@@ -71,37 +71,14 @@ public class VisualSTG extends AbstractVisualModel {
 	@Override
 	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
 		if (first == second) {
-			throw new InvalidConnectionException ("Connections are only valid between different objects");
+			throw new InvalidConnectionException ("Self-loops are not allowed.");
 		}
-
-		if (first instanceof VisualPlace) {
-			if (second instanceof VisualPlace) {
-				throw new InvalidConnectionException ("Arcs between places are not allowed");
-			}
-			if (second instanceof VisualConnection) {
-				throw new InvalidConnectionException ("Arcs between places and implicit places are not allowed");
-			}
+		if (getConnection(first, second) != null) {
+			throw new InvalidConnectionException ("This arc already exisits.");
 		}
-
-		if (first instanceof VisualTransition) {
-			if ((second instanceof VisualConnection) && !(second  instanceof VisualImplicitPlaceArc)) {
-				throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
-			}
-			if ((second instanceof VisualTransition) && (getConnection(first, second) != null)) {
-				throw new InvalidConnectionException ("This arc with implicit place already exisits");
-			}
-		}
-
-		if (first instanceof VisualConnection) {
-			if (!(first instanceof VisualImplicitPlaceArc)) {
-				throw new InvalidConnectionException ("Only connections with arcs having implicit places are allowed");
-			}
-			if (second instanceof VisualConnection) {
-				throw new InvalidConnectionException ("Arcs between places are not allowed");
-			}
-			if (second instanceof VisualPlace) {
-				throw new InvalidConnectionException ("Arcs between places are not allowed");
-			}
+		if (((first instanceof VisualPlace) || (first instanceof VisualImplicitPlaceArc))
+			&& ((second instanceof VisualPlace) || (second instanceof VisualImplicitPlaceArc))) {
+			throw new InvalidConnectionException ("Arcs between places are not allowed.");
 		}
 	}
 

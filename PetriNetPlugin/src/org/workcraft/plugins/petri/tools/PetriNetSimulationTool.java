@@ -52,8 +52,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -96,8 +98,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	protected PetriNetModel net;
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
-	protected JScrollPane infoPanel;
-	protected JPanel statusPanel;
+	protected JPanel infoPanel;
+	protected JSplitPane splitPane;
+	protected JScrollPane tracePane;
+	protected JScrollPane statePane;
 	protected JTable traceTable;
 
 	private JSlider speedSlider;
@@ -170,16 +174,29 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 		traceTable = new JTable(new TraceTableModel());
 		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		traceTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
 
-		infoPanel = new JScrollPane(traceTable);
-		infoPanel.setPreferredSize(new Dimension(1, 1));
+		tracePane = new JScrollPane();
+		tracePane.setViewportView(traceTable);
+		tracePane.setMinimumSize(new Dimension(1, 50));
 
-		statusPanel = new JPanel();
+		statePane = new JScrollPane();
+		statePane.setMinimumSize(new Dimension(1, 50));
+
+		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tracePane, statePane);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(150);
+		splitPane.setResizeWeight(0.5);
+
+		infoPanel = new JPanel();
+		infoPanel.setLayout(new BorderLayout());
+		infoPanel.add(splitPane, BorderLayout.CENTER);
+
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
-		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
+		interfacePanel.add(controlPanel, BorderLayout.NORTH);
 		interfacePanel.add(infoPanel, BorderLayout.CENTER);
-		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
+		interfacePanel.setPreferredSize(new Dimension(0, 0));
 
 		speedSlider.addChangeListener(new ChangeListener() {
 			@Override
@@ -330,7 +347,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			public void mouseReleased(MouseEvent arg0) {
 			}
 		});
-		traceTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
+	}
+
+	public void setStatePaneVisibility(boolean visible) {
+		statePane.setVisible(visible);
+		splitPane.setDividerSize(visible ? 10 : 0);
 	}
 
 	@Override
@@ -339,6 +360,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		net = (PetriNetModel)visualNet.getMathModel();
 		initialMarking = readMarking();
 		super.activated(editor);
+		setStatePaneVisibility(true);
 		editor.getWorkspaceEntry().captureMemento();
 		editor.getWorkspaceEntry().setCanModify(false);
 		resetTraces(editor);
@@ -777,7 +799,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		boolean ret = false;
 		for (Node node: container.getChildren()) {
 			if (node instanceof VisualTransition) {
-				ret=ret || net.isEnabled(((VisualTransition)node).getReferencedTransition());
+				ret = ret || net.isEnabled(((VisualTransition)node).getReferencedTransition());
 			}
 
 			if (node instanceof Container) {

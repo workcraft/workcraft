@@ -58,17 +58,17 @@ public class VisualCircuit extends AbstractVisualModel {
 	@Override
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
 		if (first==second) {
-			throw new InvalidConnectionException ("Connections are only valid between different objects");
+			throw new InvalidConnectionException ("Connections are only valid between different objects.");
 		}
 
 		if (second instanceof VisualConnection) {
-			throw new InvalidConnectionException ("Merging connections is not allowed");
+			throw new InvalidConnectionException ("Merging connections is not allowed.");
 		}
 
 		if (second instanceof VisualComponent) {
 			for (Connection c: this.getConnections(second)) {
 				if (c.getSecond() == second)
-					throw new InvalidConnectionException ("Only one connection is allowed as a driver");
+					throw new InvalidConnectionException ("Only one connection is allowed as a driver.");
 			}
 		}
 
@@ -77,10 +77,10 @@ public class VisualCircuit extends AbstractVisualModel {
 			Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
 
 			if ((toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.OUTPUT)
-				throw new InvalidConnectionException ("Outputs of the components cannot be driven");
+				throw new InvalidConnectionException ("Outputs of the components cannot be driven.");
 
 			if (!(toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.INPUT)
-				throw new InvalidConnectionException ("Inputs from the environment cannot be driven");
+				throw new InvalidConnectionException ("Inputs from the environment cannot be driven.");
 		}
 	}
 

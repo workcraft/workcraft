@@ -43,6 +43,10 @@ public class VisualFsm extends AbstractVisualModel {
 	}
 
 	@Override
+	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
+	}
+
+	@Override
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
@@ -58,20 +62,6 @@ public class VisualFsm extends AbstractVisualModel {
 			vTransition.setConnectionType(ConnectionType.BEZIER, true);
 		}
 		return vTransition;
-	}
-
-	@Override
-	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (first == null || second == null) {
-			throw new InvalidConnectionException ("Invalid connection");
-		}
-		if (!(first instanceof VisualState) || !(second instanceof VisualState)) {
-			throw new InvalidConnectionException ("Invalid connection");
-		}
-//		if (getPostset(first).contains(second) || getPreset(second).contains(first)) {
-//			throw new InvalidConnectionException ("There is already an arc from " +
-//				getStateName((VisualState)first) + " to " + getStateName((VisualState)second));
-//		}
 	}
 
 	public String getStateName(VisualState state) {

@@ -31,7 +31,7 @@ public class SimulationTool extends PetriNetSimulationTool {
 	@Override
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
-		statusPanel.setVisible(false);
+		setStatePaneVisibility(false);
 	}
 
 	@Override

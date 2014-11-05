@@ -56,7 +56,6 @@ public class ConnectionTool extends AbstractTool {
 	static protected final Color validConnectionColor = Color.BLUE;
 	static protected final Color invalidConnectionColor = Color.RED;
 
-	protected boolean forbidConnectingArcs = true;
 	protected boolean forbidSelfLoops = true;
 
 	private Point2D mousePosition = null;
@@ -68,11 +67,10 @@ public class ConnectionTool extends AbstractTool {
 
 	private static Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
-	public ConnectionTool () {
+	public ConnectionTool() {
 	}
 
-	public ConnectionTool (boolean forbidConnectingArcs, boolean forbidSelfLoops) {
-		this.forbidConnectingArcs = forbidConnectingArcs;
+	public ConnectionTool(boolean forbidSelfLoops) {
 		this.forbidSelfLoops = forbidSelfLoops;
 	}
 
@@ -103,13 +101,17 @@ public class ConnectionTool extends AbstractTool {
 
 	protected void updateState(GraphEditor editor) {
 		VisualNode node = (VisualNode) HitMan.hitTestForConnection(mousePosition, editor.getModel());
-		if (!forbidConnectingArcs || !(node instanceof VisualConnection)) {
+		if (isConnectable(node)) {
 			currentNode = node;
 			if (currentNode != firstNode) {
 				mouseLeftFirstNode = true;
 				warningMessage = null;
 			}
 		}
+	}
+
+	protected boolean isConnectable(Node node) {
+		return !(node instanceof VisualConnection);
 	}
 
 	@Override
@@ -186,12 +188,12 @@ public class ConnectionTool extends AbstractTool {
 					editor.getWorkspaceEntry().setCanModify(false);
 				} else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
 					if (forbidSelfLoops) {
-						warningMessage = "Self-loops are not allowed";
+						warningMessage = "Self-loops are not allowed.";
 					} else if (!mouseLeftFirstNode) {
-						warningMessage = "Move the mouse outside this node before creating a self-loop";
+						warningMessage = "Move the mouse outside this node before creating a self-loop.";
 					}
 				} else if ((firstNode instanceof VisualGroup) || (currentNode instanceof VisualGroup)) {
-					warningMessage = "Connection with group element is not allowed";
+					warningMessage = "Connection with group element is not allowed.";
 				} else {
 					editor.getWorkspaceEntry().saveMemento();
 					finishConnection(e.getModel());

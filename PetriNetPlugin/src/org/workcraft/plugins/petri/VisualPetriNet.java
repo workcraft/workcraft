@@ -80,10 +80,15 @@ public class VisualPetriNet extends AbstractVisualModel {
 	}
 
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
-		if (first instanceof VisualPlace && second instanceof VisualPlace)
-			throw new InvalidConnectionException ("Connections between places are not valid");
-		if (first instanceof VisualTransition && second instanceof VisualTransition)
-			throw new InvalidConnectionException ("Connections between transitions are not valid");
+		if (getConnection(first, second) != null) {
+			throw new InvalidConnectionException ("This arc already exists.");
+		}
+		if (first instanceof VisualPlace && second instanceof VisualPlace) {
+			throw new InvalidConnectionException ("Arcs between places are not allowed.");
+		}
+		if (first instanceof VisualTransition && second instanceof VisualTransition) {
+			throw new InvalidConnectionException ("Arcs between transitions are not allowed.");
+		}
 	}
 
 	@Override

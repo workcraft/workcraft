@@ -64,19 +64,19 @@ public class VisualXmas extends AbstractVisualModel {
 			throw new InvalidConnectionException ("Connection is only allowed between ports");
 		} else {
 			if (((VisualXmasContact)first).getIOType() != IOType.OUTPUT) {
-				throw new InvalidConnectionException ("Connection is only allowed from output port");
+				throw new InvalidConnectionException ("Connection is only allowed from output port.");
 			}
 			if (((VisualXmasContact)second).getIOType() != IOType.INPUT) {
-				throw new InvalidConnectionException ("Connection is only allowed to input port");
+				throw new InvalidConnectionException ("Connection is only allowed to input port.");
 			}
 			for (Connection c: this.getConnections(first)) {
 				if (c.getFirst() == first) {
-					throw new InvalidConnectionException ("Only one connection is allowed from port");
+					throw new InvalidConnectionException ("Only one connection is allowed from port.");
 				}
 			}
 			for (Connection c: this.getConnections(second)) {
 				if (c.getSecond() == second) {
-					throw new InvalidConnectionException ("Only one connection is allowed to port");
+					throw new InvalidConnectionException ("Only one connection is allowed to port.");
 				}
 			}
 		}
