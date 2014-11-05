@@ -76,4 +76,10 @@ public class SONConnectionTool extends ConnectionTool {
 		super.mousePressed(e);
 	}
 
+	@Override
+	public void deactivated(GraphEditor editor) {
+		semantic = Semantics.PNLINE;
+		super.deactivated(editor);
+	}
+
 }

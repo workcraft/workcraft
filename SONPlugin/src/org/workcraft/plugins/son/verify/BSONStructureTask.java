@@ -131,9 +131,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : model invloves BSCON cycle paths = "+ cycleErrors.size() + ".");
+			logger.error("ERROR : model involves BSCON cycle paths = "+ cycleErrors.size() + ".");
+			int i = 1;
 			for(Path cycle : cycleErrors){
-				int i = 1;
 				logger.error("Cycle " + i + ": " + cycle.toString(net));
 				i++;
 			}

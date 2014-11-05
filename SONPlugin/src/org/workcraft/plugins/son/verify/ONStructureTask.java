@@ -129,9 +129,9 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			else{
 				hasErr = true;
 				errNumber++;
-				logger.error("ERROR : model invloves cycle paths = "+ cycleResult.size() + ".");
+				logger.error("ERROR : model involves cycle paths = "+ cycleResult.size() + ".");
+				int i = 1;
 				for(Path cycle : cycleResult){
-					int i = 1;
 					logger.error("Cycle " + i + ": " + cycle.toString(net));
 					i++;
 				}

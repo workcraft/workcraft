@@ -616,7 +616,7 @@ public class VisualSON extends AbstractVisualModel {
 								 mathParent.remove(mathCon);
 							 //create connection between first node and block
 							 try {
-
+								forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
 								this.connect(first, vBlock);
 							} catch (InvalidConnectionException e) {
 								// TODO Auto-generated catch block

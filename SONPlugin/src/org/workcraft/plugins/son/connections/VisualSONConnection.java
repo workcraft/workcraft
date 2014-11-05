@@ -5,6 +5,7 @@ import java.awt.Stroke;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 
 public class VisualSONConnection extends VisualConnection {
@@ -16,8 +17,31 @@ public class VisualSONConnection extends VisualConnection {
 		this(refConnection, null, null);
 	}
 
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, String>(
+				this, "Semantic", String.class) {
+			public void setter(VisualSONConnection object, String value) {
+			}
+			public String getter(VisualSONConnection object) {
+				switch (getSemantics()) {
+				case PNLINE:
+					return "Petri-net connection";
+				case SYNCLINE:
+					return "Synchronous communication";
+				case ASYNLINE:
+					return "Asynchronous communication";
+				case BHVLINE:
+					return "Behavioural abstraction";
+				default:
+					return getSemantics().toString();
+				}
+			}
+		});
+	}
+
 	public VisualSONConnection(SONConnection refConnection, VisualComponent first, VisualComponent second) {
 		super(refConnection, first, second);
+		addPropertyDeclarations();
 		removePropertyDeclarationByName("Line width");
 		removePropertyDeclarationByName("Arrow width");
 		removePropertyDeclarationByName("Arrow length");
@@ -72,5 +96,4 @@ public class VisualSONConnection extends VisualConnection {
 		}
 		return super.hasArrow();
 	}
-
 }

@@ -104,9 +104,9 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : model invloves global cycle paths = "+ cycleErrors.size() + ".");
+			logger.error("ERROR : model involves global cycle paths = "+ cycleErrors.size() + ".");
+			int i = 1;
 			for(Path cycle : cycleErrors){
-				int i = 1;
 				logger.error("Cycle " + i + ": " + cycle.toString(net));
 				i++;
 			}

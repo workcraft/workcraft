@@ -68,6 +68,6 @@ public class ONPathAlg{
 			for(Node end : relationAlg.getFinal(nodes)){
 				result.addAll(PathAlgorithm.getPaths(start, end, createAdj(nodes)));
 			}
-		 return PathAlgorithm.merging(result);
+		 return result;
 	}
 }
