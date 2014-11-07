@@ -107,7 +107,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	private VisualComponent second = null;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
-	private ScaleMode scaleMode = ScaleMode.LOCK_RELATIVELY;
+	private ScaleMode scaleMode = ScaleMode.NONE;
 
 	private ConnectionGraphic graphic = null;
 

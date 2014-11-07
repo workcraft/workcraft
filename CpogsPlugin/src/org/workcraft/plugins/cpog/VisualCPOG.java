@@ -30,6 +30,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -184,7 +185,7 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	public void groupSelection(String graphName) {
-		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
 			VisualScenario scenario = new VisualScenario();
 			if (graphName != null) {

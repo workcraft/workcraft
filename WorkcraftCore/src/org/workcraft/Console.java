@@ -35,6 +35,13 @@ import org.workcraft.util.FileUtils;
 
 
 public class Console {
+	static {
+		// Workaround for Java 7 bug http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7075600
+		// TODO: Remove again when switching to Java 8
+		if(System.getProperty("java.version").startsWith("1.7")) {
+			System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+		}
+	}
 
 	public static void main(String[] args) {
 		LinkedList<String> arglist = new LinkedList<String>();

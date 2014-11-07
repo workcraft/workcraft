@@ -67,7 +67,9 @@ public class OutputWindow extends JPanel {
 
 		@Override
 		public void write(byte b[]) throws IOException {
-			systemOut.write(b);
+			if (systemOut != null) {
+				systemOut.write(b);
+			}
 			String s = new String(b);
 			txtStdOut.append(s);
 			txtStdOut.setCaretPosition(txtStdOut.getDocument().getLength());
@@ -75,7 +77,9 @@ public class OutputWindow extends JPanel {
 
 		@Override
 		public void write(byte b[], int off, int len) throws IOException {
-			systemOut.write(b, off, len);
+			if (systemOut != null) {
+				systemOut.write(b, off, len);
+			}
 			String s = new String(b , off , len);
 			txtStdOut.append(s);
 		}

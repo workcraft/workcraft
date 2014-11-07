@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,9 +54,17 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
@@ -336,6 +345,69 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return view;
 	}
 
+	private Set<Point2D> calcConnectionSnaps(VisualConnection vc) {
+		Set<Point2D> result = new HashSet<Point2D>();
+		result.add(vc.getSecondCenter());
+		result.add(vc.getFirstCenter());
+		return result;
+	}
+
+	private Set<Point2D> getComponentSnaps(VisualComponent component) {
+		Set<Point2D> result = new HashSet<Point2D>();
+		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
+		Point2D pos = TransformHelper.transform(component, localToRootTransform).getCenter();
+		result.add(pos);
+		for (Connection connection: getModel().getConnections(component)) {
+			if (connection instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)connection;
+				if (vc.getConnectionType() == ConnectionType.POLYLINE) {
+					Polyline polyline = (Polyline)vc.getGraphic();
+					ControlPoint firstControlPoint = polyline.getFirstControlPoint();
+					if ((component == connection.getFirst()) && (firstControlPoint != null)) {
+						result.add(firstControlPoint.getPosition());
+					}
+					ControlPoint lastControlPoint = polyline.getLastControlPoint();
+					if ((component == connection.getSecond()) && (lastControlPoint != null)) {
+						result.add(lastControlPoint.getPosition());
+					}
+				}
+				result.addAll(calcConnectionSnaps(vc));
+			}
+		}
+		return result;
+	}
+
+	private Set<Point2D> getControlPointSnaps(ControlPoint cp) {
+		Set<Point2D> result = new HashSet<Point2D>();
+		Node graphics = cp.getParent();
+		if (graphics instanceof Polyline) {
+			Polyline polyline = (Polyline)cp.getParent();
+			result.add(cp.getPosition());
+			result.add(polyline.getPrevAnchorPointLocation(cp));
+			result.add(polyline.getNextAnchorPointLocation(cp));
+		}
+		Node parent = graphics.getParent();
+		if (parent instanceof VisualConnection) {
+			VisualConnection vc = (VisualConnection)parent;
+			result.addAll(calcConnectionSnaps(vc));
+		}
+		return result;
+	}
+
+	@Override
+	public Set<Point2D> getSnaps(VisualNode node) {
+		Set<Point2D> result = new HashSet<Point2D>();
+		if (node instanceof VisualComponent) {
+			VisualComponent component = (VisualComponent)node;
+			result.addAll(getComponentSnaps(component));
+		} else if (node instanceof ControlPoint) {
+			ControlPoint cp = (ControlPoint)node;
+			result.addAll(getControlPointSnaps(cp));
+		}
+		return result;
+	}
+
+	@Override
 	public Point2D snap(Point2D pos, Set<Point2D> snaps) {
 		double x = grid.snapCoordinate(pos.getX());
 		double y = grid.snapCoordinate(pos.getY());
@@ -352,10 +424,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return new Point2D.Double(x, y);
 	}
 
+	@Override
 	public WorkspaceEntry getWorkspaceEntry() {
 		return workspaceEntry;
 	}
 
+	@Override
 	public MainWindow getMainWindow() {
 		return mainWindow;
 	}

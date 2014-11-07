@@ -1,10 +1,10 @@
 package org.workcraft.gui;
 
+import org.workcraft.AboutDialog;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.propertyeditor.AboutDialog;
 
 public class MainWindowActions {
 	public static final Action CREATE_WORK_ACTION = new Action() {

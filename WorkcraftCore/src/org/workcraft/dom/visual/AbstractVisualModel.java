@@ -48,7 +48,6 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -287,48 +286,29 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		double deltaX = 0.0;
 		double deltaY = 0.0;
 		int num = 0;
-		for (Node n: components) {
-			if (n instanceof VisualTransformableNode) {
-				VisualTransformableNode tn = (VisualTransformableNode)n;
-				deltaX+= tn.getX();
-				deltaY+= tn.getY();
+		for (Node node: components) {
+			if (node instanceof VisualTransformableNode) {
+				VisualTransformableNode tn = (VisualTransformableNode)node;
+				deltaX += tn.getX();
+				deltaY += tn.getY();
 				num++;
 			}
 		}
 		if (num>0) {
-			deltaX /=num;
-			deltaY /=num;
+			deltaX /= num;
+			deltaY /= num;
 		}
 		// Round numbers
 		deltaX = Math.round(deltaX*2)/2;
 		deltaY = Math.round(deltaY*2)/2;
-		// Make connection scale mode relative to components
-		HashMap<VisualConnection, ScaleMode> connectionToScaleMode = new HashMap<>();
-		for (Node node: components) {
-			if (node instanceof VisualConnection) {
-				VisualConnection vc = (VisualConnection)node;
-				connectionToScaleMode.put(vc, vc.getScaleMode());
-				vc.setScaleMode(ScaleMode.LOCK_RELATIVELY);
-			}
-		}
+
 		// Move components
-		for (Node n: components) {
-			if (n instanceof VisualTransformableNode && !(n instanceof ControlPoint)) {
-				VisualTransformableNode tn = (VisualTransformableNode)n;
+		for (Node node: components) {
+			if (node instanceof VisualTransformableNode && !(node instanceof ControlPoint)) {
+				VisualTransformableNode tn = (VisualTransformableNode)node;
 				tn.setPosition(new Point2D.Double(tn.getX() - deltaX, tn.getY() - deltaY));
 			}
 		}
-		// Restore connections scale mode
-		for (Node node: components) {
-			if (node instanceof VisualConnection) {
-				ScaleMode scaleMode = connectionToScaleMode.get(node);
-				if (scaleMode != null) {
-					VisualConnection vc = (VisualConnection)node;
-					vc.setScaleMode(scaleMode);
-				}
-			}
-		}
-
 		return new Point2D.Double(deltaX, deltaY);
 	}
 
@@ -383,58 +363,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return Collections.unmodifiableSet(selection);
 	}
 
-	public Collection<Node> getOrderedCurrentLevelSelection() {
-		HashSet<Node> result = new HashSet<Node>();
-		for(Node node : getCurrentLevel().getChildren()) {
-			if (isGroupable(node) && selection.contains(node)) {
-				result.add(node);
-			}
-		}
-		return result;
-	}
-
+	@Override
 	public boolean isGroupable(Node node) {
 		return (node instanceof VisualNode);
 	}
 
-	public Collection<Node> getRecursiveSelection() {
-		HashSet<Node> result = new HashSet<Node>();
-		for (Node node : selection) {
-			if (node instanceof VisualNode) {
-				result.add(node);
-				result.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
-			}
-		}
-		return result;
-	}
-
-	public Collection<VisualConnection> getCurrentLevelConnections() {
-		return Hierarchy.getChildrenOfType(getCurrentLevel(), VisualConnection.class);
-	}
-
-	public Collection<Node> getGroupableCurrentLevelSelection() {
-		HashSet<Node> result = new HashSet<Node>();
-		Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection();
-        for (Node node : currentLevelSelection) {
-        	if (isGroupable(node) && !(node instanceof VisualConnection)) {
-            	result.add(node);
-            }
-        }
-        Collection<Node> recursiveSelection = getRecursiveSelection();
-		Collection<VisualConnection> currentLevelConnections = getCurrentLevelConnections();
-        for (VisualConnection connection : currentLevelConnections) {
-        	VisualComponent first = connection.getFirst();
-        	VisualComponent second = connection.getSecond();
-        	if (recursiveSelection.contains(first) && recursiveSelection.contains(second)) {
-        		result.add(connection);
-        	}
-        }
-		return result;
-	}
-
 	@Override
 	public void groupSelection() {
-		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
 			VisualGroup group = new VisualGroup();
 			getCurrentLevel().add(group);
@@ -446,7 +382,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@Override
 	public void groupPageSelection() {
-		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
 			PageNode pageNode = new PageNode();
 			getCurrentMathLevel().add(pageNode);
@@ -461,7 +397,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
+		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
 			if (node instanceof VisualGroup) {
 				VisualGroup group = (VisualGroup)node;
 				for(Node subNode : group.unGroup()) {

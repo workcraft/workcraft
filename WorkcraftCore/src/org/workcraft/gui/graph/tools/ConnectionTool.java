@@ -58,8 +58,9 @@ public class ConnectionTool extends AbstractTool {
 
 	protected boolean forbidSelfLoops = true;
 
-	private Point2D mousePosition = null;
+	private Point2D firstPoint = null;
 	private VisualNode firstNode = null;
+	private Point2D currentPoint = null;
 	private VisualNode currentNode = null;
 	private String warningMessage = null;
 	private boolean mouseLeftFirstNode = false;
@@ -90,9 +91,10 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	protected void resetState(GraphEditor editor) {
-		mousePosition = null;
-		firstNode = null;
+		currentPoint = null;
 		currentNode = null;
+		firstPoint = null;
+		firstNode = null;
 		warningMessage = null;
 		mouseLeftFirstNode = false;
 		editor.getModel().selectNone();
@@ -100,7 +102,7 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	protected void updateState(GraphEditor editor) {
-		VisualNode node = (VisualNode) HitMan.hitTestForConnection(mousePosition, editor.getModel());
+		VisualNode node = (VisualNode) HitMan.hitTestForConnection(currentPoint, editor.getModel());
 		if (isConnectable(node)) {
 			currentNode = node;
 			if (currentNode != firstNode) {
@@ -129,17 +131,16 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		if ((firstNode != null) && (mousePosition != null)) {
+		if ((firstNode != null) && (currentPoint != null)) {
 			g.setStroke(new BasicStroke((float)editor.getViewport().pixelSizeInUserSpace().getX()));
-			Point2D center = TransformHelper.transform(firstNode, TransformHelper.getTransformToRoot(firstNode)).getCenter();
 			Path2D path = new Path2D.Double();
-			path.moveTo(center.getX(), center.getY());
+			path.moveTo(firstPoint.getX(), firstPoint.getY());
 			if (controlPoints != null) {
 				for (Point2D point: controlPoints) {
 					path.lineTo(point.getX(), point.getY());
 				}
 			}
-			path.lineTo(mousePosition.getX(), mousePosition.getY());
+			path.lineTo(currentPoint.getX(), currentPoint.getY());
 			if (currentNode == null) {
 				g.setColor(incompleteConnectionColor);
 				g.draw(path);
@@ -159,14 +160,14 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
-		mousePosition = e.getPosition();
+		currentPoint = e.getPosition();
 		updateState(e.getEditor());
 		e.getEditor().repaint();
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		mousePosition = e.getPosition();
+		currentPoint = e.getPosition();
 		GraphEditor editor = e.getEditor();
 		updateState(editor);
 		if (e.getButton() == MouseEvent.BUTTON1) {
@@ -174,12 +175,13 @@ public class ConnectionTool extends AbstractTool {
 				if (firstNode != null) {
 					Set<Point2D> snaps = new HashSet<Point2D>();
 					if (controlPoints.isEmpty()) {
-						Point2D center = TransformHelper.transform(firstNode, TransformHelper.getTransformToRoot(firstNode)).getCenter();
-						snaps.add(center);
+						AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
+						Point2D p = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
+						snaps.add(p);
 					} else {
 						snaps.add(controlPoints.getLast());
 					}
-					Point2D snapPos = editor.snap(mousePosition, snaps);
+					Point2D snapPos = editor.snap(currentPoint, snaps);
 					controlPoints.add(snapPos);
 				}
 			} else {
@@ -212,6 +214,13 @@ public class ConnectionTool extends AbstractTool {
 
 	private void startConnection() {
 		firstNode = currentNode;
+		if (firstNode instanceof VisualConnection) {
+			VisualConnection vc = (VisualConnection)firstNode;
+			firstPoint = vc.getNearestPointOnConnection(currentPoint);
+		} else {
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
+			firstPoint = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
+		}
 		currentNode = null;
 		warningMessage = null;
 		mouseLeftFirstNode = false;
