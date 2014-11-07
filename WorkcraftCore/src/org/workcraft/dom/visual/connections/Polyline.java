@@ -28,6 +28,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.List;
 
 import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
@@ -182,25 +183,47 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return nearest;
 	}
 
+	private int getControlPointCount() {
+		return getChildren().size();
+	}
+
 	protected int getSegmentCount() {
-		return groupImpl.getChildren().size() + 1;
+		return getControlPointCount() + 1;
+	}
+
+	protected int getAnchorPointCount() {
+		return getControlPointCount() + 2;
 	}
 
 	private Point2D getAnchorPointLocation(int index) {
-		if (index == 0)
+		if (index <= 0) {
 			return connectionInfo.getFirstCenter();
-		if (index > groupImpl.getChildren().size())
+		} if (index >= getAnchorPointCount()-1) {
 			return connectionInfo.getSecondCenter();
-		return ((ControlPoint) groupImpl.getChildren().get(index-1)).getPosition();
+		}
+		return getControlPoint(index-1).getPosition();
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ControlPoint>  getControlPoints() {
+		return (List)(getChildren());
+	}
+
+	private ControlPoint getControlPoint(int index) {
+		ControlPoint result = null;
+		if ((index >=0) && (index < getControlPointCount())) {
+			result = getControlPoints().get(index);
+		}
+		return result;
 	}
 
 	protected Line2D getSegment(int index) {
 		int segments = getSegmentCount();
-
-		if (index > segments-1)
+		if (index < segments) {
+			return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index+1));
+		} else {
 			throw new RuntimeException ("Segment index is greater than number of segments");
-
-		return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index+1));
+		}
 	}
 
 	private Rectangle2D getSegmentBoundsWithThreshold (Line2D segment) {
@@ -348,12 +371,12 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	public void notify(SelectionChangedEvent event) {
 		boolean controlsVisible = false;
 		for (Node n : event.getSelection())
-			if (n == getParent() || groupImpl.getChildren().contains(n)) {
+			if (n == getParent() || getChildren().contains(n)) {
 				controlsVisible = true;
 				break;
 			}
 
-		for (Node n : groupImpl.getChildren())
+		for (Node n : getChildren())
 			((ControlPoint)n).setHidden(!controlsVisible);
 	}
 
@@ -408,7 +431,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	private int getIndex(ControlPoint cp) {
 		int index = -1;
-		for(Node node: groupImpl.getChildren()) {
+		for(Node node: getChildren()) {
 			index++;
 			if (node == cp) {
 				return index;
@@ -433,6 +456,14 @@ StateObserver, HierarchyObserver, SelectionObserver {
 			pos = getAnchorPointLocation(index+2);
 		}
 		return pos;
+	}
+
+	public ControlPoint getFirstControlPoint() {
+		return getControlPoint(0);
+	}
+
+	public ControlPoint getLastControlPoint() {
+		return getControlPoint(getControlPointCount()-1);
 	}
 
 }

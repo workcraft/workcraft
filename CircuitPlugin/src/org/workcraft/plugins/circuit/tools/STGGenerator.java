@@ -358,8 +358,7 @@ public class STGGenerator {
 		clauses.addAll(function.getClauses());
 
 
-		for(DnfClause clause : clauses)
-		{
+		for(DnfClause clause : clauses) {
 			VisualSignalTransition transition = stg.createSignalTransition(signalName, type, transitionDirection, curContainer);
 			nodes.add(transition);
 			parentContact.getReferencedTransitions().add(transition.getReferencedTransition());
@@ -376,25 +375,25 @@ public class STGGenerator {
 
 			for (Literal literal : clause.getLiterals()) {
 				Contact targetContact = (Contact)literal.getVariable();
-
 				VisualContact driverContact = targetDrivers.get(targetContact);
-
 				ContactSTG source = drivers.get(driverContact);
-
-				if(source == null)
+				if(source == null) {
 					throw new RuntimeException("No source for " + circuit.getMathModel().getName(targetContact) + " while generating " + signalName);
-
-				VisualPlace p = literal.getNegation() ? source.p0 : source.p1;
-
-				placesToRead.add(p);
+				}
+				VisualPlace place = literal.getNegation() ? source.p0 : source.p1;
+				placesToRead.add(place);
 			}
-
-			if(placesToRead.remove(preset))
+			if(placesToRead.remove(preset)) {
 				System.out.println(String.format("warning: signal %s depends on itself", signalName));
-
-			for(VisualPlace p : placesToRead) {
-				stg.connect(p, transition);
-				stg.connect(transition, p);
+			}
+			for(VisualPlace place : placesToRead) {
+				// FIXME: Why duplicate arcs would be created in the first place?
+				if(stg.getConnection(place, transition) == null) {
+					stg.connect(place, transition);
+				}
+				if(stg.getConnection(transition, place) == null) {
+					stg.connect(transition, place);
+				}
 			}
 		}
 

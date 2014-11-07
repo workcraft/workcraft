@@ -48,6 +48,7 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -282,7 +283,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public static Point2D centralizeComponents(Collection<Node> components) {
-		// find weighted center
+		// Find weighted center
 		double deltaX = 0.0;
 		double deltaY = 0.0;
 		int num = 0;
@@ -298,17 +299,36 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			deltaX /=num;
 			deltaY /=num;
 		}
-		// round numbers
+		// Round numbers
 		deltaX = Math.round(deltaX*2)/2;
 		deltaY = Math.round(deltaY*2)/2;
-		//
-
+		// Make connection scale mode relative to components
+		HashMap<VisualConnection, ScaleMode> connectionToScaleMode = new HashMap<>();
+		for (Node node: components) {
+			if (node instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)node;
+				connectionToScaleMode.put(vc, vc.getScaleMode());
+				vc.setScaleMode(ScaleMode.LOCK_RELATIVELY);
+			}
+		}
+		// Move components
 		for (Node n: components) {
 			if (n instanceof VisualTransformableNode && !(n instanceof ControlPoint)) {
 				VisualTransformableNode tn = (VisualTransformableNode)n;
-				tn.setPosition(new Point2D.Double(tn.getX()-deltaX, tn.getY()-deltaY));
+				tn.setPosition(new Point2D.Double(tn.getX() - deltaX, tn.getY() - deltaY));
 			}
 		}
+		// Restore connections scale mode
+		for (Node node: components) {
+			if (node instanceof VisualConnection) {
+				ScaleMode scaleMode = connectionToScaleMode.get(node);
+				if (scaleMode != null) {
+					VisualConnection vc = (VisualConnection)node;
+					vc.setScaleMode(scaleMode);
+				}
+			}
+		}
+
 		return new Point2D.Double(deltaX, deltaY);
 	}
 
@@ -432,7 +452,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			getCurrentMathLevel().add(pageNode);
 			VisualPage page = new VisualPage(pageNode);
 			getCurrentLevel().add(page);
-			this.reparent(page, this, getCurrentLevel(), nodes);
+			reparent(page, this, getCurrentLevel(), nodes);
 			page.setPosition(centralizeComponents(nodes));
 			select(page);
 		}

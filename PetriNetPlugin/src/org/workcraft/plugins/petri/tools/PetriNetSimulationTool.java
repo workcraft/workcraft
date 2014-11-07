@@ -55,7 +55,6 @@ import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -544,7 +543,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	private void resetTraces(final GraphEditor editor) {
 		applyMarking(initialMarking);
 		mainTrace.setPosition(0);
-		branchTrace.setPosition(0);
+		branchTrace.clear();
 		updateState(editor);
 	}
 
