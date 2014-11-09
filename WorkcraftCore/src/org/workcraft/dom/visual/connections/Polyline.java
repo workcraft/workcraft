@@ -28,7 +28,9 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
@@ -136,54 +138,49 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return n;
 	}
 
-	private double getParameterOnSegment (double t, int segmentIndex) {
+	private double getParameterOnSegment(double t, int segmentIndex) {
 		return t * getSegmentCount() - segmentIndex;
 	}
 
 
-	private int getNearestSegment (Point2D pt, Point2D out_pointOnSegment) {
+	public int getNearestSegment(Point2D pt, Point2D out_pointOnSegment) {
 		double min = Double.MAX_VALUE;
 		int nearest = -1;
 
 		for (int i=0; i<getSegmentCount(); i++) {
 			Line2D segment = getSegment(i);
-
 			Point2D a = new Point2D.Double ( pt.getX() - segment.getX1(), pt.getY() - segment.getY1() );
 			Point2D b = new Point2D.Double ( segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1() );
 
 			double magB = b.distance(0, 0);
-
 			double dist;
-
 			if (magB < 0.0000001) {
 				dist = pt.distance(segment.getP1());
 			} else {
 				b.setLocation(b.getX() / magB, b.getY() / magB);
-
 				double magAonB = a.getX() * b.getX() + a.getY() * b.getY();
-
-				if (magAonB < 0)
+				if (magAonB < 0) {
 					magAonB = 0;
-				if (magAonB > magB)
+				}
+				if (magAonB > magB) {
 					magAonB = magB;
-
+				}
 				a.setLocation(segment.getX1() + b.getX() * magAonB, segment.getY1() + b.getY() * magAonB);
-
 				dist = new Point2D.Double(pt.getX() - a.getX(), pt.getY() - a.getY()).distance(0,0);
 			}
 
 			if (dist < min) {
 				min = dist;
-				if (out_pointOnSegment != null)
+				if (out_pointOnSegment != null) {
 					out_pointOnSegment.setLocation(a);
+				}
 				nearest = i;
 			}
 		}
-
 		return nearest;
 	}
 
-	private int getControlPointCount() {
+	public int getControlPointCount() {
 		return getChildren().size();
 	}
 
@@ -205,11 +202,11 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ControlPoint>  getControlPoints() {
-		return (List)(getChildren());
+	public List<ControlPoint> getControlPoints() {
+		return Collections.unmodifiableList((List)getChildren());
 	}
 
-	private ControlPoint getControlPoint(int index) {
+	public ControlPoint getControlPoint(int index) {
 		ControlPoint result = null;
 		if ((index >=0) && (index < getControlPointCount())) {
 			result = getControlPoints().get(index);

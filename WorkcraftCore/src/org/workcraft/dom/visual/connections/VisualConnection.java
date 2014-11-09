@@ -56,6 +56,8 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
+import com.sun.corba.se.impl.resolver.SplitLocalResolverImpl;
+
 public class VisualConnection extends VisualNode implements Node, Drawable, DependentNode,
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
@@ -129,6 +131,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	private double bubbleSize = defaultBubbleSize;
 
 	private boolean isTokenColorPropagator = false;
+	private Point2D splitPoint = null;
 
 	private LinkedHashSet<Node> children = new LinkedHashSet<Node>();
 	private ComponentsTransformObserver componentsTransformObserver = null;
@@ -413,6 +416,16 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	public void setTokenColorPropagator(boolean value) {
 		isTokenColorPropagator = value;
+	}
+
+	@NoAutoSerialisation
+	public void setSplitPoint(Point2D point) {
+		splitPoint = point;
+	}
+
+	@NoAutoSerialisation
+	public Point2D getSplitPoint() {
+		return (splitPoint == null) ? getPointOnConnection(0.5) : splitPoint;
 	}
 
 	public Point2D getPointOnConnection(double t) {

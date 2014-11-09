@@ -186,7 +186,7 @@ public class ConnectionTool extends AbstractTool {
 				}
 			} else {
 				if (firstNode == null) {
-					startConnection();
+					startConnection(editor);
 					editor.getWorkspaceEntry().setCanModify(false);
 				} else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
 					if (forbidSelfLoops) {
@@ -198,9 +198,9 @@ public class ConnectionTool extends AbstractTool {
 					warningMessage = "Connection with group element is not allowed.";
 				} else {
 					editor.getWorkspaceEntry().saveMemento();
-					finishConnection(e.getModel());
+					finishConnection(editor);
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-						startConnection();
+						startConnection(editor);
 					} else {
 						resetState(editor);
 					}
@@ -212,13 +212,16 @@ public class ConnectionTool extends AbstractTool {
 		editor.repaint();
 	}
 
-	private void startConnection() {
+	private void startConnection(GraphEditor editor) {
 		firstNode = currentNode;
+		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
 		if (firstNode instanceof VisualConnection) {
-			VisualConnection vc = (VisualConnection)firstNode;
-			firstPoint = vc.getNearestPointOnConnection(currentPoint);
+			VisualConnection connection = (VisualConnection)firstNode;
+			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
+			Point2D currentPointInLocalSpace = rootToLocalTransform.transform(currentPoint, null);
+			Point2D nearestPointInLocalSpace = connection.getNearestPointOnConnection(currentPointInLocalSpace);
+			firstPoint = localToRootTransform.transform(nearestPointInLocalSpace, null);
 		} else {
-			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
 			firstPoint = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
 		}
 		currentNode = null;
@@ -227,19 +230,32 @@ public class ConnectionTool extends AbstractTool {
 		controlPoints = new LinkedList<Point2D>();
 	}
 
-	private void finishConnection(VisualModel model) {
+	private void finishConnection(GraphEditor editor) {
 		try {
+			if (firstNode instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)firstNode;
+				Point2D snapPos = editor.snap(firstPoint, null);
+				AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
+				vc.setSplitPoint(rootToLocalTransform.transform(snapPos, null));
+			}
+			if (currentNode instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)currentNode;
+				Point2D snapPos = editor.snap(currentPoint, null);
+				AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
+				vc.setSplitPoint(rootToLocalTransform.transform(snapPos, null));
+			}
+			VisualModel model = editor.getModel();
 			VisualConnection connection = model.connect(firstNode, currentNode);
-			AffineTransform rootToConnectionTransform = TransformHelper.getTransform(model.getRoot(), connection);
 			if (controlPoints != null) {
 				ConnectionGraphic graphic = connection.getGraphic();
 				if (graphic instanceof Polyline) {
 					Polyline polyline = (Polyline)graphic;
+					AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
 					ListIterator<Point2D> pointIterator = controlPoints.listIterator(controlPoints.size());
 					// Iterate in reverse
 					while(pointIterator.hasPrevious()) {
 						Point2D point = pointIterator.previous();
-						rootToConnectionTransform.transform(point, point);
+						rootToLocalTransform.transform(point, point);
 						polyline.insertControlPointInSegment(point, 0);
 					}
 				}

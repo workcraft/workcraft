@@ -43,8 +43,8 @@ public class DefaultAnchorGenerator extends DummyMouseListener {
 					e.getEditor().getWorkspaceEntry().saveMemento();
 					model.selectNone();
 					Polyline polyline = (Polyline)connection.getGraphic();
-					AffineTransform t = TransformHelper.getTransform(model.getRoot(), connection);
-					Point2D point = t.transform(e.getPosition(), null);
+					AffineTransform rootToConnectionTransform = TransformHelper.getTransform(model.getRoot(), connection);
+					Point2D point = rootToConnectionTransform.transform(e.getPosition(), null);
 					polyline.createControlPoint(point);
 					model.select(connection);
 				}

@@ -21,8 +21,13 @@
 
 package org.workcraft.plugins.stg;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -32,8 +37,11 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -142,22 +150,52 @@ public class VisualSTG extends AbstractVisualModel {
 		return connection;
 	}
 
-	public VisualPlace makeExplicit(VisualImplicitPlaceArc con) {
-		Container group = Hierarchy.getNearestAncestor(con, Container.class);
+	private void addControlPoints(VisualConnection connection, List<Point2D> locations) {
+		if (connection.getGraphic() instanceof Polyline) {
+			Polyline polyline = (Polyline)connection.getGraphic();
+			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
+			ListIterator<Point2D> locationIterator = locations.listIterator(locations.size());
+			// Iterate in reverse
+			while(locationIterator.hasPrevious()) {
+				Point2D locationInLocalSpace = rootToLocalTransform.transform(locationIterator.previous(), null);
+				polyline.insertControlPointInSegment(locationInLocalSpace, 0);
+			}
+		}
+	}
 
-		STGPlace implicitPlace = con.getImplicitPlace();
+	public VisualPlace makeExplicit(VisualImplicitPlaceArc connection) {
+		Container group = Hierarchy.getNearestAncestor(connection, Container.class);
+
+		List<Point2D> locations = new LinkedList<Point2D>();
+		int splitIndex = -1;
+		if (connection.getGraphic() instanceof Polyline) {
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+			Polyline polyline = (Polyline)connection.getGraphic();
+			for (ControlPoint cp:  polyline.getControlPoints()) {
+				Point2D location = localToRootTransform.transform(cp.getPosition(), null);
+				locations.add(location);
+			}
+			splitIndex = polyline.getNearestSegment(connection.getSplitPoint(), null);
+		}
+
+		STGPlace implicitPlace = connection.getImplicitPlace();
 		stg.makeExplicit(implicitPlace);
 		VisualPlace place = new VisualPlace(implicitPlace);
-		place.setPosition(con.getPointOnConnection(0.5));
+		place.setPosition(connection.getSplitPoint());
 
-		VisualConnection con1 = new VisualConnection(con.getRefCon1(), con.getFirst(), place);
-		VisualConnection con2 = new VisualConnection(con.getRefCon2(), place, con.getSecond());
+		VisualConnection con1 = new VisualConnection(connection.getRefCon1(), connection.getFirst(), place);
+		VisualConnection con2 = new VisualConnection(connection.getRefCon2(), place, connection.getSecond());
 
 		group.add(place);
 		group.add(con1);
 		group.add(con2);
 
-		remove(con);
+		if (!locations.isEmpty()) {
+			addControlPoints(con1, locations.subList(0, splitIndex));
+			addControlPoints(con2, locations.subList(splitIndex, locations.size()));
+		}
+
+		remove(connection);
 		return place;
 	}
 

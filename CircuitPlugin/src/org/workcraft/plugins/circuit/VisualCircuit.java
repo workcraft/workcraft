@@ -21,9 +21,14 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -34,10 +39,14 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
@@ -99,22 +108,51 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 
+	private void addControlPoints(VisualConnection connection, List<Point2D> locations) {
+		if (connection.getGraphic() instanceof Polyline) {
+			Polyline polyline = (Polyline)connection.getGraphic();
+			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
+			ListIterator<Point2D> locationIterator = locations.listIterator(locations.size());
+			// Iterate in reverse
+			while(locationIterator.hasPrevious()) {
+				Point2D locationInLocalSpace = rootToLocalTransform.transform(locationIterator.previous(), null);
+				polyline.insertControlPointInSegment(locationInLocalSpace, 0);
+			}
+		}
+	}
+
 	@Override
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
-
 		if (first instanceof VisualConnection) {
 			VisualConnection connection = (VisualConnection)first;
+			List<Point2D> locations = new LinkedList<Point2D>();
+			int splitIndex = -1;
+ 			if (connection.getGraphic() instanceof Polyline) {
+ 				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+				Polyline polyline = (Polyline)connection.getGraphic();
+				for (ControlPoint cp:  polyline.getControlPoints()) {
+					Point2D location = localToRootTransform.transform(cp.getPosition(), null);
+					locations.add(location);
+				}
+				splitIndex = polyline.getNearestSegment(connection.getSplitPoint(), null);
+			}
+
 			Container vContainer = (Container)connection.getParent();
 			Container mParent = (Container)(connection.getReferencedConnection().getParent());
 			Joint mJoint = new Joint();
 			mParent.add(mJoint);
 			VisualJoint vJoint = new VisualJoint(mJoint);
 			vContainer.add(vJoint);
-			vJoint.setPosition(connection.getPointOnConnection(0.5));
+			vJoint.setPosition(connection.getSplitPoint());
 			remove(connection);
-			connect(connection.getFirst(), vJoint);
-			connect(vJoint, connection.getSecond());
+
+			VisualConnection vc1 = connect(connection.getFirst(), vJoint);
+			VisualConnection vc2 = connect(vJoint, connection.getSecond());
+			if (!locations.isEmpty()) {
+				addControlPoints(vc1, locations.subList(0, splitIndex));
+				addControlPoints(vc2, locations.subList(splitIndex, locations.size()));
+			}
 			first = vJoint;
 		}
 
