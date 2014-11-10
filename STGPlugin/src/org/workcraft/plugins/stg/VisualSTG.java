@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -37,6 +36,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -150,19 +150,6 @@ public class VisualSTG extends AbstractVisualModel {
 		return connection;
 	}
 
-	private void addControlPoints(VisualConnection connection, List<Point2D> locations) {
-		if (connection.getGraphic() instanceof Polyline) {
-			Polyline polyline = (Polyline)connection.getGraphic();
-			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
-			ListIterator<Point2D> locationIterator = locations.listIterator(locations.size());
-			// Iterate in reverse
-			while(locationIterator.hasPrevious()) {
-				Point2D locationInLocalSpace = rootToLocalTransform.transform(locationIterator.previous(), null);
-				polyline.insertControlPointInSegment(locationInLocalSpace, 0);
-			}
-		}
-	}
-
 	public VisualPlace makeExplicit(VisualImplicitPlaceArc connection) {
 		Container group = Hierarchy.getNearestAncestor(connection, Container.class);
 
@@ -191,8 +178,8 @@ public class VisualSTG extends AbstractVisualModel {
 		group.add(con2);
 
 		if (!locations.isEmpty()) {
-			addControlPoints(con1, locations.subList(0, splitIndex));
-			addControlPoints(con2, locations.subList(splitIndex, locations.size()));
+			ConnectionHelper.addControlPoints(con1, locations.subList(0, splitIndex));
+			ConnectionHelper.addControlPoints(con2, locations.subList(splitIndex, locations.size()));
 		}
 
 		remove(connection);

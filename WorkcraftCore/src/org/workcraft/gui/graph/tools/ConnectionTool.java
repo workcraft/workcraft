@@ -32,19 +32,17 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Set;
 
 import javax.swing.Icon;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
-import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -234,32 +232,17 @@ public class ConnectionTool extends AbstractTool {
 		try {
 			if (firstNode instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)firstNode;
-				Point2D snapPos = editor.snap(firstPoint, null);
 				AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
-				vc.setSplitPoint(rootToLocalTransform.transform(snapPos, null));
+				vc.setSplitPoint(rootToLocalTransform.transform(firstPoint, null));
 			}
 			if (currentNode instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)currentNode;
-				Point2D snapPos = editor.snap(currentPoint, null);
 				AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
-				vc.setSplitPoint(rootToLocalTransform.transform(snapPos, null));
+				vc.setSplitPoint(rootToLocalTransform.transform(currentPoint, null));
 			}
 			VisualModel model = editor.getModel();
 			VisualConnection connection = model.connect(firstNode, currentNode);
-			if (controlPoints != null) {
-				ConnectionGraphic graphic = connection.getGraphic();
-				if (graphic instanceof Polyline) {
-					Polyline polyline = (Polyline)graphic;
-					AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
-					ListIterator<Point2D> pointIterator = controlPoints.listIterator(controlPoints.size());
-					// Iterate in reverse
-					while(pointIterator.hasPrevious()) {
-						Point2D point = pointIterator.previous();
-						rootToLocalTransform.transform(point, point);
-						polyline.insertControlPointInSegment(point, 0);
-					}
-				}
-			}
+			ConnectionHelper.addControlPoints(connection, controlPoints);
 		} catch (InvalidConnectionException exeption) {
 			Toolkit.getDefaultToolkit().beep();
 		}

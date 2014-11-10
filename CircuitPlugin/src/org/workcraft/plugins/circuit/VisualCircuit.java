@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.circuit;
 
-import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.File;
@@ -39,6 +38,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -46,7 +46,6 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
@@ -108,19 +107,6 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 	}
 
-	private void addControlPoints(VisualConnection connection, List<Point2D> locations) {
-		if (connection.getGraphic() instanceof Polyline) {
-			Polyline polyline = (Polyline)connection.getGraphic();
-			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
-			ListIterator<Point2D> locationIterator = locations.listIterator(locations.size());
-			// Iterate in reverse
-			while(locationIterator.hasPrevious()) {
-				Point2D locationInLocalSpace = rootToLocalTransform.transform(locationIterator.previous(), null);
-				polyline.insertControlPointInSegment(locationInLocalSpace, 0);
-			}
-		}
-	}
-
 	@Override
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
@@ -150,8 +136,8 @@ public class VisualCircuit extends AbstractVisualModel {
 			VisualConnection vc1 = connect(connection.getFirst(), vJoint);
 			VisualConnection vc2 = connect(vJoint, connection.getSecond());
 			if (!locations.isEmpty()) {
-				addControlPoints(vc1, locations.subList(0, splitIndex));
-				addControlPoints(vc2, locations.subList(splitIndex, locations.size()));
+				ConnectionHelper.addControlPoints(vc1, locations.subList(0, splitIndex));
+				ConnectionHelper.addControlPoints(vc2, locations.subList(splitIndex, locations.size()));
 			}
 			first = vJoint;
 		}

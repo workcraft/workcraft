@@ -30,7 +30,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
@@ -67,32 +66,29 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		connectionInfo = parent;
 	}
 
+	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		if (!valid) {
 			update();
 		}
 
-		Path2D connectionPath = new Path2D.Double();
-
 		int start = getSegmentIndex(curveInfo.tStart);
-		int end = getSegmentIndex(curveInfo.tEnd);
-
 		Point2D startPt = getPointOnCurve(curveInfo.tStart);
+
+		int end = getSegmentIndex(curveInfo.tEnd);
 		Point2D endPt = getPointOnCurve(curveInfo.tEnd);
 
+		Path2D connectionPath = new Path2D.Double();
 		connectionPath.moveTo(startPt.getX(), startPt.getY());
-
 		for (int i=start; i<end; i++) {
 			Line2D segment = getSegment(i);
 			connectionPath.lineTo(segment.getX2(), segment.getY2());
 		}
-
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
 		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
 		g.setColor(color);
-
 		g.setStroke(connectionInfo.getStroke());
 		g.draw(connectionPath);
 
@@ -107,6 +103,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		}
 	}
 
+	@Override
 	public Rectangle2D getBoundingBox() {
 		if (!valid) {
 			update();
@@ -245,17 +242,16 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return bb;
 	}
 
-	public void createControlPoint(Point2D userLocation) {
-		Point2D pointOnConnection = new Point2D.Double();
-		int segment = getNearestSegment(userLocation, pointOnConnection);
-		insertControlPointInSegment(pointOnConnection, segment);
+	public ControlPoint insertControlPointInSegment(Point2D location, int segmentIndex) {
+		ControlPoint cp = new ControlPoint();
+		cp.setPosition(location);
+		groupImpl.add(segmentIndex, cp);
+		controlPointsChanged();
+		return cp;
 	}
 
-	public void insertControlPointInSegment(Point2D location, int segment) {
-		ControlPoint ap = new ControlPoint();
-		ap.setPosition(location);
-		groupImpl.add(segment, ap);
-		controlPointsChanged();
+	public void addControlPoint(Point2D location) {
+		insertControlPointInSegment(location, getSegmentCount() - 1);
 	}
 
 	@Override
@@ -263,50 +259,62 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return getDistanceToCurve(point) < VisualConnection.HIT_THRESHOLD;
 	}
 
+	@Override
 	public Collection<Node> getChildren() {
 		return groupImpl.getChildren();
 	}
 
+	@Override
 	public Node getParent() {
 		return groupImpl.getParent();
 	}
 
+	@Override
 	public void setParent(Node parent) {
 		throw new RuntimeException ("Node does not support reparenting");
 	}
 
+	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 	}
 
+	@Override
 	public void add(Node node) {
 		groupImpl.add(node);
 	}
 
+	@Override
 	public void addObserver(HierarchyObserver obs) {
 		groupImpl.addObserver(obs);
 	}
 
+	@Override
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
 
+	@Override
 	public void remove(Node node) {
 		groupImpl.remove(node);
 	}
 
+	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
 	}
 
+	@Override
 	public void removeAllObservers() {
 		groupImpl.removeAllObservers();
 	}
 
+	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
 
+	@Override
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
 	}
