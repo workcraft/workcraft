@@ -10,6 +10,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.son.tools.ColorResetTool;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.ErrTracingReset;
+import org.workcraft.plugins.son.tools.ReachabilityTool;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
 import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.plugins.son.tools.TokenRefreshTool;
@@ -30,8 +31,9 @@ public class SONModule implements Module{
 		pm.registerClass(ModelDescriptor.class, SONModelDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
 		pm.registerClass(Tool.class, TestTool.class, framework);
-		// Structural verification
+		//verification
 		pm.registerClass(Tool.class, StructurePropertyChecker.class, framework);
+		pm.registerClass(Tool.class, ReachabilityTool.class);
 		//Custom tools
 		pm.registerClass(Tool.class, ColorResetTool.class);
 		pm.registerClass(Tool.class, TokenRefreshTool.class);

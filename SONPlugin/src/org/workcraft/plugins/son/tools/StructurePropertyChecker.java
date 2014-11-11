@@ -6,7 +6,7 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.son.OutputRedirect;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.gui.StructureVerifyDialog;
-import org.workcraft.plugins.son.verify.SONMainTask;
+import org.workcraft.plugins.son.tasks.SONMainTask;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -31,7 +31,7 @@ public class StructurePropertyChecker implements Tool {
 	}
 
 	public String getDisplayName(){
-		return "Check for structural properties";
+		return "Check for structural properties...";
 	}
 
 	public void run(WorkspaceEntry we){

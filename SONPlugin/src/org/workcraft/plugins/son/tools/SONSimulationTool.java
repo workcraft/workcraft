@@ -124,7 +124,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
 		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
-		reverseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"), "Reverse simulation");
+		reverseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"), "Switch to reverse simulation");
 		autoSimuButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-auto-simulation.svg"), "Automatic simulation (maximum parallelism)");
 
 		speedSlider = new JSlider(-1000, 1000, 0);
@@ -417,13 +417,13 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
 		traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
 		if(!reverse){
-			reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"));
-			reverseButton.setToolTipText("Reverse simulation");
+			reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"));
+			reverseButton.setToolTipText("Switch to reverse simulation");
 		}
 
 		else{
-			reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"));
-			reverseButton.setToolTipText("Forward simulation");
+			reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"));
+			reverseButton.setToolTipText("Switch to forward simulation");
 		}
 		editor.requestFocus();
 		editor.repaint();
@@ -944,13 +944,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 						executeEvent(e.getEditor(),fireList);
 					}
 					if(dialog.getRun()==2){
-						simuAlg.clearAll();
 						return;
 						}
 					}
 				//Error tracing
 			//	setErrNum(runList, reverse);
-				simuAlg.clearAll();
 
 			}else{
 				//reverse simulation
@@ -967,7 +965,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				if(possibleFires.isEmpty() && maxFires.isEmpty()){
 					fireList.add(event);
 					executeEvent(e.getEditor(),fireList);
-					simuAlg.clearAll();
 				} else {
 					e.getEditor().requestFocus();
 					ParallelSimDialog dialog = new ParallelSimDialog(
@@ -986,13 +983,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 						executeEvent(e.getEditor(),fireList);
 					}
 					if(dialog.getRun()==2){
-						simuAlg.clearAll();
 						return;
 					}
 				}
 				//Reverse error tracing
 				//setErrNum(runList, reverse);
-				simuAlg.clearAll();
 			}
 		}
 	}
