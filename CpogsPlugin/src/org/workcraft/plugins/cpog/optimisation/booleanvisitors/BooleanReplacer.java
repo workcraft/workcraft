@@ -112,7 +112,11 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula>
 	}
 
 	public static BooleanFormula replace(BooleanFormula formula, BooleanVariable param, BooleanFormula value) {
-		return replace(formula, Arrays.asList(param), Arrays.asList(value));
+		BooleanFormula result = null;
+		if (formula != null) {
+			result = replace(formula, Arrays.asList(param), Arrays.asList(value));
+		}
+		return result;
 	}
 
 	@Override

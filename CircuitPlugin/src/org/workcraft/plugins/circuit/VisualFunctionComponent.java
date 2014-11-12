@@ -9,12 +9,14 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -24,6 +26,9 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
 @DisplayName("Function")
@@ -66,12 +71,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			case GATE:
 				GateRenderer.foreground = getForegroundColor();
 				GateRenderer.background = getFillColor();
-				if (gateOutput.getSetFunction() == null) {
+				BooleanFormula setFunction = gateOutput.getSetFunction();
+				if ((setFunction == null) || setFunction.equals(Zero.instance()) || setFunction.equals(One.instance())) {
 					renderingResult = null;
 				} else if (gateOutput.getResetFunction() == null) {
-					renderingResult = GateRenderer.renderGate(gateOutput.getSetFunction());
+					renderingResult = GateRenderer.renderGate(setFunction);
 				} else {
-					renderingResult = CElementRenderer.renderGate(gateOutput.getSetFunction(), gateOutput.getResetFunction());
+					renderingResult = CElementRenderer.renderGate(setFunction, gateOutput.getResetFunction());
 				}
 				break;
 			default:
@@ -127,23 +133,28 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			}
 			double inputPositionX = snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
 			double outputPositionX = snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
+
+			Collection<VisualContact> contacts = getContacts();
+			Collection<VisualConnection> connections = getRelevantConnections(contacts);
 			for (Node n: this.getChildren()) {
-				bt.setTransform(at);
 				if (n instanceof VisualFunctionContact) {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
-					if (vc.getIOType() == IOType.INPUT) {
-						String vcName = vc.getName();
-						Point2D position = res.contactPositions().get(vcName);
-						if (position != null) {
-							bt.translate(inputPositionX, position.getY());
+					if (contactIsFree(vc, connections)) {
+						bt.setTransform(at);
+						if (vc.getIOType() == IOType.INPUT) {
+							String vcName = vc.getName();
+							Point2D position = res.contactPositions().get(vcName);
+							if (position != null) {
+								bt.translate(inputPositionX, position.getY());
+							}
+						} else {
+							bt.translate(outputPositionX, 0);
 						}
-					} else {
-						bt.translate(outputPositionX, 0);
+						// Here we only need to change position, do not do the rotation
+						AffineTransform ct = new AffineTransform();
+						ct.translate(bt.getTranslateX(), bt.getTranslateY());
+						vc.setTransform(ct);
 					}
-					// Here we only need to change position, do not do the rotation
-					AffineTransform ct = new AffineTransform();
-					ct.translate(bt.getTranslateX(), bt.getTranslateY());
-					vc.setTransform(ct);
 				}
 			}
 		}
@@ -272,6 +283,22 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			drawLabelInLocalSpace(r);
 			drawNameInLocalSpace(r);
 		}
+	}
+
+	@Override
+	public void add(Node node) {
+		super.add(node);
+		if (node instanceof VisualContact) {
+			invalidateRenderingResult();
+		}
+	}
+
+	@Override
+	public void remove(Node node) {
+		if (node instanceof VisualContact) {
+			invalidateRenderingResult();
+		}
+		super.remove(node);
 	}
 
 }

@@ -27,7 +27,7 @@ public class CscResolutionTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "STG resynthesis";
+		return "Encoding conflicts";
 	}
 
 	@Override

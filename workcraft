@@ -1,12 +1,32 @@
 #!/usr/bin/env bash
 
+# Remember the current working directory
 CURRENT_DIR=`pwd -P`
-WORKCRAFT_DIR=`dirname "$0"`
-cd "$WORKCRAFT_DIR"
+
+# Change to Workcraft home directory and put it into the WORKCRAFT_HOME variable
+cd `dirname "$0"`
 WORKCRAFT_HOME=`pwd -P`
 
+# Add location of the third-party tools to the PATH variable
 export PATH=$PATH:$WORKCRAFT_HOME/tools
 
+# Set the JVM executable in JAVA_BIN variable (if not defined yet)
+if [ -z "$JAVA_BIN" ]
+then
+    if [ -z "$JAVA_HOME" ]
+    then
+        JAVA_BIN=java
+    else
+        if [ -e "$JAVA_HOME"/bin/java ]
+        then
+            JAVA_BIN="$JAVA_HOME"/bin/java
+        else        
+            JAVA_BIN="$JAVA_HOME"/java
+        fi
+    fi
+fi
+
+# Add all the plugins and third-party JARs to the CLASSPATH variable 
 CLASSPATH=\
 "$WORKCRAFT_HOME/CircuitPlugin/bin:"\
 "$WORKCRAFT_HOME/CpogsPlugin/bin:"\
@@ -57,5 +77,8 @@ CLASSPATH=\
 "$WORKCRAFT_HOME/WorkcraftCore/bin:"\
 "$WORKCRAFT_HOME/XmasPlugin/bin:"\
 
-java -classpath "$CLASSPATH" org.workcraft.Console
+# Run Workcraft with the specific JAVA_BIN and CLASSPATH
+"$JAVA_BIN" -classpath "$CLASSPATH" org.workcraft.Console
+
+# Restore the current working directory
 cd "$CURRENT_DIR"

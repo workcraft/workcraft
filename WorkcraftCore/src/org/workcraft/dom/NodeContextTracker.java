@@ -52,14 +52,13 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 			connections.put(n, new LinkedHashSet<Connection>());
 	}
 
-	private void removeHashes (Node n) {
+	private void removeHashes(Node n) {
 		presets.remove(n);
 		postsets.remove(n);
 		connections.remove(n);
 	}
 
-	private void nodeAdded (Node n) {
-		//System.out.println ("(NCT) node added " + n);
+	private void nodeAdded(Node n) {
 		initHashes(n);
 
 		if (n instanceof Connection) {
@@ -76,13 +75,12 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 			connections.get(c2).add(con);
 		}
 
-		for (Node nn : n.getChildren())
+		for (Node nn : n.getChildren()) {
 			nodeAdded(nn);
+		}
 	}
 
 	private void nodeRemoved(Node n) {
-		//System.out.println ("(NCT) node removed " + n);
-
 		for (Node postsetNodes: postsets.get(n))
 			presets.get(postsetNodes).remove(n);
 

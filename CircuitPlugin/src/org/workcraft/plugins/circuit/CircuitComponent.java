@@ -29,10 +29,16 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
+import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
@@ -40,6 +46,28 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 	private String name = "";
+
+	public CircuitComponent() {
+		// Update all set/reset functions of the component when its contact is removed
+		new HierarchySupervisor() {
+			@Override
+			public void handleEvent(HierarchyEvent e) {
+				if (e instanceof NodesDeletingEvent) {
+					for (Node node: e.getAffectedNodes()) {
+						if (node instanceof Contact) {
+							final Contact contact = (Contact)node;
+							for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
+								BooleanFormula setFunction = BooleanReplacer.replace(fc.getSetFunction(), contact, Zero.instance());
+								fc.setSetFunction(setFunction);
+								BooleanFormula resetFunction = BooleanReplacer.replace(fc.getResetFunction(), contact, Zero.instance());
+								fc.setResetFunction(resetFunction);
+							}
+						}
+					}
+				}
+			}
+		}.attach(this);
+	}
 
 	private boolean isEnvironment;
 
@@ -51,18 +79,22 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 		this.isEnvironment = isEnvironment;
 	}
 
+	@Override
 	public Node getParent() {
 		return groupImpl.getParent();
 	}
 
+	@Override
 	public void setParent(Node parent) {
 		groupImpl.setParent(parent);
 	}
 
+	@Override
 	public void addObserver(HierarchyObserver obs) {
 		groupImpl.addObserver(obs);
 	}
 
+	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
 	}
@@ -95,7 +127,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
-		//checkName(newParent);
 	}
 
 	@Override
@@ -107,11 +138,17 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 		return Hierarchy.filterNodesByType(getChildren(), Contact.class);
 	}
 
+	public Collection<FunctionContact> getFunctionContact() {
+		return Hierarchy.getChildrenOfType(this, FunctionContact.class);
+	}
+
 	public Collection<Contact> getInputs() {
 		ArrayList<Contact> result = new ArrayList<Contact>();
-		for(Contact c : getContacts())
-			if(c.getIOType() == IOType.INPUT)
+		for(Contact c : getContacts()) {
+			if(c.getIOType() == IOType.INPUT) {
 				result.add(c);
+			}
+		}
 		return result;
 	}
 
