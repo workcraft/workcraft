@@ -34,7 +34,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		bhvGroups = bsonAlg.getBhvGroups(net.getGroups());
 	}
 
-	private Collection<Node> getMinFireSet (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
+	private Collection<Node> getSyncMinimum (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 		Collection<Node> result = new HashSet<Node>();
 		HashSet<Node> syncEvents = new HashSet<Node>();
 		//get related synchronous events
@@ -50,7 +50,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 					for(TransitionNode pre : getPreAsynEvents((TransitionNode)n)){
 						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
-							result.addAll(getMinFireSet((TransitionNode)n, sync, enabledEvents));
+							result.addAll(getSyncMinimum((TransitionNode)n, sync, enabledEvents));
 					}
 				}
 				if(!enabledEvents.contains(n))
@@ -65,7 +65,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			for(TransitionNode n : this.getPreAsynEvents(e))
 				if(!result.contains(n) && enabledEvents.contains(n)){
 					result.add(n);
-					result.addAll(getMinFireSet((TransitionNode)n, sync, enabledEvents));
+					result.addAll(getSyncMinimum((TransitionNode)n, sync, enabledEvents));
 				}
 		}
 		else
@@ -81,7 +81,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	public List<TransitionNode> getMinFires (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 		List<TransitionNode> result = new ArrayList<TransitionNode>();
 
-		for(Node n : getMinFireSet(e, sync, enabledEvents))
+		for(Node n : getSyncMinimum(e, sync, enabledEvents))
 			if(n instanceof TransitionNode)
 				result.add((TransitionNode)n);;
 
@@ -319,8 +319,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		return false;
 	}
 
-	public void fire(Collection<TransitionNode> runList) throws InvalidStructureException{
-		for(TransitionNode e : runList){
+	public void fire(Collection<TransitionNode> fireList) throws InvalidStructureException{
+		for(TransitionNode e : fireList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
 					Condition to = (Condition)c.getSecond();
@@ -336,7 +336,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getFirst()){
 						ChannelPlace to = (ChannelPlace)c.getSecond();
-						if(runList.containsAll(net.getPostset(to)) && runList.containsAll(net.getPreset(to)))
+						if(fireList.containsAll(net.getPostset(to)) && fireList.containsAll(net.getPreset(to)))
 							to.setMarked(((ChannelPlace)to).isMarked());
 						else{
 							if(to.isMarked())
@@ -346,7 +346,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getSecond()){
 						ChannelPlace from = (ChannelPlace)c.getFirst();
-						if(runList.containsAll(net.getPostset(from)) && runList.containsAll(net.getPreset(from)))
+						if(fireList.containsAll(net.getPostset(from)) && fireList.containsAll(net.getPreset(from)))
 							from.setMarked(((ChannelPlace)from).isMarked());
 						else
 							if(!from.isMarked())
@@ -511,8 +511,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	public void unFire(Collection<TransitionNode> events) throws InvalidStructureException{
-		for(TransitionNode e : events){
+	public void unFire(Collection<TransitionNode> fireList) throws InvalidStructureException{
+		for(TransitionNode e : fireList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getSecond()) {
 					Condition to = (Condition)c.getFirst();
@@ -528,7 +528,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getSecond()){
 					ChannelPlace to = (ChannelPlace)c.getFirst();
-					if(events.containsAll(net.getPreset(to)) && events.containsAll(net.getPostset(to)))
+					if(fireList.containsAll(net.getPreset(to)) && fireList.containsAll(net.getPostset(to)))
 						to.setMarked(((ChannelPlace)to).isMarked());
 					else
 						if(to.isMarked())
@@ -537,7 +537,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getFirst()){
 					ChannelPlace from = (ChannelPlace)c.getSecond();
-					if(events.containsAll(net.getPreset(from)) && events.containsAll(net.getPostset(from)))
+					if(fireList.containsAll(net.getPreset(from)) && fireList.containsAll(net.getPostset(from)))
 						from.setMarked(((ChannelPlace)from).isMarked());
 					else
 						if(!from.isMarked())
@@ -600,11 +600,5 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 		}
-	}
-
-	//others
-
-	public Collection<ONGroup> getAbstractGroups(){
-		return this.abstractGroups;
 	}
 }

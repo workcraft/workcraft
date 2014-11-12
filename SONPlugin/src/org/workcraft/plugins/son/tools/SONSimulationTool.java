@@ -898,7 +898,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		if (node instanceof VisualTransitionNode && conToBlock){
 
 			Collection<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
-			TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
+			TransitionNode selected = ((VisualTransitionNode)node).getMathTransitionNode();
 
 			if(reverse){
 				for(TransitionNode enable : net.getTransitionNodes())
@@ -910,8 +910,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 						enabledEvents.add(enable);
 				}
 
-			List<TransitionNode> minFires = simuAlg.getMinFires(event, sync, enabledEvents);
-			List<TransitionNode> maxFires = simuAlg.getMaxFires(event, sync, enabledEvents);
+			List<TransitionNode> minFires = simuAlg.getMinFires(selected, sync, enabledEvents);
+			List<TransitionNode> maxFires = simuAlg.getMaxFires(selected, sync, enabledEvents);
 
 			if(!reverse){
 				List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
@@ -919,12 +919,12 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					if(!minFires.contains(pe))
 						possibleFires.add(pe);
 
-				minFires.remove(event);
+				minFires.remove(selected);
 
 				List<TransitionNode> fireList = new ArrayList<TransitionNode>();
 
 				if(possibleFires.isEmpty() && minFires.isEmpty()){
-					fireList.add(event);
+					fireList.add(selected);
 					executeEvent(e.getEditor(),fireList);
 
 				}else{
@@ -932,12 +932,12 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					ParallelSimDialog dialog = new ParallelSimDialog(
 							this.getFramework().getMainWindow(),
 							net, possibleFires, minFires, maxFires,
-							event, reverse);
+							selected, reverse);
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
 					fireList.addAll(minFires);
-					fireList.add(event);
+					fireList.add(selected);
 
 					if (dialog.getRun() == 1){
 						fireList.addAll(dialog.getSelectedEvent());
@@ -958,25 +958,25 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					if(!maxFires.contains(pe))
 						possibleFires.add(pe);
 
-						maxFires.remove(event);
+						maxFires.remove(selected);
 
 				List<TransitionNode> fireList = new ArrayList<TransitionNode>();
 
 				if(possibleFires.isEmpty() && maxFires.isEmpty()){
-					fireList.add(event);
+					fireList.add(selected);
 					executeEvent(e.getEditor(),fireList);
 				} else {
 					e.getEditor().requestFocus();
 					ParallelSimDialog dialog = new ParallelSimDialog(
 							this.getFramework().getMainWindow(),
 							net, possibleFires, maxFires, minFires,
-							event, reverse);
+							selected, reverse);
 
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
 					fireList.addAll(maxFires);
-					fireList.add(event);
+					fireList.add(selected);
 
 					if (dialog.getRun() == 1){
 						fireList.addAll(dialog.getSelectedEvent());

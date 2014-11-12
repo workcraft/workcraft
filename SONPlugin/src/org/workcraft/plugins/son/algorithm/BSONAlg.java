@@ -98,7 +98,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get related ONGroup of a set of phase inputs and outputs
+	 * get related behavioral group of a set of conditions (phase inputs or outputs)
 	 */
 	public ONGroup getBhvGroup(Collection<Condition> conditions){
 		for(ONGroup group : net.getGroups())
@@ -108,7 +108,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get related ONGroup of a given condition
+	 * get corresponding behavioral Groups of a given abstract condition
 	 */
 	public Collection<ONGroup> getBhvGroups(Condition c){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -121,7 +121,21 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get behaviour groups.
+	 * get corresponding abstract Groups of a given behavioral condition
+	 */
+	public Collection<ONGroup> getAbstractGroups(Condition c){
+		Collection<ONGroup> result = new HashSet<ONGroup>();
+		for(SONConnection con : net.getOutputSONConnections(c))
+			if(con.getSemantics() == Semantics.BHVLINE)
+				for(ONGroup group : net.getGroups())
+					if(group.getConditions().contains(con.getSecond()))
+						result.add(group);
+		return result;
+	}
+
+
+	/**
+	 * Flit behavioral groups in a group set .
 	 */
 	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -142,7 +156,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get abstract groups.
+	 * Flit abstract groups in a group set.
 	 */
 	public Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -189,12 +203,25 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	//if a transitionNode is in abstract group
+	public boolean isAbstractEvent(TransitionNode n){
+		if(getPrePNSet(n).size() == 1){
+			Condition c = (Condition)getPrePNSet(n).iterator().next();
+			if(net.getInputSONConnectionTypes(c).contains(Semantics.BHVLINE)
+					&& !net.getOutputSONConnectionTypes(c).contains(Semantics.BHVLINE)){
+				return true;
+			}else
+				return false;
+		}else
+			return false;
+	}
+
 	public Collection<Condition[]> before(TransitionNode e){
 		Collection<Condition[]> result = new ArrayList<Condition[]>();
 		Condition[] pre = new Condition[1];
 		Condition[] post = new Condition[1];
 
-		if(this.getPostPNSet(e).size()!=1 || this.getPrePNSet(e).size()!=1){
+		if(this.getPostPNSet(e).size()!=1 || getPrePNSet(e).size()!=1){
 			//System.out.println("size > 1");
 			return result;
 		}
@@ -212,8 +239,8 @@ public class BSONAlg extends RelationAlgorithm{
 
 		Collection<Condition> maxI = getMaximalPhase(phaseI);
 		Collection<Condition> minI2 = getMinimalPhase(phaseI2);
-		Collection<Condition> PRE = this.getPREset(e);
-		Collection<Condition> POST = this.getPOSTset(e);
+		Collection<Condition> PRE = getPREset(e);
+		Collection<Condition> POST = getPOSTset(e);
 		if(!maxI.containsAll(minI2)){
 			for(Condition c0 : maxI){
 				for(Condition c1 : minI2){
@@ -246,19 +273,19 @@ public class BSONAlg extends RelationAlgorithm{
 			Collection<Node> preMaxI = new HashSet<Node>();
 			Collection<Node> postMinI2 = new HashSet<Node>();
 			for(Node n: maxI)
-				preMaxI.addAll(this.getPrePNSet(n));
+				preMaxI.addAll(getPrePNSet(n));
 			for(Node n: minI2)
-				postMinI2.addAll(this.getPostPNSet(n));
+				postMinI2.addAll(getPostPNSet(n));
 
 			Collection<Condition> PREpreMaxI = new HashSet<Condition>();
 			Collection<Condition> POSTpostMinI2 = new HashSet<Condition>();
 
 			for(Node n : preMaxI){
 				if(n instanceof TransitionNode)
-				PREpreMaxI.addAll(this.getPREset((TransitionNode)n));}
+				PREpreMaxI.addAll(getPREset((TransitionNode)n));}
 			for(Node n : postMinI2){
 				if(n instanceof TransitionNode)
-				POSTpostMinI2.addAll(this.getPOSTset((TransitionNode)n));}
+				POSTpostMinI2.addAll(getPOSTset((TransitionNode)n));}
 
 			for(Condition c0 : PREpreMaxI){
 				for(Condition c1 : POSTpostMinI2){

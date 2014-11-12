@@ -164,6 +164,7 @@ public class ParallelSimDialog  extends JDialog{
 						if(!item.isSelected() ){
 							selectedEvents.remove(item.getEvent());
 							if(!reverse){
+								//unselected related synchronous events.
 								for(TransitionNode e : maxFires){
 									for(EventItem eventItem : itemList){
 										if(e==eventItem.getEvent()){
@@ -174,6 +175,7 @@ public class ParallelSimDialog  extends JDialog{
 									}
 								}
 							}else{
+								//unselected related synchronous events.
 								for(TransitionNode e : minFires){
 									for(EventItem eventItem : itemList){
 										if(e==eventItem.getEvent()){

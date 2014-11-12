@@ -3,17 +3,21 @@ package org.workcraft.plugins.son.tasks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.ONPathAlg;
 import org.workcraft.plugins.son.algorithm.Path;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class BSONStructureTask extends AbstractStructuralVerification{
 
@@ -53,7 +57,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			return;
 		}
 
-		//Abstract level structure
+		//Abstract group structure task
 		logger.info("Running model strucuture and components relation check...");
 		logger.info("Running abstract group structure task...");
 		groupErrors.addAll(groupTask1(groups));
@@ -82,7 +86,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 		//phase decomposition task
 		logger.info("Running phase decomposition task...");
-		Collection<ONGroup> abstractGroups = this.getAbstractGroups(groups);
+		Collection<ONGroup> abstractGroups = getAbstractGroups(groups);
 		Collection<Condition> task3 = phaseTask1(abstractGroups);
 		relationErrors.addAll(task3);
 
@@ -119,6 +123,23 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				logger.info("Correct phase decomposition");
 
 		logger.info("phase decomposition task complete.");
+
+
+		//Abstract event relation task
+		logger.info("Running abstract events relation task...");
+		Collection<ArrayList<TransitionNode>> absEventsTask = SyncAbstractEventsTask(groups);
+		if(!absEventsTask.isEmpty()){
+			hasErr = true;
+			for(ArrayList<TransitionNode> list : absEventsTask){
+				List<String> output = new ArrayList<String>();
+				for (Node node : list){
+					output.add(net.getNodeReference(node) + " (" + net.getComponentLabel(node) + ")");
+				}
+				logger.info("Error: Invalid abtract events relation, " +
+						"events " + output + " are not in synchronous relation");
+			}
+		}
+
 		logger.info("Model strucuture and components relation task complete.");
 
 		//BSON cycle task
@@ -181,7 +202,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	//A/SYN communication between abstract and behavioural ONs
 	private Collection<ChannelPlace> groupTask2(Collection<ONGroup> groups){
 		Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
-		Collection<ONGroup> abstractGroups = this.getAbstractGroups(groups);
+		Collection<ONGroup> abstractGroups = getAbstractGroups(groups);
 
 		for(ChannelPlace cPlace : getRelationAlg().getRelatedChannelPlace(groups)){
 			int inAbGroup = 0;
@@ -204,7 +225,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		return result;
 	}
 
-	//task1: if a phase is in one ON.
+	//task1: if a phase is in a single ON.
 	private Collection<Condition> phaseTask1(Collection<ONGroup> abstractGroups){
 		Collection<Condition> result = new HashSet<Condition>();
 		for(ONGroup group : abstractGroups)
@@ -320,6 +341,38 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		}
 
 		return "";
+	}
+
+	private Collection<ArrayList<TransitionNode>> SyncAbstractEventsTask(Collection<ONGroup> groups){
+		Collection<ArrayList<TransitionNode>> result = new ArrayList<ArrayList<TransitionNode>>();
+		Collection<ONGroup> bhvGroups = getBSONAlg().getBhvGroups(groups);
+
+		for(ONGroup group : bhvGroups){
+			//get final states of a behavioral group
+			for(Condition c : group.getConditions()){
+				if(getRelationAlg().isFinal(c)){
+					//for each final state, if it has more than one abstract groups and its corresponding
+					//abstract conditions are not final states, then those abstract conditions should be
+					//in synchronous communication.
+					if(getBSONAlg().getAbstractGroups(c).size() > 1){
+						ArrayList<TransitionNode> subResult = new ArrayList<TransitionNode>();
+						for(Condition post : getRelationAlg().getPostBhvSet(c)){
+							if(!getRelationAlg().isFinal(post))
+								subResult.add((TransitionNode)getRelationAlg().getPostPNSet(post).iterator().next());
+						}
+						if(subResult.size() > 1){
+							Collection<Node> nodes = new HashSet<Node>();
+							nodes.addAll(subResult);
+							SimulationAlg simuAlg = new SimulationAlg(net);
+							if(simuAlg.getSyncCycles(nodes).isEmpty())
+								result.add(subResult);
+						}
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	@Override

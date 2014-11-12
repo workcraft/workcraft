@@ -345,7 +345,7 @@ public class RelationAlgorithm{
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPreset(node)){
 			if(net.getSONConnectionType(node, n) == Semantics.PNLINE)
-			result.add(n);
+				result.add(n);
 		}
 		return result;
 	}
@@ -357,7 +357,31 @@ public class RelationAlgorithm{
 		Collection<Node> result = new ArrayList<Node>();
 		for(Node n : net.getPostset(node)){
 			if(net.getSONConnectionType(node, n) == Semantics.PNLINE)
-			result.add(n);
+				result.add(n);
+		}
+		return result;
+	}
+
+	/**
+	 * get all Bhv-based postset of a given condition.
+	 */
+	public Collection<Condition> getPostBhvSet(Condition c){
+		Collection<Condition> result = new ArrayList<Condition>();
+		for(Node n : net.getPostset(c)){
+			if(net.getSONConnectionType(c, n) == Semantics.BHVLINE)
+				result.add((Condition)n);
+		}
+		return result;
+	}
+
+	/**
+	 * get all Bhv-based preset of a given condition.
+	 */
+	public Collection<Condition> getPreBhvSet(Condition c){
+		Collection<Condition> result = new ArrayList<Condition>();
+		for(Node n : net.getPreset(c)){
+			if(net.getSONConnectionType(c, n) == Semantics.BHVLINE)
+				result.add((Condition)n);
 		}
 		return result;
 	}

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
@@ -70,7 +71,6 @@ public class SON extends AbstractMathModel {
 
 		return con;
 	}
-
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result =  new ArrayList<Node>();
