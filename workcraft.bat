@@ -6,16 +6,15 @@ pushd "%WORKCRAFT_HOME%"
 set PATH=%PATH%;%WORKCRAFT_HOME%\tools
 
 :: Set the JVM executable in the JAVA_BIN variable (if not defined yet)
-IF DEFINED %JAVA_BIN% (
-) ELSE (
-    IF DEFINED %JAVA_HOME% (
-        IF EXISTS %JAVA_HOME%\bin\javaw.exe (
+IF "%JAVA_BIN%"=="" (
+    IF "%JAVA_HOME%"=="" (
+        set JAVA_BIN=javaw.exe
+    ) ELSE (
+        IF EXIST %JAVA_HOME%\bin\javaw.exe (
             set JAVA_BIN=%JAVA_HOME%\bin\javaw.exe
         ) ELSE (
             set JAVA_BIN=%JAVA_HOME%\javaw.exe
         )
-    ) ELSE (
-        set JAVA_BIN=javaw.exe
     )
 )
 

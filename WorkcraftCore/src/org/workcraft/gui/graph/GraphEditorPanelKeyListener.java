@@ -52,6 +52,25 @@ class GraphEditorPanelKeyListener implements KeyListener {
 				editor.getMainWindow().panDown();
 				break;
 			}
+		} else {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_EQUALS:
+			case KeyEvent.VK_PLUS:
+			case KeyEvent.VK_ADD:
+				editor.getMainWindow().zoomIn();
+				break;
+			case KeyEvent.VK_MINUS:
+			case KeyEvent.VK_UNDERSCORE:
+			case KeyEvent.VK_SUBTRACT:
+				editor.getMainWindow().zoomOut();
+				break;
+			case KeyEvent.VK_MULTIPLY:
+				editor.getMainWindow().zoomFit();
+				break;
+			case KeyEvent.VK_DIVIDE:
+				editor.getMainWindow().panCenter();
+				break;
+			}
 		}
 		GraphEditorKeyEvent geke = new GraphEditorKeyEvent (editor, e);
 		forwardListener.keyPressed(geke);
