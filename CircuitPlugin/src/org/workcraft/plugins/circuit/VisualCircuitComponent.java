@@ -34,6 +34,7 @@ import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
@@ -49,6 +50,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -159,7 +161,8 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void setRenderType(RenderType renderType) {
 		if (this.renderType != renderType) {
 			this.renderType = renderType;
-			spreadContactsEvenly();
+			//spreadContactsEvenly();
+			setContactsDefaultPosition();
 			invalidateBoundingBox();
 			sendNotification(new PropertyChangedEvent(this, "render type"));
 		}
@@ -228,23 +231,56 @@ public class VisualCircuitComponent extends VisualComponent implements
 		invalidateBoundingBox();
 	}
 
+	public Collection<VisualContact> getContacts() {
+		return Hierarchy.getChildrenOfType(this, VisualContact.class);
+	}
+
+	public Collection<VisualConnection> getRelevantConnections(Collection<VisualContact> contacts) {
+		Node root = Hierarchy.getRoot(this);
+		final HashSet<VisualContact> contactsHashSet = new HashSet<VisualContact>(contacts);
+		return Hierarchy.getDescendantsOfType(root, VisualConnection.class,
+				new Func<VisualConnection, Boolean>() {
+					@Override
+					public Boolean eval(VisualConnection arg) {
+						return (contactsHashSet.contains(arg.getFirst()) || contactsHashSet.contains(arg.getSecond()));
+					}
+				});
+	}
+
+	public boolean contactIsFree(VisualContact contact, Collection<VisualConnection> connections) {
+		boolean result= true;
+		for (VisualConnection connection: connections) {
+			if ((connection.getFirst() == contact) || (connection.getSecond() == contact)) {
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+
 	public void setContactsDefaultPosition() {
 		spreadContactsEvenly();
+
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			switch (vc.getDirection()) {
-			case WEST:
-				vc.setX(bb.getMinX() - contactLength);
-				break;
-			case NORTH:
-				vc.setY(bb.getMinY() - contactLength);
-				break;
-			case EAST:
-				vc.setX(bb.getMaxX() + contactLength);
-				break;
-			case SOUTH:
-				vc.setY(bb.getMaxY() + contactLength);
-				break;
+
+		Collection<VisualContact> contacts = getContacts();
+		Collection<VisualConnection> connections = getRelevantConnections(contacts);
+		for (VisualContact vc: contacts) {
+			if (contactIsFree(vc, connections)) {
+				switch (vc.getDirection()) {
+				case WEST:
+					vc.setX(bb.getMinX() - contactLength);
+					break;
+				case NORTH:
+					vc.setY(bb.getMinY() - contactLength);
+					break;
+				case EAST:
+					vc.setX(bb.getMaxX() + contactLength);
+					break;
+				case SOUTH:
+					vc.setY(bb.getMaxY() + contactLength);
+					break;
+				}
 			}
 		}
 		invalidateBoundingBox();
