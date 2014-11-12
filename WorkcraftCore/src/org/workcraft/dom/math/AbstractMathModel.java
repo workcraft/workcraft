@@ -61,12 +61,16 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 			nodes = Hierarchy.getChildrenOfType(sourceRoot, Node.class);
 		}
 
+		HierarchicalUniqueNameReferenceManager srcReferenceManager = (HierarchicalUniqueNameReferenceManager)sourceModel.getReferenceManager();
+		NamespaceProvider provider = manager.getNamespaceProvider(targetContainer);
+		if (targetContainer instanceof NamespaceProvider) {
+			provider = (NamespaceProvider) targetContainer;
+		}
+
 		for (Node node: nodes) {
-			NamespaceProvider provider = manager.getNamespaceProvider(targetContainer);
-			if (targetContainer instanceof NamespaceProvider) {
-				provider = (NamespaceProvider) targetContainer;
+			if (node != null) {
+				manager.setNamespaceProvider(node, srcReferenceManager, provider);
 			}
-			manager.setNamespaceProvider(node, (HierarchicalUniqueNameReferenceManager)sourceModel.getReferenceManager(), provider);
 		}
 
 		sourceRoot.reparent(nodes, targetContainer);

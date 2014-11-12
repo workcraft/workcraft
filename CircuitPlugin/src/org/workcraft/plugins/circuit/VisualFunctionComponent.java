@@ -24,6 +24,9 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
 @DisplayName("Function")
@@ -66,12 +69,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			case GATE:
 				GateRenderer.foreground = getForegroundColor();
 				GateRenderer.background = getFillColor();
-				if (gateOutput.getSetFunction() == null) {
+				BooleanFormula setFunction = gateOutput.getSetFunction();
+				if ((setFunction == null) || setFunction.equals(Zero.instance()) || setFunction.equals(One.instance())) {
 					renderingResult = null;
 				} else if (gateOutput.getResetFunction() == null) {
-					renderingResult = GateRenderer.renderGate(gateOutput.getSetFunction());
+					renderingResult = GateRenderer.renderGate(setFunction);
 				} else {
-					renderingResult = CElementRenderer.renderGate(gateOutput.getSetFunction(), gateOutput.getResetFunction());
+					renderingResult = CElementRenderer.renderGate(setFunction, gateOutput.getResetFunction());
 				}
 				break;
 			default:
@@ -272,6 +276,22 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			drawLabelInLocalSpace(r);
 			drawNameInLocalSpace(r);
 		}
+	}
+
+	@Override
+	public void add(Node node) {
+		super.add(node);
+		if (node instanceof VisualContact) {
+			invalidateRenderingResult();
+		}
+	}
+
+	@Override
+	public void remove(Node node) {
+		if (node instanceof VisualContact) {
+			invalidateRenderingResult();
+		}
+		super.remove(node);
 	}
 
 }

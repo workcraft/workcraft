@@ -48,7 +48,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	}
 
 	public void setNamespaceProvider(Node node, HierarchicalUniqueNameReferenceManager sourceReferenceManager, NamespaceProvider provider) {
-		if (provider==null) {
+		if (provider == null) {
 			provider = topProvider;
 		}
 		NamespaceProvider oldProvider = sourceReferenceManager.getNamespaceProvider(node);
