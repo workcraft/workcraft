@@ -41,7 +41,7 @@ public class MpsatSettings {
 		}
 	}
 
-	private static final Pattern nodeNamePattern = Pattern.compile("\"\\s*(.+?)\\s*\"");
+	private static final Pattern nodeNamePattern = Pattern.compile("\"(\\S+?)\"");
 
 	private final String name;
 	private final MpsatMode mode;
@@ -76,22 +76,24 @@ public class MpsatSettings {
 	// Reach expression for checking conformation (this is a template,
 	// the list of places needs to be updated for each circuit)
 	public static final String reachConformation =
-		"let CPnames = {\"in1_0\", \"in1_1\", \"in0_0\", \"in0_1\", \"out0_0\", \"out0_1\"},\n" +
-		"CP=gather n in CPnames { P n } {\n" +
-		"	exists s in SIGNALS \\ DUMMY {\n" +
-		"		exists t in tran s {\n" +
-		"			forall p in pre t * CP { $p }\n" +
-		"		}\n" +
-		"		&\n" +
-		"		forall t in tran s {\n" +
-		"			exists p in pre t \\ CP { ~$p }\n" +
-		"		}\n" +
-		"	}\n" +
-		"}\n";
+		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n" +
+		"  let CPnames = {\"in1_0\", \"in1_1\", \"in0_0\", \"in0_1\", \"out0_0\", \"out0_1\"},\n" +
+		"  CP=gather n in CPnames { P n } {\n" +
+		"    exists s in SIGNALS \\ DUMMY {\n" +
+		"      exists t in tran s {\n" +
+		"        forall p in pre t * CP { $p }\n" +
+		"      }\n" +
+		"      &\n" +
+		"      forall t in tran s {\n" +
+		"        exists p in pre t \\ CP { ~$p }\n" +
+		"      }\n" +
+		"    }\n" +
+		"  }\n";
 
-	// FIXME: Currently Punf does not support dead signals, transitions and places well
-	//        (e.g. a dead transition may disappear from unfolding), therefore the
-	//        conformation property cannot be checked reliably.
+	// Note: New (PNML-based) version of Punf is required to check conformation property.
+	// Old version of Punf does not support dead signals, transitions and places well
+	// (e.g. a dead transition may disappear from unfolding), therefore the conformation
+	// property cannot be checked reliably.
 	public static String genReachConformation(STG stg, STG circuitStg) {
 		// Form a set of system STG places which came from the circuitStg
 		HashSet<Node> circuitPlaces = new HashSet<Node>();
@@ -163,7 +165,9 @@ public class MpsatSettings {
 			}
 			circuitPredicate += "   )\n";
 			environmentPredicate += "   )\n";
-			if (!result.isEmpty()) {
+			if (result.isEmpty()) {
+				result = "card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n";
+			} else {
 				result += "|\n";
 			}
 			result += "/* Conformation check for signal " + s + " */\n";

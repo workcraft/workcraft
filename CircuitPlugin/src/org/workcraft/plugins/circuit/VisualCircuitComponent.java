@@ -236,15 +236,19 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	public Collection<VisualConnection> getRelevantConnections(Collection<VisualContact> contacts) {
+		Collection<VisualConnection> result = Collections.emptyList();
 		Node root = Hierarchy.getRoot(this);
-		final HashSet<VisualContact> contactsHashSet = new HashSet<VisualContact>(contacts);
-		return Hierarchy.getDescendantsOfType(root, VisualConnection.class,
+		if (root != null) {
+			final HashSet<VisualContact> contactsHashSet = new HashSet<VisualContact>(contacts);
+			result = Hierarchy.getDescendantsOfType(root, VisualConnection.class,
 				new Func<VisualConnection, Boolean>() {
 					@Override
 					public Boolean eval(VisualConnection arg) {
 						return (contactsHashSet.contains(arg.getFirst()) || contactsHashSet.contains(arg.getSecond()));
 					}
 				});
+		}
+		return result;
 	}
 
 	public boolean contactIsFree(VisualContact contact, Collection<VisualConnection> connections) {

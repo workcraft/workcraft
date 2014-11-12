@@ -40,7 +40,6 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 				refCount.put(node, 1);
 			} else {
 				refCount.put(node, refCount.get(node) + 1);
-				System.out.println("Info: node " + node + " has " + refCount.get(node) + " references");
 			}
 		}
 	}

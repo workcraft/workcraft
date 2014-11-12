@@ -21,7 +21,7 @@ public class NamespaceHelper {
 	final public static String flatNameSeparator = "__";
 
 	// TODO: make it work with the embedded ' characters
-	private static String hPattern = "(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)";
+	private static Pattern hPattern = Pattern.compile("(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)");
 
 	public static String getFlatName(String reference) {
 		return getFlatName(reference, flatNameSeparator, true);
@@ -62,8 +62,7 @@ public class NamespaceHelper {
 	public static void splitReference(String reference, LinkedList<String> path) {
 		if (reference.equals("")) return;
 
-		Pattern pattern = Pattern.compile(hPattern);
-		Matcher matcher = pattern.matcher(reference);
+		Matcher matcher = hPattern.matcher(reference);
 		if (matcher.find()) {
 			String str = matcher.group(2);
 			str=str.replace("'", "");
@@ -101,10 +100,8 @@ public class NamespaceHelper {
 		// legacy reference support
 		if (Identifier.isNumber(reference)) return reference;
 
-		Pattern pattern = Pattern.compile(hPattern);
-		Matcher matcher = pattern.matcher(reference);
+		Matcher matcher = hPattern.matcher(reference);
 		if (matcher.find()) {
-
 			String head = matcher.group(2);
 			head = head.replace("'", "");
 			return head;
@@ -116,8 +113,7 @@ public class NamespaceHelper {
 		// legacy reference support
 		if (Identifier.isNumber(reference)) return "";
 
-		Pattern pattern = Pattern.compile(hPattern);
-		Matcher matcher = pattern.matcher(reference);
+		Matcher matcher = hPattern.matcher(reference);
 		if (matcher.find()) {
 			String tail = matcher.group(9);
 			return tail;

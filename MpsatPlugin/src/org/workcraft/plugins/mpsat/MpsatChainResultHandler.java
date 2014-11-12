@@ -102,7 +102,8 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 					if (cause != null) {
 						errorMessage += "\n\nFailure caused by: " + cause.toString();
 					} else {
-						errorMessage += "\n\nFailure caused by the following errors:\n" + new String(mpsatResult.getReturnValue().getErrors());
+						byte[] errors = mpsatResult.getReturnValue().getErrors();
+						errorMessage += "\n\nFailure caused by the following errors:\n" + new String(errors);
 					}
 				} else {
 					errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";

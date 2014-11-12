@@ -22,7 +22,7 @@ public class PetrifyUntoggle implements Tool {
 
 	@Override
 	public String getSection() {
-		return "STG resynthesis";
+		return "Global transformations";
 	}
 
 	@Override
