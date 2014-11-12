@@ -45,7 +45,7 @@ public class MakePlacesImplicitTool implements Tool {
 		if (!places.isEmpty()) {
 			we.saveMemento();
 			for (VisualPlace place: places) {
-				stg.maybeMakeImplicit(place);
+				stg.maybeMakeImplicit(place, true);
 			}
 		}
 	}
