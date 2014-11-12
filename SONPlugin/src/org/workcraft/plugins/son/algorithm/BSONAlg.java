@@ -64,7 +64,7 @@ public class BSONAlg extends RelationAlgorithm{
 		Phase result = new Phase();
 		Collection<Condition> connectedNodes = new ArrayList<Condition>();
 		Collection<Path> paths = new ArrayList<Path>();
-		ONPathAlg alg = new ONPathAlg(net);
+		ONCycleAlg alg = new ONCycleAlg(net);
 
 		for(SONConnection con : net.getSONConnections()){
 			if(con.getSecond()==c && con.getSemantics()==Semantics.BHVLINE)

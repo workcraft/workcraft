@@ -11,7 +11,8 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.algorithm.ONPathAlg;
+import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
+import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -281,7 +282,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		Collection<Condition> minimal = getBSONAlg().getMinimalPhase(phase);
 		Collection<Condition> maximal = getBSONAlg().getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
-		ONPathAlg alg = new ONPathAlg(net);
+		ONCycleAlg alg = new ONCycleAlg(net);
 		ONGroup bhvGroup = getBSONAlg().getBhvGroup(phase);
 		Collection<Path> paths = alg.pathTask(bhvGroup.getComponents());
 
@@ -363,8 +364,8 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 						if(subResult.size() > 1){
 							Collection<Node> nodes = new HashSet<Node>();
 							nodes.addAll(subResult);
-							SimulationAlg simuAlg = new SimulationAlg(net);
-							if(simuAlg.getSyncCycles(nodes).isEmpty())
+							CSONCycleAlg cson = new CSONCycleAlg(net);
+							if(cson.syncCycleTask(nodes).isEmpty())
 								result.add(subResult);
 						}
 					}

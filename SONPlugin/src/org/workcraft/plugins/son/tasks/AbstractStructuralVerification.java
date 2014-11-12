@@ -7,9 +7,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.algorithm.BSONPathAlg;
-import org.workcraft.plugins.son.algorithm.CSONPathAlg;
-import org.workcraft.plugins.son.algorithm.ONPathAlg;
+import org.workcraft.plugins.son.algorithm.BSONCycleAlg;
+import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
+import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
@@ -19,19 +19,19 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 	private SON net;
 
 	private RelationAlgorithm relationAlg;
-	private CSONPathAlg csonPathAlg;
+	private CSONCycleAlg csonPathAlg;
 	private BSONAlg bsonAlg;
-	private BSONPathAlg bsonPathAlg;
-	private ONPathAlg onPathAlg;
+	private BSONCycleAlg bsonPathAlg;
+	private ONCycleAlg onPathAlg;
 	private TSONAlg tsonAlg;
 
 	public AbstractStructuralVerification(SON net){
 		this.net = net;
 		relationAlg = new RelationAlgorithm(net);
-		csonPathAlg = new CSONPathAlg(net);
+		csonPathAlg = new CSONCycleAlg(net);
 		bsonAlg = new BSONAlg(net);
-		bsonPathAlg = new BSONPathAlg(net);
-		onPathAlg = new ONPathAlg(net);
+		bsonPathAlg = new BSONCycleAlg(net);
+		onPathAlg = new ONCycleAlg(net);
 		tsonAlg = new TSONAlg(net);
 
 	}
@@ -72,15 +72,15 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		return this.bsonAlg;
 	}
 
-	public BSONPathAlg getBSONPathAlg(){
+	public BSONCycleAlg getBSONPathAlg(){
 		return bsonPathAlg;
 	}
 
-	public CSONPathAlg getCSONPathAlg(){
+	public CSONCycleAlg getCSONPathAlg(){
 		return csonPathAlg;
 	}
 
-	public ONPathAlg getPathAlg(){
+	public ONCycleAlg getPathAlg(){
 		return onPathAlg;
 	}
 

@@ -61,6 +61,7 @@ import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.Trace;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
+import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
@@ -382,10 +383,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 	private Collection<Path> getSyncCycles(){
 		HashSet<Node> nodes = new HashSet<Node>();
-		nodes.addAll(net.getConditions());
 		nodes.addAll(net.getTransitionNodes());
+		CSONCycleAlg cson = new CSONCycleAlg(net);
 
-		return simuAlg.getSyncCycles(nodes);
+		return cson.syncCycleTask(nodes);
 	}
 
 	private Map<Condition, Phase> getPhases(){

@@ -30,13 +30,19 @@ public class ONGroup extends PageNode{
 				result.add(node);
 
 		//remove the nodes in isolate blocks
-		for(Block block : this.getBlocks())
-			for(SONConnection con : getSONConnections())
+		for(Block block : this.getBlocks()){
+			boolean isCollapsed = false;
+			for(SONConnection con : getSONConnections()){
 				if(con.getFirst() == block || con.getSecond() == block){
-					result.removeAll(block.getComponents());
-					result.add(block);
+					isCollapsed = true;
+					break;
 				}
-
+			}
+			if(isCollapsed){
+				result.removeAll(block.getComponents());
+				result.add(block);
+			}
+		}
 		return result;
 	}
 
