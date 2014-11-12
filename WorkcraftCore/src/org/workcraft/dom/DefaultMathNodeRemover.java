@@ -36,10 +36,14 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 
 	private void incRef(MathNode node) {
 		if (node != null) {
-			if (refCount.get(node) == null) {
+			Integer count = refCount.get(node);
+			if (count == null) {
 				refCount.put(node, 1);
 			} else {
-				refCount.put(node, refCount.get(node) + 1);
+				refCount.put(node, count + 1);
+				if (count > 1) {
+					System.out.println("Debug info: node " + node + "is referenced " + (count+1) + " times");
+				}
 			}
 		}
 	}
@@ -50,7 +54,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 			if (refs == 0) {
 				refCount.remove(node);
 				Node parent = node.getParent();
-				if ((parent != null) && (parent instanceof Container)) {
+				if (parent instanceof Container) {
 					((Container)parent).remove(node);
 				}
 			} else {
@@ -66,7 +70,6 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 				nodeRemoved(node);
 			}
 		}
-
 		if (e instanceof NodesAddedEvent) {
 			for (Node node : e.getAffectedNodes()) {
 				nodeAdded(node);

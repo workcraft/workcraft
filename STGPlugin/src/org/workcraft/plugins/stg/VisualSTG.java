@@ -46,6 +46,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -70,8 +71,22 @@ public class VisualSTG extends AbstractVisualModel {
 		if (root == null) {
 			try {
 				createDefaultFlatStructure();
+				// FIXME: Implicit places should not appear in the first place.
+				fixVisibilityOfImplicitPlaces();
 			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private void fixVisibilityOfImplicitPlaces() {
+		for (VisualPlace vp: getVisualPlaces()) {
+			Place p = vp.getReferencedPlace();
+			if (p instanceof STGPlace) {
+				STGPlace pp = (STGPlace)p;
+				if (pp.isImplicit()) {
+					maybeMakeImplicit(vp, false);
+				}
 			}
 		}
 	}
@@ -186,7 +201,7 @@ public class VisualSTG extends AbstractVisualModel {
 		return place;
 	}
 
-	public void maybeMakeImplicit (VisualPlace place) {
+	public void maybeMakeImplicit(VisualPlace place, boolean preserveConnectionShape) {
 		Collection<Node> preset = getPreset(place);
 		Collection<Node> postset = getPostset(place);
 		if ((preset.size() == 1) && (postset.size() == 1)) {
@@ -205,7 +220,9 @@ public class VisualSTG extends AbstractVisualModel {
 				}
 			}
 			VisualImplicitPlaceArc con = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (STGPlace)place.getReferencedPlace());
-			con.addPolylinePoint(place.getPosition(), true);
+			if (preserveConnectionShape) {
+				con.addPolylinePoint(place.getPosition(), true);
+			}
 			Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
 			parent.add(con);
 			// Remove explicit place, all its connections will get removed automatically by the hanging connection remover
