@@ -1,7 +1,25 @@
+:: Change to Workcraft home directory and put it into the WORKCRAFT_HOME variable
 set WORKCRAFT_HOME=%~dp0
+pushd "%WORKCRAFT_HOME%"
 
+:: Add location of the third-party tools to the PATH variable
 set PATH=%PATH%;%WORKCRAFT_HOME%\tools
 
+:: Set the JVM executable in the JAVA_BIN variable (if not defined yet)
+IF DEFINED %JAVA_BIN% (
+) ELSE (
+    IF DEFINED %JAVA_HOME% (
+        IF EXISTS %JAVA_HOME%\bin\javaw.exe (
+            set JAVA_BIN=%JAVA_HOME%\bin\javaw.exe
+        ) ELSE (
+            set JAVA_BIN=%JAVA_HOME%\javaw.exe
+        )
+    ) ELSE (
+        set JAVA_BIN=javaw.exe
+    )
+)
+
+:: Add all the plugins and third-party JARs to the CLASSPATH variable
 set CLASSPATH=^
 %WORKCRAFT_HOME%\CircuitPlugin\bin;^
 %WORKCRAFT_HOME%\CpogsPlugin\bin;^
@@ -52,6 +70,8 @@ set CLASSPATH=^
 %WORKCRAFT_HOME%\XmasPlugin\bin;^
 ;
 
-pushd "%WORKCRAFT_HOME%"
-javaw.exe -classpath "%CLASSPATH%" org.workcraft.Console
+:: Run Workcraft with the specific JAVA_BIN and CLASSPATH
+%JAVA_BIN% -classpath "%CLASSPATH%" org.workcraft.Console
+
+:: Restore the current working directory
 popd
