@@ -24,27 +24,34 @@ import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 
-public class STGSelectionTool extends SelectionTool
-{
+public class STGSelectionTool extends SelectionTool {
 	private boolean cancelInPlaceEdit = false;
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e)
 	{
 		boolean processed = false;
-		if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 1) {
-			VisualModel model = e.getEditor().getModel();
+		if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
+			GraphEditor editor = e.getEditor();
+			VisualModel model = editor.getModel();
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node != null) {
 				if (node instanceof VisualPlace) {
 					Place place = ((VisualPlace) node).getReferencedPlace();
-					toggleToken(place, e);
+					toggleToken(place, editor);
 					processed = true;
+				} else if (node instanceof VisualImplicitPlaceArc) {
+					if (e.getKeyModifiers() == MouseEvent.CTRL_DOWN_MASK) {
+						Place place = ((VisualImplicitPlaceArc) node).getImplicitPlace();
+						toggleToken(place, editor);
+						processed = true;
+					}
 				} else if (node instanceof VisualNamedTransition) {
 					VisualNamedTransition transition = (VisualNamedTransition)node;
-					editNameInPlace(e.getEditor(), transition, transition.getName());
+					editNameInPlace(editor, transition, transition.getName());
 					processed = true;
 				}
 			}
@@ -54,9 +61,9 @@ public class STGSelectionTool extends SelectionTool
 		}
 	}
 
-	private void toggleToken(Place place, GraphEditorMouseEvent e) {
+	private void toggleToken(Place place, GraphEditor editor) {
 		if (place.getTokens() <= 1) {
-			e.getEditor().getWorkspaceEntry().saveMemento();
+			editor.getWorkspaceEntry().saveMemento();
 
 			if (place.getTokens() == 1)
 				place.setTokens(0);
