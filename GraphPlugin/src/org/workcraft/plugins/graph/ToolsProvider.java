@@ -18,7 +18,7 @@ public class ToolsProvider implements CustomToolsProvider {
 
 		result.add(new SelectionTool());
 		result.add(new CommentGeneratorTool());
-		result.add(new ConnectionTool(true, false));
+		result.add(new ConnectionTool(false));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
 		return result;
 	}

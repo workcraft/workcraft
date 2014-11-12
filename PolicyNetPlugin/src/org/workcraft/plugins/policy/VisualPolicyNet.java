@@ -29,6 +29,7 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -83,7 +84,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 	public void groupSelection(){
 		ArrayList<Node> selected = new ArrayList<Node>();
 		ArrayList<Node> refSelected = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
+		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
 			if(node instanceof VisualTransformableNode) {
 				selected.add((VisualTransformableNode)node);
 				if (node instanceof VisualComponent) {
@@ -114,7 +115,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 	@Override
 	public void ungroupSelection() {
 		int count = 0;
-		for(Node node : getOrderedCurrentLevelSelection()){
+		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
 			if(node instanceof VisualLocality) {
 				count++;
 			}
@@ -122,7 +123,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 		if (count == 1) {
 			ArrayList<Node> toSelect = new ArrayList<Node>();
 			Collection<Node> mathNodes = new ArrayList<Node>();
-			for(Node node : getOrderedCurrentLevelSelection()) {
+			for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
 				if(node instanceof VisualLocality) {
 					VisualLocality locality = (VisualLocality)node;
 					for(Node subNode : locality.unGroup()){

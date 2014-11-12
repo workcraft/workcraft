@@ -3,6 +3,7 @@ package org.workcraft.plugins.stg.tools;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
@@ -179,13 +181,13 @@ public class STGSimulationTool extends PetriNetSimulationTool {
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);
 		stateMap = new HashMap<String, SignalState>();
+
 		stateTable = new JTable(new StateTableModel());
-		statusPanel.setLayout(new BorderLayout());
-		statusPanel.add(stateTable.getTableHeader(), BorderLayout.PAGE_START);
-		statusPanel.add(stateTable, BorderLayout.CENTER);
-		stateTable.setFillsViewportHeight(true);
 		stateTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		stateTable.setDefaultRenderer(Object.class,	new StateTableCellRendererImplementation());
+
+		statePane.setViewportView(stateTable);
+
 		traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
 	}
 

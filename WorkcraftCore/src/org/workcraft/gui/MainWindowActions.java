@@ -1,10 +1,10 @@
 package org.workcraft.gui;
 
+import org.workcraft.AboutDialog;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.propertyeditor.AboutDialog;
 
 public class MainWindowActions {
 	public static final Action CREATE_WORK_ACTION = new Action() {
@@ -214,6 +214,105 @@ public class MainWindowActions {
 		@Override
 		public void run(Framework f) {
 			f.getMainWindow().editSettings();
+		}
+	};
+
+	public static final Action VIEW_ZOOM_IN = new Action() {
+		@Override
+		public String getText() {
+			return "Zoom in";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomIn();
+		}
+	};
+
+	public static final Action VIEW_ZOOM_OUT = new Action() {
+		@Override
+		public String getText() {
+			return "Zoom out";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomOut();
+		}
+	};
+
+	public static final Action VIEW_ZOOM_DEFAULT = new Action() {
+		@Override
+		public String getText() {
+			return "Default zoom";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomDefault();
+		}
+	};
+
+	public static final Action VIEW_PAN_CENTER = new Action() {
+		@Override
+		public String getText() {
+			return "Center selection";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panCenter();
+		}
+	};
+
+	public static final Action VIEW_ZOOM_FIT = new Action() {
+		@Override
+		public String getText() {
+			return "Fit selection to screen";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().zoomFit();
+		}
+	};
+
+	public static final Action VIEW_PAN_LEFT = new Action() {
+		@Override
+		public String getText() {
+			return "Pan left";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panLeft();
+		}
+	};
+
+	public static final Action VIEW_PAN_UP = new Action() {
+		@Override
+		public String getText() {
+			return "Pan up";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panUp();
+		}
+	};
+
+	public static final Action VIEW_PAN_RIGHT= new Action() {
+		@Override
+		public String getText() {
+			return "Pan right";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panRight();
+		}
+	};
+
+	public static final Action VIEW_PAN_DOWN = new Action() {
+		@Override
+		public String getText() {
+			return "Pan down";
+		}
+		@Override
+		public void run(Framework f) {
+			f.getMainWindow().panDown();
 		}
 	};
 

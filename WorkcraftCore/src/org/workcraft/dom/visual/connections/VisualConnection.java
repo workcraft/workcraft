@@ -56,6 +56,8 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
+import com.sun.corba.se.impl.resolver.SplitLocalResolverImpl;
+
 public class VisualConnection extends VisualNode implements Node, Drawable, DependentNode,
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
@@ -107,7 +109,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	private VisualComponent second = null;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
-	private ScaleMode scaleMode = ScaleMode.LOCK_RELATIVELY;
+	private ScaleMode scaleMode = ScaleMode.NONE;
 
 	private ConnectionGraphic graphic = null;
 
@@ -129,6 +131,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	private double bubbleSize = defaultBubbleSize;
 
 	private boolean isTokenColorPropagator = false;
+	private Point2D splitPoint = null;
 
 	private LinkedHashSet<Node> children = new LinkedHashSet<Node>();
 	private ComponentsTransformObserver componentsTransformObserver = null;
@@ -415,6 +418,16 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		isTokenColorPropagator = value;
 	}
 
+	@NoAutoSerialisation
+	public void setSplitPoint(Point2D point) {
+		splitPoint = point;
+	}
+
+	@NoAutoSerialisation
+	public Point2D getSplitPoint() {
+		return (splitPoint == null) ? getPointOnConnection(0.5) : splitPoint;
+	}
+
 	public Point2D getPointOnConnection(double t) {
 		return graphic.getPointOnCurve(t);
 	}
@@ -514,6 +527,39 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	public void setScaleMode(ScaleMode scaleMode) {
 		this.scaleMode = scaleMode;
+	}
+
+	public void copyProperties(VisualConnection connection) {
+		connection.setConnectionType(getConnectionType());
+		connection.setColor(getColor());
+		connection.setLineWidth(getLineWidth());
+		connection.setArrowLength(getArrowLength());
+		connection.setArrowWidth(getArrowWidth());
+		connection.setBubbleSize(getBubbleSize());
+		connection.setScaleMode(getScaleMode());
+	}
+
+	public void copyGeometry(VisualConnection connection) {
+		ConnectionGraphic g = getGraphic();
+		if (g instanceof Polyline) {
+			for (Node node: g.getChildren()) {
+				if (node instanceof ControlPoint) {
+					ControlPoint cp = (ControlPoint)node;
+					connection.addPolylinePoint(cp.getPosition(), true);
+				}
+			}
+		} else if (g instanceof Bezier) {
+			BezierControlPoint[] p = ((Bezier)g).getControlPoints();
+
+			BezierControlPoint cp1 = new BezierControlPoint();
+			cp1.setPosition(p[0].getPosition());
+
+			BezierControlPoint cp2 = new BezierControlPoint();
+			cp2.setPosition(p[1].getPosition());
+
+			Bezier bezier = (Bezier)connection.getGraphic();
+			bezier.initControlPoints(cp1, cp2);
+		}
 	}
 
 }

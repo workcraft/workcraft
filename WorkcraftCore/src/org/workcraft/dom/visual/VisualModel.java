@@ -35,13 +35,11 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
 
 public interface VisualModel extends Model, ObservableState {
-	public void draw (Graphics2D g, Decorator decorator);
+	public void draw(Graphics2D g, Decorator decorator);
 
 	public void setCurrentLevel(Container group);
 	public Container getCurrentLevel();
 	public MathModel getMathModel();
-
-	public Collection<Node> getSelection();
 
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException;
@@ -51,15 +49,17 @@ public interface VisualModel extends Model, ObservableState {
 	public void selectInverse();
 	public void select(Node node);
 	public void select(Collection<Node> nodes);
-	public void addToSelection (Collection<Node> nodes);
-	public void addToSelection (Node node);
-	public void removeFromSelection (Node node);
-	public void removeFromSelection (Collection<Node> nodes);
+	public void addToSelection(Node node);
+	public void addToSelection(Collection<Node> nodes);
+	public void removeFromSelection(Node node);
+	public void removeFromSelection(Collection<Node> nodes);
 	public void deleteSelection();
 
+	public Collection<Node> getSelection();
+
+	public boolean isGroupable(Node node);
 	public void groupSelection();
 	public void ungroupSelection();
-
 	public void groupPageSelection();
 	public void ungroupPageSelection();
 

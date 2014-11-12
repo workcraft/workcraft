@@ -46,7 +46,7 @@ public class SimulationTool extends STGSimulationTool {
 	@Override
 	public void activated(GraphEditor editor) {
 		super.activated(editor);
-		statusPanel.setVisible(false);
+		setStatePaneVisibility(false);
 	}
 
 	@Override

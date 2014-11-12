@@ -92,7 +92,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		};
 	}
 
-	protected NameManager getNameManager(NamespaceProvider provider) {
+	public NameManager getNameManager(NamespaceProvider provider) {
 		if (provider==null) {
 			provider = topProvider;
 		}

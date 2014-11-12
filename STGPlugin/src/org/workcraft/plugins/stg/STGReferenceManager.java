@@ -38,15 +38,26 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 	}
 
 	public Pair<String, Integer> getNamePair(Node node) {
-		return getNameManager(node).getNamePair(node);
+		STGNameManager mgr = getNameManager(node);
+		Pair<String, Integer> result = null;
+		if (mgr.isNamed(node)) {
+			result = mgr.getNamePair(node);
+		}
+		return result;
 	}
 
 	public int getInstanceNumber (Node node) {
-		return getNameManager(node).getInstanceNumber(node);
+		STGNameManager mgr = getNameManager(node);
+		int result = 0;
+		if (mgr.isNamed(node)) {
+			result = mgr.getInstanceNumber(node);
+		}
+		return result;
 	}
 
 	public void setInstanceNumber (Node node, int number) {
-		getNameManager(node).setInstanceNumber(node, number);
+		STGNameManager mgr = getNameManager(node);
+		mgr.setInstanceNumber(node, number);
 	}
 
 	public Collection<SignalTransition> getSignalTransitions(String signalReference) {

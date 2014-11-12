@@ -21,12 +21,9 @@
 
 package org.workcraft.dom.visual.connections;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.DummyMouseListener;
@@ -39,15 +36,8 @@ public class DefaultAnchorGenerator extends DummyMouseListener {
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node instanceof VisualConnection) {
 				VisualConnection connection = (VisualConnection)node;
-				if (connection.getGraphic() instanceof Polyline) {
-					e.getEditor().getWorkspaceEntry().saveMemento();
-					model.selectNone();
-					Polyline polyline = (Polyline)connection.getGraphic();
-					AffineTransform t = TransformHelper.getTransform(model.getRoot(), connection);
-					Point2D point = t.transform(e.getPosition(), null);
-					polyline.createControlPoint(point);
-					model.select(connection);
-				}
+				ControlPoint cp = ConnectionHelper.createControlPoint(connection, e.getPosition());
+				model.select(cp);
 			}
 		}
 	}

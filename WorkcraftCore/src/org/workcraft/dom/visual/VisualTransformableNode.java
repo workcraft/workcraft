@@ -43,26 +43,11 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 				this, "X", Double.class) {
 			@Override
 			public void setter(VisualTransformableNode object, Double value) {
-				Node node = object.getParent();
-				while (node != null) {
-					if (node instanceof VisualTransformableNode) {
-						value -= ((VisualTransformableNode)node).getX();
-					}
-					node = node.getParent();
-				}
-				object.setX(value);
+				object.setRootSpaceX(value);
 			}
 			@Override
 			public Double getter(VisualTransformableNode object) {
-				double result = 0.0;
-				Node node = object;
-				while (node != null) {
-					if (node instanceof VisualTransformableNode) {
-						result += ((VisualTransformableNode)node).getX();
-					}
-					node = node.getParent();
-				}
-				return result;
+				return object.getRootSpaceX();
 			}
 		});
 
@@ -70,26 +55,11 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 				this, "Y", Double.class) {
 			@Override
 			public void setter(VisualTransformableNode object, Double value) {
-				Node node = object.getParent();
-				while (node != null) {
-					if (node instanceof VisualTransformableNode) {
-						value -= ((VisualTransformableNode)node).getY();
-					}
-					node = node.getParent();
-				}
-				object.setY(value);
+				object.setRootSpaceY(value);
 			}
 			@Override
 			public Double getter(VisualTransformableNode object) {
-				double result = 0.0;
-				Node node = object;
-				while (node != null) {
-					if (node instanceof VisualTransformableNode) {
-						result += ((VisualTransformableNode)node).getY();
-					}
-					node = node.getParent();
-				}
-				return result;
+				return object.getRootSpaceY();
 			}
 		});
 	}
@@ -112,28 +82,78 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
+	public void setX(double value) {
+		transformChanging();
+		localToParentTransform.translate(value - localToParentTransform.getTranslateX(), 0);
+		transformChanged();
+	}
+
+	@NoAutoSerialisation
+	private double getRootSpaceX() {
+		double result = 0.0;
+		Node node = this;
+		while (node != null) {
+			if (node instanceof VisualTransformableNode) {
+				result += ((VisualTransformableNode)node).getX();
+			}
+			node = node.getParent();
+		}
+		return result;
+	}
+
+	@NoAutoSerialisation
+	private void setRootSpaceX(double value) {
+		Node node = getParent();
+		while (node != null) {
+			if (node instanceof VisualTransformableNode) {
+				value -= ((VisualTransformableNode)node).getX();
+			}
+			node = node.getParent();
+		}
+		setX(value);
+	}
+
+	@NoAutoSerialisation
 	public double getY() {
 		return localToParentTransform.getTranslateY();
 	}
 
 	@NoAutoSerialisation
-	public void setX(double x) {
+	public void setY(double value) {
 		transformChanging();
-		localToParentTransform.translate(x-localToParentTransform.getTranslateX(), 0);
+		localToParentTransform.translate(0, value - localToParentTransform.getTranslateY());
 		transformChanged();
 	}
 
 	@NoAutoSerialisation
-	public void setY(double y) {
-		transformChanging();
-		localToParentTransform.translate(0, y - localToParentTransform.getTranslateY());
-		transformChanged();
+	private double getRootSpaceY() {
+		double result = 0.0;
+		Node node = this;
+		while (node != null) {
+			if (node instanceof VisualTransformableNode) {
+				result += ((VisualTransformableNode)node).getY();
+			}
+			node = node.getParent();
+		}
+		return result;
+	}
+
+	@NoAutoSerialisation
+	private void setRootSpaceY(double value) {
+		Node node = getParent();
+		while (node != null) {
+			if (node instanceof VisualTransformableNode) {
+				value -= ((VisualTransformableNode)node).getY();
+			}
+			node = node.getParent();
+		}
+		setY(value);
 	}
 
 	@NoAutoSerialisation
 	public void setPosition(Point2D pos) {
 		transformChanging();
-		localToParentTransform.translate(pos.getX()-localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
+		localToParentTransform.translate(pos.getX() - localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
 		transformChanged();
 	}
 

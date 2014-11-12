@@ -14,6 +14,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -195,7 +196,7 @@ public class VisualSON extends AbstractVisualModel {
 			return result;
 		}
 
-		for(Node node : getOrderedCurrentLevelSelection()){
+		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
 			if(node instanceof VisualPage){
 				selection.addAll(Hierarchy.getDescendantsOfType(node, VisualComponent.class));
 			}
@@ -205,7 +206,7 @@ public class VisualSON extends AbstractVisualModel {
 		}
 
 		if(isPure(selection)){
-			for(Node node : getOrderedCurrentLevelSelection()){
+			for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
 				if(node instanceof VisualTransformableNode){
 					if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
 							result.add(node);
@@ -443,7 +444,7 @@ public class VisualSON extends AbstractVisualModel {
 		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
 		int errorType = 0;
 
-		for(Node node : getOrderedCurrentLevelSelection()){
+		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
 			if((node instanceof VisualCondition) || (node instanceof VisualEvent)) {
 				if(relationAlg.isFinal(((VisualComponent)node).getReferencedComponent())
 						|| relationAlg.isInitial(((VisualComponent)node).getReferencedComponent()))

@@ -103,14 +103,18 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 
 		@Override
 		public void write(byte b[]) throws IOException {
-			systemErr.write(b);
+			if (systemErr != null) {
+				systemErr.write(b);
+			}
 			String s = new String(b);
 			puts(s);
 		}
 
 		@Override
 		public void write(byte b[], int off, int len) throws IOException {
-			systemErr.write(b, off, len);
+			if (systemErr != null) {
+				systemErr.write(b, off, len);
+			}
 			String s = new String(b , off , len);
 			puts(s);
 		}

@@ -19,7 +19,7 @@ public class ToolsProvider implements CustomToolsProvider {
 
 		result.add(new SelectionTool(false));
 		result.add(new CommentGeneratorTool());
-		result.add(new ConnectionTool(true, false));
+		result.add(new ConnectionTool(false));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
 		result.add(new SimulationTool());
 		return result;

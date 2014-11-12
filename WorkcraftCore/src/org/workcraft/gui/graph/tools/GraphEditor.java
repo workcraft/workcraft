@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.EditorOverlay;
 import org.workcraft.gui.graph.Viewport;
@@ -40,6 +41,7 @@ public interface GraphEditor {
 	public VisualModel getModel();
 	public int getWidth();
 	public int getHeight();
+	public Set<Point2D> getSnaps(VisualNode node);
 	public Point2D snap(Point2D pos, Set<Point2D> snaps);
 	public void repaint();
 	public void forceRedraw();

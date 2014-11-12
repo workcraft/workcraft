@@ -33,12 +33,14 @@ import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 
 public class Geometry {
 
-	public static Point2D lerp(Point2D p1, Point2D p2, double t)
-	{
+	public static Point2D lerp(Point2D p1, Point2D p2, double t) {
 		return new Point2D.Double(p1.getX()*(1-t)+p2.getX()*t, p1.getY()*(1-t)+p2.getY()*t);
 	}
+	public static Point2D middle(Point2D p1, Point2D p2) {
+		return lerp(p1, p2, 0.5);
+	}
 
-	public static Point2D add (Point2D p1, Point2D p2) {
+	public static Point2D add(Point2D p1, Point2D p2) {
 		Point2D result = (Point2D)p1.clone();
 		result.setLocation(result.getX() + p2.getX(), result.getY() + p2.getY());
 		return result;
@@ -56,7 +58,7 @@ public class Geometry {
 		return result;
 	}
 
-	public static Point2D normalize (Point2D p) {
+	public static Point2D normalize(Point2D p) {
 		Point2D result = (Point2D)p.clone();
 		double length = p.distance(0, 0);
 		if (length < 0.0000001)
@@ -66,23 +68,22 @@ public class Geometry {
 		return result;
 	}
 
-	public static Point2D reduce (Point2D p) {
+	public static Point2D reduce(Point2D p) {
 		Point2D result = multiply (normalize(p), Math.pow(p.distanceSq(0, 0), 0.2));
 		return result;
 	}
 
-	public static double dotProduct (Point2D v1, Point2D v2) {
+	public static double dotProduct(Point2D v1, Point2D v2) {
 		return v1.getX() * v2.getX() + v1.getY() * v2.getY();
 	}
 
-	public static Point2D multiply (Point2D p, double a) {
+	public static Point2D multiply(Point2D p, double a) {
 		Point2D result = (Point2D)p.clone();
 		result.setLocation(p.getX() * a, p.getY() * a);
 		return result;
 	}
 
-	public static class CurveSplitResult
-	{
+	public static class CurveSplitResult {
 		public final CubicCurve2D curve1;
 		public final CubicCurve2D curve2;
 
@@ -135,8 +136,7 @@ public class Geometry {
 		return multiply(lerp(b1, b2, t), 3.0);
 	}
 
-	public static Point2D getSecondDerivativeOfCubicCurve (CubicCurve2D curve, double t)
-	{
+	public static Point2D getSecondDerivativeOfCubicCurve (CubicCurve2D curve, double t) {
 		Point2D a1 = subtract(curve.getCtrlP1(), curve.getP1());
 		Point2D a2 = subtract(curve.getCtrlP2(), curve.getCtrlP1());
 		Point2D a3 = subtract(curve.getP2(), curve.getCtrlP2());
@@ -147,8 +147,7 @@ public class Geometry {
 		return multiply(lerp(b1, b2, t), 9.0);
 	}
 
-	public static AffineTransform optimisticInverse(AffineTransform transform)
-	{
+	public static AffineTransform optimisticInverse(AffineTransform transform) {
 		try
 		{
 			return transform.createInverse();
@@ -215,8 +214,7 @@ public class Geometry {
 		return result;
 	}
 
-	public static double crossProduct(Point2D p, Point2D q)
-	{
+	public static double crossProduct(Point2D p, Point2D q) {
 		double x1 = p.getX();
 		double y1 = p.getY();
 

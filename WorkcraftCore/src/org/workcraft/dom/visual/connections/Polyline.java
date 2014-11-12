@@ -28,6 +28,8 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.workcraft.dom.ArbitraryInsertionGroupImpl;
 import org.workcraft.dom.Container;
@@ -64,32 +66,29 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		connectionInfo = parent;
 	}
 
+	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		if (!valid) {
 			update();
 		}
 
-		Path2D connectionPath = new Path2D.Double();
-
 		int start = getSegmentIndex(curveInfo.tStart);
-		int end = getSegmentIndex(curveInfo.tEnd);
-
 		Point2D startPt = getPointOnCurve(curveInfo.tStart);
+
+		int end = getSegmentIndex(curveInfo.tEnd);
 		Point2D endPt = getPointOnCurve(curveInfo.tEnd);
 
+		Path2D connectionPath = new Path2D.Double();
 		connectionPath.moveTo(startPt.getX(), startPt.getY());
-
 		for (int i=start; i<end; i++) {
 			Line2D segment = getSegment(i);
 			connectionPath.lineTo(segment.getX2(), segment.getY2());
 		}
-
 		connectionPath.lineTo(endPt.getX(), endPt.getY());
 
 		Color color = Coloriser.colorise(connectionInfo.getDrawColor(), r.getDecoration().getColorisation());
 		g.setColor(color);
-
 		g.setStroke(connectionInfo.getStroke());
 		g.draw(connectionPath);
 
@@ -104,6 +103,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		}
 	}
 
+	@Override
 	public Rectangle2D getBoundingBox() {
 		if (!valid) {
 			update();
@@ -135,72 +135,89 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return n;
 	}
 
-	private double getParameterOnSegment (double t, int segmentIndex) {
+	private double getParameterOnSegment(double t, int segmentIndex) {
 		return t * getSegmentCount() - segmentIndex;
 	}
 
 
-	private int getNearestSegment (Point2D pt, Point2D out_pointOnSegment) {
+	public int getNearestSegment(Point2D pt, Point2D out_pointOnSegment) {
 		double min = Double.MAX_VALUE;
 		int nearest = -1;
 
 		for (int i=0; i<getSegmentCount(); i++) {
 			Line2D segment = getSegment(i);
-
 			Point2D a = new Point2D.Double ( pt.getX() - segment.getX1(), pt.getY() - segment.getY1() );
 			Point2D b = new Point2D.Double ( segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1() );
 
 			double magB = b.distance(0, 0);
-
 			double dist;
-
 			if (magB < 0.0000001) {
 				dist = pt.distance(segment.getP1());
 			} else {
 				b.setLocation(b.getX() / magB, b.getY() / magB);
-
 				double magAonB = a.getX() * b.getX() + a.getY() * b.getY();
-
-				if (magAonB < 0)
+				if (magAonB < 0) {
 					magAonB = 0;
-				if (magAonB > magB)
+				}
+				if (magAonB > magB) {
 					magAonB = magB;
-
+				}
 				a.setLocation(segment.getX1() + b.getX() * magAonB, segment.getY1() + b.getY() * magAonB);
-
 				dist = new Point2D.Double(pt.getX() - a.getX(), pt.getY() - a.getY()).distance(0,0);
 			}
 
 			if (dist < min) {
 				min = dist;
-				if (out_pointOnSegment != null)
+				if (out_pointOnSegment != null) {
 					out_pointOnSegment.setLocation(a);
+				}
 				nearest = i;
 			}
 		}
-
 		return nearest;
 	}
 
+	public int getControlPointCount() {
+		return getChildren().size();
+	}
+
 	protected int getSegmentCount() {
-		return groupImpl.getChildren().size() + 1;
+		return getControlPointCount() + 1;
+	}
+
+	protected int getAnchorPointCount() {
+		return getControlPointCount() + 2;
 	}
 
 	private Point2D getAnchorPointLocation(int index) {
-		if (index == 0)
+		if (index <= 0) {
 			return connectionInfo.getFirstCenter();
-		if (index > groupImpl.getChildren().size())
+		} if (index >= getAnchorPointCount()-1) {
 			return connectionInfo.getSecondCenter();
-		return ((ControlPoint) groupImpl.getChildren().get(index-1)).getPosition();
+		}
+		return getControlPoint(index-1).getPosition();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<ControlPoint> getControlPoints() {
+		return Collections.unmodifiableList((List)getChildren());
+	}
+
+	public ControlPoint getControlPoint(int index) {
+		ControlPoint result = null;
+		if ((index >=0) && (index < getControlPointCount())) {
+			result = getControlPoints().get(index);
+		}
+		return result;
 	}
 
 	protected Line2D getSegment(int index) {
 		int segments = getSegmentCount();
-
-		if (index > segments-1)
+		if (index < segments) {
+			return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index+1));
+		} else {
 			throw new RuntimeException ("Segment index is greater than number of segments");
-
-		return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index+1));
+		}
 	}
 
 	private Rectangle2D getSegmentBoundsWithThreshold (Line2D segment) {
@@ -225,17 +242,16 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return bb;
 	}
 
-	public void createControlPoint(Point2D userLocation) {
-		Point2D pointOnConnection = new Point2D.Double();
-		int segment = getNearestSegment(userLocation, pointOnConnection);
-		insertControlPointInSegment(pointOnConnection, segment);
+	public ControlPoint insertControlPointInSegment(Point2D location, int segmentIndex) {
+		ControlPoint cp = new ControlPoint();
+		cp.setPosition(location);
+		groupImpl.add(segmentIndex, cp);
+		controlPointsChanged();
+		return cp;
 	}
 
-	public void insertControlPointInSegment(Point2D location, int segment) {
-		ControlPoint ap = new ControlPoint();
-		ap.setPosition(location);
-		groupImpl.add(segment, ap);
-		controlPointsChanged();
+	public void addControlPoint(Point2D location) {
+		insertControlPointInSegment(location, getSegmentCount() - 1);
 	}
 
 	@Override
@@ -243,50 +259,62 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return getDistanceToCurve(point) < VisualConnection.HIT_THRESHOLD;
 	}
 
+	@Override
 	public Collection<Node> getChildren() {
 		return groupImpl.getChildren();
 	}
 
+	@Override
 	public Node getParent() {
 		return groupImpl.getParent();
 	}
 
+	@Override
 	public void setParent(Node parent) {
 		throw new RuntimeException ("Node does not support reparenting");
 	}
 
+	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 	}
 
+	@Override
 	public void add(Node node) {
 		groupImpl.add(node);
 	}
 
+	@Override
 	public void addObserver(HierarchyObserver obs) {
 		groupImpl.addObserver(obs);
 	}
 
+	@Override
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
 
+	@Override
 	public void remove(Node node) {
 		groupImpl.remove(node);
 	}
 
+	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
 	}
 
+	@Override
 	public void removeAllObservers() {
 		groupImpl.removeAllObservers();
 	}
 
+	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
 
+	@Override
 	public void reparent(Collection<Node> nodes) {
 		groupImpl.reparent(nodes);
 	}
@@ -348,12 +376,12 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	public void notify(SelectionChangedEvent event) {
 		boolean controlsVisible = false;
 		for (Node n : event.getSelection())
-			if (n == getParent() || groupImpl.getChildren().contains(n)) {
+			if (n == getParent() || getChildren().contains(n)) {
 				controlsVisible = true;
 				break;
 			}
 
-		for (Node n : groupImpl.getChildren())
+		for (Node n : getChildren())
 			((ControlPoint)n).setHidden(!controlsVisible);
 	}
 
@@ -408,7 +436,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	private int getIndex(ControlPoint cp) {
 		int index = -1;
-		for(Node node: groupImpl.getChildren()) {
+		for(Node node: getChildren()) {
 			index++;
 			if (node == cp) {
 				return index;
@@ -433,6 +461,14 @@ StateObserver, HierarchyObserver, SelectionObserver {
 			pos = getAnchorPointLocation(index+2);
 		}
 		return pos;
+	}
+
+	public ControlPoint getFirstControlPoint() {
+		return getControlPoint(0);
+	}
+
+	public ControlPoint getLastControlPoint() {
+		return getControlPoint(getControlPointCount()-1);
 	}
 
 }

@@ -38,8 +38,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.Icon;
@@ -59,6 +61,7 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
+import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
@@ -67,10 +70,9 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.dom.visual.connections.BezierControlPoint;
-import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
-import org.workcraft.dom.visual.connections.Polyline;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -97,9 +99,11 @@ public class SelectionTool extends AbstractTool {
 	private boolean notClick1 = false;
 	private boolean notClick3 = false;
 
-	private Point2D snapOffset;
+	private Point2D offset;
 	private Set<Point2D> snaps = new HashSet<Point2D>();
 	private DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
+
+	private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
 
 	private LinkedHashSet<Node> selected = new LinkedHashSet<Node>();
 	private SelectionMode selectionMode = SelectionMode.NONE;
@@ -157,6 +161,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionGroup(editor);
+				editor.requestFocus();
 			}
 		});
 		groupPanel.add(groupButton);
@@ -168,6 +173,7 @@ public class SelectionTool extends AbstractTool {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					selectionPageGroup(editor);
+					editor.requestFocus();
 				}
 			});
 			groupPanel.add(groupPageButton);
@@ -179,6 +185,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionUngroup(editor);
+				editor.requestFocus();
 			}
 		});
 		groupPanel.add(ungroupButton);
@@ -191,6 +198,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changeLevelUp(editor);
+				editor.requestFocus();
 			}
 		});
 		levelPanel.add(levelUpButton);
@@ -200,6 +208,7 @@ public class SelectionTool extends AbstractTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changeLevelDown(editor);
+				editor.requestFocus();
 			}
 		});
 		levelPanel.add(levelDownButton);
@@ -207,20 +216,22 @@ public class SelectionTool extends AbstractTool {
 		JPanel flipPanel = new JPanel(new FlowLayout());
 		controlPanel.add(flipPanel);
 		JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal (Ctrl+F)");
+				"images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal");
 		flipHorizontalButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionFlipHorizontal(editor);
+				editor.requestFocus();
 			}
 		});
 		flipPanel.add(flipHorizontalButton);
 		JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-flip_vertical.svg"), "Flip vertical (Ctrl+Shift+F)");
+				"images/icons/svg/selection-flip_vertical.svg"), "Flip vertical");
 		flipVerticalButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionFlipVertical(editor);
+				editor.requestFocus();
 			}
 		});
 		flipPanel.add(flipVerticalButton);
@@ -228,20 +239,22 @@ public class SelectionTool extends AbstractTool {
 		JPanel rotatePanel = new JPanel(new FlowLayout());
 		controlPanel.add(rotatePanel);
 		JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise (Ctrl+R)");
+				"images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise");
 		rotateClockwiseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionRotateClockwise(editor);
+				editor.requestFocus();
 			}
 		});
 		rotatePanel.add(rotateClockwiseButton);
 		JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (Ctrl+Shift+R)");
+				"images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
 		rotateCounterclockwiseButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectionRotateCounterclockwise(editor);
+				editor.requestFocus();
 			}
 		});
 		rotatePanel.add(rotateCounterclockwiseButton);
@@ -273,7 +286,7 @@ public class SelectionTool extends AbstractTool {
 			return;
 
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			VisualModel model = e.getEditor().getModel();
+			VisualModel model = e.getModel();
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node == null) {
 				if (e.getClickCount() > 1) {
@@ -294,7 +307,7 @@ public class SelectionTool extends AbstractTool {
 
 				} else {
 					if (e.getKeyModifiers() == 0) {
-						e.getModel().selectNone();
+						model.selectNone();
 					}
 				}
 			} else {
@@ -311,13 +324,13 @@ public class SelectionTool extends AbstractTool {
 				} else {
 					switch (e.getKeyModifiers()) {
 					case 0:
-						e.getModel().select(node);
+						model.select(node);
 						break;
 					case MouseEvent.SHIFT_DOWN_MASK:
-						e.getModel().addToSelection(node);
+						model.addToSelection(node);
 						break;
 					case MouseEvent.CTRL_DOWN_MASK:
-						e.getModel().removeFromSelection(node);
+						model.removeFromSelection(node);
 						break;
 					}
 				}
@@ -332,10 +345,11 @@ public class SelectionTool extends AbstractTool {
 		VisualModel model = editor.getModel();
 		if (dragState == DrugState.MOVE) {
 			Point2D prevPos = e.getPrevPosition();
-			Point2D.Double pos1 = new Point2D.Double(prevPos.getX() + snapOffset.getX(), prevPos.getY() + snapOffset.getY());
+			Point2D.Double pos1 = new Point2D.Double(prevPos.getX() + offset.getX(), prevPos.getY() + offset.getY());
 			Point2D snapPos1 = editor.snap(pos1, snaps);
-			Point2D.Double pos2 = new Point2D.Double(e.getX()+snapOffset.getX(), e.getY()+snapOffset.getY());
+			Point2D.Double pos2 = new Point2D.Double(e.getX() + offset.getX(), e.getY() + offset.getY());
 			Point2D snapPos2 = editor.snap(pos2, snaps);
+			// Intermediate move of the selection - no need for beforeSelectionModification or afterSelectionModification
 			selectionOffset(editor, snapPos2.getX() - snapPos1.getX(), snapPos2.getY() - snapPos1.getY());
 		} else if (dragState == DrugState.SELECT) {
 			selected.clear();
@@ -343,10 +357,26 @@ public class SelectionTool extends AbstractTool {
 			selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
 			editor.repaint();
 		} else {
-			VisualNode node = (VisualNode)HitMan.hitTestForSelection(e.getPosition(), editor.getModel());
+			VisualNode node = (VisualNode)HitMan.hitTestForSelection(e.getPosition(), model);
 			if (currentNode != node) {
 				currentNode = node;
 				editor.repaint();
+			}
+		}
+	}
+
+	@Override
+	public void mousePressed(GraphEditorMouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			notClick1 = false;
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
+			if (isDragging()) {
+				cancelDrag(e.getEditor());
+				e.getEditor().repaint();
+				notClick1 = true;
+				notClick3 = true;
+			} else {
+				notClick3 = false;
 			}
 		}
 	}
@@ -360,7 +390,7 @@ public class SelectionTool extends AbstractTool {
 			Node hitNode = HitMan.hitTestForSelection(startPos, model);
 
 			if (hitNode == null) {
-				// hit nothing, so start select-drag
+				// If hit nothing then start select-drag
 				switch (e.getKeyModifiers()) {
 				case 0:
 					selectionMode = SelectionMode.REPLACE;
@@ -385,76 +415,47 @@ public class SelectionTool extends AbstractTool {
 						selected.addAll(model.getSelection());
 					}
 				}
-			} else {
-				// hit something
-				if ((e.getKeyModifiers() == 0) && (hitNode instanceof Movable)) {
-					// mouse down without modifiers, begin move-drag
-					dragState = DrugState.MOVE;
-					editor.getWorkspaceEntry().captureMemento();
-					if ((hitNode != null) && !model.getSelection().contains(hitNode)) {
-						e.getModel().select(hitNode);
-					}
-					Movable node = (Movable)hitNode;
-					Point2D pos = new Point2D.Double(node.getTransform().getTranslateX(), node.getTransform().getTranslateY());
-					snaps = calcSnapPoints(node);
-					Point2D snapPos = editor.snap(pos, snaps);
-					snapOffset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
-					selectionOffset(editor, snapPos.getX()-pos.getX(), snapPos.getY()-pos.getY());
-				} else {
-					// do nothing if pressed on a node with modifiers
+			} else if ((e.getKeyModifiers() == 0) && (hitNode instanceof VisualNode)) {
+				// If mouse down without modifiers and hit something then begin move-drag
+				dragState = DrugState.MOVE;
+				VisualNode node = (VisualNode)hitNode;
+				if ((node != null) && !model.getSelection().contains(node)) {
+					model.select(node);
 				}
-			}
-		}
-	}
-
-	protected Set<Point2D> calcSnapPoints(Node node) {
-		Set<Point2D> result = new HashSet<Point2D>();
-		if ((node instanceof ControlPoint) && !(node instanceof BezierControlPoint)) {
-			ControlPoint cp = (ControlPoint)node;
-			if (cp.getParent() instanceof Polyline) {
-				Polyline polyline = (Polyline)cp.getParent();
-				result.add(cp.getPosition());
-				result.add(polyline.getPrevAnchorPointLocation(cp));
-				result.add(polyline.getNextAnchorPointLocation(cp));
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public void mousePressed(GraphEditorMouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON1)
-			notClick1 = false;
-
-		if (e.getButton() == MouseEvent.BUTTON3) {
-
-			if (isDragging()) {
-				cancelDrag(e.getEditor());
-				e.getEditor().repaint();
-				notClick1 = true;
-				notClick3 = true;
+				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(node);
+				Point2D pos = TransformHelper.transform(node, localToRootTransform).getCenter();
+				snaps = editor.getSnaps(node);
+				Point2D snapPos = editor.snap(pos, snaps);
+				offset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
+				// Initial move of the selection - beforeSelectionModification is needed
+				beforeSelectionModification(editor);
+				selectionOffset(editor, snapPos.getX() - pos.getX(), snapPos.getY() - pos.getY());
 			} else {
-				notClick3 = false;
+				// Do nothing if pressed on a node with modifiers
 			}
 		}
 	}
 
 	@Override
 	public void finishDrag(GraphEditorMouseEvent e) {
+		GraphEditor editor = e.getEditor();
 		if (dragState == DrugState.MOVE) {
-			e.getEditor().getWorkspaceEntry().saveMemento();
+			// Final move of the selection - afterSelectionModification is needed
+			afterSelectionModification(editor);
 		} else if (dragState == DrugState.SELECT) {
-			if (selectionMode == SelectionMode.REPLACE)
-				e.getModel().select(selected);
-			else if (selectionMode == SelectionMode.ADD)
-				e.getModel().addToSelection(selected);
-			else if (selectionMode == SelectionMode.REMOVE)
-				e.getModel().removeFromSelection(selected);
+			VisualModel model = e.getModel();
+			if (selectionMode == SelectionMode.REPLACE) {
+				model.select(selected);
+			} else if (selectionMode == SelectionMode.ADD) {
+				model.addToSelection(selected);
+			} else if (selectionMode == SelectionMode.REMOVE) {
+				model.removeFromSelection(selected);
+			}
 			selectionBox = null;
 		}
 		dragState = DrugState.NONE;
 		selected.clear();
-		e.getEditor().repaint();
+		editor.repaint();
 	}
 
 
@@ -509,35 +510,25 @@ public class SelectionTool extends AbstractTool {
 			}
 		}
 
-		if (enablePages && e.isAltDown() && !e.isCtrlDown() && !e.isShiftDown()) {
+		if (enablePages && e.isAltDown() && !e.isCtrlDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
-				selectionPageGroup(e.getEditor());
+				if (e.isShiftDown()) {
+					selectionPageUngroup(e.getEditor());
+				} else {
+					selectionPageGroup(e.getEditor());
+				}
 				break;
 			}
 		}
 
-		if (e.isCtrlDown()) {
+		if (e.isCtrlDown() && !e.isAltDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
 				if (e.isShiftDown()) {
 					selectionUngroup(e.getEditor());
 				} else {
 					selectionGroup(e.getEditor());
-				}
-				break;
-			case KeyEvent.VK_F:
-				if (e.isShiftDown()) {
-					selectionFlipVertical(e.getEditor());
-				} else {
-					selectionFlipHorizontal(e.getEditor());
-				}
-				break;
-			case KeyEvent.VK_R:
-				if (e.isShiftDown()) {
-					selectionRotateCounterclockwise(e.getEditor());
-				} else {
-					selectionRotateClockwise(e.getEditor());
 				}
 				break;
 			}
@@ -562,6 +553,7 @@ public class SelectionTool extends AbstractTool {
 
 			@Override
 			public Decoration getDecoration(Node node) {
+				VisualModel model = editor.getModel();
 				if (node == currentNode) {
 					return new Decoration(){
 						@Override
@@ -575,11 +567,11 @@ public class SelectionTool extends AbstractTool {
 					};
 				}
 
-				if (node == editor.getModel().getCurrentLevel()) {
+				if (node == model.getCurrentLevel()) {
 					return Decoration.Empty.INSTANCE;
 				}
 
-				if (node == editor.getModel().getRoot()) {
+				if (node == model.getRoot()) {
 					return new Decoration(){
 						@Override
 						public Color getColorisation() {
@@ -596,10 +588,10 @@ public class SelectionTool extends AbstractTool {
 				 * where
 				 *   r = (selectionMode == SelectionState.REMOVE)
 				 *   c = selected.contains(node)
-				 *   s = editor.getModel().getSelection().contains(node)
+				 *   s = model.getSelection().contains(node)
 				 */
 				if ( ((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
-					|| (!selected.contains(node) && editor.getModel().getSelection().contains(node)) ) {
+					|| (!selected.contains(node) && model.getSelection().contains(node)) ) {
 					return new Decoration() {
 						@Override
 						public Color getColorisation() {
@@ -731,11 +723,20 @@ public class SelectionTool extends AbstractTool {
 		);
 	}
 
+	protected void selectionCancel(final GraphEditor editor) {
+		VisualModel model = editor.getModel();
+		if (!model.getSelection().isEmpty()) {
+			editor.getMainWindow().selectNone();
+			editor.forceRedraw();
+		}
+		editor.requestFocus();
+	}
+
 	private void selectionOffset(final GraphEditor editor, double dx, double dy) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			// Note that no memento should be saved until the drug action is complete
-			for(Node node : model.getSelection()){
+		if (!model.getSelection().isEmpty()) {
+			// Note that no memento should not be saved until the drug action is complete
+			for(Node node : model.getSelection()) {
 				if(node instanceof Movable) {
 					Movable mv = (Movable) node;
 					MovableHelper.translate(mv, dx, dy);
@@ -744,85 +745,108 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
-	protected void selectionCancel(final GraphEditor editor) {
-		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getMainWindow().selectNone();
-			editor.forceRedraw();
-		}
-	}
-
 	protected void selectionGroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			model.groupSelection();
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
 	}
 
 	protected void selectionUngroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			model.ungroupSelection();
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
 	}
 
 	protected void selectionPageGroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			model.groupPageSelection();
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
 	}
 
 	protected void selectionPageUngroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			model.ungroupPageSelection();
-			editor.getMainWindow().forceRedraw();
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
 	}
 
 	protected void selectionRotateClockwise(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
 	}
 
 	protected void selectionRotateCounterclockwise(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
 	}
 
 	protected void selectionFlipHorizontal(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, -1, 1);
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
 	}
 
 	protected void selectionFlipVertical(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
-		if (model.getSelection().size() > 0) {
-			editor.getWorkspaceEntry().saveMemento();
+		if (!model.getSelection().isEmpty()) {
+			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, 1, -1);
-			editor.forceRedraw();
+			afterSelectionModification(editor);
 		}
+	}
+
+	private void beforeSelectionModification(final GraphEditor editor) {
+		// Capture model memento for use in afterSelectionModification
+		editor.getWorkspaceEntry().captureMemento();
+
+		// FIXME: Save connections scale mode and force it LOCK_RELATIVELY for modification
+		connectionToScaleModeMap = new HashMap<>();
+		for (Node node: SelectionHelper.getGroupableCurrentLevelSelection(editor.getModel())) {
+			if (node instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)node;
+				connectionToScaleModeMap.put(vc, vc.getScaleMode());
+				vc.setScaleMode(ScaleMode.LOCK_RELATIVELY);
+			}
+		}
+	}
+
+	private void afterSelectionModification(final GraphEditor editor) {
+		// Save memento that was captured in beforeSelectionModification
+		editor.getWorkspaceEntry().saveMemento();
+
+		// FIXME: Restore connections scale mode
+		if (connectionToScaleModeMap != null) {
+			for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
+				VisualConnection vc = entry.getKey();
+				ScaleMode scaleMode = entry.getValue();
+				vc.setScaleMode(scaleMode);
+			}
+		}
+
+		// Redraw the editor window to recalculate all the bounding boxes
+		editor.forceRedraw();
 	}
 
 }

@@ -22,7 +22,7 @@ public class PetrifyDummyContraction implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformations";
+		return "STG resynthesis";
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package org.workcraft.gui.propertyeditor;
+package org.workcraft;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
@@ -24,7 +24,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import org.workcraft.Info;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.util.GUI;
 

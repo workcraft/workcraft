@@ -39,6 +39,12 @@ import java.util.LinkedList;
  */
 public class Viewport {
 	/**
+	 * The default value of the scale factor is such that there are 16 user space units visible
+	 *  across the vertical axis of the viewport.
+	 */
+	private static final double DEFAULT_SCALE = 0.0625;
+
+	/**
 	 * The scaling factor per zoom level. Increasing the zoom level by 1 will effectively magnify all
 	 * objects by this factor, while decreasing it by 1 will shrink all objects by the same factor.
 	 */
@@ -60,10 +66,9 @@ public class Viewport {
 	protected double ty = 0.0;
 
 	/**
-	 * Current view scale factor. The default value is such that there are 16 user space units visible
-	 *  across the vertical axis of the viewport.
+	 * Current view scale factor.
 	 */
-	protected double scale = 0.0625;
+	protected double scale = DEFAULT_SCALE;
 
 	/**
 	 * The transformation from user space to screen space such that the point (0,0) in user space is
@@ -126,9 +131,10 @@ public class Viewport {
 		userToScreenTransform.setToIdentity();
 		userToScreenTransform.translate(shape.width/2 + shape.x, shape.height/2 + shape.y);
 
-		if (shape.height != 0)
-			userToScreenTransform.scale(shape.height/2, shape.height/2);
-
+		if ((shape.height != 0) && (shape.width != 0)) {
+			double s = Math.min(shape.height/2, shape.width/2);
+			userToScreenTransform.scale(s, s);
+		}
 		updateFinalTransform();
 
 		// notify listeners
@@ -266,6 +272,21 @@ public class Viewport {
 		viewChanged();
 	}
 
+	public void scale (double scale) {
+		if (scale < 0.01f) {
+			scale = 0.01f;
+		}
+		if (scale > 1.0f) {
+			scale = 1.0f;
+		}
+		this.scale = scale;
+		viewChanged();
+	}
+
+	public void scaleDefault() {
+		scale(DEFAULT_SCALE);
+	}
+
 	/**
 	 * Zooms the viewport by the specified amount of levels. One positive level is the magnification
 	 * by 2 to the power of 1/4. Thus, increasing the zoom by 4 levels magnifies the objects to twice
@@ -274,14 +295,7 @@ public class Viewport {
 	 * The required change of the zoom level. Use positive value to zoom in, negative value to zoom out.
 	 */
 	public void zoom (int levels) {
-		scale *= Math.pow(SCALE_FACTOR, levels);
-
-		if (scale < 0.01f)
-			scale = 0.01f;
-		if (scale > 1.0f)
-			scale = 1.0f;
-
-		viewChanged();
+		scale(scale * Math.pow(SCALE_FACTOR, levels));
 	}
 
 	/**

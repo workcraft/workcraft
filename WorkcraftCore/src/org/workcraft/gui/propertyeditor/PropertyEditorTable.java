@@ -40,7 +40,6 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 	HashMap<Class<?>, PropertyClass> propertyClasses;
 	TableCellRenderer cellRenderers[];
 	TableCellEditor cellEditors[];
-
 	PropertyEditorTableModel model;
 
 	public PropertyEditorTable(Framework framework) {
@@ -76,7 +75,6 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		else
 			return cellEditors[row];
 	}
-
 
 	@Override
 	public TableCellRenderer getCellRenderer(int row, int col) {

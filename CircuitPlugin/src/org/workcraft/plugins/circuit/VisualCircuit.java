@@ -21,9 +21,13 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -34,9 +38,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -58,17 +66,17 @@ public class VisualCircuit extends AbstractVisualModel {
 	@Override
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
 		if (first==second) {
-			throw new InvalidConnectionException ("Connections are only valid between different objects");
+			throw new InvalidConnectionException ("Connections are only valid between different objects.");
 		}
 
 		if (second instanceof VisualConnection) {
-			throw new InvalidConnectionException ("Merging connections is not allowed");
+			throw new InvalidConnectionException ("Merging connections is not allowed.");
 		}
 
 		if (second instanceof VisualComponent) {
 			for (Connection c: this.getConnections(second)) {
 				if (c.getSecond() == second)
-					throw new InvalidConnectionException ("Only one connection is allowed as a driver");
+					throw new InvalidConnectionException ("Only one connection is allowed as a driver.");
 			}
 		}
 
@@ -77,10 +85,10 @@ public class VisualCircuit extends AbstractVisualModel {
 			Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
 
 			if ((toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.OUTPUT)
-				throw new InvalidConnectionException ("Outputs of the components cannot be driven");
+				throw new InvalidConnectionException ("Outputs of the components cannot be driven.");
 
 			if (!(toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.INPUT)
-				throw new InvalidConnectionException ("Inputs from the environment cannot be driven");
+				throw new InvalidConnectionException ("Inputs from the environment cannot be driven.");
 		}
 	}
 
@@ -102,19 +110,35 @@ public class VisualCircuit extends AbstractVisualModel {
 	@Override
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
-
 		if (first instanceof VisualConnection) {
 			VisualConnection connection = (VisualConnection)first;
+			List<Point2D> locations = new LinkedList<Point2D>();
+			int splitIndex = -1;
+ 			if (connection.getGraphic() instanceof Polyline) {
+ 				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+				Polyline polyline = (Polyline)connection.getGraphic();
+				for (ControlPoint cp:  polyline.getControlPoints()) {
+					Point2D location = localToRootTransform.transform(cp.getPosition(), null);
+					locations.add(location);
+				}
+				splitIndex = polyline.getNearestSegment(connection.getSplitPoint(), null);
+			}
+
 			Container vContainer = (Container)connection.getParent();
 			Container mParent = (Container)(connection.getReferencedConnection().getParent());
 			Joint mJoint = new Joint();
 			mParent.add(mJoint);
 			VisualJoint vJoint = new VisualJoint(mJoint);
 			vContainer.add(vJoint);
-			vJoint.setPosition(connection.getPointOnConnection(0.5));
+			vJoint.setPosition(connection.getSplitPoint());
 			remove(connection);
-			connect(connection.getFirst(), vJoint);
-			connect(vJoint, connection.getSecond());
+
+			VisualConnection vc1 = connect(connection.getFirst(), vJoint);
+			VisualConnection vc2 = connect(vJoint, connection.getSecond());
+			if (!locations.isEmpty()) {
+				ConnectionHelper.addControlPoints(vc1, locations.subList(0, splitIndex));
+				ConnectionHelper.addControlPoints(vc2, locations.subList(splitIndex, locations.size()));
+			}
 			first = vJoint;
 		}
 

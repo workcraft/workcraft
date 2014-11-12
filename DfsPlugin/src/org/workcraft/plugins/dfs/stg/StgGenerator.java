@@ -478,8 +478,6 @@ public class StgGenerator {
 					fwCF = stg.createSignalTransition(nameFwC + name, type, SignalTransition.Direction.MINUS, curContainer);
 					createConsumingArc(fwC1, fwCF, false);
 					createProducingArc(fwCF, fwC0, false);
-					stg.connect(fwC1, fwCF);
-					stg.connect(fwCF, fwC0);
 					setPosition(fwCF, x - 2.0, y - 4.0 - dy);
 					nodes.add(fwCF);
 				}
@@ -526,16 +524,16 @@ public class StgGenerator {
 				if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
 					bwCR = stg.createSignalTransition(nameBwC + name, type, SignalTransition.Direction.PLUS, curContainer);
 					bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
-					stg.connect(bwC0, bwCR);
-					stg.connect(bwCR, bwC1);
+					createConsumingArc(bwC0, bwCR, false);
+					createProducingArc(bwCR, bwC1, false);
 					setPosition(bwCR, x - 2.0, y + 4.0 + dy);
 					nodes.add(bwCR);
 				}
 				bwCRs.put(n, bwCR);
 				if (bwCF == null) {
 					bwCF = stg.createSignalTransition(nameBwC + name, type, SignalTransition.Direction.MINUS, curContainer);
-					stg.connect(bwC1, bwCF);
-					stg.connect(bwCF, bwC0);
+					createConsumingArc(bwC1, bwCF, false);
+					createProducingArc(bwCF, bwC0, false);
 					setPosition(bwCF, x - 2.0, y + 2.0 - dy);
 					nodes.add(bwCF);
 				}

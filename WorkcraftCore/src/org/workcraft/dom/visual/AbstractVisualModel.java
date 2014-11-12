@@ -282,31 +282,31 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public static Point2D centralizeComponents(Collection<Node> components) {
-		// find weighted center
+		// Find weighted center
 		double deltaX = 0.0;
 		double deltaY = 0.0;
 		int num = 0;
-		for (Node n: components) {
-			if (n instanceof VisualTransformableNode) {
-				VisualTransformableNode tn = (VisualTransformableNode)n;
-				deltaX+= tn.getX();
-				deltaY+= tn.getY();
+		for (Node node: components) {
+			if (node instanceof VisualTransformableNode) {
+				VisualTransformableNode tn = (VisualTransformableNode)node;
+				deltaX += tn.getX();
+				deltaY += tn.getY();
 				num++;
 			}
 		}
 		if (num>0) {
-			deltaX /=num;
-			deltaY /=num;
+			deltaX /= num;
+			deltaY /= num;
 		}
-		// round numbers
+		// Round numbers
 		deltaX = Math.round(deltaX*2)/2;
 		deltaY = Math.round(deltaY*2)/2;
-		//
 
-		for (Node n: components) {
-			if (n instanceof VisualTransformableNode && !(n instanceof ControlPoint)) {
-				VisualTransformableNode tn = (VisualTransformableNode)n;
-				tn.setPosition(new Point2D.Double(tn.getX()-deltaX, tn.getY()-deltaY));
+		// Move components
+		for (Node node: components) {
+			if (node instanceof VisualTransformableNode && !(node instanceof ControlPoint)) {
+				VisualTransformableNode tn = (VisualTransformableNode)node;
+				tn.setPosition(new Point2D.Double(tn.getX() - deltaX, tn.getY() - deltaY));
 			}
 		}
 		return new Point2D.Double(deltaX, deltaY);
@@ -363,58 +363,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return Collections.unmodifiableSet(selection);
 	}
 
-	public Collection<Node> getOrderedCurrentLevelSelection() {
-		HashSet<Node> result = new HashSet<Node>();
-		for(Node node : getCurrentLevel().getChildren()) {
-			if (isGroupable(node) && selection.contains(node)) {
-				result.add(node);
-			}
-		}
-		return result;
-	}
-
+	@Override
 	public boolean isGroupable(Node node) {
 		return (node instanceof VisualNode);
 	}
 
-	public Collection<Node> getRecursiveSelection() {
-		HashSet<Node> result = new HashSet<Node>();
-		for (Node node : selection) {
-			if (node instanceof VisualNode) {
-				result.add(node);
-				result.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
-			}
-		}
-		return result;
-	}
-
-	public Collection<VisualConnection> getCurrentLevelConnections() {
-		return Hierarchy.getChildrenOfType(getCurrentLevel(), VisualConnection.class);
-	}
-
-	public Collection<Node> getGroupableCurrentLevelSelection() {
-		HashSet<Node> result = new HashSet<Node>();
-		Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection();
-        for (Node node : currentLevelSelection) {
-        	if (isGroupable(node) && !(node instanceof VisualConnection)) {
-            	result.add(node);
-            }
-        }
-        Collection<Node> recursiveSelection = getRecursiveSelection();
-		Collection<VisualConnection> currentLevelConnections = getCurrentLevelConnections();
-        for (VisualConnection connection : currentLevelConnections) {
-        	VisualComponent first = connection.getFirst();
-        	VisualComponent second = connection.getSecond();
-        	if (recursiveSelection.contains(first) && recursiveSelection.contains(second)) {
-        		result.add(connection);
-        	}
-        }
-		return result;
-	}
-
 	@Override
 	public void groupSelection() {
-		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
 			VisualGroup group = new VisualGroup();
 			getCurrentLevel().add(group);
@@ -426,13 +382,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@Override
 	public void groupPageSelection() {
-		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
 			PageNode pageNode = new PageNode();
 			getCurrentMathLevel().add(pageNode);
 			VisualPage page = new VisualPage(pageNode);
 			getCurrentLevel().add(page);
-			this.reparent(page, this, getCurrentLevel(), nodes);
+			reparent(page, this, getCurrentLevel(), nodes);
 			page.setPosition(centralizeComponents(nodes));
 			select(page);
 		}
@@ -441,7 +397,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public void ungroupSelection() {
 		ArrayList<Node> toSelect = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
+		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
 			if (node instanceof VisualGroup) {
 				VisualGroup group = (VisualGroup)node;
 				for(Node subNode : group.unGroup()) {
@@ -543,8 +499,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		MathModel mmodel = visualModel.getMathModel();
 
 		// find the closest container that has a referenced math node
-		VisualComponent vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
-		if (visualContainer instanceof VisualComponent) vis = (VisualComponent)visualContainer;
+		VisualComponent vis = null;
+		if (visualContainer instanceof VisualComponent) {
+			vis = (VisualComponent)visualContainer;
+		} else {
+			vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+		}
 
 		// get appropriate math container, it will be the target container for the math model
 		Container mathTargetContainer;

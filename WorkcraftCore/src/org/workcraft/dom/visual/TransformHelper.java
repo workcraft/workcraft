@@ -61,6 +61,10 @@ public class TransformHelper {
 		return getTransformToAncestor(node, Hierarchy.getRoot(node));
 	}
 
+	public static AffineTransform getTransformFromRoot(Node node) {
+		return getTransform(Hierarchy.getRoot(node), node);
+	}
+
 	public static AffineTransform getTransform(Node node1, Node node2) {
 		Node parent = Hierarchy.getCommonParent(node1, node2);
 		AffineTransform node1ToParent = getTransformToAncestor(node1, parent);

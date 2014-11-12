@@ -32,19 +32,17 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Set;
 
 import javax.swing.Icon;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
-import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -56,11 +54,11 @@ public class ConnectionTool extends AbstractTool {
 	static protected final Color validConnectionColor = Color.BLUE;
 	static protected final Color invalidConnectionColor = Color.RED;
 
-	protected boolean forbidConnectingArcs = true;
 	protected boolean forbidSelfLoops = true;
 
-	private Point2D mousePosition = null;
+	private Point2D firstPoint = null;
 	private VisualNode firstNode = null;
+	private Point2D currentPoint = null;
 	private VisualNode currentNode = null;
 	private String warningMessage = null;
 	private boolean mouseLeftFirstNode = false;
@@ -68,11 +66,10 @@ public class ConnectionTool extends AbstractTool {
 
 	private static Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
-	public ConnectionTool () {
+	public ConnectionTool() {
 	}
 
-	public ConnectionTool (boolean forbidConnectingArcs, boolean forbidSelfLoops) {
-		this.forbidConnectingArcs = forbidConnectingArcs;
+	public ConnectionTool(boolean forbidSelfLoops) {
 		this.forbidSelfLoops = forbidSelfLoops;
 	}
 
@@ -92,9 +89,10 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	protected void resetState(GraphEditor editor) {
-		mousePosition = null;
-		firstNode = null;
+		currentPoint = null;
 		currentNode = null;
+		firstPoint = null;
+		firstNode = null;
 		warningMessage = null;
 		mouseLeftFirstNode = false;
 		editor.getModel().selectNone();
@@ -102,14 +100,18 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	protected void updateState(GraphEditor editor) {
-		VisualNode node = (VisualNode) HitMan.hitTestForConnection(mousePosition, editor.getModel());
-		if (!forbidConnectingArcs || !(node instanceof VisualConnection)) {
+		VisualNode node = (VisualNode) HitMan.hitTestForConnection(currentPoint, editor.getModel());
+		if (isConnectable(node)) {
 			currentNode = node;
 			if (currentNode != firstNode) {
 				mouseLeftFirstNode = true;
 				warningMessage = null;
 			}
 		}
+	}
+
+	protected boolean isConnectable(Node node) {
+		return !(node instanceof VisualConnection);
 	}
 
 	@Override
@@ -127,17 +129,16 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-		if ((firstNode != null) && (mousePosition != null)) {
+		if ((firstNode != null) && (currentPoint != null)) {
 			g.setStroke(new BasicStroke((float)editor.getViewport().pixelSizeInUserSpace().getX()));
-			Point2D center = TransformHelper.transform(firstNode, TransformHelper.getTransformToRoot(firstNode)).getCenter();
 			Path2D path = new Path2D.Double();
-			path.moveTo(center.getX(), center.getY());
+			path.moveTo(firstPoint.getX(), firstPoint.getY());
 			if (controlPoints != null) {
 				for (Point2D point: controlPoints) {
 					path.lineTo(point.getX(), point.getY());
 				}
 			}
-			path.lineTo(mousePosition.getX(), mousePosition.getY());
+			path.lineTo(currentPoint.getX(), currentPoint.getY());
 			if (currentNode == null) {
 				g.setColor(incompleteConnectionColor);
 				g.draw(path);
@@ -157,14 +158,14 @@ public class ConnectionTool extends AbstractTool {
 
 	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
-		mousePosition = e.getPosition();
+		currentPoint = e.getPosition();
 		updateState(e.getEditor());
 		e.getEditor().repaint();
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
-		mousePosition = e.getPosition();
+		currentPoint = e.getPosition();
 		GraphEditor editor = e.getEditor();
 		updateState(editor);
 		if (e.getButton() == MouseEvent.BUTTON1) {
@@ -172,31 +173,32 @@ public class ConnectionTool extends AbstractTool {
 				if (firstNode != null) {
 					Set<Point2D> snaps = new HashSet<Point2D>();
 					if (controlPoints.isEmpty()) {
-						Point2D center = TransformHelper.transform(firstNode, TransformHelper.getTransformToRoot(firstNode)).getCenter();
-						snaps.add(center);
+						AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
+						Point2D p = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
+						snaps.add(p);
 					} else {
 						snaps.add(controlPoints.getLast());
 					}
-					Point2D snapPos = editor.snap(mousePosition, snaps);
+					Point2D snapPos = editor.snap(currentPoint, snaps);
 					controlPoints.add(snapPos);
 				}
 			} else {
 				if (firstNode == null) {
-					startConnection();
+					startConnection(editor);
 					editor.getWorkspaceEntry().setCanModify(false);
 				} else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
 					if (forbidSelfLoops) {
-						warningMessage = "Self-loops are not allowed";
+						warningMessage = "Self-loops are not allowed.";
 					} else if (!mouseLeftFirstNode) {
-						warningMessage = "Move the mouse outside this node before creating a self-loop";
+						warningMessage = "Move the mouse outside this node before creating a self-loop.";
 					}
 				} else if ((firstNode instanceof VisualGroup) || (currentNode instanceof VisualGroup)) {
-					warningMessage = "Connection with group element is not allowed";
+					warningMessage = "Connection with group element is not allowed.";
 				} else {
 					editor.getWorkspaceEntry().saveMemento();
-					finishConnection(e.getModel());
+					finishConnection(editor);
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-						startConnection();
+						startConnection(editor);
 					} else {
 						resetState(editor);
 					}
@@ -208,31 +210,39 @@ public class ConnectionTool extends AbstractTool {
 		editor.repaint();
 	}
 
-	private void startConnection() {
+	private void startConnection(GraphEditor editor) {
 		firstNode = currentNode;
+		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
+		if (firstNode instanceof VisualConnection) {
+			VisualConnection connection = (VisualConnection)firstNode;
+			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
+			Point2D currentPointInLocalSpace = rootToLocalTransform.transform(currentPoint, null);
+			Point2D nearestPointInLocalSpace = connection.getNearestPointOnConnection(currentPointInLocalSpace);
+			firstPoint = localToRootTransform.transform(nearestPointInLocalSpace, null);
+		} else {
+			firstPoint = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
+		}
 		currentNode = null;
 		warningMessage = null;
 		mouseLeftFirstNode = false;
 		controlPoints = new LinkedList<Point2D>();
 	}
 
-	private void finishConnection(VisualModel model) {
+	private void finishConnection(GraphEditor editor) {
 		try {
-			VisualConnection connection = model.connect(firstNode, currentNode);
-			AffineTransform rootToConnectionTransform = TransformHelper.getTransform(model.getRoot(), connection);
-			if (controlPoints != null) {
-				ConnectionGraphic graphic = connection.getGraphic();
-				if (graphic instanceof Polyline) {
-					Polyline polyline = (Polyline)graphic;
-					ListIterator<Point2D> pointIterator = controlPoints.listIterator(controlPoints.size());
-					// Iterate in reverse
-					while(pointIterator.hasPrevious()) {
-						Point2D point = pointIterator.previous();
-						rootToConnectionTransform.transform(point, point);
-						polyline.insertControlPointInSegment(point, 0);
-					}
-				}
+			if (firstNode instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)firstNode;
+				AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
+				vc.setSplitPoint(rootToLocalTransform.transform(firstPoint, null));
 			}
+			if (currentNode instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)currentNode;
+				AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
+				vc.setSplitPoint(rootToLocalTransform.transform(currentPoint, null));
+			}
+			VisualModel model = editor.getModel();
+			VisualConnection connection = model.connect(firstNode, currentNode);
+			ConnectionHelper.addControlPoints(connection, controlPoints);
 		} catch (InvalidConnectionException exeption) {
 			Toolkit.getDefaultToolkit().beep();
 		}

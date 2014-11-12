@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.util.Identifier;
 import org.workcraft.util.TwoWayMap;
 
@@ -52,11 +51,7 @@ public class UniqueNameManager implements NameManager {
 
 	@Override
 	public String getName(Node node) {
-		String name = nodes.getKey(node);
-		if (name == null) {
-			throw new NotFoundException("Node \"" + node.toString() + "\" was not issued a name");
-		}
-		return name;
+		return nodes.getKey(node);
 	}
 
 	@Override

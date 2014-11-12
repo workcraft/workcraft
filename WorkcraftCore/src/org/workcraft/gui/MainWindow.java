@@ -24,10 +24,13 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -70,6 +73,8 @@ import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.LayoutException;
@@ -79,6 +84,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -93,6 +99,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Tools;
@@ -103,6 +110,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
 	private static final String UILAYOUT_PATH = "./config/uilayout.xml";
+	private static final int VIEWPORT_MARGIN = 30;
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(Action e) {
@@ -483,6 +491,15 @@ public class MainWindow extends JFrame {
 			MainWindowActions.EDIT_COPY_ACTION.setEnabled(false);
 			MainWindowActions.EDIT_PASTE_ACTION.setEnabled(false);
 		}
+		MainWindowActions.VIEW_ZOOM_IN.setEnabled(enable);
+		MainWindowActions.VIEW_ZOOM_OUT.setEnabled(enable);
+		MainWindowActions.VIEW_ZOOM_DEFAULT.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_CENTER.setEnabled(enable);
+		MainWindowActions.VIEW_ZOOM_FIT.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_LEFT.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_UP.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_RIGHT.setEnabled(enable);
+		MainWindowActions.VIEW_PAN_DOWN.setEnabled(enable);
 	}
 
 	public ScriptedActionListener getDefaultActionListener() {
@@ -1195,54 +1212,45 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void forceRedraw() {
-		if (editorInFocus != null) {
-			// Redraw one pixel to force redrawing of the whole model. This is usually necessary
-			// to recalculate bounding boxes of children components and correctly estimate the
-			// bounding boxes of their parents.
-			editorInFocus.forceRedraw();
-		}
-	}
-
 	public void undo()  {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().undo();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void redo() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().redo();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void cut() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().cut();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void copy() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().copy();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void paste() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().paste();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
 	public void delete() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().delete();
-			forceRedraw();
+			editorInFocus.forceRedraw();
 		}
 	}
 
@@ -1290,6 +1298,84 @@ public class MainWindow extends JFrame {
 				} catch (OperationCancelledException e) {
 				}
 			}
+		}
+	}
+
+	public void zoomIn() {
+		editorInFocus.getViewport().zoom(1);
+		editorInFocus.repaint();
+	}
+
+	public void zoomOut() {
+		editorInFocus.getViewport().zoom(-1);
+		editorInFocus.repaint();
+	}
+
+	public void zoomDefault() {
+		editorInFocus.getViewport().scaleDefault();
+		editorInFocus.repaint();
+	}
+
+	public void zoomFit() {
+		Viewport viewport = editorInFocus.getViewport();
+		Rectangle2D viewportBox = viewport.getShape();
+		VisualModel model = editorInFocus.getModel();
+		Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+		if (!model.getSelection().isEmpty()) {
+			nodes.retainAll(model.getSelection());
+		}
+		Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+		if ((modelBox != null) && (viewportBox != null)) {
+			double ratioX = 1.0;
+			double ratioY = 1.0;
+			if (viewportBox.getHeight() > VIEWPORT_MARGIN) {
+				ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getHeight();
+				ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getHeight();
+			}
+			double scaleX = ratioX / modelBox.getWidth();
+			double scaleY = ratioY / modelBox.getHeight();
+			double scale = 2.0 * Math.min(scaleX, scaleY);
+			viewport.scale(scale);
+			panCenter();
+		}
+	}
+
+	public void panLeft() {
+		editorInFocus.getViewport().pan(20, 0);
+		editorInFocus.repaint();
+	}
+
+	public void panUp() {
+		editorInFocus.getViewport().pan(0, 20);
+		editorInFocus.repaint();
+	}
+
+	public void panRight() {
+		editorInFocus.getViewport().pan(-20, 0);
+		editorInFocus.repaint();
+	}
+
+	public void panDown() {
+		editorInFocus.getViewport().pan(0, -20);
+		editorInFocus.repaint();
+	}
+
+	public void panCenter() {
+		Viewport viewport = editorInFocus.getViewport();
+		Rectangle2D viewportBox = viewport.getShape();
+		VisualModel model = editorInFocus.getModel();
+		Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+		if (!model.getSelection().isEmpty()) {
+			nodes.retainAll(model.getSelection());
+		}
+		Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+		if ((modelBox != null) && (viewportBox != null)) {
+			int viewportCenterX = (int)Math.round(viewportBox.getCenterX());
+			int viewportCenterY = (int)Math.round(viewportBox.getCenterY());
+			Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
+			Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
+			viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
+			editorInFocus.repaint();
 		}
 	}
 
