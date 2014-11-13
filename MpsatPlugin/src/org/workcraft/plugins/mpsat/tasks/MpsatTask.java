@@ -28,22 +28,22 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 
 		ArrayList<String> command = new ArrayList<String>();
+		// Name of the executable
 		command.add(MpsatUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix());
-
-		for (String arg : MpsatUtilitySettings.getExtraArgs().split(" ")) {
+		// Built-in arguments
+		for (String arg : args) {
+			command.add(arg);
+		}
+		// Extra arguments
+		for (String arg : MpsatUtilitySettings.getExtraArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
-
-		for (String arg : args) {
-			command.add(arg);
-		}
-
+		// Input file argument
 		command.add(inputFileName);
 
 		File workingDir = FileUtils.createTempDirectory("mpsat_");
-
 		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDir);
 
 		Result<? extends ExternalProcessResult> res = externalProcessTask.run(monitor);
