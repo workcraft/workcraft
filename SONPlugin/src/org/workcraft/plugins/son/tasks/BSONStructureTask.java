@@ -363,9 +363,10 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 					if(getBSONAlg().getAbstractGroups(c).size() > 1){
 						ArrayList<TransitionNode> subResult = new ArrayList<TransitionNode>();
 						for(Condition post : getRelationAlg().getPostBhvSet(c)){
-							if(!getRelationAlg().isFinal(post))
+							if(!getRelationAlg().isFinal(post) && !getRelationAlg().getPostPNSet(post).isEmpty())
 								subResult.add((TransitionNode)getRelationAlg().getPostPNSet(post).iterator().next());
 						}
+						//check if they are in synchronous cycle
 						if(subResult.size() > 1){
 							Collection<Node> nodes = new HashSet<Node>();
 							nodes.addAll(subResult);

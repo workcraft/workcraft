@@ -9,7 +9,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class CSONCycleAlg extends ONCycleAlg{
 
@@ -107,18 +106,19 @@ public class CSONCycleAlg extends ONCycleAlg{
 				}
 				for(Node post: net.getPostset(nodes.get(index))){
 					if(((post instanceof ChannelPlace) && net.getSONConnectionType(post, nodes.get(index)) == Semantics.ASYNLINE)){
-						TransitionNode t = (TransitionNode)net.getPostset(post).iterator().next();
-						result[index].add(nodeIndex.get(t));
-					}
+						for(Node t : net.getPostset(post))
+							result[index].add(nodeIndex.get(t));
+				}
 					if((post instanceof ChannelPlace) && (net.getSONConnectionType(nodes.get(index), post) == Semantics.SYNCLINE)){
-						TransitionNode t = (TransitionNode)net.getPostset(post).iterator().next();
-						result[index].add(nodeIndex.get(t));
+						for(Node t : net.getPostset(post)){
+							result[index].add(nodeIndex.get(t));
 
-						int index2 = nodeIndex.get(t);
-						if(result[index2] == null){
-							result[index2] = new ArrayList<Integer>();
+							int index2 = nodeIndex.get(t);
+							if(result[index2] == null){
+								result[index2] = new ArrayList<Integer>();
+							}
+							result[index2].add(index);
 						}
-						result[index2].add(index);
 					}
 				}
 			}
@@ -130,7 +130,7 @@ public class CSONCycleAlg extends ONCycleAlg{
 	}
 
 	/**
-	 * get synchronous cycle for a set of node.
+	 * get synchronous cycle for a set of transition node.
 	 */
 	public Collection<Path> syncCycleTask(Collection<Node> nodes){
 		List<Path> result = new ArrayList<Path>();

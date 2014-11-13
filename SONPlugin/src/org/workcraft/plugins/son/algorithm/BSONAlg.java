@@ -98,7 +98,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get related behavioral group of a set of conditions (phase inputs or outputs)
+	 * get behavioral group of a set of conditions (phase inputs or outputs)
 	 */
 	public ONGroup getBhvGroup(Collection<Condition> conditions){
 		for(ONGroup group : net.getGroups())

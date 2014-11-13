@@ -480,12 +480,17 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		for(ONGroup abstractGroup : bsonAlg.getAbstractGroups(net.getGroups())){
 			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
 				if(c instanceof Condition){
+					//set initial marking for abstract groups
 					result.put((Condition)c, true);
 					((Condition) c).setMarked(true);
+					//get corresponding behavioural groups
 					Collection<ONGroup> bhvGroups = bsonAlg.getBhvGroups((Condition)c);
 					if(bhvGroups.size() == 1){
 						for(ONGroup bhvGroup : bhvGroups){
+							//get initial state of a behavioural group
 							Collection<Node> initial = relationAlg.getInitial(bhvGroup.getComponents());
+							//if all corresponding abstact conditions are marked, set tokens
+							boolean isMarked = true;
 							if(phases.get(c).containsAll(initial))
 								for(Node c1 : relationAlg.getInitial(bhvGroup.getComponents())){
 									result.put((Condition)c1, true);
@@ -498,7 +503,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 						}
 					}else{
 						result.clear();
-						throw new InvalidStructureException("bhv group size");
+						throw new InvalidStructureException("behavioural group size");
 					}
 				}
 			}
