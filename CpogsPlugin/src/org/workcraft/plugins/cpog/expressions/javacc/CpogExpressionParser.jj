@@ -78,10 +78,7 @@ public class CpogExpressionParser {
   
   CpogFormula sequence(CpogFormula a, CpogFormula b)
   {
-    CpogFormula result = worker.sequence(a, b);
-    if (globalBool != "")
-    {		vars.setSequenceCondition(result, globalBool);
-	}	
+    CpogFormula result = worker.sequence(a, b);	vars.setSequenceCondition(result, globalBool);
     return result;
   }
   

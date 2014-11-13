@@ -516,6 +516,7 @@ public class CpogParsingTool {
 		 int index;
 		 for (ArcCondition a : arcConditionList)
 			{
+			 if (a.getBoolForm().compareTo("") != 0) {
 				index = 0;
 					ArrayList<String> vertexList = a.getVertexList();
 					Iterator<String> it = vertexList.iterator();
@@ -534,7 +535,6 @@ public class CpogParsingTool {
 							int ind = 0;
 							if (first.contains("("))
 							{
-
 								first = first.replace("(", "");
 								first = first.replace(")", "");
 								while(first.contains("+"))
@@ -564,8 +564,26 @@ public class CpogParsingTool {
 								for (String vert2 : verts2)
 								{
 									arc = (VisualArc) visualCpog.getConnection(vertexMap.get(vert1), vertexMap.get(vert2));
+									ArrayList<VisualArc> dupArcs = new ArrayList<VisualArc>();
 									if (arc != null)
 									{
+										for (Connection con : visualCpog.getConnections(vertexMap.get(vert1))) {
+											if (con.getSecond().equals(vertexMap.get(vert2))) {
+												dupArcs.add((VisualArc) con);
+											}
+										}
+										if (dupArcs.size() > 1)
+										{
+											for (VisualArc va : dupArcs) {
+												if (FormulaToString.toString(va.getCondition()).compareTo("1") != 0)
+												{
+													dupArcs.remove(va);
+												} else
+												{
+													visualCpog.remove(va);
+												}
+											}
+										}
 										try {
 											if (FormulaToString.toString(arc.getCondition()).compareTo("1") == 0)
 											{
@@ -585,6 +603,7 @@ public class CpogParsingTool {
 						}
 						index++;
 					}
+			 }
 				}
 	 }
 

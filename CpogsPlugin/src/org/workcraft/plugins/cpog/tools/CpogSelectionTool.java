@@ -10,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -223,18 +224,24 @@ public class CpogSelectionTool extends SelectionTool {
 
 		CpogFormula f = null;
 		GraphFunc<String, CpogFormula> PGF = null;
+		final HashMap<String, VisualVertex> localVertices = new HashMap<String, VisualVertex>();
 		try {
 			f = CpogExpressionParser.parse(text,
 					PGF = new GraphFunc<String, CpogFormula>() {
 
 				String name;
 				boolean ref;
+
 				@Override
 				public CpogFormula eval(String label) {
-					if (vertexMap.containsKey(label))
-						return vertexMap.get(label);
-
 					VisualVertex vertex = null;
+
+					if (vertexMap.containsKey(label)) {
+						vertex = vertexMap.get(label);
+						localVertices.put(label, vertex);
+						return vertex; }
+
+					vertex = null;
 
 					// TODO: Optimise!
 
@@ -242,6 +249,7 @@ public class CpogSelectionTool extends SelectionTool {
 						for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
 							if (v.getLabel().equals(label)) {
 								vertex = v;
+								localVertices.put(label, vertex);
 								break;
 							}
 
@@ -249,6 +257,7 @@ public class CpogSelectionTool extends SelectionTool {
 						vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
 						vertex.setLabel(label);
 						vertexMap.put(label, vertex);
+						localVertices.put(label, vertex);
 					}
 					return vertex;
 				}
@@ -297,6 +306,7 @@ public class CpogSelectionTool extends SelectionTool {
 						for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
 							if (v.getLabel().equals(label)) {
 								vertex = v;
+								localVertices.put(label, vertex);
 								break;
 							}
 
@@ -304,6 +314,7 @@ public class CpogSelectionTool extends SelectionTool {
 						vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
 						vertex.setLabel(label);
 						vertexMap.put(label, vertex);
+						localVertices.put(label, vertex);
 					}
 
 					if (boolExpression != "")
@@ -344,7 +355,8 @@ public class CpogSelectionTool extends SelectionTool {
 
 				@Override
 				public void setSequenceCondition(CpogFormula formula, String boolForm) {
-					arcConditionList.add(new ArcCondition(formula, boolForm));
+					ArcCondition a = new ArcCondition(formula, boolForm);
+					arcConditionList.add(a);
 				}
 
 				@Override
@@ -437,9 +449,41 @@ public class CpogSelectionTool extends SelectionTool {
 				visualCpog.groupSelection(PGF.getGraphName());
 			}
 		} else {
-			int index = text.indexOf("= ");
-			text = text.substring(index + 2);
-			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, text);
+			String normalForm = "";
+			Collection<VisualVertex> verts = localVertices.values();
+			Iterator<VisualVertex> it= verts.iterator();
+			VisualVertex v;
+			while (it.hasNext()) {
+				v = it.next();
+				if (FormulaToString.toString(v.getCondition()).compareTo("1") == 0) {
+					normalForm = normalForm + v.getLabel();
+				} else {
+					normalForm = normalForm + "[" + FormulaToString.toString(v.getCondition()) + "]" + v.getLabel();
+				}
+				if (it.hasNext()) {
+					normalForm = normalForm + " + ";
+				}
+			}
+
+			Iterator<ArcCondition> it1 = arcConditionList.iterator();
+			ArcCondition ac;
+			if (!arcConditionList.isEmpty()) {
+				normalForm = normalForm + " + ";
+			}
+			while (it1.hasNext()) {
+				ac = it1.next();
+				if (ac.getBoolForm().compareTo("") == 0) {
+					normalForm = normalForm + " " + CpogFormulaToString.toString(ac.getFormula());
+				} else {
+					normalForm = normalForm + "[" + ac.getBoolForm() + "](" + CpogFormulaToString.toString(ac.getFormula()) + ")";
+				}
+				if (it1.hasNext()) {
+					normalForm = normalForm + " + ";
+				}
+			}
+
+			System.out.println("NormalForm: " + normalForm);
+			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, normalForm);
 			visualCpog.remove(visualCpog.getSelection());
 		}
 

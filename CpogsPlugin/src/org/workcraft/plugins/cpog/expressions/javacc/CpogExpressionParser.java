@@ -70,10 +70,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
   CpogFormula sequence(CpogFormula a, CpogFormula b)
   {
     CpogFormula result = worker.sequence(a, b);
-    if (globalBool != "")
-    {
-                vars.setSequenceCondition(result, globalBool);
-        }
+        vars.setSequenceCondition(result, globalBool);
     return result;
   }
 
