@@ -51,18 +51,18 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 		}
 
 		for(Block block : blocks){
-			logger.info("Initialising block " +net.getName(block)+ " ...");
+			logger.info("Initialising block " +net.getNodeReference(block)+ " ...");
 			Collection<Node> inputs = getTSONAlg().getBlockInputs(block);
 			Collection<Node> outputs = getTSONAlg().getBlockOutputs(block);
 
 			Collection<String> inputNames = new ArrayList<String>();
 			for(Node node : inputs)
-				inputNames.add(" "+net.getName(node) + " ");
+				inputNames.add(" "+net.getNodeReference(node) + " ");
 			logger.info("inputs = "+ inputNames.toString() + "");
 
 			Collection<String> outputNames = new ArrayList<String>();
 			for(Node node : outputs)
-				outputNames.add(" "+net.getName(node) + " ");
+				outputNames.add(" "+net.getNodeReference(node) + " ");
 			logger.info("outputs = "+ outputNames.toString() + " ");
 
 		//Causally Precede task result
@@ -75,12 +75,12 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 					errNumber = errNumber + result3.size();
 					for(Node node : result3)
 						logger.error("ERROR : Incorrect causally relation, the input node "+
-					net.getName(node) + "(" + net.getComponentLabel(node) + ")" +" must causally precede all outputs." );
+					net.getNodeReference(node) + "(" + net.getComponentLabel(node) + ")" +" must causally precede all outputs." );
 				}else
 					logger.info("Correct causal relation between inputs and outputs.");
 			}else{
 				warningNumber++;
-				logger.info("Warning : Block contians cyclic path, cannot run causally precede task: " + net.getName(block));
+				logger.info("Warning : Block contians cyclic path, cannot run causally precede task: " + net.getNodeReference(block));
 			}
 		}
 

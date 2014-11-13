@@ -10,11 +10,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -75,12 +73,13 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		logger.info("Running behavioural groups structure task...");
 		Collection<ChannelPlace> task2 = groupTask2(groups);
 		relationErrors.addAll(task2);
+		errNumber = errNumber + task2.size();
 		if(relationErrors.isEmpty())
 			logger.info("Correct behavioural relation");
 		else{
 			hasErr = true;
 			for(ChannelPlace cPlace : task2){
-				logger.error("ERROR: Invalid communication relation (A/SYN communication between abstract and behavioural ONs)" + net.getName(cPlace));
+				logger.error("ERROR: Invalid communication relation (A/SYN communication between abstract and behavioural ONs)" + net.getNodeReference(cPlace));
 			}
 		}
 		logger.info("Behavioural groups structure task complete.");
@@ -90,18 +89,20 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		Collection<ONGroup> abstractGroups = getAbstractGroups(groups);
 		Collection<Condition> task3 = phaseTask1(abstractGroups);
 		relationErrors.addAll(task3);
+		errNumber = errNumber + task3.size();
 
 			if(!task3.isEmpty()){
 				hasErr = true;
 				for(Condition c : task3)
-					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
+					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getNodeReference(c)+ "(" + net.getComponentLabel(c) + ")  ");
 			}else{
 				Collection<Condition> task4 =phaseTask2(abstractGroups);
 				relationErrors.addAll(task4);
+				errNumber = errNumber + task4.size();
 				if(!task4.isEmpty()){
 					hasErr = true;
 					for(Node c : task4)
-						logger.error("ERROR: Invalid Phase (phase does not reach initial/final state): " + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
+						logger.error("ERROR: Invalid Phase (phase does not reach initial/final state): " + net.getNodeReference(c)+ "(" + net.getComponentLabel(c) + ")  ");
 				}
 			}
 			if(!hasErr){
@@ -111,12 +112,13 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 						result = this.phaseTask3(getBSONAlg().getPhase(c), c);
 							if(result!=""){
 								hasErr = true;
-								logger.error("ERROR:"+ result + net.getName(c)+ "(" + net.getComponentLabel(c) + ")  ");
+								logger.error("ERROR:"+ result + net.getNodeReference(c)+ "(" + net.getComponentLabel(c) + ")  ");
 								relationErrors.add(c);
+								errNumber++;
 					}
 				}
 			}else{
-				logger.info("WARNING : Relation error exist, cannot run valid phase checking task." );
+				logger.info("WARNING : Relation error exist, cannot run phase structure checking task." );
 				warningNumber++;
 			}
 
@@ -130,7 +132,6 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		logger.info("Running abstract events relation task...");
 		Collection<ArrayList<TransitionNode>> absEventsTask = SyncAbstractEventsTask(groups);
 		if(!absEventsTask.isEmpty()){
-			hasErr = true;
 			for(ArrayList<TransitionNode> list : absEventsTask){
 				List<String> output = new ArrayList<String>();
 				for (Node node : list){
@@ -138,7 +139,11 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				}
 				logger.info("Error: Invalid abtract events relation, " +
 						"events " + output + " are not in synchronous relation");
+				relationErrors.addAll(list);
 			}
+			errNumber = errNumber + absEventsTask.size();
+		}else{
+			logger.info("Abstract events relation correct");
 		}
 
 		logger.info("Model strucuture and components relation task complete.");
@@ -168,7 +173,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			warningNumber++;
 		}
 
-		errNumber = errNumber + relationErrors.size() + groupErrors.size();
+		errNumber = errNumber + groupErrors.size();
 	}
 
 	private Collection<ONGroup> groupTask1(Collection<ONGroup> groups){
@@ -299,7 +304,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				}
 			if (minNodeInPath>1){
 				for(Node n : minimal)
-					result.add(net.getName(n));
+					result.add(net.getNodeReference(n));
 				return  "Minimal phase" +result.toString() + "is not a cut: ";
 			}
 
@@ -310,17 +315,17 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				}
 			if (maxNodeInPath>1){
 				for(Node n : maximal)
-					result.add(net.getName(n));
+					result.add(net.getNodeReference(n));
 				return "Maximal phase" +result.toString() + "is not a cut: ";
 			}
 			if (!hasMinPhaseNode){
 				for(Node n : minimal)
-					result.add(net.getName(n));
+					result.add(net.getNodeReference(n));
 				 return  "Minimal phase" +result.toString() + "is not a cut: ";
 			}
 			if (!hasMaxPhaseNode){
 				for(Node n : maximal)
-					result.add(net.getName(n));
+					result.add(net.getNodeReference(n));
 				return "Maximal phase" +result.toString() + "is not a cut: ";
 			}
 		}
@@ -334,9 +339,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 			if(!preMaximal.containsAll(minimal)){
 				if(!getRelationAlg().getFinal(preBhvGroup.getComponents()).containsAll(preMaximal))
-					return "Invalid phase joint (not match Max("+ net.getName(pre) + ")): ";
+					return "Invalid phase joint (not match Max("+ net.getNodeReference(pre) + ")): ";
 				if(!getRelationAlg().getInitial(bhvGroup.getComponents()).containsAll(minimal)){
-					return "Invalid phase joint (not match Max("+ net.getName(pre) + ")): ";
+					return "Invalid phase joint (not match Max("+ net.getNodeReference(pre) + ")): ";
 				}
 			}
 		}
@@ -365,7 +370,14 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 							Collection<Node> nodes = new HashSet<Node>();
 							nodes.addAll(subResult);
 							CSONCycleAlg cson = new CSONCycleAlg(net);
-							if(cson.syncCycleTask(nodes).isEmpty())
+							boolean contains = false;
+							for(Path cycle : cson.syncCycleTask(nodes)){
+								if(cycle.containsAll(nodes)){
+									contains = true;
+									break;
+								}
+							}
+							if(!contains)
 								result.add(subResult);
 						}
 					}

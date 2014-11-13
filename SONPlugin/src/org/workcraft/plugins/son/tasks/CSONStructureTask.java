@@ -68,11 +68,11 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 			hasErr = true;
 			errNumber = errNumber + relationErrors.size();
 			for(Node cPlace : task1)
-				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  : " +
+				logger.error("ERROR : Incorrect channel place relation: " + net.getNodeReference(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  : " +
 						"input/output size > 1");
 
 			for(Node cPlace : task2)
-				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  :" +
+				logger.error("ERROR : Incorrect communication types: " + net.getNodeReference(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  :" +
 						"different input and output connection types");
 		}
 

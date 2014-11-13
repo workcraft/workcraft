@@ -3,6 +3,7 @@ package org.workcraft.plugins.son.algorithm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -217,8 +218,12 @@ public class RelationAlgorithm{
 		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(Node node : net.getPreset(e)){
 			if((node instanceof ChannelPlace) && net.getSONConnectionType(node, e) == Semantics.ASYNLINE){
-				TransitionNode node2 = (TransitionNode)net.getPreset(node).iterator().next();
-				result.add(node2);
+
+				Iterator<Node> it = net.getPreset(node).iterator();
+
+				while(it.hasNext() && it.next() instanceof TransitionNode){
+					result.add((TransitionNode)it);
+				}
 			}
 		}
 		return result;

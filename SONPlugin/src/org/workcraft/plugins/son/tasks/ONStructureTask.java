@@ -80,7 +80,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 				errNumber = errNumber + task1.size();
 				for(Node node : task1){
 					relationErrors.add(node);
-					logger.error("ERROR : Incorrect initial state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
+					logger.error("ERROR : Incorrect initial state: " + net.getNodeReference(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
@@ -93,7 +93,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 				errNumber = errNumber + task2.size();
 				for(Node node : task2){
 					relationErrors.add(node);
-					logger.error("ERROR : Incorrect final state: " + net.getName(node) + "(" + net.getComponentLabel(node) + ")  ");
+					logger.error("ERROR : Incorrect final state: " + net.getNodeReference(node) + "(" + net.getComponentLabel(node) + ")  ");
 				}
 			}
 
@@ -108,11 +108,11 @@ public class ONStructureTask extends AbstractStructuralVerification{
 				errNumber = errNumber + task3.size()+ task4.size();
 				for(Node condition : task3){
 					relationErrors.add(condition);
-					logger.error("ERROR : Post set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
+					logger.error("ERROR : Post set nodes in conflict: " + net.getNodeReference(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 					}
 				for(Node condition : task4){
 					relationErrors.add(condition);
-					logger.error("ERROR : Pre set nodes in conflict: " + net.getName(condition) + "(" + net.getComponentLabel(condition) + ")  ");
+					logger.error("ERROR : Pre set nodes in conflict: " + net.getNodeReference(condition) + "(" + net.getComponentLabel(condition) + ")  ");
 				}
 			}
 			logger.info("Components relation task complete.");

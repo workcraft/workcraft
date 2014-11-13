@@ -74,7 +74,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
-import org.workcraft.plugins.son.gui.ParallelSimDialog;
+import org.workcraft.plugins.son.gui.ParallelSimuDialog;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
@@ -930,10 +930,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 				}else{
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(
-							this.getFramework().getMainWindow(),
+					ParallelSimuDialog dialog = new ParallelSimuDialog(
+							getFramework().getMainWindow(),
 							net, possibleFires, minFires, maxFires,
-							selected, reverse);
+							selected, reverse, sync);
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
 
@@ -968,10 +968,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					executeEvent(e.getEditor(),fireList);
 				} else {
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(
+					ParallelSimuDialog dialog = new ParallelSimuDialog(
 							this.getFramework().getMainWindow(),
 							net, possibleFires, maxFires, minFires,
-							selected, reverse);
+							selected, reverse, sync);
 
 					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
 					dialog.setVisible(true);
@@ -1062,12 +1062,12 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					Node event2 = null;
 					if (branchTrace.canProgress()) {
 						Step step = branchTrace.get(branchTrace.getPosition());
-						if (step.contains(net.getName(event)))
-							event2 = net.getNodeByReference(net.getName(event));
+						if (step.contains(net.getNodeReference(event)))
+							event2 = net.getNodeByReference(net.getNodeReference(event));
 					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
 						Step step = mainTrace.get(mainTrace.getPosition());
-						if (step.contains(net.getName(event)))
-							event2 = net.getNodeByReference(net.getName(event));
+						if (step.contains(net.getNodeReference(event)))
+							event2 = net.getNodeByReference(net.getNodeReference(event));
 					}
 
 

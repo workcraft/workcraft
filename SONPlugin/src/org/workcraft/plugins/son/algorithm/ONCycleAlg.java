@@ -49,10 +49,6 @@ public class ONCycleAlg{
 	@SuppressWarnings("unchecked")
 	public List<Integer>[] createGraph(List<Node> nodes){
 		List<Integer>[] result = new List[nodes.size()];
-		System.out.println("*************");
-		for(Node node: nodes){
-			System.out.println("node " + net.getNodeReference(node));
-		}
 		LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
 		for(int i = 0; i < nodes.size(); i++){
 			nodeIndex.put(nodes.get(i), i);
