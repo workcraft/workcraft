@@ -74,7 +74,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
-import org.workcraft.plugins.son.gui.ParallelSimuDialog;
+import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
@@ -483,27 +483,30 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					//set initial marking for abstract groups
 					result.put((Condition)c, true);
 					((Condition) c).setMarked(true);
-					//get corresponding behavioural groups
-					Collection<ONGroup> bhvGroups = bsonAlg.getBhvGroups((Condition)c);
-					if(bhvGroups.size() == 1){
-						for(ONGroup bhvGroup : bhvGroups){
-							//get initial state of a behavioural group
-							Collection<Node> initial = relationAlg.getInitial(bhvGroup.getComponents());
-							//if all corresponding abstact conditions are marked, set tokens
-							boolean isMarked = true;
-							if(phases.get(c).containsAll(initial))
-								for(Node c1 : relationAlg.getInitial(bhvGroup.getComponents())){
-									result.put((Condition)c1, true);
-									((Condition) c1).setMarked(true);
-									}
-							else{
-								result.clear();
-								throw new InvalidStructureException("phase");
-								}
+				}
+			}
+		}
+
+		//get corresponding behavioural groups
+		for(ONGroup bhvGroup : bsonAlg.getBhvGroups(net.getGroups())){
+			//get initial state of a behavioural group
+			Collection<Node> initial = relationAlg.getInitial(bhvGroup.getComponents());
+			//if all corresponding abstact conditions are marked, set tokens
+			if(!initial.isEmpty()){
+				//all conditions in initial state must have the same abstract conditions,
+				//otherwise there is structure error.
+				Condition bhvCondition = (Condition)initial.iterator().next();
+				boolean isMarked = true;
+				for(Condition absCondition : bsonAlg.getAbstractConditions(bhvCondition))
+					if(relationAlg.isInitial(absCondition) && !absCondition.isMarked()){
+						isMarked = false;
+					}
+				if(isMarked){
+					for(Node c : initial){
+						if(c instanceof Condition){
+							result.put((Condition)c, true);
+							((Condition) c).setMarked(true);
 						}
-					}else{
-						result.clear();
-						throw new InvalidStructureException("behavioural group size");
 					}
 				}
 			}
@@ -935,7 +938,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 				}else{
 					e.getEditor().requestFocus();
-					ParallelSimuDialog dialog = new ParallelSimuDialog(
+					ParallelSimDialog dialog = new ParallelSimDialog(
 							getFramework().getMainWindow(),
 							net, possibleFires, minFires, maxFires,
 							selected, reverse, sync);
@@ -973,7 +976,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					executeEvent(e.getEditor(),fireList);
 				} else {
 					e.getEditor().requestFocus();
-					ParallelSimuDialog dialog = new ParallelSimuDialog(
+					ParallelSimDialog dialog = new ParallelSimDialog(
 							this.getFramework().getMainWindow(),
 							net, possibleFires, maxFires, minFires,
 							selected, reverse, sync);

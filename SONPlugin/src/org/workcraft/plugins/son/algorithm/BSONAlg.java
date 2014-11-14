@@ -97,6 +97,56 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	private Collection<Condition> Max(Node node){
+		Collection<Condition> result = new HashSet<Condition>();
+
+		if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
+			result.addAll(getPostBhvSet((Condition)node));
+		}
+		else{
+
+			Collection<Node> postPN = getPostPNSet(node);
+
+			if(!postPN.isEmpty()){
+				for(Node post : postPN)
+					result.addAll(Max(post));
+			}
+
+		}
+		return result;
+	}
+
+	private Collection<Condition> Min(Node node){
+		Collection<Condition> result = new HashSet<Condition>();
+
+		if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
+			result.addAll(getPostBhvSet((Condition)node));
+		}
+		else{
+			Collection<Node> prePN = getPrePNSet(node);
+
+			if(!prePN.isEmpty()){
+				for(Node pre : prePN)
+					result.addAll(Min(pre));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * get abstract conditions for a node
+	 */
+	public Collection<Condition> getAbstractConditions(Node node){
+		Collection<Condition> result = new HashSet<Condition>();
+		Collection<Condition> min = Min(node);
+		Collection<Condition> max = Max(node);
+		for(Condition c : max){
+			if(min.contains(c))
+				result.add(c);
+		}
+		return result;
+	}
+
 	/**
 	 * get behavioral group of a set of conditions (phase inputs or outputs)
 	 */
@@ -108,7 +158,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get corresponding behavioral Groups of a given abstract condition
+	 * get corresponding behavioral groups for a given abstract condition
 	 */
 	public Collection<ONGroup> getBhvGroups(Condition c){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -121,11 +171,11 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get corresponding abstract Groups of a given behavioral condition
+	 * get corresponding abstract Groups for a given final behavioral condition
 	 */
-	public Collection<ONGroup> getAbstractGroups(Condition c){
+	public Collection<ONGroup> getAbstractGroups(Condition fin){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
-		for(SONConnection con : net.getOutputSONConnections(c))
+		for(SONConnection con : net.getOutputSONConnections(fin))
 			if(con.getSemantics() == Semantics.BHVLINE)
 				for(ONGroup group : net.getGroups())
 					if(group.getConditions().contains(con.getSecond()))

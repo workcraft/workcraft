@@ -182,7 +182,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PN-based(petri net) pre-conditions of a given condition
+	 * get all PN-based(petri net) pre-conditions for a given condition
 	 */
 	public Collection<Condition> getPrePNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
@@ -197,7 +197,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PN-based post-conditions of a given condition
+	 * get all PN-based post-conditions for a given condition
 	 */
 	public Collection<Condition> getPostPNCondition(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
@@ -212,7 +212,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all asynchronous (Communication-SON) pre-events of a given event node
+	 * get all asynchronous (Communication-SON) pre-events for a given event node
 	 */
 	public Collection<TransitionNode> getPreAsynEvents (TransitionNode e){
 		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
@@ -230,7 +230,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all asynchronous (Communication-SON) post-events of a given event node
+	 * get all asynchronous (Communication-SON) post-events for a given event node
 	 */
 	public Collection<TransitionNode> getPostAsynEvents (TransitionNode e){
 		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
@@ -247,7 +247,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all asynchronous and synchronous (Communication-SON) pre-event of a given event or collapsed block
+	 * get all asynchronous and synchronous (Communication-SON) pre-event for a given event or collapsed block
 	 */
 	public Collection<TransitionNode> getPreASynEvents(TransitionNode node){
 		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
@@ -277,7 +277,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all asynchronous and synchronous(Communication-SON) post-event of a given event or block
+	 * get all asynchronous and synchronous(Communication-SON) post-event for a given event or block
 	 */
 	public Collection<TransitionNode> getPostASynEvents(TransitionNode node){
 		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
@@ -307,7 +307,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PRE-conditions (PN and CSON-based) of a given event or block.
+	 * get all PRE-conditions (PN and CSON-based) for a given event or block.
 	 */
 	public Collection<Condition> getPREset(TransitionNode e){
 		Collection<Condition> result = new ArrayList<Condition>();
@@ -343,7 +343,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all POST-conditions (PN and CSON-based) of a given event or block.
+	 * get all POST-conditions (PN and CSON-based) for a given event or block.
 	 */
 	public Collection<Condition> getPOSTset(TransitionNode e){
 		Collection<Condition> result = new ArrayList<Condition>();
@@ -380,7 +380,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PN-based preset of a given node.
+	 * get all PN-based preset for a given node.
 	 */
 	public Collection<Node> getPrePNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
@@ -392,7 +392,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all PN-based postset of a given node.
+	 * get all PN-based postset for a given node.
 	 */
 	public Collection<Node> getPostPNSet(Node node){
 		Collection<Node> result = new ArrayList<Node>();
@@ -404,7 +404,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all Bhv-based postset of a given condition.
+	 * get all Bhv-based postset for a given condition.
 	 */
 	public Collection<Condition> getPostBhvSet(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();
@@ -416,7 +416,7 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * get all Bhv-based preset of a given condition.
+	 * get all Bhv-based preset for a given condition.
 	 */
 	public Collection<Condition> getPreBhvSet(Condition c){
 		Collection<Condition> result = new ArrayList<Condition>();

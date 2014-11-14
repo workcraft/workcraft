@@ -18,6 +18,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
@@ -61,8 +62,9 @@ public class TestTool extends AbstractTool implements Tool{
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
+		abtreactConditionTest(net);
 		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
-		syncCycleTest(net);
+		//syncCycleTest(net);
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
 		//connectionTypeTest(net, vnet);
@@ -108,6 +110,16 @@ public class TestTool extends AbstractTool implements Tool{
 			message = "adfa";
 			throw new InvalidConnectionException(message);
 		}
+	}
+
+	private void abtreactConditionTest(SON net){
+		BSONAlg alg = new BSONAlg(net);
+		for(Node node : net.getComponents()){
+			for(Condition c : alg.getAbstractConditions(node)){
+				System.out.println("abstract condition of   " + net.getNodeReference(node) + "  is  "  + net.getNodeReference(c));
+			}
+		}
+		System.out.println("********************");
 	}
 
 /*	private void convertBlockTest(SONModel net, VisualSON vnet){
