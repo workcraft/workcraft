@@ -39,6 +39,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		process.addListener(this);
 
 		try {
+			System.out.println("Running external command: " + getCommandLine());
 			process.start();
 		} catch (IOException e) {
 			return Result.exception(e);
@@ -66,6 +67,19 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		ExternalProcessResult result = new ExternalProcessResult(returnCode, stdoutAccum.getData(), stderrAccum.getData(), Collections.<String, byte[]>emptyMap());
 
 		return Result.finished(result);
+	}
+
+	private String getCommandLine() {
+		String command = "";
+		for (String arg: args) {
+			if (command.isEmpty()) {
+				command = "";
+			} else {
+				command += " ";
+			}
+			command += arg;
+		}
+		return command;
 	}
 
 	@Override

@@ -85,10 +85,10 @@ public class DotGParser implements DotGParserConstants {
                 try {
                         ConnectionResult result = stg.connect(first, second);
                         STGPlace implicitPlace = result.getImplicitPlace();
-
-                        if (implicitPlace != null)
+                        if (implicitPlace != null) {
                                 implicitPlaces.put (Pair.of (first, second), implicitPlace);
-
+                                implicitPlace.setImplicit(true);
+                        }
                 } catch (InvalidConnectionException e) {
                         throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +
                          " to " + stg.getNodeReference(second) + ".", e);

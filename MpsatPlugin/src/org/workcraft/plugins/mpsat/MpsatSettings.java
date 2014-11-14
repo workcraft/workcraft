@@ -229,9 +229,11 @@ public class MpsatSettings {
 
 	public String[] getMpsatArguments() {
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(getMode().getArgument());
+		for (String option: getMode().getArgument().split("\\s")) {
+			args.add(option);
+		}
 
-		if (getMode().isReach())
+		if (getMode().isReach()) {
 			try {
 				File reach = File.createTempFile("reach", null);
 				reach.deleteOnExit();
@@ -242,6 +244,7 @@ public class MpsatSettings {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+		}
 
 		args.add(String.format("-v%d", getVerbosity()));
 

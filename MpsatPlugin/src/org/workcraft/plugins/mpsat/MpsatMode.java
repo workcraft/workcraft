@@ -10,7 +10,7 @@ public enum MpsatMode {
 	STG_REACHABILITY ("-Fs", "STG reachability analysis", true),
 	CSC_CONFLICT_DETECTION ("-C", "CSC conflict detection", false),
 	NORMALCY ("-N", "Normalcy property checking", false),
-	RESOLVE_ENCODING_CONFLICTS ("-R", "Resolve encoding conflicts", false),
+	RESOLVE_ENCODING_CONFLICTS ("-R -$1 -p0 -cl", "Resolve encoding conflicts", false),
 	USC_CONFLICT_DETECTION ("-U", "USC conflict detection", false),
 	COMPLEX_GATE_IMPLEMENTATION ("-E", "Derive complex-gate implementation", false),
 	GENERALISED_CELEMENT_IMPLEMENTATION ("-G", "Derive gC-elements implementation", false),
@@ -36,9 +36,11 @@ public enum MpsatMode {
 	};
 
 	public static MpsatMode getMode (String arg) {
-		for (int i=0; i<modes.length; i++)
-			if (modes[i].getArgument().equals(arg))
+		for (int i=0; i<modes.length; i++) {
+			if (modes[i].getArgument().equals(arg)) {
 				return modes[i];
+			}
+		}
 		return null;
 	}
 

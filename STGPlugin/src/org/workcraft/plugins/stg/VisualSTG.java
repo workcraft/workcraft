@@ -46,6 +46,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -70,8 +71,22 @@ public class VisualSTG extends AbstractVisualModel {
 		if (root == null) {
 			try {
 				createDefaultFlatStructure();
+				// FIXME: Implicit places should not appear in the first place.
+				fixVisibilityOfImplicitPlaces();
 			} catch (NodeCreationException e) {
 				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private void fixVisibilityOfImplicitPlaces() {
+		for (VisualPlace vp: getVisualPlaces()) {
+			Place p = vp.getReferencedPlace();
+			if (p instanceof STGPlace) {
+				STGPlace pp = (STGPlace)p;
+				if (pp.isImplicit()) {
+					maybeMakeImplicit(vp, false);
+				}
 			}
 		}
 	}
@@ -155,6 +170,7 @@ public class VisualSTG extends AbstractVisualModel {
 
 		List<Point2D> locations = new LinkedList<Point2D>();
 		int splitIndex = -1;
+		Point2D splitPoint = connection.getSplitPoint();
 		if (connection.getGraphic() instanceof Polyline) {
 			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
 			Polyline polyline = (Polyline)connection.getGraphic();
@@ -162,13 +178,13 @@ public class VisualSTG extends AbstractVisualModel {
 				Point2D location = localToRootTransform.transform(cp.getPosition(), null);
 				locations.add(location);
 			}
-			splitIndex = polyline.getNearestSegment(connection.getSplitPoint(), null);
+			splitIndex = polyline.getNearestSegment(splitPoint, null);
 		}
 
 		STGPlace implicitPlace = connection.getImplicitPlace();
 		stg.makeExplicit(implicitPlace);
 		VisualPlace place = new VisualPlace(implicitPlace);
-		place.setPosition(connection.getSplitPoint());
+		place.setPosition(splitPoint);
 
 		VisualConnection con1 = new VisualConnection(connection.getRefCon1(), connection.getFirst(), place);
 		VisualConnection con2 = new VisualConnection(connection.getRefCon2(), place, connection.getSecond());
@@ -178,15 +194,24 @@ public class VisualSTG extends AbstractVisualModel {
 		group.add(con2);
 
 		if (!locations.isEmpty()) {
-			ConnectionHelper.addControlPoints(con1, locations.subList(0, splitIndex));
-			ConnectionHelper.addControlPoints(con2, locations.subList(splitIndex, locations.size()));
+			int splitIndex1 = splitIndex;
+			if ((splitIndex1 > 0) && (locations.get(splitIndex1-1).distanceSq(splitPoint) < 0.001)) {
+				splitIndex1--;
+			}
+			ConnectionHelper.addControlPoints(con1, locations.subList(0, splitIndex1));
+
+			int splitIndex2 = splitIndex;
+			if ((splitIndex2 < locations.size()) && (locations.get(splitIndex2).distanceSq(splitPoint) < 0.001)) {
+				splitIndex2++;
+			}
+			ConnectionHelper.addControlPoints(con2, locations.subList(splitIndex2, locations.size()));
 		}
 
 		remove(connection);
 		return place;
 	}
 
-	public void maybeMakeImplicit (VisualPlace place) {
+	public void maybeMakeImplicit(VisualPlace place, boolean preserveConnectionShape) {
 		Collection<Node> preset = getPreset(place);
 		Collection<Node> postset = getPostset(place);
 		if ((preset.size() == 1) && (postset.size() == 1)) {
@@ -195,19 +220,42 @@ public class VisualSTG extends AbstractVisualModel {
 			VisualComponent first = (VisualComponent)preset.iterator().next();
 			VisualComponent second = (VisualComponent)postset.iterator().next();
 
-			MathConnection refCon1 = null, refCon2 = null;
+			VisualConnection con1 = null;
+			VisualConnection con2 = null;
 			Collection<Connection> connections = new ArrayList<Connection> (getConnections(place));
 			for (Connection con: connections) {
 				if (con.getFirst() == place) {
-					refCon2 = ((VisualConnection)con).getReferencedConnection();
+					con2 = (VisualConnection)con;
 				} else if (con.getSecond() == place) {
-					refCon1 = ((VisualConnection)con).getReferencedConnection();
+					con1 = (VisualConnection)con;
 				}
 			}
-			VisualImplicitPlaceArc con = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (STGPlace)place.getReferencedPlace());
-			con.addPolylinePoint(place.getPosition(), true);
+			MathConnection refCon1 = con1.getReferencedConnection();
+			MathConnection refCon2 = con2.getReferencedConnection();
+			VisualImplicitPlaceArc connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (STGPlace)place.getReferencedPlace());
 			Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
-			parent.add(con);
+			parent.add(connection);
+			if (preserveConnectionShape) {
+				List<Point2D> locations = new LinkedList<Point2D>();
+	 			if (con1.getGraphic() instanceof Polyline) {
+	 				Polyline polyline = (Polyline)con1.getGraphic();
+	 				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con1);
+					for (ControlPoint cp:  polyline.getControlPoints()) {
+						Point2D location = localToRootTransform.transform(cp.getPosition(), null);
+						locations.add(location);
+					}
+	 			}
+	 			locations.add(place.getPosition());
+	 			if (con2.getGraphic() instanceof Polyline) {
+	 				Polyline polyline = (Polyline)con2.getGraphic();
+	 				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con2);
+					for (ControlPoint cp:  polyline.getControlPoints()) {
+						Point2D location = localToRootTransform.transform(cp.getPosition(), null);
+						locations.add(location);
+					}
+	 			}
+	 			ConnectionHelper.addControlPoints(connection, locations);
+			}
 			// Remove explicit place, all its connections will get removed automatically by the hanging connection remover
 			remove(place);
 		}
