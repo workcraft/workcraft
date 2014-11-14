@@ -1126,11 +1126,20 @@ public class MainWindow extends JFrame {
 	}
 
 	private String getTitle(WorkspaceEntry we, VisualModel model) {
+		String prefix = (we.isChanged() ? "*" : "");
+		String suffix = null;
 		switch (CommonEditorSettings.getTitleStyle()) {
-		case LONG: return we.getTitle() + " - " + model.getDisplayName();
-		case SHORT:	return we.getTitle() + " [" + model.getShortName() + "]";
-		default: return we.getTitle();
+		case LONG:
+			suffix = " - " + model.getDisplayName();
+			break;
+		case SHORT:
+			suffix += " [" + model.getShortName() + "]";
+			break;
+		default:
+			suffix = "";
+			break;
 		}
+		return (prefix + we.getTitle() + suffix);
 	}
 
 	public void refreshTitle(WorkspaceEntry we) {

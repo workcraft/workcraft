@@ -78,6 +78,7 @@ public class WorkspaceEntry implements ObservableState {
 				savedMemento = null;
 			}
 			workspace.fireEntryChanged(this);
+			framework.getMainWindow().refreshTitle(this);
 		}
 	}
 
