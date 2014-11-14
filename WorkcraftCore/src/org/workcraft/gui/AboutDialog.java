@@ -1,7 +1,6 @@
-package org.workcraft;
+package org.workcraft.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -24,7 +23,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import org.workcraft.gui.MainWindow;
+import org.workcraft.Info;
 import org.workcraft.util.GUI;
 
 public class AboutDialog extends JDialog {
@@ -88,16 +87,11 @@ public class AboutDialog extends JDialog {
 	        @Override
 	        public void hyperlinkUpdate(HyperlinkEvent event) {
 	        	if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {
-	    			Desktop desktop = Desktop.getDesktop();
-	    			if ((desktop != null) && desktop.isSupported(Desktop.Action.BROWSE)) {
-	    				try {
-	    					URI uri = event.getURL().toURI();
-	    					desktop.browse(uri);
-	    				} catch(IOException e) {
-	    					System.out.println(e);
-	    				} catch (URISyntaxException e) {
-	    					System.out.println(e);
-	    				}
+    				try {
+    					URI uri = event.getURL().toURI();
+    					DesktopApi.browse(uri);
+    				} catch (URISyntaxException e) {
+    					System.out.println(e);
 	    			}
 	        	}
 	        }

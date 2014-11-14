@@ -20,7 +20,6 @@
  */
 
 package org.workcraft;
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -67,6 +66,7 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Importer;
@@ -849,14 +849,7 @@ public class Framework {
 	public void openExternally(String fileName) {
 		File file = new File(fileName);
 		if (checkFile(file)) {
-			Desktop desktop = Desktop.getDesktop();
-			if ((desktop != null) && desktop.isSupported(Desktop.Action.OPEN)) {
-				try {
-					desktop.open(file);
-				} catch(IOException e1) {
-					System.out.println(e1);
-				}
-			}
+			DesktopApi.open(file);
 		}
 	}
 

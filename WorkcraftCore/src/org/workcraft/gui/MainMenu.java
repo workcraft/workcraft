@@ -415,11 +415,20 @@ public class MainMenu extends JMenuBar {
 		ActionMenuItem miTutorials = new ActionMenuItem(MainWindowActions.HELP_TUTORIALS_ACTION);
 		miTutorials.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		ActionMenuItem miBugreport = new ActionMenuItem(MainWindowActions.HELP_BUGREPORT_ACTION);
+		miBugreport.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
+		ActionMenuItem miQuestion = new ActionMenuItem(MainWindowActions.HELP_QUESTION_ACTION);
+		miQuestion.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
 		miAbout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		mnHelp.add(miContents);
 		mnHelp.add(miTutorials);
+		mnHelp.addSeparator();
+		mnHelp.add(miBugreport);
+		mnHelp.add(miQuestion);
 		mnHelp.addSeparator();
 		mnHelp.add(miAbout);
 

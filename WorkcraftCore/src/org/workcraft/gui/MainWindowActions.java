@@ -1,6 +1,8 @@
 package org.workcraft.gui;
 
-import org.workcraft.AboutDialog;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -347,10 +349,43 @@ public class MainWindowActions {
 		}
 
 		public String getText() {
-			return "Tutorails";
+			return "Tutorials";
 		};
 	};
 
+	public static final Action HELP_BUGREPORT_ACTION = new Action() {
+		@Override
+		public void run(Framework f) {
+			URI uri;
+			try {
+				uri = new URI("https://bugs.launchpad.net/workcraft/+filebug");
+				DesktopApi.browse(uri);
+			} catch (URISyntaxException e) {
+				System.out.println(e);
+			}
+		}
+
+		public String getText() {
+			return "Report a bug";
+		};
+	};
+
+	public static final Action HELP_QUESTION_ACTION = new Action() {
+		@Override
+		public void run(Framework f) {
+			URI uri;
+			try {
+				uri = new URI("https://answers.launchpad.net/workcraft/+addquestion");
+				DesktopApi.browse(uri);
+			} catch (URISyntaxException e) {
+				System.out.println(e);
+			}
+		}
+
+		public String getText() {
+			return "Ask a question";
+		};
+	};
 
 	public static final Action HELP_ABOUT_ACTION = new Action() {
 		@Override

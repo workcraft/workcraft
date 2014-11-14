@@ -28,6 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.mpsat.MpsatBuiltinPresets;
 import org.workcraft.plugins.mpsat.MpsatMode;
@@ -302,11 +303,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		helpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Desktop.getDesktop().open(new File("help/reach.html"));
-				} catch(IOException e1) {
-					System.out.println(e1);
-				}
+				DesktopApi.open(new File("help/reach.html"));
 			}
 		});
 
