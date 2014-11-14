@@ -173,13 +173,17 @@ public class BSONAlg extends RelationAlgorithm{
 	/**
 	 * get corresponding abstract Groups for a given final behavioral condition
 	 */
-	public Collection<ONGroup> getAbstractGroups(Condition fin){
+	public Collection<ONGroup> getAbstractGroups(Condition node){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
-		for(SONConnection con : net.getOutputSONConnections(fin))
-			if(con.getSemantics() == Semantics.BHVLINE)
-				for(ONGroup group : net.getGroups())
-					if(group.getConditions().contains(con.getSecond()))
-						result.add(group);
+
+		Collection<Condition> absConditions = getAbstractConditions(node);
+
+		for(ONGroup group : net.getGroups()){
+			for(Condition c : absConditions)
+				if(group.getComponents().contains(c))
+					result.add(group);
+		}
+
 		return result;
 	}
 
