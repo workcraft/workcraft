@@ -62,9 +62,9 @@ public class TestTool extends AbstractTool implements Tool{
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
-		abtreactConditionTest(net);
+		//abtreactConditionTest(net);
 		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
-		//syncCycleTest(net);
+		syncCycleTest(net);
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
 		//connectionTypeTest(net, vnet);
@@ -96,11 +96,11 @@ public class TestTool extends AbstractTool implements Tool{
 	private void syncCycleTest(SON net){
 		CSONCycleAlg csonPath = new CSONCycleAlg(net);
 		HashSet<Node> nodes = new HashSet<Node>();
-		nodes.addAll(net.getConditions());
+		nodes.addAll(net.getChannelPlaces());
 		nodes.addAll(net.getTransitionNodes());
 
 		for(Path path : csonPath.syncCycleTask(nodes)){
-			System.out.println(path);
+			System.out.println(path.toString(net));
 		}
 	}
 

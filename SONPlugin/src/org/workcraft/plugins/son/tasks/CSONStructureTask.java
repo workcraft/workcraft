@@ -51,7 +51,7 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 		logger.info("Channel Place(s) = " + relatedcPlaces.size());
 
 		if(relatedcPlaces.isEmpty()){
-			logger.info("Task termination: no a/synchronous connections in selected groups.");
+			logger.info("Task terminated: no a/synchronous connections in selected groups.");
 			return;
 		}
 

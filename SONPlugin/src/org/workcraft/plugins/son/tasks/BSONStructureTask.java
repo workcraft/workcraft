@@ -11,8 +11,8 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
-import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
+import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -118,7 +118,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 					}
 				}
 			}else{
-				logger.info("WARNING : Relation error exist, cannot run phase structure checking task." );
+				logger.info("WARNING : Relation error exist, cannot run phase structure task." );
 				warningNumber++;
 			}
 
@@ -287,9 +287,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		Collection<Condition> minimal = getBSONAlg().getMinimalPhase(phase);
 		Collection<Condition> maximal = getBSONAlg().getMaximalPhase(phase);
 		Collection<String> result = new ArrayList<String>();
-		ONCycleAlg alg = new ONCycleAlg(net);
+		PathAlgorithm alg = new PathAlgorithm(net);
 		ONGroup bhvGroup = getBSONAlg().getBhvGroup(phase);
-		Collection<Path> paths = alg.pathTask(bhvGroup.getComponents());
+		Collection<Path> paths = pathTask(bhvGroup.getComponents(), alg);
 
 		for(Path path : paths){
 			int minNodeInPath = 0;
@@ -349,6 +349,15 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		return "";
 	}
 
+	private Collection<Path> pathTask (Collection<Node> nodes, PathAlgorithm alg){
+		List<Path> result = new ArrayList<Path>();
+		for(Node start : getRelationAlg().getInitial(nodes))
+			for(Node end : getRelationAlg().getFinal(nodes)){
+				result.addAll(PathAlgorithm.getPaths(start, end, alg.createAdj(nodes)));
+			}
+		 return result;
+	}
+
 	private Collection<ArrayList<TransitionNode>> SyncAbstractEventsTask(Collection<ONGroup> groups){
 		Collection<ArrayList<TransitionNode>> result = new ArrayList<ArrayList<TransitionNode>>();
 		Collection<ONGroup> bhvGroups = getBSONAlg().getBhvGroups(groups);
@@ -370,6 +379,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 						if(subResult.size() > 1){
 							Collection<Node> nodes = new HashSet<Node>();
 							nodes.addAll(subResult);
+							nodes.addAll(net.getChannelPlaces());
 							CSONCycleAlg cson = new CSONCycleAlg(net);
 							boolean contains = false;
 							for(Path cycle : cson.syncCycleTask(nodes)){

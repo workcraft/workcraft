@@ -384,6 +384,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	private Collection<Path> getSyncCycles(){
 		HashSet<Node> nodes = new HashSet<Node>();
 		nodes.addAll(net.getTransitionNodes());
+		nodes.addAll(net.getChannelPlaces());
 		CSONCycleAlg cson = new CSONCycleAlg(net);
 
 		return cson.syncCycleTask(nodes);

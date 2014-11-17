@@ -58,13 +58,13 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get phase of a given (high-level) condition
+	 * get phase for a given (high-level) condition
 	 */
 	public Phase getPhase(Condition c){
 		Phase result = new Phase();
 		Collection<Condition> connectedNodes = new ArrayList<Condition>();
 		Collection<Path> paths = new ArrayList<Path>();
-		ONCycleAlg alg = new ONCycleAlg(net);
+		PathAlgorithm alg = new PathAlgorithm(net);
 
 		for(SONConnection con : net.getSONConnections()){
 			if(con.getSecond()==c && con.getSemantics()==Semantics.BHVLINE)
@@ -87,7 +87,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get the phases of every condition of an abstract group
+	 * get the phases of every abstract condition in an abstract group
 	 */
 	public Map<Condition, Phase> getPhases(ONGroup abstractGroup){
 		Map<Condition, Phase> result = new HashMap<Condition, Phase>();

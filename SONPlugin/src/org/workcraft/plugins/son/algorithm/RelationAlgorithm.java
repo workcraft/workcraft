@@ -426,4 +426,13 @@ public class RelationAlgorithm{
 		}
 		return result;
 	}
+
+	public Collection<Node> getPreset(Collection<Node> nodes){
+		Collection<Node> result = new HashSet<Node>();
+		for(Node node : nodes){
+			result.addAll(net.getPreset(node));
+		 }
+
+		return result;
+	}
 }

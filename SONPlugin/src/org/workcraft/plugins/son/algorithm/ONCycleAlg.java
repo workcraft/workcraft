@@ -19,25 +19,6 @@ public class ONCycleAlg{
 	}
 
 	/**
-	 * create adjacency matrix
-	 */
-	public List<Node[]> createAdj(Collection<Node> nodes){
-
-		List<Node[]> result = new ArrayList<Node[]>();
-
-		for (Node n: nodes){
-			for (Node next: net.getPostset(n))
-				if(nodes.contains(next)){
-					Node[] adjoin = new Node[2];
-					adjoin[0] = n;
-					adjoin[1] = next;
-					result.add(adjoin);
-				}
-		}
-		return result;
-	}
-
-	/**
 	 * create Integer Graph for a nodes set
 	 * G<(a,b,c,d) , (<a,b> <b,c> <c,d> <d,b> <b,d>)> would be
 	 * a = 0 ; b = 1, c = 2, d = 3
@@ -92,14 +73,5 @@ public class ONCycleAlg{
 		}
 
 		return result;
-	}
-
-	public Collection<Path> pathTask (Collection<Node> nodes){
-		List<Path> result = new ArrayList<Path>();
-		for(Node start : relationAlg.getInitial(nodes))
-			for(Node end : relationAlg.getFinal(nodes)){
-				result.addAll(PathAlgorithm.getPaths(start, end, createAdj(nodes)));
-			}
-		 return result;
 	}
 }
