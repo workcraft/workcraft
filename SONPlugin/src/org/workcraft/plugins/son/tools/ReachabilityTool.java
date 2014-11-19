@@ -1,11 +1,21 @@
 package org.workcraft.plugins.son.tools;
 
+import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.tasks.ReachabilityTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityTool implements Tool{
+
+	private final Framework framework;
+
+	public ReachabilityTool(Framework framework){
+
+		this.framework = framework;
+
+	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -24,7 +34,9 @@ public class ReachabilityTool implements Tool{
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		// TODO Auto-generated method stub
+		SON net=(SON)we.getModelEntry().getMathModel();
+		ReachabilityTask task = new ReachabilityTask(net);
+		framework.getTaskManager().execute(task, "Verification");
 
 	}
 

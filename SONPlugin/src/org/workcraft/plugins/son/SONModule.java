@@ -33,7 +33,7 @@ public class SONModule implements Module{
 		pm.registerClass(Tool.class, TestTool.class, framework);
 		//verification
 		pm.registerClass(Tool.class, StructurePropertyChecker.class, framework);
-		pm.registerClass(Tool.class, ReachabilityTool.class);
+		pm.registerClass(Tool.class, ReachabilityTool.class, framework);
 		//Custom tools
 		pm.registerClass(Tool.class, ColorResetTool.class);
 		pm.registerClass(Tool.class, TokenRefreshTool.class);

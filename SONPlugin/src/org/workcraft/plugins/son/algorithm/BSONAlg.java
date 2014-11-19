@@ -134,7 +134,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get abstract conditions for a node
+	 * get abstract conditions for a bhv node
 	 */
 	public Collection<Condition> getAbstractConditions(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
@@ -171,7 +171,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get corresponding abstract Groups for a given final behavioral condition
+	 * get corresponding abstract Groups for a given behavioral condition
 	 */
 	public Collection<ONGroup> getAbstractGroups(Condition node){
 		Collection<ONGroup> result = new HashSet<ONGroup>();

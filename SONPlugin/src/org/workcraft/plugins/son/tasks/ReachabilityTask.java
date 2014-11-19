@@ -5,22 +5,25 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.CycleAlgorithm;
-import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
-import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.Result.Outcome;
 
 public class ReachabilityTask implements Task<VerificationResult>{
 
@@ -33,51 +36,85 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	@Override
 	public Result<? extends VerificationResult> run(
 			ProgressMonitor<? super VerificationResult> monitor) {
-		return null;
+
+		Collection<PlaceNode> marking = new ArrayList<PlaceNode>();
+
+		for(PlaceNode node : net.getPlaceNodes())
+			if(node.isMarked())
+				marking.add(node);
+
+		if(BSONReachable(marking))
+			System.out.println("BSON reachable");
+		else
+			System.out.println("BSON unreachable");
+
+		try {
+			if(CSONReachable(marking))
+				System.out.println("CSON reachable");
+			else
+				System.out.println("CSON unreachable");
+		} catch (StackOverflowError e) {
+			JOptionPane.showMessageDialog(null,
+					"Fail to run reachability anaylsis tool, " +
+					"error may due to incorrect structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+		}
+
+		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 
 	private boolean BSONReachable(Collection<PlaceNode> marking){
-		Collection<PlaceNode> abstractNodes = new ArrayList<PlaceNode>();
+		Collection<PlaceNode> absNodes = new HashSet<PlaceNode>();
 		BSONAlg bsonAlg = new BSONAlg(net);
 		//get abstract conditions
 		for(PlaceNode node : marking){
 			if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)
 					&& !net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-				abstractNodes.add(node);
-				//if there exist at least one marked bhv condition in the phase of node
-				if(!hasCommonElements(bsonAlg.getPhase((Condition)node), marking))
-					return false;
+				absNodes.add(node);
 			}
 		}
+
 		//get non-abstract node
-		marking.removeAll(abstractNodes);
-		//for each node, check if its corresponding abstract conditions are all marked.
-		for(PlaceNode node : marking){
-			for(Condition con : bsonAlg.getAbstractConditions(node)){
-				if (!con.isMarked())
-					return false;
+		Collection<PlaceNode> bhvNodes = new ArrayList<PlaceNode>();
+		bhvNodes.addAll(marking);
+		bhvNodes.removeAll(absNodes);
+
+		//get all abstract conditions for marking
+		for(PlaceNode node : bhvNodes){
+			if(node instanceof Condition){
+				Collection<Condition> expectedAbsNodes = bsonAlg.getAbstractConditions((Condition)node);
+				absNodes.addAll(expectedAbsNodes);
+				marking.addAll(expectedAbsNodes);
 			}
 		}
+		//check if
+		if(hasOtherMarkedPlacesInGroup(absNodes, bsonAlg))
+			return false;
+
 		return true;
 	}
 
-	private boolean hasCommonElements(Phase set1, Collection<PlaceNode> set2){
-		for(Node n : set1)
-			if(set2.contains(n))
+	private boolean hasOtherMarkedPlacesInGroup(Collection<PlaceNode> absNodes, BSONAlg bsonAlg){
+		Collection<ONGroup> absGroups = bsonAlg.getAbstractGroups(net.getGroups());
+
+		for(ONGroup group : absGroups){
+			int i = 0;
+			for(PlaceNode pn : absNodes){
+				if(group.contains(pn))
+					i++;
+			}
+			if(i > 1)
 				return true;
-		for(Node n : set2)
-			if(set1.contains(n))
-				return true;
+		}
 		return false;
-}
+	}
 
 	private boolean CSONReachable(Collection<PlaceNode> marking){
-		boolean result = true;
+		Collection<Path> sync = getSyncCycles();
 		Collection<Node> syncCycles = new HashSet<Node>();
-		for(Path path : getSyncCycles()){
+		for(Path path : sync){
 			syncCycles.addAll(path);
 		}
-		//if marking contains a synchronous channel place, then it's unreachable.
+		//if marking contains a synchronous channel place, it's unreachable.
 		for(PlaceNode node : marking){
 			if(node instanceof ChannelPlace)
 				if(syncCycles.containsAll(net.getPreset(node))
@@ -86,22 +123,41 @@ public class ReachabilityTask implements Task<VerificationResult>{
 				}
 		}
 
-		Collection<TransitionNode> causalPredecessors = new HashSet<TransitionNode>();
+		Collection<Node> causalPredecessors = new HashSet<Node>();
 
-		return result;
+		for(PlaceNode node : marking){
+			causalPredecessors.addAll(causalPredecessors(node, sync));
+		}
+
+		for(PlaceNode node : marking){
+			if(causalPredecessors.contains(node))
+				return false;
+		}
+
+		return true;
 	}
 
-	private Collection<Node> causalPredecessors (Node node, Collection<Node> history,  Collection<Path> sync){
-		Collection<Node> result = new HashSet<Node>();
-		history.add(node);
+	private Collection<PlaceNode> causalPredecessors (Node node, Collection<Path> sync){
+		Collection<PlaceNode> result = new HashSet<PlaceNode>();
+		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
+
 		Path path = isInSync(node, sync);
 		if(path.isEmpty()){
 			for(Node pre : net.getPreset(node)){
-				result.add(pre);
-				result.addAll(causalPredecessors(pre, history, sync));
+				if(net.getSONConnectionType(node, pre) != Semantics.BHVLINE){
+					if(pre instanceof PlaceNode){
+						result.add((PlaceNode)pre);
+					}
+					result.addAll(causalPredecessors(pre, sync));
+				}
 			}
 		}else{
-
+			for(Node pre : relationAlg.getPreset(path)){
+				if(pre instanceof PlaceNode){
+					result.add((PlaceNode)pre);
+				}
+				result.addAll(causalPredecessors(pre, sync));
+			}
 		}
 
 		return result;
