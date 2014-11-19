@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
@@ -20,6 +19,7 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -43,13 +43,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			if(node.isMarked())
 				marking.add(node);
 
-		if(BSONReachable(marking))
-			System.out.println("BSON reachable");
-		else
-			System.out.println("BSON unreachable");
-
 		try {
-			if(CSONReachable(marking))
+			if(reachabilityTask(marking))
 				System.out.println("CSON reachable");
 			else
 				System.out.println("CSON unreachable");
@@ -62,53 +57,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 
-	private boolean BSONReachable(Collection<PlaceNode> marking){
-		Collection<PlaceNode> absNodes = new HashSet<PlaceNode>();
-		BSONAlg bsonAlg = new BSONAlg(net);
-		//get abstract conditions
-		for(PlaceNode node : marking){
-			if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)
-					&& !net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-				absNodes.add(node);
-			}
-		}
 
-		//get non-abstract node
-		Collection<PlaceNode> bhvNodes = new ArrayList<PlaceNode>();
-		bhvNodes.addAll(marking);
-		bhvNodes.removeAll(absNodes);
-
-		//get all abstract conditions for marking
-		for(PlaceNode node : bhvNodes){
-			if(node instanceof Condition){
-				Collection<Condition> expectedAbsNodes = bsonAlg.getAbstractConditions((Condition)node);
-				absNodes.addAll(expectedAbsNodes);
-				marking.addAll(expectedAbsNodes);
-			}
-		}
-		//check if
-		if(hasOtherMarkedPlacesInGroup(absNodes, bsonAlg))
-			return false;
-
-		return true;
-	}
-
-	private boolean hasOtherMarkedPlacesInGroup(Collection<PlaceNode> absNodes, BSONAlg bsonAlg){
-		Collection<ONGroup> absGroups = bsonAlg.getAbstractGroups(net.getGroups());
-
-		for(ONGroup group : absGroups){
-			int i = 0;
-			for(PlaceNode pn : absNodes){
-				if(group.contains(pn))
-					i++;
-			}
-			if(i > 1)
-				return true;
-		}
-		return false;
-	}
-
-	private boolean CSONReachable(Collection<PlaceNode> marking){
+	private boolean reachabilityTask(Collection<PlaceNode> marking){
 		Collection<Path> sync = getSyncCycles();
 		Collection<Node> syncCycles = new HashSet<Node>();
 		for(Path path : sync){
@@ -126,7 +76,13 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		Collection<Node> causalPredecessors = new HashSet<Node>();
 
 		for(PlaceNode node : marking){
-			causalPredecessors.addAll(causalPredecessors(node, sync));
+			System.out.println();
+			System.out.println("marking = " + net.getNodeReference(node));
+			causalPredecessors.addAll(getCausalPredecessors(node, sync));
+			for(Node n : causalPredecessors){
+				System.out.print(" " + net.getNodeReference(n));
+			}
+			System.out.println();
 		}
 
 		for(PlaceNode node : marking){
@@ -137,31 +93,85 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		return true;
 	}
 
-	private Collection<PlaceNode> causalPredecessors (Node node, Collection<Path> sync){
-		Collection<PlaceNode> result = new HashSet<PlaceNode>();
+	private Collection<TransitionNode> getCausalPredecessors (Node node, Collection<Path> sync){
+		Collection<TransitionNode> result = new HashSet<TransitionNode>();
+
 		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
 
 		Path path = isInSync(node, sync);
-		if(path.isEmpty()){
-			for(Node pre : net.getPreset(node)){
-				if(net.getSONConnectionType(node, pre) != Semantics.BHVLINE){
-					if(pre instanceof PlaceNode){
-						result.add((PlaceNode)pre);
+
+		if(node instanceof TransitionNode){
+			if(path.isEmpty()){
+				for(Node pre : net.getPreset(node)){
+					for(TransitionNode t : CausalRelations(pre)){
+						result.add(t);
+						result.addAll(getCausalPredecessors(t, sync));
 					}
-					result.addAll(causalPredecessors(pre, sync));
+				}
+			}else{
+				for(Node pre : relationAlg.getPreset(path)){
+					for(TransitionNode t : CausalRelations(pre)){
+						result.add(t);
+						result.addAll(getCausalPredecessors(t, sync));
+					}
 				}
 			}
 		}else{
-			for(Node pre : relationAlg.getPreset(path)){
-				if(pre instanceof PlaceNode){
-					result.add((PlaceNode)pre);
+			for(Node pre : net.getPreset(node)){
+				for(TransitionNode t : CausalRelations(pre)){
+					result.add(t);
+					result.addAll(getCausalPredecessors(t, sync));
 				}
-				result.addAll(causalPredecessors(pre, sync));
 			}
+		}
+		return result;
+	}
+
+	private Collection<TransitionNode> CausalRelations(Node pre){
+		Collection<Node> causalSet = new HashSet<Node>();
+		BSONAlg bsonAlg = new BSONAlg(net);
+		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
+
+		//if pre-condition is not max/min phase, add pre-pre-event to the set.
+		if((pre instanceof Condition) && !(net.getSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
+			causalSet.addAll(net.getPreset(pre));
+		}
+		if(pre instanceof ChannelPlace){
+			causalSet.addAll(net.getPreset(pre));
+		}
+		//if pre-condition is max/min phase, add pre-event of corresponding abstract condition to
+		if((pre instanceof Condition)
+				&& (net.getOutputSONConnectionTypes(pre).contains(Semantics.BHVLINE))
+				&& (!net.getInputSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
+			//get corresponding abstract conditions
+			Collection<Condition> absConditions = bsonAlg.getAbstractConditions(pre);
+			//for each phase of abstract conditions,
+			//if c is the minimum phase (but not maximum) of that condition, add its pre-event to the set.
+			for(Condition c : absConditions){
+				Phase phase = bsonAlg.getPhase(c);
+				if(bsonAlg.getMinimalPhase(phase).contains(c) && !bsonAlg.getMaximalPhase(phase).contains(c))
+					causalSet.addAll(relationAlg.getPrePNSet(c));
+			}
+		}
+		//if pre-condition is abstract condition, get is minimum phase first and add its pre-events to the set
+		if((pre instanceof Condition) && !(net.getOutputSONConnectionTypes(pre).contains(Semantics.BHVLINE))
+				&&(net.getInputSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
+			Phase phase = bsonAlg.getPhase((Condition)pre);
+			Collection<Condition> max = bsonAlg.getMinimalPhase(phase);
+			for(Condition c : max){
+				causalSet.addAll(relationAlg.getPrePNSet(c));
+			}
+		}
+
+		Collection<TransitionNode> result = new HashSet<TransitionNode>();
+		for(Node node : causalSet){
+			if(node instanceof TransitionNode)
+				result.add((TransitionNode)node);
 		}
 
 		return result;
 	}
+
 
 	private Path isInSync(Node node, Collection<Path> sync){
 		Path result = new Path();
