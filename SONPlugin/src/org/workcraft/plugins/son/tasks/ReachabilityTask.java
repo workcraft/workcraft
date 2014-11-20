@@ -117,53 +117,67 @@ public class ReachabilityTask implements Task<VerificationResult>{
 				}
 			}
 		}else{
-			for(Node pre : net.getPreset(node)){
-				for(TransitionNode t : CausalRelations(pre)){
-					result.add(t);
-					result.addAll(getCausalPredecessors(t, sync));
-				}
+			for(TransitionNode t : CausalRelations(node)){
+				result.add(t);
+				result.addAll(getCausalPredecessors(t, sync));
 			}
 		}
 		return result;
 	}
 
-	private Collection<TransitionNode> CausalRelations(Node pre){
-		Collection<Node> causalSet = new HashSet<Node>();
+	private List<TransitionNode> CausalRelations(Node pre){
+		List<Node> causalSet = new ArrayList<Node>();
 		BSONAlg bsonAlg = new BSONAlg(net);
 		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
 
-		//if pre-condition is not max/min phase, add pre-pre-event to the set.
+		//if condition is not max/min phase, add pre-pre-event to the set.
 		if((pre instanceof Condition) && !(net.getSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
 			causalSet.addAll(net.getPreset(pre));
 		}
 		if(pre instanceof ChannelPlace){
 			causalSet.addAll(net.getPreset(pre));
 		}
-		//if pre-condition is max/min phase, add pre-event of corresponding abstract condition to
+		//if (behavioral) condition is max/min phase, add pre-event of corresponding abstract condition to
 		if((pre instanceof Condition)
 				&& (net.getOutputSONConnectionTypes(pre).contains(Semantics.BHVLINE))
 				&& (!net.getInputSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
 			//get corresponding abstract conditions
 			Collection<Condition> absConditions = bsonAlg.getAbstractConditions(pre);
 			//for each phase of abstract conditions,
-			//if c is the minimum phase (but not maximum) of that condition, add its pre-event to the set.
+			//if 'pre' is the minimum phase of that condition, add abstract pre-event to the set.
+			//if 'pre' is the maximum phase of that condition and is not the minimum one, add behavioural pre-event to the set.
 			for(Condition c : absConditions){
 				Phase phase = bsonAlg.getPhase(c);
-				if(bsonAlg.getMinimalPhase(phase).contains(c) && !bsonAlg.getMaximalPhase(phase).contains(c))
+				Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
+				Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
+				if(min.contains(pre))
 					causalSet.addAll(relationAlg.getPrePNSet(c));
+				else{
+					causalSet.addAll(relationAlg.getPrePNSet(pre));
+				}
 			}
 		}
-		//if pre-condition is abstract condition, get is minimum phase first and add its pre-events to the set
+		//if 'pre' is abstract condition,
+		//get minimal and maximal phase,
+		//if min == max, add abstract pre-event to the set
+		//else add pre-behavioural event of which min!=max
 		if((pre instanceof Condition) && !(net.getOutputSONConnectionTypes(pre).contains(Semantics.BHVLINE))
 				&&(net.getInputSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
 			Phase phase = bsonAlg.getPhase((Condition)pre);
-			Collection<Condition> max = bsonAlg.getMinimalPhase(phase);
-			for(Condition c : max){
-				causalSet.addAll(relationAlg.getPrePNSet(c));
+			Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
+			Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
+			if(min.containsAll(max) && max.containsAll(min)){
+				causalSet.addAll(relationAlg.getPrePNSet(pre));
+			}
+			else{
+				for(Condition cMax : max){
+					if(!min.contains(cMax))
+						causalSet.addAll(relationAlg.getPrePNSet(cMax));
+				}
 			}
 		}
 
-		Collection<TransitionNode> result = new HashSet<TransitionNode>();
+		List<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(Node node : causalSet){
 			if(node instanceof TransitionNode)
 				result.add((TransitionNode)node);
