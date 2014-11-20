@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.tools;
 
+
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
@@ -35,9 +36,8 @@ public class ReachabilityTool implements Tool{
 	@Override
 	public void run(WorkspaceEntry we) {
 		SON net=(SON)we.getModelEntry().getMathModel();
-		ReachabilityTask task = new ReachabilityTask(net);
-		framework.getTaskManager().execute(task, "Verification");
-
+		ReachabilityTask task = new ReachabilityTask(net, we, framework);
+		framework.getTaskManager().queue(task, "Verification");
 	}
 
 }

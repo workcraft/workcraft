@@ -130,7 +130,7 @@ public class CSONCycleAlg extends ONCycleAlg{
 //	}
 
 	/**
-	 * get synchronous cycle for a set of transition node.
+	 * get synchronous cycle for a set of transition and channel place nodes.
 	 */
 	public Collection<Path> syncCycleTask(Collection<Node> nodes){
 		return syncCycleFliter(super.cycleTask(nodes));

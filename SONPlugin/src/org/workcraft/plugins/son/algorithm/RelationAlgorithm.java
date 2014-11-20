@@ -437,4 +437,18 @@ public class RelationAlgorithm{
 
 		return result;
 	}
+
+	public Collection<Node> getCommonElements(Collection<? extends Node> set1, Collection<? extends Node> set2){
+		Collection<Node> result = new HashSet<Node>();
+		for(Node node : set1){
+			if(set2.contains(node))
+				result.add(node);
+		}
+
+		for(Node node : set2){
+			if(set1.contains(node))
+				result.add(node);
+		}
+		return result;
+	}
 }

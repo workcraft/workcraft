@@ -74,8 +74,12 @@ public class BSONAlg extends RelationAlgorithm{
 			return result;
 		else{
 			for(Node start : connectedNodes)
-				for(Node end : connectedNodes)
+				for(Node end : connectedNodes){
+					if(getBhvGroup(connectedNodes) == null){
+						System.out.println("adj null");
+					}
 					paths.addAll(PathAlgorithm.getPaths(start, end, alg.createAdj(getBhvGroup(connectedNodes).getComponents())));
+				}
 
 			for(Path path : paths){
 				for(Node n : path)
@@ -86,14 +90,23 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	/**
-	 * get the phases of every abstract condition in an abstract group
-	 */
-	public Map<Condition, Phase> getPhases(ONGroup abstractGroup){
+	private Map<Condition, Phase> getPhases(ONGroup abstractGroup){
 		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
 		for(Condition c : abstractGroup.getConditions())
 			result.put(c, getPhase(c));
 
+		return result;
+	}
+
+	/**
+	 * get the phases of every abstract condition in abstract groups
+	 */
+	public Map<Condition, Phase> getPhases(){
+		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
+		Collection<ONGroup> abstractGroups =getAbstractGroups(net.getGroups());
+		for(ONGroup group : abstractGroups){
+			result.putAll(getPhases(group));
+		}
 		return result;
 	}
 
@@ -134,10 +147,16 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get abstract conditions for a bhv node
+	 * get abstract conditions for a node
 	 */
 	public Collection<Condition> getAbstractConditions(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
+
+		if(isAbstractCondition(node)){
+			result.add((Condition)node);
+			return result;
+		}
+
 		Collection<Condition> min = Min(node);
 		Collection<Condition> max = Max(node);
 		for(Condition c : max){
@@ -147,14 +166,24 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	public boolean isAbstractCondition(Node node){
+		if((node instanceof Condition) && !(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+				&&(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)))
+			return true;
+
+		return false;
+	}
+
 	/**
-	 * get behavioral group of a set of conditions (phase inputs or outputs)
+	 * get behavioral group for a set of conditions (phase inputs or outputs)
 	 */
 	public ONGroup getBhvGroup(Collection<Condition> conditions){
+		Collection<ONGroup> groups = new HashSet<ONGroup>();
 		for(ONGroup group : net.getGroups())
-			if(group.getConditions().containsAll(conditions))
-				return group;
-		return null;
+			if(!getCommonElements(group.getComponents(), conditions).isEmpty())
+				groups.add(group);
+
+		return groups.iterator().next();
 	}
 
 	/**

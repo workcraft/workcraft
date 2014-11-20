@@ -83,13 +83,13 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	private SON net;
 	protected VisualSON visualNet;
 	private Framework framework;
+	private GraphEditor editor;
 
 	private RelationAlgorithm relationAlg;
 	private BSONAlg bsonAlg;
 	private SimulationAlg simuAlg;
 	private ErrorTracingAlg	errAlg;
 
-	private Collection<ONGroup> abstractGroups = new ArrayList<ONGroup>();
 	private Collection<Path> sync = new ArrayList<Path>();
 	private Map<Condition, Phase> phases = new HashMap<Condition, Phase>();
 	protected Map<PlaceNode, Boolean>initialMarking = new HashMap<PlaceNode, Boolean>();
@@ -337,6 +337,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
 		framework = editor.getFramework();
+		this.editor = editor;
 		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
 		simuAlg = new SimulationAlg(net);
@@ -355,7 +356,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			return;
 		}
 		sync = getSyncCycles();
-		phases = getPhases();
+		phases = bsonAlg.getPhases();
 		try {
 			initialMarking.putAll(autoInitialMarking());
 		} catch (InvalidStructureException e) {
@@ -388,15 +389,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		CSONCycleAlg cson = new CSONCycleAlg(net);
 
 		return cson.syncCycleTask(nodes);
-	}
-
-	private Map<Condition, Phase> getPhases(){
-		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
-		abstractGroups =bsonAlg.getAbstractGroups(net.getGroups());
-		for(ONGroup group : abstractGroups){
-			result.putAll(bsonAlg.getPhases(group));
-		}
-		return result;
 	}
 
 	@Override
@@ -478,7 +470,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 
 		//initial marking for abstract groups and behavioral groups
-		for(ONGroup abstractGroup : bsonAlg.getAbstractGroups(net.getGroups())){
+		Collection<ONGroup> abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
+		for(ONGroup abstractGroup : abstractGroups){
 			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
 				if(c instanceof Condition){
 					//set initial marking for abstract groups
@@ -489,19 +482,28 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 
 		//get corresponding behavioural groups
-		for(ONGroup bhvGroup : bsonAlg.getBhvGroups(net.getGroups())){
+		Collection<ONGroup> behaviouralGroups = bsonAlg.getBhvGroups(net.getGroups());
+		for(ONGroup bhvGroup : behaviouralGroups){
 			//get initial state of a behavioural group
 			Collection<Node> initial = relationAlg.getInitial(bhvGroup.getComponents());
-			//if all corresponding abstact conditions are marked, set tokens
+			//if all corresponding abstract conditions are marked, set tokens
 			if(!initial.isEmpty()){
 				//all conditions in initial state must have the same abstract conditions,
 				//otherwise there is structure error.
 				Condition bhvCondition = (Condition)initial.iterator().next();
 				boolean isMarked = true;
-				for(Condition absCondition : bsonAlg.getAbstractConditions(bhvCondition))
-					if(relationAlg.isInitial(absCondition) && !absCondition.isMarked()){
-						isMarked = false;
+				//get abstract conditions set C
+				//check if they are all initial state
+				//if it's not check if there exist other abstract condition in C which is in the same group and is the initial state
+				//if we cann't find that condition, it's invalid initial marking
+				Collection<Condition> absConditions = bsonAlg.getAbstractConditions(bhvCondition);
+				for(Condition absCondition : absConditions)
+					if(!relationAlg.isInitial(absCondition)){
+						ONGroup absGroup = bsonAlg.getAbstractGroups(absCondition).iterator().next();
+						if(!relationAlg.hasInitial(relationAlg.getCommonElements(absGroup.getComponents(), absConditions)))
+							isMarked = false;
 					}
+
 				if(isMarked){
 					for(Node c : initial){
 						if(c instanceof Condition){
@@ -731,7 +733,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		updateState(editor);
 	}
 
-	private void mergeTrace(final GraphEditor editor) {
+	public void mergeTrace(final GraphEditor editor) {
 		if (!branchTrace.isEmpty()) {
 			while (mainTrace.getPosition() < mainTrace.size()) {
 				mainTrace.removeCurrent();
@@ -748,6 +750,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			Collection<TransitionNode> abstractEvents = new ArrayList<TransitionNode>();
 			//get high level events
 			for(TransitionNode absEvent : fireList){
+				Collection<ONGroup> abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
 				for(ONGroup group : abstractGroups){
 					if(group.getEventNodes().contains(absEvent))
 						abstractEvents.add(absEvent);
@@ -795,6 +798,29 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				}
 			}
 			autoSimulator(editor, readSONMarking(), history);
+		}
+	}
+
+	public void ReachabilitySimulator(final GraphEditor editor, Collection<TransitionNode> causalPredecessors){
+		ArrayList<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
+		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
+		//activated(editor);
+
+		for(TransitionNode node : net.getTransitionNodes()){
+			if(simuAlg.isEnabled(node, sync, phases))
+				enabledEvents.add(node);
+		}
+		for(Node node : relationAlg.getCommonElements(enabledEvents, causalPredecessors)){
+			if(node instanceof TransitionNode)
+				fireList.add((TransitionNode)node);
+		}
+		causalPredecessors.removeAll(fireList);
+
+		if(!fireList.isEmpty()){
+
+			executeEvent(editor, fireList);
+
+			ReachabilitySimulator(editor, causalPredecessors);
 		}
 	}
 
@@ -1147,6 +1173,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				return null;
 			}
 		};
+	}
+
+	public GraphEditor getGraphEditor(){
+		return editor;
 	}
 
 	@Override

@@ -94,7 +94,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			if(!task3.isEmpty()){
 				hasErr = true;
 				for(Condition c : task3)
-					logger.error("ERROR: Invalid Phase (disjointed elements): " + net.getNodeReference(c)+ "(" + net.getComponentLabel(c) + ")  ");
+					logger.error("ERROR: Invalid Phase (disjointed phases): " + net.getNodeReference(c)+ "(" + net.getComponentLabel(c) + ")  ");
 			}else{
 				Collection<Condition> task4 =phaseTask2(abstractGroups);
 				relationErrors.addAll(task4);
