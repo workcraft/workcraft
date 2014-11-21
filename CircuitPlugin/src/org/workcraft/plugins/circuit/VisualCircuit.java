@@ -27,7 +27,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -249,6 +248,10 @@ public class VisualCircuit extends AbstractVisualModel {
 			properties.add(props.getResetProperty(contact));
 		}
 		return properties;
+	}
+
+	public String getMathName(VisualComponent component) {
+		return getMathModel().getName(component.getReferencedComponent());
 	}
 
 }

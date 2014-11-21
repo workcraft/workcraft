@@ -621,13 +621,14 @@ public class MainWindow extends JFrame {
 	}
 
 	public void toggleDockableWindow(DockableWindow window) {
-		if (window.isClosed())
+		if (window.isClosed()) {
 			displayDockableWindow(window);
-		else
+		} else {
 			try {
 				closeDockableWindow(window);
 			} catch (OperationCancelledException e) {
 			}
+		}
 	}
 
 	private void saveDockingLayout() {
@@ -642,10 +643,9 @@ public class MainWindow extends JFrame {
 		try {
 			File file = new File(UILAYOUT_PATH);
 			File parentDir = file.getParentFile();
-			if (parentDir != null)
-				if (!parentDir.exists())
-					parentDir.mkdirs();
-
+			if ((parentDir != null) && !parentDir.exists()) {
+				parentDir.mkdirs();
+			}
 			FileOutputStream os = new FileOutputStream(file);
 			pers.store(os, pmodel);
 			os.close();
@@ -1133,7 +1133,7 @@ public class MainWindow extends JFrame {
 			suffix = " - " + model.getDisplayName();
 			break;
 		case SHORT:
-			suffix += " [" + model.getShortName() + "]";
+			suffix = " [" + model.getShortName() + "]";
 			break;
 		default:
 			suffix = "";

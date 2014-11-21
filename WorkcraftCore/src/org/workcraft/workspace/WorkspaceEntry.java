@@ -133,7 +133,7 @@ public class WorkspaceEntry implements ObservableState {
 			if (dot == -1) {
 				res = name;
 			} else {
-				res = name.substring(0,dot);
+				res = name.substring(0, dot);
 			}
 		} else {
 			res = name;

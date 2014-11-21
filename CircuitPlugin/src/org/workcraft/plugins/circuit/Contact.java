@@ -103,4 +103,24 @@ public class Contact extends MathNode implements BooleanVariable {
 		return getName();
 	}
 
+	public boolean isInput() {
+		return (getIOType() == IOType.INPUT);
+	}
+
+	public boolean isOutput() {
+		return (getIOType() == IOType.OUTPUT);
+	}
+
+	public boolean isPort() {
+		return !(getParent() instanceof CircuitComponent);
+	}
+
+	public boolean isDriver() {
+		return (isOutput() != isPort());
+	}
+
+	public boolean isDriven() {
+		return (isOutput() == isPort());
+	}
+
 }
