@@ -77,11 +77,19 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		}
 		try {
 			if(reachabilityTask()){
-				simulation();
-				System.out.println("reachable");
+				int result = JOptionPane.showConfirmDialog(null,
+						"The selected marking is REACHABLE from initial states, \n" +
+						"select OK to analysis the trace leading to the marking in the simulation tool",
+						"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
+				if(result == 0){
+					simulation();
 				}
-			else
-				System.out.println("unreachable");
+				}
+			else{
+				JOptionPane.showMessageDialog(null,
+						"The selected marking is UNREACHABLE from initial states",
+						"Reachability task result", JOptionPane.INFORMATION_MESSAGE);
+			}
 		} catch (StackOverflowError e) {
 			JOptionPane.showMessageDialog(null,
 					"Fail to run reachability anaylsis tool, " +
