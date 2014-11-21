@@ -82,9 +82,13 @@ public class ReachabilityTask implements Task<VerificationResult>{
 						"select OK to analysis the trace leading to the marking in the simulation tool",
 						"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
 				if(result == 0){
-					simulation();
+					Map<PlaceNode, Boolean> finalStates = simulation();
+					for(PlaceNode node : marking){
+						if(finalStates.get(node) == false)
+							throw new RuntimeException("Reachability algorithm error, doesn't reach selected marking");
+					}
 				}
-				}
+			}
 			else{
 				JOptionPane.showMessageDialog(null,
 						"The selected marking is UNREACHABLE from initial states",
@@ -99,7 +103,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 
-	private void simulation(){
+	private Map<PlaceNode, Boolean> simulation(){
+		Map<PlaceNode, Boolean> result;
 		final MainWindow mainWindow = framework.getMainWindow();
 		GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
 		if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
@@ -114,8 +119,10 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		final ToolboxPanel toolbox = currentEditor.getToolBox();
 		final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
 		toolbox.selectTool(tool);
-		tool.ReachabilitySimulator(tool.getGraphEditor(), causalPredecessors);
+		result = tool.ReachabilitySimulator(tool.getGraphEditor(), causalPredecessors);
 		tool.mergeTrace(tool.getGraphEditor());
+
+		return result;
 	}
 
 

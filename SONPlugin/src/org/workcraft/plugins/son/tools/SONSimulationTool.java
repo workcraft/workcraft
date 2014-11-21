@@ -801,7 +801,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 	}
 
-	public void ReachabilitySimulator(final GraphEditor editor, Collection<TransitionNode> causalPredecessors){
+	public Map<PlaceNode, Boolean> ReachabilitySimulator(final GraphEditor editor, Collection<TransitionNode> causalPredecessors){
 		ArrayList<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
 		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
 		//activated(editor);
@@ -822,6 +822,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 			ReachabilitySimulator(editor, causalPredecessors);
 		}
+
+		return readSONMarking();
 	}
 
 	public void executeEvent(final GraphEditor editor, List<TransitionNode> fireList) {
