@@ -1133,7 +1133,7 @@ public class MainWindow extends JFrame {
 			suffix = " - " + model.getDisplayName();
 			break;
 		case SHORT:
-			suffix += " [" + model.getShortName() + "]";
+			suffix = " [" + model.getShortName() + "]";
 			break;
 		default:
 			suffix = "";

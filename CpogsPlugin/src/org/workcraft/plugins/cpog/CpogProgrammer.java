@@ -241,7 +241,7 @@ public class CpogProgrammer {
 				File f = new File(abcFolder);
 				if(!f.exists() || !f.isDirectory()){
 					JOptionPane.showMessageDialog(null,
-							"Find out more information on \"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to" +
+							"Find out more information on \"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
 							"set path of the folder containing Abc inside Workcraft settings.",
 							"Abc tool not installed correctly",
 							JOptionPane.ERROR_MESSAGE);
@@ -263,7 +263,7 @@ public class CpogProgrammer {
 			}else{
 				abcFlag = "";
 				abcFolder = "";
-				gateLibFlag = "-lib";
+				gateLibFlag = "";
 				gatesLibrary = "";
 			}
 
@@ -508,14 +508,18 @@ public class CpogProgrammer {
 			    	 for(int j=0; j<settings.getBits(); j++){
 			    		 if(encoding[i][j]){
 			    			 Output.print("1");
+			    			 //System.out.print("1");
 			    		 }
 			    		 else{
 			    			 Output.print("0");
+			    			 //System.out.print("0");
 			    		 }
 			    	 }
 			    	 Output.println();
+			    	// System.out.println();
 			     }
 			     Output.println(settings.getBits());
+			    //System.out.println(settings.getBits());
 			     Output.close();
 			     customPath = encodingFile.getAbsolutePath();
 			     if(callingProgrammer(Double.MAX_VALUE, we, 0, false) != 0){
@@ -863,7 +867,7 @@ public class CpogProgrammer {
 		return;
 	}
 
-	// FUNCTION FOR DELETING TEMPORART FILE USED BY PROGRAMMER TOOL
+	// FUNCTION FOR DELETING TEMPORARY FILE USED BY PROGRAMMER TOOL
 	private void deleteTempFiles(){
 		if ((scenarioFile != null) &&scenarioFile.exists()) {
 			scenarioFile.delete();
@@ -878,12 +882,13 @@ public class CpogProgrammer {
 	// TO WORKCRAFT TO BUILD THE COMPOSITIONAL GRAPH
 	private int callingProgrammer(Double currArea, WorkspaceEntry we, int it, boolean continuous) throws IOException{
 		//Debug Printing: launching executable
-//		System.out.println(programmerCommand + " " + scenarioFile.getAbsolutePath() + " " +
-//				"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
-//				verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
-//				espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
-//				gatesLibrary);
-		process = new ProcessBuilder(programmerCommand, scenarioFile.getAbsolutePath(),
+		/*System.out.println(programmerCommand + " " + scenarioFile.getAbsolutePath() + " " +
+		"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
+		verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
+		espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
+		gatesLibrary);*/
+
+				process = new ProcessBuilder(programmerCommand, scenarioFile.getAbsolutePath(),
 				"-m", effort, genMode, numSol, customFlag, customPath, verbose, cpogSize, disableFunction, oldSynt,
 				espressoFlag, espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
 		InputStream is = process.getInputStream();
