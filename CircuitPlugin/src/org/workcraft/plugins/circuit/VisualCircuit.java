@@ -24,10 +24,12 @@ package org.workcraft.plugins.circuit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.workcraft.Framework;
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
@@ -48,12 +50,14 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.workspace.WorkspaceEntry;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
@@ -217,11 +221,26 @@ public class VisualCircuit extends AbstractVisualModel {
 		return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
 	}
 
+	private File getBase() {
+		Framework framework = Framework.INSTANCE;
+		GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+		WorkspaceEntry we = editor.getWorkspaceEntry();
+		return we.getFile().getParentFile();
+	}
+
 	@NoAutoSerialisation
 	public File getEnvironmentFile() {
 		File result = null;
 		for (Environment env: getEnvironments()) {
 			result = env.getFile();
+			File base = env.getBase();
+			if (base != null) {
+				URI relativeUri = base.toURI().relativize(result.toURI());
+				if (!relativeUri.equals(result.toURI())) {
+					result = new File(getBase(), relativeUri.getPath());
+				}
+			}
+			break;
 		}
 		return result;
 	}
@@ -233,6 +252,7 @@ public class VisualCircuit extends AbstractVisualModel {
 		}
 		Environment env = new Environment();
 		env.setFile(value);
+		env.setBase(getBase());
 		add(env);
 	}
 
