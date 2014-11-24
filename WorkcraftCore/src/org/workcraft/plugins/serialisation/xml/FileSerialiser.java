@@ -15,7 +15,9 @@ public class FileSerialiser implements BasicXMLSerialiser {
 	public void serialise(Element element, Object object)
 			throws SerialisationException {
 		if (object != null) {
-			element.setAttribute("path", ((File)object).getPath());
+			File file = (File)object;
+			String path = file.getPath();
+			element.setAttribute("path", path);
 		}
 	}
 

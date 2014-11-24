@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
@@ -332,15 +331,24 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return (Contact)getReferencedComponent();
 	}
 
+	public boolean isInput() {
+		return getReferencedContact().isInput();
+	}
 
-	public static boolean isDriver(Node node) {
-		if (node instanceof VisualContact) {
-			VisualContact contact = (VisualContact)node;
-			boolean ret =	(contact.getIOType() == IOType.OUTPUT) ||
-							!(contact.getParent() instanceof VisualCircuitComponent);
-			return ret;
-		}
-		return false;
+	public boolean isOutput() {
+		return getReferencedContact().isOutput();
+	}
+
+	public boolean isPort() {
+		return getReferencedContact().isPort();
+	}
+
+	public boolean isDriver() {
+		return getReferencedContact().isDriver();
+	}
+
+	public boolean isDriven() {
+		return getReferencedContact().isDriven();
 	}
 
 	public HashSet<SignalTransition> getReferencedTransitions() {

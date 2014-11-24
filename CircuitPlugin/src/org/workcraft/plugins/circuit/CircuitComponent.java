@@ -152,6 +152,16 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 		return result;
 	}
 
+	public Collection<Contact> getOutputs() {
+		ArrayList<Contact> result = new ArrayList<Contact>();
+		for(Contact c : getContacts()) {
+			if(c.getIOType() == IOType.OUTPUT) {
+				result.add(c);
+			}
+		}
+		return result;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 		sendNotification(new PropertyChangedEvent(this, "name"));

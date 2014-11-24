@@ -79,7 +79,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.10);
 
 			// Generating .g for the circuit
-			File circuitStgFile = File.createTempFile(title + "-circuit-", stgExporter.getExtenstion());
+			String circuitFilePrefix = title + "-circuit-";
+			File circuitStgFile = File.createTempFile(circuitFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
 			ExportTask circuitExportTask = new ExportTask(stgExporter, circuitStg, circuitStgFile.getCanonicalPath());
 			Result<? extends Object> circuitExportResult = framework.getTaskManager().execute(
 					circuitExportTask, "Exporting circuit .g", subtaskMonitor);
@@ -111,7 +112,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 					environmentStgFile = environmentFile;
 				} else {
 					STG environementStg = (STG)framework.loadFile(environmentFile).getMathModel();
-					environmentStgFile = File.createTempFile(title + "-environment-", stgExporter.getExtenstion());
+					String environmentFilePrefix = title + "-environment-";
+					environmentStgFile = File.createTempFile(environmentFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
 					ExportTask environmentExportTask = new ExportTask(stgExporter, environementStg, environmentStgFile.getCanonicalPath());
 					Result<? extends Object> environmentExportResult = framework.getTaskManager().execute(
 							environmentExportTask, "Exporting environment .g", subtaskMonitor);
@@ -128,7 +130,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 				monitor.progressUpdate(0.25);
 
 				// Generating .g for the whole system (circuit and environment)
-				stgFile = File.createTempFile(title + "-system-", stgExporter.getExtenstion());
+				String systemFilePrefix = title + "-system-";
+				stgFile = File.createTempFile(systemFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
 				PcompTask pcompTask = new PcompTask(new File[]{circuitStgFile, environmentStgFile}, PCompOutputMode.OUTPUT, true, false);
 				pcompResult = framework.getTaskManager().execute(
 						pcompTask, "Running pcomp", subtaskMonitor);
@@ -148,7 +151,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			File unfoldingFile = File.createTempFile(title+"-unfolding-", MpsatUtilitySettings.getUnfoldingExtension());
+			String unfoldingFilePrefix = title + "-unfolding-";
+			File unfoldingFile = File.createTempFile(unfoldingFilePrefix.replaceAll("\\s",""), MpsatUtilitySettings.getUnfoldingExtension());
 			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);

@@ -94,8 +94,7 @@ import org.xml.sax.SAXException;
 
 
 public class Framework {
-	public static final String FRAMEWORK_VERSION_MAJOR = "2";
-	public static final String FRAMEWORK_VERSION_MINOR = "dev";
+	 public static Framework INSTANCE;
 
 	class ExecuteScriptAction implements ContextAction {
 		private String script;
@@ -195,6 +194,8 @@ public class Framework {
 	public Memento clipboard;
 
 	public Framework() {
+		Framework.INSTANCE = this;
+
 		pluginManager = new PluginManager(this);
 		taskManager = new DefaultTaskManager()
 		{

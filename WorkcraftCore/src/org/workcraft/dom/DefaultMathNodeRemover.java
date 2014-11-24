@@ -22,6 +22,7 @@
 package org.workcraft.dom;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DependentNode;
@@ -32,33 +33,31 @@ import org.workcraft.observation.NodesDeletedEvent;
 
 public class DefaultMathNodeRemover extends HierarchySupervisor {
 
-	private HashMap<MathNode, Integer> refCount = new HashMap<MathNode, Integer>();
+	private HashMap<MathNode, HashSet<DependentNode>> referenceTracker = new HashMap<MathNode, HashSet<DependentNode>>();
 
-	private void incRef(MathNode node) {
-		if (node != null) {
-			Integer count = refCount.get(node);
-			if (count == null) {
-				refCount.put(node, 1);
-			} else {
-				refCount.put(node, count + 1);
-				if (count > 1) {
-					System.out.println("Debug info: node " + node + "is referenced " + (count+1) + " times");
-				}
+	private void addReference(MathNode mathNode, DependentNode dependentNode) {
+		if (mathNode != null) {
+			HashSet<DependentNode> refs = referenceTracker.get(mathNode);
+			if (refs == null) {
+				refs = new HashSet<DependentNode>();
+				referenceTracker.put(mathNode ,refs);
 			}
+			refs.add(dependentNode);
 		}
 	}
 
-	private void decRef(MathNode node) {
-		if (node != null) {
-			Integer refs = refCount.get(node) - 1;
-			if (refs == 0) {
-				refCount.remove(node);
-				Node parent = node.getParent();
+	private void removeReference(MathNode mathNode, DependentNode dependentNode) {
+		if (mathNode != null) {
+			HashSet<DependentNode> refs = referenceTracker.get(mathNode);
+			if (refs != null) {
+				refs.remove(dependentNode);
+			}
+			if ((refs == null) || refs.isEmpty()) {
+				referenceTracker.remove(mathNode);
+				Node parent = mathNode.getParent();
 				if (parent instanceof Container) {
-					((Container)parent).remove(node);
+					((Container)parent).remove(mathNode);
 				}
-			} else {
-				refCount.put(node, refs);
 			}
 		}
 	}
@@ -78,27 +77,29 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 	}
 
 	private void nodeAdded(Node node) {
-		if (node != null) {
-			if (node instanceof DependentNode) {
-				for (MathNode mn : ((DependentNode)node).getMathReferences()) {
-					incRef(mn);
-				}
+		if (node instanceof DependentNode) {
+			DependentNode dependentNode = (DependentNode)node;
+			for (MathNode mathNode : dependentNode.getMathReferences()) {
+				addReference(mathNode, dependentNode);
 			}
-			for (Node n : node.getChildren()) {
-				nodeAdded(n);
+		}
+		if (node != null) {
+			for (Node childNode : node.getChildren()) {
+				nodeAdded(childNode);
 			}
 		}
 	}
 
 	private void nodeRemoved(Node node) {
-		if (node != null) {
-			if (node instanceof DependentNode) {
-				for (MathNode mn : ((DependentNode)node).getMathReferences()) {
-					decRef(mn);
-				}
+		if (node instanceof DependentNode) {
+			DependentNode dependentNode = (DependentNode)node;
+			for (MathNode mathNode : dependentNode.getMathReferences()) {
+				removeReference(mathNode, dependentNode);
 			}
-			for (Node n : node.getChildren()) {
-				nodeRemoved(n);
+		}
+		if (node != null) {
+			for (Node childNode : node.getChildren()) {
+				nodeRemoved(childNode);
 			}
 		}
 	}

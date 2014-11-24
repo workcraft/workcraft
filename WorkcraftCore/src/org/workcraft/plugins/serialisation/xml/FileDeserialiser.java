@@ -13,7 +13,8 @@ public class FileDeserialiser implements BasicXMLDeserialiser{
 	}
 
 	public Object deserialise(Element element) throws DeserialisationException {
-		return new File(element.getAttribute("path"));
+		String path = element.getAttribute("path");
+		return new File(path);
 	}
 
 }

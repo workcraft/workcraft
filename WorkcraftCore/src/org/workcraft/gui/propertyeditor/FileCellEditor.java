@@ -19,7 +19,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 	JButton button;
 	File file;
 
-	public  FileCellEditor() {
+	public FileCellEditor() {
 		button = new JButton();
 		button.setActionCommand(EDIT);
 		button.addActionListener(this);
