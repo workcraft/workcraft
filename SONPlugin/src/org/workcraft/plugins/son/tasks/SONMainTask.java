@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.StructureVerifySettings;
-import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -41,40 +40,6 @@ public class SONMainTask implements Task<VerificationResult>{
 		clearConsole();
 		//all tasks
 		SON net=(SON)we.getModelEntry().getMathModel();
-		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-
-		//TSON structure tasks
-		if(settings.getType() == 0){
-			TSONStructureTask tsonSTask = new TSONStructureTask(net);
-			tsonSTask.task(settings.getSelectedGroups());
-
-			groupErrors.addAll(tsonSTask.getGroupErrors());
-			relationErrors.addAll(tsonSTask.getRelationErrors());
-			cycleErrors.addAll(tsonSTask.getCycleErrors());
-
-			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
-			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
-		}
-
-		if(settings.getType() == 4){
-			TSONStructureTask tsonSTask = new TSONStructureTask(net);
-			tsonSTask.task(settings.getSelectedGroups());
-
-			groupErrors.addAll(tsonSTask.getGroupErrors());
-			relationErrors.addAll(tsonSTask.getRelationErrors());
-			cycleErrors.addAll(tsonSTask.getCycleErrors());
-
-			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
-			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
-		}
-
-
-		//save current workspace
-		we.captureMemento();
-		//Change connections from block bounding box to inside.
-		if(!vnet.connectToBlocks()){
-			return new Result<VerificationResult>(Outcome.FINISHED);
-		}
 
 		if(settings.getType() == 0){
 
@@ -156,11 +121,42 @@ public class SONMainTask implements Task<VerificationResult>{
 			if(settings.getOuputBefore())
 				outputBefore(net);
 		}
+
+
+		//TSON structure tasks
+		if(settings.getType() == 0){
+			TSONStructureTask tsonSTask = new TSONStructureTask(net);
+			tsonSTask.task(settings.getSelectedGroups());
+
+			groupErrors.addAll(tsonSTask.getGroupErrors());
+			relationErrors.addAll(tsonSTask.getRelationErrors());
+			cycleErrors.addAll(tsonSTask.getCycleErrors());
+
+			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
+			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
+		}
+
+		if(settings.getType() == 4){
+			TSONStructureTask tsonSTask = new TSONStructureTask(net);
+			tsonSTask.task(settings.getSelectedGroups());
+
+			groupErrors.addAll(tsonSTask.getGroupErrors());
+			relationErrors.addAll(tsonSTask.getRelationErrors());
+			cycleErrors.addAll(tsonSTask.getCycleErrors());
+
+			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
+			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
+		}
+
+		int err = getTotalErrNum();
+		int warning = getTotalWarningNum();
+
+		logger.info("\n\nVerification-Result : "+ err + " Error(s), " + warning + " Warning(s).");
+
 		//load memory for reconnecting from block bounding to its inside.
 		we.cancelMemento();
 
 		net=(SON)we.getModelEntry().getMathModel();
-		vnet = (VisualSON)we.getModelEntry().getVisualModel();
 		errNodesHighlight(settings.getErrNodesHighlight(), net);
 
 		return new Result<VerificationResult>(Outcome.FINISHED);

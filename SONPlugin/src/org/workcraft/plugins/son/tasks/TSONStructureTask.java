@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
@@ -14,7 +13,6 @@ import org.workcraft.plugins.son.elements.Block;
 public class TSONStructureTask extends AbstractStructuralVerification{
 
 	private SON net;
-	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new HashSet<Node>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
@@ -30,43 +28,36 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 	}
 
 	@Override
-	public void task(Collection<ONGroup> selectedGroups) {
+	public void task(Collection<ONGroup> groups) {
 
-		logger.info("-----------------Temporal-SON Verification-----------------");
+		infoMsg("---------------------Temporal-SON Structure Verification---------------------");
 
 		//group info
-		logger.info("Initialising selected group elements...");
+		infoMsg("Initialising selected groups and components...");
 
 		Collection<Block> blocks = new ArrayList<Block>();
 
-		for(ONGroup cGroup : selectedGroups)
+		for(ONGroup cGroup : groups)
 			blocks.addAll(cGroup.getBlocks());
 
-		logger.info("Selected Groups = " +  selectedGroups.size());
-		logger.info("Collapsed Block size = " + blocks.size());
+		infoMsg("Selected Groups : " +  net.toString(groups));
+		infoMsg("Collapsed Blocks : " + net.toString(blocks));
 
 		if(blocks.isEmpty()){
-			logger.info("Task termination: no blocks in selected groups.");
+			infoMsg("Task terminated: no blocks in selected groups.");
 			return;
 		}
 
 		for(Block block : blocks){
-			logger.info("Initialising block " +net.getNodeReference(block)+ " ...");
+			infoMsg("Initialising block..." + block);
 			Collection<Node> inputs = getTSONAlg().getBlockInputs(block);
 			Collection<Node> outputs = getTSONAlg().getBlockOutputs(block);
 
-			Collection<String> inputNames = new ArrayList<String>();
-			for(Node node : inputs)
-				inputNames.add(" "+net.getNodeReference(node) + " ");
-			logger.info("inputs = "+ inputNames.toString() + "");
-
-			Collection<String> outputNames = new ArrayList<String>();
-			for(Node node : outputs)
-				outputNames.add(" "+net.getNodeReference(node) + " ");
-			logger.info("outputs = "+ outputNames.toString() + " ");
+			infoMsg("Block inputs: "+ net.toString(inputs));
+			infoMsg("Block outputs: "+ net.toString(outputs));
 
 		//Causally Precede task result
-			logger.info("Running block structural checking tasks...");
+			infoMsg("Running block structure tasks...");
 			if(getPathAlg().cycleTask(block.getComponents()).isEmpty()){
 				Collection<Node> result3 = CausallyPrecedeTask(block);
 				if(!result3.isEmpty()){
@@ -74,20 +65,19 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 					relationErrors.add(block);
 					errNumber = errNumber + result3.size();
 					for(Node node : result3)
-						logger.error("ERROR : Incorrect causally relation, the input node "+
-					net.getNodeReference(node) + "(" + net.getComponentLabel(node) + ")" +" must causally precede all outputs." );
+						errMsg("ERROR : Invalid causally relation, the input does not causally precede all block outputs.",node);
 				}else
-					logger.info("Correct causal relation between inputs and outputs.");
+					infoMsg("Valid causal relation between block inputs and outputs.");
 			}else{
 				warningNumber++;
-				logger.info("Warning : Block contians cyclic path, cannot run causally precede task: " + net.getNodeReference(block));
+				infoMsg("Warning : Block contians cycle path, cannot run causal relation task.", block);
 			}
 		}
 
 		//block connection task result
 
 
-		logger.info("block structural checking tasks complete.");
+		infoMsg("block structure tasks complete.");
 
 	}
 

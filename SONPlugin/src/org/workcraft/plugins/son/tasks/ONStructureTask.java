@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
@@ -17,7 +16,6 @@ import org.workcraft.plugins.son.elements.Event;
 public class ONStructureTask extends AbstractStructuralVerification{
 
 	private SON net;
-	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new HashSet<Node>();
 	private Collection<Path> cycleErrors = new HashSet<Path>();
@@ -34,7 +32,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 	public void task(Collection<ONGroup> groups){
 
-		logger.info("-------------------------Occurrence Net Verification-------------------------");
+		infoMsg("-------------------------Occurrence Net Structure Verification-------------------------");
 
 		ArrayList<Node> components = new ArrayList<Node>();
 
@@ -42,8 +40,8 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			components.addAll(group.getComponents());
 		}
 
-		logger.info("Selected Groups = " +  groups.size());
-		logger.info("Group Components = " + components.size()+"\n");
+		infoMsg("Selected Groups = " +  groups.size());
+		infoMsg("Group Components = " + components.size() + "\n");
 
 		for(ONGroup group : groups){
 
@@ -51,20 +49,17 @@ public class ONStructureTask extends AbstractStructuralVerification{
 		Collection<Path> cycleResult;
 
 		//group info
-			logger.info("Initialising group components...");
+			infoMsg("Initialising selected groups and components...");
 
 			Collection<Node> groupComponents = group.getComponents();
-				if(group.getLabel().isEmpty())
-					logger.info("Group label : empty" );
-				else
-					logger.info("Group label : " + group.getLabel() );
+			infoMsg("Group name : ", group);
+			infoMsg("Conditions = "+group.getConditions().size()+".\n" +"Events = "+group.getEvents().size()
+					+".\n" + "Collapsed Blocks = " + group.getCollapsedBlocks().size()+".");
 
-			logger.info("Condition(s) = "+group.getConditions().size()+".\n" +"Event(s) = "+group.getEvents().size()
-					+".\n" + "Collapsed Block(s) = " + group.getCollapsedBlocks().size()+".");
-			logger.info("Running components relation task...");
+			infoMsg("Running component relation tasks...");
 
 			if(!getRelationAlg().hasFinal(groupComponents) || !getRelationAlg().hasInitial(groupComponents)){
-				logger.error("ERROR : Occurrence net must have at least one initial state and one final state \n");
+				errMsg("ERROR : Occurrence net must have at least one input and one output.");
 				hasErr = true;
 				errNumber ++;
 				continue;
@@ -74,26 +69,26 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			task1 = iniStateTask(groupComponents);
 
 			if (task1.isEmpty())
-				logger.info("Initial states correct.");
+				infoMsg("Valid occurrence net input.");
 			else{
 				hasErr = true;
 				errNumber = errNumber + task1.size();
 				for(Node node : task1){
 					relationErrors.add(node);
-					logger.error("ERROR : Incorrect initial state: " + net.getNodeReference(node) + "(" + net.getComponentLabel(node) + ")  ");
+					errMsg("ERROR : Invalid occurrence net input (initial state is not a condition).", node);
 				}
 			}
 
 			//final state result
 			task2 = finalStateTask(groupComponents);
 			if (task2.isEmpty())
-				logger.info("Final states correct.");
+				infoMsg("Valid occurrence net output.");
 			else{
 				hasErr = true;
 				errNumber = errNumber + task2.size();
 				for(Node node : task2){
 					relationErrors.add(node);
-					logger.error("ERROR : Incorrect final state: " + net.getNodeReference(node) + "(" + net.getComponentLabel(node) + ")  ");
+					errMsg("ERROR : Invalid occurrence net output (final state is not a condition).", node);
 				}
 			}
 
@@ -102,41 +97,41 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			task4 = preConflictTask(groupComponents);
 
 			if (task3.isEmpty() && task4.isEmpty())
-				logger.info("Condition structure correct.");
+				infoMsg("Occurrence net is conflict free.");
 			else{
 				hasErr = true;
 				errNumber = errNumber + task3.size()+ task4.size();
 				for(Node condition : task3){
 					relationErrors.add(condition);
-					logger.error("ERROR : Post set nodes in conflict: " + net.getNodeReference(condition) + "(" + net.getComponentLabel(condition) + ")  ");
+					errMsg("ERROR : Output events in conflict.", condition);
 					}
 				for(Node condition : task4){
 					relationErrors.add(condition);
-					logger.error("ERROR : Pre set nodes in conflict: " + net.getNodeReference(condition) + "(" + net.getComponentLabel(condition) + ")  ");
+					errMsg("ERROR : Input events in conflict.", condition);
 				}
 			}
-			logger.info("Components relation task complete.");
+			infoMsg("Component relation tasks complete.");
 
 			//cycle detection result
-			logger.info("Running cycle detection...");
+			infoMsg("Running cycle detection task...");
 
 			cycleResult = getPathAlg().cycleTask(groupComponents);
 
 			cycleErrors.addAll(cycleResult);
 
 			if (cycleResult.isEmpty())
-				logger.info("Acyclic structure correct");
+				infoMsg("Occurrence net is cycle free");
 			else{
 				hasErr = true;
 				errNumber++;
-				logger.error("ERROR : model involves cycle paths = "+ cycleResult.size() + ".");
+				errMsg("ERROR : Occurrence net involves cycle paths = "+ cycleResult.size() + ".");
 				int i = 1;
 				for(Path cycle : cycleResult){
-					logger.error("Cycle " + i + ": " + cycle.toString(net));
+					errMsg("Cycle " + i + ": " + cycle.toString(net));
 					i++;
 				}
 			}
-			logger.info("Cycle detection complete.\n");
+			infoMsg("Cycle detection task complete.\n");
 		}
 	}
 

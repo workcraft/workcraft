@@ -103,7 +103,7 @@ public class BSONCycleAlg extends ONCycleAlg{
 	}
 
 	@Override
-	public Collection<Path> cycleTask (Collection<Node> nodes){
+	public Collection<Path> cycleTask (Collection<? extends Node> nodes){
 		 return cyclePathFliter(super.cycleTask(nodes));
 	}
 

@@ -137,8 +137,8 @@ public class StructureVerifyDialog extends JDialog{
 		typeCombo.addItem(new typeMode(0, "Structured Occurrence Nets"));
 		typeCombo.addItem(new typeMode(1, "Occurrence Net (Group)"));
 		typeCombo.addItem(new typeMode(2, "Communication Structured Occurrence Nets"));
-		typeCombo.addItem(new typeMode(3, "Behavioural Abstraction"));
-		typeCombo.addItem(new typeMode(4, "Temporal Abstraction"));
+		typeCombo.addItem(new typeMode(3, "Behavioural Structured Occurrence Nets"));
+		typeCombo.addItem(new typeMode(4, "Temporal Structured Occurrence Nets"));
 
 		ArcTypePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
 
@@ -155,7 +155,10 @@ public class StructureVerifyDialog extends JDialog{
 		DefaultListModel listModel = new DefaultListModel();
 
 		for(ONGroup group : net.getGroups()){
-			listModel.addElement(new CheckListItem("Group: " + group.getLabel(), group));
+			if(group.getLabel().isEmpty())
+				listModel.addElement(new CheckListItem("Group: " + net.getNodeReference(group), group));
+			else
+				listModel.addElement(new CheckListItem("Group: " + net.getNodeReference(group) + " (" + group.getLabel() + ")", group));
 		}
 
 		groupList = new JList (listModel);

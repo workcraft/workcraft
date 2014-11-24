@@ -4,6 +4,7 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.tasks.ReachabilityTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -36,7 +37,9 @@ public class ReachabilityTool implements Tool{
 	@Override
 	public void run(WorkspaceEntry we) {
 		SON net=(SON)we.getModelEntry().getMathModel();
+		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 		ReachabilityTask task = new ReachabilityTask(net, we, framework);
+		vnet.connectToBlocks(we);
 		framework.getTaskManager().queue(task, "Verification");
 	}
 

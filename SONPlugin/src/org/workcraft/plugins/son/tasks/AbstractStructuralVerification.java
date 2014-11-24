@@ -3,6 +3,7 @@ package org.workcraft.plugins.son.tasks;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
@@ -17,6 +18,8 @@ import org.workcraft.plugins.son.algorithm.TSONAlg;
 abstract class AbstractStructuralVerification implements StructuralVerification{
 
 	private SON net;
+
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private RelationAlgorithm relationAlg;
 	private CSONCycleAlg csonPathAlg;
@@ -62,6 +65,22 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 			}
 		}
 		return result;
+	}
+
+	public void infoMsg(String msg){
+		logger.info(msg);
+	}
+
+	public void infoMsg(String msg, Node node){
+		logger.info(msg + " [" + net.getNodeReference(node) + "]");
+	}
+
+	public void errMsg(String msg){
+		logger.info(msg);
+	}
+
+	public void errMsg(String msg, Node node){
+		logger.info(msg + " [" + net.getNodeReference(node) + "]");
 	}
 
 	public RelationAlgorithm getRelationAlg(){

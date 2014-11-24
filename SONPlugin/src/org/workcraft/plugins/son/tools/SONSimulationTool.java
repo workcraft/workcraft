@@ -77,6 +77,7 @@ import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class SONSimulationTool extends PetriNetSimulationTool {
 
@@ -113,7 +114,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected final Trace branchTrace = new Trace();
 
 	protected boolean reverse = false;
-	protected boolean conToBlock = true;
 
 	protected Timer timer = null;
 
@@ -342,19 +342,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		bsonAlg = new BSONAlg(net);
 		simuAlg = new SimulationAlg(net);
 		errAlg = new ErrorTracingAlg(net);
-
-		if (visualNet == editor.getModel()) {
-			editor.getWorkspaceEntry().captureMemento();
-		}
-		editor.getWorkspaceEntry().setCanModify(false);
+		WorkspaceEntry we = editor.getWorkspaceEntry();
 
 		mainTrace.clear();
 		branchTrace.clear();
 
-		if(!visualNet.connectToBlocks()){
-			conToBlock = false;
-			return;
-		}
+		we.setCanModify(false);
+		visualNet.connectToBlocks(we);
+
 		sync = getSyncCycles();
 		phases = bsonAlg.getPhases();
 		try {
@@ -933,7 +928,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			}
 		});
 
-		if (node instanceof VisualTransitionNode && conToBlock){
+		if (node instanceof VisualTransitionNode){
 
 			Collection<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
 			TransitionNode selected = ((VisualTransitionNode)node).getMathTransitionNode();
@@ -1094,19 +1089,19 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
-				if(node instanceof VisualTransitionNode && conToBlock) {
+				if(node instanceof VisualTransitionNode) {
 					TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
 					Node event2 = null;
+
 					if (branchTrace.canProgress()) {
 						Step step = branchTrace.get(branchTrace.getPosition());
-						if (step.contains(net.getNodeReference(event)))
-							event2 = net.getNodeByReference(net.getNodeReference(event));
+						if (step.contains(net.getName(event)))
+							event2 = net.getNodeByReference(net.getName(event));
 					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
 						Step step = mainTrace.get(mainTrace.getPosition());
-						if (step.contains(net.getNodeReference(event)))
-							event2 = net.getNodeByReference(net.getNodeReference(event));
+						if (step.contains(net.getName(event)))
+							event2 = net.getNodeByReference(net.getName(event));
 					}
-
 
 					if (event==event2) {
 						return new Decoration(){

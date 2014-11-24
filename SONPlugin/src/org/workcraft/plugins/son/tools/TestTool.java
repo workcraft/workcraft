@@ -89,8 +89,8 @@ public class TestTool extends AbstractTool implements Tool{
 		}
 	}
 
-	private void conditionOutputTest(VisualSON vnet){
-		vnet.connectToBlocks();
+	private void conditionOutputTest(VisualSON vnet, WorkspaceEntry we){
+		vnet.connectToBlocks(we);
 	}
 
 	private void syncCycleTest(SON net){

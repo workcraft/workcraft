@@ -352,14 +352,17 @@ public class SON extends AbstractMathModel {
 		boolean first = true;
 		for (Node node : nodes) {
 			if (!first) {
-				result.append(' ');
-				result.append(',' + getNodeReference(node));
+				result.append(',');
+				result.append(' ' + getNodeReference(node));
 			}else{
 				result.append(' ');
+				result.append('[');
 				result.append(getNodeReference(node));
 				first = false;
 			}
 		}
+		if(!nodes.isEmpty())
+			result.append(']');
 		return result.toString();
 
 	}

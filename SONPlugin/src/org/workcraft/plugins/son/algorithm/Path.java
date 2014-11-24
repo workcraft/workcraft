@@ -14,14 +14,17 @@ public class Path extends ArrayList<Node>{
 		boolean first = true;
 		for (Node node : this) {
 			if (!first) {
-				result.append(' ');
-				result.append(',' + net.getNodeReference(node));
+				result.append(',');
+				result.append(' ' + net.getNodeReference(node));
 			}else{
 				result.append(' ');
+				result.append('[');
 				result.append(net.getNodeReference(node));
 				first = false;
 			}
 		}
+		if(!this.isEmpty())
+			result.append(']');
 		return result.toString();
 	}
 }

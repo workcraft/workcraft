@@ -128,7 +128,7 @@ public class OutputArea extends JFrame {
             BorderLayout.CENTER);
         this.pack ();
         this.setVisible (true);
-        this.setTitle("Verification Result");
+        this.setTitle("Structure Verification Result");
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize=kit.getScreenSize();

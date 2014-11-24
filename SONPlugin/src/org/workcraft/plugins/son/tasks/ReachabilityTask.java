@@ -18,6 +18,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.CycleAlgorithm;
+import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -61,7 +62,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		}
 
 		phases = bsonAlg.getPhases();
-
 	}
 
 	@Override
@@ -75,31 +75,37 @@ public class ReachabilityTask implements Task<VerificationResult>{
 					"Marking required", JOptionPane.INFORMATION_MESSAGE);
 			return new Result<VerificationResult>(Outcome.FINISHED);
 		}
-		try {
-			if(reachabilityTask()){
-				int result = JOptionPane.showConfirmDialog(null,
-						"The selected marking is REACHABLE from initial states, \n" +
-						"select OK to analysis the trace leading to the marking in the simulation tool",
-						"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
-				if(result == 0){
-					Map<PlaceNode, Boolean> finalStates = simulation();
-					for(PlaceNode node : marking){
-						if(finalStates.get(node) == false)
-							throw new RuntimeException("Reachability algorithm error, doesn't reach selected marking");
-					}
-				}
-			}
-			else{
-				JOptionPane.showMessageDialog(null,
-						"The selected marking is UNREACHABLE from initial states",
-						"Reachability task result", JOptionPane.INFORMATION_MESSAGE);
-			}
-		} catch (StackOverflowError e) {
+
+		//cycle detection
+		ONCycleAlg cycleAlg = new ONCycleAlg(net);
+		if(!cycleAlg.cycleTask(net.getComponents()).isEmpty()){
+			we.cancelMemento();
 			JOptionPane.showMessageDialog(null,
 					"Fail to run reachability anaylsis tool, " +
 					"error may due to incorrect structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+			return new Result<VerificationResult>(Outcome.FINISHED);
 		}
 
+		if(reachabilityTask()){
+			int result = JOptionPane.showConfirmDialog(null,
+					"The selected marking is REACHABLE from initial states. \n" +
+					"Select OK to analysis the trace leading to the marking in the simulation tool.",
+					"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
+			if(result == 0){
+				Map<PlaceNode, Boolean> finalStates = simulation();
+				for(PlaceNode node : marking){
+					if(finalStates.get(node) == false)
+						throw new RuntimeException("Reachability algorithm error, doesn't reach selected marking" + net.getNodeReference(node));
+				}
+				return new Result<VerificationResult>(Outcome.FINISHED);
+			}
+		}
+		else{
+			JOptionPane.showMessageDialog(null,
+					"The selected marking is UNREACHABLE from initial states",
+					"Reachability task result", JOptionPane.INFORMATION_MESSAGE);
+		}
+		we.cancelMemento();
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 
@@ -146,7 +152,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 //			//reachability checking for initial marking
 //			//get abstract conditions set C
 //			//check if they are all initial state
-//			//if it's not, check if there exist other abstract condition in C which is in the same group and is the initial state
+//			//if it's not, check if there exist other abstract condition
+//			//in C which is in the same group and is the initial state
 //			//if we cann't find that condition, it's invalid initial marking
 //			if(relationAlg.isInitial(node)){
 //				Collection<Condition> absConditions = bsonAlg.getAbstractConditions(node);
@@ -159,7 +166,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 //			}
 
 			causalPredecessors.addAll(getCausalPredecessors(node, sync));
-			//test
+//			//test
 //			System.out.println();
 //			System.out.println("marking = " + net.getNodeReference(node));
 //			for(Node n : causalPredecessors){
