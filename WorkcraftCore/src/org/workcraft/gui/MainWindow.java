@@ -1144,7 +1144,7 @@ public class MainWindow extends JFrame {
 
 	public void refreshTitle(WorkspaceEntry we) {
 		for (DockableWindow w : editorWindows.get(we)) {
-			final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
+			final GraphEditorPanel editor = getCurrentEditor();
 			String title = getTitle(we, editor.getModel());
 			w.getContentPanel().setTitle(title);
 			w.setTabText(title);
