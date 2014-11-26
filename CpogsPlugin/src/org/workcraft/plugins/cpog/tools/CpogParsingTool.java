@@ -1,6 +1,9 @@
 package org.workcraft.plugins.cpog.tools;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D.Double;
+import java.lang.Number;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -85,7 +88,7 @@ public class CpogParsingTool {
 	    return boolForm;
 	  }
 
-	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX)
+	 public void bfsLayout(Queue<VisualVertex> q, VisualCPOG visualCpog, double originalX, double originalY)
 	 {
 		 ArrayList<ArrayList<VisualVertex>> outer = new ArrayList<ArrayList<VisualVertex>>();
 		 outer.add(new ArrayList<VisualVertex>());
@@ -98,9 +101,9 @@ public class CpogParsingTool {
 			e.printStackTrace();
 		}
 		 outer.get(0).add(current);
-
 		 children = getChildren(visualCpog, current);
 		 outer.add(new ArrayList<VisualVertex>());
+
 
 		 for (VisualVertex child : children)
 		 {
@@ -126,11 +129,9 @@ public class CpogParsingTool {
 			 }
 		 }
 
-		 Point2D.Double centre = new Point2D.Double(0, 0);
+		 Point2D.Double centre = new Point2D.Double(0, originalY);
 		 int maxSize = 0;
 
-		 if ((maxX != 0) && (maxY != 0))
-		 {
 			 for (ArrayList<VisualVertex> inner : outer)
 			 {
 				 if (inner.size() > maxSize)
@@ -139,11 +140,7 @@ public class CpogParsingTool {
 				 }
 			 }
 
-			 centre = new Point2D.Double(originalX, maxY);
-
-		 }
-
-		 double x = centre.getX();
+		 double x = originalX;
 		 double y = 0;
 
 		 Iterator<ArrayList<VisualVertex>> it = outer.iterator();
@@ -162,18 +159,11 @@ public class CpogParsingTool {
 			 {
 				 v.setPosition(new Point2D.Double(x, y));
 				 y += 2.5;
-				 if (y > maxY)
-				 {
-					 maxY = y;
-				 }
+
 			 }
 			 if (it.hasNext())
 			 {
 				 x += 2.5;
-				 if (x > maxX)
-				 {
-					 maxX = x;
-				 }
 			 }
 		 }
 	 }
@@ -425,6 +415,7 @@ public class CpogParsingTool {
 		 VisualVertex current = null;
 		 boolean transitiveFound = false;
 
+
 		 for(VisualVertex root: roots)
 		 {
 			 q.enqueue(root);
@@ -615,4 +606,57 @@ public class CpogParsingTool {
 			refMap.put(gn, text);
 	 }
 
+	 public Point2D.Double getLowestVertex(VisualCPOG visualCpog)
+	 {
+		 Collection<VisualVertex> vertices =  visualCpog.getVertices(visualCpog.getCurrentLevel());
+		 vertices.removeAll(visualCpog.getSelection());
+		 Collection<VisualScenario> groups = visualCpog.getGroups();
+
+		 vertices.removeAll(visualCpog.getSelection());
+		 groups.removeAll(visualCpog.getSelection());
+
+		 Point2D.Double centre, startPoint = null;
+
+
+		 for(VisualVertex vertex : vertices) {
+			 centre = (Double) vertex.getCenter();
+			 if (startPoint == null) {
+				 startPoint = new Point2D.Double (centre.getX(), centre.getY());
+			 } else {
+				 if (centre.getY() < startPoint.getY()) {
+				 	startPoint.setLocation(startPoint.getX(), centre.getY());
+			 	}
+				 if (centre.getX() < startPoint.getX()){
+					 startPoint.setLocation(centre.getX(), startPoint.getY());
+				 }
+			 }
+
+		 }
+		 for(VisualScenario group : groups) {
+			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) group.getBoundingBox();
+			 Point2D.Double c = (Double) group.getPosition();
+			 Point2D.Double bl = new Point2D.Double(rect.getCenterX(), rect.getCenterY() + (rect.getHeight()/2));
+
+
+			 if (startPoint == null) {
+				 startPoint = new Point2D.Double(bl.getX(), bl.getY());
+			 } else {
+				 if (bl.getY() > startPoint.getY()) {
+					 startPoint.setLocation(startPoint.getX(), bl.getY());
+				 }
+				 if (bl.getX() < startPoint.getX()) {
+					 startPoint.setLocation(bl.getY(), startPoint.getY());
+				 }
+			 }
+		 }
+		 if (startPoint == null) {
+			 startPoint = new Point2D.Double(0,0);
+		 } else
+		 {
+			 startPoint.setLocation(startPoint.getX(), startPoint.getY() + 3);
+		 }
+
+		 return startPoint;
+
+	 }
 }

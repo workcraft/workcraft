@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.CpogConnector;
@@ -436,17 +438,28 @@ public class CpogSelectionTool extends SelectionTool {
 			} else {
 				Iterator<VisualVertex> root = roots.iterator();
 				Queue q = new Queue();
-				//double originalX = maxX;
+				double originalX = 0, originalY = 0;
 				while(root.hasNext()) {
 					q.enqueue(root.next());
-					parsingTool.bfsLayout(q, visualCpog, 0);
+					parsingTool.bfsLayout(q, visualCpog, originalX, originalY);
+					originalY += 2.5;
 				}
 			}
 
-			maxY += 2;
 			editor.requestFocus();
+			Point2D.Double coordinate = (Double) parsingTool.getLowestVertex(visualCpog);
 			if (PGF.getGraphName() != null)	{
-				visualCpog.groupSelection(PGF.getGraphName());
+				VisualScenario vs = visualCpog.groupSelection(PGF.getGraphName());
+				vs.setPosition(coordinate);
+			} else {
+				for (Node node : visualCpog.getSelection())
+				{
+					if (node instanceof VisualVertex)
+					{
+						VisualVertex v = (VisualVertex) node;
+						v.setPosition(new Point2D.Double(v.getX(), v.getY() + coordinate.getY()));
+					}
+				}
 			}
 		} else {
 			String normalForm = "";
@@ -482,7 +495,6 @@ public class CpogSelectionTool extends SelectionTool {
 				}
 			}
 
-			System.out.println("NormalForm: " + normalForm);
 			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, normalForm);
 			visualCpog.remove(visualCpog.getSelection());
 		}

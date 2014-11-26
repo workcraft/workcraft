@@ -179,10 +179,11 @@ public class VisualCPOG extends AbstractVisualModel
 		groupSelection(null);
 	}
 
-	public void groupSelection(String graphName) {
+	public VisualScenario groupSelection(String graphName) {
 		Collection<Node> nodes = getGroupableCurrentLevelSelection();
+		VisualScenario scenario = null;
 		if (nodes.size() >= 1) {
-			VisualScenario scenario = new VisualScenario();
+			scenario = new VisualScenario();
 			if (graphName != null) {
 				scenario.setLabel(graphName);
 			}
@@ -191,6 +192,7 @@ public class VisualCPOG extends AbstractVisualModel
 			scenario.setPosition(centralizeComponents(nodes));
 			select(scenario);
 		}
+		return scenario;
 	}
 
 	// TODO: Add safe versions of these methods; see getVertices(Container root).
