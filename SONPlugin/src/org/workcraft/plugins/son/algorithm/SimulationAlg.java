@@ -261,7 +261,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		for(TransitionNode e : fireList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
-					Condition to = (Condition)c.getSecond();					if(to.isMarked())
+					Condition to = (Condition)c.getSecond();
+					if(to.isMarked())
 						throw new InvalidStructureException("Token amount > 1: "+net.getNodeReference(to));
 					to.setMarked(true);
 				}
@@ -292,59 +293,59 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 
-		for(ONGroup group : abstractGroups){
-			if(group.getEvents().contains(e)){
-				Collection<Condition> preMax = new HashSet<Condition>();
-				Collection<Condition> postMin = new HashSet<Condition>();
-				for(Node pre : getPrePNSet(e))
+			//if e is an abstract events, get preMax - maximal phase of e's input, and postMin - minimal phase of e' output
+			Collection<Condition> preMax = new HashSet<Condition>();
+			Collection<Condition> postMin = new HashSet<Condition>();
+			for(Node pre : getPrePNSet(e)){
+				if(bsonAlg.isAbstractCondition(pre))
 					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
-				for(Node post : getPostPNSet(e))
+			}
+			for(Node post : getPostPNSet(e)){
+				if(bsonAlg.isAbstractCondition(post))
 					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
-				//disjoint phases
-				if(!preMax.containsAll(postMin)){
-					boolean isFinal=true;
-					for(Condition fin : preMax)
-							if(!isFinal(fin))
-								isFinal=false;
-					if(isFinal){
-						//structure that condition fin has more than one abstract conditions
-						for(Condition fin : preMax){
-							//amount of marked abstract conditions
-							int tokens = 0;
-							for(Node post : net.getPostset(fin)){
-								if((post instanceof Condition)
-										&& net.getSONConnectionType(post, fin) == Semantics.BHVLINE)
-									if(((Condition)post).isMarked())
-										tokens++;
-							}
-							//if preMax has token and there exist an empty abstract condition, then token -> false;
-							if(fin.isMarked() && tokens == 0)
-								fin.setMarked(false);
-						}
+			}
+			//if preMax and postMin are in separate ONs.
+			if(!preMax.containsAll(postMin)){
+				boolean isFinal=true;
+				//if preMax are the final states of an ON
+				for(Condition fin : preMax){
+					if(!isFinal(fin)){
+						isFinal=false;
+						break;
 					}
-					boolean isIni = true;
-					for(Condition init : postMin)
-						if(!isInitial(init))
-							isIni=false;
-					if(isIni)
-						for(Condition ini : postMin){
-							//structure that condition ini has more than one abstract conditions
-							int tokens = 0;
-							int size = 0;
-							for(Node post : net.getPostset(ini)){
-								if((post instanceof Condition)
-										&& net.getSONConnectionType(post, ini) == Semantics.BHVLINE){
-									size++;
-									if(((Condition)post).isMarked())
-										tokens++;
-									}
-							}
-
-							if(!ini.isMarked() && tokens == size)
-								ini.setMarked(true);
-							//	JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+				}
+				//token in preMax sets to false if none of corresponding abstract conditions is marked
+				if(isFinal){
+					for(Condition fin : preMax){
+						int tokens = 0;
+						for(Node c : bsonAlg.getAbstractConditions(fin)){
+							if(((Condition)c).isMarked())
+								tokens++;
 						}
+						if(fin.isMarked() && tokens == 0)
+							fin.setMarked(false);
 					}
+				}
+				//if postMin are the initial states of another ON
+				boolean isInitial = true;
+				for(Condition init : postMin){
+					if(!isInitial(init)){
+						isInitial=false;
+						break;
+					}
+				}
+				//token in postMin sets to true if ALL corresponding abstract conditions is marked
+				if(isInitial)
+					for(Condition ini : postMin){
+						int tokens = 0;
+						int count = 0;
+						for(Node c : bsonAlg.getAbstractConditions(ini)){
+							count++;
+							if(((Condition)c).isMarked())
+								tokens++;
+						}
+						if(!ini.isMarked() && tokens == count)
+							ini.setMarked(true);
 				}
 			}
 		}
@@ -482,57 +483,60 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 
-			for(ONGroup group : abstractGroups){
-				if(group.getEvents().contains(e)){
-					Phase preMax = new Phase();
-					Phase postMin = new Phase();
-					for(Node pre : getPrePNSet(e))
-						preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
-					for(Node post : getPostPNSet(e))
-						postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
 
-					if(!preMax.containsAll(postMin)){
-						boolean isInitial=true;
-						for(Condition ini : postMin)
-								if(!isInitial(ini))
-									isInitial=false;
-						if(isInitial){
-								for(Condition ini : postMin){
-									//structure such that condition fin has more than one high-level states
-									int tokens = 0;
-									for(Node post : net.getPostset(ini)){
-										if(post instanceof Condition && net.getSONConnectionType(post, ini) == Semantics.BHVLINE)
-											if(((Condition)post).isMarked())
-												tokens++;
-									}
-									//if preMax has token and there is no high-level states has token, then token -> false;
-									if(ini.isMarked() && tokens == 0)
-										ini.setMarked(false);
-								}
-							}
-
-						boolean isFinal = true;
-						for(Condition fin : preMax)
-								if(!isFinal(fin))
-									isFinal=false;
-						if(isFinal)
-							for(Condition fin : preMax){
-								//structure such that condition ini has more than one high-level states
-								int tokens = 0;
-								int size = 0;
-								for(Node post : net.getPostset(fin)){
-									if(post instanceof Condition && net.getSONConnectionType(post, fin)== Semantics.BHVLINE){
-										size++;
-										if(((Condition)post).isMarked())
-											tokens++;
-										}
-								}
-
-								if(!fin.isMarked() && tokens == size)
-									fin.setMarked(true);
-								//	JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
-							}
+			//if e is an abstract events, get preMax - maximal phase of e's input, and postMin - minimal phase of e' output
+			Collection<Condition> preMax = new HashSet<Condition>();
+			Collection<Condition> postMin = new HashSet<Condition>();
+			for(Node pre : getPrePNSet(e)){
+				if(bsonAlg.isAbstractCondition(pre))
+					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+			}
+			for(Node post : getPostPNSet(e)){
+				if(bsonAlg.isAbstractCondition(post))
+					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
+			}
+			//if preMax and postMin are in separate ONs.
+			if(!preMax.containsAll(postMin)){
+				boolean isFinal=true;
+				//if preMax are the final states of an ON
+				for(Condition fin : preMax){
+					if(!isFinal(fin)){
+						isFinal=false;
+						break;
 					}
+				}
+				//token in preMax sets to true if all of corresponding abstract conditions is marked
+				if(isFinal){
+					for(Condition fin : preMax){
+						int tokens = 0;
+						int count = 0;
+						for(Node c : bsonAlg.getAbstractConditions(fin)){
+							count++;
+							if(((Condition)c).isMarked())
+								tokens++;
+						}
+						if(!fin.isMarked() && tokens == count)
+							fin.setMarked(true);
+					}
+				}
+				//if postMin are the initial states of another ON
+				boolean isInitial = true;
+				for(Condition init : postMin){
+					if(!isInitial(init)){
+						isInitial=false;
+						break;
+					}
+				}
+				//token in postMin sets to false if none of corresponding abstract conditions is marked
+				if(isInitial)
+					for(Condition ini : postMin){
+						int tokens = 0;
+						for(Node c : bsonAlg.getAbstractConditions(ini)){
+							if(((Condition)c).isMarked())
+								tokens++;
+						}
+						if(ini.isMarked() && tokens == 0)
+							ini.setMarked(false);
 				}
 			}
 		}

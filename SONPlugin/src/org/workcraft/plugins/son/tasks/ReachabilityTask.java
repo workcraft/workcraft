@@ -39,7 +39,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	private final WorkspaceEntry we;
 	private final Framework framework;
 	private BSONAlg bsonAlg;
-	private RelationAlgorithm relationAlg;
 
 	private Collection<PlaceNode> marking;
 	private Map<Condition, Phase> phases;
@@ -52,7 +51,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		this.framework = framework;
 
 		bsonAlg = new BSONAlg(net);
-		relationAlg = new RelationAlgorithm(net);;
 		marking = new ArrayList<PlaceNode>();
 		causalPredecessors = new HashSet<TransitionNode>();
 
@@ -148,61 +146,42 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 		causalPredecessors = new HashSet<TransitionNode>();
 
+		//get CausalPredecessors for each marking
 		for(PlaceNode node : marking){
-//			//reachability checking for initial marking
-//			//get abstract conditions set C
-//			//check if they are all initial state
-//			//if it's not, check if there exist other abstract condition
-//			//in C which is in the same group and is the initial state
-//			//if we cann't find that condition, it's invalid initial marking
-//			if(relationAlg.isInitial(node)){
-//				Collection<Condition> absConditions = bsonAlg.getAbstractConditions(node);
-//				for(Condition absCondition : absConditions)
-//					if(!relationAlg.isInitial(absCondition)){
-//						ONGroup absGroup = bsonAlg.getAbstractGroups(absCondition).iterator().next();
-//						if(!relationAlg.hasInitial(relationAlg.getCommonElements(absGroup.getComponents(), absConditions)))
-//							return false;
-//					}
-//			}
-
 			causalPredecessors.addAll(getCausalPredecessors(node, sync));
-//			//test
-//			System.out.println();
-//			System.out.println("marking = " + net.getNodeReference(node));
-//			for(Node n : causalPredecessors){
-//				System.out.print(" " + net.getNodeReference(n));
-//				net.setForegroundColor(n, Color.RED);
-//			}
-//			System.out.println();
 		}
 
 		Collection<Node> consume = new HashSet<Node>();
 
 		//get all place nodes which are the input (consumed) of causal predecessors
-		//if input is abstract condition and every its max phase is final state
-		//add such max phase to the set
 		for(TransitionNode t : causalPredecessors){
 			for(Node pre : net.getPreset(t)){
 				consume.add(pre);
-				if(bsonAlg.isAbstractCondition(pre)){
-					boolean isFinal = true;
-					Collection<Condition> max = bsonAlg.getMaximalPhase(phases.get(pre));
-					for(Condition c : max){
-						if(!relationAlg.isFinal(c)){
-							isFinal = false;
-							break;
-						}
-					}
-					if(isFinal){
-						consume.addAll(max);
-					}
-				}
 			}
 		}
+//		//test
+//		System.out.println();
+//		System.out.println("marking = " + net.getNodeReference(node));
+//		for(Node n : causalPredecessors){
+//			System.out.print(" " + net.getNodeReference(n));
+//			net.setForegroundColor(n, Color.RED);
+//		}
+//		System.out.println();
+//		System.out.println();
+//		System.out.println("consume:");
+//		for(Node n : consume){
+//			System.out.print(" " + net.getNodeReference(n));
+//		}
+//		System.out.println();
 
-		// marking is reachable if none of the marked conditions is consumed by causalPredecessors.
+		// marking is reachable if
+		//1. none of the marked conditions is consumed by causalPredecessors.
+		//2. all of corresponding abstract conditions are not consumed by causalPredecessors
 		for(PlaceNode node : marking){
 			if(consume.contains(node))
+				return false;
+			Collection<Condition> c = bsonAlg.getAbstractConditions(node);
+			if(consume.containsAll(c))
 				return false;
 		}
 
@@ -258,8 +237,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		else if(pre instanceof ChannelPlace){
 			causalSet.addAll(net.getPreset(pre));
 		}
-		//else if marking contains pre, add its pre-event to the set
-		else if(marking.contains(pre)){
+		//else if marking contains pre and pre is not initial state, add its PN pre-event to the set
+		else if(marking.contains(pre) && !relationAlg.isInitial(pre)){
 			causalSet.addAll(relationAlg.getPrePNSet(pre));
 		}
 		//else if 'pre' is a bhv condition,
@@ -273,7 +252,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 				Phase phase = phases.get(c);
 				Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
 				Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
-				//if pre is min, add abstract pre-event to the abstract set.
+				//if pre is in min, add abstract pre-event to the abstract set.
 				if (min.contains(pre)){
 					causalSet.addAll(relationAlg.getPrePNSet(c));
 				}

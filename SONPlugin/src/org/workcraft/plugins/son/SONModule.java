@@ -30,7 +30,7 @@ public class SONModule implements Module{
 		PluginManager pm = framework.getPluginManager();
 		pm.registerClass(ModelDescriptor.class, SONModelDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
-		pm.registerClass(Tool.class, TestTool.class, framework);
+		//pm.registerClass(Tool.class, TestTool.class, framework);
 		//verification
 		pm.registerClass(Tool.class, StructurePropertyChecker.class, framework);
 		pm.registerClass(Tool.class, ReachabilityTool.class, framework);
