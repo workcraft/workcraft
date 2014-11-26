@@ -6,13 +6,13 @@ import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.tools.CscResolutionTool;
-import org.workcraft.plugins.mpsat.tools.CustomPropertyMpsatChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatConformationChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatConsistencyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatCscChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatCustomPropertyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatDeadlockChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatNormalcyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatPersistencyChecker;
-import org.workcraft.plugins.mpsat.tools.MpsatSynthesis;
 import org.workcraft.plugins.mpsat.tools.MpsatSynthesisComplexGate;
 import org.workcraft.plugins.mpsat.tools.MpsatSynthesisGeneralisedCelement;
 import org.workcraft.plugins.mpsat.tools.MpsatSynthesisStandardCelement;
@@ -38,7 +38,8 @@ public class MpsatModule implements Module {
 		p.registerClass(Tool.class, MpsatNormalcyChecker.class, framework);
 		p.registerClass(Tool.class, MpsatCscChecker.class, framework);
 		p.registerClass(Tool.class, MpsatUscChecker.class, framework);
-		p.registerClass(Tool.class, CustomPropertyMpsatChecker.class, framework);
+		p.registerClass(Tool.class, MpsatConformationChecker.class, framework);
+		p.registerClass(Tool.class, MpsatCustomPropertyChecker.class, framework);
 
 		p.registerClass(Settings.class, MpsatUtilitySettings.class);
 		p.registerClass(Settings.class, PunfUtilitySettings.class);

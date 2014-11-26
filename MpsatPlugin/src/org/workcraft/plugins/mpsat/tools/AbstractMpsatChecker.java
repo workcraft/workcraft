@@ -22,13 +22,17 @@ public abstract class AbstractMpsatChecker implements Tool {
 
 	@Override
 	public final void run(WorkspaceEntry we) {
+		final MpsatSettings settings = getSettings();
+		final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings, framework);
+
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
-		final MpsatChainTask mpsatTask = new MpsatChainTask(we, getSettings(), framework);
-		framework.getTaskManager().queue(mpsatTask, description, new MpsatChainResultHandler(mpsatTask));
+		MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
+
+		framework.getTaskManager().queue(mpsatTask, description, monitor);
 	}
 
 	@Override

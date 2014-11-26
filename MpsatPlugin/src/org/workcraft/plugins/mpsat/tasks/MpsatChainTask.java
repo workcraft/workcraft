@@ -11,33 +11,29 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainTask implements Task<MpsatChainResult> {
 	private final WorkspaceEntry we;
 	private final MpsatSettings settings;
 	private final Framework framework;
-	private PetriNetModel model;
 
 	public MpsatChainTask(WorkspaceEntry we, MpsatSettings settings, Framework framework) {
 		this.we = we;
 		this.settings = settings;
 		this.framework = framework;
-		this.model = null;
 	}
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		try {
-			if(model == null) {
-				model = WorkspaceUtils.getAs(getWorkspaceEntry(), PetriNetModel.class);
-			}
+			PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 			if (exporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

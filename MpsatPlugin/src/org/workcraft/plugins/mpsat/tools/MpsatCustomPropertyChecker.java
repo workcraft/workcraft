@@ -15,9 +15,9 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CustomPropertyMpsatChecker implements Tool {
+public class MpsatCustomPropertyChecker implements Tool {
 
-	public CustomPropertyMpsatChecker(Framework framework) {
+	public MpsatCustomPropertyChecker(Framework framework) {
 		this.framework = framework;
 	}
 
