@@ -369,27 +369,27 @@ public class STG extends AbstractMathModel implements STGModel {
 	@Override
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
-
 		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager.getNodeByReference(provider,
 					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst())	);
+
 			Node t2 = referenceManager.getNodeByReference(provider,
 					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond()) );
+			if ((t1 != null) && (t2 != null)) {
+				Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
-			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
-
-			for (Node node : implicitPlaceCandidates) {
-				if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
-					return node;
+				for (Node node : implicitPlaceCandidates) {
+					if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
+						return node;
+					}
 				}
 			}
-
 			throw new NotFoundException("Implicit place between "
 					+ implicitPlaceTransitions.getFirst() + " and "
 					+ implicitPlaceTransitions.getSecond() + " does not exist.");
-		} else
-
+		} else {
 			return super.getNodeByReference(provider, reference);
+		}
 	}
 
 	public void makeExplicit(STGPlace implicitPlace) {
