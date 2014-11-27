@@ -193,180 +193,306 @@ public class CpogParsingTool {
 		 VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 		 Collection<VisualScenario> scenarios =  visualCpog.getGroups();
 		 Collection<Node> selection =  visualCpog.getSelection();
-		 VisualScenario group = null;
+		 ArrayList<VisualScenario> groups = new ArrayList<VisualScenario>();
 		 ArrayList<VisualVertex> vertices = new ArrayList<VisualVertex>();
 		 ArrayList<String> expression = new ArrayList<String>();
 
-		 //Check if scenario is selected
-		 if (selection.size() == 1)
-		 {
+		 //Get selected scenarios
 			 for(VisualScenario s : scenarios)
 			 {
 				 if (selection.contains(s))
 				 {
-					 group = s;
+					 groups.add(s);
 				 }
 			 }
-		 }
 		 //Add vertices from group
-		 if (group != null)
+		 if (!groups.isEmpty())
 		 {
-			 expression.add(group.getLabel() + " =");
-			 for (VisualComponent v : group.getComponents())
-			 {
-				 vertices.add((VisualVertex) v);
-			 }
-		 } else //Add selected vertices
-		 {
-			 for (Node n : selection)
-			 {
-				 if (n instanceof VisualVertex)
+			 for (VisualScenario group : groups) {
+				 expression.add(group.getLabel() + " =");
+				 vertices.clear();
+				 for (VisualComponent v : group.getComponents()) {
+					 vertices.add((VisualVertex) v);
+				 }
+				 Set<Connection> arcs;
+				 Iterator<Connection> it;
+				 Connection connection;
+				 boolean second = false;
+				 HashSet<VisualVertex> roots = new HashSet<VisualVertex>();
+				 //get root(s)
+				 for (VisualVertex v : vertices)
 				 {
+					arcs = visualCpog.getConnections(v);
+					it = arcs.iterator();
+					//The following covers root nodes, and nodes with no connections
+					while (it.hasNext())
+					{
+						connection = it.next();
+						if (!connection.getFirst().equals(v))
+						{
+							second = true;
+							break;
+						}
+					}
+					if (!second)
+					{
+						roots.add(v);
+					}
+					second = false;
+				 }
+
+				 Iterator<VisualVertex> i = roots.iterator();
+				 VisualVertex current = null;
+				 Set<Connection> totalConnections;
+				 ArrayList<Connection> connections = new ArrayList<Connection>();
+				 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
+				 HashSet<Connection> visitedConnections = new HashSet<Connection>();
+				 Queue<VisualVertex> q = new Queue<VisualVertex>();
+				// String label = "";
+				 while(i.hasNext())
+				 {
+
+				   q.enqueue(i.next());
+				   while(!q.isEmpty()){
+					   connections.clear();
+					   try {
+						current = (VisualVertex) q.dequeue();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						//Should never throw an exception
+					}
+
+					   totalConnections = visualCpog.getConnections(current);
+
+					   for (Connection c : totalConnections)
+					   {
+						   if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)))
+						   {
+							   connections.add(c);
+						   }
+					   }
+					   if (connections.size() > 0)
+					   {
+						   if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
+						   {
+							   expression.add(current.getLabel() + " ->");
+						   } else
+						   {
+							   expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel() + " ->");
+						   }
+					   } else if (!visitedVertices.contains(current))
+					   {
+						   if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
+						   {
+							   expression.add(current.getLabel());
+						   } else
+						   {
+							   expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel());
+						   }
+
+					   }
+
+					   if (connections.size() > 1)
+					   {
+						   expression.add("(");
+					   }
+
+					   Iterator<Connection> conIt = connections.iterator();
+					   VisualVertex child;
+					   connection = null;
+					   while(conIt.hasNext())
+					   {
+						   connection = conIt.next();
+						   child = (VisualVertex) connection.getSecond();
+						   if (FormulaToString.toString(child.getCondition()).compareTo("1") == 0)
+						   {
+							   expression.add(child.getLabel());
+						   } else
+						   {
+							   expression.add("[" + FormulaToString.toString(child.getCondition()) + "]" + child.getLabel());
+						   }
+
+
+						   visitedConnections.add(connection);
+						   visitedVertices.add(child);
+						   q.enqueue(child);
+
+						   if (conIt.hasNext())
+						   {
+							   expression.add("+");
+						   }
+
+					   }
+
+					   if (connections.size() > 1)
+					   {
+						   expression.add(")");
+					   }
+
+					   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
+					   {
+						   expression.add("+");
+					   }
+
+					   if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+"))
+					   {
+						   expression.add("+");
+					   }
+				   }
+
+				 }
+				 while (expression.get(expression.size() - 1) == "+")
+				 {
+					 expression.remove(expression.size() - 1);
+				 }
+				 expression.add("\n");
+			 }
+		 }
+		 if (!selection.isEmpty())
+		 {
+			 expression.add("\n");
+			 vertices.clear();
+			 for (Node n : selection) {
+				 if (n instanceof VisualVertex) {
 					 vertices.add((VisualVertex) n);
 				 }
+
 			 }
-		 }
-		 Set<Connection> arcs;
-		 Iterator<Connection> it;
-		 Connection connection;
-		 boolean second = false;
-		 HashSet<VisualVertex> roots = new HashSet<VisualVertex>();
-		 //get root(s)
-		 for (VisualVertex v : vertices)
-		 {
-			arcs = visualCpog.getConnections(v);
-			it = arcs.iterator();
-			//The following covers root nodes, and nodes with no connections
-			while (it.hasNext())
-			{
-				connection = it.next();
-				if (!connection.getFirst().equals(v))
+			 Set<Connection> arcs;
+			 Iterator<Connection> it;
+			 Connection connection;
+			 boolean second = false;
+			 HashSet<VisualVertex> roots = new HashSet<VisualVertex>();
+			 //get root(s)
+			 for (VisualVertex v : vertices)
+			 {
+				arcs = visualCpog.getConnections(v);
+				it = arcs.iterator();
+				//The following covers root nodes, and nodes with no connections
+				while (it.hasNext())
 				{
-					second = true;
-					break;
+					connection = it.next();
+					if (!connection.getFirst().equals(v))
+					{
+						second = true;
+						break;
+					}
 				}
-			}
-			if (!second)
-			{
-				roots.add(v);
-			}
-			second = false;
-		 }
+				if (!second)
+				{
+					roots.add(v);
+				}
+				second = false;
+			 }
 
-		 Iterator<VisualVertex> i = roots.iterator();
-		 VisualVertex current = null;
-		 Set<Connection> totalConnections;
-		 ArrayList<Connection> connections = new ArrayList<Connection>();
-		 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
-		 HashSet<Connection> visitedConnections = new HashSet<Connection>();
-		 Queue q = new Queue();
-		 String label = "";
-		 while(i.hasNext())
-		 {
+			 Iterator<VisualVertex> i = roots.iterator();
+			 VisualVertex current = null;
+			 Set<Connection> totalConnections;
+			 ArrayList<Connection> connections = new ArrayList<Connection>();
+			 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
+			 HashSet<Connection> visitedConnections = new HashSet<Connection>();
+			 Queue<VisualVertex> q = new Queue<VisualVertex>();
+			// String label = "";
+			 while(i.hasNext())
+			 {
 
-		   q.enqueue(i.next());
-		   while(!q.isEmpty()){
-			   connections.clear();
-			   try {
-				current = (VisualVertex) q.dequeue();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				//Should never throw an exception
-			}
+			   q.enqueue(i.next());
+			   while(!q.isEmpty()){
+				   connections.clear();
+				   try {
+					current = (VisualVertex) q.dequeue();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					//Should never throw an exception
+				}
 
-			   totalConnections = visualCpog.getConnections(current);
+				   totalConnections = visualCpog.getConnections(current);
 
-			   for (Connection c : totalConnections)
-			   {
-				   if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)))
+				   for (Connection c : totalConnections)
 				   {
-					   connections.add(c);
+					   if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)))
+					   {
+						   connections.add(c);
+					   }
 				   }
-			   }
-			   boolean textInserted = false;
-			   if (connections.size() > 0)
-			   {
-				   if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
+				   if (connections.size() > 0)
 				   {
-					   expression.add(current.getLabel() + " ->");
-				   } else
+					   if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
+					   {
+						   expression.add(current.getLabel() + " ->");
+					   } else
+					   {
+						   expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel() + " ->");
+					   }
+				   } else if (!visitedVertices.contains(current))
 				   {
-					   expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel() + " ->");
-				   }
-				   textInserted = true;
-			   } else if (!visitedVertices.contains(current))
-			   {
-				   if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
-				   {
-					   expression.add(current.getLabel());
-				   } else
-				   {
-					   expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel());
-				   }
+					   if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
+					   {
+						   expression.add(current.getLabel());
+					   } else
+					   {
+						   expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel());
+					   }
 
-			   }
-
-			   if (connections.size() > 1)
-			   {
-				   expression.add("(");
-			   }
-
-			   Iterator<Connection> conIt = connections.iterator();
-			   VisualVertex child;
-			   connection = null;
-			   while(conIt.hasNext())
-			   {
-				   connection = conIt.next();
-				   child = (VisualVertex) connection.getSecond();
-				   if (FormulaToString.toString(child.getCondition()).compareTo("1") == 0)
-				   {
-					   expression.add(child.getLabel());
-				   } else
-				   {
-					   expression.add("[" + FormulaToString.toString(child.getCondition()) + "]" + child.getLabel());
 				   }
 
+				   if (connections.size() > 1)
+				   {
+					   expression.add("(");
+				   }
 
-				   visitedConnections.add(connection);
-				   visitedVertices.add(child);
-				   q.enqueue(child);
+				   Iterator<Connection> conIt = connections.iterator();
+				   VisualVertex child;
+				   connection = null;
+				   while(conIt.hasNext())
+				   {
+					   connection = conIt.next();
+					   child = (VisualVertex) connection.getSecond();
+					   if (FormulaToString.toString(child.getCondition()).compareTo("1") == 0)
+					   {
+						   expression.add(child.getLabel());
+					   } else
+					   {
+						   expression.add("[" + FormulaToString.toString(child.getCondition()) + "]" + child.getLabel());
+					   }
 
-				   if (conIt.hasNext())
+
+					   visitedConnections.add(connection);
+					   visitedVertices.add(child);
+					   q.enqueue(child);
+
+					   if (conIt.hasNext())
+					   {
+						   expression.add("+");
+					   }
+
+				   }
+
+				   if (connections.size() > 1)
+				   {
+					   expression.add(")");
+				   }
+
+				   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
 				   {
 					   expression.add("+");
 				   }
 
+				   if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+"))
+				   {
+					   expression.add("+");
+				   }
 			   }
-
-			   if (connections.size() > 1)
-			   {
-				   expression.add(")");
-			   }
-
-			   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
-			   {
-				   expression.add("+");
-			   }
-
-			   textInserted = false;
-
-
-
-		   }
-		   if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+"))
-		   {
-			   expression.add("+");
-		   }
-
-
+			 }
 
 		 }
+
+
+
 		 String total = "";
-		 while (expression.get(expression.size() - 1) == "+")
-		 {
-			 expression.remove(expression.size() - 1);
-		 }
+
 		 for (String ex : expression)
 		 {
 				 total = total + " " + ex;

@@ -450,6 +450,7 @@ public class CpogSelectionTool extends SelectionTool {
 			Point2D.Double coordinate = (Double) parsingTool.getLowestVertex(visualCpog);
 			if (PGF.getGraphName() != null)	{
 				VisualScenario vs = visualCpog.groupSelection(PGF.getGraphName());
+				coordinate.setLocation(coordinate.getX(), coordinate.getY() + (vs.getBoundingBox().getHeight()/2));
 				vs.setPosition(coordinate);
 			} else {
 				for (Node node : visualCpog.getSelection())
