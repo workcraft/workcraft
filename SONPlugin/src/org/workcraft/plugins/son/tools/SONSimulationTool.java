@@ -113,7 +113,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected final Trace mainTrace = new Trace();
 	protected final Trace branchTrace = new Trace();
 
-	protected boolean reverse = false;
+	protected boolean reverse;
 
 	protected Timer timer = null;
 
@@ -344,11 +344,12 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		errAlg = new ErrorTracingAlg(net);
 		WorkspaceEntry we = editor.getWorkspaceEntry();
 
-		mainTrace.clear();
-		branchTrace.clear();
-
 		we.setCanModify(false);
 		visualNet.connectToBlocks(we);
+
+		reverse = false;
+		mainTrace.clear();
+		branchTrace.clear();
 
 		sync = getSyncCycles();
 		phases = bsonAlg.getPhases();
@@ -365,18 +366,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		updateState(editor);
 	}
 
-	@Override
-	public void deactivated(final GraphEditor editor) {
-		super.deactivated(editor);
-		if (timer != null) {
-			timer.stop();
-			timer = null;
-		}
-		if (visualNet == editor.getModel()) {
-			editor.getWorkspaceEntry().cancelMemento();
-		}
-	}
-
 	private Collection<Path> getSyncCycles(){
 		HashSet<Node> nodes = new HashSet<Node>();
 		nodes.addAll(net.getTransitionNodes());
@@ -384,6 +373,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		CSONCycleAlg cson = new CSONCycleAlg(net);
 
 		return cson.syncCycleTask(nodes);
+	}
+
+	@Override
+	public void deactivated(GraphEditor editor) {
+		super.deactivated(editor);
+		mainTrace.clear();
+		branchTrace.clear();
+		reverse = false;
 	}
 
 	@Override
@@ -796,10 +793,19 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 	}
 
-	public Map<PlaceNode, Boolean> ReachabilitySimulator(final GraphEditor editor, Collection<TransitionNode> causalPredecessors){
+	public Map<PlaceNode, Boolean> ReachabilitySimulator(final GraphEditor editor, Collection<String> causalPredecessorRefs, Collection<String> markingRefs){
+		Collection<TransitionNode> causalPredecessors = new ArrayList<TransitionNode>();
+		for(String ref : causalPredecessorRefs){
+			Node node = net.getNodeByReference(ref);
+			if(node instanceof TransitionNode)
+				causalPredecessors.add((TransitionNode)net.getNodeByReference(ref));
+		}
+		return ReachabilitySimulatorTask(editor, causalPredecessors, markingRefs);
+	}
+
+	private Map<PlaceNode, Boolean> ReachabilitySimulatorTask(final GraphEditor editor, Collection<TransitionNode> causalPredecessors,  Collection<String> markingRefs){
 		ArrayList<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
 		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
-		//activated(editor);
 
 		for(TransitionNode node : net.getTransitionNodes()){
 			if(simuAlg.isEnabled(node, sync, phases))
@@ -815,7 +821,15 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 			executeEvent(editor, fireList);
 
-			ReachabilitySimulator(editor, causalPredecessors);
+			ReachabilitySimulatorTask(editor, causalPredecessors, markingRefs);
+		}
+
+		for(String ref : markingRefs){
+			Node node = net.getNodeByReference(ref);
+			if(node instanceof PlaceNode){
+				((PlaceNode)node).setForegroundColor(Color.BLUE);
+				((PlaceNode)node).setTokenColor(Color.BLUE);
+			}
 		}
 
 		return readSONMarking();
@@ -1095,24 +1109,24 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 					if (branchTrace.canProgress()) {
 						Step step = branchTrace.get(branchTrace.getPosition());
-						if (step.contains(net.getName(event)))
-							event2 = net.getNodeByReference(net.getName(event));
+						if (step.contains(net.getNodeReference(event)))
+							event2 = net.getNodeByReference(net.getNodeReference(event));
 					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
 						Step step = mainTrace.get(mainTrace.getPosition());
-						if (step.contains(net.getName(event)))
-							event2 = net.getNodeByReference(net.getName(event));
+						if (step.contains(net.getNodeReference(event)))
+							event2 = net.getNodeByReference(net.getNodeReference(event));
 					}
 
 					if (event==event2) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 
 							@Override
 							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
 						};
 
@@ -1142,7 +1156,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 										return CommonSimulationSettings.getEnabledBackgroundColor();
 									}
 								};
-					}catch(NullPointerException ex){}
+					}catch(NullPointerException ex){
+
+					}
 				}
 
 				if ((node instanceof VisualPage && !(node instanceof VisualBlock)) || node instanceof VisualGroup) {

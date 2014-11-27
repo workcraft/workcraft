@@ -33,7 +33,6 @@ public class VisualPlaceNode extends VisualComponent{
 	private String value = "";
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
-	private Color tokenColor = CommonVisualSettings.getBorderColor();
 
 	public VisualPlaceNode(PlaceNode refNode) {
 		super(refNode);
@@ -211,11 +210,11 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	public Color getTokenColor() {
-		return tokenColor;
+		return ((PlaceNode)getReferencedComponent()).getTokenColor();
 	}
 
 	public void setTokenColor(Color tokenColor) {
-		this.tokenColor = tokenColor;
+		((PlaceNode)getReferencedComponent()).setTokenColor(tokenColor);
 	}
 
 	public Color getForegroundColor() {

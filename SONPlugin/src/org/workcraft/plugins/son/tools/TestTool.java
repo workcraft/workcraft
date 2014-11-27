@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.workcraft.Framework;
@@ -61,10 +62,21 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
+		ArrayList<Node> nodes   = new ArrayList<Node>();
+		Node n = net.getComponents().iterator().next();
+		System.out.println(n.toString());
+		System.out.println(net.getName(n));
+		System.out.println(net.getNodeReference(n));
+		we.captureMemento();
+		we.cancelMemento();
+		net=(SON)we.getModelEntry().getMathModel();
+		Node n1 = net.getComponents().iterator().next();
+		System.out.println(n1.toString());
+
 
 		//abtreactConditionTest(net);
 		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
-		syncCycleTest(net);
+		//syncCycleTest(net);
 		//blockMathLevelTest(net, vnet);
 		//mathLevelTest(net, vnet);
 		//connectionTypeTest(net, vnet);

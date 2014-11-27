@@ -258,6 +258,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	public void fire(Collection<TransitionNode> fireList) throws InvalidStructureException{
+
 		for(TransitionNode e : fireList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
@@ -454,13 +455,13 @@ public class SimulationAlg extends RelationAlgorithm {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getSecond()) {
 					Condition to = (Condition)c.getFirst();
 					if(to.isMarked())
-						throw new InvalidStructureException("Token amount > 1: "+net.getNodeReference(to));
+						throw new InvalidStructureException("Reverse Token amount > 1: "+net.getNodeReference(to));
 					to.setMarked(true);
 				}
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
 					Condition from = (Condition)c.getSecond();
 					if(!from.isMarked())
-						throw new InvalidStructureException("Token amount = 0: "+net.getNodeReference(from));
+						throw new InvalidStructureException("Reverse Token amount = 0: "+net.getNodeReference(from));
 					from.setMarked(false);
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getSecond()){
@@ -469,7 +470,7 @@ public class SimulationAlg extends RelationAlgorithm {
 						to.setMarked(((ChannelPlace)to).isMarked());
 					else
 						if(to.isMarked())
-							throw new InvalidStructureException("Token amount > 1: "+net.getNodeReference(to));
+							throw new InvalidStructureException("Reverse Token amount > 1: "+net.getNodeReference(to));
 						to.setMarked(!to.isMarked());
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getFirst()){
@@ -478,7 +479,7 @@ public class SimulationAlg extends RelationAlgorithm {
 						from.setMarked(((ChannelPlace)from).isMarked());
 					else
 						if(!from.isMarked())
-							throw new InvalidStructureException("Token amount = 0: "+net.getNodeReference(from));
+							throw new InvalidStructureException("Reverse Token amount = 0: "+net.getNodeReference(from));
 						from.setMarked(!from.isMarked());
 				}
 			}
