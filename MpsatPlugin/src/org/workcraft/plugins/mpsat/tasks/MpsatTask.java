@@ -16,12 +16,21 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 
 public class MpsatTask implements Task<ExternalProcessResult> {
-	private String[] args;
-	private String inputFileName;
+	private final String[] args;
+	private final String inputFileName;
+	private final File workingDirectory;
 
 	public MpsatTask(String[] args, String inputFileName) {
+		this(args, inputFileName, null);
+	}
+
+	public MpsatTask(String[] args, String inputFileName, File workingDirectory) {
 		this.args = args;
 		this.inputFileName = inputFileName;
+		if (workingDirectory == null) {
+			workingDirectory = FileUtils.createTempDirectory("mpsat_");
+		}
+		this.workingDirectory = workingDirectory;
 	}
 
 	@Override
@@ -43,23 +52,20 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		// Input file argument
 		command.add(inputFileName);
 
-		File workingDir = FileUtils.createTempDirectory("mpsat_");
-		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDir);
-
+		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDirectory);
 		Result<? extends ExternalProcessResult> res = externalProcessTask.run(monitor);
-
-		if(res.getOutcome() == Outcome.CANCELLED)
+		if(res.getOutcome() == Outcome.CANCELLED) {
 			return res;
+		}
 
 		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
-
 		try {
 			String unfoldingFileName = "mpsat" + MpsatUtilitySettings.getUnfoldingExtension();
-			File unfoldingFile = new File(workingDir, unfoldingFileName);
+			File unfoldingFile = new File(workingDirectory, unfoldingFileName);
 			if(unfoldingFile.exists()) {
 				outputFiles.put(unfoldingFileName, FileUtils.readAllBytes(unfoldingFile));
 			}
-			File g = new File(workingDir, "mpsat.g");
+			File g = new File(workingDirectory, "mpsat.g");
 			if(g.exists()) {
 				outputFiles.put("mpsat.g", FileUtils.readAllBytes(g));
 			}
@@ -69,10 +75,11 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
 		ExternalProcessResult retVal = res.getReturnValue();
 		ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
-
-		if (retVal.getReturnCode() < 2)
+		if (retVal.getReturnCode() < 2) {
 			return Result.finished(result);
-		else
+		} else {
 			return Result.failed(result);
+		}
 	}
+
 }

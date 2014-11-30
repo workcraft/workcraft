@@ -28,12 +28,11 @@ public class MpsatCscResolutionResultHandler implements Runnable {
 				this.result = result;
 	}
 
-	public STGModel getResolvedStg()
-	{
+	public STGModel getResolvedStg() {
 		final byte[] output = result.getReturnValue().getMpsatResult().getReturnValue().getOutputFile("mpsat.g");
-		if(output == null)
+		if(output == null) {
 			return null;
-
+		}
 		try {
 			return new DotGImporter().importSTG(new ByteArrayInputStream(output));
 		} catch (DeserialisationException e) {

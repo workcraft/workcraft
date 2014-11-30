@@ -1,6 +1,12 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashSet;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
@@ -8,8 +14,8 @@ import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
-import org.workcraft.plugins.pcomp.PCompOutputMode;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.serialisation.Format;
@@ -32,17 +38,18 @@ public class MpsatConformationTask extends MpsatChainTask {
 
 	private final WorkspaceEntry we;
 	private final Framework framework;
-	private File environmentFile;
+	private File envFile;
 
-	public MpsatConformationTask(WorkspaceEntry we, Framework framework, File environmentFile) {
+	public MpsatConformationTask(WorkspaceEntry we, Framework framework, File envFile) {
 		super (we, null, framework);
 		this.we = we;
 		this.framework = framework;
-		this.environmentFile = environmentFile;
+		this.envFile = envFile;
 	}
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		File workingDirectory = null;
 		try {
 			// Common variables
 			monitor.progressUpdate(0.10);
@@ -50,97 +57,90 @@ public class MpsatConformationTask extends MpsatChainTask {
 			if (title.endsWith(".work")) {
 				title = title.substring(0, title.length() - 5);
 			}
-			STG modelStg = (STG)we.getModelEntry().getVisualModel().getMathModel();
-			Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), modelStg, Format.STG);
-			if (stgExporter == null) {
-				throw new RuntimeException ("Exporter not available: model class " + modelStg.getClass().getName() + " to format STG.");
+			workingDirectory = FileUtils.createTempDirectory(title + "-");
+
+			STG devStg = (STG)we.getModelEntry().getVisualModel().getMathModel();
+			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
+			if (devStgExporter == null) {
+				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
 			}
 			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
 			monitor.progressUpdate(0.20);
 
 			// Generating .g for the model
-			String modelFilePrefix = title + "-model-";
-			File modelStgFile = File.createTempFile(modelFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
-			ExportTask modelExportTask = new ExportTask(stgExporter, modelStg, modelStgFile.getCanonicalPath());
-			Result<? extends Object> modelExportResult = framework.getTaskManager().execute(
-					modelExportTask, "Exporting model .g", subtaskMonitor);
+			File devStgFile =  new File(workingDirectory, "dev.g");
+			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
+			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
+					devExportTask, "Exporting circuit .g", subtaskMonitor);
 
-			if (modelExportResult.getOutcome() != Outcome.FINISHED) {
-				modelStgFile.delete();
-				if (modelExportResult.getOutcome() == Outcome.CANCELLED) {
+			if (devExportResult.getOutcome() != Outcome.FINISHED) {
+				if (devExportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(modelExportResult, null, null, null, toolchainPreparationSettings));
+						new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
 			}
 			monitor.progressUpdate(0.30);
 
 			// Generating .g for the environment
 			Result<? extends ExternalProcessResult>  pcompResult = null;
-			// Compose model with its environment
-			File environmentStgFile;
-			if (environmentFile.getName().endsWith(".g")) {
-				environmentStgFile = environmentFile;
+			File envStgFile = null;
+			if (envFile.getName().endsWith(".g")) {
+				envStgFile = envFile;
 			} else {
-				STG environementStg = (STG)framework.loadFile(environmentFile).getMathModel();
-				String environmentFilePrefix = title + "-environment-";
-				environmentStgFile = File.createTempFile(environmentFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
-				ExportTask environmentExportTask = new ExportTask(stgExporter, environementStg, environmentStgFile.getCanonicalPath());
-				Result<? extends Object> environmentExportResult = framework.getTaskManager().execute(
-						environmentExportTask, "Exporting environment .g", subtaskMonitor);
+				STG envStg = (STG)framework.loadFile(envFile).getMathModel();
+				Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
+				envStgFile = new File(workingDirectory, "env.g");
+				ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
+				Result<? extends Object> envExportResult = framework.getTaskManager().execute(
+						envExportTask, "Exporting environment .g", subtaskMonitor);
 
-				if (environmentExportResult.getOutcome() != Outcome.FINISHED) {
-					environmentStgFile.delete();
-					if (environmentExportResult.getOutcome() == Outcome.CANCELLED) {
+				if (envExportResult.getOutcome() != Outcome.FINISHED) {
+					if (envExportResult.getOutcome() == Outcome.CANCELLED) {
 						return new Result<MpsatChainResult>(Outcome.CANCELLED);
 					}
 					return new Result<MpsatChainResult>(Outcome.FAILED,
-							new MpsatChainResult(environmentExportResult, null, null, null, toolchainPreparationSettings));
+							new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
 				}
 			}
 			monitor.progressUpdate(0.40);
 
 			// Generating .g for the whole system (model and environment)
-			String systemFilePrefix = title + "-system-";
-			File systemFile = File.createTempFile(systemFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
-			PcompTask pcompTask = new PcompTask(new File[]{modelStgFile, environmentStgFile}, PCompOutputMode.OUTPUT, true, false);
+			File stgFile = new File(workingDirectory, "system.g");
+			PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
 			pcompResult = framework.getTaskManager().execute(
 					pcompTask, "Running pcomp", subtaskMonitor);
 
 			if (pcompResult.getOutcome() != Outcome.FINISHED) {
-				modelStgFile.delete();
 				if (pcompResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(modelExportResult, pcompResult, null, null, toolchainPreparationSettings));
+						new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
 			}
-			FileUtils.writeAllText(systemFile, new String(pcompResult.getReturnValue().getOutput()));
-			WorkspaceEntry systemWorkspaceEntry = framework.getWorkspace().open(systemFile, true);
-			STG systemStg = (STG)systemWorkspaceEntry.getModelEntry().getMathModel();
-
+			FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
+			WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
+			STG stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
 			monitor.progressUpdate(0.50);
 
 			// Generate unfolding
-			String unfoldingFilePrefix = title + "-unfolding-";
-			File unfoldingFile = File.createTempFile(unfoldingFilePrefix.replaceAll("\\s",""), MpsatUtilitySettings.getUnfoldingExtension());
-			PunfTask punfTask = new PunfTask(systemFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension());
+			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
 
-			systemFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				unfoldingFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(modelExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+						new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
 			}
 			monitor.progressUpdate(0.60);
 
 			// Check for interface conformation
-			String reachConformation = MpsatSettings.genReachConformation(systemStg, modelStg);
+			HashSet<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
+			String reachConformation = MpsatSettings.genReachConformation(stg, devStg, devPlaceNames);
 			if (MpsatUtilitySettings.getDebugReach()) {
 				System.out.println("\nReach expression for the interface conformation property:");
 				System.out.println(reachConformation);
@@ -149,7 +149,8 @@ public class MpsatConformationTask extends MpsatChainTask {
 					MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
 					MpsatUtilitySettings.getSolutionCount(), reachConformation);
 
-			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
+			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
+					unfoldingFile.getCanonicalPath(), workingDirectory);
 			Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 					mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
@@ -158,29 +159,53 @@ public class MpsatConformationTask extends MpsatChainTask {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(modelExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
+						new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
 			}
 			monitor.progressUpdate(0.80);
 
 			MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getReturnValue());
 			if (!mpsatConformationParser.getSolutions().isEmpty()) {
-				unfoldingFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
-						new MpsatChainResult(modelExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
-								"Model does not conform to the environment after the following trace:"));
+						new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
+								"This model does not conform to the environment after the following trace:"));
 			}
-
 			monitor.progressUpdate(1.0);
 
 			// Success
 			unfoldingFile.delete();
-			String message = "The model conforms to its environment (" + environmentFile.getName() + ").";
+			String message = "The model conforms to its environment (" + envFile.getName() + ").";
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
-					new MpsatChainResult(modelExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
+					new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
+		} finally {
+			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
+				FileUtils.deleteDirectoryTree(workingDirectory);
+			}
 		}
 	}
+
+
+	private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
+		HashSet<String> result = new HashSet<String>();
+		InputStream is = new ByteArrayInputStream(bufferedInput);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		try {
+			String line = null;
+			while ((lineIndex >= 0) && ((line = br.readLine()) != null)) {
+				lineIndex--;
+			}
+			if (line != null) {
+				for (String name: line.trim().split("\\s")) {
+					result.add(name);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 
 }

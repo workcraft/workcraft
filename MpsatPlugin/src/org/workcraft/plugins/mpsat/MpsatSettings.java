@@ -9,13 +9,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -96,109 +94,67 @@ public class MpsatSettings {
 	// Old version of Punf does not support dead signals, transitions and places well
 	// (e.g. a dead transition may disappear from unfolding), therefore the conformation
 	// property cannot be checked reliably.
-	public static String genReachConformation(STG stg, STG circuitStg) {
-		// Form a set of system STG places which came from the circuitStg
-		HashSet<Node> circuitPlaces = new HashSet<Node>();
-//		for (Type type: Type.values()) {
-//			for (String s : circuitStg.getSignalReferences(type)) {
-//				Node p0 = stg.getNodeByReference(s + "_0");
-//				if (p0 == null) {
-//					p0 = stg.getNodeByReference("<" + s + "-," + s + "+>");
-//				}
-//				if (p0 != null) {
-//					circuitPlaces.add(p0);
-//				}
-//				Node p1 = stg.getNodeByReference(s + "_1");
-//				if (p1 == null) {
-//					p1 = stg.getNodeByReference("<" + s + "+," + s + "->");
-//				}
-//				if (p1 != null) {
-//					circuitPlaces.add(p1);
-//				}
-//			}
-//		}
-		for (Place p: circuitStg.getPlaces()) {
-			String ref = circuitStg.getNodeReference(p);
-			Node place = stg.getNodeByReference(ref);
-			if (place == null) {
-				Set<Node> preset = circuitStg.getPreset(p);
-				Set<Node> postset = circuitStg.getPostset(p);
-				if (((preset.size() == 1) && (postset.size() == 1))) {
-					Node pred = preset.iterator().next();
-					String predRef = NamespaceHelper.getFlatName(circuitStg.getNodeReference(pred));
-					Node succ = postset.iterator().next();
-					String succRef = NamespaceHelper.getFlatName(circuitStg.getNodeReference(succ));
-					String implicitRef = "<" + predRef	+ "," + succRef + ">";
-					place =  stg.getNodeByReference(implicitRef);
-				}
-			}
-			if (place == null) {
-				throw new RuntimeException("Could not find a place in the composed STG that corresponds to " + ref + "in the original STG.");
-			} else {
-				circuitPlaces.add(place);
-			}
-		}
-
+	public static String genReachConformation(STG stg, STG devStg, HashSet<String> devPlaceNames) {
 		// Generate Reach expression
 		String result = "";
-		for (String s : circuitStg.getSignalReferences(Type.OUTPUT)) {
-			String circuitPredicate = "";
-			String environmentPredicate = "";
+		for (String signalRef : devStg.getSignalReferences(Type.OUTPUT)) {
+			String signalFlatName = NamespaceHelper.getFlatName(signalRef);
+			String devPredicate = "";
+			String envPredicate = "";
 			for (SignalTransition t: stg.getSignalTransitions()) {
-				if (!t.getSignalType().equals(Type.OUTPUT) || !t.getSignalName().equals(s)) continue;
-				String circuitPreset = "";
-				String environmentPreset = "";
+				if (!t.getSignalType().equals(Type.OUTPUT) || !t.getSignalName().equals(signalFlatName)) continue;
+				String devPreset = "";
+				String envPreset = "";
 				for (Node p: stg.getPreset(t)) {
-					String name = stg.getNodeReference(p);
-					if (circuitPlaces.contains(p)) {
-						if (circuitPreset.isEmpty()) {
-							circuitPreset += "{";
-						} else {
-							circuitPreset += ", ";
-						}
-						circuitPreset += "\"" + name + "\"";
+					String placeRef = stg.getNodeReference(p);
+					String placeFlatName = NamespaceHelper.getFlatName(placeRef);
+					if (devPlaceNames.contains(placeFlatName)) {
+						devPreset += (devPreset.isEmpty() ? "{" : ", ");
+						devPreset += "\"" + placeFlatName + "\"";
 					} else {
-						if (environmentPreset.isEmpty()) {
-							environmentPreset += "{";
-						} else {
-							environmentPreset += ", ";
-						}
-						environmentPreset += "\"" + name + "\"";
+						envPreset += (envPreset.isEmpty() ? "{" : ", ");
+						envPreset += "\"" + placeFlatName + "\"";
 					}
 				}
-				circuitPreset += "}";
-				environmentPreset += "}";
-
-				if (circuitPredicate.isEmpty()) {
-					circuitPredicate += "   (\n";
-				} else {
-					circuitPredicate += "      |\n";
+				if ( !devPreset.isEmpty() ) {
+					devPreset += "}";
+					if (devPredicate.isEmpty()) {
+						devPredicate += "   (\n";
+					} else {
+						devPredicate += "      |\n";
+					}
+					devPredicate += "      forall p in " + devPreset  + " {\n";
+					devPredicate += "         $ P p\n";
+					devPredicate += "      }\n";
 				}
-				circuitPredicate += "      forall p in " + circuitPreset  + " {\n";
-				circuitPredicate += "         $ P p\n";
-				circuitPredicate += "      }\n";
-
-				if (environmentPredicate.isEmpty()) {
-					environmentPredicate += "   (\n";
-				} else {
-					environmentPredicate += "      &\n";
+				if ( !envPreset.isEmpty() ) {
+					envPreset += "}";
+					if (envPredicate.isEmpty()) {
+						envPredicate += "   (\n";
+					} else {
+						envPredicate += "      &\n";
+					}
+					envPredicate += "      exists p in " + envPreset  + " {\n";
+					envPredicate += "         ~$ P p\n";
+					envPredicate += "      }\n";
 				}
-				environmentPredicate += "      exists p in " + environmentPreset  + " {\n";
-				environmentPredicate += "         ~$ P p\n";
-				environmentPredicate += "      }\n";
 			}
-			circuitPredicate += "   )\n";
-			environmentPredicate += "   )\n";
+			if ( !devPredicate.isEmpty() ) {
+				devPredicate += "   )\n";
+			}
+			if ( !envPredicate.isEmpty() ) {
+				envPredicate += "   )\n";
+			}
 			if (result.isEmpty()) {
 				result = "card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n";
 			} else {
 				result += "|\n";
 			}
-			result += "/* Conformation check for signal " + s + " */\n";
+			result += "/* Conformation check for signal " + signalRef + " */\n";
 			result += "(\n";
-			result += circuitPredicate;
+			result += devPredicate;
 			result += "   &\n";
-			result += environmentPredicate;
+			result += envPredicate;
 			result += ")\n";
 		}
 		return result;

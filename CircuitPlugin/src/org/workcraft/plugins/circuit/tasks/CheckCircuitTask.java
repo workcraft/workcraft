@@ -1,6 +1,12 @@
 package org.workcraft.plugins.circuit.tasks;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashSet;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
@@ -14,8 +20,8 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat.tasks.PunfTask;
-import org.workcraft.plugins.pcomp.PCompOutputMode;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.serialisation.Format;
@@ -62,6 +68,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		File workingDirectory = null;
 		try {
 			// Common variables
 			monitor.progressUpdate(0.05);
@@ -70,79 +77,76 @@ public class CheckCircuitTask extends MpsatChainTask {
 				title = title.substring(0, title.length() - 5);
 			}
 			VisualCircuit visualCircuit = (VisualCircuit)we.getModelEntry().getVisualModel();
-			STG circuitStg = (STG)STGGenerator.generate(visualCircuit).getMathModel();
-			Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), circuitStg, Format.STG);
-			if (stgExporter == null) {
-				throw new RuntimeException ("Exporter not available: model class " + circuitStg.getClass().getName() + " to format STG.");
+			File envFile = visualCircuit.getEnvironmentFile();
+			boolean hasEnvironment = ((envFile != null) && envFile.exists());
+
+			workingDirectory = FileUtils.createTempDirectory(title + "-");
+
+			STG devStg = (STG)STGGenerator.generate(visualCircuit).getMathModel();
+			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
+			if (devStgExporter == null) {
+				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
 			}
 			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
 			monitor.progressUpdate(0.10);
 
 			// Generating .g for the circuit
-			String circuitFilePrefix = title + "-circuit-";
-			File circuitStgFile = File.createTempFile(circuitFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
-			ExportTask circuitExportTask = new ExportTask(stgExporter, circuitStg, circuitStgFile.getCanonicalPath());
-			Result<? extends Object> circuitExportResult = framework.getTaskManager().execute(
-					circuitExportTask, "Exporting circuit .g", subtaskMonitor);
+			String devStgName = (hasEnvironment ? "dev.g" : "system.g");
+			File devStgFile =  new File(workingDirectory, devStgName);
+			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
+			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
+					devExportTask, "Exporting circuit .g", subtaskMonitor);
 
-			if (circuitExportResult.getOutcome() != Outcome.FINISHED) {
-				circuitStgFile.delete();
-				if (circuitExportResult.getOutcome() == Outcome.CANCELLED) {
+			if (devExportResult.getOutcome() != Outcome.FINISHED) {
+				if (devExportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(circuitExportResult, null, null, null, toolchainPreparationSettings));
+						new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
 			}
 			monitor.progressUpdate(0.20);
 
 			// Generating .g for the environment
-			File stgFile;
 			STG stg;
+			File stgFile = null;
 			Result<? extends ExternalProcessResult>  pcompResult = null;
-			File environmentFile = visualCircuit.getEnvironmentFile();
-			boolean hasEnvironment = ((environmentFile != null) && environmentFile.exists());
 			if ( !hasEnvironment ) {
-				 // No environment to compose with
-				 stgFile = circuitStgFile;
-				 stg = circuitStg;
+				 stgFile = devStgFile;
+				 stg = devStg;
 			} else {
-				// Compose circuit with its environment
-				File environmentStgFile;
-				if (environmentFile.getName().endsWith(".g")) {
-					environmentStgFile = environmentFile;
+				File envStgFile = null;
+				if (envFile.getName().endsWith(".g")) {
+					envStgFile = envFile;
 				} else {
-					STG environementStg = (STG)framework.loadFile(environmentFile).getMathModel();
-					String environmentFilePrefix = title + "-environment-";
-					environmentStgFile = File.createTempFile(environmentFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
-					ExportTask environmentExportTask = new ExportTask(stgExporter, environementStg, environmentStgFile.getCanonicalPath());
-					Result<? extends Object> environmentExportResult = framework.getTaskManager().execute(
-							environmentExportTask, "Exporting environment .g", subtaskMonitor);
+					STG envStg = (STG)framework.loadFile(envFile).getMathModel();
+					Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
+					envStgFile = new File(workingDirectory, "env.g");
+					ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
+					Result<? extends Object> envExportResult = framework.getTaskManager().execute(
+							envExportTask, "Exporting environment .g", subtaskMonitor);
 
-					if (environmentExportResult.getOutcome() != Outcome.FINISHED) {
-						environmentStgFile.delete();
-						if (environmentExportResult.getOutcome() == Outcome.CANCELLED) {
+					if (envExportResult.getOutcome() != Outcome.FINISHED) {
+						if (envExportResult.getOutcome() == Outcome.CANCELLED) {
 							return new Result<MpsatChainResult>(Outcome.CANCELLED);
 						}
 						return new Result<MpsatChainResult>(Outcome.FAILED,
-								new MpsatChainResult(environmentExportResult, null, null, null, toolchainPreparationSettings));
+								new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
 					}
 				}
 				monitor.progressUpdate(0.25);
 
 				// Generating .g for the whole system (circuit and environment)
-				String systemFilePrefix = title + "-system-";
-				stgFile = File.createTempFile(systemFilePrefix.replaceAll("\\s",""), stgExporter.getExtenstion());
-				PcompTask pcompTask = new PcompTask(new File[]{circuitStgFile, environmentStgFile}, PCompOutputMode.OUTPUT, true, false);
+				stgFile = new File(workingDirectory, "system.g");
+				PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
 				pcompResult = framework.getTaskManager().execute(
 						pcompTask, "Running pcomp", subtaskMonitor);
 
 				if (pcompResult.getOutcome() != Outcome.FINISHED) {
-					circuitStgFile.delete();
 					if (pcompResult.getOutcome() == Outcome.CANCELLED) {
 						return new Result<MpsatChainResult>(Outcome.CANCELLED);
 					}
 					return new Result<MpsatChainResult>(Outcome.FAILED,
-							new MpsatChainResult(circuitExportResult, pcompResult, null, null, toolchainPreparationSettings));
+							new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
 				}
 				FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
 				WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
@@ -151,26 +155,24 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			String unfoldingFilePrefix = title + "-unfolding-";
-			File unfoldingFile = File.createTempFile(unfoldingFilePrefix.replaceAll("\\s",""), MpsatUtilitySettings.getUnfoldingExtension());
+			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension());
 			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
 
-			stgFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				unfoldingFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
 				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(circuitExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+						new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
 			}
 			monitor.progressUpdate(0.40);
 
 			// Check for interface conformation (only if the environment is specified)
 			if (hasEnvironment && checkConformation) {
-				String reachConformation = MpsatSettings.genReachConformation(stg, circuitStg);
+				HashSet<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
+				String reachConformation = MpsatSettings.genReachConformation(stg, devStg, devPlaceNames);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the interface conformation property:");
 					System.out.println(reachConformation);
@@ -179,7 +181,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 						MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
 						MpsatUtilitySettings.getSolutionCount(), reachConformation);
 
-				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
+				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
+						unfoldingFile.getCanonicalPath(), workingDirectory);
 				Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 						mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
@@ -188,15 +191,14 @@ public class CheckCircuitTask extends MpsatChainTask {
 						return new Result<MpsatChainResult>(Outcome.CANCELLED);
 					}
 					return new Result<MpsatChainResult>(Outcome.FAILED,
-							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
+							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
 				}
 				monitor.progressUpdate(0.50);
 
 				MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getReturnValue());
 				if (!mpsatConformationParser.getSolutions().isEmpty()) {
-					unfoldingFile.delete();
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
-							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
+							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
 									"Circuit does not conform to the environment after the following trace:"));
 				}
 			}
@@ -204,7 +206,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			// Check for deadlock
 			if (checkDeadlock) {
-				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
+				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(),
+						unfoldingFile.getCanonicalPath(), workingDirectory);
 				Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
 						mpsatDeadlockTask, "Running deadlock check [MPSat]", subtaskMonitor);
 
@@ -213,15 +216,14 @@ public class CheckCircuitTask extends MpsatChainTask {
 						return new Result<MpsatChainResult>(Outcome.CANCELLED);
 					}
 					return new Result<MpsatChainResult>(Outcome.FAILED,
-							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings));
+							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings));
 				}
 				monitor.progressUpdate(0.70);
 
 				MpsatResultParser mpsatDeadlockParser = new MpsatResultParser(mpsatDeadlockResult.getReturnValue());
 				if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
-					unfoldingFile.delete();
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
-							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
+							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
 									"Circuit has a deadlock after the following trace:"));
 				}
 			}
@@ -229,7 +231,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			// Check for hazards
 			if (checkHazard) {
-				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
+				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(),
+						unfoldingFile.getCanonicalPath(), workingDirectory);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the hazard property:");
 					System.out.println(hazardSettings.getReach());
@@ -242,44 +245,72 @@ public class CheckCircuitTask extends MpsatChainTask {
 						return new Result<MpsatChainResult>(Outcome.CANCELLED);
 					}
 					return new Result<MpsatChainResult>(Outcome.FAILED,
-							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings));
+							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings));
 				}
 				monitor.progressUpdate(0.90);
 
 				MpsatResultParser mpsatHazardParser = new MpsatResultParser(mpsatHazardResult.getReturnValue());
 				if (!mpsatHazardParser.getSolutions().isEmpty()) {
-					unfoldingFile.delete();
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
-							new MpsatChainResult(circuitExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings,
+							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings,
 									"Circuit has a hazard  after the following trace:"));
 				}
 			}
 			monitor.progressUpdate(1.0);
 
 			// Success
-			unfoldingFile.delete();
-			String message = "";
-			if (hasEnvironment) {
-				message = "Under the given environment (" + environmentFile.getName() + ")";
-			} else {
-				message = "Without environment restrictions";
-			}
-			message +=  " the circuit is:\n";
-			if (checkConformation) {
-				message += "  * conformant\n";
-			}
-			if (checkDeadlock) {
-				message += "  * deadlock-free\n";
-			}
-			if (checkHazard) {
-				message += "  * hazard-free\n";
-			}
+			String message = getSuccessMessage(envFile);
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
-					new MpsatChainResult(circuitExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
+					new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
+		} finally {
+			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
+				FileUtils.deleteDirectoryTree(workingDirectory);
+			}
 		}
+	}
+
+	private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
+		HashSet<String> result = new HashSet<String>();
+		InputStream is = new ByteArrayInputStream(bufferedInput);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		try {
+			String line = null;
+			while ((lineIndex >= 0) && ((line = br.readLine()) != null)) {
+				lineIndex--;
+			}
+			if (line != null) {
+				for (String name: line.trim().split("\\s")) {
+					result.add(name);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	private String getSuccessMessage(File environmentFile) {
+		String message = "";
+		boolean hasEnvironment = ((environmentFile != null) && environmentFile.exists());
+		if (hasEnvironment) {
+			message = "Under the given environment (" + environmentFile.getName() + ")";
+		} else {
+			message = "Without environment restrictions";
+		}
+		message +=  " the circuit is:\n";
+		if (checkConformation) {
+			message += "  * conformant\n";
+		}
+		if (checkDeadlock) {
+			message += "  * deadlock-free\n";
+		}
+		if (checkHazard) {
+			message += "  * hazard-free\n";
+		}
+		return message;
 	}
 
 }
