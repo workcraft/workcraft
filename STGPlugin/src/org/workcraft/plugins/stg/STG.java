@@ -214,6 +214,16 @@ public class STG extends AbstractMathModel implements STGModel {
 				});
 	}
 
+	public Set<String> getSignalFlatNames(Type type) {
+		Set<String> result = new HashSet<String>();
+		for (SignalTransition st : getSignalTransitions(type)) {
+			String ref = getSignalReference(st);
+			String flatName = NamespaceHelper.hierarchicalToFlatName(ref);
+			result.add(flatName);
+		}
+		return result;
+	}
+
 	@Override
 	public Set<String> getSignalReferences(Type type) {
 		Set<String> result = new HashSet<String>();
@@ -359,8 +369,8 @@ public class STG extends AbstractMathModel implements STGModel {
 					throw new RuntimeException("An implicit place cannot have more that one transition in its preset or postset.");
 				}
 
-				return "<" + NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
-						+ "," + NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
+				return "<" + NamespaceHelper.hierarchicalToFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
+						+ "," + NamespaceHelper.hierarchicalToFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
 			}
 		}
 		return super.getNodeReference(provider, node);

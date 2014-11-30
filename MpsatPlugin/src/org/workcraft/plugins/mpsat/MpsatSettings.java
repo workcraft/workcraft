@@ -6,9 +6,10 @@ package org.workcraft.plugins.mpsat;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +17,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.FileUtils;
 
 public class MpsatSettings {
@@ -53,113 +54,157 @@ public class MpsatSettings {
 	// Reach expression for checking signal consistency
 	public static final String reachConsistency =
 		"exists s in SIGNALS \\ DUMMY {\n" +
-		"  let Es = ev s {\n" +
-		"    $s & exists e in Es s.t. is_plus e { @e }\n" +
-		"    |\n" +
-		"    ~$s & exists e in Es s.t. is_minus e { @e }\n" +
-		"  }\n" +
+		"    let Es = ev s {\n" +
+		"        $s & exists e in Es s.t. is_plus e { @e }\n" +
+		"        |\n" +
+		"        ~$s & exists e in Es s.t. is_minus e { @e }\n" +
+		"    }\n" +
 		"}\n";
 
 	// Reach expression for checking semimodularity (output persistency)
 	public static final String reachSemimodularity =
 		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n" +
-		"  exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n" +
-		"    @t1 &\n" +
-		"    exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n" +
-		"      @t2 &\n" +
-		"      forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n" +
-		"        exists p in pre t3 \\ post t2 { ~$p }\n" +
-		"      }\n" +
-		"    }\n" +
-		"  }\n";
+		"    exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n" +
+		"        @t1 &\n" +
+		"        exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n" +
+		"            @t2 &\n" +
+		"            forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n" +
+		"                exists p in pre t3 \\ post t2 { ~$p }\n" +
+		"            }\n" +
+		"        }\n" +
+		"    }\n";
 
 	// Reach expression for checking conformation (this is a template,
 	// the list of places needs to be updated for each circuit)
 	public static final String reachConformation =
-		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n" +
-		"  let CPnames = {\"in1_0\", \"in1_1\", \"in0_0\", \"in0_1\", \"out0_0\", \"out0_1\"},\n" +
-		"  CP=gather n in CPnames { P n } {\n" +
-		"    exists s in SIGNALS \\ DUMMY {\n" +
-		"      exists t in tran s {\n" +
-		"        forall p in pre t * CP { $p }\n" +
-		"      }\n" +
-		"      &\n" +
-		"      forall t in tran s {\n" +
-		"        exists p in pre t \\ CP { ~$p }\n" +
-		"      }\n" +
-		"    }\n" +
-		"  }\n";
+//			"let devOutputs = gather signalName in { \"out0\" } { S signalName },\n" +
+//			"    devPlaces = gather placeName in { \"in1_0\", \"in1_1\", \"in0_1\", \"in0_0\", \"<out0+,out0->\", \"<out0-,out0+>\" } { P placeName } {\n" +
+			"    card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n" +
+			"    exists s in devOutputs {\n" +
+			"        exists t in tran s {\n" +
+			"            is_plus t & forall p in pre t * devPlaces { $ p }\n" +
+			"        }\n" +
+			"        &\n" +
+			"        forall t in tran s {\n" +
+			"            is_plus t & exists p in pre t \\ devPlaces { ~ $ p }\n" +
+			"        }\n" +
+			"        |\n" +
+			"        exists t in tran s {\n" +
+			"            is_minus t & forall p in pre t * devPlaces { $ p }\n" +
+			"        }\n" +
+			"        &\n" +
+			"        forall t in tran s {\n" +
+			"            is_minus t & exists p in pre t \\ devPlaces { ~ $ p }\n" +
+			"        }\n" +
+			"    }\n" +
+			"}\n";
 
 	// Note: New (PNML-based) version of Punf is required to check conformation property.
 	// Old version of Punf does not support dead signals, transitions and places well
 	// (e.g. a dead transition may disappear from unfolding), therefore the conformation
 	// property cannot be checked reliably.
-	public static String genReachConformation(STG stg, STG devStg, HashSet<String> devPlaceNames) {
-		// Generate Reach expression
+	public static String genReachConformation(Set<String> devOutputNames, Set<String> devPlaceNames) {
+		String devOutputList = genNameList(devOutputNames);
+		String devPlaceList = genNameList(devPlaceNames);
+		return "let devOutputs = gather signalName in { " + devOutputList + " } { S signalName },\n" +
+			   "    devPlaces = gather placeName in { " + devPlaceList + " } { P placeName } {\n" +
+			   reachConformation;
+	}
+
+	private static String genNameList(Collection<String> names) {
 		String result = "";
-		for (String signalRef : devStg.getSignalReferences(Type.OUTPUT)) {
-			String signalFlatName = NamespaceHelper.getFlatName(signalRef);
-			String devPredicate = "";
-			String envPredicate = "";
-			for (SignalTransition t: stg.getSignalTransitions()) {
-				if (!t.getSignalType().equals(Type.OUTPUT) || !t.getSignalName().equals(signalFlatName)) continue;
-				String devPreset = "";
-				String envPreset = "";
-				for (Node p: stg.getPreset(t)) {
-					String placeRef = stg.getNodeReference(p);
-					String placeFlatName = NamespaceHelper.getFlatName(placeRef);
-					if (devPlaceNames.contains(placeFlatName)) {
-						devPreset += (devPreset.isEmpty() ? "{" : ", ");
-						devPreset += "\"" + placeFlatName + "\"";
-					} else {
-						envPreset += (envPreset.isEmpty() ? "{" : ", ");
-						envPreset += "\"" + placeFlatName + "\"";
-					}
-				}
-				if ( !devPreset.isEmpty() ) {
-					devPreset += "}";
-					if (devPredicate.isEmpty()) {
-						devPredicate += "   (\n";
-					} else {
-						devPredicate += "      |\n";
-					}
-					devPredicate += "      forall p in " + devPreset  + " {\n";
-					devPredicate += "         $ P p\n";
-					devPredicate += "      }\n";
-				}
-				if ( !envPreset.isEmpty() ) {
-					envPreset += "}";
-					if (envPredicate.isEmpty()) {
-						envPredicate += "   (\n";
-					} else {
-						envPredicate += "      &\n";
-					}
-					envPredicate += "      exists p in " + envPreset  + " {\n";
-					envPredicate += "         ~$ P p\n";
-					envPredicate += "      }\n";
-				}
+		for (String name: names) {
+			if ( !result.isEmpty() ) {
+				result += ", ";
 			}
-			if ( !devPredicate.isEmpty() ) {
-				devPredicate += "   )\n";
-			}
-			if ( !envPredicate.isEmpty() ) {
-				envPredicate += "   )\n";
-			}
-			if (result.isEmpty()) {
-				result = "card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n";
-			} else {
-				result += "|\n";
-			}
-			result += "/* Conformation check for signal " + signalRef + " */\n";
-			result += "(\n";
-			result += devPredicate;
-			result += "   &\n";
-			result += envPredicate;
-			result += ")\n";
+			result += "\"" + name + "\"";
 		}
 		return result;
 	}
 
+	public static String genReachConformationDetail(STG stg, Set<String> devOutputNames, Set<String> devPlaceNames) {
+		String result = "";
+		for (String signalFlatName: devOutputNames) {
+			String riseDevPredicate = "";
+			String fallDevPredicate = "";
+			String riseEnvPredicate = "";
+			String fallEnvPredicate = "";
+
+			String signalRef = NamespaceHelper.flatToHierarchicalName(signalFlatName);
+			for (SignalTransition t: stg.getSignalTransitions(signalRef)) {
+				String devPreset = "";
+				String envPreset = "";
+				for (Node p: stg.getPreset(t)) {
+					String placeRef = stg.getNodeReference(p);
+					String placeFlatName = NamespaceHelper.hierarchicalToFlatName(placeRef);
+					if (devPlaceNames.contains(placeFlatName)) {
+						devPreset += (devPreset.isEmpty() ? "{" : ", ");
+						devPreset += "\"" + placeFlatName + "\"";
+					}
+					envPreset += (envPreset.isEmpty() ? "{" : ", ");
+					envPreset += "\"" + placeFlatName + "\"";
+				}
+
+				if ( !devPreset.isEmpty() && !envPreset.isEmpty() ) {
+					devPreset += "}";
+					envPreset += "}";
+					String devPredicate = "";
+					devPredicate += "        forall p in " + devPreset  + " {\n";
+					devPredicate += "            $ P p\n";
+					devPredicate += "        }\n";
+					String envPredicate = "";
+					envPredicate += "        exists p in " + envPreset  + " {\n";
+					envPredicate += "          ~$ P p\n";
+					envPredicate += "        }\n";
+					if (t.getDirection() == Direction.PLUS) {
+						if ( !riseDevPredicate.isEmpty() ) {
+							riseDevPredicate += "        |\n";
+						}
+						riseDevPredicate += devPredicate;
+						if ( !riseEnvPredicate.isEmpty() ) {
+							riseEnvPredicate += "        &\n";
+						}
+						riseEnvPredicate += envPredicate;
+					} else {
+						if ( !fallDevPredicate.isEmpty() ) {
+							fallDevPredicate += "        |\n";
+						}
+						fallDevPredicate += devPredicate;
+						if ( !fallEnvPredicate.isEmpty() ) {
+							fallEnvPredicate += "        &\n";
+						}
+						fallEnvPredicate += envPredicate;
+					}
+				}
+			}
+
+			if ( !riseDevPredicate.isEmpty() || !fallDevPredicate.isEmpty() ) {
+				if (result.isEmpty()) {
+					result = "card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n";
+				} else {
+					result += "|\n";
+				}
+				result += "(  /* Conformation check for signal \"" + signalFlatName + "\" */\n";
+				result += "    (\n";
+				result +=          riseDevPredicate;
+				result += "    )\n";
+				result += "    &\n";
+				result += "    (\n";
+				result +=          riseEnvPredicate;
+				result += "    )\n";
+				result += "    |\n";
+				result += "    (\n";
+				result +=          fallDevPredicate;
+				result += "    )\n";
+				result += "    &\n";
+				result += "    (\n";
+				result +=          fallEnvPredicate;
+				result += "    )\n";
+				result += ")\n";
+			}
+		}
+		return result;
+	}
 
 	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit, String reach) {
 		super();
@@ -192,7 +237,7 @@ public class MpsatSettings {
 		Matcher matcher = nodeNamePattern.matcher(reach);
 		while (matcher.find()) {
 			String reference = matcher.group(1);
-			String flatName = NamespaceHelper.getFlatName(reference);
+			String flatName = NamespaceHelper.hierarchicalToFlatName(reference);
 			matcher.appendReplacement(sb, "\"" + flatName + "\"");
 		}
 		matcher.appendTail(sb);

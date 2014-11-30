@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
@@ -18,6 +19,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -139,8 +141,10 @@ public class MpsatConformationTask extends MpsatChainTask {
 			monitor.progressUpdate(0.60);
 
 			// Check for interface conformation
-			HashSet<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
-			String reachConformation = MpsatSettings.genReachConformation(stg, devStg, devPlaceNames);
+			Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
+			Set<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
+//			String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
+			String reachConformation = MpsatSettings.genReachConformationDetail(stg, devOutputNames, devPlaceNames);
 			if (MpsatUtilitySettings.getDebugReach()) {
 				System.out.println("\nReach expression for the interface conformation property:");
 				System.out.println(reachConformation);

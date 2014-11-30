@@ -68,7 +68,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
 			String hName = en.getKey();
 			String fName = en.getValue();
 
-			String answer = NamespaceHelper.getFlatName(hName);
+			String answer = NamespaceHelper.hierarchicalToFlatName(hName);
 			assertTrue(answer.equals(fName));
 
 			hName = hName.replaceAll("'", "");

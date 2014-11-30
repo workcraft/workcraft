@@ -23,20 +23,20 @@ public class NamespaceHelper {
 	// TODO: make it work with the embedded ' characters
 	private static Pattern hPattern = Pattern.compile("(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)");
 
-	public static String getFlatName(String reference) {
-		return getFlatName(reference, flatNameSeparator, true);
+	public static String hierarchicalToFlatName(String reference) {
+		return hierarchicalToFlatName(reference, flatNameSeparator, true);
 	}
 
-	private static String getFlatName(String reference, String flatSeparator, boolean isFirst) {
+	private static String hierarchicalToFlatName(String reference, String flatSeparator, boolean suppressLeadingSeparator) {
 		if (flatSeparator==null) flatSeparator=flatNameSeparator;
 
-		// do not work with implicit places(?)
+		// Do not work with implicit places(?)
 		if (reference.startsWith("<")) {
 			return reference;
 		}
 		String ret = "";
-		// in this version the first separator is not shown
-		if (!isFirst && reference.startsWith(hierarchySeparator)) {
+		// In this version the first separator is suppressed
+		if (!suppressLeadingSeparator && reference.startsWith(hierarchySeparator)) {
 			ret=flatSeparator;
 		}
 
@@ -45,11 +45,11 @@ public class NamespaceHelper {
 		if (tail.equals("")) {
 			return ret+head;
 		}
-		return ret+head+getFlatName(tail, flatSeparator, false);
+		return ret + head + hierarchicalToFlatName(tail, flatSeparator, false);
 	}
 
-	public static String flatToHierarchicalName(String reference) {
-		return flatToHierarchicalName(reference, flatNameSeparator);
+	public static String flatToHierarchicalName(String flatName) {
+		return flatToHierarchicalName(flatName, flatNameSeparator);
 	}
 
 	private static String flatToHierarchicalName(String reference, String flatSeparator) {
