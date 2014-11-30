@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.tasks;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,8 +18,6 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
-import org.workcraft.plugins.son.algorithm.CycleAlgorithm;
-import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -82,12 +79,12 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		vnet.connectToBlocks(we);
 
 		//cycle detection
-		ONCycleAlg cycleAlg = new ONCycleAlg(net);
+		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
 		if(!cycleAlg.cycleTask(net.getComponents()).isEmpty()){
 			we.cancelMemento();
 			JOptionPane.showMessageDialog(null,
 					"Fail to run reachability anaylsis tool, " +
-					"error may due to incorrect structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+					"error due to cyclic structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
 			return new Result<VerificationResult>(Outcome.FINISHED);
 		}
 
@@ -143,9 +140,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	private boolean reachabilityTask(){
 		Collection<Path> sync = getSyncCycles();
 		Collection<Node> syncCycles = new HashSet<Node>();
-		for(Path path : sync){
-			syncCycles.addAll(path);
-		}
+
 		//if marking contains a synchronous channel place, it's unreachable.
 		for(String ref : markingRefs){
 			Node node = net.getNodeByReference(ref);
@@ -211,27 +206,33 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			if(path.isEmpty()){
 				for(Node pre : net.getPreset(node)){
 					for(TransitionNode t : CausalRelations(pre)){
-						result.add(t);
-						result.addAll(getCausalPredecessors(t, sync));
+						if(!result.contains(t)){
+							result.add(t);
+							result.addAll(getCausalPredecessors(t, sync));
+						}
 					}
 				}
 			}else{
 				for(Node n : path){
-					if(n instanceof TransitionNode)
+					if(n instanceof TransitionNode && !result.contains(n))
 						result.add((TransitionNode)n);
 				}
 				for(Node pre : relationAlg.getPreset(path)){
 					for(TransitionNode t : CausalRelations(pre)){
-						result.add(t);
-						result.addAll(getCausalPredecessors(t, sync));
+						if(!result.contains(t)){
+							result.add(t);
+							result.addAll(getCausalPredecessors(t, sync));
+						}
 					}
 				}
 			}
 		}
 		else{
 			for(TransitionNode t : CausalRelations(node)){
-				result.add(t);
-				result.addAll(getCausalPredecessors(t, sync));
+				if(!result.contains(t)){
+					result.add(t);
+					result.addAll(getCausalPredecessors(t, sync));
+				}
 			}
 		}
 		return result;
@@ -311,25 +312,11 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	}
 
 	private Collection<Path> getSyncCycles(){
-		List<Path> result = new ArrayList<Path>();
 		HashSet<Node> nodes = new HashSet<Node>();
 		nodes.addAll(net.getTransitionNodes());
 		nodes.addAll(net.getChannelPlaces());
-		CycleAlgorithm cycleAlg = new CycleAlgorithm();
-		CSONCycleAlg alg = new CSONCycleAlg(net);
+		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
 
-		List<Node> list = new ArrayList<Node>();
-		list.addAll(nodes);
-
-		for(List<Integer> cycleIndex : cycleAlg.getCycles(alg.createGraph(list))){
-			if(cycleIndex.size() > 1){
-				Path cycle = new Path();
-				for(Integer index : cycleIndex){
-					cycle.add(list.get(index));
-				}
-				result.add(cycle);
-			}
-		}
-		return result;
+		return cycleAlg.syncCycleTask(nodes);
 	}
 }

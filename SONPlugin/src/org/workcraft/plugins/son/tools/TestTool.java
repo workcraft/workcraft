@@ -62,18 +62,8 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		ArrayList<Node> nodes   = new ArrayList<Node>();
-		Node n = net.getComponents().iterator().next();
-		System.out.println(n.toString());
-		System.out.println(net.getName(n));
-		System.out.println(net.getNodeReference(n));
-		we.captureMemento();
-		we.cancelMemento();
-		net=(SON)we.getModelEntry().getMathModel();
-		Node n1 = net.getComponents().iterator().next();
-		System.out.println(n1.toString());
 
-
+		csonCycleTest(net);
 		//abtreactConditionTest(net);
 		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
 		//syncCycleTest(net);
@@ -111,7 +101,16 @@ public class TestTool extends AbstractTool implements Tool{
 		nodes.addAll(net.getChannelPlaces());
 		nodes.addAll(net.getTransitionNodes());
 
-		for(Path path : csonPath.syncCycleTask(nodes)){
+		for(Path path : csonPath.syncEventCycleTask(nodes)){
+			System.out.println(path.toString(net));
+		}
+	}
+
+	private void csonCycleTest(SON net){
+		CSONCycleAlg csonPath = new CSONCycleAlg(net);
+
+
+		for(Path path : csonPath.cycleTask(net.getComponents())){
 			System.out.println(path.toString(net));
 		}
 	}

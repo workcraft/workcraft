@@ -22,34 +22,6 @@ public class BSONCycleAlg extends ONCycleAlg{
 		bsonAlg =new BSONAlg(net);
 	}
 
-//	@Override
-//	public List<Node[]> createAdj(Collection<Node> nodes){
-//
-//		List<Node[]> result = new ArrayList<Node[]>();
-//
-//		for (Node n: nodes){
-//			for (Node next: net.getPostset(n))
-//				if(nodes.contains(next) && net.getSONConnectionType(n, next) != Semantics.BHVLINE){
-//					Node[] adjoin = new Node[2];
-//					adjoin[0] = n;
-//					adjoin[1] = next;
-//					result.add(adjoin);
-//
-//					if(net.getSONConnectionType(n, next) == Semantics.SYNCLINE){
-//						Node[] reAdjoin = new Node[2];
-//						reAdjoin[0] = next;
-//						reAdjoin[1] = n;
-//						if(!result.contains(reAdjoin))
-//							result.add(reAdjoin);
-//
-//				}
-//			}
-//			if(n instanceof TransitionNode)
-//				result.addAll(bsonAlg.before((TransitionNode)n));
-//		}
-//		return result;
-//	}
-
 	/**
 	 * create Integer Graph for a nodes set
 	 * Synchronous communication would be treated as an undirected line.

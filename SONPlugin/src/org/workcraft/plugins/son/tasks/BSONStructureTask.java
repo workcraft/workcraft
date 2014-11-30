@@ -375,7 +375,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 							nodes.addAll(net.getChannelPlaces());
 							CSONCycleAlg cson = new CSONCycleAlg(net);
 							boolean contains = false;
-							for(Path cycle : cson.syncCycleTask(nodes)){
+							for(Path cycle : cson.syncEventCycleTask(nodes)){
 								if(cycle.containsAll(subResult)){
 									contains = true;
 									break;
