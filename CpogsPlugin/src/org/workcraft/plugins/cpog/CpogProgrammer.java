@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,13 +41,14 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CpogProgrammer {
 	// FIXME: Relative path to the directory with programmer results. Currently this is hard-coded in programmer.
-	private static final String genEncodingDir = "../tools/results/generated_encoding/";
+	//private static final String genEncodingDir = "../tools/results/generated_encoding/";
 
 	private EncoderSettings settings;
-	private File scenarioFile, encodingFile ;
+	private File scenarioFile, encodingFile,resultDir;
 	private Double minArea;
 
 	// SETTING PARAMETERS FOR CALLING PROGRAMMER
+	private String genEncodingDir;
 	private String programmerCommand;
 	private String espressoCommand;
 	private String abcFolder;
@@ -329,8 +331,12 @@ public class CpogProgrammer {
 					System.out.println("Error");
 			}
 
-			FileUtils.deleteDirectoryTree(new File(genEncodingDir));
-			new File(genEncodingDir).mkdirs();
+			//FileUtils.deleteDirectoryTree(new File(genEncodingDir));
+			resultDir = File.createTempFile("folder-name","");
+			resultDir.delete();
+			resultDir.mkdir();
+
+			//new File(genEncodingDir).mkdirs();
 
 			// IF SCENCO MODE IS NOT SELECTED, PROGRAMMER IS CALLED ITERATIVELY
 		// BECAUSE, IF CONTINUOUS OPTION IS SELECTED, TOOL IS CALLED
@@ -842,7 +848,7 @@ public class CpogProgrammer {
 	// THE MICROCONTROLLER SYNTHESISED WITH ABC TOOL
 	private void printController(int m){
 		System.out.println();
-		String fileName = genEncodingDir;
+		String fileName = resultDir.getAbsolutePath();
 		for(int i=0; i<m; i++) fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
 		fileName = fileName.concat(".prg");
 		File f = new File(fileName);
@@ -875,6 +881,9 @@ public class CpogProgrammer {
 		if ((encodingFile != null) && encodingFile.exists()) {
 			encodingFile.delete();
 		}
+		if((resultDir != null) && resultDir.exists()){
+			resultDir.delete();
+		}
 	}
 
 	// THIS FUNCTION CALLS PROGRAMMER TOOL BY PASSING ALL THE NEEDED ARGUMENTS BY COMMAND LINE.
@@ -890,7 +899,7 @@ public class CpogProgrammer {
 
 				process = new ProcessBuilder(programmerCommand, scenarioFile.getAbsolutePath(),
 				"-m", effort, genMode, numSol, customFlag, customPath, verbose, cpogSize, disableFunction, oldSynt,
-				espressoFlag, espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
+				espressoFlag, espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary, "-res", resultDir.getAbsolutePath()).start();
 		InputStream is = process.getInputStream();
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);
