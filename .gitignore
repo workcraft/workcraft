@@ -15,3 +15,4 @@ generated
 *.BASE
 *.OTHER
 *.THIS
+RE:\.?[^.]+

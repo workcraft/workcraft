@@ -32,7 +32,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
-import org.workcraft.dom.Node;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
@@ -53,10 +52,9 @@ public class ParallelSimDialog  extends JDialog{
 	private JButton runButton, cancelButton;
 	protected JScrollPane infoPanel;
 	private JList eventList;
+	Collection<Path> sync;
 
 	private HashSet<TransitionNode> selectedEvents = new HashSet<TransitionNode>();
-	private Collection<Path> sync;
-	private Collection<TransitionNode> enabledEvents;
 
 	private int run = 0;
 	private Window owner;
@@ -152,10 +150,17 @@ public class ParallelSimDialog  extends JDialog{
 					}
 
 					if(item instanceof EventItem){
+						SimulationAlg simuAlg = new SimulationAlg(net);
 						if(item.isSelected() ){
 							selectedEvents.add(item.getEvent());
 
-							for(TransitionNode e : minFires){
+							List<TransitionNode> set;
+							if(!reverse)
+								set = simuAlg.getMinFires(item.getEvent(), sync, possibleFires);
+							else
+								set = simuAlg.getMaxFires(item.getEvent(), sync, possibleFires);
+
+							for(TransitionNode e : set){
 								for(EventItem eventItem : itemList){
 									if(e==eventItem.getEvent()){
 										selectedEvents.add(e);
@@ -169,27 +174,24 @@ public class ParallelSimDialog  extends JDialog{
 
 						if(!item.isSelected() ){
 							selectedEvents.remove(item.getEvent());
-							if(!reverse){
-								for(TransitionNode e : maxFires){
-									for(EventItem eventItem : itemList){
-										if(e==eventItem.getEvent()){
-											selectedEvents.remove(e);
-											eventItem.setSelected(false);
-											eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
-										}
-									}
-								}
-							}else{
-								for(TransitionNode e : minFires){
-									for(EventItem eventItem : itemList){
-										if(e==eventItem.getEvent()){
-											selectedEvents.remove(e);
-											eventItem.setSelected(false);
-											eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
-										}
+
+							List<TransitionNode> set;
+							if(!reverse)
+								set = simuAlg.getMaxFires(item.getEvent(), sync, possibleFires);
+							else
+								set = simuAlg.getMinFires(item.getEvent(), sync, possibleFires);
+
+								//unselected related synchronous events.
+							for(TransitionNode e : set){
+								for(EventItem eventItem : itemList){
+									if(e==eventItem.getEvent()){
+										selectedEvents.remove(e);
+										eventItem.setSelected(false);
+										eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
 									}
 								}
 							}
+
 							item.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
 						}
 
@@ -279,8 +281,8 @@ public class ParallelSimDialog  extends JDialog{
 
 	public  ParallelSimDialog (Window owner, SON net,
 			List<TransitionNode> possibleFires, List<TransitionNode> minFires,
-			List<TransitionNode> maxFires, TransitionNode event, Collection<Path> sync,
-			Collection<TransitionNode> enabledEvents, boolean reverse){
+			List<TransitionNode> maxFires, TransitionNode event, boolean reverse,
+			Collection<Path> sync){
 		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
 
 		this.net = net;
@@ -290,7 +292,6 @@ public class ParallelSimDialog  extends JDialog{
 		this.maxFires = maxFires;
 		this.clickedEvent = event;
 		this.sync = sync;
-		this.enabledEvents = enabledEvents;
 
 		setEventsColor(minFires, event);
 

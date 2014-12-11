@@ -22,14 +22,10 @@ public class SimulationAlg extends RelationAlgorithm {
 	private SON net;
 	private BSONAlg bsonAlg;
 
-	private Collection<TransitionNode> syncEventSet = new HashSet<TransitionNode>();
-	private Collection<Node> checkedEvents = new HashSet<Node>();
-
-	private Collection<Node> minFire = new HashSet<Node>();
-	private Collection<Node> postEventSet = new HashSet<Node>();
-
 	private Collection<ONGroup> abstractGroups;
 	private Collection<ONGroup> bhvGroups;
+
+	private Collection<Node> checkedNodes = new HashSet<Node>();
 
 	public SimulationAlg(SON net){
 		super(net);
@@ -40,54 +36,56 @@ public class SimulationAlg extends RelationAlgorithm {
 		bhvGroups = bsonAlg.getBhvGroups(net.getGroups());
 	}
 
-	private void getMinFireSet (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
-
+	private Collection<Node> getSyncMinimum (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
+		Collection<Node> result = new HashSet<Node>();
 		HashSet<Node> syncEvents = new HashSet<Node>();
-
+		//get related synchronous events
 		for(Path cycle : sync){
 			if(cycle.contains(e))
 				syncEvents.addAll(cycle);
 		}
-
+		//e is in synchronous cycle
 		if(!syncEvents.isEmpty()){
 			for(Node n : syncEvents){
-				if(enabledEvents.contains(n) && !minFire.contains(n)){
-					minFire.add(n);
-
-					for(TransitionNode pre : this.getPreAsynEvents((TransitionNode)n)){
-						if(!syncEvents.contains(pre) && enabledEvents.contains(pre))
-							getMinFireSet((TransitionNode)n, sync, enabledEvents);
+				//add all related synchronous cycle to result
+				if(enabledEvents.contains(n) && !result.contains(n)){
+					result.add(n);
+					//continue to check the event which is the pre-aysn-event of related synchronous cycle
+					for(TransitionNode pre : getPreAsynEvents((TransitionNode)n)){
+						if(!syncEvents.contains(pre) && enabledEvents.contains(pre)){
+							result.addAll(getSyncMinimum((TransitionNode)pre, sync, enabledEvents));
+						}
 					}
 				}
 				if(!enabledEvents.contains(n))
-					throw new RuntimeException("algorithm error: has unenabled event in sync cycle  "+net.getName(n));
+					throw new RuntimeException("algorithm error: has unenabled event in sync cycle  "+net.getNodeReference(n));
 			}
 		}
+		//e is not in synchronous cycle	but has pre asyn event
+		else if(!getPreAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
+			if(!result.contains(e))
+				result.add(e);
 
-		if(!this.getPreAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
-			if(!minFire.contains(e))
-				minFire.add(e);
-
-			for(TransitionNode n : this.getPreAsynEvents(e))
-				if(!minFire.contains(n) && enabledEvents.contains(n)){
-					minFire.add(n);
-					getMinFireSet((TransitionNode)n, sync, enabledEvents);
+			for(TransitionNode n : getPreAsynEvents(e))
+				if(!result.contains(n) && enabledEvents.contains(n)){
+					result.add(n);
+					result.addAll(getSyncMinimum((TransitionNode)n, sync, enabledEvents));
 				}
 		}
-		else
-			minFire.add(e);
+		else{
+			result.add(e);
+		}
+		return result;
 	}
 
 	/**
 	 * return minimal execution set of a given node.
-	 * This may contain other nodes which have synchronous with the target node.
+	 * contain other nodes which have synchronous with the clicked node.
 	 */
 	public List<TransitionNode> getMinFires (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 		List<TransitionNode> result = new ArrayList<TransitionNode>();
 
-		getMinFireSet(e, sync, enabledEvents);
-
-		for(Node n : this.minFire)
+		for(Node n : getSyncMinimum(e, sync, enabledEvents))
 			if(n instanceof TransitionNode)
 				result.add((TransitionNode)n);;
 
@@ -95,8 +93,8 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 
-	private void getMaxFireSet(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
-
+	private Collection<Node> getMaxFireSet(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
+		Collection<Node> result = new HashSet<Node>();
 		Collection<Node> syncEvents = new HashSet<Node>();
 
 		for(Path cycle : sync){
@@ -106,12 +104,14 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		if(!syncEvents.isEmpty()){
 			for(Node n : syncEvents){
-				if(enabledEvents.contains(n) && !postEventSet.contains(n)){
-					postEventSet.add(n);
+				if(enabledEvents.contains(n) && !result.contains(n)){
+					result.add(n);
 
 					for(TransitionNode post : this.getPostAsynEvents((TransitionNode)n)){
-						if(!syncEvents.contains(post) && enabledEvents.contains(post))
-							getMaxFireSet((TransitionNode)n, sync, enabledEvents);
+						if(!syncEvents.contains(post) && enabledEvents.contains(post)){
+							result.add(post);
+							result.addAll(getMaxFireSet((TransitionNode)post, sync, enabledEvents));
+						}
 					}
 
 				}
@@ -119,113 +119,30 @@ public class SimulationAlg extends RelationAlgorithm {
 					throw new RuntimeException("algorithm error: has unenable event in sync cycle");
 			}
 		}
+		else if(!getPostAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
+			if(!result.contains(e))
+				result.add(e);
 
-		if(!this.getPostAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
-			if(!postEventSet.contains(e))
-				postEventSet.add(e);
-
-			for(TransitionNode n : this.getPostAsynEvents(e))
-				if(!postEventSet.contains(n) && enabledEvents.contains(n)){
-					postEventSet.add(n);
-					getMaxFireSet((TransitionNode)n, sync, enabledEvents);
+			for(TransitionNode n : getPostAsynEvents(e))
+				if(!result.contains(n) && enabledEvents.contains(n)){
+					result.add(n);
+					result.addAll(getMaxFireSet((TransitionNode)n, sync, enabledEvents));
 				}
 		}
-		else
-			postEventSet.add(e);
+		else{
+			result.add(e);
+		}
+		return result;
 	}
 
 	public List<TransitionNode> getMaxFires (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
 		List<TransitionNode> result = new ArrayList<TransitionNode>();
-		getMaxFireSet(e, sync, enabledEvents);
 
-		for(Node n : this.postEventSet)
+		for(Node n : getMaxFireSet(e, sync, enabledEvents))
 			if(n instanceof TransitionNode)
 				result.add((TransitionNode)n);
 
 		return result;
-	}
-
-	/**
-	 * clear all set.
-	 */
-	public void clearAll(){
-			syncEventSet.clear();
-			checkedEvents.clear();
-
-			minFire.clear();
-			postEventSet.clear();
-	}
-
-	private List<Node[]> createAdj(Collection<Node> nodes){
-
-		List<Node[]> result = new ArrayList<Node[]>();
-
-		for (Node n: nodes){
-			for (Node next: net.getPostset(n)){
-				if((next instanceof ChannelPlace) &&
-						net.getSONConnectionType(next, n) == Semantics.ASYNLINE){
-					Node[] adjoin = new Node[2];
-					for(Node n2 : net.getPostset(next))
-						if(n2 instanceof TransitionNode){
-							adjoin[0] = n;
-							adjoin[1] = n2;
-							result.add(adjoin);
-						}
-				}
-
-				if((next instanceof ChannelPlace) &&
-						net.getSONConnectionType(next, n) == Semantics.SYNCLINE){
-					Node[] adjoin = new Node[2];
-					Node[] reAdjoin = new Node[2];
-					for(Node n2 : net.getPostset(next))
-						if(n2 instanceof TransitionNode){
-							adjoin[0] = n;
-							adjoin[1] = n2;
-							reAdjoin[0] = n2;
-							reAdjoin[1] = n;
-							result.add(adjoin);
-							result.add(reAdjoin);
-						}
-				}
-
-				if((next instanceof TransitionNode) || (next instanceof Condition)){
-					Node[] adjoin = new Node[2];
-					adjoin[0] = n;
-					adjoin[1] = next;
-					result.add(adjoin);
-					}
-				}
-		}
-		return result;
-	}
-
-	/**
-	 * get synchronous cycle for a set of node.
-	 */
-	public Collection<Path> getSyncCycles(Collection<Node> nodes){
-		Collection<Path> cycles = new ArrayList<Path>();
-		List<Path> filter = new ArrayList<Path>();
-
-		this.clearAll();
-		//get all cycle set
-		for(Node s : getInitial(nodes))
-			for(Node v : getFinal(nodes))
-				cycles.addAll(PathAlgorithm.getCycles(s, v, createAdj(nodes)));
-		//get synchronous cycle set
-		if(!cycles.isEmpty()){
-			for(Path path : cycles){
-				boolean hasCondition = false;
-				for(Node n : path)
-					if(n instanceof Condition){
-						hasCondition = true;
-						continue;
-					}
-				if(!hasCondition)
-					filter.add(path);
-			}
-		}
-		//get longest synchronous cycle set
-		return 	PathAlgorithm.merging(filter);
 	}
 
 	private boolean isPNEnabled (TransitionNode e) {
@@ -242,23 +159,23 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	private boolean isSyncEnabled(TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
-		HashSet<Node> syncEvents = new HashSet<Node>();
-
+		Collection<Node> relatedSync = new HashSet<Node>();
+		//get nodes which have synchronous relation with e
 		for(Path cycle : sync){
 			if(cycle.contains(e))
-				syncEvents.addAll(cycle);
+				relatedSync.addAll(cycle);
 		}
 
-		if(syncEvents.contains(e)){
-			checkedEvents.addAll(syncEvents);
-			for(Node n : syncEvents)
+		if(relatedSync.contains(e)){
+			checkedNodes.addAll(relatedSync);
+			for(Node n : relatedSync)
 				if(n instanceof TransitionNode){
-					if(!this.isPNEnabled((TransitionNode)n) || !this.isBhvEnabled((TransitionNode)n, phases))
+					if(!isPNEnabled((TransitionNode)n) || !isBhvEnabled((TransitionNode)n, phases))
 							return false;
-					for(TransitionNode pre : this.getPreAsynEvents((TransitionNode)n)){
-						if(!syncEvents.contains(pre)){
-							if(!this.isAsynEnabled((TransitionNode)n, sync, phases)
-									|| !this.isBhvEnabled((TransitionNode)n, phases))
+					for(TransitionNode pre : getPreAsynEvents((TransitionNode)n)){
+						if(!relatedSync.contains(pre)){
+							if(!isAsynEnabled((TransitionNode)n, sync, phases)
+									|| !isBhvEnabled((TransitionNode)n, phases))
 								return false;
 						}
 					}
@@ -269,15 +186,18 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	private boolean isAsynEnabled(TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
-
+		//get pre-channel place q of e
 		for (Node n : net.getPreset(e)){
 			if(n instanceof ChannelPlace)
+				//if q is un-marked (synchronous semantic)
 				if (((ChannelPlace)n).isMarked() == false)
+					//get the input transition node of q, if it is unenabled then e is unenabled
 					for(Node node : net.getPreset(n)){
-						if(node instanceof TransitionNode && !checkedEvents.contains(node)){
-							if(!this.isPNEnabled((TransitionNode)node) ||!this.isSyncEnabled((TransitionNode)node, sync, phases)
-									||!this.isAsynEnabled((TransitionNode)node, sync, phases)
-									||!this.isBhvEnabled((TransitionNode)node, phases))
+						if(node instanceof TransitionNode && !checkedNodes.contains(node)){
+							if(!isPNEnabled((TransitionNode)node)
+									||!isSyncEnabled((TransitionNode)node, sync, phases)
+									||!isAsynEnabled((TransitionNode)node, sync, phases)
+									||!isBhvEnabled((TransitionNode)node, phases))
 								return false;
 						}
 				}
@@ -286,6 +206,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	private boolean isBhvEnabled(TransitionNode e, Map<Condition, Phase> phases){
+		//if e is abstract event, e is enabled if the maximal phase of e's pre-condition is marked
 		for(ONGroup group : abstractGroups){
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPrePNSet(e))
@@ -302,12 +223,22 @@ public class SimulationAlg extends RelationAlgorithm {
 		for(ONGroup group : bhvGroups){
 			if(group.getComponents().contains(e)){
 				for(Condition c : phases.keySet()){
+					//if c is marked
 					if(c.isMarked())
-						if((!phases.get(c).containsAll(getPrePNSet(e)) && phases.get(c).containsAll(getPostPNSet(e)))||
-								(!phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e))))
-							return false;
+						//e is unenbled if
+						//1. e belong to c
+						//2. either the pre- or post condition of e not belong to c's phase
+						if((!phases.get(c).containsAll(getPrePNSet(e))
+								&& phases.get(c).containsAll(getPostPNSet(e)))
+								|| (!phases.get(c).containsAll(getPostPNSet(e))
+										&& phases.get(c).containsAll(getPrePNSet(e)))){
+						return false;
+						}
+					//if c is not marked
 					if(!c.isMarked())
-						if(phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e)))
+						//e is un-enabled if the pre- and post-conditions of e all belong to the phase of c.
+						if(phases.get(c).containsAll(getPostPNSet(e))
+								&& phases.get(c).containsAll(getPrePNSet(e)))
 							return false;
 					}
 				}
@@ -316,102 +247,106 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	final public boolean isEnabled (TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
-		checkedEvents.clear();
-		if(isPNEnabled(e) && isSyncEnabled(e, sync, phases)
-				&& this.isAsynEnabled(e, sync, phases) && isBhvEnabled(e, phases)){
+		checkedNodes.clear();
+		if(isPNEnabled(e)
+				&& isSyncEnabled(e, sync, phases)
+				&& isAsynEnabled(e, sync, phases)
+				&& isBhvEnabled(e, phases)){
 			return true;
 		}
 		return false;
 	}
 
-	public void fire(Collection<TransitionNode> runList) throws InvalidStructureException{
-		for(TransitionNode e : runList){
+	public void fire(Collection<TransitionNode> fireList) throws InvalidStructureException{
+
+		for(TransitionNode e : fireList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
 					Condition to = (Condition)c.getSecond();
 					if(to.isMarked())
-						throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
+						throw new InvalidStructureException("Token amount > 1: "+net.getNodeReference(to));
 					to.setMarked(true);
 				}
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getSecond()) {
 					Condition from = (Condition)c.getFirst();
 					if(!from.isMarked())
-						throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
+						throw new InvalidStructureException("Token amount = 0: "+net.getNodeReference(from));
 					from.setMarked(false);
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getFirst()){
 						ChannelPlace to = (ChannelPlace)c.getSecond();
-						if(runList.containsAll(net.getPostset(to)) && runList.containsAll(net.getPreset(to)))
+						if(fireList.containsAll(net.getPostset(to)) && fireList.containsAll(net.getPreset(to)))
 							to.setMarked(((ChannelPlace)to).isMarked());
 						else{
 							if(to.isMarked())
-								throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
+								throw new InvalidStructureException("Token amount > 1: "+net.getNodeReference(to));
 							to.setMarked(true);
 						}
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getSecond()){
 						ChannelPlace from = (ChannelPlace)c.getFirst();
-						if(runList.containsAll(net.getPostset(from)) && runList.containsAll(net.getPreset(from)))
+						if(fireList.containsAll(net.getPostset(from)) && fireList.containsAll(net.getPreset(from)))
 							from.setMarked(((ChannelPlace)from).isMarked());
 						else
 							if(!from.isMarked())
-								throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
+								throw new InvalidStructureException("Token amount = 0: "+net.getNodeReference(from));
 							from.setMarked(false);
 				}
 			}
 
-		for(ONGroup group : abstractGroups){
-			if(group.getEvents().contains(e)){
-				Collection<Condition> preMax = new HashSet<Condition>();
-				Collection<Condition> postMin = new HashSet<Condition>();
-				for(Node pre : getPrePNSet(e))
-					preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
-				for(Node post : getPostPNSet(e))
+			//if e is an abstract events, get preMax - maximal phase of e's input, and postMin - minimal phase of e' output
+			Collection<Condition> preMax = new HashSet<Condition>();
+			Collection<Condition> postMin = new HashSet<Condition>();
+			for(Node pre : getPrePNSet(e)){
+				if(bsonAlg.isAbstractCondition(pre))
+					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+			}
+			for(Node post : getPostPNSet(e)){
+				if(bsonAlg.isAbstractCondition(post))
 					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
-				//disjoint phases
-				if(!preMax.containsAll(postMin)){
-					boolean isFinal=true;
-					for(Condition fin : preMax)
-							if(!isFinal(fin))
-								isFinal=false;
-					if(isFinal){
-						for(Condition fin : preMax){
-							//structure such that condition fin has more than one high-level states
-							int tokens = 0;
-							for(Node post : net.getPostset(fin)){
-								if((post instanceof Condition)
-										&& net.getSONConnectionType(post, fin) == Semantics.BHVLINE)
-									if(((Condition)post).isMarked())
-										tokens++;
-							}
-							//if preMax has token and there is no high-level states has token, then token -> false;
-							if(fin.isMarked() && tokens == 0)
-								fin.setMarked(false);
-						}
+			}
+			//if preMax and postMin are in separate ONs.
+			if(!preMax.containsAll(postMin)){
+				boolean isFinal=true;
+				//if preMax are the final states of an ON
+				for(Condition fin : preMax){
+					if(!isFinal(fin)){
+						isFinal=false;
+						break;
 					}
-					boolean isIni = true;
-					for(Condition init : postMin)
-						if(!isInitial(init))
-							isIni=false;
-					if(isIni)
-						for(Condition ini : postMin){
-							//structure such that condition ini has more than one high-level states
-							int tokens = 0;
-							int size = 0;
-							for(Node post : net.getPostset(ini)){
-								if((post instanceof Condition)
-										&& net.getSONConnectionType(post, ini) == Semantics.BHVLINE){
-									size++;
-									if(((Condition)post).isMarked())
-										tokens++;
-									}
-							}
-
-							if(!ini.isMarked() && tokens == size)
-								ini.setMarked(true);
-							//	JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
+				}
+				//token in preMax sets to false if none of corresponding abstract conditions is marked
+				if(isFinal){
+					for(Condition fin : preMax){
+						int tokens = 0;
+						for(Node c : bsonAlg.getAbstractConditions(fin)){
+							if(((Condition)c).isMarked())
+								tokens++;
 						}
+						if(fin.isMarked() && tokens == 0)
+							fin.setMarked(false);
 					}
+				}
+				//if postMin are the initial states of another ON
+				boolean isInitial = true;
+				for(Condition init : postMin){
+					if(!isInitial(init)){
+						isInitial=false;
+						break;
+					}
+				}
+				//token in postMin sets to true if ALL corresponding abstract conditions is marked
+				if(isInitial)
+					for(Condition ini : postMin){
+						int tokens = 0;
+						int count = 0;
+						for(Node c : bsonAlg.getAbstractConditions(ini)){
+							count++;
+							if(((Condition)c).isMarked())
+								tokens++;
+						}
+						if(!ini.isMarked() && tokens == count)
+							ini.setMarked(true);
 				}
 			}
 		}
@@ -421,7 +356,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	//reverse simulation
 
 	final public boolean isUnfireEnabled (TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases) {
-		checkedEvents.clear();
+		checkedNodes.clear();
 		if(isPNUnEnabled(e) && isSyncUnEnabled(e, sync, phases) && this.isAsynUnEnabled(e, sync, phases) && isBhvUnEnabled(e, phases))
 			return true;
 		return false;
@@ -440,21 +375,21 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	private boolean isSyncUnEnabled(TransitionNode e, Collection<Path> sync, Map<Condition, Phase> phases){
-		HashSet<Node> syncEvents = new HashSet<Node>();
+		HashSet<Node> relatedSync = new HashSet<Node>();
 
 		for(Path cycle : sync){
 			if(cycle.contains(e))
-				syncEvents.addAll(cycle);
+				relatedSync.addAll(cycle);
 		}
 
-		if(syncEvents.contains(e)){
-			checkedEvents.addAll(syncEvents);
-			for(Node n : syncEvents)
+		if(relatedSync.contains(e)){
+			checkedNodes.addAll(relatedSync);
+			for(Node n : relatedSync)
 				if(n instanceof TransitionNode){
 					if(!this.isPNUnEnabled((TransitionNode)n) || !this.isBhvUnEnabled((TransitionNode)n, phases))
 							return false;
 					for(Node post : this.getPostAsynEvents((TransitionNode)n)){
-						if(post instanceof TransitionNode && !syncEvents.contains(post)){
+						if(post instanceof TransitionNode && !relatedSync.contains(post)){
 							if(!this.isAsynUnEnabled((TransitionNode)n, sync, phases)||!this.isBhvUnEnabled((TransitionNode)n, phases))
 								return false;
 						}
@@ -470,9 +405,11 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(n instanceof ChannelPlace)
 				if (((ChannelPlace)n).isMarked() == false)
 					for(Node node : net.getPostset(n)){
-						if(node instanceof TransitionNode && !checkedEvents.contains(node)){
-							if(!this.isPNUnEnabled((TransitionNode)node) ||!this.isSyncUnEnabled((TransitionNode)node, sync, phases)
-									||!this.isAsynUnEnabled((TransitionNode)node, sync, phases) ||!this.isBhvUnEnabled((TransitionNode)node, phases))
+						if(node instanceof TransitionNode && !checkedNodes.contains(node)){
+							if(!this.isPNUnEnabled((TransitionNode)node)
+									||!this.isSyncUnEnabled((TransitionNode)node, sync, phases)
+									||!this.isAsynUnEnabled((TransitionNode)node, sync, phases)
+									||!this.isBhvUnEnabled((TransitionNode)node, phases))
 								return false;
 						}
 				}
@@ -498,8 +435,10 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Condition c : phases.keySet()){
 					if(c.isMarked())
-						if((!phases.get(c).containsAll(getPrePNSet(e)) && phases.get(c).containsAll(getPostPNSet(e)))||
-								(!phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e))))
+						if((!phases.get(c).containsAll(getPrePNSet(e))
+								&& phases.get(c).containsAll(getPostPNSet(e)))
+								|| (!phases.get(c).containsAll(getPostPNSet(e))
+										&& phases.get(c).containsAll(getPrePNSet(e))))
 							return false;
 					if(!c.isMarked())
 						if(phases.get(c).containsAll(getPostPNSet(e)) && phases.get(c).containsAll(getPrePNSet(e)))
@@ -510,100 +449,97 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	public void unFire(Collection<TransitionNode> events) throws InvalidStructureException{
-		for(TransitionNode e : events){
+	public void unFire(Collection<TransitionNode> fireList) throws InvalidStructureException{
+		for(TransitionNode e : fireList){
 			for (SONConnection c : net.getSONConnections(e)) {
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getSecond()) {
 					Condition to = (Condition)c.getFirst();
 					if(to.isMarked())
-						throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
+						throw new InvalidStructureException("Reverse Token amount > 1: "+net.getNodeReference(to));
 					to.setMarked(true);
 				}
 				if (c.getSemantics() == Semantics.PNLINE && e==c.getFirst()) {
 					Condition from = (Condition)c.getSecond();
 					if(!from.isMarked())
-						throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
+						throw new InvalidStructureException("Reverse Token amount = 0: "+net.getNodeReference(from));
 					from.setMarked(false);
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getSecond()){
 					ChannelPlace to = (ChannelPlace)c.getFirst();
-					if(events.containsAll(net.getPreset(to)) && events.containsAll(net.getPostset(to)))
+					if(fireList.containsAll(net.getPreset(to)) && fireList.containsAll(net.getPostset(to)))
 						to.setMarked(((ChannelPlace)to).isMarked());
 					else
 						if(to.isMarked())
-							throw new InvalidStructureException("Token amount > 1: "+net.getName(to));
+							throw new InvalidStructureException("Reverse Token amount > 1: "+net.getNodeReference(to));
 						to.setMarked(!to.isMarked());
 				}
 				if (c.getSemantics() == Semantics.ASYNLINE && e==c.getFirst()){
 					ChannelPlace from = (ChannelPlace)c.getSecond();
-					if(events.containsAll(net.getPreset(from)) && events.containsAll(net.getPostset(from)))
+					if(fireList.containsAll(net.getPreset(from)) && fireList.containsAll(net.getPostset(from)))
 						from.setMarked(((ChannelPlace)from).isMarked());
 					else
 						if(!from.isMarked())
-							throw new InvalidStructureException("Token amount = 0: "+net.getName(from));
+							throw new InvalidStructureException("Reverse Token amount = 0: "+net.getNodeReference(from));
 						from.setMarked(!from.isMarked());
 				}
 			}
 
-			for(ONGroup group : abstractGroups){
-				if(group.getEvents().contains(e)){
-					Phase preMax = new Phase();
-					Phase postMin = new Phase();
-					for(Node pre : getPrePNSet(e))
-						preMax.addAll( bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
-					for(Node post : getPostPNSet(e))
-						postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
 
-					if(!preMax.containsAll(postMin)){
-						boolean isInitial=true;
-						for(Condition ini : postMin)
-								if(!isInitial(ini))
-									isInitial=false;
-						if(isInitial){
-								for(Condition ini : postMin){
-									//structure such that condition fin has more than one high-level states
-									int tokens = 0;
-									for(Node post : net.getPostset(ini)){
-										if(post instanceof Condition && net.getSONConnectionType(post, ini) == Semantics.BHVLINE)
-											if(((Condition)post).isMarked())
-												tokens++;
-									}
-									//if preMax has token and there is no high-level states has token, then token -> false;
-									if(ini.isMarked() && tokens == 0)
-										ini.setMarked(false);
-								}
-							}
-
-						boolean isFinal = true;
-						for(Condition fin : preMax)
-								if(!isFinal(fin))
-									isFinal=false;
-						if(isFinal)
-							for(Condition fin : preMax){
-								//structure such that condition ini has more than one high-level states
-								int tokens = 0;
-								int size = 0;
-								for(Node post : net.getPostset(fin)){
-									if(post instanceof Condition && net.getSONConnectionType(post, fin)== Semantics.BHVLINE){
-										size++;
-										if(((Condition)post).isMarked())
-											tokens++;
-										}
-								}
-
-								if(!fin.isMarked() && tokens == size)
-									fin.setMarked(true);
-								//	JOptionPane.showMessageDialog(null, "Token setting error: token in "+net.getName(ini) + " is true", "Error", JOptionPane.WARNING_MESSAGE);
-							}
+			//if e is an abstract events, get preMax - maximal phase of e's input, and postMin - minimal phase of e' output
+			Collection<Condition> preMax = new HashSet<Condition>();
+			Collection<Condition> postMin = new HashSet<Condition>();
+			for(Node pre : getPrePNSet(e)){
+				if(bsonAlg.isAbstractCondition(pre))
+					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+			}
+			for(Node post : getPostPNSet(e)){
+				if(bsonAlg.isAbstractCondition(post))
+					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
+			}
+			//if preMax and postMin are in separate ONs.
+			if(!preMax.containsAll(postMin)){
+				boolean isFinal=true;
+				//if preMax are the final states of an ON
+				for(Condition fin : preMax){
+					if(!isFinal(fin)){
+						isFinal=false;
+						break;
 					}
+				}
+				//token in preMax sets to true if all of corresponding abstract conditions is marked
+				if(isFinal){
+					for(Condition fin : preMax){
+						int tokens = 0;
+						int count = 0;
+						for(Node c : bsonAlg.getAbstractConditions(fin)){
+							count++;
+							if(((Condition)c).isMarked())
+								tokens++;
+						}
+						if(!fin.isMarked() && tokens == count)
+							fin.setMarked(true);
+					}
+				}
+				//if postMin are the initial states of another ON
+				boolean isInitial = true;
+				for(Condition init : postMin){
+					if(!isInitial(init)){
+						isInitial=false;
+						break;
+					}
+				}
+				//token in postMin sets to false if none of corresponding abstract conditions is marked
+				if(isInitial)
+					for(Condition ini : postMin){
+						int tokens = 0;
+						for(Node c : bsonAlg.getAbstractConditions(ini)){
+							if(((Condition)c).isMarked())
+								tokens++;
+						}
+						if(ini.isMarked() && tokens == 0)
+							ini.setMarked(false);
 				}
 			}
 		}
-	}
-
-	//others
-
-	public Collection<ONGroup> getAbstractGroups(){
-		return this.abstractGroups;
 	}
 }

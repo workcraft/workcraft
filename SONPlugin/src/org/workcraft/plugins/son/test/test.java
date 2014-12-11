@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.OutputRedirect;
-import org.workcraft.plugins.son.verify.VerificationResult;
+import org.workcraft.plugins.son.tasks.VerificationResult;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;

@@ -71,7 +71,6 @@ public class SON extends AbstractMathModel {
 		return con;
 	}
 
-
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result =  new ArrayList<Node>();
 
@@ -346,4 +345,25 @@ public class SON extends AbstractMathModel {
 		return false;
 	}
 
+	public String toString(Collection<? extends Node> nodes){
+
+		StringBuffer result = new StringBuffer("");
+
+		boolean first = true;
+		for (Node node : nodes) {
+			if (!first) {
+				result.append(',');
+				result.append(' ' + getNodeReference(node));
+			}else{
+				result.append(' ');
+				result.append('[');
+				result.append(getNodeReference(node));
+				first = false;
+			}
+		}
+		if(!nodes.isEmpty())
+			result.append(']');
+		return result.toString();
+
+	}
 }

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.workcraft.Framework;
@@ -18,6 +19,9 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
+import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
+import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
@@ -58,19 +62,9 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		Graphics2D g = null;
-		GraphEditorPanel editor = null;
-		for(GraphEditorPanel ed : framework.getMainWindow().getEditors(we)){
-			editor = ed;
-			g = (Graphics2D)editor.getGraphics();
-		}
-		for(int i=0; i< 5000; i++){
-			GUI.drawEditorMessage(editor, g, Color.BLACK, "afdasfasd");
-			System.out.println(i);
-		}
-		activated(editor);
-		editor.repaint();
 
+		csonCycleTest(net);
+		//abtreactConditionTest(net);
 		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
 		//syncCycleTest(net);
 		//blockMathLevelTest(net, vnet);
@@ -97,17 +91,28 @@ public class TestTool extends AbstractTool implements Tool{
 		}
 	}
 
-	private void conditionOutputTest(VisualSON vnet){
-		vnet.connectToBlocks();
+	private void conditionOutputTest(VisualSON vnet, WorkspaceEntry we){
+		vnet.connectToBlocks(we);
 	}
 
 	private void syncCycleTest(SON net){
-		SimulationAlg simuAlg = new SimulationAlg(net);
+		CSONCycleAlg csonPath = new CSONCycleAlg(net);
 		HashSet<Node> nodes = new HashSet<Node>();
-		nodes.addAll(net.getConditions());
+		nodes.addAll(net.getChannelPlaces());
 		nodes.addAll(net.getTransitionNodes());
 
-		simuAlg.getSyncCycles(nodes);
+		for(Path path : csonPath.syncEventCycleTask(nodes)){
+			System.out.println(path.toString(net));
+		}
+	}
+
+	private void csonCycleTest(SON net){
+		CSONCycleAlg csonPath = new CSONCycleAlg(net);
+
+
+		for(Path path : csonPath.cycleTask(net.getComponents())){
+			System.out.println(path.toString(net));
+		}
 	}
 
 	private void exceptionTest() throws InvalidConnectionException{
@@ -116,6 +121,16 @@ public class TestTool extends AbstractTool implements Tool{
 			message = "adfa";
 			throw new InvalidConnectionException(message);
 		}
+	}
+
+	private void abtreactConditionTest(SON net){
+		BSONAlg alg = new BSONAlg(net);
+		for(Node node : net.getComponents()){
+			for(Condition c : alg.getAbstractConditions(node)){
+				System.out.println("abstract condition of   " + net.getNodeReference(node) + "  is  "  + net.getNodeReference(c));
+			}
+		}
+		System.out.println("********************");
 	}
 
 /*	private void convertBlockTest(SONModel net, VisualSON vnet){

@@ -13,6 +13,7 @@ public class PlaceNode extends MathNode {
 	private String label = "";
 	private int errors = 0;
 	private boolean marked = false;
+	private Color tokenColor = CommonVisualSettings.getBorderColor();
 
 	public void setMarked(boolean token) {
 		this.marked=token;
@@ -57,5 +58,14 @@ public class PlaceNode extends MathNode {
 
 	public String getLabel(){
 		return label;
+	}
+
+	public Color getTokenColor() {
+		return tokenColor;
+	}
+
+	public void setTokenColor(Color tokenColor) {
+		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, "tokenColor"));
 	}
 }

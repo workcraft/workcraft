@@ -1,4 +1,4 @@
-package org.workcraft.plugins.son.verify;
+package org.workcraft.plugins.son.tasks;
 
 public class VerificationResult {
 

@@ -45,7 +45,7 @@ public class MpsatUtilitySettings implements Settings {
 	private static final String defaultExtraArgs = "";
 	private static final Boolean defaultUsePnmlUnfolding = false;
 	private static final Boolean defaultDebugReach = false;
-	private static final Boolean defaultDebugTemporaryFiles = true;
+	private static final Boolean defaultDebugTemporaryFiles = false;
 
 	private static String command = defaultCommand;
 	private static SolutionMode solutionMode = defaultSolutionMode;

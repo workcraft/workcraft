@@ -1,4 +1,4 @@
-package org.workcraft.plugins.son.verify;
+package org.workcraft.plugins.son.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;

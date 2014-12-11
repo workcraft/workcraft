@@ -1,10 +1,9 @@
-package org.workcraft.plugins.son.verify;
+package org.workcraft.plugins.son.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
@@ -15,7 +14,6 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 public class CSONStructureTask extends AbstractStructuralVerification{
 
 	private SON net;
-	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private Collection<Node> relationErrors = new ArrayList<Node>();
 	private Collection<Path> cycleErrors = new ArrayList<Path>();
@@ -32,48 +30,45 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 
 	public void task(Collection<ONGroup> groups){
 
-		logger.info("-----------------Communication-SON Verification-----------------");
+		infoMsg("-----------------Communication-SON Structure Verification-----------------");
 
 		//group info
-		logger.info("Initialising selected group components...");
+		infoMsg("Initialising selected groups and components...");
 		ArrayList<Node> components = new ArrayList<Node>();
 		for(ONGroup group : groups){
 			components.addAll(group.getComponents());
 		}
 
-		logger.info("Selected Groups = " +  groups.size());
-		logger.info("Group Components = " + components.size());
+		infoMsg("Selected Groups : " +  net.toString(groups));
 
-		ArrayList<ChannelPlace> relatedcPlaces = new ArrayList<ChannelPlace>();
-		relatedcPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
-		components.addAll(relatedcPlaces);
+		ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
+		relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
+		components.addAll(relatedCPlaces);
 
-		logger.info("Channel Place(s) = " + relatedcPlaces.size());
+		infoMsg("Channel Places = " + relatedCPlaces.size());
 
-		if(relatedcPlaces.isEmpty()){
-			logger.info("Task termination: no a/synchronous connections in selected groups.");
+		if(relatedCPlaces.isEmpty()){
+			infoMsg("Task terminated: no communication abstractions in selected groups.");
 			return;
 		}
 
 		//channel place relation
-		logger.info("Running model structure and components relation check...");
-		Collection<ChannelPlace> task1 = cPlaceRelationTask(relatedcPlaces);
-		Collection<ChannelPlace> task2 = cPlaceConTypeTask(relatedcPlaces);
+		infoMsg("Running component relation tasks...");
+		Collection<ChannelPlace> task1 = cPlaceRelationTask(relatedCPlaces);
+		Collection<ChannelPlace> task2 = cPlaceConTypeTask(relatedCPlaces);
 		relationErrors.addAll(task1);
 		relationErrors.addAll(task2);
 
 		if(relationErrors.isEmpty() && relationErrors.isEmpty())
-			logger.info("Correct channel place relation.");
+			infoMsg("Valid channel place relation.");
 		else{
 			hasErr = true;
 			errNumber = errNumber + relationErrors.size();
 			for(Node cPlace : task1)
-				logger.error("ERROR : Incorrect channel place relation: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  : " +
-						"input/output size > 1");
+				errMsg("ERROR : Invalid channel place relation (input/output size != 1).", cPlace);
 
 			for(Node cPlace : task2)
-				logger.error("ERROR : Incorrect communication types: " + net.getName(cPlace) + "(" + net.getComponentLabel(cPlace) + ")  :" +
-						"different input and output connection types");
+				errMsg("ERROR : Invalid communication types (inconsistent input and output connection types).", cPlace);
 		}
 
 /*		//channel place structure
@@ -93,26 +88,26 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 			}
 		}  */
 
-		logger.info("Model strucuture and components relation task complete.");
+		infoMsg("Component relation tasks complete.");
 
 		//global cycle detection
-		logger.info("Running cycle detection...");
-		cycleErrors.addAll(getCSONPathAlg().cycleTask(components));
+		infoMsg("Running cycle detection task...");
+		cycleErrors.addAll(getCSONPathAlg().asynCycleTask(components));
 
 		if (cycleErrors.isEmpty() )
-			logger.info("Acyclic structure correct");
+			infoMsg("Communication-SON is cycle free");
 		else{
 			hasErr = true;
 			errNumber++;
-			logger.error("ERROR : model invloves global cycle paths = "+ cycleErrors.size() + ".");
+			errMsg("ERROR : Communication-SON involves global cycle paths = "+ cycleErrors.size() + ".");
+			int i = 1;
 			for(Path cycle : cycleErrors){
-				int i = 1;
-				logger.error("Cycle " + i + ": " + cycle.toString(net));
+				errMsg("Cycle " + i + ": " + cycle.toString(net));
 				i++;
 			}
 		}
 
-		logger.info("Cycle detection complete.\n");
+		infoMsg("Cycle detection task complete.\n");
 
 	}
 

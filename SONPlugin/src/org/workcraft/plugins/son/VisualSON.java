@@ -34,6 +34,7 @@ import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.workspace.WorkspaceEntry;
 
 
 @DisplayName ("Structured Occurrence Nets")
@@ -62,7 +63,7 @@ public class VisualSON extends AbstractVisualModel {
 			}
 
 		this.net = model;
-		blockConnectionChecker();
+		blockConnectionRecover();
 	}
 
 	@Override
@@ -582,11 +583,12 @@ public class VisualSON extends AbstractVisualModel {
 
 	/**
 	 * reconnect block interface to its bounding.
-	 * have to use with captureMemento() & cancelMemento().
+	 * have to use with cancelMemento().
 	 */
-	public boolean connectToBlocks(){
-		if(!beforeConToBlock())
-			return false;
+	public void connectToBlocks(WorkspaceEntry we){
+		blockConnectionRecover();
+		//save current workspace
+		we.captureMemento();
 
 		for(VisualBlock vBlock : this.getVisualBlocks()){
 			if(vBlock.getIsCollapsed()){
@@ -617,7 +619,7 @@ public class VisualSON extends AbstractVisualModel {
 								 mathParent.remove(mathCon);
 							 //create connection between first node and block
 							 try {
-
+								forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
 								this.connect(first, vBlock);
 							} catch (InvalidConnectionException e) {
 								// TODO Auto-generated catch block
@@ -659,10 +661,9 @@ public class VisualSON extends AbstractVisualModel {
 				 }
 			}
 		}
-		return true;
 	}
 
-	private boolean beforeConToBlock(){
+	private boolean blockConnectionChecker(){
 		Collection<String> errBlocks = new ArrayList<String>();
 		for(VisualPlaceNode c : this.getVisualPlaceNode())
 			c.setInterface("");
@@ -671,7 +672,7 @@ public class VisualSON extends AbstractVisualModel {
 		for(VisualBlock block : this.getVisualBlocks()){
 			if(!net.getPreset(block.getReferencedComponent()).isEmpty() || !net.getPostset(block.getReferencedComponent()).isEmpty()){
 				err = false;
-				errBlocks.add(net.getName(block.getReferencedComponent())+" ");
+				errBlocks.add(net.getNodeReference(block.getReferencedComponent())+" ");
 				block.setForegroundColor(SONSettings.getRelationErrColor());
 				}
 		}
@@ -685,10 +686,10 @@ public class VisualSON extends AbstractVisualModel {
 	/**
 	 * reconnect from block bounding to its inside
 	 */
-	public void blockConnectionChecker(){
+	public void blockConnectionRecover(){
 		ArrayList<String> compatibility = new ArrayList<String>();
 		for(VisualPlaceNode p : getVisualPlaceNode()){
-			if(p.getInterface() != ""){
+			if(!p.getInterface().isEmpty()){
 				String[] infos = p.getInterface().trim().split(";");
 				//interface information checking
 				ArrayList<VisualSONConnection> connections = new ArrayList<VisualSONConnection>();
@@ -762,7 +763,7 @@ public class VisualSON extends AbstractVisualModel {
 			JOptionPane.showMessageDialog(null, "Incompatible connections. Error may due to lost block information, " +
 					"reconnect block components again)"+ compatibility.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
 		}
-		beforeConToBlock();
+		blockConnectionChecker();
 	}
 
 	public void forceConnectionSemantics(Semantics currentSemantics) {
