@@ -833,7 +833,7 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	private JFileChooser createOpenDialog(String title, boolean multiSelection, Importer[] importers) {
+	public JFileChooser createOpenDialog(String title, boolean multiSelection, Importer[] importers) {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.OPEN_DIALOG);
 		fc.setMultiSelectionEnabled(multiSelection);
@@ -856,7 +856,7 @@ public class MainWindow extends JFrame {
 		return fc;
 	}
 
-	private JFileChooser createSaveDialog(String title, File file, Exporter exporter) {
+	public JFileChooser createSaveDialog(String title, File file, Exporter exporter) {
 		JFileChooser fc = new JFileChooser();
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);
 		fc.setDialogTitle(title);

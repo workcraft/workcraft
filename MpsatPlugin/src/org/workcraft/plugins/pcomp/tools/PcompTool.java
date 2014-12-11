@@ -46,7 +46,7 @@ public class PcompTool implements Tool {
 			}
 
 			PcompTask pcompTask = new PcompTask(inputs.toArray(new File[0]), dialog.getMode(),
-					dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked());
+					dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(), null);
 
 			PcompResultHandler pcompResult = new PcompResultHandler(framework, dialog.showInEditor());
 

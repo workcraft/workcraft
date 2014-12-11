@@ -214,6 +214,16 @@ public class STG extends AbstractMathModel implements STGModel {
 				});
 	}
 
+	public Set<String> getSignalFlatNames(Type type) {
+		Set<String> result = new HashSet<String>();
+		for (SignalTransition st : getSignalTransitions(type)) {
+			String ref = getSignalReference(st);
+			String flatName = NamespaceHelper.hierarchicalToFlatName(ref);
+			result.add(flatName);
+		}
+		return result;
+	}
+
 	@Override
 	public Set<String> getSignalReferences(Type type) {
 		Set<String> result = new HashSet<String>();
@@ -359,8 +369,8 @@ public class STG extends AbstractMathModel implements STGModel {
 					throw new RuntimeException("An implicit place cannot have more that one transition in its preset or postset.");
 				}
 
-				return "<" + NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
-						+ "," + NamespaceHelper.getFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
+				return "<" + NamespaceHelper.hierarchicalToFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
+						+ "," + NamespaceHelper.hierarchicalToFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
 			}
 		}
 		return super.getNodeReference(provider, node);
@@ -369,27 +379,27 @@ public class STG extends AbstractMathModel implements STGModel {
 	@Override
 	public Node getNodeByReference(NamespaceProvider provider, String reference) {
 		Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
-
 		if (implicitPlaceTransitions != null) {
 			Node t1 = referenceManager.getNodeByReference(provider,
 					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst())	);
+
 			Node t2 = referenceManager.getNodeByReference(provider,
 					NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond()) );
+			if ((t1 != null) && (t2 != null)) {
+				Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
-			Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
-
-			for (Node node : implicitPlaceCandidates) {
-				if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
-					return node;
+				for (Node node : implicitPlaceCandidates) {
+					if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
+						return node;
+					}
 				}
 			}
-
 			throw new NotFoundException("Implicit place between "
 					+ implicitPlaceTransitions.getFirst() + " and "
 					+ implicitPlaceTransitions.getSecond() + " does not exist.");
-		} else
-
+		} else {
 			return super.getNodeByReference(provider, reference);
+		}
 	}
 
 	public void makeExplicit(STGPlace implicitPlace) {

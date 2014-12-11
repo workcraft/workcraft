@@ -22,7 +22,7 @@ import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
-import org.workcraft.plugins.pcomp.PCompOutputMode;
+import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.stg.STGWorkspaceFilter;
 
 @SuppressWarnings("serial")
@@ -62,14 +62,13 @@ public class PcompDialog extends JDialog {
 		return improvedPcomp.isSelected();
 	}
 
-	public PCompOutputMode getMode()
-	{
+	public ConversionMode getMode() {
 		if (leaveOutputs.isSelected())
-			return PCompOutputMode.OUTPUT;
+			return ConversionMode.OUTPUT;
 		if (internalize.isSelected())
-			return PCompOutputMode.INTERNAL;
+			return ConversionMode.INTERNAL;
 		if (dummify.isSelected())
-			return PCompOutputMode.DUMMY;
+			return ConversionMode.DUMMY;
 		throw new NotSupportedException("No button is selected. Cannot proceed.");
 	}
 

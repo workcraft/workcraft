@@ -451,7 +451,7 @@ public class STGGenerator {
 		Node parent = contact.getParent();
 		if (parent instanceof VisualFunctionComponent) {
 			VisualFunctionComponent component = (VisualFunctionComponent)parent;
-			String componentName = NamespaceHelper.getFlatName(circuit.getMathName(component));
+			String componentName = NamespaceHelper.hierarchicalToFlatName(circuit.getMathName(component));
 			String contactName = circuit.getMathName(contact);
 			result = componentName + "_" + contactName;
 		}
@@ -470,7 +470,7 @@ public class STGGenerator {
 				result = circuit.getMathName(outputPort);
 			} else {
 				// If the component has a single output, use the component name. Otherwise append the contact.
-				result = NamespaceHelper.getFlatName(circuit.getMathName(component));
+				result = NamespaceHelper.hierarchicalToFlatName(circuit.getMathName(component));
 				int output_cnt = 0;
 				for (Node node: component.getChildren()) {
 					if (node instanceof VisualContact) {
