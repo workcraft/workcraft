@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,13 +41,14 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CpogProgrammer {
 	// FIXME: Relative path to the directory with programmer results. Currently this is hard-coded in programmer.
-	private static final String genEncodingDir = "../tools/results/generated_encoding/";
+	//private static final String genEncodingDir = "../tools/results/generated_encoding/";
 
 	private EncoderSettings settings;
-	private File scenarioFile, encodingFile ;
+	private File scenarioFile, encodingFile,resultDir;
 	private Double minArea;
 
 	// SETTING PARAMETERS FOR CALLING PROGRAMMER
+	private String genEncodingDir;
 	private String programmerCommand;
 	private String espressoCommand;
 	private String abcFolder;
@@ -241,7 +243,7 @@ public class CpogProgrammer {
 				File f = new File(abcFolder);
 				if(!f.exists() || !f.isDirectory()){
 					JOptionPane.showMessageDialog(null,
-							"Find out more information on \"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to" +
+							"Find out more information on \"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
 							"set path of the folder containing Abc inside Workcraft settings.",
 							"Abc tool not installed correctly",
 							JOptionPane.ERROR_MESSAGE);
@@ -263,7 +265,7 @@ public class CpogProgrammer {
 			}else{
 				abcFlag = "";
 				abcFolder = "";
-				gateLibFlag = "-lib";
+				gateLibFlag = "";
 				gatesLibrary = "";
 			}
 
@@ -329,8 +331,12 @@ public class CpogProgrammer {
 					System.out.println("Error");
 			}
 
-			FileUtils.deleteDirectoryTree(new File(genEncodingDir));
-			new File(genEncodingDir).mkdirs();
+			//FileUtils.deleteDirectoryTree(new File(genEncodingDir));
+			resultDir = File.createTempFile("folder-name","");
+			resultDir.delete();
+			resultDir.mkdir();
+
+			//new File(genEncodingDir).mkdirs();
 
 			// IF SCENCO MODE IS NOT SELECTED, PROGRAMMER IS CALLED ITERATIVELY
 		// BECAUSE, IF CONTINUOUS OPTION IS SELECTED, TOOL IS CALLED
@@ -508,14 +514,18 @@ public class CpogProgrammer {
 			    	 for(int j=0; j<settings.getBits(); j++){
 			    		 if(encoding[i][j]){
 			    			 Output.print("1");
+			    			 //System.out.print("1");
 			    		 }
 			    		 else{
 			    			 Output.print("0");
+			    			 //System.out.print("0");
 			    		 }
 			    	 }
 			    	 Output.println();
+			    	// System.out.println();
 			     }
 			     Output.println(settings.getBits());
+			    //System.out.println(settings.getBits());
 			     Output.close();
 			     customPath = encodingFile.getAbsolutePath();
 			     if(callingProgrammer(Double.MAX_VALUE, we, 0, false) != 0){
@@ -838,7 +848,7 @@ public class CpogProgrammer {
 	// THE MICROCONTROLLER SYNTHESISED WITH ABC TOOL
 	private void printController(int m){
 		System.out.println();
-		String fileName = genEncodingDir;
+		String fileName = resultDir.getAbsolutePath();
 		for(int i=0; i<m; i++) fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
 		fileName = fileName.concat(".prg");
 		File f = new File(fileName);
@@ -863,13 +873,16 @@ public class CpogProgrammer {
 		return;
 	}
 
-	// FUNCTION FOR DELETING TEMPORART FILE USED BY PROGRAMMER TOOL
+	// FUNCTION FOR DELETING TEMPORARY FILE USED BY PROGRAMMER TOOL
 	private void deleteTempFiles(){
 		if ((scenarioFile != null) &&scenarioFile.exists()) {
 			scenarioFile.delete();
 		}
 		if ((encodingFile != null) && encodingFile.exists()) {
 			encodingFile.delete();
+		}
+		if((resultDir != null) && resultDir.exists()){
+			resultDir.delete();
 		}
 	}
 
@@ -878,14 +891,15 @@ public class CpogProgrammer {
 	// TO WORKCRAFT TO BUILD THE COMPOSITIONAL GRAPH
 	private int callingProgrammer(Double currArea, WorkspaceEntry we, int it, boolean continuous) throws IOException{
 		//Debug Printing: launching executable
-//		System.out.println(programmerCommand + " " + scenarioFile.getAbsolutePath() + " " +
-//				"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
-//				verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
-//				espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
-//				gatesLibrary);
-		process = new ProcessBuilder(programmerCommand, scenarioFile.getAbsolutePath(),
+		/*System.out.println(programmerCommand + " " + scenarioFile.getAbsolutePath() + " " +
+		"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
+		verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
+		espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
+		gatesLibrary);*/
+
+				process = new ProcessBuilder(programmerCommand, scenarioFile.getAbsolutePath(),
 				"-m", effort, genMode, numSol, customFlag, customPath, verbose, cpogSize, disableFunction, oldSynt,
-				espressoFlag, espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary).start();
+				espressoFlag, espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary, "-res", resultDir.getAbsolutePath()).start();
 		InputStream is = process.getInputStream();
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);
