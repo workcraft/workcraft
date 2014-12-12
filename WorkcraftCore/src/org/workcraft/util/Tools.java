@@ -12,9 +12,10 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class Tools {
-	public static ListMap<String, Pair<String, Tool>> getTools(WorkspaceEntry we, Framework framework) {
+	public static ListMap<String, Pair<String, Tool>> getTools(WorkspaceEntry we) {
 		ListMap<String, Pair<String, Tool>> toolSections = new ListMap<String, Pair<String, Tool>>();
 
+		final Framework framework = Framework.getInstance();
 		for (PluginInfo<? extends Tool> info : framework.getPluginManager().getPlugins(Tool.class)) {
 			Tool tool = info.getSingleton();
 

@@ -9,12 +9,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractMpsatChecker implements Tool {
 
-	private final Framework framework;
-
-	public AbstractMpsatChecker(Framework framework){
-		this.framework = framework;
-	}
-
 	@Override
 	public final String getSection() {
 		return "Verification";
@@ -23,7 +17,7 @@ public abstract class AbstractMpsatChecker implements Tool {
 	@Override
 	public final void run(WorkspaceEntry we) {
 		final MpsatSettings settings = getSettings();
-		final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings, framework);
+		final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
 
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
@@ -31,7 +25,7 @@ public abstract class AbstractMpsatChecker implements Tool {
 			description += "(" + title +")";
 		}
 		MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
-
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(mpsatTask, description, monitor);
 	}
 

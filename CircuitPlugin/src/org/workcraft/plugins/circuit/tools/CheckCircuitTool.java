@@ -8,11 +8,6 @@ import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckCircuitTool implements Tool {
-	private final Framework framework;
-
-	public CheckCircuitTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	public String getDisplayName() {
 		return "Check circuit for conformation, deadlocks and hazards (reuse unfolding)";
@@ -30,13 +25,13 @@ public class CheckCircuitTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final CheckCircuitTask task = new CheckCircuitTask(we, framework,
-				checkConformation(), checkDeadlock(), checkHazard());
+		final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation(), checkDeadlock(), checkHazard());
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
 	}
 

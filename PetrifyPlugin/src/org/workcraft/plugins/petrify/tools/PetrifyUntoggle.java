@@ -9,11 +9,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifyUntoggle implements Tool {
-	private Framework framework;
-
-	public PetrifyUntoggle(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -32,7 +27,8 @@ public class PetrifyUntoggle implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final TransformationTask task = new TransformationTask(framework, we, "Signal transition untoggle", new String[] {"-untog"});
+		final TransformationTask task = new TransformationTask(we, "Signal transition untoggle", new String[] {"-untog"});
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, "Petrify signal transition untoggle", new TransformationResultHandler(task));
 	}
 }

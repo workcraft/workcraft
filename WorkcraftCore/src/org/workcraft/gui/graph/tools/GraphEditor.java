@@ -24,7 +24,6 @@ package org.workcraft.gui.graph.tools;
 import java.awt.geom.Point2D;
 import java.util.Set;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
@@ -35,7 +34,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 public interface GraphEditor {
 	public Viewport getViewport();
 	public MainWindow getMainWindow();
-	public Framework getFramework();
 	public EditorOverlay getOverlay();
 	public WorkspaceEntry getWorkspaceEntry();
 	public VisualModel getModel();

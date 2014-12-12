@@ -16,16 +16,12 @@ import org.workcraft.tasks.Result.Outcome;
 
 
 public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult> {
-	private final Framework framework;
-
-	public SynthesisResultHandler(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public void finished(Result<? extends SynthesisResult> result, String description) {
 		if (result.getOutcome() == Outcome.FAILED) {
 			String msg = result.getReturnValue().getStderr();
+			final Framework framework = Framework.getInstance();
 			JOptionPane.showMessageDialog(framework.getMainWindow(), msg, "Error", JOptionPane.ERROR_MESSAGE);
 		} else if (result.getOutcome() == Outcome.FINISHED) {
 

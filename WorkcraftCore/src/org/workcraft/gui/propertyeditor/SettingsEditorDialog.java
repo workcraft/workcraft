@@ -57,7 +57,6 @@ public class SettingsEditorDialog extends JDialog {
 	private DefaultMutableTreeNode sectionRoot;
 	private JTree sectionTree;
 
-	private final Framework framework;
 	private final PropertyEditorTable propertiesTable;
 
 	static class SettingsPageNode
@@ -81,8 +80,7 @@ public class SettingsEditorDialog extends JDialog {
 	public SettingsEditorDialog(MainWindow owner) {
 		super(owner);
 
-		framework = owner.getFramework();
-		propertiesTable = new PropertyEditorTable(framework);
+		propertiesTable = new PropertyEditorTable();
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setModal(true);
@@ -148,6 +146,7 @@ public class SettingsEditorDialog extends JDialog {
 	}
 
 	private void loadSections() {
+		final Framework framework = Framework.getInstance();
 		for (PluginInfo<? extends Settings> info : framework.getPluginManager().getPlugins(Settings.class)) {
 			Settings e = info.getSingleton();
 			addItem (e.getSection(), e);
@@ -163,9 +162,9 @@ public class SettingsEditorDialog extends JDialog {
 	}
 
 	private void setObject(Settings p) {
-		if (p == null)
+		if (p == null) {
 			propertiesTable.setObject(null);
-		else {
+		} else {
 			propertiesTable.setObject(p);
 		}
 	}

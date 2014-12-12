@@ -46,6 +46,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -83,7 +84,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 	private SON net;
 	protected VisualSON visualNet;
-	private Framework framework;
 	private GraphEditor editor;
 
 	private RelationAlgorithm relationAlg;
@@ -336,7 +336,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
-		framework = editor.getFramework();
+		final Framework framework = Framework.getInstance();
 		this.editor = editor;
 		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
@@ -943,6 +943,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		});
 
 		if (node instanceof VisualTransitionNode){
+			final Framework framework = Framework.getInstance();
+			MainWindow mainWindow = framework.getMainWindow();
 
 			Collection<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
 			TransitionNode selected = ((VisualTransitionNode)node).getMathTransitionNode();
@@ -976,11 +978,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 				}else{
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(
-							getFramework().getMainWindow(),
-							net, possibleFires, minFires, maxFires,
-							selected, reverse, sync);
-					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
+					ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
+							net, possibleFires, minFires, maxFires, selected, reverse, sync);
+					GUI.centerToParent(dialog, mainWindow);
 					dialog.setVisible(true);
 
 					fireList.addAll(minFires);
@@ -1014,12 +1014,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					executeEvent(e.getEditor(),fireList);
 				} else {
 					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(
-							this.getFramework().getMainWindow(),
-							net, possibleFires, maxFires, minFires,
-							selected, reverse, sync);
+					ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
+							net, possibleFires, maxFires, minFires, selected, reverse, sync);
 
-					GUI.centerToParent(dialog, this.getFramework().getMainWindow());
+					GUI.centerToParent(dialog, mainWindow);
 					dialog.setVisible(true);
 
 					fireList.addAll(maxFires);
@@ -1037,14 +1035,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				//setErrNum(runList, reverse);
 			}
 		}
-	}
-
-	public Framework getFramework(){
-		return this.framework;
-	}
-
-	public void setFramework(Framework framework){
-		this.framework =framework;
 	}
 
 	public boolean isReverse(){

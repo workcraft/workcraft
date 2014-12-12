@@ -11,7 +11,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.plugins.xmas.components.ForkComponent;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.JoinComponent;
@@ -21,40 +20,24 @@ import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
+import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
 public class JsonExport implements Tool {
 
-	//private final Framework framework;
-
-	//VisualCircuit circuit;
-	//private CheckCircuitTask checkTask;
-
-
-	//ProgressMonitor<? super MpsatChainResult> monitor;
-
-	/*public CircuitTestTool(Framework framework, Workspace ws) {
-		this.framework = framework;
-//		this.ws = ws;
-	}*/
-
-
 	public String getDisplayName() {
 		return "Export to JSON file";
 	}
-
 
 	public String getSection() {
 		return "Export";
 	}
 
-
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, Xmas.class);
 	}
-
 
 	public void run(WorkspaceEntry we) {
 		System.out.println("Running tests");
@@ -298,4 +281,5 @@ public class JsonExport implements Tool {
 	            }
 	    }
 	}
+
 }

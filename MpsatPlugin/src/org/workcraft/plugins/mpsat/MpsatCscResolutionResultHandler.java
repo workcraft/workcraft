@@ -5,6 +5,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.interop.DotGImporter;
@@ -42,20 +43,21 @@ public class MpsatCscResolutionResultHandler implements Runnable {
 
 	@Override
 	public void run() {
-		WorkspaceEntry we = task.getWorkspaceEntry();
+		final Framework framework = Framework.getInstance();
+		final WorkspaceEntry we = task.getWorkspaceEntry();
 		Path<String> path = we.getWorkspacePath();
 		String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
 
 		STGModel model = getResolvedStg();
 		if (model == null) {
-			JOptionPane.showMessageDialog(task.getFramework().getMainWindow(),
+			JOptionPane.showMessageDialog(framework.getMainWindow(),
 					"MPSat output: \n\n" + new String(result.getReturnValue().getMpsatResult().getReturnValue().getErrors()),
 					"Conflict resolution failed", JOptionPane.WARNING_MESSAGE );
 		} else {
 			Path<String> directory = path.getParent();
 			String name = fileName + "_resolved";
 			ModelEntry me = new ModelEntry(new STGModelDescriptor(), model);
-			Workspace workspace = task.getFramework().getWorkspace();
+			Workspace workspace = framework.getWorkspace();
 			workspace.add(directory, name, me, true, true);
 		}
 	}

@@ -36,7 +36,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 	private SON net;
 	private final WorkspaceEntry we;
-	private final Framework framework;
 	private BSONAlg bsonAlg;
 
 	private Collection<String> markingRefs;
@@ -45,9 +44,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	private Collection<String> causalPredecessorRefs;
 
 
-	public ReachabilityTask(WorkspaceEntry we, Framework framework){
+	public ReachabilityTask(WorkspaceEntry we){
 		this.we = we;
-		this.framework = framework;
 
 		net = (SON)we.getModelEntry().getMathModel();
 		bsonAlg = new BSONAlg(net);
@@ -116,6 +114,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 	private Map<PlaceNode, Boolean> simulation(){
 		Map<PlaceNode, Boolean> result;
+		final Framework framework = Framework.getInstance();
 		final MainWindow mainWindow = framework.getMainWindow();
 		GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
 		if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {

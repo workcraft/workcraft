@@ -26,8 +26,8 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 public class DummyMouseListener implements GraphEditorMouseListener {
 
 	private static DummyMouseListener instance = new DummyMouseListener();
-	public static DummyMouseListener getInstance()
-	{
+
+	public static DummyMouseListener getInstance() {
 		return instance;
 	}
 

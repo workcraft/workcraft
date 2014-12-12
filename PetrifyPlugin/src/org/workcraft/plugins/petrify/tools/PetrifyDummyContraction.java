@@ -9,11 +9,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifyDummyContraction implements Tool {
-	private Framework framework;
-
-	public PetrifyDummyContraction(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -32,7 +27,8 @@ public class PetrifyDummyContraction implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final TransformationTask task = new TransformationTask(framework, we, "Dummy contraction", new String[] { "-hide", ".dummy" });
+		final TransformationTask task = new TransformationTask(we, "Dummy contraction", new String[] { "-hide", ".dummy" });
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, "Petrify dummy contraction", new TransformationResultHandler(task));
 	}
 }

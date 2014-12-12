@@ -43,12 +43,6 @@ import org.workcraft.util.FileUtils;
 
 public class PSExporter implements Exporter {
 
-	public PSExporter(Framework framework){
-		this.framework = framework;
-	}
-
-	private Framework framework;
-
 	public void export(Model model, OutputStream out) throws IOException,
 	ModelValidationException, SerialisationException {
 
@@ -57,6 +51,7 @@ public class PSExporter implements Exporter {
 
 		File dotG = File.createTempFile("workcraft", ".g");
 
+		final Framework framework = Framework.getInstance();
 		final Result<? extends Object> result = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g");
 
 		if (result.getOutcome() != Outcome.FINISHED)

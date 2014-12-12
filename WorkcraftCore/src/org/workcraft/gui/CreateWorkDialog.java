@@ -71,11 +71,9 @@ public class CreateWorkDialog extends JDialog {
 	private JTextField txtTitle;
 
 	private int modalResult = 0;
-	private Framework framework;
 
 	public CreateWorkDialog(MainWindow owner) {
 		super(owner);
-		framework = owner.getFramework();
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setModal(true);
@@ -148,6 +146,7 @@ public class CreateWorkDialog extends JDialog {
 			}
 		});
 
+		final Framework framework = Framework.getInstance();
 		final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
 		ArrayList<ListElement> elements = new ArrayList<ListElement>();
 

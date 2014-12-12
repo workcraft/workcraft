@@ -22,12 +22,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MpsatChainTask implements Task<MpsatChainResult> {
 	private final WorkspaceEntry we;
 	private final MpsatSettings settings;
-	private final Framework framework;
 
-	public MpsatChainTask(WorkspaceEntry we, MpsatSettings settings, Framework framework) {
+	public MpsatChainTask(WorkspaceEntry we, MpsatSettings settings) {
 		this.we = we;
 		this.settings = settings;
-		this.framework = framework;
 	}
 
 	@Override
@@ -36,6 +34,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 		File unfoldingFile = null;
 		try {
 			PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
+			Framework framework = Framework.getInstance();
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 			if (exporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
@@ -95,10 +94,6 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 	public MpsatSettings getSettings() {
 		return settings;
-	}
-
-	public Framework getFramework() {
-		return framework;
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {

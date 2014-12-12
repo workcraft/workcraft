@@ -29,18 +29,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDeadlockTask extends MpsatChainTask {
 	private final MpsatSettings settings;
 	private final WorkspaceEntry we;
-	private final Framework framework;
 
-	public CheckDeadlockTask(WorkspaceEntry we, Framework framework) {
-		super (we, null, framework);
+	public CheckDeadlockTask(WorkspaceEntry we) {
+		super (we, null);
 		this.we = we;
-		this.framework = framework;
 		this.settings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
 	}
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		final Framework framework = Framework.getInstance();
 		try {
 			PetriNetGenerator generator = new PetriNetGenerator((VisualPolicyNet)we.getModelEntry().getVisualModel());
 			PetriNet model = (PetriNet)generator.getPetriNet().getMathModel();

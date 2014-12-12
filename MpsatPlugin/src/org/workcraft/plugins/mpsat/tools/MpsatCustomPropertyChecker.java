@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
@@ -16,12 +17,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCustomPropertyChecker implements Tool {
-
-	public MpsatCustomPropertyChecker(Framework framework) {
-		this.framework = framework;
-	}
-
-	private final Framework framework;
 
 	@Override
 	public String getSection() {
@@ -36,11 +31,13 @@ public class MpsatCustomPropertyChecker implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(new File("config/mpsat_presets.xml"), new MpsatSettingsSerialiser());
-		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(framework.getMainWindow(), pmgr);
-		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);
+		GUI.centerAndSizeToParent(dialog, mainWindow);
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1) {
-			final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings(), framework);
+			final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings());
 			framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
 					new MpsatChainResultHandler(mpsatTask));
 		}

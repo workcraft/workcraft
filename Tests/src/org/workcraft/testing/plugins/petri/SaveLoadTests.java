@@ -72,7 +72,7 @@ public class SaveLoadTests {
 	@Test
 	public void TestMathModelLoad() throws Exception
 	{
-		Framework framework = new Framework();
+		Framework framework = Framework.getInstance();
 		framework.getPluginManager().loadManifest();
 
 		ModelEntry modelEntry = framework.load(new Base16Reader(testDataMathModel));
@@ -86,7 +86,7 @@ public class SaveLoadTests {
 	@Test
 	public void TestVisualModelLoad() throws Exception
 	{
-		Framework framework = new Framework();
+		Framework framework = Framework.getInstance();
 		framework.getPluginManager().loadManifest();
 
 		ModelEntry modelEntry = framework.load(new Base16Reader(testDataVisualModel));
@@ -117,10 +117,10 @@ public class SaveLoadTests {
 
 	private void ensureSampleUpToDate(String sampleVarName, Model model, String currentValue) throws SerialisationException, Exception
 	{
-		Framework f = new Framework();
-		f.getPluginManager().loadManifest();
+		Framework framework = Framework.getInstance();
+		framework.getPluginManager().loadManifest();
 		StringWriter writer = new StringWriter();
-		f.save(new ModelEntry(new PetriNetModelDescriptor(), model), new Base16Writer(writer));
+		framework.save(new ModelEntry(new PetriNetModelDescriptor(), model), new Base16Writer(writer));
 		String generatedValue = writer.toString();
 		if(currentValue.equals(generatedValue))
 			return;

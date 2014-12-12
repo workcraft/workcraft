@@ -62,12 +62,18 @@ public class DockableWindowContentPanel extends JPanel {
 		}
 
 		@Override
-		public void run(Framework framework) {
+		public void run() {
 			switch (actionType) {
 			case CLOSE_ACTION:
-				try { framework.getMainWindow().closeDockableWindow(windowID); } catch (OperationCancelledException e) {}
+				try {
+					final Framework framework = Framework.getInstance();
+					framework.getMainWindow().closeDockableWindow(windowID);
+					} catch (OperationCancelledException e) {
+
+					}
 				break;
 			case MAXIMIZE_ACTION:
+				final Framework framework = Framework.getInstance();
 				framework.getMainWindow().toggleDockableWindowMaximized(windowID);
 				break;
 			case MINIMIZE_ACTION:

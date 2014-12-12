@@ -23,32 +23,33 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class CpogModule implements Module {
 	@Override
-	public void init(final Framework framework) {
-		final PluginManager p = framework.getPluginManager();
+	public void init() {
+		final Framework framework = Framework.getInstance();
+		final PluginManager pm = framework.getPluginManager();
 
-		p.registerClass(ModelDescriptor.class, CpogModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, CpogModelDescriptor.class);
 
-		p.registerClass(PropertyClassProvider.class, EncodingPropertyProvider.class);
+		pm.registerClass(PropertyClassProvider.class, EncodingPropertyProvider.class);
 
-		p.registerClass(XMLSerialiser.class, VisualCPOGGroupSerialiser.class);
-		p.registerClass(XMLSerialiser.class, VertexSerialiser.class);
-		p.registerClass(XMLSerialiser.class, RhoClauseSerialiser.class);
-		p.registerClass(XMLSerialiser.class, ArcSerialiser.class);
+		pm.registerClass(XMLSerialiser.class, VisualCPOGGroupSerialiser.class);
+		pm.registerClass(XMLSerialiser.class, VertexSerialiser.class);
+		pm.registerClass(XMLSerialiser.class, RhoClauseSerialiser.class);
+		pm.registerClass(XMLSerialiser.class, ArcSerialiser.class);
 
-		p.registerClass(XMLDeserialiser.class, VisualCPOGGroupDeserialiser.class);
-		p.registerClass(XMLDeserialiser.class, VertexDeserialiser.class);
-		p.registerClass(XMLDeserialiser.class, RhoClauseDeserialiser.class);
-		p.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
-		p.registerClass(Settings.class, CpogSettings.class);
+		pm.registerClass(XMLDeserialiser.class, VisualCPOGGroupDeserialiser.class);
+		pm.registerClass(XMLDeserialiser.class, VertexDeserialiser.class);
+		pm.registerClass(XMLDeserialiser.class, RhoClauseDeserialiser.class);
+		pm.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
+		pm.registerClass(Settings.class, CpogSettings.class);
 
 		//p.registerClass(Tool.class, CpogEncoder.class);
 
-		p.registerClass(Tool.class, EncoderPreferencesTool.class, framework);
+		pm.registerClass(Tool.class, EncoderPreferencesTool.class);
 
-		p.registerClass(Tool.class, new Initialiser<Tool>() {
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new GraphStatisticsTool(framework);
+				return new GraphStatisticsTool();
 			}
 		});
 	}

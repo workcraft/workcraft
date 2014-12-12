@@ -23,15 +23,13 @@ package org.workcraft.gui.actions;
 
 import java.util.LinkedList;
 
-import org.workcraft.Framework;
-
 public abstract class Action/* extends AbstractAction */{
 	private static final long serialVersionUID = -2235480226869966860L;
 	private LinkedList<Actor> actors = new LinkedList<Actor>();
 	private boolean enabled = true;
 
 	public abstract String getText();
-	public abstract void run(Framework framework);
+	public abstract void run();
 
 	void addActor(Actor actor) {
 		actors.add(actor);

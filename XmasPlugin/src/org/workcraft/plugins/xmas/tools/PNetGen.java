@@ -18,23 +18,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PNetGen implements Tool {
 
-	//private final Framework framework;
-
-	//VisualCircuit circuit;
-	//private CheckCircuitTask checkTask;
-
-
-	//ProgressMonitor<? super MpsatChainResult> monitor;
-
-	/*public CircuitTestTool(Framework framework, Workspace ws) {
-		this.framework = framework;
-//		this.ws = ws;
-	}*/
-
 	private static boolean printoutput=true;
 
 	private static class Ids {
-
 		   String a;
 		   String b;
 
@@ -951,4 +937,5 @@ public class PNetGen implements Tool {
 	    }
 		System.out.println("");
 	}
+
 }

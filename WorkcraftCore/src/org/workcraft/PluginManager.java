@@ -46,16 +46,12 @@ public class PluginManager implements PluginProvider {
 	public static final File DEFAULT_MANIFEST = new File("config"+File.separator+"plugins.xml");
 	public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
 
-	private Framework framework;
-
 	private ListMap <Class<?>, PluginInfo<?>> plugins = new ListMap<Class<?>, PluginInfo<?>>();
 
-	public static class PluginInstanceHolder<T> implements PluginInfo<T>
-	{
+	public static class PluginInstanceHolder<T> implements PluginInfo<T> {
 		private final Initialiser<? extends T> initialiser;
 
-		public PluginInstanceHolder(Initialiser<? extends T> initialiser)
-		{
+		public PluginInstanceHolder(Initialiser<? extends T> initialiser) {
 			this.initialiser = initialiser;
 		}
 
@@ -68,23 +64,18 @@ public class PluginManager implements PluginProvider {
 
 		@Override
 		public T getSingleton() {
-			if(instance == null)
+			if(instance == null) {
 				instance = newInstance();
+			}
 			return instance;
 		}
-	}
-
-
-	public PluginManager(Framework framework) {
-		this.framework = framework;
 	}
 
 	public void loadManifest() throws IOException, FormatException, PluginInstantiationException {
 		loadManifest(DEFAULT_MANIFEST);
 	}
 
-	public boolean tryLoadManifest(File file)
-	{
+	public boolean tryLoadManifest(File file) {
 		if(!file.exists()) {
 			System.out.println("Plugin manifest \"" + file.getPath() + "\" does not exist.");
 			return false;
@@ -146,7 +137,7 @@ public class PluginManager implements PluginProvider {
 			final Module module = info.newInstance();
 			try {
 				System.out.println("Loading module: " + module.getDescription());
-				module.init(framework);
+				module.init();
 			}
 			catch(Throwable th) {
 				System.err.println("Error during initialisation of module " + module.toString());
@@ -227,7 +218,6 @@ public class PluginManager implements PluginProvider {
 		}
 
 		initModules();
-
 		System.out.println("Plugin initialisation done.");
 
 	}
@@ -237,8 +227,7 @@ public class PluginManager implements PluginProvider {
 		return (Collection<PluginInfo<? extends T>>)(Collection<?>)Collections.unmodifiableCollection(plugins.get(interf));
 	}
 
-	public <T> void registerClass(Class<T> interf, final Class<? extends T> cls)
-	{
+	public <T> void registerClass(Class<T> interf, final Class<? extends T> cls) {
 		registerClass(interf, new Initialiser<T>(){
 			@Override
 			public T create() {
@@ -246,15 +235,11 @@ public class PluginManager implements PluginProvider {
 					return cls.newInstance();
 				} catch (InstantiationException e) {
 					Throwable q = e;
-
 					System.err.println (cls.getCanonicalName());
-					while (q != null)
-					{
+					while (q != null) {
 						q.printStackTrace();
 						q = q.getCause();
 					}
-
-
 					throw new RuntimeException(e);
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
@@ -263,17 +248,15 @@ public class PluginManager implements PluginProvider {
 		});
 	}
 
-	public <T> void registerClass(Class<T> interf, final Class<? extends T> cls, final Object ... constructorArgs)
-	{
+	public <T> void registerClass(Class<T> interf, final Class<? extends T> cls, final Object ... constructorArgs) {
 		registerClass(interf, new Initialiser<T>(){
 			@Override
 			public T create() {
 				try {
 					Class<?> classes[] = new Class<?>[constructorArgs.length];
-
-					for (int i=0; i<constructorArgs.length; i++)
+					for (int i=0; i<constructorArgs.length; i++) {
 						classes[i] = constructorArgs[i].getClass();
-
+					}
 					return new ConstructorParametersMatcher().match(cls, classes).newInstance(constructorArgs);
 				} catch (InstantiationException e) {
 					throw new RuntimeException(e);

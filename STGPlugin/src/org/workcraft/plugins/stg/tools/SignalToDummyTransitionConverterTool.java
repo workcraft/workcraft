@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.tools;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -17,11 +16,6 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class SignalToDummyTransitionConverterTool implements Tool {
-	private final Framework framework;
-
-	public SignalToDummyTransitionConverterTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {

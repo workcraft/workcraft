@@ -18,11 +18,12 @@ public class XmasModule implements Module {
 	}
 
 	@Override
-	public void init(final Framework framework) {
+	public void init() {
+		final Framework framework = Framework.getInstance();
 		PluginManager pm = framework.getPluginManager();
 
-		framework.getPluginManager().registerClass(Tool.class, JsonExport.class);
-		framework.getPluginManager().registerClass(Tool.class, PNetGen.class);
+		pm.registerClass(Tool.class, JsonExport.class);
+		pm.registerClass(Tool.class, PNetGen.class);
 
 		pm.registerClass(ModelDescriptor.class, XmasModelDescriptor.class);
 		pm.registerClass(Settings.class, XmasSettings.class);

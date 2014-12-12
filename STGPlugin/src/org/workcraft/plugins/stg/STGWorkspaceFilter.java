@@ -6,14 +6,10 @@ import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class STGWorkspaceFilter implements Func<Path<String>, Boolean> {
-	private final Framework framework;
-
-	public STGWorkspaceFilter(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public Boolean eval(Path<String> arg) {
+		final Framework framework = Framework.getInstance();
 		WorkspaceEntry entry = framework.getWorkspace().getOpenFile(arg);
 
 		if (entry != null && entry.getModelEntry() != null && entry.getModelEntry().getMathModel() instanceof STGModel)

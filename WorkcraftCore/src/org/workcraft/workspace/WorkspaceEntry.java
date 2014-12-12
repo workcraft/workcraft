@@ -55,7 +55,6 @@ public class WorkspaceEntry implements ObservableState {
 	private ModelEntry modelEntry = null;
 	private boolean changed = true;
 	private boolean temporary = true;
-	private final Framework framework;
 	private final Workspace workspace;
 	private final MementoManager history = new MementoManager();
 	private boolean canModify = true;
@@ -64,11 +63,6 @@ public class WorkspaceEntry implements ObservableState {
 
 	public WorkspaceEntry(Workspace workspace) {
 		this.workspace = workspace;
-		if (workspace != null) {
-			this.framework = workspace.getFramework();
-		} else {
-			this.framework = null;
-		}
 	}
 
 	public void setChanged(boolean changed) {
@@ -78,6 +72,7 @@ public class WorkspaceEntry implements ObservableState {
 				savedMemento = null;
 			}
 			workspace.fireEntryChanged(this);
+			final Framework framework = Framework.getInstance();
 			framework.getMainWindow().refreshTitle(this);
 		}
 	}
@@ -200,6 +195,7 @@ public class WorkspaceEntry implements ObservableState {
 		MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify);
 		MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify);
+		final Framework framework = Framework.getInstance();
 		framework.getMainWindow().getMainMenu().getToolsMenu().setEnabled(canModify);
 	}
 
@@ -213,6 +209,7 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public void captureMemento() {
+		final Framework framework = Framework.getInstance();
 		capturedMemento = framework.save(modelEntry);
 		if (changed == false) {
 			savedMemento = capturedMemento;
@@ -226,6 +223,7 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public void cancelMemento() {
+		final Framework framework = Framework.getInstance();
 		setModelEntry(framework.load(capturedMemento));
 		setChanged(savedMemento != capturedMemento);
 		capturedMemento = null;
@@ -235,6 +233,7 @@ public class WorkspaceEntry implements ObservableState {
 		Memento currentMemento = capturedMemento;
 		capturedMemento = null;
 		if (currentMemento == null) {
+			final Framework framework = Framework.getInstance();
 			currentMemento = framework.save(modelEntry);
 		}
 		if (changed == false) {
@@ -250,6 +249,7 @@ public class WorkspaceEntry implements ObservableState {
 		if (history.canUndo()) {
 			Memento undoMemento = history.pullUndo();
 			if (undoMemento != null) {
+				final Framework framework = Framework.getInstance();
 				Memento currentMemento = framework.save(modelEntry);
 				if (changed == false) {
 					savedMemento = currentMemento;
@@ -266,6 +266,7 @@ public class WorkspaceEntry implements ObservableState {
 		if (history.canRedo()) {
 			Memento redoMemento = history.pullRedo();
 			if (redoMemento != null) {
+				final Framework framework = Framework.getInstance();
 				Memento currentMemento = framework.save(modelEntry);
 				if (changed == false) {
 					savedMemento = currentMemento;
@@ -279,6 +280,7 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public void insert(ModelEntry me) {
+		final Framework framework = Framework.getInstance();
 		try {
 			Memento currentMemento = framework.save(modelEntry);
 			Memento insertMemento = framework.save(me);
@@ -315,6 +317,7 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public String getClipboardAsString() {
+		final Framework framework = Framework.getInstance();
 		return unzipInputStream(new ZipInputStream(framework.clipboard.getStream()));
 	}
 
@@ -338,6 +341,7 @@ public class WorkspaceEntry implements ObservableState {
 				}
 				model.selectInverse();
 				model.deleteSelection();
+				final Framework framework = Framework.getInstance();
 				framework.clipboard = framework.save(modelEntry);
 				if (CommonEditorSettings.getDebugClipboard()) {
 					// copy the memento clipboard into the system-wide clipboard as a string
@@ -356,6 +360,7 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public void paste() {
+		final Framework framework = Framework.getInstance();
 		if (framework.clipboard != null) {
 			try {
 				Memento memento = framework.save(modelEntry);

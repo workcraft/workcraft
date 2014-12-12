@@ -10,7 +10,8 @@ import org.workcraft.gui.actions.Action;
 
 public class MainWindowActions {
 	public static final Action CREATE_WORK_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.getMainWindow().createWork(); } catch (OperationCancelledException e) { }
 		}
 		@Override public String getText() {
@@ -18,7 +19,8 @@ public class MainWindowActions {
 		};
 	};
 	public static final Action OPEN_WORK_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.getMainWindow().openWork(); } catch (OperationCancelledException e) { }
 		}
 		@Override public String getText() {
@@ -26,7 +28,8 @@ public class MainWindowActions {
 		};
 	};
 	public static final Action MERGE_WORK_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.getMainWindow().mergeWork(); } catch (OperationCancelledException e) { }
 		}
 		@Override public String getText() {
@@ -34,7 +37,8 @@ public class MainWindowActions {
 		};
 	};
 	public static final Action SAVE_WORK_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.getMainWindow().saveWork(); } catch (OperationCancelledException e) { }
 		}
 		@Override public String getText() {
@@ -42,7 +46,8 @@ public class MainWindowActions {
 		};
 	};
 	public static final Action SAVE_WORK_AS_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.getMainWindow().saveWorkAs(); } catch (OperationCancelledException e) { }
 		}
 		public String getText() {
@@ -50,7 +55,8 @@ public class MainWindowActions {
 		};
 	};
 	public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.getMainWindow().closeActiveEditor(); } catch (OperationCancelledException e) { }
 		}
 		public String getText() {
@@ -59,7 +65,8 @@ public class MainWindowActions {
 	};
 
 	public static final Action CLOSE_ALL_EDITORS_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.getMainWindow().closeEditorWindows(); } catch (OperationCancelledException e) { }
 		}
 		public String getText() {
@@ -67,7 +74,8 @@ public class MainWindowActions {
 		};
 	};
 	public static final Action EXIT_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			f.shutdown();
 		}
 		public String getText() {
@@ -75,7 +83,8 @@ public class MainWindowActions {
 		};
 	};
 	public static final Action SHUTDOWN_GUI_ACTION = new Action() {
-		@Override public void run(Framework f) {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
 			try { f.shutdownGUI(); } catch (OperationCancelledException e) { }
 		}
 		public String getText() {
@@ -89,7 +98,8 @@ public class MainWindowActions {
 			return "Reconfigure plugins";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			try {
 				f.getPluginManager().reconfigure();
 			} catch (PluginInstantiationException e) {
@@ -104,7 +114,8 @@ public class MainWindowActions {
 			return "Import...";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().importFrom();
 		}
 	};
@@ -115,7 +126,8 @@ public class MainWindowActions {
 			return "Undo";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().undo();
 		}
 	};
@@ -126,7 +138,8 @@ public class MainWindowActions {
 			return "Redo";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().redo();
 		}
 	};
@@ -137,7 +150,8 @@ public class MainWindowActions {
 			return "Cut";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().cut();
 		}
 	};
@@ -148,7 +162,8 @@ public class MainWindowActions {
 			return "Copy";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().copy();
 		}
 	};
@@ -159,7 +174,8 @@ public class MainWindowActions {
 			return "Paste";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().paste();
 		}
 	};
@@ -170,7 +186,8 @@ public class MainWindowActions {
 			return "Delete";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().delete();
 		}
 	};
@@ -181,7 +198,8 @@ public class MainWindowActions {
 			return "Select all";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().selectAll();
 		}
 	};
@@ -192,7 +210,8 @@ public class MainWindowActions {
 			return "Inverse selection";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().selectInverse();
 		}
 	};
@@ -203,7 +222,8 @@ public class MainWindowActions {
 			return "Deselect";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().selectNone();
 		}
 	};
@@ -214,7 +234,8 @@ public class MainWindowActions {
 			return "Preferences...";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().editSettings();
 		}
 	};
@@ -225,7 +246,8 @@ public class MainWindowActions {
 			return "Zoom in";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().zoomIn();
 		}
 	};
@@ -236,7 +258,8 @@ public class MainWindowActions {
 			return "Zoom out";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().zoomOut();
 		}
 	};
@@ -247,7 +270,8 @@ public class MainWindowActions {
 			return "Default zoom";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().zoomDefault();
 		}
 	};
@@ -258,7 +282,8 @@ public class MainWindowActions {
 			return "Center selection";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().panCenter();
 		}
 	};
@@ -269,7 +294,8 @@ public class MainWindowActions {
 			return "Fit selection to screen";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().zoomFit();
 		}
 	};
@@ -280,7 +306,8 @@ public class MainWindowActions {
 			return "Pan left";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().panLeft();
 		}
 	};
@@ -291,7 +318,8 @@ public class MainWindowActions {
 			return "Pan up";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().panUp();
 		}
 	};
@@ -302,7 +330,8 @@ public class MainWindowActions {
 			return "Pan right";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().panRight();
 		}
 	};
@@ -313,7 +342,8 @@ public class MainWindowActions {
 			return "Pan down";
 		}
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().panDown();
 		}
 	};
@@ -325,7 +355,8 @@ public class MainWindowActions {
 		}
 
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.getMainWindow().resetLayout();
 		}
 
@@ -333,7 +364,8 @@ public class MainWindowActions {
 
 	public static final Action HELP_CONTENTS_ACTION = new Action() {
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.openExternally("help/start.html");
 		}
 
@@ -344,7 +376,8 @@ public class MainWindowActions {
 
 	public static final Action HELP_TUTORIALS_ACTION = new Action() {
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			f.openExternally("tutorial/start.html");
 		}
 
@@ -355,7 +388,7 @@ public class MainWindowActions {
 
 	public static final Action HELP_BUGREPORT_ACTION = new Action() {
 		@Override
-		public void run(Framework f) {
+		public void run() {
 			URI uri;
 			try {
 				uri = new URI("https://bugs.launchpad.net/workcraft/+filebug");
@@ -372,7 +405,7 @@ public class MainWindowActions {
 
 	public static final Action HELP_QUESTION_ACTION = new Action() {
 		@Override
-		public void run(Framework f) {
+		public void run() {
 			URI uri;
 			try {
 				uri = new URI("https://answers.launchpad.net/workcraft/+addquestion");
@@ -389,7 +422,8 @@ public class MainWindowActions {
 
 	public static final Action HELP_ABOUT_ACTION = new Action() {
 		@Override
-		public void run(Framework f) {
+		public void run() {
+			final Framework f = Framework.getInstance();
 			AboutDialog about = new AboutDialog(f.getMainWindow());
 			about.setModal(true);
 			about.setResizable(false);

@@ -11,11 +11,6 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriNetGeneratorTool implements Tool {
-	private final Framework framework;
-
-	public PetriNetGeneratorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {
@@ -36,6 +31,7 @@ public class PetriNetGeneratorTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final VisualPolicyNet visualModel = (VisualPolicyNet)we.getModelEntry().getVisualModel();
 		final PetriNetGenerator generator = new PetriNetGenerator(visualModel);
+		final Framework framework = Framework.getInstance();
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();

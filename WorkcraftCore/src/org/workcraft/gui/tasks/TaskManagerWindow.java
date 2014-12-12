@@ -149,7 +149,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 	private JScrollPane scroll;
 	private JPanel content;
 
-	public TaskManagerWindow (final Framework framework) {
+	public TaskManagerWindow() {
 
 		setLayout(new BorderLayout());
 		scroll = new JScrollPane();
@@ -165,6 +165,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 		Border lineBorder = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		setBorder(lineBorder);
 
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().addObserver(this);
 
 		JButton comp = new JButton("Queue test task");

@@ -42,7 +42,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 	TableCellEditor cellEditors[];
 	PropertyEditorTableModel model;
 
-	public PropertyEditorTable(Framework framework) {
+	public PropertyEditorTable() {
 		super();
 
 		model = new PropertyEditorTableModel();
@@ -62,6 +62,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		propertyClasses.put(Color.class, new ColorProperty());
 		propertyClasses.put(URI.class, new FileProperty());
 
+		final Framework framework = Framework.getInstance();
 		for(PluginInfo<? extends PropertyClassProvider> plugin : framework.getPluginManager().getPlugins(PropertyClassProvider.class)) {
 			PropertyClassProvider instance = plugin.newInstance();
 			propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());

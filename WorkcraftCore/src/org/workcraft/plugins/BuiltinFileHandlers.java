@@ -10,10 +10,18 @@ import org.workcraft.workspace.FileHandler;
 
 public class BuiltinFileHandlers implements Module {
 	@Override
-	public void init(final Framework framework) {
-		final PluginManager p = framework.getPluginManager();
-		p.registerClass(FileHandler.class, new Initialiser<FileHandler>(){ @Override public FileHandler create() { return new WorkcraftOpen(framework); }});
-		p.registerClass(FileHandler.class, SystemOpen.class);
+	public void init() {
+		final Framework framework = Framework.getInstance();
+		final PluginManager pm = framework.getPluginManager();
+
+		pm.registerClass(FileHandler.class, new Initialiser<FileHandler>(){
+			@Override
+			public FileHandler create() {
+				return new WorkcraftOpen();
+				}
+			});
+
+		pm.registerClass(FileHandler.class, SystemOpen.class);
 	}
 
 	@Override

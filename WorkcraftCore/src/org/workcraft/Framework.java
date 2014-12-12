@@ -94,7 +94,7 @@ import org.xml.sax.SAXException;
 
 
 public class Framework {
-	 public static Framework INSTANCE;
+	 private static Framework instance = null;
 
 	class ExecuteScriptAction implements ContextAction {
 		private String script;
@@ -193,15 +193,11 @@ public class Framework {
 
 	public Memento clipboard;
 
-	public Framework() {
-		Framework.INSTANCE = this;
-
-		pluginManager = new PluginManager(this);
-		taskManager = new DefaultTaskManager()
-		{
+	private Framework() {
+		pluginManager = new PluginManager();
+		taskManager = new DefaultTaskManager() {
 			public <T> Result<? extends T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
-				if(SwingUtilities.isEventDispatchThread())
-				{
+				if (SwingUtilities.isEventDispatchThread()) {
 					OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<T>(mainWindow, description);
 
 					ProgressMonitorArray<T> observers = new ProgressMonitorArray<T>();
@@ -214,15 +210,22 @@ public class Framework {
 					cancelDialog.setVisible(true);
 
 					return cancelDialog.result;
-				}
-				else
+				} else {
 					return super.execute(task, description, observer);
+				}
 			};
 		};
 		modelManager = new ModelManager();
 		compatibilityManager = new CompatibilityManager();
 		config = new Config();
-		workspace = new Workspace(this);
+		workspace = new Workspace();
+	}
+
+	public static Framework getInstance() {
+		if (instance == null) {
+			instance = new Framework();
+		}
+		return instance;
 	}
 
 	public void loadConfig(String fileName) {
@@ -421,13 +424,13 @@ public class Framework {
 		System.out.println ("Switching to GUI mode...");
 
 		if (SwingUtilities.isEventDispatchThread()) {
-			mainWindow = new MainWindow(Framework.this);
+			mainWindow = new MainWindow();
 			mainWindow.startup();
 		} else {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
-						mainWindow = new MainWindow(Framework.this);
+						mainWindow = new MainWindow();
 						mainWindow.startup();
 					}
 				});

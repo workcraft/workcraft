@@ -34,14 +34,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
-import org.workcraft.Framework;
 import org.workcraft.history.HistoryEvent;
 import org.workcraft.history.HistoryListener;
 import org.workcraft.history.HistoryProvider;
 
 @SuppressWarnings("serial")
 public class HistoryView extends JInternalFrame implements HistoryListener {
-	Framework framework;
 	HistoryProvider provider = null;
 	HistoryListModel listModel = null;
 
@@ -55,10 +53,9 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 	/**
 	 * This is the xxx default constructor
 	 */
-	public HistoryView(Framework framework) {
+	public HistoryView() {
 		super();
 		initialize();
-		this.framework = framework;
 	}
 
 	/**

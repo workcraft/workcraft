@@ -62,13 +62,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class DotLayoutTool implements Tool {
 
-	private final Framework framework;
-
-	public DotLayoutTool(Framework framework) {
-		this.framework = framework;
-	}
-
 	private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
+		final Framework framework = Framework.getInstance();
 		Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.DOT);
 		if (exporter == null)
 			throw new RuntimeException ("Cannot find a .dot exporter for the model " + model);
@@ -223,6 +218,7 @@ public class DotLayoutTool implements Tool {
 			args.add(original.getAbsolutePath());
 
 			Task<ExternalProcessResult> task = new ExternalProcessTask(args, new File("."));
+			final Framework framework = Framework.getInstance();
 			Result<? extends ExternalProcessResult> res = framework.getTaskManager().execute(task, "Laying out the graph...");
 
 			if(res.getOutcome() == Outcome.CANCELLED)

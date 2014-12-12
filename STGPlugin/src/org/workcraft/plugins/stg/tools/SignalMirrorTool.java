@@ -2,18 +2,12 @@ package org.workcraft.plugins.stg.tools;
 
 import java.util.Set;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class SignalMirrorTool implements Tool {
-	private final Framework framework;
-
-	public SignalMirrorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {

@@ -21,20 +21,16 @@ import org.workcraft.util.Export;
 
 public class DrawSgTask implements Task<DrawSgResult> {
 	private final Model model;
-	private Framework framework;
 	private boolean writeHuge = false;
 
-	public DrawSgTask(Model model, Framework framework)
-	{
+	public DrawSgTask(Model model) {
 		this.model = model;
-		this.framework = framework;
 	}
 
 	@Override
-	public Result<? extends DrawSgResult> run(ProgressMonitor<? super DrawSgResult> monitor)
-	{
-		try
-		{
+	public Result<? extends DrawSgResult> run(ProgressMonitor<? super DrawSgResult> monitor) {
+		final Framework framework = Framework.getInstance();
+		try	{
 			File dotG = File.createTempFile("workcraft", ".g");
 			dotG.deleteOnExit();
 

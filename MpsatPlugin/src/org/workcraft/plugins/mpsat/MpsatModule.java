@@ -24,28 +24,29 @@ import org.workcraft.plugins.pcomp.tools.PcompTool;
 public class MpsatModule implements Module {
 
 	@Override
-	public void init(Framework framework) {
-		PluginManager p = framework.getPluginManager();
+	public void init() {
+		final Framework framework = Framework.getInstance();
+		PluginManager pm = framework.getPluginManager();
 
-		p.registerClass(Tool.class, CscResolutionTool.class, framework);
-		p.registerClass(Tool.class, MpsatSynthesisComplexGate.class, framework);
-		p.registerClass(Tool.class, MpsatSynthesisGeneralisedCelement.class, framework);
-		p.registerClass(Tool.class, MpsatSynthesisStandardCelement.class, framework);
-		p.registerClass(Tool.class, MpsatSynthesisTechnologyMapping.class, framework);
-		p.registerClass(Tool.class, MpsatDeadlockChecker.class, framework);
-		p.registerClass(Tool.class, MpsatConsistencyChecker.class, framework);
-		p.registerClass(Tool.class, MpsatPersistencyChecker.class, framework);
-		p.registerClass(Tool.class, MpsatNormalcyChecker.class, framework);
-		p.registerClass(Tool.class, MpsatCscChecker.class, framework);
-		p.registerClass(Tool.class, MpsatUscChecker.class, framework);
-		p.registerClass(Tool.class, MpsatConformationChecker.class, framework);
-		p.registerClass(Tool.class, MpsatCustomPropertyChecker.class, framework);
+		pm.registerClass(Tool.class, CscResolutionTool.class);
+		pm.registerClass(Tool.class, MpsatSynthesisComplexGate.class);
+		pm.registerClass(Tool.class, MpsatSynthesisGeneralisedCelement.class);
+		pm.registerClass(Tool.class, MpsatSynthesisStandardCelement.class);
+		pm.registerClass(Tool.class, MpsatSynthesisTechnologyMapping.class);
+		pm.registerClass(Tool.class, MpsatDeadlockChecker.class);
+		pm.registerClass(Tool.class, MpsatConsistencyChecker.class);
+		pm.registerClass(Tool.class, MpsatPersistencyChecker.class);
+		pm.registerClass(Tool.class, MpsatNormalcyChecker.class);
+		pm.registerClass(Tool.class, MpsatCscChecker.class);
+		pm.registerClass(Tool.class, MpsatUscChecker.class);
+		pm.registerClass(Tool.class, MpsatConformationChecker.class);
+		pm.registerClass(Tool.class, MpsatCustomPropertyChecker.class);
 
-		p.registerClass(Settings.class, MpsatUtilitySettings.class);
-		p.registerClass(Settings.class, PunfUtilitySettings.class);
+		pm.registerClass(Settings.class, MpsatUtilitySettings.class);
+		pm.registerClass(Settings.class, PunfUtilitySettings.class);
 
-		p.registerClass(Tool.class, PcompTool.class, framework);
-		p.registerClass(Settings.class, PcompUtilitySettings.class);
+		pm.registerClass(Tool.class, PcompTool.class);
+		pm.registerClass(Settings.class, PcompUtilitySettings.class);
 	}
 
 	@Override

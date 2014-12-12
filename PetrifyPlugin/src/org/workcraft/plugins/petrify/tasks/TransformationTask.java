@@ -20,13 +20,11 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationTask implements Task<TransformationResult>{
-	private Framework framework;
 	private WorkspaceEntry workspaceEntry;
 	String description;
 	String[] parameters;
 
-	public TransformationTask(Framework framework, WorkspaceEntry workspaceEntry, String description, String[] parameters) {
-		this.framework = framework;
+	public TransformationTask(WorkspaceEntry workspaceEntry, String description, String[] parameters) {
 		this.workspaceEntry = workspaceEntry;
 		this.description = description;
 		this.parameters = parameters;
@@ -36,19 +34,16 @@ public class TransformationTask implements Task<TransformationResult>{
 		return workspaceEntry;
 	}
 
-	public Framework getFramework() {
-		return framework;
-	}
-
 	@Override
 	public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
+		final Framework framework = Framework.getInstance();
 		try
 		{
 			File tmp = File.createTempFile("stg_", ".g");
 
-			ExportTask exportTask = Export.createExportTask(WorkspaceUtils.getAs(workspaceEntry, STGModel.class), tmp, Format.STG, getFramework().getPluginManager());
+			ExportTask exportTask = Export.createExportTask(WorkspaceUtils.getAs(workspaceEntry, STGModel.class), tmp, Format.STG, framework.getPluginManager());
 
-			final Result<? extends Object> exportResult = getFramework().getTaskManager().execute(exportTask, description +": writing .g");
+			final Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, description +": writing .g");
 
 			if (exportResult.getOutcome() != Outcome.FINISHED)
 				if (exportResult.getOutcome() == Outcome.CANCELLED)
@@ -58,7 +53,7 @@ public class TransformationTask implements Task<TransformationResult>{
 
 			PetrifyTask petrifyTask = new PetrifyTask(parameters, tmp.getAbsolutePath());
 
-			final Result<? extends ExternalProcessResult> petrifyResult = getFramework().getTaskManager().execute(petrifyTask, description + ": executing Petrify");
+			final Result<? extends ExternalProcessResult> petrifyResult = framework.getTaskManager().execute(petrifyTask, description + ": executing Petrify");
 
 			if (petrifyResult.getOutcome() == Outcome.FINISHED)
 			{

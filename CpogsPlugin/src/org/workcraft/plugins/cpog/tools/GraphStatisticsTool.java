@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -19,11 +18,6 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphStatisticsTool implements Tool {
-	private final Framework framework;
-
-	public GraphStatisticsTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {

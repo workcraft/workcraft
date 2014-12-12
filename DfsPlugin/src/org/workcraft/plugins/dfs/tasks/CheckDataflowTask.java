@@ -30,12 +30,10 @@ public class CheckDataflowTask extends MpsatChainTask {
 	private final MpsatSettings deadlockSettings;
 	private final MpsatSettings hazardSettings;
 	private final WorkspaceEntry we;
-	private final Framework framework;
 
-	public CheckDataflowTask(WorkspaceEntry we, Framework framework) {
-		super (we, null, framework);
+	public CheckDataflowTask(WorkspaceEntry we) {
+		super (we, null);
 		this.we = we;
-		this.framework = framework;
 
 		this.deadlockSettings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
@@ -47,6 +45,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		final Framework framework = Framework.getInstance();
 		try {
 			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
 			STGModel model = (STGModel)generator.getSTG().getMathModel();

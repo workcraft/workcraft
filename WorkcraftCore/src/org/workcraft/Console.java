@@ -74,7 +74,7 @@ public class Console {
 			f.mkdirs();
 		}
 
-		final Framework framework  = new Framework();
+		final Framework framework  = Framework.getInstance();
 		framework.setSilent(silent);
 
 		BufferedReader in = new BufferedReader (new InputStreamReader (System.in));

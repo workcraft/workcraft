@@ -13,11 +13,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatConformationChecker implements Tool {
-	private final Framework framework;
-
-	public MpsatConformationChecker(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getSection() {
@@ -36,11 +31,12 @@ public class MpsatConformationChecker implements Tool {
 
 	@Override
 	public final void run(WorkspaceEntry we) {
+		final Framework framework = Framework.getInstance();
 		JFileChooser fc = framework.getMainWindow().createOpenDialog("Open environment file", false, null);
 		if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			if (framework.checkFile(file)) {
-				final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, framework, file);
+				final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, file);
 
 				String description = "MPSat tool chain";
 				String title = we.getModelEntry().getModel().getTitle();

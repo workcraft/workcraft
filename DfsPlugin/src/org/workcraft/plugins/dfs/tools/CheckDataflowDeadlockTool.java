@@ -9,11 +9,6 @@ import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckDataflowDeadlockTool implements Tool {
-	private final Framework framework;
-
-	public CheckDataflowDeadlockTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	public String getDisplayName() {
 		return "Check dataflow for deadlocks";
@@ -31,12 +26,13 @@ public class CheckDataflowDeadlockTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final CheckDataflowDeadlockTask task = new CheckDataflowDeadlockTask(we, framework);
+		final CheckDataflowDeadlockTask task = new CheckDataflowDeadlockTask(we);
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
 	}
 

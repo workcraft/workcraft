@@ -1,6 +1,5 @@
 package org.workcraft.gui.graph.tools;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
@@ -9,11 +8,6 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.workspace.WorkspaceEntry;
 
 abstract public class AbstractContractorTool implements Tool {
-	private final Framework framework;
-
-	public AbstractContractorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {

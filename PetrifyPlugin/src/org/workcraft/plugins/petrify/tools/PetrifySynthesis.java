@@ -17,11 +17,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 abstract public class PetrifySynthesis implements Tool {
-	protected final Framework framework;
-
-	public PetrifySynthesis(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getSection() {
@@ -37,17 +32,19 @@ abstract public class PetrifySynthesis implements Tool {
 	public void run(WorkspaceEntry we) {
 		// call petrify asynchronous (w/o blocking the GUI)
 		try {
+			final Framework framework = Framework.getInstance();
 			framework.getTaskManager().queue(
 				new SynthesisTask(getSynthesisParameter(),
-						getInputSTG(framework, WorkspaceUtils.getAs(we, STGModel.class)),
+						getInputSTG(WorkspaceUtils.getAs(we, STGModel.class)),
 						File.createTempFile("petrifyEquations", ".eqn"), null),
-				"Petrify Logic Synthesis", new SynthesisResultHandler(framework));
+				"Petrify Logic Synthesis", new SynthesisResultHandler());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected File getInputSTG(Framework framework, Model model) {
+	protected File getInputSTG(Model model) {
+		final Framework framework = Framework.getInstance();
 		Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 		if (stgExporter == null) {
 			throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

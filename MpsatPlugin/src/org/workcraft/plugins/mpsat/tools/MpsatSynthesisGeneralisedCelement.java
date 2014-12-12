@@ -1,13 +1,8 @@
 package org.workcraft.plugins.mpsat.tools;
 
-import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat.MpsatMode;
 
 public class MpsatSynthesisGeneralisedCelement extends MpsatSynthesis {
-
-	public MpsatSynthesisGeneralisedCelement(Framework framework) {
-		super(framework);
-	}
 
 	@Override
 	public MpsatMode getSynthesisMode() {

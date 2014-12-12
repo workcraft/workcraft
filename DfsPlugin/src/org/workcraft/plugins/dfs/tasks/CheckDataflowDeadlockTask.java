@@ -29,18 +29,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDataflowDeadlockTask extends MpsatChainTask {
 	private final MpsatSettings settings;
 	private final WorkspaceEntry we;
-	private final Framework framework;
 
-	public CheckDataflowDeadlockTask(WorkspaceEntry we, Framework framework) {
-		super (we, null, framework);
+	public CheckDataflowDeadlockTask(WorkspaceEntry we) {
+		super (we, null);
 		this.we = we;
-		this.framework = framework;
 		this.settings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
 	}
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		final Framework framework = Framework.getInstance();
 		try {
 			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
 			STGModel model = (STGModel)generator.getSTG().getMathModel();

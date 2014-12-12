@@ -9,11 +9,6 @@ import org.workcraft.plugins.policy.tasks.CheckDeadlockTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckDeadlockTool implements Tool {
-	private final Framework framework;
-
-	public CheckDeadlockTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	public String getDisplayName() {
 		return "Check policy net for deadlocks (taking bundels into account)";
@@ -31,12 +26,13 @@ public class CheckDeadlockTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final CheckDeadlockTask task = new CheckDeadlockTask(we, framework);
+		final CheckDeadlockTask task = new CheckDeadlockTask(we);
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
 	}
 

@@ -32,16 +32,7 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TestTool extends AbstractTool implements Tool{
-
-	private final Framework framework;
 	private String message = "";
-
-	public TestTool(Framework framework){
-
-		this.framework = framework;
-
-	}
-
 
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, SON.class);

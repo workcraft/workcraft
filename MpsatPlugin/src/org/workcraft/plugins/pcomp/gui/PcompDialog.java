@@ -27,7 +27,6 @@ import org.workcraft.plugins.stg.STGWorkspaceFilter;
 
 @SuppressWarnings("serial")
 public class PcompDialog extends JDialog {
-	private final Framework framework;
 	protected boolean result;
 	private Set<Path<String>> sourcePaths;
 	private JCheckBox showInEditor;
@@ -38,9 +37,8 @@ public class PcompDialog extends JDialog {
 	private JCheckBox sharedOutputs;
 	private JCheckBox improvedPcomp;
 
-	public PcompDialog(Window owner, Framework framework) {
+	public PcompDialog(Window owner) {
 		super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
-		this.framework = framework;
 
 		final JPanel content = createContents();
 		this.setContentPane(content);
@@ -85,7 +83,8 @@ public class PcompDialog extends JDialog {
 
 		final JPanel content = new JPanel(new TableLayout(sizes));
 
-		final WorkspaceChooser chooser = new WorkspaceChooser(framework.getWorkspace(), new STGWorkspaceFilter(framework));
+		final Framework framework = Framework.getInstance();
+		final WorkspaceChooser chooser = new WorkspaceChooser(framework.getWorkspace(), new STGWorkspaceFilter());
 		chooser.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Source STGs"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 		chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
 

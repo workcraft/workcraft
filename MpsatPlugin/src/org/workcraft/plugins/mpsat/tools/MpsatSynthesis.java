@@ -13,12 +13,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 abstract public class MpsatSynthesis implements Tool {
 
-	private final Framework framework;
-
-	public MpsatSynthesis(Framework framework) {
-		this.framework = framework;
-	}
-
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, STGModel.class);
@@ -32,7 +26,8 @@ abstract public class MpsatSynthesis implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		final MpsatSettings settings = new MpsatSettings("synthesis", getSynthesisMode(), 0, SolutionMode.FIRST, 1, null);
-		final MpsatChainTask task = new MpsatChainTask(we, settings, framework);
+		final MpsatChainTask task = new MpsatChainTask(we, settings);
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, "Logic synthesis with MPSat", new MpsatChainResultHandler(task));
 	}
 

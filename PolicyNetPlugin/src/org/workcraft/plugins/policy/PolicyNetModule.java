@@ -19,27 +19,28 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 public class PolicyNetModule implements Module {
 
 	@Override
-	public void init(final Framework framework) {
+	public void init() {
+		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new PetriNetGeneratorTool(framework);
+				return new PetriNetGeneratorTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new TransitionBundlerTool(framework);
+				return new TransitionBundlerTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckDeadlockTool(framework);
+				return new CheckDeadlockTool();
 			}
 		});
 

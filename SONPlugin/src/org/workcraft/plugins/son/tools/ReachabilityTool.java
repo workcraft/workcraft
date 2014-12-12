@@ -10,14 +10,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityTool implements Tool{
 
-	private final Framework framework;
-
-	public ReachabilityTool(Framework framework){
-
-		this.framework = framework;
-
-	}
-
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, SON.class);
@@ -35,7 +27,8 @@ public class ReachabilityTool implements Tool{
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		ReachabilityTask task = new ReachabilityTask(we, framework);
+		ReachabilityTask task = new ReachabilityTask(we);
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, "Verification");
 	}
 
