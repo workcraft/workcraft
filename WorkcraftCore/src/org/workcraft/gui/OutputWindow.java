@@ -33,8 +33,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.workcraft.Framework;
-
 @SuppressWarnings("serial")
 public class OutputWindow extends JPanel {
 	protected PrintStream systemOut;
@@ -42,7 +40,7 @@ public class OutputWindow extends JPanel {
 	private JScrollPane scrollStdOut;
 	private JTextArea txtStdOut;
 
-	public OutputWindow(Framework framework) {
+	public OutputWindow() {
 		txtStdOut = new JTextArea();
 		txtStdOut.setLineWrap(true);
 		txtStdOut.setEditable(false);

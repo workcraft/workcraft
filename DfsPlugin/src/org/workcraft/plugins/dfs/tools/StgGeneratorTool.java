@@ -12,11 +12,6 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgGeneratorTool implements Tool {
-	private final Framework framework;
-
-	public StgGeneratorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {
@@ -37,6 +32,7 @@ public class StgGeneratorTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final VisualDfs dfs = (VisualDfs)we.getModelEntry().getVisualModel();
 		final StgGenerator generator = new StgGenerator(dfs);
+		final Framework framework = Framework.getInstance();
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();

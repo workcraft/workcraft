@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -26,11 +25,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransitionContractorTool implements Tool {
 	private static final int ArrayList = 0;
-	private final Framework framework;
-
-	public TransitionContractorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {

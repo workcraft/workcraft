@@ -49,11 +49,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceTree;
 
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
-	private Framework framework;
 	private WorkspaceWindow wsWindow;
 
 	public WorkspacePopupProvider(WorkspaceWindow wsWindow) {
-		this.framework = wsWindow.getWorkspace().getFramework();
 		this.wsWindow = wsWindow;
 	}
 
@@ -63,6 +61,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 		final HashMap<JMenuItem, FileHandler> handlers = new HashMap<JMenuItem, FileHandler>();
 		final HashMap<JMenuItem, Tool> tools = new HashMap<JMenuItem, Tool>();
 
+		final Framework framework = Framework.getInstance();
 		final Workspace workspace = framework.getWorkspace();
 
 		final File file = workspace.getFile(path);
@@ -195,7 +194,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 				popup.add(miSaveAs);
 				popup.add(miOpenView);
 
-				ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(openFile, framework);
+				ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(openFile);
 				List<String> sections = Tools.getSections(applicableTools);
 
 				if (!sections.isEmpty())

@@ -69,7 +69,8 @@ public class MainMenu extends JMenuBar {
 		}
 
 		@Override
-		public void run(Framework framework) {
+		public void run() {
+			final Framework framework = Framework.getInstance();
 			framework.getMainWindow().runTool(tool);
 		}
 	}
@@ -87,7 +88,8 @@ public class MainMenu extends JMenuBar {
 			return windowTitle;
 		}
 		@Override
-		public void run(Framework framework) {
+		public void run() {
+			final Framework framework = Framework.getInstance();
 			framework.getMainWindow().toggleDockableWindow(window);
 		}
 	}
@@ -100,8 +102,12 @@ public class MainMenu extends JMenuBar {
 		}
 
 		@Override
-		public void run(Framework framework) {
-			try {framework.getMainWindow().export(exporter);} catch (OperationCancelledException e) {}
+		public void run() {
+			try {
+				final Framework framework = Framework.getInstance();
+				framework.getMainWindow().export(exporter);
+			} catch (OperationCancelledException e) {
+			}
 		}
 
 		public String getText() {
@@ -446,7 +452,7 @@ public class MainMenu extends JMenuBar {
 		mnExport.setEnabled(false);
 
 		VisualModel model = we.getModelEntry().getVisualModel();
-		Framework framework = mainWindow.getFramework();
+		final Framework framework = Framework.getInstance();
 		PluginManager pluginManager = framework.getPluginManager();
 		Collection<PluginInfo<? extends Exporter>> plugins = pluginManager.getPlugins(Exporter.class);
 
@@ -479,8 +485,7 @@ public class MainMenu extends JMenuBar {
 		mnTools.setVisible(true);
 		mnTools.removeAll();
 
-		Framework framework = mainWindow.getFramework();
-		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we, framework);
+		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we);
 		List<String> sections = Tools.getSections(tools);
 
 		for (String section : sections) {

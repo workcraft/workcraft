@@ -56,7 +56,6 @@ public class Workspace {
 	private File workspaceFile;
 	private final Map<Path<String>, File> mounts;
 	private Map<Path<String>, File> permanentMounts;
-	private final Framework framework;
 
 	private final DependencyManager dependencyManager = new DependencyManager();
 
@@ -70,8 +69,7 @@ public class Workspace {
 		return workspaceFile.getParentFile();
 	}
 
-	public Workspace(Framework framework) {
-		this.framework = framework;
+	public Workspace() {
 		this.temporary = true;
 		mounts = new HashMap<Path<String>, File>();
 		permanentMounts = new HashMap<Path<String>, File>();
@@ -105,6 +103,7 @@ public class Workspace {
 		WorkspaceEntry we = new WorkspaceEntry(this);
 		we.setTemporary(temporary);
 		we.setChanged(false);
+		final Framework framework = Framework.getInstance();
 		if (file.getName().endsWith(".work")) {
 			we.setModelEntry(framework.loadFile(file));
 			if (workspacePath == null) {
@@ -127,6 +126,7 @@ public class Workspace {
 
 	public WorkspaceEntry merge(WorkspaceEntry we, File file) throws DeserialisationException {
 		if (we != null && file.exists() && file.getName().endsWith(".work")) {
+			final Framework framework = Framework.getInstance();
 			we.insert(framework.loadFile(file));
 		}
 		return we;
@@ -190,6 +190,7 @@ public class Workspace {
 		openFiles.put(path, we);
 		fireEntryAdded(we);
 		if (open) {
+			final Framework framework = Framework.getInstance();
 			framework.getMainWindow().createEditorWindow(we);
 		}
 		return we;
@@ -514,6 +515,7 @@ public class Workspace {
 	private void deleteFile (Path<String> path) throws OperationCancelledException {
 		final WorkspaceEntry openFile = getOpenFile(path);
 		if (openFile != null) {
+			final Framework framework = Framework.getInstance();
 			framework.getMainWindow().closeEditors(openFile);
 		}
 		openFiles.removeValue(openFile);
@@ -539,10 +541,6 @@ public class Workspace {
 		} else {
 			deleteFile(path);
 		}
-	}
-
-	public Framework getFramework() {
-		return framework;
 	}
 
 	public File getWorkspaceFile() {

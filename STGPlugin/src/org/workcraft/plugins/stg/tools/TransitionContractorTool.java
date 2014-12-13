@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.tools;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -14,11 +13,6 @@ import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransitionContractorTool implements Tool {
-	private final Framework framework;
-
-	public TransitionContractorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {

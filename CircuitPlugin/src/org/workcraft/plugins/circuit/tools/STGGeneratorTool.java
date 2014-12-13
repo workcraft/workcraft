@@ -12,11 +12,6 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class STGGeneratorTool implements Tool {
-	private final Framework framework;
-
-	public STGGeneratorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {
@@ -37,6 +32,7 @@ public class STGGeneratorTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final VisualCircuit circuit = (VisualCircuit)we.getModelEntry().getVisualModel();
 		final VisualSTG vstg = STGGenerator.generate(circuit);
+		final Framework framework = Framework.getInstance();
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String name = we.getWorkspacePath().getNode();

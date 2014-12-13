@@ -42,8 +42,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.workcraft.Framework;
-
 @SuppressWarnings("serial")
 public class ErrorWindow extends JPanel implements ComponentListener {
 	protected PrintStream systemErr;
@@ -52,7 +50,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 	private JTextArea txtStdErr;
 	private Color colorBack = null;
 
-	public ErrorWindow (Framework framework) {
+	public ErrorWindow () {
 		txtStdErr = new JTextArea();
 		txtStdErr.setLineWrap(true);
 		txtStdErr.setEditable(false);

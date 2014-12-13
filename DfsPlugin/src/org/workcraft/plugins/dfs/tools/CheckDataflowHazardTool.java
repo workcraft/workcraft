@@ -8,11 +8,6 @@ import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckDataflowHazardTool implements Tool {
-	private final Framework framework;
-
-	public CheckDataflowHazardTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	public String getDisplayName() {
 		return "Check dataflow for hazards";
@@ -30,12 +25,13 @@ public class CheckDataflowHazardTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final CheckDataflowHazardTask task = new CheckDataflowHazardTask(we, framework);
+		final CheckDataflowHazardTask task = new CheckDataflowHazardTask(we);
 		String description = "MPSat tool chain";
 		String title = we.getModelEntry().getModel().getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
 	}
 

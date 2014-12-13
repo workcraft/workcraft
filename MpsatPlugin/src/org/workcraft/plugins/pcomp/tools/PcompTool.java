@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.pcomp.gui.PcompDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
@@ -17,12 +18,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PcompTool implements Tool {
 
-	private final Framework framework;
-
-	public PcompTool(Framework framework) {
-		this.framework = framework;
-	}
-
 	public final String getSection() {
 		return "Composition";
 	}
@@ -32,12 +27,14 @@ public class PcompTool implements Tool {
 	}
 
 	public final void run(WorkspaceEntry we) {
-		PcompDialog dialog = new PcompDialog(framework.getMainWindow(), framework);
-		GUI.centerAndSizeToParent(dialog, framework.getMainWindow());
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+		PcompDialog dialog = new PcompDialog(mainWindow);
+		GUI.centerAndSizeToParent(dialog, mainWindow);
 
 		if (dialog.run()) {
 
-			DotGProvider dotGProvider = new DotGProvider(framework);
+			DotGProvider dotGProvider = new DotGProvider();
 
 			ArrayList<File> inputs = new ArrayList<File>();
 
@@ -48,7 +45,7 @@ public class PcompTool implements Tool {
 			PcompTask pcompTask = new PcompTask(inputs.toArray(new File[0]), dialog.getMode(),
 					dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(), null);
 
-			PcompResultHandler pcompResult = new PcompResultHandler(framework, dialog.showInEditor());
+			PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor());
 
 			framework.getTaskManager().queue(pcompTask,	"Running pcomp", pcompResult);
 		}

@@ -53,16 +53,13 @@ public class CheckCircuitTask extends MpsatChainTask {
 			MpsatUtilitySettings.getSolutionCount(), MpsatSettings.reachSemimodularity);
 
 	private final WorkspaceEntry we;
-	private final Framework framework;
 	private final boolean checkConformation;
 	private final boolean checkDeadlock;
 	private final boolean checkHazard;
 
-	public CheckCircuitTask(WorkspaceEntry we, Framework framework,
-			boolean checkConformation, boolean checkDeadlock, boolean checkHazard) {
-		super (we, null, framework);
+	public CheckCircuitTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkHazard) {
+		super (we, null);
 		this.we = we;
-		this.framework = framework;
 		this.checkConformation = checkConformation;
 		this.checkDeadlock = checkDeadlock;
 		this.checkHazard = checkHazard;
@@ -70,6 +67,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		Framework framework = Framework.getInstance();
 		File workingDirectory = null;
 		try {
 			// Common variables

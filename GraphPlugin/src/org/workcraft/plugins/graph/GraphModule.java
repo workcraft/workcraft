@@ -12,13 +12,14 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class GraphModule implements Module {
 
 	@Override
-	public void init(final Framework framework) {
+	public void init() {
+		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new AbstractContractorTool(framework) {
+				return new AbstractContractorTool() {
 					@Override
 					public boolean isApplicableTo(WorkspaceEntry we) {
 						return we.getModelEntry().getMathModel() instanceof Graph;

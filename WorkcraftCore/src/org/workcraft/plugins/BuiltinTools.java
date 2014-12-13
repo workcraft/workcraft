@@ -18,22 +18,23 @@ import org.workcraft.plugins.transform.CopyLablesTool;
 
 public class BuiltinTools implements Module {
 	@Override
-	public void init(final Framework framework) {
-		final PluginManager p = framework.getPluginManager();
+	public void init() {
+		final Framework framework = Framework.getInstance();
+		final PluginManager pm = framework.getPluginManager();
 
-		p.registerClass(Settings.class, CommonEditorSettings.class);
-		p.registerClass(Settings.class, CommonVisualSettings.class);
-		p.registerClass(Settings.class, CommonSimulationSettings.class);
-		p.registerClass(Settings.class, CommonCommentSettings.class);
+		pm.registerClass(Settings.class, CommonEditorSettings.class);
+		pm.registerClass(Settings.class, CommonVisualSettings.class);
+		pm.registerClass(Settings.class, CommonSimulationSettings.class);
+		pm.registerClass(Settings.class, CommonCommentSettings.class);
 
-		p.registerClass(Settings.class, DotLayoutSettings.class);
-		p.registerClass(Settings.class, RandomLayoutSettings.class);
+		pm.registerClass(Settings.class, DotLayoutSettings.class);
+		pm.registerClass(Settings.class, RandomLayoutSettings.class);
 
-		p.registerClass(Tool.class, DotLayoutTool.class, framework);
-		p.registerClass(Tool.class, NullLayoutTool.class);
-		p.registerClass(Tool.class, RandomLayoutTool.class);
+		pm.registerClass(Tool.class, DotLayoutTool.class);
+		pm.registerClass(Tool.class, NullLayoutTool.class);
+		pm.registerClass(Tool.class, RandomLayoutTool.class);
 
-		p.registerClass(Tool.class, CopyLablesTool.class);
+		pm.registerClass(Tool.class, CopyLablesTool.class);
 	}
 
 	@Override

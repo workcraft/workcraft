@@ -39,9 +39,11 @@ public abstract class ScriptedAction extends Action {
 
 	protected abstract String getScript();
 
-	@Override public void run(Framework framework) {
-		if (getScript() != null)
+	@Override public void run() {
+		if (getScript() != null) {
+			final Framework framework = Framework.getInstance();
 			framework.execJavaScript(getScript());
+		}
 	}
 
 	public String getUndoScript() {

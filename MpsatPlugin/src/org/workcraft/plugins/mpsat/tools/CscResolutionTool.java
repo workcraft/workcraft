@@ -13,13 +13,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CscResolutionTool implements Tool {
 
-	private final Framework framework;
-
-	public CscResolutionTool(Framework framework)
-	{
-		this.framework = framework;
-	}
-
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, STGModel.class);
@@ -33,7 +26,8 @@ public class CscResolutionTool implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		MpsatSettings settings = new MpsatSettings("CSC", MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1, null);
-		MpsatChainTask mpsatTask = new MpsatChainTask(we, settings, framework);
+		MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(mpsatTask, "CSC conflicts resolution", new MpsatChainResultHandler(mpsatTask));
 	}
 

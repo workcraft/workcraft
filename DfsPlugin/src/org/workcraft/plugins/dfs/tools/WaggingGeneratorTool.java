@@ -9,11 +9,6 @@ import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class WaggingGeneratorTool implements Tool {
-	private final Framework framework;
-
-	public WaggingGeneratorTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {
@@ -34,6 +29,7 @@ public class WaggingGeneratorTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final VisualDfs dfs = (VisualDfs)we.getModelEntry().getVisualModel();
 		if (dfs.getSelection().size() < 1) {
+			final Framework framework = Framework.getInstance();
 			JOptionPane.showMessageDialog(framework.getMainWindow(),
 				"Select at least one component for wagging!", "Wagging", JOptionPane.ERROR_MESSAGE);
 		} else {
@@ -48,6 +44,7 @@ public class WaggingGeneratorTool implements Tool {
 
 	public int getWayCount() {
 		int count = 0;
+		final Framework framework = Framework.getInstance();
 		String ans = JOptionPane.showInputDialog(framework.getMainWindow(),
 				"Please enter the number of wagging branches:", "4");
 		if (ans != null) {

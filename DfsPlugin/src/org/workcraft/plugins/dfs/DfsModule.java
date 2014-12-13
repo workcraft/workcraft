@@ -18,20 +18,21 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class DfsModule implements Module {
 
 	@Override
-	public void init(final Framework framework) {
+	public void init() {
+		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new StgGeneratorTool(framework);
+				return new StgGeneratorTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new WaggingGeneratorTool(framework) {
+				return new WaggingGeneratorTool() {
 					@Override
 					public String getDisplayName() {
 						return "2-way wagging";
@@ -47,7 +48,7 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new WaggingGeneratorTool(framework) {
+				return new WaggingGeneratorTool() {
 					@Override
 					public String getDisplayName() {
 						return "3-way wagging";
@@ -63,7 +64,7 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new WaggingGeneratorTool(framework) {
+				return new WaggingGeneratorTool() {
 					@Override
 					public String getDisplayName() {
 						return "4-way wagging";
@@ -79,14 +80,14 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new WaggingGeneratorTool(framework);
+				return new WaggingGeneratorTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new AbstractContractorTool(framework) {
+				return new AbstractContractorTool() {
 					@Override
 					public boolean isApplicableTo(WorkspaceEntry we) {
 						return we.getModelEntry().getMathModel() instanceof Dfs;
@@ -99,21 +100,21 @@ public class DfsModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckDataflowDeadlockTool(framework);
+				return new CheckDataflowDeadlockTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckDataflowHazardTool(framework);
+				return new CheckDataflowHazardTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckDataflowTool(framework);
+				return new CheckDataflowTool();
 			}
 		});
 

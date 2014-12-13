@@ -35,15 +35,12 @@ import org.workcraft.Framework;
 
 @SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {
-	private Framework framework;
 
 	private JPanel panelInput = null;
 	private JButton btnExecute = null;
 	private JEditTextArea txtScript = null;
 
-	public JavaScriptWindow (Framework framework) {
-		this.framework = framework;
-
+	public JavaScriptWindow() {
 		btnExecute = new JButton();
 		btnExecute.setText("Execute [ctrl-Enter]");
 
@@ -79,6 +76,7 @@ public class JavaScriptWindow extends JPanel {
 	public void execScript() {
 		if (txtScript.getText().length()>0)
 			try {
+				final Framework framework = Framework.getInstance();
 				Object result = framework.execJavaScript(txtScript.getText());
 
 				Context.enter();

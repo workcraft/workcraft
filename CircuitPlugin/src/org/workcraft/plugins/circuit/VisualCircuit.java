@@ -222,7 +222,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	}
 
 	private File getBase() {
-		Framework framework = Framework.INSTANCE;
+		Framework framework = Framework.getInstance();
 		GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
 		WorkspaceEntry we = editor.getWorkspaceEntry();
 		return we.getFile().getParentFile();

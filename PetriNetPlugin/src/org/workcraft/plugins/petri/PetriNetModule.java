@@ -11,14 +11,15 @@ import org.workcraft.plugins.petri.tools.TransitionContractorTool;
 public class PetriNetModule implements Module {
 
 	@Override
-	public void init(final Framework framework) {
+	public void init() {
+		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 		pm.registerClass(ModelDescriptor.class, PetriNetModelDescriptor.class);
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new TransitionContractorTool(framework);
+				return new TransitionContractorTool();
 			}
 		});
 	}

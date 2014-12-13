@@ -27,7 +27,8 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 public class STGModule implements Module {
 
 	@Override
-	public void init(final Framework framework) {
+	public void init() {
+		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 		pm.registerClass(ModelDescriptor.class, STGModelDescriptor.class);
 
@@ -43,42 +44,42 @@ public class STGModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new SignalMirrorTool(framework);
+				return new SignalMirrorTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new MakePlacesImplicitTool(framework);
+				return new MakePlacesImplicitTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new MakePlacesExplicitTool(framework);
+				return new MakePlacesExplicitTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new SignalToDummyTransitionConverterTool(framework);
+				return new SignalToDummyTransitionConverterTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new DummyToSignalTransitionConverterTool(framework);
+				return new DummyToSignalTransitionConverterTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new TransitionContractorTool(framework);
+				return new TransitionContractorTool();
 			}
 		});
 	}

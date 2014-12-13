@@ -17,12 +17,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ShowSg implements Tool {
 
-	private final Framework framework;
-
-	public ShowSg(Framework framework){
-		this.framework = framework;
-	}
-
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, PetriNetModel.class);
@@ -35,7 +29,8 @@ public class ShowSg implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		DrawSgTask task = new DrawSgTask(WorkspaceUtils.getAs(we, PetriNetModel.class), framework);
+		DrawSgTask task = new DrawSgTask(WorkspaceUtils.getAs(we, PetriNetModel.class));
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, "Show state graph", new ProgressMonitor<DrawSgResult>() {
 			@Override
 			public void progressUpdate(double completion) {

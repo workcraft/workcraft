@@ -7,11 +7,6 @@ import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransitionBundlerTool implements Tool {
-	final Framework framework;
-
-	public TransitionBundlerTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public String getDisplayName() {
@@ -31,6 +26,7 @@ public class TransitionBundlerTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
+		final Framework framework = Framework.getInstance();
 		framework.getMainWindow().getCurrentEditor().getToolBox().selectDefaultTool();
 		we.saveMemento();
 

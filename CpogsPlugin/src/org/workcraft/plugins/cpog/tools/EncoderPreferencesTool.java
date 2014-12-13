@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
@@ -15,14 +16,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class EncoderPreferencesTool implements Tool {
 
-	private final Framework framework;
 	private EncoderSettings settings;
 	private EncoderConfigurationDialog dialog;
 	PresetManager<EncoderSettings> pmgr;
-
-	public EncoderPreferencesTool(Framework framework) {
-		this.framework = framework;
-	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -43,11 +39,13 @@ public class EncoderPreferencesTool implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
 		settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
 		pmgr = new PresetManager<EncoderSettings>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-		dialog = new EncoderConfigurationDialog(framework.getMainWindow(), pmgr, settings, we);
+		dialog = new EncoderConfigurationDialog(mainWindow, pmgr, settings, we);
 
-		GUI.centerToParent(dialog, framework.getMainWindow());
+		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
 		// TASK INSERTION
 		/*final ProgrammerChainTask programmerTask = new ProgrammerChainTask(we, dialog.getSettings(), framework);

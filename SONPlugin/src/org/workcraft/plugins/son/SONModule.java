@@ -21,19 +21,20 @@ public class SONModule implements Module{
 		return "Structured Occurrence Nets";
 	}
 
-	public void init(Framework framework) {
-		initPluginManager(framework);
-		initCompatibilityManager(framework);
+	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
 	}
 
-	private void initPluginManager(final Framework framework) {
+	private void initPluginManager() {
+		final Framework framework = Framework.getInstance();
 		PluginManager pm = framework.getPluginManager();
 		pm.registerClass(ModelDescriptor.class, SONModelDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
-		pm.registerClass(Tool.class, TestTool.class, framework);
+		pm.registerClass(Tool.class, TestTool.class);
 		//verification
-		pm.registerClass(Tool.class, StructurePropertyChecker.class, framework);
-		pm.registerClass(Tool.class, ReachabilityTool.class, framework);
+		pm.registerClass(Tool.class, StructurePropertyChecker.class);
+		pm.registerClass(Tool.class, ReachabilityTool.class);
 		//Custom tools
 		pm.registerClass(Tool.class, ColorResetTool.class);
 		pm.registerClass(Tool.class, TokenRefreshTool.class);
@@ -43,7 +44,8 @@ public class SONModule implements Module{
 
 	}
 
-	private void initCompatibilityManager(final Framework framework) {
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerGlobalReplacement(VisualSON.class.getName(),

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.Trace;
 import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
@@ -43,7 +44,8 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 				message = getPropertyName() + " is violated with the following trace:\n";
 			}
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
-			GUI.centerAndSizeToParent(solutionsDialog, task.getFramework().getMainWindow());
+			final Framework framework = Framework.getInstance();
+			GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
 			solutionsDialog.setVisible(true);
 		} else {
 			if (message == null) {

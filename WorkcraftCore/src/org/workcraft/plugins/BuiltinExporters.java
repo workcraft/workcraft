@@ -9,11 +9,12 @@ import org.workcraft.plugins.interop.SVGExporter;
 
 public class BuiltinExporters implements Module {
 	@Override
-	public void init(final Framework framework) {
-		final PluginManager p = framework.getPluginManager();
+	public void init() {
+		final Framework framework = Framework.getInstance();
+		final PluginManager pm = framework.getPluginManager();
 
-		p.registerClass(Exporter.class, DotExporter.class);
-		p.registerClass(Exporter.class, SVGExporter.class);
+		pm.registerClass(Exporter.class, DotExporter.class);
+		pm.registerClass(Exporter.class, SVGExporter.class);
 	}
 
 	@Override

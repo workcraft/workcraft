@@ -15,15 +15,10 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class DotGProvider {
-	private final Framework framework;
-	private final Workspace workspace;
-
-	public DotGProvider (Framework framework) {
-		this.framework = framework;
-		this.workspace = framework.getWorkspace();
-	}
 
 	public File getDotG (Path<String> source) {
+		final Framework framework = Framework.getInstance();
+		Workspace workspace = framework.getWorkspace();
 		WorkspaceEntry we = workspace.getOpenFile(source);
 
 		if (we != null) {

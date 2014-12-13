@@ -24,32 +24,33 @@ public class CircuitModule implements Module {
 	}
 
 	@Override
-	public void init(final Framework framework) {
-		initPluginManager(framework);
-		initCompatibilityManager(framework);
+	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
 	}
 
-	private void initPluginManager(final Framework framework) {
+	private void initPluginManager() {
+		final Framework framework = Framework.getInstance();
 		PluginManager pm = framework.getPluginManager();
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new STGGeneratorTool(framework);
+				return new STGGeneratorTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitTool(framework);
+				return new CheckCircuitTool();
 			}
 		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitTool(framework) {
+				return new CheckCircuitTool() {
 					@Override
 					public String getDisplayName() {
 						return "Check circuit only for conformation";
@@ -69,7 +70,7 @@ public class CircuitModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitTool(framework) {
+				return new CheckCircuitTool() {
 					@Override
 					public String getDisplayName() {
 						return "Check circuit only for deadlocks";
@@ -89,7 +90,7 @@ public class CircuitModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new CheckCircuitTool(framework) {
+				return new CheckCircuitTool() {
 					@Override
 					public String getDisplayName() {
 						return "Check circuit only for hazards";
@@ -113,7 +114,8 @@ public class CircuitModule implements Module {
 	}
 
 
-	private void initCompatibilityManager(final Framework framework) {
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerContextualReplacement(VisualCircuit.class.getName(), "VisualCircuitComponent",

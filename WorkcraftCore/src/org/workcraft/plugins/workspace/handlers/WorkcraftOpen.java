@@ -6,33 +6,33 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.FileHandler;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkcraftOpen implements FileHandler {
-	private final Framework framework;
-
-	public WorkcraftOpen(Framework framework) {
-		this.framework = framework;
-	}
 
 	public boolean accept(File f) {
-		if (Import.chooseBestImporter(framework.getPluginManager(), f) != null)
+		final Framework framework = Framework.getInstance();
+		if (Import.chooseBestImporter(framework.getPluginManager(), f) != null) {
 			return true;
-		else
+		} else {
 			return false;
+		}
 	}
 
 	public void execute(File f) {
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
 		try {
 			final Workspace workspace = framework.getWorkspace();
 			WorkspaceEntry we = workspace.open(f, false);
-			framework.getMainWindow().createEditorWindow(we);
+			mainWindow.createEditorWindow(we);
 		} catch (DeserialisationException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

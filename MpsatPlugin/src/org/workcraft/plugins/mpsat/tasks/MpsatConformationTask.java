@@ -39,18 +39,17 @@ public class MpsatConformationTask extends MpsatChainTask {
 			MpsatMode.UNDEFINED, 0, null, 0, null);
 
 	private final WorkspaceEntry we;
-	private final Framework framework;
 	private File envFile;
 
-	public MpsatConformationTask(WorkspaceEntry we, Framework framework, File envFile) {
-		super (we, null, framework);
+	public MpsatConformationTask(WorkspaceEntry we, File envFile) {
+		super (we, null);
 		this.we = we;
-		this.framework = framework;
 		this.envFile = envFile;
 	}
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		Framework framework = Framework.getInstance();
 		File workingDirectory = null;
 		try {
 			// Common variables

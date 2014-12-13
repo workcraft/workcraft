@@ -53,7 +53,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DependentNode;
@@ -570,11 +569,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public ToolboxPanel getToolBox() {
 		return toolboxPanel;
-	}
-
-	@Override
-	public Framework getFramework() {
-		return mainWindow.getFramework();
 	}
 
 }

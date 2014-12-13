@@ -114,11 +114,9 @@ public class MainWindow extends JFrame {
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(Action e) {
-			e.run(framework);
+			e.run();
 		}
 	};
-
-	private Framework framework;
 
 	private WorkspaceWindow workspaceWindow;
 
@@ -154,14 +152,14 @@ public class MainWindow extends JFrame {
 	private HashMap<Integer, DockableWindow> IDToDockableWindowMap = new HashMap<Integer, DockableWindow>();
 
 	protected void createWindows() {
-		workspaceWindow = new WorkspaceWindow(framework);
+		workspaceWindow = new WorkspaceWindow();
 		workspaceWindow.setVisible(true);
-		propertyEditorWindow = new PropertyEditorWindow(framework);
+		propertyEditorWindow = new PropertyEditorWindow();
 
-		outputWindow = new OutputWindow(framework);
+		outputWindow = new OutputWindow();
 
-		errorWindow = new ErrorWindow(framework);
-		jsWindow = new JavaScriptWindow(framework);
+		errorWindow = new ErrorWindow();
+		jsWindow = new JavaScriptWindow();
 
 		toolboxWindow = new SimpleContainer();
 
@@ -171,13 +169,13 @@ public class MainWindow extends JFrame {
 		editorInFocus = null;
 	}
 
-	public MainWindow(final Framework framework) {
+	public MainWindow() {
 		super();
-		this.framework = framework;
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				final Framework framework = Framework.getInstance();
 				framework.shutdown();
 			}
 		});
@@ -191,6 +189,7 @@ public class MainWindow extends JFrame {
 			if (laf == null)
 				laf = UIManager.getSystemLookAndFeelClassName();
 
+			final Framework framework = Framework.getInstance();
 			framework.setConfigVar("gui.lookandfeel", laf);
 			framework.restartGUI();
 		}
@@ -353,6 +352,7 @@ public class MainWindow extends JFrame {
 		mainMenu = new MainMenu(this);
 		setJMenuBar(mainMenu);
 
+		final Framework framework = Framework.getInstance();
 		String laf = framework.getConfigVar("gui.lookandfeel");
 		if (laf == null) {
 			laf = UIManager.getCrossPlatformLookAndFeelClassName();
@@ -436,8 +436,7 @@ public class MainWindow extends JFrame {
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,
 				0.5f));
 
-		DockableWindow tasks = createDockableWindow(new TaskManagerWindow(
-				framework), "Tasks", outputDockable,
+		DockableWindow tasks = createDockableWindow(new TaskManagerWindow(), "Tasks", outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		setVisible(true);
@@ -565,6 +564,7 @@ public class MainWindow extends JFrame {
 
 			editorWindows.remove(we, dockableWindow);
 			if (editorWindows.get(we).isEmpty()) {
+				final Framework framework = Framework.getInstance();
 				framework.getWorkspace().close(we);
 			}
 
@@ -692,6 +692,7 @@ public class MainWindow extends JFrame {
 	public void shutdown() throws OperationCancelledException {
 		closeEditorWindows();
 
+		final Framework framework = Framework.getInstance();
 		if (framework.getWorkspace().isChanged()
 				&& !framework.getWorkspace().isTemporary()) {
 			int result = JOptionPane.showConfirmDialog(this,
@@ -766,6 +767,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void createWork(Path<String> path)	throws OperationCancelledException {
+		final Framework framework = Framework.getInstance();
 		CreateWorkDialog dialog = new CreateWorkDialog(MainWindow.this);
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1) {
@@ -801,6 +803,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void requestFocus(GraphEditorPanel sender) {
+		final Framework framework = Framework.getInstance();
 		sender.requestFocusInWindow();
 		if (editorInFocus != sender) {
 			editorInFocus = sender;
@@ -927,6 +930,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void openWork(File f) {
+		final Framework framework = Framework.getInstance();
 		if (framework.checkFile(f)) {
 			try {
 				WorkspaceEntry we = framework.getWorkspace().open(f, true);
@@ -966,6 +970,7 @@ public class MainWindow extends JFrame {
 			openWork(f);
 		} else {
 			try {
+				final Framework framework = Framework.getInstance();
 				WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
 				framework.getWorkspace().merge(we, f);
 			} catch (DeserialisationException e) {
@@ -1000,6 +1005,7 @@ public class MainWindow extends JFrame {
 		} else {
 			try {
 				if (we.getModelEntry() != null) {
+					final Framework framework = Framework.getInstance();
 					framework.save(we.getModelEntry(), we.getFile().getPath());
 				} else {
 					throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
@@ -1044,6 +1050,7 @@ public class MainWindow extends JFrame {
 		String path = getValidSavePath(fc, null);
 		try {
 			File destination = new File(path);
+			final Framework framework = Framework.getInstance();
 			Workspace ws = framework.getWorkspace();
 
 			final Path<String> wsFrom = we.getWorkspacePath();
@@ -1072,6 +1079,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void importFrom() {
+		final Framework framework = Framework.getInstance();
 		Collection<PluginInfo<? extends Importer>> importerInfo = framework.getPluginManager().getPlugins(Importer.class);
 		Importer[] importers = new Importer[importerInfo.size()];
 		int cnt = 0;
@@ -1089,6 +1097,7 @@ public class MainWindow extends JFrame {
 	}
 
 	public void importFrom(File f, Importer[] importers) {
+		final Framework framework = Framework.getInstance();
 		if (framework.checkFile(f)) {
 			for (Importer importer : importers) {
 				if (importer.accept(f)) {
@@ -1121,6 +1130,7 @@ public class MainWindow extends JFrame {
 		JFileChooser fc = createSaveDialog(title, file, exporter);
 		String path = getValidSavePath(fc, exporter);
 		Task<Object> exportTask = new Export.ExportTask(exporter, editorInFocus.getModel(), path);
+		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(exportTask, "Exporting " + title, new TaskFailureNotifier());
 		lastSavePath = fc.getCurrentDirectory().getPath();
 	}
@@ -1178,10 +1188,6 @@ public class MainWindow extends JFrame {
 
 	public PropertyEditorWindow getPropertyView() {
 		return propertyEditorWindow;
-	}
-
-	public Framework getFramework() {
-		return framework;
 	}
 
 	public void closeActiveEditor() throws OperationCancelledException {
@@ -1301,6 +1307,7 @@ public class MainWindow extends JFrame {
 					+ "This will cause the visual editor windows to be closed.\n\nProceed?",
 					"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				try {
+					final Framework framework = Framework.getInstance();
 					framework.shutdownGUI();
 					new File(UILAYOUT_PATH).delete();
 					framework.startGUI();

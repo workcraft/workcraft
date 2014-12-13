@@ -29,12 +29,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDataflowHazardTask extends MpsatChainTask {
 	private final MpsatSettings settings;
 	private final WorkspaceEntry we;
-	private final Framework framework;
 
-	public CheckDataflowHazardTask(WorkspaceEntry we, Framework framework) {
-		super (we, null, framework);
+	public CheckDataflowHazardTask(WorkspaceEntry we) {
+		super (we, null);
 		this.we = we;
-		this.framework = framework;
 		this.settings = new MpsatSettings("Output persistence", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
 				MpsatSettings.reachSemimodularity);
@@ -42,6 +40,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+		final Framework framework = Framework.getInstance();
 		try {
 			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
 			STGModel model = (STGModel)generator.getSTG().getMathModel();

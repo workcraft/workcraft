@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.workcraft.Framework;
 import org.workcraft.Trace;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
@@ -45,8 +46,9 @@ public class SolutionPanel extends JPanel {
 		playButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				final Framework framework = Framework.getInstance();
 				final WorkspaceEntry we = task.getWorkspaceEntry();
-				final MainWindow mainWindow = task.getFramework().getMainWindow();
+				final MainWindow mainWindow = framework.getMainWindow();
 				GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
 				if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
 					final List<GraphEditorPanel> editors = mainWindow.getEditors(we);

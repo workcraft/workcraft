@@ -21,18 +21,17 @@ public class ProgrammerChainTask implements Task<ProgrammerChainResult> {
 
 	private final WorkspaceEntry we;
 	private final EncoderSettings settings;
-	private final Framework framework;
 	private VisualModel model;
 
-	public ProgrammerChainTask(WorkspaceEntry we, EncoderSettings settings, Framework framework) {
+	public ProgrammerChainTask(WorkspaceEntry we, EncoderSettings settings) {
 		this.we = we;
 		this.settings = settings;
-		this.framework = framework;
 		this.model = null;
 	}
 
 	@Override
 	public Result<? extends ProgrammerChainResult> run(ProgressMonitor<? super ProgrammerChainResult> monitor) {
+		final Framework framework = Framework.getInstance();
 		try {
 			if(model == null) {
 				model = WorkspaceUtils.getAs(getWorkspaceEntry(), VisualModel.class);
@@ -65,10 +64,6 @@ public class ProgrammerChainTask implements Task<ProgrammerChainResult> {
 
 	public EncoderSettings getSettings() {
 		return settings;
-	}
-
-	public Framework getFramework() {
-		return framework;
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {
