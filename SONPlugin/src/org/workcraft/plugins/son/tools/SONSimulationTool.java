@@ -336,7 +336,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
-		final Framework framework = Framework.getInstance();
 		this.editor = editor;
 		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
@@ -942,9 +941,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			}
 		});
 
-		if (node instanceof VisualTransitionNode){
-			final Framework framework = Framework.getInstance();
-			MainWindow mainWindow = framework.getMainWindow();
+		final Framework framework = Framework.getInstance();
+		final MainWindow mainWindow = framework.getMainWindow();
+
+		if (node instanceof VisualTransitionNode) {
 
 			Collection<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
 			TransitionNode selected = ((VisualTransitionNode)node).getMathTransitionNode();
@@ -979,7 +979,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				}else{
 					e.getEditor().requestFocus();
 					ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
-							net, possibleFires, minFires, maxFires, selected, reverse, sync);
+							net, possibleFires, minFires, maxFires,	selected, reverse, sync);
 					GUI.centerToParent(dialog, mainWindow);
 					dialog.setVisible(true);
 

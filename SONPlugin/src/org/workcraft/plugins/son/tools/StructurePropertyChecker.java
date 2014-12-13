@@ -32,7 +32,8 @@ public class StructurePropertyChecker implements Tool {
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
 		final Framework framework = Framework.getInstance();
-		MainWindow mainWindow = framework.getMainWindow();
+		final MainWindow mainWindow = framework.getMainWindow();
+
 		StructureVerifyDialog dialog = new StructureVerifyDialog(mainWindow, net);
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
