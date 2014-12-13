@@ -8,7 +8,7 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyDummyContraction implements Tool {
+public class PetrifyNetSynthesis implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -22,13 +22,13 @@ public class PetrifyDummyContraction implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Dummy contraction [Petrify]";
+		return "Net synthesis (with -er option) [Petrify]";
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final TransformationTask task = new TransformationTask(we, "Dummy contraction", new String[] { "-hide", ".dummy" });
+		final TransformationTask task = new TransformationTask(we, "Net synthesis", new String[] { "-er" });
 		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Petrify dummy contraction", new TransformationResultHandler(task));
+		framework.getTaskManager().queue(task, "Petrify net synthesis", new TransformationResultHandler(task));
 	}
 }

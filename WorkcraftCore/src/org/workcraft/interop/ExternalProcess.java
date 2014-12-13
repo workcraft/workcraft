@@ -152,9 +152,9 @@ public class ExternalProcess {
 		errorStream = Channels.newChannel(process.getErrorStream());
 		inputStream = Channels.newChannel(process.getInputStream());
 
-		if (outputStream == null)
-			throw new RuntimeException ("WTF?");
-
+		if (outputStream == null) {
+			throw new RuntimeException("No output stream!");
+		}
 		new InputReaderThread().start();
 		new ErrorReaderThread().start();
 		new WaiterThread().start();

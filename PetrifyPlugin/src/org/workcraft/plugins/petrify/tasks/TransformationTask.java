@@ -7,7 +7,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.interop.DotGImporter;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.shared.tasks.PetrifyTask;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -36,12 +35,12 @@ public class TransformationTask implements Task<TransformationResult>{
 
 	@Override
 	public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
-		final Framework framework = Framework.getInstance();
-		try
-		{
+		try {
+			final Framework framework = Framework.getInstance();
 			File tmp = File.createTempFile("stg_", ".g");
 
-			ExportTask exportTask = Export.createExportTask(WorkspaceUtils.getAs(workspaceEntry, STGModel.class), tmp, Format.STG, framework.getPluginManager());
+			STGModel inStg = WorkspaceUtils.getAs(workspaceEntry, STGModel.class);
+			ExportTask exportTask = Export.createExportTask(inStg, tmp, Format.STG, framework.getPluginManager());
 
 			final Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, description +": writing .g");
 
@@ -55,25 +54,24 @@ public class TransformationTask implements Task<TransformationResult>{
 
 			final Result<? extends ExternalProcessResult> petrifyResult = framework.getTaskManager().execute(petrifyTask, description + ": executing Petrify");
 
-			if (petrifyResult.getOutcome() == Outcome.FINISHED)
-			{
+			if (petrifyResult.getOutcome() == Outcome.FINISHED) {
 				try {
-					final STGModel stg = new DotGImporter().importSTG(new ByteArrayInputStream(petrifyResult.getReturnValue().getOutput()));
-					return Result.finished(new TransformationResult(null, stg));
+					final STGModel outStg = new DotGImporter().importSTG(new ByteArrayInputStream(petrifyResult.getReturnValue().getOutput()));
+					return Result.finished(new TransformationResult(null, outStg));
 				} catch (DeserialisationException e) {
 					return Result.exception(e);
 				}
 
-			} else
-			{
-				if(petrifyResult.getOutcome() == Outcome.FAILED)
+			} else {
+				if(petrifyResult.getOutcome() == Outcome.FAILED) {
 					return Result.failed(new TransformationResult(petrifyResult, null));
-				else
+				} else {
 					return Result.cancelled();
+				}
 			}
-		} catch (Throwable e)
-		{
+		} catch (Throwable e) {
 			return Result.exception(e);
 		}
 	}
+
 }
