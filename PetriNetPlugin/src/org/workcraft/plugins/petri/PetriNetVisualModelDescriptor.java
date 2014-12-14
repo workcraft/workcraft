@@ -9,7 +9,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 public class PetriNetVisualModelDescriptor implements VisualModelDescriptor {
 
 	@Override
-	public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
+	public VisualModel create(MathModel mathModel) {
 		return new VisualPetriNet ((PetriNet)mathModel);
 	}
 

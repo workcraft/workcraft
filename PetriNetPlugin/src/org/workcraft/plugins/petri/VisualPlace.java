@@ -188,4 +188,11 @@ public class VisualPlace extends VisualComponent {
 		sendNotification(new PropertyChangedEvent(this, "token color"));
 	}
 
+	public void copyProperties(VisualPlace src) {
+		super.copyProperties(src);
+		getReferencedPlace().setCapacity(src.getReferencedPlace().getCapacity());
+		getReferencedPlace().setTokens(src.getReferencedPlace().getTokens());
+		setTokenColor(src.getTokenColor());
+	}
+
 }

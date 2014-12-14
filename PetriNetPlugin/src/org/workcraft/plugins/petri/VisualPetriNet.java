@@ -40,7 +40,7 @@ import org.workcraft.util.Hierarchy;
 @CustomTools ( PetriNetToolProvider.class )
 public class VisualPetriNet extends AbstractVisualModel {
 
-	public VisualPetriNet(PetriNet model) throws VisualModelInstantiationException {
+	public VisualPetriNet(PetriNet model) {
 		this (model, null);
 	}
 

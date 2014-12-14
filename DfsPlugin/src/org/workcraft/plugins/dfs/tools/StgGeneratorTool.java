@@ -15,12 +15,12 @@ public class StgGeneratorTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Generate STG";
+		return "Signal Transition Graph";
 	}
 
 	@Override
 	public String getSection() {
-		return "STG";
+		return "Conversion";
 	}
 
 	@Override

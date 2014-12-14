@@ -11,16 +11,16 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class STGGeneratorTool implements Tool {
+public class StgGeneratorTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Generate STG";
+		return "Signal Transition Graph";
 	}
 
 	@Override
 	public String getSection() {
-		return "STG";
+		return "Conversion";
 	}
 
 	@Override

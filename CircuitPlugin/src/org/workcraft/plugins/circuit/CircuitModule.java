@@ -11,7 +11,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
-import org.workcraft.plugins.circuit.tools.STGGeneratorTool;
+import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
@@ -36,7 +36,7 @@ public class CircuitModule implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new STGGeneratorTool();
+				return new StgGeneratorTool();
 			}
 		});
 

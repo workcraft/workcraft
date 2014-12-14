@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
@@ -26,14 +25,12 @@ public class PetriNetGenerator {
 
 	public PetriNetGenerator(VisualFsm fsm) {
 		this.fsm = fsm;
+		this.petriNet = new VisualPetriNet(new PetriNet());
+		stateToPlaceMap = convertStates();
+		eventToTransitionMap = convertEvents();
+		refToSymbolMap = cacheLabels();
 		try {
-			this.petriNet = new VisualPetriNet(new PetriNet());
-			stateToPlaceMap = convertStates();
-			eventToTransitionMap = convertEvents();
-			refToSymbolMap = cacheLabels();
 			connectEvents();
-		} catch (VisualModelInstantiationException e) {
-			throw new RuntimeException(e);
 		} catch ( InvalidConnectionException e) {
 			throw new RuntimeException(e);
 		}
@@ -55,14 +52,9 @@ public class PetriNetGenerator {
 		Map<VisualState, VisualPlace> result = new HashMap<VisualState, VisualPlace>();
 		for(VisualState state: Hierarchy.getDescendantsOfType(fsm.getRoot(), VisualState.class)) {
 			VisualPlace place = petriNet.createPlace(fsm.getMathModel().getNodeReference(state.getReferencedState()));
-			place.setPosition(state.getPosition());
+			place.copyProperties(state);
 			place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
-			place.setForegroundColor(state.getForegroundColor());
-			place.setFillColor(state.getFillColor());
 			place.setTokenColor(state.getForegroundColor());
-			place.setLabel(state.getLabel());
-			place.setLabelColor(state.getLabelColor());
-			place.setLabelPositioning(state.getLabelPositioning());
 			result.put(state, place);
 		}
 		return result;

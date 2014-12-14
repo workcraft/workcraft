@@ -185,14 +185,14 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	}
 
 	@Override
-	public void copyProperties(VisualConnection connection) {
-		super.copyProperties(connection);
-		if (connection instanceof VisualImplicitPlaceArc) {
-			VisualImplicitPlaceArc implicitPlaceArc = (VisualImplicitPlaceArc)connection;
-			implicitPlaceArc.setTokenColor(getTokenColor());
-			STGPlace place = implicitPlaceArc.getImplicitPlace();
-			place.setTokens(getImplicitPlace().getTokens());
-			place.setCapacity(getImplicitPlace().getCapacity());
+	public void copyProperties(VisualConnection src) {
+		super.copyProperties(src);
+		if (src instanceof VisualImplicitPlaceArc) {
+			VisualImplicitPlaceArc srcImplicitPlaceArc = (VisualImplicitPlaceArc)src;
+			setTokenColor(srcImplicitPlaceArc.getTokenColor());
+			STGPlace srcPlace = srcImplicitPlaceArc.getImplicitPlace();
+			getImplicitPlace().setTokens(srcPlace.getTokens());
+			getImplicitPlace().setCapacity(srcPlace.getCapacity());
 		}
 	}
 }

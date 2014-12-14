@@ -56,8 +56,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-import com.sun.corba.se.impl.resolver.SplitLocalResolverImpl;
-
 public class VisualConnection extends VisualNode implements Node, Drawable, DependentNode,
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
@@ -529,27 +527,27 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		this.scaleMode = scaleMode;
 	}
 
-	public void copyProperties(VisualConnection connection) {
-		connection.setConnectionType(getConnectionType());
-		connection.setColor(getColor());
-		connection.setLineWidth(getLineWidth());
-		connection.setArrowLength(getArrowLength());
-		connection.setArrowWidth(getArrowWidth());
-		connection.setBubbleSize(getBubbleSize());
-		connection.setScaleMode(getScaleMode());
+	public void copyProperties(VisualConnection src) {
+		setConnectionType(src.getConnectionType());
+		setColor(src.getColor());
+		setLineWidth(src.getLineWidth());
+		setArrowLength(src.getArrowLength());
+		setArrowWidth(src.getArrowWidth());
+		setBubbleSize(src.getBubbleSize());
+		setScaleMode(src.getScaleMode());
 	}
 
-	public void copyGeometry(VisualConnection connection) {
-		ConnectionGraphic g = getGraphic();
-		if (g instanceof Polyline) {
-			for (Node node: g.getChildren()) {
+	public void copyGeometry(VisualConnection src) {
+		ConnectionGraphic srcGraphics = src.getGraphic();
+		if (srcGraphics instanceof Polyline) {
+			for (Node node: srcGraphics.getChildren()) {
 				if (node instanceof ControlPoint) {
 					ControlPoint cp = (ControlPoint)node;
-					connection.addPolylinePoint(cp.getPosition(), true);
+					addPolylinePoint(cp.getPosition(), true);
 				}
 			}
-		} else if (g instanceof Bezier) {
-			BezierControlPoint[] p = ((Bezier)g).getControlPoints();
+		} else if (srcGraphics instanceof Bezier) {
+			BezierControlPoint[] p = ((Bezier)srcGraphics).getControlPoints();
 
 			BezierControlPoint cp1 = new BezierControlPoint();
 			cp1.setPosition(p[0].getPosition());
@@ -557,7 +555,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			BezierControlPoint cp2 = new BezierControlPoint();
 			cp2.setPosition(p[1].getPosition());
 
-			Bezier bezier = (Bezier)connection.getGraphic();
+			Bezier bezier = (Bezier)getGraphic();
 			bezier.initControlPoints(cp1, cp2);
 		}
 	}

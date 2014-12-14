@@ -372,4 +372,13 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return getInternalBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 
+	public void copyProperties(VisualComponent src) {
+		setPosition(src.getPosition());
+		setForegroundColor(src.getForegroundColor());
+		setFillColor(src.getFillColor());
+		setLabel(src.getLabel());
+		setLabelColor(src.getLabelColor());
+		setLabelPositioning(src.getLabelPositioning());
+	}
+
 }
