@@ -67,6 +67,7 @@ import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
@@ -1119,15 +1120,13 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 					if (event==event2) {
 						return new Decoration(){
-
 							@Override
 							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
+								return CommonSimulationSettings.getEnabledBackgroundColor();
 							}
-
 							@Override
 							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
+								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 						};
 

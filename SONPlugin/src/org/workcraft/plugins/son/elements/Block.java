@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -11,6 +12,7 @@ import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.util.Hierarchy;
 
+@VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
 public class Block extends PageNode implements TransitionNode{
 	private String label="";
 	private Color foregroundColor = SONSettings.getGroupForegroundColor();
@@ -71,7 +73,7 @@ public class Block extends PageNode implements TransitionNode{
 	@Override
 	public void setFillColor(Color color){
 		this.fillColor = color;
-		sendNotification(new PropertyChangedEvent(this, "fill color"));
+		sendNotification(new PropertyChangedEvent(this, "fillColor"));
 	}
 
 	@Override
