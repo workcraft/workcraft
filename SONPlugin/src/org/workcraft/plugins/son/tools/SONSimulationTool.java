@@ -1109,16 +1109,17 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 					if (branchTrace.canProgress()) {
 						Step step = branchTrace.get(branchTrace.getPosition());
-						if (step.contains(net.getNodeReference(event)))
+						if ((step.isReverse() == reverse) && (step.contains(net.getNodeReference(event))))
 							event2 = net.getNodeByReference(net.getNodeReference(event));
 					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
 						Step step = mainTrace.get(mainTrace.getPosition());
-						if (step.contains(net.getNodeReference(event)))
+						if ((step.isReverse() == reverse) && (step.contains(net.getNodeReference(event))))
 							event2 = net.getNodeByReference(net.getNodeReference(event));
 					}
 
 					if (event==event2) {
 						return new Decoration(){
+
 							@Override
 							public Color getColorisation() {
 								return CommonSimulationSettings.getEnabledForegroundColor();

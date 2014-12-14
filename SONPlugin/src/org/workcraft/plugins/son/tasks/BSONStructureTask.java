@@ -125,18 +125,18 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		infoMsg("phase checking tasks complete.");
 
 
-		//Abstract event relation task
-		infoMsg("Running abstract event relation task...");
-		Collection<ArrayList<TransitionNode>> absEventsTask = SyncAbstractEventsTask(groups);
-		if(!absEventsTask.isEmpty()){
-			for(ArrayList<TransitionNode> list : absEventsTask){
-				errMsg("Error : Invalid abstract event relation (events are not in synchronous relation)." + net.toString(list));
-				relationErrors.addAll(list);
-			}
-			errNumber = errNumber + absEventsTask.size();
-		}else{
-			infoMsg("Valid abstract event relation.");
-		}
+//		//Abstract event relation task
+//		infoMsg("Running abstract event relation task...");
+//		Collection<ArrayList<TransitionNode>> absEventsTask = SyncAbstractEventsTask(groups);
+//		if(!absEventsTask.isEmpty()){
+//			for(ArrayList<TransitionNode> list : absEventsTask){
+//				errMsg("Error : Invalid abstract event relation (events are not in synchronous relation)." + net.toString(list));
+//				relationErrors.addAll(list);
+//			}
+//			errNumber = errNumber + absEventsTask.size();
+//		}else{
+//			infoMsg("Valid abstract event relation.");
+//		}
 
 
 		//BSON cycle task
