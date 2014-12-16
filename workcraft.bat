@@ -10,7 +10,7 @@ IF "%JAVA_BIN%"=="" (
     IF "%JAVA_HOME%"=="" (
         set JAVA_BIN=javaw.exe
     ) ELSE (
-        IF EXIST %JAVA_HOME%\bin\javaw.exe (
+        IF EXIST "%JAVA_HOME%\bin\javaw.exe" (
             set JAVA_BIN=%JAVA_HOME%\bin\javaw.exe
         ) ELSE (
             set JAVA_BIN=%JAVA_HOME%\javaw.exe
@@ -70,7 +70,7 @@ set CLASSPATH=^
 ;
 
 :: Run Workcraft with the specific JAVA_BIN and CLASSPATH
-%JAVA_BIN% -classpath "%CLASSPATH%" org.workcraft.Console
+"%JAVA_BIN%" -classpath "%CLASSPATH%" org.workcraft.Console
 
 :: Restore the current working directory
 popd

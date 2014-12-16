@@ -17,6 +17,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
@@ -44,13 +45,13 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		}
 		cacheRenderedText(r);
 
-		Color colorisation = r.getDecoration().getColorisation();
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 		if ((bb != null) && (getParent() != null)) {
 			Graphics2D g = r.getGraphics();
-			g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+			Decoration d = r.getDecoration();
+			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 			g.fill(bb);
-			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 			g.setStroke(new BasicStroke(  strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
 					3.0f, new float[]{ strokeWidth , 2 * strokeWidth,}, 0f));
 			g.draw(bb);

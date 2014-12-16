@@ -123,7 +123,7 @@ public class ParallelSimDialog  extends JDialog{
 		DefaultListModel listModel = new DefaultListModel();
 
 		for(TransitionNode event : this.possibleFires){
-			EventItem item = new EventItem(net.getName(event)+"  "+event.getLabel(), event, possibleFires);
+			EventItem item = new EventItem(net.getNodeReference(event)+"  "+event.getLabel(), event, possibleFires);
 			listModel.addElement(item);
 		}
 
@@ -265,14 +265,14 @@ public class ParallelSimDialog  extends JDialog{
 	private String[][] createData(){
 		String dataVal[][] = new String[this.minFires.size()+1][2];
 
-		dataVal[0][0] = net.getName(clickedEvent)+ "(clicked)";
+		dataVal[0][0] = net.getNodeReference(clickedEvent)+ "(clicked)";
 		dataVal[0][1] = this.clickedEvent.getLabel();
 
-		if(!this.minFires.isEmpty()){
-			for(int i=1 ; i<this.minFires.size()+1; i++)
-				dataVal[i][0]=net.getName(this.minFires.get(i-1));
-			for(int i=1 ; i<this.minFires.size()+1; i++)
-				dataVal[i][1]=this.minFires.get(i-1).getLabel();
+		if(!minFires.isEmpty()){
+			for(int i=1 ; i < minFires.size()+1; i++)
+				dataVal[i][0]=net.getNodeReference(minFires.get(i-1));
+			for(int i=1 ; i < minFires.size()+1; i++)
+				dataVal[i][1] = minFires.get(i-1).getLabel();
 		}
 
 		return dataVal;
