@@ -261,17 +261,21 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 	}
 
-	public VisualPlace createPlace(String name, Container visualContainer) {
+	public VisualPlace createPlace(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
+		}
 
-		if (visualContainer==null) visualContainer = getRoot();
-		STGPlace p = stg.createPlace(name, getMathContainer(this, visualContainer));
+		STGPlace p = stg.createPlace(name, getMathContainer(this, container));
 		VisualPlace place = new VisualPlace(p);
-		visualContainer.add(place);
+		container.add(place);
 		return place;
 	}
 
 	public VisualDummyTransition createDummyTransition(String name, Container container) {
-		if (container==null) container = getRoot();
+		if (container == null) {
+			container = getRoot();
+		}
 
 		DummyTransition transition = stg.createDummyTransition(name, getMathContainer(this, container));
 		VisualDummyTransition visualTransition = new VisualDummyTransition(transition);

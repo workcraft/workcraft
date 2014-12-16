@@ -163,7 +163,7 @@ public class STGGenerator {
 	}
 
 	// store created containers in a separate map
-	private static HashMap<String, Node> createdContainers = null;
+	private static HashMap<String, Container> createdContainers = null;
 
 	public synchronized static VisualSTG generate(VisualCircuit circuit) {
 		try {

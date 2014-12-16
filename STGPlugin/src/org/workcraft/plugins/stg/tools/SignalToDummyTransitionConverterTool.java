@@ -57,8 +57,7 @@ public class SignalToDummyTransitionConverterTool implements Tool {
 			try {
 				VisualConnection oldPredConnection = (VisualConnection)stg.getConnection(pred, signalTransition);
 				VisualConnection newPredConnection = stg.connect(pred, dummyTransition);
-				newPredConnection.copyProperties(oldPredConnection);
-				newPredConnection.copyGeometry(oldPredConnection);
+				newPredConnection.copyStyle(oldPredConnection);
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}
@@ -67,8 +66,7 @@ public class SignalToDummyTransitionConverterTool implements Tool {
 			try {
 				VisualConnection oldSuccConnection = (VisualConnection)stg.getConnection(signalTransition, succ);
 				VisualConnection newSuccConnection = stg.connect(dummyTransition, succ);
-				newSuccConnection.copyProperties(oldSuccConnection);
-				newSuccConnection.copyGeometry(oldSuccConnection);
+				newSuccConnection.copyStyle(oldSuccConnection);
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}

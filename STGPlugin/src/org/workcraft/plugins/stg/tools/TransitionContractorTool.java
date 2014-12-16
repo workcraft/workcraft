@@ -50,7 +50,7 @@ public class TransitionContractorTool implements Tool {
 					try {
 						VisualConnection oldConnection = (VisualConnection)model.getConnection(pred, transition);
 						VisualConnection newConnection = model.connect(pred, succ);
-						newConnection.copyProperties(oldConnection);
+						newConnection.copyStyle(oldConnection);
 					} catch (InvalidConnectionException e) {
 						e.printStackTrace();
 					}

@@ -265,4 +265,12 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		transformChanged();
 	}
 
+	@Override
+	public void copyStyle(Stylable src) {
+		if (src instanceof VisualTransformableNode) {
+			VisualTransformableNode srcNode = (VisualTransformableNode)src;
+			setPosition(srcNode.getPosition());
+		}
+	}
+
 }

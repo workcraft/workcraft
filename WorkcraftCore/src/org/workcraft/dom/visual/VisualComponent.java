@@ -372,13 +372,19 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return getInternalBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
 
-	public void copyProperties(VisualComponent src) {
-		setPosition(src.getPosition());
-		setForegroundColor(src.getForegroundColor());
-		setFillColor(src.getFillColor());
-		setLabel(src.getLabel());
-		setLabelColor(src.getLabelColor());
-		setLabelPositioning(src.getLabelPositioning());
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualComponent) {
+			VisualComponent srcComponent = (VisualComponent)src;
+			setForegroundColor(srcComponent.getForegroundColor());
+			setFillColor(srcComponent.getFillColor());
+			setLabel(srcComponent.getLabel());
+			setLabelColor(srcComponent.getLabelColor());
+			setLabelPositioning(srcComponent.getLabelPositioning());
+			setNameColor(srcComponent.getNameColor());
+			setNamePositioning(srcComponent.getNamePositioning());
+		}
 	}
 
 }

@@ -41,7 +41,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
-public abstract class VisualNode implements Properties, Node, Touchable, ObservableState, Hidable {
+public abstract class VisualNode implements Properties, Node, Touchable, Stylable, ObservableState, Hidable {
 	protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 	private Node parent = null;
 	private boolean hidden = false;
@@ -119,6 +119,10 @@ public abstract class VisualNode implements Properties, Node, Touchable, Observa
 	@Override
 	public void removeObserver(StateObserver obs) {
 		observableStateImpl.removeObserver(obs);
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
 	}
 
 }

@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -33,7 +34,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Petri Net")
@@ -59,24 +59,24 @@ public class VisualPetriNet extends AbstractVisualModel {
 		return (PetriNet)getMathModel();
 	}
 
-	public VisualPlace createPlace(Place place) {
+	public VisualPlace createPlace(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
+		}
+		Place place = getPetriNet().createPlace(name, getMathContainer(this, container));
 		VisualPlace visualPlace = new VisualPlace(place);
-		add(visualPlace);
+		container.add(visualPlace);
 		return visualPlace;
 	}
 
-	public VisualPlace createPlace(String name) {
-		return createPlace(getPetriNet().createPlace(name));
-	}
-
-	public VisualTransition createTransition(Transition transition) {
+	public VisualTransition createTransition(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
+		}
+		Transition transition = getPetriNet().createTransition(name, getMathContainer(this, container));
 		VisualTransition visualTransition = new VisualTransition(transition);
 		add(visualTransition);
 		return visualTransition;
-	}
-
-	public VisualTransition createTransition(String name) {
-		return createTransition(getPetriNet().createTransition(name));
 	}
 
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {

@@ -257,7 +257,7 @@ public class VisualSON extends AbstractVisualModel {
 		return true;
 	}
 
-	public void groupSelection(){
+	public VisualGroup groupSelection(){
 		Collection<Node> selected = getGroupableSelection();
 
 		if (selected.size() > 0) {
@@ -323,6 +323,7 @@ public class VisualSON extends AbstractVisualModel {
 				select(group);
 			}
 		}
+		return null;
 	}
 
 /*	public void superGroupSelection(){

@@ -277,8 +277,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public VisualModel getVisualModel() {
-		return this;
+	public String getNodeMathReference(Node node) {
+		if (node instanceof VisualComponent) {
+			VisualComponent component = (VisualComponent)node;
+			node = component.getReferencedComponent();
+		}
+		return getMathModel().getNodeReference(node);
+	}
+
+	@Override
+	public String getMathName(Node node) {
+		if (node instanceof VisualComponent) {
+			VisualComponent component = (VisualComponent)node;
+			node = component.getReferencedComponent();
+		}
+		return getMathModel().getName(node);
 	}
 
 	public static Point2D centralizeComponents(Collection<Node> components) {
@@ -369,29 +382,33 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public void groupSelection() {
+	public VisualGroup groupSelection() {
+		VisualGroup group = null;
 		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
-			VisualGroup group = new VisualGroup();
+			group = new VisualGroup();
 			getCurrentLevel().add(group);
 			getCurrentLevel().reparent(nodes, group);
 			group.setPosition(centralizeComponents(nodes));
 			select(group);
 		}
+		return group;
 	}
 
 	@Override
-	public void groupPageSelection() {
+	public VisualPage groupPageSelection() {
+		VisualPage page = null;
 		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
 			PageNode pageNode = new PageNode();
 			getCurrentMathLevel().add(pageNode);
-			VisualPage page = new VisualPage(pageNode);
+			page = new VisualPage(pageNode);
 			getCurrentLevel().add(page);
 			reparent(page, this, getCurrentLevel(), nodes);
 			page.setPosition(centralizeComponents(nodes));
 			select(page);
 		}
+		return page;
 	}
 
 	@Override

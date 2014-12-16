@@ -40,6 +40,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -527,36 +528,38 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		this.scaleMode = scaleMode;
 	}
 
-	public void copyProperties(VisualConnection src) {
-		setConnectionType(src.getConnectionType());
-		setColor(src.getColor());
-		setLineWidth(src.getLineWidth());
-		setArrowLength(src.getArrowLength());
-		setArrowWidth(src.getArrowWidth());
-		setBubbleSize(src.getBubbleSize());
-		setScaleMode(src.getScaleMode());
-	}
+	@Override
+	public void copyStyle(Stylable src) {
+		if (src instanceof VisualConnection) {
+			VisualConnection srcConnection = (VisualConnection)src;
+			setConnectionType(srcConnection.getConnectionType());
+			setColor(srcConnection.getColor());
+			setLineWidth(srcConnection.getLineWidth());
+			setArrowLength(srcConnection.getArrowLength());
+			setArrowWidth(srcConnection.getArrowWidth());
+			setBubbleSize(srcConnection.getBubbleSize());
+			setScaleMode(srcConnection.getScaleMode());
 
-	public void copyGeometry(VisualConnection src) {
-		ConnectionGraphic srcGraphics = src.getGraphic();
-		if (srcGraphics instanceof Polyline) {
-			for (Node node: srcGraphics.getChildren()) {
-				if (node instanceof ControlPoint) {
-					ControlPoint cp = (ControlPoint)node;
-					addPolylinePoint(cp.getPosition(), true);
+			ConnectionGraphic srcGraphics = srcConnection.getGraphic();
+			if (srcGraphics instanceof Polyline) {
+				for (Node node: srcGraphics.getChildren()) {
+					if (node instanceof ControlPoint) {
+						ControlPoint cp = (ControlPoint)node;
+						addPolylinePoint(cp.getPosition(), true);
+					}
 				}
+			} else if (srcGraphics instanceof Bezier) {
+				BezierControlPoint[] p = ((Bezier)srcGraphics).getControlPoints();
+
+				BezierControlPoint cp1 = new BezierControlPoint();
+				cp1.setPosition(p[0].getPosition());
+
+				BezierControlPoint cp2 = new BezierControlPoint();
+				cp2.setPosition(p[1].getPosition());
+
+				Bezier bezier = (Bezier)getGraphic();
+				bezier.initControlPoints(cp1, cp2);
 			}
-		} else if (srcGraphics instanceof Bezier) {
-			BezierControlPoint[] p = ((Bezier)srcGraphics).getControlPoints();
-
-			BezierControlPoint cp1 = new BezierControlPoint();
-			cp1.setPosition(p[0].getPosition());
-
-			BezierControlPoint cp2 = new BezierControlPoint();
-			cp2.setPosition(p[1].getPosition());
-
-			Bezier bezier = (Bezier)getGraphic();
-			bezier.initControlPoints(cp1, cp2);
 		}
 	}
 

@@ -47,7 +47,8 @@ public class PetriNetGenerator {
 	private Map<VisualPlace, VisualPlace> convertPlaces() {
 		Map<VisualPlace, VisualPlace> result = new HashMap<VisualPlace, VisualPlace>();
 		for(VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
-			VisualPlace newPlace = petriNet.createPlace(policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace()));
+			String name = policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace());
+			VisualPlace newPlace = petriNet.createPlace(name, null);
 			newPlace.copyProperties(place);
 			result.put(place, newPlace);
 		}
@@ -59,8 +60,9 @@ public class PetriNetGenerator {
 		for(VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
 			Collection<Bundle> bundles = policyNet.getPolicyNet().getBundlesOfTransition(transition.getReferencedTransition());
 			if (bundles.size() == 0) {
-				VisualTransition newTransition = petriNet.createTransition(policyNet.getPolicyNet().getNodeReference(transition.getReferencedTransition()));
-				newTransition.copyProperties(transition);
+				String name = policyNet.getPolicyNet().getNodeReference(transition.getReferencedTransition());
+				VisualTransition newTransition = petriNet.createTransition(name, null);
+				newTransition.copyStyle(transition);
 				result.put(transition, newTransition);
 			}
 		}
@@ -83,7 +85,7 @@ public class PetriNetGenerator {
 				}
 				if (count > 0) {
 					String bundleName = policyNet.getPolicyNet().getNodeReference(bundle.getReferencedBundle());
-					VisualTransition newTransition = petriNet.createTransition(bundleName);
+					VisualTransition newTransition = petriNet.createTransition(bundleName, null);
 					newTransition.setFillColor(bundle.getColor());
 					newTransition.setPosition(new Point2D.Double(x / count, y / count));
 					result.put(bundle, newTransition);

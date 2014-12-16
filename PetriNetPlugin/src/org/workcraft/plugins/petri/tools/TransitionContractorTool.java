@@ -1,9 +1,6 @@
 package org.workcraft.plugins.petri.tools;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -109,9 +106,7 @@ public class TransitionContractorTool implements Tool {
 		String predName = model.getPetriNet().getName(predPlace.getReferencedPlace());
 		String succName = model.getPetriNet().getName(succPlace.getReferencedPlace());
 		String name = nameManagerer.getDerivedName(null, predName + succName);
-		VisualPlace place = model.createPlace(name);
-		Collection<Node> places = new ArrayList<Node>(Arrays.asList(place));
-		model.getRoot().reparent(places, vContainer);
+		VisualPlace place = model.createPlace(name, vContainer);
 
 		Point2D pos = Geometry.middle(predPlace.getPosition(), succPlace.getPosition());
 		place.setPosition(pos);

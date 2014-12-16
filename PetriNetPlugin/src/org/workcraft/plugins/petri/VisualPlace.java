@@ -189,7 +189,7 @@ public class VisualPlace extends VisualComponent {
 	}
 
 	public void copyProperties(VisualPlace src) {
-		super.copyProperties(src);
+		super.copyStyle(src);
 		getReferencedPlace().setCapacity(src.getReferencedPlace().getCapacity());
 		getReferencedPlace().setTokens(src.getReferencedPlace().getTokens());
 		setTokenColor(src.getTokenColor());

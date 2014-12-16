@@ -81,7 +81,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 	}
 
 	@Override
-	public void groupSelection(){
+	public VisualGroup groupSelection(){
 		ArrayList<Node> selected = new ArrayList<Node>();
 		ArrayList<Node> refSelected = new ArrayList<Node>();
 		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
@@ -94,10 +94,10 @@ public class VisualPolicyNet extends VisualPetriNet {
 				}
 			}
 		}
-
+		VisualLocality newLocality = null;
 		if (selected.size() > 0) {
 			VisualLocality curLocality = (VisualLocality)getCurrentLevel();
-			VisualLocality newLocality = new VisualLocality(getPolicyNet().createLocality(refSelected, curLocality.getLocality()));
+			newLocality = new VisualLocality(getPolicyNet().createLocality(refSelected, curLocality.getLocality()));
 			curLocality.add(newLocality);
 			curLocality.reparent(selected, newLocality);
 
@@ -110,6 +110,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 			curLocality.reparent(connectionsToLocality, newLocality);
 			select(newLocality);
 		}
+		return newLocality;
 	}
 
 	@Override

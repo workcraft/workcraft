@@ -75,16 +75,16 @@ public class STG extends AbstractMathModel implements STGModel {
 		return createPlace(null, null);
 	}
 
-	final public STGPlace createPlace(String name, Container cont) {
-		if (cont==null) {
-			cont=getRoot();
+	final public STGPlace createPlace(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
 		}
-		STGPlace newPlace = new STGPlace();
-		cont.add(newPlace);
+		STGPlace place = new STGPlace();
+		container.add(place);
 		if (name != null) {
-			setName(newPlace, name);
+			setName(place, name);
 		}
-		return newPlace;
+		return place;
 	}
 
 	final public Transition createTransition() {

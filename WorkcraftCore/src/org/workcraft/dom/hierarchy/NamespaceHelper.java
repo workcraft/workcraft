@@ -130,24 +130,27 @@ public class NamespaceHelper {
 		return getNameFromReference(tail);
 	}
 
-	public static HashMap<String, Node> copyPageStructure(VisualModel targetModel, Container targetContainer,
-			VisualModel sourceModel, Container sourceContainer, HashMap<String, Node> createdPageContainers) {
+	public static HashMap<String, Container> copyPageStructure(VisualModel targetModel, Container targetContainer,
+			VisualModel sourceModel, Container sourceContainer, HashMap<String, Container> createdPageContainers) {
 		if (createdPageContainers == null) {
-			createdPageContainers = new HashMap<String, Node>();
+			createdPageContainers = new HashMap<String, Container>();
 		}
 		createdPageContainers.put("", targetModel.getRoot());
 		HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
 		for (Node vn: sourceContainer.getChildren()) {
 			if (vn instanceof VisualPage) {
 				VisualPage vp = (VisualPage)vn;
-				String name = sourceModel.getMathModel().getName(vp.getReferencedComponent());
+				String name = sourceModel.getMathName(vp);
 
 				PageNode np2 = new PageNode();
 				VisualPage vp2 = new VisualPage(np2);
 				targetContainer.add(vp2);
+				vp2.copyStyle(vp);
+
 				AbstractVisualModel.getMathContainer(targetModel, targetContainer).add(np2);
 				targetModel.getMathModel().setName(np2, name);
-				createdPageContainers.put(targetModel.getMathModel().getNodeReference(np2), vp2);
+				String ref = targetModel.getNodeMathReference(vp2);
+				createdPageContainers.put(ref, vp2);
 
 				toProcess.put(vp, vp2);
 			}

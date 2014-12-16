@@ -32,7 +32,6 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.DefaultReferenceManager;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 
@@ -64,35 +63,33 @@ public abstract class AbstractModel implements Model {
 		this.mgr.attach(root);
 	}
 
-	public Model getMathModel() {
-		return this;
-	}
-
-	public VisualModel getVisualModel() {
-		return null;
-	}
-
-	public void add (Node node) {
+	@Override
+	public void add(Node node) {
 		root.add(node);
 	}
 
-	public void remove (Node node) {
-		if (node.getParent() instanceof Container)
+	@Override
+	public void remove(Node node) {
+		if (node.getParent() instanceof Container) {
 			((Container)node.getParent()).remove(node);
-		else
+		} else {
 			throw new RuntimeException ("Cannot remove a child node from a node that is not a Container (or null).");
+		}
 	}
 
-	public void remove (Collection<Node> nodes) {
+	@Override
+	public void remove(Collection<Node> nodes) {
 		LinkedList<Node> toRemove = new LinkedList<Node>(nodes);
 		for (Node node : toRemove) {
 			// some nodes may be removed as a result of removing other nodes in the list,
 			// e.g. hanging connections so need to check
-			if (node.getParent() != null)
+			if (node.getParent() != null) {
 				remove (node);
+			}
 		}
 	}
 
+	@Override
 	public String getDisplayName() {
 		DisplayName name = this.getClass().getAnnotation(DisplayName.class);
 		if (name == null) {
@@ -102,6 +99,7 @@ public abstract class AbstractModel implements Model {
 		}
 	}
 
+	@Override
 	public String getShortName() {
 		ShortName name = this.getClass().getAnnotation(ShortName.class);
 		if (name != null) {
@@ -121,26 +119,32 @@ public abstract class AbstractModel implements Model {
 		}
 	}
 
+	@Override
 	final public String getTitle() {
 		return title;
 	}
 
+	@Override
 	final public void setTitle(String title) {
 		this.title = title;
 	}
 
+	@Override
 	public final Container getRoot() {
 		return root;
 	}
 
+	@Override
 	public Set<Connection> getConnections(Node component) {
 		return nodeContextTracker.getConnections(component);
 	}
 
+	@Override
 	public Set<Node> getPostset(Node component) {
 		return nodeContextTracker.getPostset(component);
 	}
 
+	@Override
 	public Set<Node> getPreset(Node component) {
 		return nodeContextTracker.getPreset(component);
 	}
@@ -174,18 +178,20 @@ public abstract class AbstractModel implements Model {
 		return properties;
 	}
 
+	@Override
 	public ReferenceManager getReferenceManager() {
 		return mgr;
 	}
 
+	@Override
 	public String getName(Node node) {
-
-		if (mgr instanceof HierarchicalUniqueNameReferenceManager)
+		if (mgr instanceof HierarchicalUniqueNameReferenceManager) {
 			return ((HierarchicalUniqueNameReferenceManager)mgr).getName(node);
-
+		}
 		return mgr.getNodeReference(null, node);
 	}
 
+	@Override
 	public void setName(Node node, String name) {
 		if (mgr instanceof HierarchicalUniqueNameReferenceManager) {
 			((HierarchicalUniqueNameReferenceManager)mgr).setName(node, name);

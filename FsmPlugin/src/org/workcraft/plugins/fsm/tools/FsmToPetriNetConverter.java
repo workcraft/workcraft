@@ -15,7 +15,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Hierarchy;
 
-public class PetriNetGenerator {
+public class FsmToPetriNetConverter {
 	private final VisualFsm fsm;
 	private final VisualPetriNet petriNet;
 
@@ -23,7 +23,7 @@ public class PetriNetGenerator {
 	private final Map<VisualEvent, VisualTransition> eventToTransitionMap;
 	private final Map<String, String> refToSymbolMap;
 
-	public PetriNetGenerator(VisualFsm fsm) {
+	public FsmToPetriNetConverter(VisualFsm fsm) {
 		this.fsm = fsm;
 		this.petriNet = new VisualPetriNet(new PetriNet());
 		stateToPlaceMap = convertStates();
@@ -51,8 +51,9 @@ public class PetriNetGenerator {
 	private Map<VisualState, VisualPlace> convertStates() {
 		Map<VisualState, VisualPlace> result = new HashMap<VisualState, VisualPlace>();
 		for(VisualState state: Hierarchy.getDescendantsOfType(fsm.getRoot(), VisualState.class)) {
-			VisualPlace place = petriNet.createPlace(fsm.getMathModel().getNodeReference(state.getReferencedState()));
-			place.copyProperties(state);
+			String name = fsm.getMathModel().getNodeReference(state.getReferencedState());
+			VisualPlace place = petriNet.createPlace(name, null);
+			place.copyStyle(state);
 			place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
 			place.setTokenColor(state.getForegroundColor());
 			result.put(state, place);
@@ -63,7 +64,8 @@ public class PetriNetGenerator {
 	private Map<VisualEvent, VisualTransition> convertEvents() {
 		Map<VisualEvent, VisualTransition> result = new HashMap<VisualEvent, VisualTransition>();
 		for(VisualEvent event : Hierarchy.getDescendantsOfType(fsm.getRoot(), VisualEvent.class)) {
-			VisualTransition transition = petriNet.createTransition(fsm.getMathModel().getNodeReference(event.getReferencedConnection()));
+			String name = fsm.getMathModel().getNodeReference(event.getReferencedConnection());
+			VisualTransition transition = petriNet.createTransition(name, null);
 			transition.setPosition(event.getCenter());
 			transition.setForegroundColor(event.getColor());
 			transition.setLabel(event.getReferencedEvent().getSymbol());
