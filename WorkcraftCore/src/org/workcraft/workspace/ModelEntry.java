@@ -9,8 +9,7 @@ public class ModelEntry {
 	private final ModelDescriptor descriptor;
 	private Model model;
 
-	public ModelEntry(ModelDescriptor descriptor, Model model)
-	{
+	public ModelEntry(ModelDescriptor descriptor, Model model) {
 		this.descriptor = descriptor;
 		this.model = model;
 	}
@@ -28,20 +27,23 @@ public class ModelEntry {
 	}
 
 	public VisualModel getVisualModel() {
-		if (isVisual())
+		if (isVisual()) {
 			return (VisualModel) model;
-		else
+		} else {
 			return null;
+		}
 	}
 
 	public MathModel getMathModel() {
-		if (isVisual())
+		if (isVisual()) {
 			return getVisualModel().getMathModel();
-		else
+		} else {
 			return (MathModel)model;
+		}
 	}
 
 	public boolean isVisual() {
 		return model instanceof VisualModel;
 	}
+
 }

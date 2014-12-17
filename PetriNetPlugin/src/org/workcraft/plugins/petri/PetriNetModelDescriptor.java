@@ -4,8 +4,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
-public class PetriNetModelDescriptor implements ModelDescriptor
-{
+public class PetriNetModelDescriptor implements ModelDescriptor {
 	@Override
 	public String getDisplayName() {
 		return "Petri Net";
@@ -20,4 +19,5 @@ public class PetriNetModelDescriptor implements ModelDescriptor
 	public VisualModelDescriptor getVisualModelDescriptor() {
 		return new PetriNetVisualModelDescriptor();
 	}
+
 }

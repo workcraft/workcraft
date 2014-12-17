@@ -68,7 +68,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	private ObservableStateImpl observableState = new ObservableStateImpl();
 
 	public AbstractVisualModel() {
-		this (null, null);
+		this(null, null);
 	}
 
 	public AbstractVisualModel(MathModel mathModel) {

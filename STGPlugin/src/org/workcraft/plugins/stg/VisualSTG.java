@@ -61,6 +61,10 @@ import org.workcraft.util.Hierarchy;
 public class VisualSTG extends AbstractVisualModel {
 	private STG stg;
 
+	public VisualSTG() {
+		this(new STG(), null);
+	}
+
 	public VisualSTG(STG model) {
 		this(model, null);
 	}
