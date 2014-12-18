@@ -27,6 +27,7 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
@@ -59,21 +60,23 @@ public class VisualPetriNet extends AbstractVisualModel {
 		return (PetriNet)getMathModel();
 	}
 
-	public VisualPlace createPlace(String name, Container container) {
+	public VisualPlace createPlace(String mathName, Container container) {
 		if (container == null) {
 			container = getRoot();
 		}
-		Place place = getPetriNet().createPlace(name, getMathContainer(this, container));
+		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+		Place place = getPetriNet().createPlace(mathName, mathContainer);
 		VisualPlace visualPlace = new VisualPlace(place);
 		container.add(visualPlace);
 		return visualPlace;
 	}
 
-	public VisualTransition createTransition(String name, Container container) {
+	public VisualTransition createTransition(String mathName, Container container) {
 		if (container == null) {
 			container = getRoot();
 		}
-		Transition transition = getPetriNet().createTransition(name, getMathContainer(this, container));
+		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+		Transition transition = getPetriNet().createTransition(mathName, mathContainer);
 		VisualTransition visualTransition = new VisualTransition(transition);
 		add(visualTransition);
 		return visualTransition;

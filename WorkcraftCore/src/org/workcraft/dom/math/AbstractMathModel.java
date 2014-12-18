@@ -24,6 +24,7 @@ package org.workcraft.dom.math;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.workcraft.NodeFactory;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
@@ -32,6 +33,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
@@ -48,6 +50,24 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         super((root == null) ? new MathGroup() : root, man);
         new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
  	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends MathNode> T createNode(String name, Container container, Class<T> type) {
+		if (container == null) {
+			container = getRoot();
+		}
+		MathNode node = null;
+		try {
+			node = NodeFactory.createNode(type);
+			container.add(node);
+			if (name != null) {
+				setName(node, name);
+			}
+		} catch (NodeCreationException e) {
+			throw new RuntimeException ("Cannot create math node \"" + name + "\" of class \"" + type +"\"");
+		}
+		return (T)node;
+	}
 
 	private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager manager, Container targetContainer,
 			Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {

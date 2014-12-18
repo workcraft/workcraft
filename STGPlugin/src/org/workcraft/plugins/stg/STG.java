@@ -76,27 +76,11 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	final public STGPlace createPlace(String name, Container container) {
-		if (container == null) {
-			container = getRoot();
-		}
-		STGPlace place = new STGPlace();
-		container.add(place);
-		if (name != null) {
-			setName(place, name);
-		}
-		return place;
-	}
-
-	final public Transition createTransition() {
-		return createDummyTransition(null, null);
+		return createNode(name, container, STGPlace.class);
 	}
 
 	final public DummyTransition createDummyTransition(String name, Container container) {
-		if (container == null) {
-			container = getRoot();
-		}
-		DummyTransition transition = new DummyTransition();
-		container.add(transition);
+		DummyTransition transition = createNode(name, container, DummyTransition.class);
 		if (name == null) {
 			name = transition.getName();
 		}
@@ -109,11 +93,7 @@ public class STG extends AbstractMathModel implements STGModel {
 	}
 
 	final public SignalTransition createSignalTransition(String name, Container container) {
-		if (container == null) {
-			container = getRoot();
-		}
-		SignalTransition transition = new SignalTransition();
-		container.add(transition);
+		SignalTransition transition = createNode(name, container, SignalTransition.class);
 		if (name == null) {
 			name = transition.getName();
 		}

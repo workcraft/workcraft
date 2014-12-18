@@ -18,7 +18,9 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
+import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
@@ -49,8 +51,10 @@ public class SimulationTool extends PetriNetSimulationTool {
 
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
-		generator = new FsmToPetriNetConverter((VisualFsm)model);
-		return generator.getPetriNet();
+		final VisualFsm fsm = (VisualFsm)model;
+		final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
+		generator = new FsmToPetriNetConverter(fsm, pn);
+		return generator.getDstModel();
 	}
 
 	@Override

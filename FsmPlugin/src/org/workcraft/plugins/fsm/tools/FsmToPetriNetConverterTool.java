@@ -5,6 +5,7 @@ import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.PetriNetModelDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.workspace.ModelEntry;
@@ -31,13 +32,13 @@ public class FsmToPetriNetConverterTool implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualFsm fsm = (VisualFsm)we.getModelEntry().getVisualModel();
-		final FsmToPetriNetConverter converter = new FsmToPetriNetConverter(fsm);
+		final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
+		final FsmToPetriNetConverter converter = new FsmToPetriNetConverter(fsm, pn);
 		final Framework framework = Framework.getInstance();
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
-		final VisualPetriNet pn = converter.getPetriNet();
-		final ModelEntry me = new ModelEntry(new PetriNetModelDescriptor(), pn);
+		final ModelEntry me = new ModelEntry(new PetriNetModelDescriptor(), converter.getDstModel());
 		workspace.add(directory, desiredName, me, false, true);
 	}
 }

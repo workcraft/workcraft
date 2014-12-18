@@ -38,6 +38,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
@@ -56,10 +57,12 @@ public class VisualModelTests {
 		}
 
 		@Override
-		public void reparent(Container targetContainer, Model sourceModel,
-				Container sourceRoot, Collection<Node> sourceChildren) {
-			// TODO Auto-generated method stub
+		public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+		}
 
+		@Override
+		public <T extends MathNode> T createNode(String name, Container container, Class<T> type) {
+			return null;
 		}
 	}
 

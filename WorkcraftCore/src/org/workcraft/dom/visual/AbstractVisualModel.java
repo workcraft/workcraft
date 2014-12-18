@@ -40,6 +40,7 @@ import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
@@ -127,6 +128,24 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			getRoot().add(vc);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends VisualComponent> T createComponent(MathNode mathNode, Container container, Class<T> type) {
+		if (container == null) {
+			container = getRoot();
+		}
+		VisualComponent component = null;
+		try {
+			component = NodeFactory.createVisualComponent(mathNode);
+			container.add(component);
+		} catch (NodeCreationException e) {
+			String mathName = getMathName(mathNode);
+			throw new RuntimeException ("Cannot create visual component for math node \"" + mathName + "\" of class \"" + type +"\"");
+		}
+		return (T)component;
+	}
+
 
 	public void draw (Graphics2D g, Decorator decorator) {
 		DrawMan.draw(this, g, decorator, getRoot());
@@ -512,36 +531,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return ret;
 	}
 
-	public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {
-		MathModel mmodel = visualModel.getMathModel();
-
-		// find the closest container that has a referenced math node
-		VisualComponent vis = null;
-		if (visualContainer instanceof VisualComponent) {
-			vis = (VisualComponent)visualContainer;
-		} else {
-			vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
-		}
-
-		// get appropriate math container, it will be the target container for the math model
-		Container mathTargetContainer;
-		mathTargetContainer = mmodel.getRoot();
-		if (vis!=null) {
-			mathTargetContainer = (Container)vis.getReferencedComponent();
-		}
-		return mathTargetContainer;
-	}
-
 	@Override
 	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
-		if (srcModel == null) srcModel = this;
-		if (srcChildren==null) srcChildren = srcRoot.getChildren();
-		Container srcMathContainer = getMathContainer((VisualModel)srcModel, srcRoot);
+		if (srcModel == null) {
+			srcModel = this;
+		}
+		if (srcChildren == null) {
+			srcChildren = srcRoot.getChildren();
+		}
+
+		Container srcMathContainer = NamespaceHelper.getMathContainer((VisualModel)srcModel, srcRoot);
 		Collection<Node> srcMathChildren = getMathChildren(srcChildren);
 		MathModel srcMathModel = ((VisualModel)srcModel).getMathModel();
 
 		MathModel dstMathMmodel = getMathModel();
-		Container dstMathContainer = getMathContainer(this, dstContainer);
+		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
 		Collection<Node> dstChildren = new HashSet<Node>();

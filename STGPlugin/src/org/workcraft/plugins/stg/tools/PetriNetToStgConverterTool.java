@@ -5,6 +5,7 @@ import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.workspace.ModelEntry;
@@ -31,13 +32,13 @@ public class PetriNetToStgConverterTool implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualPetriNet pn = (VisualPetriNet)we.getModelEntry().getVisualModel();
-		final PetriNetToStgConverter converter = new PetriNetToStgConverter(pn);
-		final VisualSTG stg = converter.getStg();
+		final VisualSTG stg = new VisualSTG(new STG());
+		final PetriNetToStgConverter converter = new PetriNetToStgConverter(pn, stg);
 		final Framework framework = Framework.getInstance();
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String name = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), stg);
+		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), converter.getDstModel());
 		workspace.add(directory, name, me, false, true);
 	}
 

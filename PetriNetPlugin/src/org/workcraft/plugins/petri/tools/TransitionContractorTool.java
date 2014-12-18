@@ -8,6 +8,7 @@ import org.workcraft.Tool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
@@ -98,7 +99,7 @@ public class TransitionContractorTool implements Tool {
 
 	private void replicatePlace(VisualPetriNet model, VisualPlace predPlace, VisualPlace succPlace) {
 		Container vContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
-		Container mContainer = VisualPetriNet.getMathContainer(model, vContainer);
+		Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
 
 		// Create replica place and put it in the common container
 		HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)model.getPetriNet().getReferenceManager();

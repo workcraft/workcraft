@@ -8,10 +8,12 @@ import java.util.regex.Pattern;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
 public class NamespaceHelper {
@@ -130,11 +132,35 @@ public class NamespaceHelper {
 		return getNameFromReference(tail);
 	}
 
+	public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {
+		if (visualContainer == null) {
+			visualContainer = visualModel.getRoot();
+		}
+
+		// Find the closest container that has a referenced math node.
+		VisualComponent vis = null;
+		if (visualContainer instanceof VisualComponent) {
+			vis = (VisualComponent)visualContainer;
+		} else {
+			vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+		}
+
+		// Get appropriate math container, it will be the target container for the math model.
+		MathModel mmodel = visualModel.getMathModel();
+		Container mathTargetContainer = mmodel.getRoot();
+		if (vis != null) {
+			mathTargetContainer = (Container)vis.getReferencedComponent();
+		}
+		return mathTargetContainer;
+	}
+
 	public static HashMap<String, Container> copyPageStructure(VisualModel targetModel, Container targetContainer,
 			VisualModel sourceModel, Container sourceContainer, HashMap<String, Container> createdPageContainers) {
+
 		if (createdPageContainers == null) {
 			createdPageContainers = new HashMap<String, Container>();
 		}
+
 		createdPageContainers.put("", targetModel.getRoot());
 		HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
 		for (Node vn: sourceContainer.getChildren()) {
@@ -147,7 +173,7 @@ public class NamespaceHelper {
 				targetContainer.add(vp2);
 				vp2.copyStyle(vp);
 
-				AbstractVisualModel.getMathContainer(targetModel, targetContainer).add(np2);
+				NamespaceHelper.getMathContainer(targetModel, targetContainer).add(np2);
 				targetModel.getMathModel().setName(np2, name);
 				String ref = targetModel.getNodeMathReference(vp2);
 				createdPageContainers.put(ref, vp2);

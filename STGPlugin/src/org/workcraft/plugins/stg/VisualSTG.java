@@ -33,6 +33,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -265,43 +266,80 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 	}
 
-	public VisualPlace createPlace(String name, Container container) {
-		if (container == null) {
-			container = getRoot();
+	public VisualDummyTransition convertSignalToDummyTransition(VisualSignalTransition signalTransition) {
+		Container container = (Container)signalTransition.getParent();
+		VisualDummyTransition dummyTransition = createDummyTransition(null, container);
+		dummyTransition.copyStyle(signalTransition);
+		dummyTransition.setLabel(signalTransition.getName());
+		for (Node pred: getPreset(signalTransition)) {
+			try {
+				VisualConnection oldPredConnection = (VisualConnection)getConnection(pred, signalTransition);
+				VisualConnection newPredConnection = connect(pred, dummyTransition);
+				newPredConnection.copyStyle(oldPredConnection);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
 		}
-
-		STGPlace p = stg.createPlace(name, getMathContainer(this, container));
-		VisualPlace place = new VisualPlace(p);
-		container.add(place);
-		return place;
+		for (Node succ: getPostset(signalTransition)) {
+			try {
+				VisualConnection oldSuccConnection = (VisualConnection)getConnection(signalTransition, succ);
+				VisualConnection newSuccConnection = connect(dummyTransition, succ);
+				newSuccConnection.copyStyle(oldSuccConnection);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
+		}
+		remove(signalTransition);
+		return dummyTransition;
 	}
 
-	public VisualDummyTransition createDummyTransition(String name, Container container) {
-		if (container == null) {
-			container = getRoot();
+	public VisualSignalTransition convertDummyToSignalTransition(VisualTransition dummyTransition) {
+		Container container = (Container)dummyTransition.getParent();
+		VisualSignalTransition signalTransition = createSignalTransition(null, Type.INTERNAL, Direction.TOGGLE, container);
+		signalTransition.copyStyle(dummyTransition);
+		for (Node pred: getPreset(dummyTransition)) {
+			try {
+				VisualConnection oldPredConnection = (VisualConnection)getConnection(pred, dummyTransition);
+				VisualConnection newPredConnection = connect(pred, signalTransition);
+				newPredConnection.copyStyle(oldPredConnection);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
 		}
+		for (Node succ: getPostset(dummyTransition)) {
+			try {
+				VisualConnection oldSuccConnection = (VisualConnection)getConnection(dummyTransition, succ);
+				VisualConnection newSuccConnection = connect(signalTransition, succ);
+				newSuccConnection.copyStyle(oldSuccConnection);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
+		}
+		remove(dummyTransition);
+		return signalTransition;
+	}
 
-		DummyTransition transition = stg.createDummyTransition(name, getMathContainer(this, container));
-		VisualDummyTransition visualTransition = new VisualDummyTransition(transition);
+	public VisualPlace createPlace(String mathName, Container container) {
+		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+		STGPlace mathPlace = stg.createPlace(mathName, mathContainer);
+		return createComponent(mathPlace, container, VisualPlace.class);
+	}
 
-		container.add(visualTransition);
-		return visualTransition;
+	public VisualDummyTransition createDummyTransition(String mathName, Container container) {
+		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+		DummyTransition mathTransition = stg.createDummyTransition(mathName, mathContainer);
+		return createComponent(mathTransition, container, VisualDummyTransition.class);
 	}
 
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
-		if (container==null) container = getRoot();
-
-		String name = null;
+		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+		String mathName = null;
 		if ((signalName != null) && (direction != null)) {
-			name = signalName + direction.toString();
+			mathName = signalName + direction.toString();
 		}
-		SignalTransition transition = stg.createSignalTransition(name, getMathContainer(this, container));
-		transition.setSignalType(type);
-		VisualSignalTransition visualTransition = new VisualSignalTransition(transition);
-
-		container.add(visualTransition);
-		return visualTransition;
+		SignalTransition mathTransition = stg.createSignalTransition(mathName, mathContainer);
+		return createComponent(mathTransition, container, VisualSignalTransition.class);
 	}
 
 	public Collection<VisualPlace> getVisualPlaces() {
@@ -338,7 +376,7 @@ public class VisualSTG extends AbstractVisualModel {
 		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
 			for (Type type : Type.values()) {
-				Container container = getMathContainer(this, getCurrentLevel());
+				Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
 				for (final String signalName : stg.getSignalNames(type, container)) {
 					if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
 					properties.add(new SignalNamePropertyDescriptor(stg, signalName, container));
