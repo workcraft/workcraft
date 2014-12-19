@@ -163,14 +163,15 @@ public class STGGenerator {
 	}
 
 	// store created containers in a separate map
-	private static HashMap<String, Node> createdContainers = null;
+	private static HashMap<String, Container> createdContainers = null;
 
 	public synchronized static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
 
 			// first, create the same page structure
-			createdContainers = NamespaceHelper.copyPageStructure(stg, stg.getRoot(), circuit, circuit.getRoot(), null);
+			NamespaceHelper.copyPageStructure(circuit, stg);
+			createdContainers = NamespaceHelper.getRefToPageMapping(stg);
 
 			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();

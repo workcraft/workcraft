@@ -40,6 +40,7 @@ import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
@@ -68,7 +69,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	private ObservableStateImpl observableState = new ObservableStateImpl();
 
 	public AbstractVisualModel() {
-		this (null, null);
+		this(null, null);
 	}
 
 	public AbstractVisualModel(MathModel mathModel) {
@@ -127,6 +128,24 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			getRoot().add(vc);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends VisualComponent> T createComponent(MathNode mathNode, Container container, Class<T> type) {
+		if (container == null) {
+			container = getRoot();
+		}
+		VisualComponent component = null;
+		try {
+			component = NodeFactory.createVisualComponent(mathNode);
+			container.add(component);
+		} catch (NodeCreationException e) {
+			String mathName = getMathName(mathNode);
+			throw new RuntimeException ("Cannot create visual component for math node \"" + mathName + "\" of class \"" + type +"\"");
+		}
+		return (T)component;
+	}
+
 
 	public void draw (Graphics2D g, Decorator decorator) {
 		DrawMan.draw(this, g, decorator, getRoot());
@@ -277,8 +296,30 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public VisualModel getVisualModel() {
-		return this;
+	public String getNodeMathReference(Node node) {
+		if (node instanceof VisualComponent) {
+			VisualComponent component = (VisualComponent)node;
+			node = component.getReferencedComponent();
+		}
+		return getMathModel().getNodeReference(node);
+	}
+
+	@Override
+	public String getMathName(Node node) {
+		if (node instanceof VisualComponent) {
+			VisualComponent component = (VisualComponent)node;
+			node = component.getReferencedComponent();
+		}
+		return getMathModel().getName(node);
+	}
+
+	@Override
+	public void setMathName(Node node, String name) {
+		if (node instanceof VisualComponent) {
+			VisualComponent component = (VisualComponent)node;
+			node = component.getReferencedComponent();
+		}
+		getMathModel().setName(node, name);
 	}
 
 	public static Point2D centralizeComponents(Collection<Node> components) {
@@ -369,29 +410,33 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public void groupSelection() {
+	public VisualGroup groupSelection() {
+		VisualGroup group = null;
 		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
-			VisualGroup group = new VisualGroup();
+			group = new VisualGroup();
 			getCurrentLevel().add(group);
 			getCurrentLevel().reparent(nodes, group);
 			group.setPosition(centralizeComponents(nodes));
 			select(group);
 		}
+		return group;
 	}
 
 	@Override
-	public void groupPageSelection() {
+	public VisualPage groupPageSelection() {
+		VisualPage page = null;
 		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
 		if (nodes.size() >= 1) {
 			PageNode pageNode = new PageNode();
 			getCurrentMathLevel().add(pageNode);
-			VisualPage page = new VisualPage(pageNode);
+			page = new VisualPage(pageNode);
 			getCurrentLevel().add(page);
 			reparent(page, this, getCurrentLevel(), nodes);
 			page.setPosition(centralizeComponents(nodes));
 			select(page);
 		}
+		return page;
 	}
 
 	@Override
@@ -495,36 +540,21 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return ret;
 	}
 
-	public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {
-		MathModel mmodel = visualModel.getMathModel();
-
-		// find the closest container that has a referenced math node
-		VisualComponent vis = null;
-		if (visualContainer instanceof VisualComponent) {
-			vis = (VisualComponent)visualContainer;
-		} else {
-			vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
-		}
-
-		// get appropriate math container, it will be the target container for the math model
-		Container mathTargetContainer;
-		mathTargetContainer = mmodel.getRoot();
-		if (vis!=null) {
-			mathTargetContainer = (Container)vis.getReferencedComponent();
-		}
-		return mathTargetContainer;
-	}
-
 	@Override
 	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
-		if (srcModel == null) srcModel = this;
-		if (srcChildren==null) srcChildren = srcRoot.getChildren();
-		Container srcMathContainer = getMathContainer((VisualModel)srcModel, srcRoot);
+		if (srcModel == null) {
+			srcModel = this;
+		}
+		if (srcChildren == null) {
+			srcChildren = srcRoot.getChildren();
+		}
+
+		Container srcMathContainer = NamespaceHelper.getMathContainer((VisualModel)srcModel, srcRoot);
 		Collection<Node> srcMathChildren = getMathChildren(srcChildren);
 		MathModel srcMathModel = ((VisualModel)srcModel).getMathModel();
 
 		MathModel dstMathMmodel = getMathModel();
-		Container dstMathContainer = getMathContainer(this, dstContainer);
+		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
 		Collection<Node> dstChildren = new HashSet<Node>();

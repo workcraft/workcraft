@@ -38,12 +38,11 @@ import org.workcraft.gui.Coloriser;
 public class ControlPoint extends VisualTransformableNode implements Drawable, Touchable {
 	private double size = 0.2;
 	private Color fillColor = Color.BLUE;
+	private Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
 
 	public ControlPoint() {
 		setHidden(true);
 	}
-
-	Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		return new Rectangle2D.Double(-size, -size, size*2, size*2);

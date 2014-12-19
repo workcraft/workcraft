@@ -17,8 +17,10 @@ import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 import org.workcraft.plugins.stg.tools.DummyToSignalTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
 import org.workcraft.plugins.stg.tools.MakePlacesImplicitTool;
+import org.workcraft.plugins.stg.tools.PetriNetToStgConverterTool;
 import org.workcraft.plugins.stg.tools.SignalMirrorTool;
 import org.workcraft.plugins.stg.tools.SignalToDummyTransitionConverterTool;
+import org.workcraft.plugins.stg.tools.StgToPetriNetConverterTool;
 import org.workcraft.plugins.stg.tools.TransitionContractorTool;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -80,6 +82,20 @@ public class STGModule implements Module {
 			@Override
 			public Tool create() {
 				return new TransitionContractorTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new PetriNetToStgConverterTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new StgToPetriNetConverterTool();
 			}
 		});
 	}

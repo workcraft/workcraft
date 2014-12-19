@@ -43,7 +43,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.AbstractVisualModel;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
@@ -297,7 +297,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
 			LinkedList<VisualContact> sameSideContacts = getOrderedContacts(vc.getDirection(), true);
-			Container container = AbstractVisualModel.getMathContainer(vcircuit, this);
+			Container container = NamespaceHelper.getMathContainer(vcircuit, this);
 			container.add(vc.getReferencedComponent());
 			add(vc);
 

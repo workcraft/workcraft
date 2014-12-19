@@ -36,6 +36,7 @@ import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -160,7 +161,7 @@ public class VisualCircuit extends AbstractVisualModel {
 					return ((node instanceof VisualGroup) || (node instanceof VisualPage));
 				}
 			});
-			Container mContainer = getMathContainer(this, vContainer);
+			Container mContainer = NamespaceHelper.getMathContainer(this, vContainer);
 
 			MathConnection mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
 			vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
@@ -207,7 +208,7 @@ public class VisualCircuit extends AbstractVisualModel {
 			VisualFunctionComponent component = (VisualFunctionComponent)container;
 			component.addContact(this, vc);
 		} else {
-			Container mathContainer = AbstractVisualModel.getMathContainer(this, getRoot());
+			Container mathContainer = NamespaceHelper.getMathContainer(this, getRoot());
 			mathContainer.add(vc.getReferencedComponent());
 			add(vc);
 		}

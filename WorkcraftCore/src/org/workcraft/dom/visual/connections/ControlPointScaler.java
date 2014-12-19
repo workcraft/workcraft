@@ -35,8 +35,9 @@ public class ControlPointScaler {
 	}
 
 	public void scale(Point2D newC1, Point2D newC2, Collection<ControlPoint> controlPoints, VisualConnection.ScaleMode mode) {
-		if (mode == VisualConnection.ScaleMode.NONE)
+		if (mode == VisualConnection.ScaleMode.NONE) {
 			return;
+		}
 
 		if (mode == VisualConnection.ScaleMode.LOCK_RELATIVELY) {
 			Point2D dC1 = subtract(newC1, oldC1);
@@ -66,9 +67,7 @@ public class ControlPointScaler {
 			v0.setLocation(0.001, 0);
 		}
 		Point2D up0 = getUpVector(mode, v0);
-
 		Point2D v = subtract(newC2, newC1);
-
 		if (v.distanceSq(0, 0) < THRESHOLD) {
 			v.setLocation(0.001, 0);
 		}

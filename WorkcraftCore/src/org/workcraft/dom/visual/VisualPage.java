@@ -122,27 +122,20 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	public VisualPage(MathNode refNode) {
 		super(refNode);
-
 		addPropertyDeclarations();
 	}
 
 	public List<Node> unGroup(ReferenceManager mathManager) {
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
-
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
-
 		groupImpl.reparent(nodesToReparent, newParent);
-
-		for (Node node : nodesToReparent)
+		for (Node node : nodesToReparent) {
 			TransformHelper.applyTransform(node, localToParentTransform);
-
+		}
 		PageNode page = (PageNode)getReferencedComponent();
-
 		page.unGroup(mathManager);
-
 		return nodesToReparent;
 	}
-
 
 	@Override
 	public void add(Node node) {
@@ -169,7 +162,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		groupImpl.remove(node);
 	}
 
-
 	@Override
 	public void removeObserver(HierarchyObserver obs) {
 		groupImpl.removeObserver(obs);
@@ -185,24 +177,20 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		groupImpl.setParent(parent);
 	}
 
-
 	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 	}
-
 
 	@Override
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
 
-
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
-
 
 	@Override
 	public void reparent(Collection<Node> nodes) {
@@ -262,4 +250,5 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 			drawLabelInLocalSpace(r);
 		}
 	}
+
 }

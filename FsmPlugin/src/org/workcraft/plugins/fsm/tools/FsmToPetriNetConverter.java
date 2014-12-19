@@ -6,34 +6,30 @@ import java.util.Map.Entry;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Hierarchy;
 
-public class PetriNetGenerator {
-	private final VisualFsm fsm;
-	private final VisualPetriNet petriNet;
+public class FsmToPetriNetConverter {
+	private final VisualFsm srcModel;
+	private final VisualPetriNet dstModel;
 
 	private final Map<VisualState, VisualPlace> stateToPlaceMap;
 	private final Map<VisualEvent, VisualTransition> eventToTransitionMap;
 	private final Map<String, String> refToSymbolMap;
 
-	public PetriNetGenerator(VisualFsm fsm) {
-		this.fsm = fsm;
+	public FsmToPetriNetConverter(VisualFsm srcModel, VisualPetriNet dstModel) {
+		this.srcModel = srcModel;
+		this.dstModel = dstModel;
+		stateToPlaceMap = convertStates();
+		eventToTransitionMap = convertEvents();
+		refToSymbolMap = cacheLabels();
 		try {
-			this.petriNet = new VisualPetriNet(new PetriNet());
-			stateToPlaceMap = convertStates();
-			eventToTransitionMap = convertEvents();
-			refToSymbolMap = cacheLabels();
 			connectEvents();
-		} catch (VisualModelInstantiationException e) {
-			throw new RuntimeException(e);
 		} catch ( InvalidConnectionException e) {
 			throw new RuntimeException(e);
 		}
@@ -44,7 +40,7 @@ public class PetriNetGenerator {
 		for (Entry<VisualEvent, VisualTransition> entry: eventToTransitionMap.entrySet()) {
 			VisualEvent event = entry.getKey();
 			VisualTransition transition = entry.getValue();
-			String ref = petriNet.getPetriNet().getNodeReference(transition.getReferencedTransition());
+			String ref = dstModel.getPetriNet().getNodeReference(transition.getReferencedTransition());
 			String symbol = event.getReferencedEvent().getSymbol();
 			result.put(ref, symbol);
 		}
@@ -53,16 +49,12 @@ public class PetriNetGenerator {
 
 	private Map<VisualState, VisualPlace> convertStates() {
 		Map<VisualState, VisualPlace> result = new HashMap<VisualState, VisualPlace>();
-		for(VisualState state: Hierarchy.getDescendantsOfType(fsm.getRoot(), VisualState.class)) {
-			VisualPlace place = petriNet.createPlace(fsm.getMathModel().getNodeReference(state.getReferencedState()));
-			place.setPosition(state.getPosition());
+		for(VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
+			String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
+			VisualPlace place = dstModel.createPlace(name, null);
+			place.copyStyle(state);
 			place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
-			place.setForegroundColor(state.getForegroundColor());
-			place.setFillColor(state.getFillColor());
 			place.setTokenColor(state.getForegroundColor());
-			place.setLabel(state.getLabel());
-			place.setLabelColor(state.getLabelColor());
-			place.setLabelPositioning(state.getLabelPositioning());
 			result.put(state, place);
 		}
 		return result;
@@ -70,8 +62,9 @@ public class PetriNetGenerator {
 
 	private Map<VisualEvent, VisualTransition> convertEvents() {
 		Map<VisualEvent, VisualTransition> result = new HashMap<VisualEvent, VisualTransition>();
-		for(VisualEvent event : Hierarchy.getDescendantsOfType(fsm.getRoot(), VisualEvent.class)) {
-			VisualTransition transition = petriNet.createTransition(fsm.getMathModel().getNodeReference(event.getReferencedConnection()));
+		for(VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
+			String name = srcModel.getMathModel().getNodeReference(event.getReferencedConnection());
+			VisualTransition transition = dstModel.createTransition(name, null);
 			transition.setPosition(event.getCenter());
 			transition.setForegroundColor(event.getColor());
 			transition.setLabel(event.getReferencedEvent().getSymbol());
@@ -82,33 +75,33 @@ public class PetriNetGenerator {
 	}
 
 	private void connectEvents() throws InvalidConnectionException {
-		for(VisualEvent event: Hierarchy.getDescendantsOfType(fsm.getRoot(), VisualEvent.class)) {
+		for(VisualEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
 			VisualTransition transition = eventToTransitionMap.get(event);
 			if (transition != null) {
 				Node first = event.getFirst();
 				if (first instanceof VisualState) {
 					VisualPlace inPlace = stateToPlaceMap.get(first);
 					if (inPlace != null) {
-						petriNet.connect(inPlace, transition);
+						dstModel.connect(inPlace, transition);
 					}
 				}
 				Node second = event.getSecond();
 				if (second instanceof VisualState) {
 					VisualPlace outPlace = stateToPlaceMap.get(second);
 					if (outPlace != null) {
-						petriNet.connect(transition, outPlace);
+						dstModel.connect(transition, outPlace);
 					}
 				}
 			}
 		}
 	}
 
-	public VisualFsm getFsm() {
-		return fsm;
+	public VisualFsm getSrcModel() {
+		return srcModel;
 	}
 
-	public VisualPetriNet getPetriNet() {
-		return petriNet;
+	public VisualPetriNet getDstModel() {
+		return dstModel;
 	}
 
 	public VisualPlace getRelatedPlace(VisualState state) {

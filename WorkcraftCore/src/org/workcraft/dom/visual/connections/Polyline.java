@@ -27,6 +27,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -242,6 +243,19 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return bb;
 	}
 
+	public void resetControlPoints() {
+		ArrayList<Node> children = new ArrayList<Node>(groupImpl.getChildren());
+		for (Node node: children) {
+			groupImpl.remove(node);
+		}
+	}
+
+	public ControlPoint insertControlPointInSegment(ControlPoint cp, int segmentIndex) {
+		groupImpl.add(segmentIndex, cp);
+		controlPointsChanged();
+		return cp;
+	}
+
 	public ControlPoint insertControlPointInSegment(Point2D location, int segmentIndex) {
 		ControlPoint cp = new ControlPoint();
 		cp.setPosition(location);
@@ -250,8 +264,12 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		return cp;
 	}
 
-	public void addControlPoint(Point2D location) {
-		insertControlPointInSegment(location, getSegmentCount() - 1);
+	public ControlPoint addControlPoint(ControlPoint cp) {
+		return insertControlPointInSegment(cp, getSegmentCount() - 1);
+	}
+
+	public ControlPoint addControlPoint(Point2D location) {
+		return insertControlPointInSegment(location, getSegmentCount() - 1);
 	}
 
 	@Override
@@ -387,9 +405,9 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public void componentsTransformChanged() {
-		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
-				.getSecondCenter(), Hierarchy.filterNodesByType(getChildren(),
-				ControlPoint.class), connectionInfo.getScaleMode());
+		Collection<ControlPoint> controlPoints = Hierarchy.filterNodesByType(getChildren(), ControlPoint.class);
+		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(),
+				controlPoints, connectionInfo.getScaleMode());
 
 		scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
 		invalidate();

@@ -267,4 +267,13 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		return new Point2D.Double(0, 0);
 	}
 
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualGroup) {
+			VisualGroup srcGroup = (VisualGroup)src;
+			setIsCollapsed(srcGroup.getIsCollapsed());
+		}
+	}
+
 }

@@ -118,6 +118,10 @@ public class Hierarchy {
 		return result;
 	}
 
+	public static Node getCommonParent(Collection<Node> nodes) {
+		return getCommonParent(nodes.toArray(new Node[nodes.size()]));
+	}
+
 	public static Node getRoot(Node node) {
 		Node root = null;
 		Node parent = node;
@@ -141,9 +145,13 @@ public class Hierarchy {
 		return true;
 	}
 
-	public static Container getNearestContainer (Node... node) {
+	public static Container getNearestContainer(Node... node) {
 		Node parent = getCommonParent(node);
 		return getNearestAncestor (parent, Container.class);
+	}
+
+	public static Container getNearestContainer(Collection<Node> nodes) {
+		return getNearestContainer(nodes.toArray(new Node[nodes.size()]));
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -177,39 +185,28 @@ public class Hierarchy {
 
 	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type) {
 		ArrayList<T> result = new ArrayList<T>();
-		result.addAll(getChildrenOfType(node, type));
 		for(Node n : node.getChildren()) {
 			result.addAll(getDescendantsOfType(n, type));
 		}
+		result.addAll(getChildrenOfType(node, type));
 		return result;
 	}
 
 	public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type, Func<T, Boolean> filter) {
 		ArrayList<T> result = new ArrayList<T>();
-		result.addAll(getChildrenOfType(node, type, filter));
 		for(Node n : node.getChildren()) {
 			result.addAll(getDescendantsOfType(n, type, filter));
 		}
+		result.addAll(getChildrenOfType(node, type, filter));
 		return result;
 	}
 
-	public static Collection<Node> getDescendants (Node node) {
+	public static Collection<Node> getDescendants(Node node) {
 		ArrayList<Node> result = new ArrayList<Node>();
+		for(Node n : node.getChildren()) {
+			result.addAll(getDescendants(n));
+		}
 		result.addAll(node.getChildren());
-		for(Node n : node.getChildren()) {
-			result.addAll(getDescendants(n));
-		}
-		return result;
-	}
-
-	public static Collection<Node> getDescendants (Node node, Func<Node, Boolean> filter) {
-		ArrayList<Node> result = new ArrayList<Node>();
-		for(Node n : node.getChildren()) {
-			if (filter.eval(n)) {
-				result.add(n);
-			}
-			result.addAll(getDescendants(n));
-		}
 		return result;
 	}
 

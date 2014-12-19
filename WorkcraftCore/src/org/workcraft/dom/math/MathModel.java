@@ -21,7 +21,9 @@
 
 package org.workcraft.dom.math;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 
 public interface MathModel extends Model {
+	public <T extends MathNode> T createNode(String name, Container container, Class<T> type);
 }

@@ -35,7 +35,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -61,33 +60,28 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		super(root, man);
 	}
 
-	final public Place createPlace(String name) {
-		Place newPlace = new Place();
-		if (name != null) {
-			setName(newPlace, name);
+	final public Place createPlace(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
 		}
-		getRoot().add(newPlace);
-		return newPlace;
-	}
-
-	final public Place createPlace() {
-		return createPlace(null);
-	}
-
-	final public Transition createTransition(String name) {
-		Transition newTransition = new Transition();
+		Place place = new Place();
+		container.add(place);
 		if (name != null) {
-			setName(newTransition, name);
+			setName(place, name);
 		}
-		getRoot().add(newTransition);
-		return newTransition;
+		return place;
 	}
 
-	final public Transition createTransition() {
-		return createTransition(null);
-	}
-
-	public void validate() throws ModelValidationException {
+	final public Transition createTransition(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
+		}
+		Transition transition = new Transition();
+		container.add(transition);
+		if (name != null) {
+			setName(transition, name);
+		}
+		return transition;
 	}
 
 	final public Collection<Place> getPlaces() {

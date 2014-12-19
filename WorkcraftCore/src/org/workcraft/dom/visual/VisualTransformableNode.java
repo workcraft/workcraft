@@ -153,7 +153,9 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	@NoAutoSerialisation
 	public void setPosition(Point2D pos) {
 		transformChanging();
-		localToParentTransform.translate(pos.getX() - localToParentTransform.getTranslateX(), pos.getY() - localToParentTransform.getTranslateY());
+		double dx = pos.getX() - localToParentTransform.getTranslateX();
+		double dy = pos.getY() - localToParentTransform.getTranslateY();
+		localToParentTransform.translate(dx, dy);
 		transformChanged();
 	}
 
@@ -263,6 +265,14 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		transformChanging();
 		localToParentTransform.setTransform(transform);
 		transformChanged();
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		if (src instanceof VisualTransformableNode) {
+			VisualTransformableNode srcNode = (VisualTransformableNode)src;
+			setPosition(srcNode.getPosition());
+		}
 	}
 
 }

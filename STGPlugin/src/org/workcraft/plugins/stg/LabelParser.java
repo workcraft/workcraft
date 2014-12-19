@@ -50,6 +50,8 @@ public class LabelParser {
 				instance =  Integer.parseInt(instanceGroup);
 			}
 			result = Triple.of(signalName, direction, instance);
+		} else {
+			throw new ArgumentException();
 		}
 		return result;
 	}

@@ -42,7 +42,7 @@ public class Fsm extends AbstractMathModel {
 				if (e instanceof NodesDeletingEvent) {
 					for (Node node: e.getAffectedNodes()) {
 						if (node instanceof State) {
-							handleStateRemoval((State)node);
+							handleInitialStateRemoval((State)node);
 						}
 					}
 				}
@@ -58,7 +58,7 @@ public class Fsm extends AbstractMathModel {
 					if (object instanceof State) {
 						PropertyChangedEvent pce = (PropertyChangedEvent)e;
 						if (pce.getPropertyName().equals("initial")) {
-							handleStateChange((State)object);
+							handleInitialStateChange((State)object);
 						}
 					}
 				}
@@ -66,10 +66,10 @@ public class Fsm extends AbstractMathModel {
 		}.attach(getRoot());
 	}
 
-	private void handleStateRemoval(State state) {
+	private void handleInitialStateRemoval(State state) {
 		if (state.isInitial()) {
 			for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-				if (s != state) {
+				if ( !s.equals(state) ) {
 					s.setInitial(true);
 					break;
 				}
@@ -77,13 +77,13 @@ public class Fsm extends AbstractMathModel {
 		}
 	}
 
-	private void handleStateChange(State state) {
+	private void handleInitialStateChange(State state) {
 		for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-			if (s != state) {
+			if ( !s.equals(state) ) {
 				if (state.isInitial()) {
-					s.setInitial(false);
+					s.setInitialQuiet(false);
 				} else {
-					s.setInitial(true);
+					s.setInitialQuiet(true);
 					break;
 				}
 			}

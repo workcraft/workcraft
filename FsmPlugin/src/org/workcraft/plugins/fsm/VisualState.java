@@ -31,7 +31,7 @@ public class VisualState extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-				this, "Initial", Boolean.class) {
+				this, "Initial", Boolean.class, true, false) {
 			public void setter(VisualState object, Boolean value) {
 				object.getReferencedState().setInitial(value);
 			}
@@ -41,12 +41,12 @@ public class VisualState extends VisualComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-				this, "Terminal", Boolean.class) {
+				this, "Final", Boolean.class) {
 			public void setter(VisualState object, Boolean value) {
-				object.getReferencedState().setTerminal(value);
+				object.getReferencedState().setFinal(value);
 			}
 			public Boolean getter(VisualState object) {
-				return object.getReferencedState().isTerminal();
+				return object.getReferencedState().isFinal();
 			}
 		});
 	}
@@ -79,7 +79,7 @@ public class VisualState extends VisualComponent {
 			g.draw(shape);
 		}
 
-		if (getReferencedState().isTerminal()) {
+		if (getReferencedState().isFinal()) {
 			double s = 2*size/3;
 			Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
 			g.setStroke(new BasicStroke(strokeWidth/2));

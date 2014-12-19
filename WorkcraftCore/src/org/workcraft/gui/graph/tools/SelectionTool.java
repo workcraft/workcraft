@@ -61,7 +61,6 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
-import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
@@ -823,19 +822,13 @@ public class SelectionTool extends AbstractTool {
 
 		// FIXME: Save connections scale mode and force it LOCK_RELATIVELY for modification
 		connectionToScaleModeMap = new HashMap<>();
-		for (Node node: SelectionHelper.getGroupableCurrentLevelSelection(editor.getModel())) {
-			if (node instanceof VisualConnection) {
-				VisualConnection vc = (VisualConnection)node;
-				connectionToScaleModeMap.put(vc, vc.getScaleMode());
-				vc.setScaleMode(ScaleMode.LOCK_RELATIVELY);
-			}
+		for (VisualConnection vc: Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualConnection.class)) {
+			connectionToScaleModeMap.put(vc, vc.getScaleMode());
+			vc.setScaleMode(ScaleMode.LOCK_RELATIVELY);
 		}
 	}
 
 	private void afterSelectionModification(final GraphEditor editor) {
-		// Save memento that was captured in beforeSelectionModification
-		editor.getWorkspaceEntry().saveMemento();
-
 		// FIXME: Restore connections scale mode
 		if (connectionToScaleModeMap != null) {
 			for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
@@ -844,6 +837,9 @@ public class SelectionTool extends AbstractTool {
 				vc.setScaleMode(scaleMode);
 			}
 		}
+
+		// Save memento that was captured in beforeSelectionModification
+		editor.getWorkspaceEntry().saveMemento();
 
 		// Redraw the editor window to recalculate all the bounding boxes
 		editor.forceRedraw();

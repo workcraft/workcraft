@@ -29,6 +29,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -41,8 +42,14 @@ public interface VisualModel extends Model, ObservableState {
 	public Container getCurrentLevel();
 	public MathModel getMathModel();
 
+	public String getNodeMathReference(Node node);
+	public String getMathName(Node node);
+	public void setMathName(Node node, String name);
+
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException;
+
+	public  <T extends VisualComponent> T createComponent(MathNode refNode, Container container, Class<T> type);
 
 	public void selectAll();
 	public void selectNone();
@@ -58,9 +65,9 @@ public interface VisualModel extends Model, ObservableState {
 	public Collection<Node> getSelection();
 
 	public boolean isGroupable(Node node);
-	public void groupSelection();
+	public VisualGroup groupSelection();
 	public void ungroupSelection();
-	public void groupPageSelection();
+	public VisualPage groupPageSelection();
 	public void ungroupPageSelection();
 
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);

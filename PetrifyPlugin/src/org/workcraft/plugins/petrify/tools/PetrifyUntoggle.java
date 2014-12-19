@@ -17,7 +17,7 @@ public class PetrifyUntoggle implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Global transformations";
+		return "Net synthesis";
 	}
 
 	@Override

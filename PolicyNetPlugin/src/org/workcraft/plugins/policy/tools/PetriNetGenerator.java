@@ -9,7 +9,6 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -32,16 +31,14 @@ public class PetriNetGenerator {
 
 	public PetriNetGenerator(VisualPolicyNet policyNet) {
 		this.policyNet = policyNet;
+		this.petriNet = new VisualPetriNet(new PetriNet());
+		placeMap = convertPlaces();
+		transitionMap = convertTransitions();
+		bundleMap = convertBundles();
+		localityMap = convertLocalities();
 		try {
-			this.petriNet = new VisualPetriNet(new PetriNet());
-			placeMap = convertPlaces();
-			transitionMap = convertTransitions();
-			bundleMap = convertBundles();
-			localityMap = convertLocalities();
 			connectTransitions();
 			connectBundles();
-		} catch (VisualModelInstantiationException e) {
-			throw new RuntimeException(e);
 		} catch ( InvalidConnectionException e) {
 			throw new RuntimeException(e);
 		}
@@ -50,16 +47,9 @@ public class PetriNetGenerator {
 	private Map<VisualPlace, VisualPlace> convertPlaces() {
 		Map<VisualPlace, VisualPlace> result = new HashMap<VisualPlace, VisualPlace>();
 		for(VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
-			VisualPlace newPlace = petriNet.createPlace(policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace()));
-			newPlace.setPosition(place.getPosition());
-			newPlace.getReferencedPlace().setCapacity(place.getReferencedPlace().getCapacity());
-			newPlace.getReferencedPlace().setTokens(place.getReferencedPlace().getTokens());
-			newPlace.setForegroundColor(place.getForegroundColor());
-			newPlace.setFillColor(place.getFillColor());
-			newPlace.setTokenColor(place.getTokenColor());
-			newPlace.setLabel(place.getLabel());
-			newPlace.setLabelColor(place.getLabelColor());
-			newPlace.setLabelPositioning(place.getLabelPositioning());
+			String name = policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace());
+			VisualPlace newPlace = petriNet.createPlace(name, null);
+			newPlace.copyStyle(place);
 			result.put(place, newPlace);
 		}
 		return result;
@@ -70,13 +60,9 @@ public class PetriNetGenerator {
 		for(VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
 			Collection<Bundle> bundles = policyNet.getPolicyNet().getBundlesOfTransition(transition.getReferencedTransition());
 			if (bundles.size() == 0) {
-				VisualTransition newTransition = petriNet.createTransition(policyNet.getPolicyNet().getNodeReference(transition.getReferencedTransition()));
-				newTransition.setPosition(transition.getPosition());
-				newTransition.setForegroundColor(transition.getForegroundColor());
-				newTransition.setFillColor(transition.getFillColor());
-				newTransition.setLabel(transition.getLabel());
-				newTransition.setLabelColor(transition.getLabelColor());
-				newTransition.setLabelPositioning(transition.getLabelPositioning());
+				String name = policyNet.getPolicyNet().getNodeReference(transition.getReferencedTransition());
+				VisualTransition newTransition = petriNet.createTransition(name, null);
+				newTransition.copyStyle(transition);
 				result.put(transition, newTransition);
 			}
 		}
@@ -99,7 +85,7 @@ public class PetriNetGenerator {
 				}
 				if (count > 0) {
 					String bundleName = policyNet.getPolicyNet().getNodeReference(bundle.getReferencedBundle());
-					VisualTransition newTransition = petriNet.createTransition(bundleName);
+					VisualTransition newTransition = petriNet.createTransition(bundleName, null);
 					newTransition.setFillColor(bundle.getColor());
 					newTransition.setPosition(new Point2D.Double(x / count, y / count));
 					result.put(bundle, newTransition);

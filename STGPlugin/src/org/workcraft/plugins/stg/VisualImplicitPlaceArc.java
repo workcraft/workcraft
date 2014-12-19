@@ -29,6 +29,7 @@ import java.util.Set;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -185,14 +186,14 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	}
 
 	@Override
-	public void copyProperties(VisualConnection connection) {
-		super.copyProperties(connection);
-		if (connection instanceof VisualImplicitPlaceArc) {
-			VisualImplicitPlaceArc implicitPlaceArc = (VisualImplicitPlaceArc)connection;
-			implicitPlaceArc.setTokenColor(getTokenColor());
-			STGPlace place = implicitPlaceArc.getImplicitPlace();
-			place.setTokens(getImplicitPlace().getTokens());
-			place.setCapacity(getImplicitPlace().getCapacity());
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualImplicitPlaceArc) {
+			VisualImplicitPlaceArc srcImplicitPlaceArc = (VisualImplicitPlaceArc)src;
+			setTokenColor(srcImplicitPlaceArc.getTokenColor());
+			STGPlace srcPlace = srcImplicitPlaceArc.getImplicitPlace();
+			getImplicitPlace().setTokens(srcPlace.getTokens());
+			getImplicitPlace().setCapacity(srcPlace.getCapacity());
 		}
 	}
 }

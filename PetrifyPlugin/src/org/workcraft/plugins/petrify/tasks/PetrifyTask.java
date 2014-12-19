@@ -1,4 +1,4 @@
-package org.workcraft.plugins.shared.tasks;
+package org.workcraft.plugins.petrify.tasks;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.workcraft.interop.ExternalProcess;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.shared.PetrifyUtilitySettings;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -36,20 +37,22 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 			ArrayList<String> command = new ArrayList<String>();
 			command.add(PetrifyUtilitySettings.getPetrifyCommand());
 
-			for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" "))
-				if (!arg.isEmpty())
+			for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" ")) {
+				if (!arg.isEmpty()) {
 					command.add(arg);
+				}
+			}
 
-			for (String arg : args)
+			for (String arg : args) {
 				command.add(arg);
-
+			}
 			command.add(inputFileName);
 
 			ExternalProcess petrifyProcess = new ExternalProcess(command.toArray(new String[command.size()]), ".");
-
 			petrifyProcess.addListener(this);
 
 			try {
+				System.out.println("Running external command: " + getCommandLine(command));
 				petrifyProcess.start();
 			} catch (IOException e) {
 				return new Result<ExternalProcessResult>(e);
@@ -60,8 +63,9 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 					petrifyProcess.cancel();
 					userCancelled = true;
 				}
-				if (finished)
+				if (finished) {
 					break;
+				}
 				try {
 					Thread.sleep(20);
 				} catch (InterruptedException e) {
@@ -71,15 +75,30 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 				}
 			}
 
-			if (userCancelled)
+			if (userCancelled) {
 				return new Result<ExternalProcessResult>(Outcome.CANCELLED);
+			}
 
 			ExternalProcessResult result = new ExternalProcessResult(returnCode, stdoutAccum.getData(), stderrAccum.getData());
 
-			if (returnCode == 0)
+			if (returnCode == 0) {
 				return new Result<ExternalProcessResult>(Outcome.FINISHED, result);
+			}
 
 			return new Result<ExternalProcessResult>(Outcome.FAILED, result);
+		}
+
+		private String getCommandLine(ArrayList<String> command) {
+			String commandLine = "";
+			for (String arg: command) {
+				if (commandLine.isEmpty()) {
+					commandLine = "";
+				} else {
+					commandLine += " ";
+				}
+				commandLine += arg;
+			}
+			return commandLine;
 		}
 
 		@Override
