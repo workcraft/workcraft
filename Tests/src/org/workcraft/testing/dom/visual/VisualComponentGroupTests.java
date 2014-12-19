@@ -205,7 +205,7 @@ public class VisualComponentGroupTests {
 
 		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(10.5, 15.5), root));
 		Assert.assertEquals(node1, HitMan.hitTestForSelection(new Point2D.Double(11.5, 16.5), root));
-		Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(10.5, 16.5), root));
+		Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(13.5, 15.5), root));
 
 		Iterable<Node> unGroup = node1.unGroup();
 		ArrayList<Node> list = new ArrayList<Node>();
