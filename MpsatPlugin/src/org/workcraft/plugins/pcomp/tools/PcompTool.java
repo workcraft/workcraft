@@ -31,22 +31,16 @@ public class PcompTool implements Tool {
 		MainWindow mainWindow = framework.getMainWindow();
 		PcompDialog dialog = new PcompDialog(mainWindow);
 		GUI.centerAndSizeToParent(dialog, mainWindow);
-
 		if (dialog.run()) {
-
 			DotGProvider dotGProvider = new DotGProvider();
-
 			ArrayList<File> inputs = new ArrayList<File>();
-
 			for (Path<String> p : dialog.getSourcePaths()) {
 				inputs.add(dotGProvider.getDotG(p));
 			}
-
 			PcompTask pcompTask = new PcompTask(inputs.toArray(new File[0]), dialog.getMode(),
 					dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(), null);
 
 			PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor());
-
 			framework.getTaskManager().queue(pcompTask,	"Running pcomp", pcompResult);
 		}
 	}

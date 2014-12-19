@@ -281,8 +281,14 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 				this.graphic = new Polyline(this);
 				if (getFirst() == getSecond()) {
 					VisualComponent v = getFirst();
-					addPolylinePoint(new Point2D.Double(v.getX() - 1.0, v.getY() + 1.5), hiddenControlPoints);
-					addPolylinePoint(new Point2D.Double(v.getX() + 1.0, v.getY() + 1.5), hiddenControlPoints);
+					ControlPoint cp1 = new ControlPoint();
+					cp1.setPosition(new Point2D.Double(v.getX() - 1.0, v.getY() + 1.5));
+					cp1.setHidden(hiddenControlPoints);
+					((Polyline)graphic).addControlPoint(cp1);
+					ControlPoint cp2 = new ControlPoint();
+					cp2.setPosition(new Point2D.Double(v.getX() + 1.0, v.getY() + 1.5));
+					cp2.setHidden(hiddenControlPoints);
+					((Polyline)graphic).addControlPoint(cp2);
 				}
 			} else if (t == ConnectionType.BEZIER) {
 				Bezier bezier = new Bezier(this);
@@ -302,15 +308,6 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			this.graphic.invalidate();
 			this.connectionType = t;
 			this.observableStateImpl.sendNotification(new PropertyChangedEvent(this, "connectionType"));
-		}
-	}
-
-	public void addPolylinePoint(Point2D p, boolean hidden) {
-		if (getGraphic() instanceof Polyline) {
-			ControlPoint cp1 = new ControlPoint();
-			cp1.setPosition(p);
-			cp1.setHidden(hidden);
-			((Polyline)getGraphic()).add(cp1);
 		}
 	}
 
@@ -530,9 +527,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	@Override
 	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
 		if (src instanceof VisualConnection) {
 			VisualConnection srcConnection = (VisualConnection)src;
 			setConnectionType(srcConnection.getConnectionType());
+			ConnectionGraphic srcGraphics = srcConnection.getGraphic();
 			setColor(srcConnection.getColor());
 			setLineWidth(srcConnection.getLineWidth());
 			setArrowLength(srcConnection.getArrowLength());
@@ -540,23 +539,21 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			setBubbleSize(srcConnection.getBubbleSize());
 			setScaleMode(srcConnection.getScaleMode());
 
-			ConnectionGraphic srcGraphics = srcConnection.getGraphic();
 			if (srcGraphics instanceof Polyline) {
-				for (Node node: srcGraphics.getChildren()) {
-					if (node instanceof ControlPoint) {
-						ControlPoint cp = (ControlPoint)node;
-						addPolylinePoint(cp.getPosition(), true);
+				Polyline polyline = (Polyline)getGraphic();
+				polyline.resetControlPoints();
+				for (Node srcNode: srcGraphics.getChildren()) {
+					if (srcNode instanceof ControlPoint) {
+						ControlPoint srcCp = (ControlPoint)srcNode;
+						polyline.addControlPoint(srcCp.getPosition());
 					}
 				}
 			} else if (srcGraphics instanceof Bezier) {
 				BezierControlPoint[] p = ((Bezier)srcGraphics).getControlPoints();
-
 				BezierControlPoint cp1 = new BezierControlPoint();
 				cp1.setPosition(p[0].getPosition());
-
 				BezierControlPoint cp2 = new BezierControlPoint();
 				cp2.setPosition(p[1].getPosition());
-
 				Bezier bezier = (Bezier)getGraphic();
 				bezier.initControlPoints(cp1, cp2);
 			}

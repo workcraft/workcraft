@@ -44,6 +44,7 @@ public interface VisualModel extends Model, ObservableState {
 
 	public String getNodeMathReference(Node node);
 	public String getMathName(Node node);
+	public void setMathName(Node node, String name);
 
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException;

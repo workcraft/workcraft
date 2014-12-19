@@ -170,7 +170,8 @@ public class STGGenerator {
 			VisualSTG stg = new VisualSTG(new STG());
 
 			// first, create the same page structure
-			createdContainers = NamespaceHelper.copyPageStructure(stg, stg.getRoot(), circuit, circuit.getRoot(), null);
+			NamespaceHelper.copyPageStructure(circuit, stg);
+			createdContainers = NamespaceHelper.getRefToPageMapping(stg);
 
 			Map<Contact, VisualContact> targetDrivers = new HashMap<Contact, VisualContact>();
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();

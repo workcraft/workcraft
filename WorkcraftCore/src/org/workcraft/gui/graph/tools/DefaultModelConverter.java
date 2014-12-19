@@ -14,6 +14,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
@@ -21,17 +22,13 @@ import org.workcraft.util.Hierarchy;
 public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> {
 	final private TSrcModel srcModel;
 	final private TDstModel dstModel;
-	final private HashMap<String, Container> pathToDstContainers;
 	final HashMap<VisualNode, VisualNode> srcToDstNodes;
 
 	public DefaultModelConverter(TSrcModel srcModel, TDstModel dstModel) {
 		this.srcModel = srcModel;
 		this.dstModel = dstModel;
-		this.pathToDstContainers = NamespaceHelper.copyPageStructure(dstModel, dstModel.getRoot(), srcModel, srcModel.getRoot(), null);
 		this.srcToDstNodes = new HashMap<>();
-		convertComponents();
-		convertConnections();
-		convertGroups();
+		convert();
 	}
 
 	public TSrcModel getSrcModel() {
@@ -42,12 +39,12 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 		return dstModel;
 	}
 
-	private void putSrcToDstComponent(VisualNode srcComponent, VisualNode dstComponent) {
-		srcToDstNodes.put(srcComponent, dstComponent);
+	private void putSrcToDstNode(VisualNode srcNode, VisualNode dstNode) {
+		srcToDstNodes.put(srcNode, dstNode);
 	}
 
-	private VisualNode getSrcToDstComponent(VisualNode srcComponent) {
-		return srcToDstNodes.get(srcComponent);
+	private VisualNode getSrcToDstNode(VisualNode srcNode) {
+		return srcToDstNodes.get(srcNode);
 	}
 
 	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getClassMap() {
@@ -63,7 +60,30 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 		return visualComponentClass;
 	}
 
+	private void convert() {
+		convertPages();
+		convertComponents();
+		convertGroups();
+		// Connections must be converted the last as their shapes change with node relocation.
+		convertConnections();
+	}
+
+	private void convertPages() {
+		NamespaceHelper.copyPageStructure(srcModel, dstModel);
+		HashMap<String, Container> refToPage = NamespaceHelper.getRefToPageMapping(dstModel);
+		for (VisualPage srcPage: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualPage.class)) {
+			String ref = srcModel.getNodeMathReference(srcPage);
+			Container dstContainer = refToPage.get(ref);
+			if (dstContainer instanceof VisualPage) {
+				VisualPage dstPage = (VisualPage)dstContainer;
+				dstPage.copyStyle(srcPage);
+				putSrcToDstNode(srcPage, dstPage);
+			}
+		}
+	}
+
 	private void convertComponents() {
+		HashMap<String, Container> refToPage = NamespaceHelper.getRefToPageMapping(dstModel);
 		Map<Class<? extends MathNode>, Class<? extends MathNode>> clsMap = getClassMap();
 		for (Class<? extends MathNode> srcMathNodeClass: clsMap.keySet()) {
 			Class<? extends MathNode> dstMathNodeClass = clsMap.get(srcMathNodeClass);
@@ -74,12 +94,12 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 				if (ref != null) {
 					String path = NamespaceHelper.getParentReference(ref);
 					String name = NamespaceHelper.getNameFromReference(ref);
-					Container container = pathToDstContainers.get(path);
+					Container container = refToPage.get(path);
 					Container mathContainer = NamespaceHelper.getMathContainer(dstModel, container);
 					MathNode dstMathNode = dstModel.getMathModel().createNode(name, mathContainer, dstMathNodeClass);
 					VisualComponent dstComponent = dstModel.createComponent(dstMathNode, container, dstVisualComponentClass);
 					dstComponent.copyStyle(srcComponent);
-					putSrcToDstComponent(srcComponent, dstComponent);
+					putSrcToDstNode(srcComponent, dstComponent);
 				}
 			}
 		}
@@ -89,12 +109,13 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 		for(VisualConnection srcConnection : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualConnection.class)) {
 			VisualComponent srcFirst = srcConnection.getFirst();
 			VisualComponent srcSecond = srcConnection.getSecond();
-			VisualNode dstFirst = getSrcToDstComponent(srcFirst);
-			VisualNode dstSecond= getSrcToDstComponent(srcSecond);
+			VisualNode dstFirst = getSrcToDstNode(srcFirst);
+			VisualNode dstSecond= getSrcToDstNode(srcSecond);
 			if ((dstFirst != null) && (dstSecond != null)) {
 				try {
-					VisualConnection newConnection = dstModel.connect(dstFirst, dstSecond);
-					newConnection.copyStyle(srcConnection);
+					VisualConnection dstConnection = dstModel.connect(dstFirst, dstSecond);
+					dstConnection.copyStyle(srcConnection);
+					putSrcToDstNode(srcConnection, dstConnection);
 				} catch (InvalidConnectionException e) {
 					e.printStackTrace();
 				}
@@ -107,27 +128,23 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 			HashSet<Node> dstSelection = new HashSet<>();
 			for (Node srcNode: srcGroup.getChildren()) {
 				Node dstNode = null;
-				if (srcNode instanceof VisualComponent) {
-					dstNode = getSrcToDstComponent((VisualComponent)srcNode);
+				if (srcNode instanceof VisualNode) {
+					dstNode = getSrcToDstNode((VisualNode)srcNode);
 				}
 				if (dstNode != null) {
 					dstSelection.add(dstNode);
-					String ref = dstModel.getNodeMathReference(dstNode);
-					String path = NamespaceHelper.getParentReference(ref);
-					Container container = pathToDstContainers.get(path);
-					dstModel.setCurrentLevel(container);
 				}
 			}
 			if ( !dstSelection.isEmpty() ) {
+				Container c = Hierarchy.getNearestContainer(dstSelection);
+				dstModel.setCurrentLevel(c);
 				dstModel.addToSelection(dstSelection);
 				VisualGroup dstGroup = dstModel.groupSelection();
-				if (dstGroup != null) {
-					dstGroup.copyStyle(srcGroup);
-					putSrcToDstComponent(srcGroup, dstGroup);
-				}
+				dstModel.selectNone();
+				dstGroup.copyStyle(srcGroup);
+				putSrcToDstNode(srcGroup, dstGroup);
 			}
 		}
-		dstModel.selectNone();
 	}
 
 }

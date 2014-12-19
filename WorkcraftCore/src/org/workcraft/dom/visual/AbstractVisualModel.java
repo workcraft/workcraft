@@ -313,6 +313,15 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return getMathModel().getName(node);
 	}
 
+	@Override
+	public void setMathName(Node node, String name) {
+		if (node instanceof VisualComponent) {
+			VisualComponent component = (VisualComponent)node;
+			node = component.getReferencedComponent();
+		}
+		getMathModel().setName(node, name);
+	}
+
 	public static Point2D centralizeComponents(Collection<Node> components) {
 		// Find weighted center
 		double deltaX = 0.0;

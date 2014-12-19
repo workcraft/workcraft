@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -13,9 +14,11 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NotSupportedException;
@@ -28,9 +31,9 @@ import org.workcraft.plugins.stg.STGWorkspaceFilter;
 @SuppressWarnings("serial")
 public class PcompDialog extends JDialog {
 	protected boolean result;
+	private WorkspaceChooser chooser;
 	private Set<Path<String>> sourcePaths;
 	private JCheckBox showInEditor;
-
 	private JRadioButton leaveOutputs;
 	private JRadioButton internalize;
 	private JRadioButton dummify;
@@ -39,9 +42,8 @@ public class PcompDialog extends JDialog {
 
 	public PcompDialog(Window owner) {
 		super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
-
 		final JPanel content = createContents();
-		this.setContentPane(content);
+		setContentPane(content);
 	}
 
 	public Set<Path<String>> getSourcePaths() {
@@ -82,64 +84,59 @@ public class PcompDialog extends JDialog {
 		};
 
 		final JPanel content = new JPanel(new TableLayout(sizes));
-
 		final Framework framework = Framework.getInstance();
-		final WorkspaceChooser chooser = new WorkspaceChooser(framework.getWorkspace(), new STGWorkspaceFilter());
-		chooser.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Source STGs"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+		chooser = new WorkspaceChooser(framework.getWorkspace(), new STGWorkspaceFilter());
+		chooser.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Source STGs"),
+				BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
 		chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
-
 		content.add(chooser, "0 0 0 1");
-
-		JPanel options = new JPanel();
-		options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
-
-		options.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Options"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
-
-		JPanel outputOptions = new JPanel();
-		outputOptions.setLayout(new BoxLayout(outputOptions, BoxLayout.Y_AXIS));
-
-		outputOptions.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Outputs"), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
-
 
 		showInEditor = new JCheckBox();
 		showInEditor.setText("Show result in editor");
+		showInEditor.setSelected(true);
 
-		ButtonGroup dummifyGroup = new ButtonGroup();
+		JPanel outputOptions = new JPanel();
+		outputOptions.setLayout(new BoxLayout(outputOptions, BoxLayout.Y_AXIS));
+		outputOptions.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Outputs"),
+				BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
 		leaveOutputs = new JRadioButton("Leave as outputs");
 		internalize = new JRadioButton("Make internal");
 		dummify = new JRadioButton("Make dummy");
 		leaveOutputs.setSelected(true);
 
-		sharedOutputs = new JCheckBox("Allow the STGs to share outputs");
+		ButtonGroup outputsGroup = new ButtonGroup();
+		outputsGroup.add(leaveOutputs);
+		outputsGroup.add(dummify);
+		outputsGroup.add(internalize);
 
-		improvedPcomp = new JCheckBox("Improved parallel composition");
-
-
-		dummifyGroup.add(leaveOutputs);
-		dummifyGroup.add(dummify);
-		dummifyGroup.add(internalize);
-
-		options.add(showInEditor, 0);
 		outputOptions.add(leaveOutputs);
 		outputOptions.add(internalize);
 		outputOptions.add(dummify);
 
+		sharedOutputs = new JCheckBox("Allow the STGs to share outputs");
+		improvedPcomp = new JCheckBox("Improved parallel composition");
+
+		JPanel options = new JPanel();
+		options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
+		options.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Options"),
+				BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+		options.add(showInEditor, 0);
 		options.add(outputOptions, 1);
 		options.add(sharedOutputs,2);
 		options.add(improvedPcomp, 3);
 
 		content.add(options, "1 0");
-
 		JPanel buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-
 		JButton runButton = new JButton ("Run");
-
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				result = true;
-				sourcePaths = chooser.getCheckedNodes();
-				setVisible(false);
+				runAction();
 			}
 		});
 
@@ -147,19 +144,46 @@ public class PcompDialog extends JDialog {
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				result = false;
-				setVisible(false);
+				cancelAction();
 			}
 		});
 
 		buttonsPanel.add(runButton);
-
 		buttonsPanel.add(cancelButton);
 
 		content.add(buttonsPanel, "1 1");
 
-		getRootPane().setDefaultButton(runButton);
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				runAction();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				cancelAction();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 		return content;
 	}
+
+
+	private void runAction() {
+		result = true;
+		sourcePaths = chooser.getCheckedNodes();
+		setVisible(false);
+	}
+
+	private void cancelAction() {
+		result = false;
+		setVisible(false);
+	}
+
 }

@@ -327,7 +327,7 @@ public class WaggingGenerator {
 			nodes.addAll(waggingData.pushRegisters);
 			nodes.addAll(waggingData.popRegisters);
 		}
-		return Hierarchy.getNearestContainer(nodes.toArray(new Node[nodes.size()]));
+		return Hierarchy.getNearestContainer(nodes);
 	}
 
 	private void addComponent(VisualComponent component, Container container, Point2D position) {

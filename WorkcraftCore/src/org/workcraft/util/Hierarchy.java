@@ -118,6 +118,10 @@ public class Hierarchy {
 		return result;
 	}
 
+	public static Node getCommonParent(Collection<Node> nodes) {
+		return getCommonParent(nodes.toArray(new Node[nodes.size()]));
+	}
+
 	public static Node getRoot(Node node) {
 		Node root = null;
 		Node parent = node;
@@ -141,9 +145,13 @@ public class Hierarchy {
 		return true;
 	}
 
-	public static Container getNearestContainer (Node... node) {
+	public static Container getNearestContainer(Node... node) {
 		Node parent = getCommonParent(node);
 		return getNearestAncestor (parent, Container.class);
+	}
+
+	public static Container getNearestContainer(Collection<Node> nodes) {
+		return getNearestContainer(nodes.toArray(new Node[nodes.size()]));
 	}
 
 	@SuppressWarnings({ "unchecked" })

@@ -28,6 +28,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawHelper;
@@ -219,9 +220,9 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
 	@Override
 	public void componentsTransformChanged() {
-		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo
-				.getSecondCenter(), Arrays.asList(new ControlPoint[] {cp1, cp2}),
-				connectionInfo.getScaleMode());
+		List<ControlPoint> controlPoints = Arrays.asList(new ControlPoint[] {cp1, cp2});
+		scaler.scale(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(),
+				controlPoints, connectionInfo.getScaleMode());
 
 		scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
 		invalidate();

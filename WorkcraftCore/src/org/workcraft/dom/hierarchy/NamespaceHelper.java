@@ -11,6 +11,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.util.Hierarchy;
@@ -154,38 +155,47 @@ public class NamespaceHelper {
 		return mathTargetContainer;
 	}
 
-	public static HashMap<String, Container> copyPageStructure(VisualModel targetModel, Container targetContainer,
-			VisualModel sourceModel, Container sourceContainer, HashMap<String, Container> createdPageContainers) {
-
-		if (createdPageContainers == null) {
-			createdPageContainers = new HashMap<String, Container>();
-		}
-
-		createdPageContainers.put("", targetModel.getRoot());
+	private static void copyPageStructure(VisualModel srcModel, Container srcContainer,	VisualModel dstModel, Container dstContainer) {
 		HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
-		for (Node vn: sourceContainer.getChildren()) {
-			if (vn instanceof VisualPage) {
-				VisualPage vp = (VisualPage)vn;
-				String name = sourceModel.getMathName(vp);
+		for (Node srcNode: srcContainer.getChildren()) {
+			if (srcNode instanceof VisualPage) {
+				VisualPage srcPage = (VisualPage)srcNode;
+				String name = srcModel.getMathName(srcPage);
 
-				PageNode np2 = new PageNode();
-				VisualPage vp2 = new VisualPage(np2);
-				targetContainer.add(vp2);
-				vp2.copyStyle(vp);
+				VisualPage dstPage = new VisualPage(new PageNode());
+				dstContainer.add(dstPage);
+				dstPage.copyStyle(srcPage);
 
-				NamespaceHelper.getMathContainer(targetModel, targetContainer).add(np2);
-				targetModel.getMathModel().setName(np2, name);
-				String ref = targetModel.getNodeMathReference(vp2);
-				createdPageContainers.put(ref, vp2);
+				Container dstMathContainer = NamespaceHelper.getMathContainer(dstModel, dstContainer);
+				dstMathContainer.add(dstPage.getReferencedComponent());
+				dstModel.setMathName(dstPage, name);
 
-				toProcess.put(vp, vp2);
-			}
+				toProcess.put(srcPage, dstPage);
+ 			} else if (srcNode instanceof VisualGroup) {
+ 				VisualGroup srcGroup = (VisualGroup)srcNode;
+				toProcess.put(srcGroup, dstContainer);
+ 			}
 		}
 
 		for (Entry<Container, Container> en: toProcess.entrySet()) {
-			copyPageStructure(targetModel, en.getValue(), sourceModel, en.getKey(), createdPageContainers);
+			copyPageStructure(srcModel, en.getKey(), dstModel, en.getValue());
 		}
-		return createdPageContainers;
 	}
 
+	public static void copyPageStructure(VisualModel srcModel, VisualModel dstModel) {
+		Container dstContainer = dstModel.getRoot();
+		Container srcContainer = srcModel.getRoot();
+		copyPageStructure(srcModel, srcContainer, dstModel, dstContainer);
+	}
+
+	public  static HashMap<String, Container> getRefToPageMapping(VisualModel model) {
+		HashMap<String, Container> result = new HashMap<String, Container>();
+		Container root = model.getRoot();
+		result.put("", root);
+		for (VisualPage page: Hierarchy.getDescendantsOfType(root, VisualPage.class)) {
+			String ref = model.getNodeMathReference(page);
+			result.put(ref, page);
+		}
+		return result;
+	}
 }
