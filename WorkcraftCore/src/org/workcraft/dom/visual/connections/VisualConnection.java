@@ -253,9 +253,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		this.graphic = graphic;
 
 		if (graphic instanceof Polyline) {
-			this.connectionType = ConnectionType.POLYLINE;
+			setConnectionType(ConnectionType.POLYLINE, true);
+//			this.connectionType = ConnectionType.POLYLINE;
 		} else if (graphic instanceof Bezier) {
-			this.connectionType = ConnectionType.BEZIER;
+			setConnectionType(ConnectionType.BEZIER, true);
+//			this.connectionType = ConnectionType.BEZIER;
 		}
 		initialise();
 	}

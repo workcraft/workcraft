@@ -61,7 +61,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 	}
 
 	public void setDefaultControlPoints() {
-		initControlPoints (new BezierControlPoint(), new BezierControlPoint());
+		initControlPoints(new BezierControlPoint(), new BezierControlPoint());
 		cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
 		cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
 		finaliseControlPoints();

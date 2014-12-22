@@ -10,6 +10,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
@@ -26,6 +27,14 @@ public class VisualFsm extends AbstractVisualModel {
 
 	public VisualFsm(Fsm model, VisualGroup root) {
 		super(model, root);
+		if (root == null) {
+			try {
+				createDefaultFlatStructure();
+			} catch (NodeCreationException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		createInitialState();
 
 		// Create a new initial state when the last state is removed
 		new HierarchySupervisor() {
@@ -69,10 +78,13 @@ public class VisualFsm extends AbstractVisualModel {
 	}
 
 	public void createInitialState() {
-		State state = new State();
-		getMathModel().add(state);
-		add(new VisualState(state));
-		state.setInitial(true);
+		Fsm fsm = (Fsm)getMathModel();
+		if ((fsm != null) && (fsm.getInitialState() == null)) {
+			State state = new State();
+			fsm.add(state);
+			add(new VisualState(state));
+			state.setInitial(true);
+		}
 	}
 
 }

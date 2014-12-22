@@ -1,5 +1,7 @@
 package org.workcraft.plugins.fsm;
 
+import java.util.Collection;
+
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -90,10 +92,31 @@ public class Fsm extends AbstractMathModel {
 		}
 	}
 
+	final public State createState(String name) {
+		return createNode(name, null, State.class);
+	}
+
 	public Event connect(State first, State second) {
 		Event con = new Event(first, second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
+	}
+
+	final public Collection<State> getStates() {
+		return Hierarchy.getDescendantsOfType(getRoot(), State.class);
+	}
+
+	final public Collection<Event> getEvents() {
+		return Hierarchy.getDescendantsOfType(getRoot(), Event.class);
+	}
+
+	public State getInitialState() {
+		for (State state: getStates()) {
+			if (state.isInitial()) {
+				return state;
+			}
+		}
+		return null;
 	}
 
 }

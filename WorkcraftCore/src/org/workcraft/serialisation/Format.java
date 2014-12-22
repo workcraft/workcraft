@@ -25,6 +25,7 @@ import java.util.UUID;
 
 public class Format {
 	public static final UUID STG = UUID.fromString("000199d9-4ac1-4423-b8ea-9017d838e45b");
+	public static final UUID SG = UUID.fromString("f309012a-ab89-4036-bb80-8b1a161e8899");
 	public static final UUID SVG = UUID.fromString("99439c3c-753b-46e3-a5d5-6a0993305a2c");
 	public static final UUID PS  = UUID.fromString("9b5bd9f0-b5cf-11df-8d81-0800200c9a66");
 	public static final UUID workcraftXML = UUID.fromString("6ea20f69-c9c4-4888-9124-252fe4345309");
@@ -36,6 +37,8 @@ public class Format {
 	{
 		if (format.equals(STG))
 			return ".g (Signal Transition Graph)";
+		else if (format.equals(SG))
+			return ".g (State Graph)";
 		else if (format.equals(SVG))
 			return ".svg (Scalable Vector Graphics)";
 		else if (format.equals(PS))

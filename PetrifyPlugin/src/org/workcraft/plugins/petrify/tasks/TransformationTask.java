@@ -5,7 +5,7 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;

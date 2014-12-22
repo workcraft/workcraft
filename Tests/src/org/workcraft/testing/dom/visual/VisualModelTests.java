@@ -561,7 +561,8 @@ public class VisualModelTests {
 		VisualGroup root = (VisualGroup)model.getRoot();
 		VisualGroup group1 = createGroup(root);
 		group1.setX(101);
-		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
+		// Note that VisualGroup nodes have margin of 0.1 on each side.
+		SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0.1, 0.1, 0.8, 0.8));
 		group1.add(sq);
 
 		SquareNode sq2 = new SquareNode(root, new Rectangle2D.Double(0, 5, 1, 1));
