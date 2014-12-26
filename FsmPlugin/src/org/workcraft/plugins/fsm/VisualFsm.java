@@ -4,11 +4,11 @@ import java.util.HashSet;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.observation.HierarchyEvent;
@@ -64,13 +64,12 @@ public class VisualFsm extends AbstractVisualModel {
 		State mState1 = vState1.getReferencedState();
 		State mState2 = vState2.getReferencedState();
 
-		Event mTransition = ((Fsm)getMathModel()).connect(mState1, mState2);
-		VisualEvent vTransition = new VisualEvent(mTransition, vState1, vState2);
-		Hierarchy.getNearestContainer(vState1, vState2).add(vTransition);
-		if (vState1 == vState2) {
-			vTransition.setConnectionType(ConnectionType.BEZIER, true);
-		}
-		return vTransition;
+		Event mEvent = ((Fsm)getMathModel()).connect(mState1, mState2);
+		VisualEvent vEvent = new VisualEvent(mEvent, vState1, vState2);
+
+		Container container = Hierarchy.getNearestContainer(vState1, vState2);
+		container.add(vEvent);
+		return vEvent;
 	}
 
 	public String getStateName(VisualState state) {

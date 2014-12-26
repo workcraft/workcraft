@@ -68,6 +68,24 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	@Override
+	public void setDefaultControlPoints() {
+		resetControlPoints();
+		if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001 ) {
+			Point2D p = connectionInfo.getFirstCenter();
+
+			ControlPoint cp1 = new ControlPoint();
+			cp1.setPosition(new Point2D.Double(p.getX() - 1.0, p.getY() + 1.5));
+			cp1.setHidden(true);
+			addControlPoint(cp1);
+
+			ControlPoint cp2 = new ControlPoint();
+			cp2.setPosition(new Point2D.Double(p.getX() + 1.0, p.getY() + 1.5));
+			cp2.setHidden(true);
+			addControlPoint(cp2);
+		}
+	}
+
+	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		if (!valid) {
@@ -393,14 +411,15 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	@Override
 	public void notify(SelectionChangedEvent event) {
 		boolean controlsVisible = false;
-		for (Node n : event.getSelection())
+		for (Node n : event.getSelection()) {
 			if (n == getParent() || getChildren().contains(n)) {
 				controlsVisible = true;
 				break;
 			}
-
-		for (Node n : getChildren())
+		}
+		for (Node n : getChildren()) {
 			((ControlPoint)n).setHidden(!controlsVisible);
+		}
 	}
 
 	@Override

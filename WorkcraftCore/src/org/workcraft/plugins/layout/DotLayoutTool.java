@@ -168,7 +168,7 @@ public class DotLayoutTool implements Tool {
 						if(con!=null)
 						{
 							VisualConnection vc = (VisualConnection)con;
-							vc.setConnectionType(ConnectionType.POLYLINE, true);
+							vc.setConnectionType(ConnectionType.POLYLINE);
 							vc.setScaleMode(ScaleMode.ADAPTIVE);
 
 							Polyline poly = (Polyline)vc.getGraphic();

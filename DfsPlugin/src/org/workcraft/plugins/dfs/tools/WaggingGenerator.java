@@ -382,7 +382,7 @@ public class WaggingGenerator {
 	}
 
 	private void convertConnectionToPolyline(VisualConnection connection, double x1Offset, double y1Offset, double x2Offset, double y2Offset) {
-		connection.setConnectionType(ConnectionType.POLYLINE, true);
+		connection.setConnectionType(ConnectionType.POLYLINE);
 		Polyline p = (Polyline)connection.getGraphic();
 		ControlPoint cp1 = new ControlPoint();
 		cp1.setPosition(new Point2D.Double(connection.getFirst().getX() + x1Offset, connection.getFirst().getY() + y1Offset));

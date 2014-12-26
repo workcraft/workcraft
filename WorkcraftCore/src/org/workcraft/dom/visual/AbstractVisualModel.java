@@ -132,9 +132,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 					new Polyline(vc), mc);
 
 			getRoot().add(vc);
-			if (mc.getFirst() == mc.getSecond()) {
-				vc.setConnectionType(ConnectionType.BEZIER, true);
-			}
+//			if (mc.getFirst() == mc.getSecond()) {
+//				vc.setConnectionType(ConnectionType.BEZIER);
+//			}
 		}
 	}
 

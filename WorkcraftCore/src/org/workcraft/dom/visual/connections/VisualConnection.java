@@ -253,11 +253,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		this.graphic = graphic;
 
 		if (graphic instanceof Polyline) {
-			setConnectionType(ConnectionType.POLYLINE, true);
-//			this.connectionType = ConnectionType.POLYLINE;
+			connectionType = ConnectionType.POLYLINE;
 		} else if (graphic instanceof Bezier) {
-			setConnectionType(ConnectionType.BEZIER, true);
-//			this.connectionType = ConnectionType.BEZIER;
+			connectionType = ConnectionType.BEZIER;
 		}
 		initialise();
 	}
@@ -269,46 +267,22 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	@NoAutoSerialisation
 	public void setConnectionType(ConnectionType t) {
-		setConnectionType(t, false);
-	}
-
-	@NoAutoSerialisation
-	public void setConnectionType(ConnectionType t, boolean hiddenControlPoints) {
 		if (connectionType != t) {
+			this.connectionType = t;
 			this.observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, getGraphic()));
 			this.children.remove(getGraphic());
 			this.observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, getGraphic()));
 
-			if (t == ConnectionType.POLYLINE) {
-				this.graphic = new Polyline(this);
-				if (getFirst() == getSecond()) {
-					VisualComponent v = getFirst();
-					ControlPoint cp1 = new ControlPoint();
-					cp1.setPosition(new Point2D.Double(v.getX() - 1.0, v.getY() + 1.5));
-					cp1.setHidden(hiddenControlPoints);
-					((Polyline)graphic).addControlPoint(cp1);
-					ControlPoint cp2 = new ControlPoint();
-					cp2.setPosition(new Point2D.Double(v.getX() + 1.0, v.getY() + 1.5));
-					cp2.setHidden(hiddenControlPoints);
-					((Polyline)graphic).addControlPoint(cp2);
-				}
-			} else if (t == ConnectionType.BEZIER) {
-				Bezier bezier = new Bezier(this);
-				this.graphic = bezier;
-				bezier.setDefaultControlPoints();
-				BezierControlPoint[] cp = bezier.getControlPoints();
-				cp[0].setHidden(hiddenControlPoints);
-				cp[1].setHidden(hiddenControlPoints);
-				if (getFirst() == this.getSecond()) {
-					VisualComponent v = getFirst();
-					cp[0].setPosition(new Point2D.Double(v.getX() - 2.0, v.getY() + 2.0));
-					cp[1].setPosition(new Point2D.Double(v.getX() + 2.0, v.getY() + 2.0));
-				}
+			if (connectionType == ConnectionType.POLYLINE) {
+				graphic = new Polyline(this);
+			} else if (connectionType == ConnectionType.BEZIER) {
+				graphic = new Bezier(this);
 			}
+			graphic.setDefaultControlPoints();
+
 			this.children.add(graphic);
 			this.observableHierarchyImpl.sendNotification(new NodesAddedEvent(this,	getGraphic()));
 			this.graphic.invalidate();
-			this.connectionType = t;
 			this.observableStateImpl.sendNotification(new PropertyChangedEvent(this, "connectionType"));
 		}
 	}

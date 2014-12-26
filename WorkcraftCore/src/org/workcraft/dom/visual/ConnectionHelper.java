@@ -31,18 +31,10 @@ public class ConnectionHelper {
 
 			ConnectionGraphic graphic = connection.getGraphic();
 			Point2D locationOnConnection = graphic.getNearestPointOnCurve(locationInLocalSpace);
-			int segmentIndex = 0;
-			Polyline polyline = null;
-			if (graphic instanceof Polyline) {
-				polyline = (Polyline)graphic;
-				segmentIndex = polyline.getNearestSegment(locationInLocalSpace, null);
-			} else {
-				connection.setConnectionType(ConnectionType.POLYLINE);
-				polyline = (Polyline)connection.getGraphic();
-			}
-			if (polyline != null) {
-				result = polyline.insertControlPointInSegment(locationOnConnection, segmentIndex);
-			}
+			connection.setConnectionType(ConnectionType.POLYLINE);
+			Polyline polyline = (Polyline)connection.getGraphic();
+			int segmentIndex = polyline.getNearestSegment(locationInLocalSpace, null);
+			result = polyline.insertControlPointInSegment(locationOnConnection, segmentIndex);
 		}
 		return result;
 	}

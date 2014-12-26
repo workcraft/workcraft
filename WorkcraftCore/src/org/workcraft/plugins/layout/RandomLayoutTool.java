@@ -24,9 +24,11 @@ package org.workcraft.plugins.layout;
 import java.util.Random;
 
 import org.workcraft.Tool;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -39,22 +41,26 @@ public class RandomLayoutTool implements Tool {
 	}
 
 	@Override
+	public String getDisplayName() {
+		return "Randomize layout";
+	}
+
+	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, VisualModel.class);
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		for (Node n : WorkspaceUtils.getAs(we, VisualModel.class).getRoot().getChildren()) {
-			if (n instanceof VisualTransformableNode) {
-				((VisualTransformableNode)n).setX(RandomLayoutSettings.getStartX() + r.nextDouble()*RandomLayoutSettings.getRangeX());
-				((VisualTransformableNode)n).setY(RandomLayoutSettings.getStartY() + r.nextDouble()*RandomLayoutSettings.getRangeY());
-			}
+		VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
+		for (VisualTransformableNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualTransformableNode.class)) {
+			node.setX(RandomLayoutSettings.getStartX() + r.nextDouble() * RandomLayoutSettings.getRangeX());
+			node.setY(RandomLayoutSettings.getStartY() + r.nextDouble() * RandomLayoutSettings.getRangeY());
+		}
+		for (VisualConnection connection: Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class)) {
+			connection.setConnectionType(ConnectionType.POLYLINE);
+			connection.getGraphic().setDefaultControlPoints();
 		}
 	}
 
-	@Override
-	public String getDisplayName() {
-		return "Randomize layout";
-	}
 }

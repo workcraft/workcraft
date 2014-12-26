@@ -23,13 +23,13 @@ package org.workcraft.plugins.graph;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
@@ -38,7 +38,6 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Directed Graph")
 @CustomTools(ToolsProvider.class)
 public class VisualGraph extends AbstractVisualModel {
-	private Graph graph;
 
 	public VisualGraph(Graph model) throws VisualModelInstantiationException {
 		this(model, null);
@@ -53,7 +52,6 @@ public class VisualGraph extends AbstractVisualModel {
 				throw new RuntimeException(e);
 			}
 		}
-		this.graph = model;
 	}
 
 
@@ -65,15 +63,15 @@ public class VisualGraph extends AbstractVisualModel {
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
 		validateConnection(first, second);
 
-		VisualComponent c1 = (VisualComponent) first;
-		VisualComponent c2 = (VisualComponent) second;
+		VisualComponent v1 = (VisualComponent)first;
+		VisualComponent v2 = (VisualComponent)second;
+		Node m1 = v1.getReferencedComponent();
+		Node m2 = v2.getReferencedComponent();
 
-		MathConnection con = (MathConnection) graph.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-		VisualConnection ret = new VisualConnection(con, c1, c2);
-		Hierarchy.getNearestContainer(c1, c2).add(ret);
-		if (c1 == c2) {
-			ret.setConnectionType(ConnectionType.BEZIER, true);
-		}
-		return ret;
+		MathConnection mCon = ((Graph)getMathModel()).connect(m1, m2);
+		VisualConnection vCon = new VisualConnection(mCon, v1, v2);
+		Container container = Hierarchy.getNearestContainer(v1, v2);
+		container.add(vCon);
+		return vCon;
 	}
 }

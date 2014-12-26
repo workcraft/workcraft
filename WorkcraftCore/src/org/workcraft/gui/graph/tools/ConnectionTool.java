@@ -242,7 +242,11 @@ public class ConnectionTool extends AbstractTool {
 			}
 			VisualModel model = editor.getModel();
 			VisualConnection connection = model.connect(firstNode, currentNode);
-			ConnectionHelper.addControlPoints(connection, controlPoints);
+			if (controlPoints.isEmpty() && (firstNode == currentNode)) {
+				connection.getGraphic().setDefaultControlPoints();
+			} else {
+				ConnectionHelper.addControlPoints(connection, controlPoints);
+			}
 		} catch (InvalidConnectionException exeption) {
 			Toolkit.getDefaultToolkit().beep();
 		}
