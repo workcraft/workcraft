@@ -41,7 +41,7 @@ public class DotGImporter implements Importer {
 	@Override
 	public boolean accept(File file) {
 		return (file.getName().endsWith(".g")
-				&& FileUtils.containsKeyword(file, GRAPH_KEYWORD));
+				&& FileUtils.fileContainsKeyword(file, GRAPH_KEYWORD));
 	}
 
 	@Override

@@ -11,9 +11,11 @@ public interface DotGParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int REST = 4;
+  int REST = 3;
   /** RegularExpression Id. */
-  int ANY = 5;
+  int ANY = 4;
+  /** RegularExpression Id. */
+  int COMMENT = 5;
   /** RegularExpression Id. */
   int LINEBREAK = 6;
   /** RegularExpression Id. */
@@ -25,7 +27,7 @@ public interface DotGParserConstants {
   /** RegularExpression Id. */
   int DUMMY_HEADER = 10;
   /** RegularExpression Id. */
-  int GRAPH = 11;
+  int STATE_GRAPH = 11;
   /** RegularExpression Id. */
   int MARKING = 12;
   /** RegularExpression Id. */
@@ -51,9 +53,9 @@ public interface DotGParserConstants {
     "<EOF>",
     "\" \"",
     "\"\\t\"",
-    "<token of kind 3>",
     "<REST>",
     "<ANY>",
+    "<COMMENT>",
     "<LINEBREAK>",
     "\".inputs\"",
     "\".outputs\"",

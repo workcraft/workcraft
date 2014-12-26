@@ -186,24 +186,21 @@ public class FileUtils{
 
 	public static String readAllTextFromSystemResource(String path) throws IOException {
 		InputStream stream = ClassLoader.getSystemResourceAsStream(path);
-		try
-		{
+		try {
 			return readAllText(stream);
-		}
-		finally
-		{
+		} finally {
 			stream.close();
 		}
 	}
 
-	public static boolean containsKeyword(File file, String keyword) {
+	public static boolean fileContainsKeyword(File file, String keyword) {
 		boolean result = false;
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(file);
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine().trim();
-				if (keyword.equals(line)) {
+				if (line.contains(keyword)) {
 					result = true;
 					break;
 				}

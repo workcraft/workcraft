@@ -9,9 +9,7 @@ import org.workcraft.plugins.fsm.Event.Direction;
 import org.workcraft.plugins.fsm.Event.Type;
 import org.workcraft.plugins.fsm.*;
 import org.workcraft.util.Pair;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.NotFoundException;
 
 public class DotGParser implements DotGParserConstants {
     private HashMap < String, Type > signals;
@@ -47,10 +45,12 @@ public class DotGParser implements DotGParserConstants {
             if (signals.containsKey(name)) {
                 Type prevType = signals.get(name);
                 if (!prevType.equals(type)) {
-                    throw new FormatException("The " + type + " signal \u005c"" + name + "\u005c" was already listed as an " + prevType + " signal.");
+                    throw new FormatException("The " + type + " signal \u005c"" + name
+                        + "\u005c" was already listed as an " + prevType + " signal.");
                 }
             } else if (dummies.contains(name)) {
-                throw new FormatException("The " + type + " \u005c"" + name + "\u005c" was already listed as a dummy.");
+                throw new FormatException("The " + type + " \u005c"" + name
+                    + "\u005c" was already listed as a dummy.");
             } else {
                 signals.put(name, type);
             }
@@ -61,7 +61,8 @@ public class DotGParser implements DotGParserConstants {
         for (String name : list) {
             if (signals.containsKey(name)) {
                 Type type = signals.get(name);
-                throw new FormatException("The dummy \u005c"" + name + "\u005c" was already listed as an " + type + " signal.");
+                throw new FormatException("The dummy \u005c"" + name
+                    + "\u005c" was already listed as an " + type + " signal.");
             } else {
                 dummies.add(name);
             }
@@ -123,13 +124,17 @@ public class DotGParser implements DotGParserConstants {
 
   final public void header() throws ParseException {
     List < String > list;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LINEBREAK:
+    label_4:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LINEBREAK:
+        ;
+        break;
+      default:
+        jj_la1[3] = jj_gen;
+        break label_4;
+      }
       jj_consume_token(LINEBREAK);
-      break;
-    default:
-      jj_la1[3] = jj_gen;
-      ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INPUT_HEADER:
@@ -166,7 +171,7 @@ public class DotGParser implements DotGParserConstants {
   final public List < String > stringList() throws ParseException {
     Token t;
     List < String > list = new LinkedList < String > ();
-    label_4:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -174,7 +179,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[5] = jj_gen;
-        break label_4;
+        break label_5;
       }
       t = jj_consume_token(NAME);
             list.add(t.image);
@@ -211,9 +216,9 @@ public class DotGParser implements DotGParserConstants {
   }
 
   final public void graph() throws ParseException {
-    jj_consume_token(GRAPH);
+    jj_consume_token(STATE_GRAPH);
     jj_consume_token(LINEBREAK);
-    label_5:
+    label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -221,7 +226,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[7] = jj_gen;
-        break label_5;
+        break label_6;
       }
       graphLine();
       jj_consume_token(LINEBREAK);
@@ -256,7 +261,7 @@ public class DotGParser implements DotGParserConstants {
     State toState;
     t = jj_consume_token(NAME);
             fromState = getOrCreateState(t.image);
-    label_6:
+    label_7:
     while (true) {
       t = jj_consume_token(NAME);
                 eventName = t.image;
@@ -270,7 +275,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[8] = jj_gen;
-        break label_6;
+        break label_7;
       }
     }
   }
@@ -290,7 +295,7 @@ public class DotGParser implements DotGParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x47c0,0x5000,0x20,0x40,0x4780,0x8000,0x5000,0x8000,0x8000,};
+      jj_la1_0 = new int[] {0x47c0,0x5000,0x10,0x40,0x4780,0x8000,0x5000,0x8000,0x8000,};
    }
 
   /** Constructor with InputStream. */
