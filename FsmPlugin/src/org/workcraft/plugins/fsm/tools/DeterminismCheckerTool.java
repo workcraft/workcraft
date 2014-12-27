@@ -36,26 +36,15 @@ public class DeterminismCheckerTool implements Tool {
 			JOptionPane.showMessageDialog(null,	"FSM is deterministic." ,
 					"Verification result", JOptionPane.INFORMATION_MESSAGE);
 		} else {
-			String stateStr = statesToString(fsm, nondeterministicStates);
-			JOptionPane.showMessageDialog(null,	"FSM has non-deterministic states: \n {" + stateStr + "}",
+			String stateStr = FsmUtils.statesToString(fsm, nondeterministicStates);
+			JOptionPane.showMessageDialog(null,	"FSM has non-deterministic states:\n" + stateStr,
 					"Verification result", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
-	private String statesToString(final Fsm fsm, HashSet<State> states) {
-		String result = "";
-		for (State state: states) {
-			if (!result.isEmpty()) {
-				result += ", ";
-			}
-			result += fsm.getNodeReference(state);
-		}
-		return result;
-	}
-
 	private HashSet<State> checkDeterminism(final Fsm fsm) {
 		HashSet<State> nondeterministicStates = new HashSet<State>();
-		HashMap<State, HashSet<Event>> stateEvents = calcStateEventsMap(fsm);
+		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateEventsMap(fsm);
 		for (State state: stateEvents.keySet()) {
 			HashSet<String> symbols = new HashSet<String>();
 			for (Event event: stateEvents.get(state)) {
@@ -68,21 +57,6 @@ public class DeterminismCheckerTool implements Tool {
 			}
 		}
 		return nondeterministicStates;
-	}
-
-
-	private HashMap<State, HashSet<Event>> calcStateEventsMap(final Fsm fsm) {
-		HashMap<State, HashSet<Event>> stateEvents = new HashMap<State, HashSet<Event>>();
-		for (State state: fsm.getStates()) {
-			HashSet<Event> events = new HashSet<Event>();
-			stateEvents.put(state, events);
-		}
-		for (Event event: fsm.getEvents()) {
-			State state = (State)event.getFirst();
-			HashSet<Event> events = stateEvents.get(state);
-			events.add(event);
-		}
-		return stateEvents;
 	}
 
 }

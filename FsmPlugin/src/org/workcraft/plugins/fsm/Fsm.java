@@ -9,6 +9,7 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesAddingEvent;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -45,6 +46,12 @@ public class Fsm extends AbstractMathModel {
 					for (Node node: e.getAffectedNodes()) {
 						if (node instanceof State) {
 							handleInitialStateRemoval((State)node);
+						}
+					}
+				} else if (e instanceof NodesAddingEvent) {
+					for (Node node: e.getAffectedNodes()) {
+						if (node instanceof State) {
+							((State)node).setInitialQuiet(false);
 						}
 					}
 				}

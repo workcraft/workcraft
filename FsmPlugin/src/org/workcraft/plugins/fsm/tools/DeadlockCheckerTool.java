@@ -38,26 +38,15 @@ public class DeadlockCheckerTool implements Tool {
 			JOptionPane.showMessageDialog(null,	"FSM is deadlock-free." ,
 					"Verification result", JOptionPane.INFORMATION_MESSAGE);
 		} else {
-			String stateStr = statesToString(fsm, deadlockStates);
-			JOptionPane.showMessageDialog(null,	"FSM has deadlock states: \n {" + stateStr + "}",
+			String stateStr = FsmUtils.statesToString(fsm, deadlockStates);
+			JOptionPane.showMessageDialog(null,	"FSM has deadlock states:\n" + stateStr,
 					"Verification result", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
-	private String statesToString(final Fsm fsm, HashSet<State> states) {
-		String result = "";
-		for (State state: states) {
-			if (!result.isEmpty()) {
-				result += ", ";
-			}
-			result += fsm.getNodeReference(state);
-		}
-		return result;
-	}
-
 	private HashSet<State> checkDeadlock(final Fsm fsm) {
 		HashSet<State> deadlockStates = new HashSet<State>();
-		HashMap<State, HashSet<Event>> stateEvents = calcStateEventsMap(fsm);
+		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateEventsMap(fsm);
 
 		HashSet<State> visited = new HashSet<State>();
 		Queue<State> queue = new LinkedList<State>();
@@ -82,20 +71,6 @@ public class DeadlockCheckerTool implements Tool {
 			}
 		}
 		return deadlockStates;
-	}
-
-	private HashMap<State, HashSet<Event>> calcStateEventsMap(final Fsm fsm) {
-		HashMap<State, HashSet<Event>> stateEvents = new HashMap<State, HashSet<Event>>();
-		for (State state: fsm.getStates()) {
-			HashSet<Event> events = new HashSet<Event>();
-			stateEvents.put(state, events);
-		}
-		for (Event event: fsm.getEvents()) {
-			State state = (State)event.getFirst();
-			HashSet<Event> events = stateEvents.get(state);
-			events.add(event);
-		}
-		return stateEvents;
 	}
 
 }

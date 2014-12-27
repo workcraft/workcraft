@@ -13,6 +13,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesAddingEvent;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.SetUtils;
