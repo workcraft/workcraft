@@ -36,16 +36,14 @@ public class DrawSgTask implements Task<DrawSgResult> {
 
 			final Result<? extends Object> dotGResult = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g" );
 
-			if (dotGResult.getOutcome() != Outcome.FINISHED)
-			{
-				if (dotGResult.getOutcome() != Outcome.CANCELLED)
-				{
-					if (dotGResult.getCause() != null)
+			if (dotGResult.getOutcome() != Outcome.FINISHED) {
+				if (dotGResult.getOutcome() != Outcome.CANCELLED) {
+					if (dotGResult.getCause() != null) {
 						return Result.exception(dotGResult.getCause());
-					else
+					} else {
 						return Result.failed(new DrawSgResult(null, "Export to .g failed for unknown reason"));
+					}
 				}
-
 				return Result.cancelled();
 			}
 
@@ -53,48 +51,32 @@ public class DrawSgTask implements Task<DrawSgResult> {
 			sg.deleteOnExit();
 
 			List<String> writeSgOptions = new ArrayList<String>();
-
 			Result<? extends ExternalProcessResult> writeSgResult;
-
-			while (true)
-			{
+			while (true) {
 				writeSgResult = framework.getTaskManager().execute(new WriteSgTask(dotG.getAbsolutePath(), sg.getAbsolutePath(), writeSgOptions), "Running write_sg");
-
-				if (writeSgResult.getOutcome() != Outcome.FINISHED)
-				{
-					if (writeSgResult.getOutcome() != Outcome.CANCELLED)
-					{
-						if (writeSgResult.getCause() != null)
+				if (writeSgResult.getOutcome() != Outcome.FINISHED) {
+					if (writeSgResult.getOutcome() != Outcome.CANCELLED) {
+						if (writeSgResult.getCause() != null) {
 							return Result.exception(writeSgResult.getCause());
-						else
-						{
+						} else {
 							final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
-
 							Pattern p = Pattern.compile("with ([0-9]+) states");
 							final Matcher m = p.matcher(errorMessages);
-							if (m.find())
-							{
+							if (m.find()) {
 								SwingUtilities.invokeAndWait(new Runnable(){
-								//	@Override
+									@Override
 									public void run() {
-										writeHuge = (JOptionPane
-												.showConfirmDialog(
-														framework.getMainWindow(),
-														"The state graph contains "
-														+ m.group(1)
-														+ " states. It may take a very long time to be processed. \n\n Are you sure you want to display it?",
-														"Please confirm",
-														JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+										writeHuge = (JOptionPane.showConfirmDialog(framework.getMainWindow(),
+											"The state graph contains " + m.group(1)
+											+ " states. It may take a very long time to be processed. \n\n Are you sure you want to display it?",
+											"Please confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
 									}
-								}
-								);
+								});
 
-								if (writeHuge)
-								{
+								if (writeHuge) {
 									writeSgOptions.add("-huge");
 									continue;
-								} else
-								{
+								} else {
 									return Result.cancelled();
 								}
 							} else {
@@ -103,36 +85,35 @@ public class DrawSgTask implements Task<DrawSgResult> {
 						}
 					}
 					return Result.cancelled();
-				} else
+				} else {
 					break;
+				}
 			}
-
 			File ps = File.createTempFile("workcraft", ".ps");
 			ps.deleteOnExit();
 
-			final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(new DrawAstgTask(sg.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>()), "Running draw_astg");
+			DrawAstgTask drawAstgTask = new DrawAstgTask(sg.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>());
+			final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(drawAstgTask, "Running draw_astg");
 
-			if (drawAstgResult.getOutcome() != Outcome.FINISHED)
-			{
-				if (drawAstgResult.getOutcome() != Outcome.CANCELLED)
-				{
-					if (drawAstgResult.getCause() != null)
+			if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
+				if (drawAstgResult.getOutcome() != Outcome.CANCELLED) {
+					if (drawAstgResult.getCause() != null) {
 						return Result.exception(drawAstgResult.getCause());
-					else
-						return Result.failed(new DrawSgResult(null, "Errors running draw_astg: \n" + new String(drawAstgResult.getReturnValue().getErrors())));
+					} else {
+						return Result.failed(new DrawSgResult(null, "Errors running draw_astg: \n"
+							+ new String(drawAstgResult.getReturnValue().getErrors())));
+					}
 				}
 				return Result.cancelled();
 			}
 
 			dotG.delete();
 			sg.delete();
-
 			return Result.finished(new DrawSgResult(ps, "No errors"));
-		}
-		catch (Throwable e)
-		{
+		} catch (Throwable e) {
 			e.printStackTrace();
 			return Result.exception(e);
 		}
 	}
+
 }

@@ -139,7 +139,6 @@ public class MpsatUtilitySettings implements Settings {
 		config.setBoolean(keyUsePnmlUnfolding, getUsePnmlUnfolding());
 		config.setBoolean(keyDebugReach, getDebugReach());
 		config.setBoolean(keyDebugTemporaryFiles, getDebugTemporaryFiles());
-
 	}
 
 	@Override

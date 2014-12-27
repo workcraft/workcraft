@@ -15,6 +15,7 @@ import org.workcraft.plugins.fsm.serialisation.DotGSerialiser;
 import org.workcraft.plugins.fsm.tools.DeadlockCheckerTool;
 import org.workcraft.plugins.fsm.tools.DeterminismCheckerTool;
 import org.workcraft.plugins.fsm.tools.FsmToPetriNetConverterTool;
+import org.workcraft.plugins.fsm.tools.PetriNetToFsmConverterTool;
 import org.workcraft.plugins.fsm.tools.ReachabilityCheckerTool;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -58,6 +59,13 @@ public class FsmModule  implements Module {
 			@Override
 			public Tool create() {
 				return new ReachabilityCheckerTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new PetriNetToFsmConverterTool();
 			}
 		});
 
