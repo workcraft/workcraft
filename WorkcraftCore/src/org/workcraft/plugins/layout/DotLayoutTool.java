@@ -228,6 +228,7 @@ public class DotLayoutTool implements Tool {
 			if(res.getReturnValue().getReturnCode() == 0) {
 				String in = FileUtils.readAllText(layout);
 				applyLayout(in, (VisualModel)model);
+				framework.getMainWindow().zoomFit();
 			} else {
 				throw new LayoutException("External process (dot) failed (code " +
 					res.getReturnValue().getReturnCode() +")\n\n" +
