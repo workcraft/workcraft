@@ -34,17 +34,14 @@ public class ConversionResultHandler extends DummyProgressMonitor<ConversionResu
 		{
 			@Override
 			public void run() {
+				final Framework framework = Framework.getInstance();
 				WorkspaceEntry we = task.getWorkspaceEntry();
 				Path<String> path = we.getWorkspacePath();
-
-				String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-				final Framework framework = Framework.getInstance();
-
 				if (result.getOutcome() == Outcome.FINISHED) {
 					Fsm model = result.getReturnValue().getResult();
 					final Workspace workspace = framework.getWorkspace();
 					final Path<String> directory = path.getParent();
-					final String name = fileName + "_transformed";
+					final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));;
 					final ModelEntry me = new ModelEntry(new FsmModelDescriptor() , model);
 					workspace.add(directory, name, me, true, true);
 				} else if (result.getOutcome() != Outcome.CANCELLED) {
