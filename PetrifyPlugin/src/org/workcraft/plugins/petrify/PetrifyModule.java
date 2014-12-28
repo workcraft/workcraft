@@ -13,7 +13,6 @@ import org.workcraft.plugins.petrify.tools.PetrifySynthesisComplexGate;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisGeneralisedCelement;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisTechnologyMapping;
 import org.workcraft.plugins.petrify.tools.PetrifyUntoggle;
-import org.workcraft.plugins.petrify.tools.ShowSg;
 import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 
 public class PetrifyModule implements Module {
@@ -33,7 +32,7 @@ public class PetrifyModule implements Module {
 		pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
 		pm.registerClass(Tool.class, PetrifyDummyContraction.class);
 		pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
-		pm.registerClass(Tool.class, ShowSg.class);
+//		pm.registerClass(Tool.class, ShowSg.class);
 	}
 
 	@Override

@@ -72,10 +72,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 		try {
 			// Common variables
 			monitor.progressUpdate(0.05);
-			String title = we.getWorkspacePath().getNode();
-			if (title.endsWith(".work")) {
-				title = title.substring(0, title.length() - 5);
-			}
+			String title = we.getTitle();
 			VisualCircuit visualCircuit = (VisualCircuit)we.getModelEntry().getVisualModel();
 			File envFile = visualCircuit.getEnvironmentFile();
 			boolean hasEnvironment = ((envFile != null) && envFile.exists());

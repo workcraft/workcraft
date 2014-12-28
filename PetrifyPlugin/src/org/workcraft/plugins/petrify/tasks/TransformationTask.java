@@ -6,6 +6,7 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
@@ -35,12 +36,13 @@ public class TransformationTask implements Task<TransformationResult>{
 
 	@Override
 	public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
+		File stgFile = null;
 		try {
 			final Framework framework = Framework.getInstance();
-			File tmp = File.createTempFile("stg_", ".g");
+			stgFile = File.createTempFile("stg_", ".g");
 
 			STGModel inStg = WorkspaceUtils.getAs(workspaceEntry, STGModel.class);
-			ExportTask exportTask = Export.createExportTask(inStg, tmp, Format.STG, framework.getPluginManager());
+			ExportTask exportTask = Export.createExportTask(inStg, stgFile, Format.STG, framework.getPluginManager());
 
 			final Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, description +": writing .g");
 
@@ -50,13 +52,15 @@ public class TransformationTask implements Task<TransformationResult>{
 				else
 					return Result.exception(exportResult.getCause());
 
-			PetrifyTask petrifyTask = new PetrifyTask(parameters, tmp.getAbsolutePath());
+			PetrifyTask petrifyTask = new PetrifyTask(parameters, stgFile.getAbsolutePath());
 
-			final Result<? extends ExternalProcessResult> petrifyResult = framework.getTaskManager().execute(petrifyTask, description + ": executing Petrify");
+			final Result<? extends ExternalProcessResult> petrifyResult
+					= framework.getTaskManager().execute(petrifyTask, description + ": executing Petrify");
 
 			if (petrifyResult.getOutcome() == Outcome.FINISHED) {
 				try {
-					final STGModel outStg = new DotGImporter().importSTG(new ByteArrayInputStream(petrifyResult.getReturnValue().getOutput()));
+					ByteArrayInputStream in = new ByteArrayInputStream(petrifyResult.getReturnValue().getOutput());
+					final STGModel outStg = new DotGImporter().importSTG(in);
 					return Result.finished(new TransformationResult(null, outStg));
 				} catch (DeserialisationException e) {
 					return Result.exception(e);
@@ -71,6 +75,10 @@ public class TransformationTask implements Task<TransformationResult>{
 			}
 		} catch (Throwable e) {
 			return Result.exception(e);
+		} finally {
+			if ((stgFile != null) && !PetrifyUtilitySettings.getDebugTemporaryFiles() ) {
+				stgFile.delete();
+			}
 		}
 	}
 

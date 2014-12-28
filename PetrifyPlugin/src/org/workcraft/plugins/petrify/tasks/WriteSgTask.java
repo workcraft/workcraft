@@ -46,17 +46,20 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 				command.add(arg);
 			}
 		}
-
-		for (String arg : options) {
-			command.add(arg);
+		if (options != null) {
+			for (String arg : options) {
+				command.add(arg);
+			}
+		}
+		if ((inputPath != null) && !inputPath.isEmpty()) {
+			command.add(inputPath);
+		}
+		if ((outputPath != null) && !outputPath.isEmpty()) {
+			command.add("-o");
+			command.add(outputPath);
 		}
 
-		command.add(inputPath);
-		command.add("-o");
-		command.add(outputPath);
-
 		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
-
 		if (res.getOutcome() != Outcome.FINISHED) {
 			return res;
 		}
@@ -95,6 +98,5 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 		this.returnCode = returnCode;
 		this.finished = true;
 	}
-
 
 }

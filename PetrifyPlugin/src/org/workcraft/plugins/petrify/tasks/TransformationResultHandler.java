@@ -9,6 +9,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.tasks.DummyProgressMonitor;
@@ -49,8 +50,9 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
 				} else {
 					MainWindow mainWindow = framework.getMainWindow();
 					if (result.getCause() == null) {
+						Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getPetrifyResult();
 						JOptionPane.showMessageDialog(mainWindow,
-								"Petrify output: \n\n" + new String(result.getReturnValue().getPetrifyResult().getReturnValue().getErrors()),
+								"Petrify output: \n\n" + new String(petrifyResult.getReturnValue().getErrors()),
 								"Transformation failed", JOptionPane.WARNING_MESSAGE);
 					} else {
 						ExceptionDialog.show(mainWindow, result.getCause());

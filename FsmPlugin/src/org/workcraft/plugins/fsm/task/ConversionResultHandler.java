@@ -11,6 +11,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmModelDescriptor;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -46,12 +47,13 @@ public class ConversionResultHandler extends DummyProgressMonitor<ConversionResu
 					final String name = fileName + "_transformed";
 					final ModelEntry me = new ModelEntry(new FsmModelDescriptor() , model);
 					workspace.add(directory, name, me, true, true);
-				} else {
+				} else if (result.getOutcome() != Outcome.CANCELLED) {
 					MainWindow mainWindow = framework.getMainWindow();
 					if (result.getCause() == null) {
+						Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getPetrifyResult();
 						JOptionPane.showMessageDialog(mainWindow,
-								"Petrify output: \n\n" + new String(result.getReturnValue().getPetrifyResult().getReturnValue().getErrors()),
-								"Transformation failed", JOptionPane.WARNING_MESSAGE);
+								"Petrify output: \n\n" + new String(petrifyResult.getReturnValue().getErrors()),
+								"Conversion failed", JOptionPane.WARNING_MESSAGE);
 					} else {
 						ExceptionDialog.show(mainWindow, result.getCause());
 					}

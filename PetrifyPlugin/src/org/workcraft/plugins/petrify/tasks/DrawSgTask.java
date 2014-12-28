@@ -18,10 +18,36 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
+import org.workcraft.util.Export.ExportTask;
 
 public class DrawSgTask implements Task<DrawSgResult> {
+
+	private final class HugeSgRunnable implements Runnable {
+		private final String stateCountMsg;
+		private boolean hugeSgConfirmed = false;
+
+		private HugeSgRunnable(String stateCountMsg) {
+			this.stateCountMsg = stateCountMsg;
+		}
+
+		@Override
+		public void run() {
+			final Framework framework = Framework.getInstance();
+			int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
+				"The state graph contains " + stateCountMsg + " states."
+				+ "It may take a very long time to be processed.\n\n"
+				+ "Are you sure you want to display it?",
+				"Please confirm", JOptionPane.YES_NO_OPTION);
+			hugeSgConfirmed = (answer == JOptionPane.YES_OPTION);
+		}
+
+		public boolean isHugeSgConfirmed() {
+			return hugeSgConfirmed;
+		}
+	}
+
+	final Pattern hugeSgPattern = Pattern.compile("with ([0-9]+) states");
 	private final Model model;
-	private boolean writeHuge = false;
 
 	public DrawSgTask(Model model) {
 		this.model = model;
@@ -34,7 +60,8 @@ public class DrawSgTask implements Task<DrawSgResult> {
 			File dotG = File.createTempFile("workcraft", ".g");
 			dotG.deleteOnExit();
 
-			final Result<? extends Object> dotGResult = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g" );
+			ExportTask exportTask = Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager());
+			final Result<? extends Object> dotGResult = framework.getTaskManager().execute(exportTask, "Exporting to .g" );
 
 			if (dotGResult.getOutcome() != Outcome.FINISHED) {
 				if (dotGResult.getOutcome() != Outcome.CANCELLED) {
@@ -51,42 +78,34 @@ public class DrawSgTask implements Task<DrawSgResult> {
 			sg.deleteOnExit();
 
 			List<String> writeSgOptions = new ArrayList<String>();
-			Result<? extends ExternalProcessResult> writeSgResult;
 			while (true) {
-				writeSgResult = framework.getTaskManager().execute(new WriteSgTask(dotG.getAbsolutePath(), sg.getAbsolutePath(), writeSgOptions), "Running write_sg");
-				if (writeSgResult.getOutcome() != Outcome.FINISHED) {
-					if (writeSgResult.getOutcome() != Outcome.CANCELLED) {
-						if (writeSgResult.getCause() != null) {
-							return Result.exception(writeSgResult.getCause());
-						} else {
-							final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
-							Pattern p = Pattern.compile("with ([0-9]+) states");
-							final Matcher m = p.matcher(errorMessages);
-							if (m.find()) {
-								SwingUtilities.invokeAndWait(new Runnable(){
-									@Override
-									public void run() {
-										writeHuge = (JOptionPane.showConfirmDialog(framework.getMainWindow(),
-											"The state graph contains " + m.group(1)
-											+ " states. It may take a very long time to be processed. \n\n Are you sure you want to display it?",
-											"Please confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-									}
-								});
+				WriteSgTask writeSgTask = new WriteSgTask(dotG.getAbsolutePath(), sg.getAbsolutePath(), writeSgOptions);
+				Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
+						writeSgTask, "Running write_sg");
 
-								if (writeHuge) {
-									writeSgOptions.add("-huge");
-									continue;
-								} else {
-									return Result.cancelled();
-								}
-							} else {
-								return Result.failed(new DrawSgResult(null, errorMessages));
-							}
-						}
-					}
-					return Result.cancelled();
-				} else {
+				if (writeSgResult.getOutcome() == Outcome.FINISHED) {
 					break;
+				}
+				if (writeSgResult.getOutcome() == Outcome.CANCELLED) {
+					return Result.cancelled();
+				}
+				if (writeSgResult.getCause() != null) {
+					return Result.exception(writeSgResult.getCause());
+				} else {
+					final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
+					final Matcher matcher = hugeSgPattern.matcher(errorMessages);
+					if (matcher.find()) {
+						final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));
+						SwingUtilities.invokeAndWait(hugeSgRunnable);
+						if (hugeSgRunnable.isHugeSgConfirmed()) {
+							writeSgOptions.add("-huge");
+							continue;
+						} else {
+							return Result.cancelled();
+						}
+					} else {
+						return Result.failed(new DrawSgResult(null, errorMessages));
+					}
 				}
 			}
 			File ps = File.createTempFile("workcraft", ".ps");
