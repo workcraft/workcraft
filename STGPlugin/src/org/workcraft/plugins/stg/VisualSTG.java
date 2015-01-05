@@ -266,59 +266,6 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 	}
 
-	public VisualDummyTransition convertSignalToDummyTransition(VisualSignalTransition signalTransition) {
-		Container container = (Container)signalTransition.getParent();
-		VisualDummyTransition dummyTransition = createDummyTransition(null, container);
-		dummyTransition.copyStyle(signalTransition);
-		dummyTransition.setLabel(signalTransition.getName());
-		for (Node pred: getPreset(signalTransition)) {
-			try {
-				VisualConnection oldPredConnection = (VisualConnection)getConnection(pred, signalTransition);
-				VisualConnection newPredConnection = connect(pred, dummyTransition);
-				newPredConnection.copyStyle(oldPredConnection);
-			} catch (InvalidConnectionException e) {
-				e.printStackTrace();
-			}
-		}
-		for (Node succ: getPostset(signalTransition)) {
-			try {
-				VisualConnection oldSuccConnection = (VisualConnection)getConnection(signalTransition, succ);
-				VisualConnection newSuccConnection = connect(dummyTransition, succ);
-				newSuccConnection.copyStyle(oldSuccConnection);
-			} catch (InvalidConnectionException e) {
-				e.printStackTrace();
-			}
-		}
-		remove(signalTransition);
-		return dummyTransition;
-	}
-
-	public VisualSignalTransition convertDummyToSignalTransition(VisualTransition dummyTransition) {
-		Container container = (Container)dummyTransition.getParent();
-		VisualSignalTransition signalTransition = createSignalTransition(null, Type.INTERNAL, Direction.TOGGLE, container);
-		signalTransition.copyStyle(dummyTransition);
-		for (Node pred: getPreset(dummyTransition)) {
-			try {
-				VisualConnection oldPredConnection = (VisualConnection)getConnection(pred, dummyTransition);
-				VisualConnection newPredConnection = connect(pred, signalTransition);
-				newPredConnection.copyStyle(oldPredConnection);
-			} catch (InvalidConnectionException e) {
-				e.printStackTrace();
-			}
-		}
-		for (Node succ: getPostset(dummyTransition)) {
-			try {
-				VisualConnection oldSuccConnection = (VisualConnection)getConnection(dummyTransition, succ);
-				VisualConnection newSuccConnection = connect(signalTransition, succ);
-				newSuccConnection.copyStyle(oldSuccConnection);
-			} catch (InvalidConnectionException e) {
-				e.printStackTrace();
-			}
-		}
-		remove(dummyTransition);
-		return signalTransition;
-	}
-
 	public VisualPlace createPlace(String mathName, Container container) {
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		STGPlace mathPlace = stg.createPlace(mathName, mathContainer);
@@ -330,7 +277,6 @@ public class VisualSTG extends AbstractVisualModel {
 		DummyTransition mathTransition = stg.createDummyTransition(mathName, mathContainer);
 		return createComponent(mathTransition, container, VisualDummyTransition.class);
 	}
-
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);

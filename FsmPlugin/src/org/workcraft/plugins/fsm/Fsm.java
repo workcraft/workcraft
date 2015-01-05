@@ -33,7 +33,8 @@ public class Fsm extends AbstractMathModel {
 			@Override
 			public String getPrefix(Node node) {
                 if (node instanceof State) return "s";
-                if (node instanceof Event) return "t";
+                if (node instanceof Symbol) return "";
+                if (node instanceof Event) return "e";
 				return super.getPrefix(node);
 			}
 		});
