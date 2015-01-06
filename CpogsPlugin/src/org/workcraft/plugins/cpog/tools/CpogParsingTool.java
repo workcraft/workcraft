@@ -88,7 +88,7 @@ public class CpogParsingTool {
 	    return boolForm;
 	  }
 
-	 public void bfsLayout(Queue<VisualVertex> q, VisualCPOG visualCpog, double originalX, double originalY)
+	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX, double originalY)
 	 {
 		 ArrayList<ArrayList<VisualVertex>> outer = new ArrayList<ArrayList<VisualVertex>>();
 		 outer.add(new ArrayList<VisualVertex>());
@@ -247,8 +247,7 @@ public class CpogParsingTool {
 				 ArrayList<Connection> connections = new ArrayList<Connection>();
 				 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
 				 HashSet<Connection> visitedConnections = new HashSet<Connection>();
-				 Queue<VisualVertex> q = new Queue<VisualVertex>();
-				// String label = "";
+				 Queue q = new Queue();
 				 while(i.hasNext())
 				 {
 
@@ -392,7 +391,7 @@ public class CpogParsingTool {
 			 ArrayList<Connection> connections = new ArrayList<Connection>();
 			 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
 			 HashSet<Connection> visitedConnections = new HashSet<Connection>();
-			 Queue<VisualVertex> q = new Queue<VisualVertex>();
+			 Queue q = new Queue();
 			// String label = "";
 			 while(i.hasNext())
 			 {
@@ -760,7 +759,6 @@ public class CpogParsingTool {
 		 }
 		 for(VisualScenario group : groups) {
 			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) group.getBoundingBox();
-			 Point2D.Double c = (Double) group.getPosition();
 			 Point2D.Double bl = new Point2D.Double(rect.getCenterX(), rect.getCenterY() + (rect.getHeight()/2));
 
 
@@ -771,7 +769,7 @@ public class CpogParsingTool {
 					 startPoint.setLocation(startPoint.getX(), bl.getY());
 				 }
 				 if (bl.getX() < startPoint.getX()) {
-					 startPoint.setLocation(bl.getY(), startPoint.getY());
+					 startPoint.setLocation(bl.getX(), startPoint.getY());
 				 }
 			 }
 		 }

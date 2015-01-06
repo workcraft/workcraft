@@ -206,7 +206,7 @@ public class CpogSelectionTool extends SelectionTool {
 		buttonPanel.add(btnGetGraphExpression);
 
 		insertTransitives = new Checkbox("Insert Transitives", false);
-		buttonPanel.add(insertTransitives);
+		controlPanel.add(insertTransitives);
 
 		interfacePanel.add(expressionScroll, BorderLayout.CENTER);
 		interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -450,6 +450,7 @@ public class CpogSelectionTool extends SelectionTool {
 			Point2D.Double coordinate = (Double) parsingTool.getLowestVertex(visualCpog);
 			if (PGF.getGraphName() != null)	{
 				VisualScenario vs = visualCpog.groupSelection(PGF.getGraphName());
+				System.out.println("X" + coordinate.getX());
 				coordinate.setLocation(coordinate.getX(), coordinate.getY() + (vs.getBoundingBox().getHeight()/2));
 				vs.setPosition(coordinate);
 			} else {
@@ -530,6 +531,11 @@ public class CpogSelectionTool extends SelectionTool {
 			super.mouseClicked(e);
 
 		}
+	}
+
+	public Checkbox getCheckbox()
+	{
+		return insertTransitives;
 	}
 }
 
