@@ -1,6 +1,6 @@
 package org.workcraft.plugins.fsm;
 
-import java.util.HashSet;
+import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -14,9 +14,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddingEvent;
-import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.SetUtils;
 
 @DisplayName("Finite State Machine")
 @CustomTools(ToolsProvider.class)
@@ -35,17 +33,18 @@ public class VisualFsm extends AbstractVisualModel {
 				throw new RuntimeException(e);
 			}
 		}
-		createInitialState();
-
-		// Create a new initial state when the last state is removed
+		// Make the first created state initial
 		new HierarchySupervisor() {
 			@Override
 			public void handleEvent(HierarchyEvent e) {
-				if (e instanceof NodesDeletingEvent) {
-					HashSet<Node> stateSet = new HashSet<Node>(Hierarchy.getChildrenOfType(getRoot(), VisualState.class));
-					HashSet<Node> removeSet = new HashSet<Node>(e.getAffectedNodes());
-					if (SetUtils.intersection(stateSet, removeSet).size() == stateSet.size()) {
-						createInitialState();
+				if (e instanceof NodesAddingEvent) {
+					Collection<VisualState> existingStates = Hierarchy.getChildrenOfType(getRoot(), VisualState.class);
+					if (existingStates.isEmpty()) {
+						Collection<VisualState> newStates = Hierarchy.filterNodesByType(e.getAffectedNodes(), VisualState.class);
+						if (!newStates.isEmpty()) {
+							VisualState state = newStates.iterator().next();
+							state.getReferencedState().setInitial(true);
+						}
 					}
 				}
 			}
@@ -65,7 +64,7 @@ public class VisualFsm extends AbstractVisualModel {
 		State mState1 = vState1.getReferencedState();
 		State mState2 = vState2.getReferencedState();
 
-		Event mEvent = ((Fsm)getMathModel()).connect(mState1, mState2);
+		Event mEvent = ((Fsm)getMathModel()).connect(mState1, mState2, null);
 		VisualEvent vEvent = new VisualEvent(mEvent, vState1, vState2);
 
 		Container container = Hierarchy.getNearestContainer(vState1, vState2);
@@ -75,16 +74,6 @@ public class VisualFsm extends AbstractVisualModel {
 
 	public String getStateName(VisualState state) {
 		return getMathModel().getName(state.getReferencedComponent());
-	}
-
-	public void createInitialState() {
-		Fsm fsm = (Fsm)getMathModel();
-		if ((fsm != null) && (fsm.getInitialState() == null)) {
-			State state = new State();
-			fsm.add(state);
-			add(new VisualState(state));
-			state.setInitial(true);
-		}
 	}
 
 }

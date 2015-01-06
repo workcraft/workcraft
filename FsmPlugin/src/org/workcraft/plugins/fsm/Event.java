@@ -6,32 +6,10 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.util.Identifier;
 
 @DisplayName("Event")
 @VisualClass(org.workcraft.plugins.fsm.VisualEvent.class)
 public class Event extends MathConnection {
-
-	public enum Type {
-		INPUT,
-		OUTPUT,
-		INTERNAL;
-
-		@Override
-		public String toString() {
-			switch(this)
-			{
-			case INPUT:
-				return "input";
-			case OUTPUT:
-				return "output";
-			case INTERNAL:
-				return "internal";
-			default:
-				throw new NotSupportedException();
-			}
-		}
-	}
 
 	public enum Direction {
 		PLUS,
@@ -65,27 +43,23 @@ public class Event extends MathConnection {
 		}
 	}
 
-	private String symbol = "";
+	private Symbol symbol;
 
 	public Event() {
 	}
 
-	public Event(State first, State second) {
+	public Event(State first, State second, Symbol symbol) {
 		super(first, second);
+		this.setSymbol(symbol);
 	}
 
-	public String getSymbol() {
+	public Symbol getSymbol() {
 		return symbol;
 	}
 
-	public void setSymbol(String symbol) {
-		if (symbol.isEmpty() || Identifier.isValid(symbol)) {
-			this.symbol = symbol;
-			sendNotification(new PropertyChangedEvent(this, "symbol"));
-		} else {
-			throw new ArgumentException("\"" + symbol + "\" is not empty and not a valid C-style identifier.\n"
-					+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
-		}
+	public void setSymbol(Symbol symbol) {
+		this.symbol = symbol;
+		sendNotification(new PropertyChangedEvent(this, "symbol"));
 	}
 
 }

@@ -4,7 +4,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NotSupportedException;
 
 public class Symbol extends MathNode {
-
 	public enum Type {
 		INPUT,
 		OUTPUT,
@@ -30,3 +29,4 @@ public class Symbol extends MathNode {
 	}
 
 }
+

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.LinkedList;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.fsm.Event.Direction;
-import org.workcraft.plugins.fsm.Event.Type;
+import org.workcraft.plugins.fsm.Symbol.Type;
 import org.workcraft.plugins.fsm.*;
 import org.workcraft.util.Pair;
 import org.workcraft.exceptions.FormatException;
@@ -35,9 +35,23 @@ public class DotGParser implements DotGParserConstants {
         return (State) node;
     }
 
-    private void createEvent(State fromState, State toState, String symbol) {
-        Event event = fsm.connect(fromState, toState);
-        event.setSymbol(symbol);
+    private Symbol getOrCreateSymbol(String name) {
+        Symbol symbol = null;
+        if ( !name.equals(Fsm.EPSILON_SERIALISATION) ) {
+            Node node = fsm.getNodeByReference(name);
+                if (node == null) {
+                symbol = fsm.createSymbol(name);
+                } else if (node instanceof Symbol) {
+                    symbol = (Symbol)node;
+                } else {
+                throw new FormatException("Node \u005c"" + name + "\u005c" already exists and it is not a symbol.");
+                }
+        }
+        return symbol;
+    }
+
+    private void createEvent(State fromState, State toState, Symbol symbol) {
+        Event event = fsm.connect(fromState, toState, symbol);
     }
 
     private void addSignals(List < String > list, Type type) {
@@ -124,17 +138,13 @@ public class DotGParser implements DotGParserConstants {
 
   final public void header() throws ParseException {
     List < String > list;
-    label_4:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case LINEBREAK:
-        ;
-        break;
-      default:
-        jj_la1[3] = jj_gen;
-        break label_4;
-      }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LINEBREAK:
       jj_consume_token(LINEBREAK);
+      break;
+    default:
+      jj_la1[3] = jj_gen;
+      ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INPUT_HEADER:
@@ -171,7 +181,7 @@ public class DotGParser implements DotGParserConstants {
   final public List < String > stringList() throws ParseException {
     Token t;
     List < String > list = new LinkedList < String > ();
-    label_5:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -179,7 +189,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[5] = jj_gen;
-        break label_5;
+        break label_4;
       }
       t = jj_consume_token(NAME);
             list.add(t.image);
@@ -218,7 +228,7 @@ public class DotGParser implements DotGParserConstants {
   final public void graph() throws ParseException {
     jj_consume_token(STATE_GRAPH);
     jj_consume_token(LINEBREAK);
-    label_6:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -226,7 +236,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[7] = jj_gen;
-        break label_6;
+        break label_5;
       }
       graphLine();
       jj_consume_token(LINEBREAK);
@@ -257,17 +267,17 @@ public class DotGParser implements DotGParserConstants {
   final public void graphLine() throws ParseException {
     Token t;
     State fromState;
-    String eventName;
+    Symbol symbol;
     State toState;
     t = jj_consume_token(NAME);
             fromState = getOrCreateState(t.image);
-    label_7:
+    label_6:
     while (true) {
       t = jj_consume_token(NAME);
-                eventName = t.image;
+                symbol = getOrCreateSymbol(t.image);
       t = jj_consume_token(NAME);
                 toState = getOrCreateState(t.image);
-            createEvent(fromState, toState, eventName);
+            createEvent(fromState, toState, symbol);
             fromState = toState;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -275,7 +285,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[8] = jj_gen;
-        break label_7;
+        break label_6;
       }
     }
   }

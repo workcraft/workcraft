@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.LinkedList;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.fsm.Event.Direction;
-import org.workcraft.plugins.fsm.Event.Type;
+import org.workcraft.plugins.fsm.Symbol.Type;
 import org.workcraft.plugins.fsm.*;
 import org.workcraft.util.Pair;
 import org.workcraft.exceptions.FormatException;

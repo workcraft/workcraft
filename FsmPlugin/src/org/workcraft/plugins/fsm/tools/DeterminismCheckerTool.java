@@ -9,6 +9,7 @@ import org.workcraft.Tool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
+import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class DeterminismCheckerTool implements Tool {
@@ -46,10 +47,11 @@ public class DeterminismCheckerTool implements Tool {
 		HashSet<State> nondeterministicStates = new HashSet<State>();
 		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateEventsMap(fsm);
 		for (State state: stateEvents.keySet()) {
-			HashSet<String> symbols = new HashSet<String>();
+			HashSet<Symbol> symbols = new HashSet<Symbol>();
 			for (Event event: stateEvents.get(state)) {
-				String symbol = event.getSymbol();
-				if (symbol.isEmpty() || symbols.contains(symbol)) {
+				Symbol symbol = event.getSymbol();
+				boolean symbolIsDummy = fsm.getName(symbol).isEmpty();
+				if (symbolIsDummy || symbols.contains(symbol)) {
 					nondeterministicStates.add(state);
 				} else {
 					symbols.add(symbol);

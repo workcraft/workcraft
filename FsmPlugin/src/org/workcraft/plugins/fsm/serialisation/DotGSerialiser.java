@@ -34,13 +34,12 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
+import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
 public class DotGSerialiser implements ModelSerialiser {
-
-	private static final String EPSILON_SERIALISATION = "dummy";
 
 	class ReferenceResolver implements ReferenceProducer {
 		HashMap<Object, String> refMap = new HashMap<Object, String>();
@@ -91,9 +90,11 @@ public class DotGSerialiser implements ModelSerialiser {
 		String result = null;
 		if (node instanceof Event) {
 			Event event = (Event)node;
-			result = event.getSymbol();
-			if ((result == null) || result.isEmpty()) {
-				result = EPSILON_SERIALISATION;
+			Symbol symbol = event.getSymbol();
+			if (symbol == null) {
+				result = Fsm.EPSILON_SERIALISATION;
+			} else {
+				result = fsm.getName(symbol);
 			}
 		} else {
 			String ref = fsm.getNodeReference(node);

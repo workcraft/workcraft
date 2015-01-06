@@ -12,12 +12,16 @@ import org.workcraft.interop.Importer;
 import org.workcraft.plugins.fsm.interop.DotGExporter;
 import org.workcraft.plugins.fsm.interop.DotGImporter;
 import org.workcraft.plugins.fsm.serialisation.DotGSerialiser;
+import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
+import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
 import org.workcraft.plugins.fsm.tools.DeadlockCheckerTool;
 import org.workcraft.plugins.fsm.tools.DeterminismCheckerTool;
 import org.workcraft.plugins.fsm.tools.FsmToPetriNetConverterTool;
 import org.workcraft.plugins.fsm.tools.PetriNetToFsmConverterTool;
 import org.workcraft.plugins.fsm.tools.ReachabilityCheckerTool;
 import org.workcraft.serialisation.ModelSerialiser;
+import org.workcraft.serialisation.xml.XMLDeserialiser;
+import org.workcraft.serialisation.xml.XMLSerialiser;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class FsmModule  implements Module {
@@ -33,6 +37,9 @@ public class FsmModule  implements Module {
 		pm.registerClass(Importer.class, DotGImporter.class);
 
 		pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
+
+		pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
+		pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
