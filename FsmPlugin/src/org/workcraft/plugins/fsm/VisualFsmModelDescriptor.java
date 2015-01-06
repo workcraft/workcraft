@@ -10,9 +10,7 @@ public class VisualFsmModelDescriptor implements VisualModelDescriptor {
 
 	@Override
 	public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-		VisualFsm fsm = new VisualFsm((Fsm)mathModel);
-		fsm.createInitialState();
-		return fsm;
+		return new VisualFsm((Fsm)mathModel);
 	}
 
 	@Override

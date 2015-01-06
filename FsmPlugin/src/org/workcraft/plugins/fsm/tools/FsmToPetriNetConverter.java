@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
@@ -40,9 +41,10 @@ public class FsmToPetriNetConverter {
 		for (Entry<VisualEvent, VisualTransition> entry: eventToTransitionMap.entrySet()) {
 			VisualEvent event = entry.getKey();
 			VisualTransition transition = entry.getValue();
-			String ref = dstModel.getPetriNet().getNodeReference(transition.getReferencedTransition());
-			String symbol = event.getReferencedEvent().getSymbol();
-			result.put(ref, symbol);
+			Symbol symbol = event.getReferencedEvent().getSymbol();
+			String dstName = dstModel.getMathName(transition);
+			String srcName = ((symbol == null) ? "" : srcModel.getMathName(symbol));
+			result.put(dstName, srcName);
 		}
 		return result;
 	}
@@ -65,9 +67,12 @@ public class FsmToPetriNetConverter {
 		for(VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
 			String name = srcModel.getMathModel().getNodeReference(event.getReferencedConnection());
 			VisualTransition transition = dstModel.createTransition(name, null);
+			Symbol symbol = event.getReferencedEvent().getSymbol();
 			transition.setPosition(event.getCenter());
 			transition.setForegroundColor(event.getColor());
-			transition.setLabel(event.getReferencedEvent().getSymbol());
+			if (symbol != null) {
+				transition.setLabel(srcModel.getMathName(symbol));
+			}
 			transition.setLabelColor(event.getSymbolColor());
 			result.put(event, transition);
 		}

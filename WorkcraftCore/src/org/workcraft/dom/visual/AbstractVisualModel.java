@@ -106,10 +106,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			if (n instanceof MathConnection) {
 				MathConnection connection = (MathConnection)n;
 
-				// Will create incomplete instance, setConnection() needs to be called later to finalise.
-				// This is to avoid cross-reference problems.
 				VisualConnection visualConnection = NodeFactory.createVisualConnection(connection);
-				createdConnections.put(visualConnection, connection);
+				if (visualConnection != null) {
+					// Will create incomplete instance, setConnection() needs to be called later to finalise.
+					// This is to avoid cross-reference problems.
+					createdConnections.put(visualConnection, connection);
+				}
 			} else {
 				MathNode node = (MathNode)n;
 				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(node);
@@ -123,9 +125,15 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 		for (VisualConnection vc : createdConnections.keySet()) {
 			MathConnection mc = createdConnections.get(vc);
-			vc.setVisualConnectionDependencies(createdNodes.get(mc.getFirst()),
-					createdNodes.get(mc.getSecond()), new Polyline(vc), mc);
+			vc.setVisualConnectionDependencies(
+					createdNodes.get(mc.getFirst()),
+					createdNodes.get(mc.getSecond()),
+					new Polyline(vc), mc);
+
 			getRoot().add(vc);
+//			if (mc.getFirst() == mc.getSecond()) {
+//				vc.setConnectionType(ConnectionType.BEZIER);
+//			}
 		}
 	}
 

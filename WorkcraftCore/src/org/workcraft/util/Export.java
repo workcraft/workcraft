@@ -54,7 +54,7 @@ public class Export {
 		@Override
 		public Result<? extends Object> run(ProgressMonitor<? super Object> monitor) {
 			FileOutputStream fos;
-
+			System.out.println("Exporting model \"" + model.getTitle() + "\" to file \"" + file.getAbsolutePath() + "\".");
 			try {
 				file.createNewFile();
 				fos = new FileOutputStream(file);
@@ -64,28 +64,29 @@ public class Export {
 
 			boolean ok = false;
 
-			try
-			{
-				if (model instanceof VisualModel)
-					if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE)
-						if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE)
+			try	{
+				if (model instanceof VisualModel) {
+					if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE) {
+						if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
 								return new Result<Boolean>(new Exception(new RuntimeException ("Exporter is not applicable to the model.")));
-						else
+						} else {
 							model = ((VisualModel)model).getMathModel();
+						}
+					}
+				}
 				exporter.export(model, fos);
 				ok = true;
 			} catch (Throwable e) {
 				return new Result<Boolean>(e);
-			}
-			finally
-			{
+			} finally {
 				try {
 					fos.close();
 				} catch (IOException e) {
 					return new Result<Boolean>(e);
 				}
-				if(!ok)
+				if(!ok) {
 					file.delete();
+				}
 			}
 
 			return new Result<Boolean>(Outcome.FINISHED);

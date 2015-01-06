@@ -68,8 +68,4 @@ public abstract class MathNode implements Node, ObservableState {
 		observableStateImpl.sendNotification(e);
 	}
 
-	public boolean requireReferenceConflictResolution() {
-		return true;
-	}
-
 }

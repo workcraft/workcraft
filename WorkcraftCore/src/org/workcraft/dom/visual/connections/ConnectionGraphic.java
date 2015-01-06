@@ -35,4 +35,6 @@ public interface ConnectionGraphic extends Node, Drawable, Touchable, Parametric
 
 	public void controlPointsChanged();
 	public void invalidate();
+
+	public void setDefaultControlPoints();
 }

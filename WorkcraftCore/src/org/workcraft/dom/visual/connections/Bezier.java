@@ -41,6 +41,7 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Geometry.CurveSplitResult;
 
 public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
+
 	private CubicCurve2D curve = new CubicCurve2D.Double();
 	private CubicCurve2D visibleCurve = new CubicCurve2D.Double();
 
@@ -60,10 +61,26 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		this.parent = parent;
 	}
 
+//	public void setDefaultControlPoints() {
+//        initControlPoints (new BezierControlPoint(), new BezierControlPoint());
+//        cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
+//        cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
+//        finaliseControlPoints();
+//    }
+
+//	@Override
 	public void setDefaultControlPoints() {
-		initControlPoints (new BezierControlPoint(), new BezierControlPoint());
-		cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
-		cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
+		initControlPoints(new BezierControlPoint(), new BezierControlPoint());
+		if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001 ) {
+			Point2D p = connectionInfo.getFirstCenter();
+			cp1.setPosition(new Point2D.Double(p.getX() - 2.0, p.getY() + 2.0));
+			cp2.setPosition(new Point2D.Double(p.getX() + 2.0, p.getY() + 2.0));
+		} else {
+			cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
+			cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
+		}
+		cp1.setHidden(true);
+		cp2.setHidden(true);
 		finaliseControlPoints();
 	}
 

@@ -279,10 +279,12 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
-		if(notClick1 && e.getButton() == MouseEvent.BUTTON1)
+		if(notClick1 && e.getButton() == MouseEvent.BUTTON1) {
 			return;
-		if(notClick3 && e.getButton() == MouseEvent.BUTTON3)
+		}
+		if(notClick3 && e.getButton() == MouseEvent.BUTTON3) {
 			return;
+		}
 
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			VisualModel model = e.getModel();

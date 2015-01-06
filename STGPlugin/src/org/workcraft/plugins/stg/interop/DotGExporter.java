@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.interop;
+package org.workcraft.plugins.stg.interop;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -27,6 +27,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.DummyMouseListener;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class DefaultAnchorGenerator extends DummyMouseListener {
 	@Override
@@ -36,8 +37,15 @@ public class DefaultAnchorGenerator extends DummyMouseListener {
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node instanceof VisualConnection) {
 				VisualConnection connection = (VisualConnection)node;
+				WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
+				we.captureMemento();
 				ControlPoint cp = ConnectionHelper.createControlPoint(connection, e.getPosition());
-				model.select(cp);
+				if (cp == null) {
+					we.cancelMemento();
+				} else {
+					we.saveMemento();
+					model.select(cp);
+				}
 			}
 		}
 	}

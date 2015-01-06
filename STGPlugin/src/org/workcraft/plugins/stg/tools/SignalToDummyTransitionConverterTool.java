@@ -37,7 +37,7 @@ public class SignalToDummyTransitionConverterTool implements Tool {
 			we.saveMemento();
 			HashSet<VisualDummyTransition> dummyTransitions = new HashSet<VisualDummyTransition>(signalTransitions.size());
 			for (VisualSignalTransition transition: signalTransitions) {
-				VisualDummyTransition dummyTransition = stg.convertSignalToDummyTransition(transition);
+				VisualDummyTransition dummyTransition = StgTransformationUtils.convertSignalToDummyTransition(stg, transition);
 				dummyTransitions.add(dummyTransition);
 			}
 			stg.select(new LinkedList<Node>(dummyTransitions));

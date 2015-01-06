@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.STGModel;

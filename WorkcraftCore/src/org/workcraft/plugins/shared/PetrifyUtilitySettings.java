@@ -38,6 +38,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
 	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
 	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
+	private static final String keyDebugTemporaryFiles = prefix + ".debugTemporaryFiles";
 
 	private static final String defaultPetrifyCommand = "petrify";
 	private static final String defaultPetrifyArgs = "-lib tools/petrify.lib";
@@ -45,6 +46,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String defaultDrawAstgArgs = "";
 	private static final String defaultWriteSgCommand = "write_sg";
 	private static final String defaultWriteSgArgs = "";
+	private static final Boolean defaultDebugTemporaryFiles = false;
 
 	private static String petrifyCommand = defaultPetrifyCommand;
 	private static String petrifyArgs = defaultPetrifyArgs;
@@ -52,6 +54,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static String drawAstgArgs = defaultDrawAstgArgs;
 	private static String writeSgCommand = defaultWriteSgCommand;
 	private static String writeSgArgs = defaultWriteSgArgs;
+	private static Boolean debigTemporaryFiles = defaultDebugTemporaryFiles;
 
 	public PetrifyUtilitySettings() {
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
@@ -113,6 +116,16 @@ public class PetrifyUtilitySettings implements Settings {
 				return PetrifyUtilitySettings.getDrawAstgArgs();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
+				this, "Keep temporary files (debug)", Boolean.class) {
+			protected void setter(PetrifyUtilitySettings object, Boolean value) {
+				PetrifyUtilitySettings.setDebugTemporaryFiles(value);
+			}
+			protected Boolean getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getDebugTemporaryFiles();
+			}
+		});
 	}
 
 	@Override
@@ -128,7 +141,7 @@ public class PetrifyUtilitySettings implements Settings {
 		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
 		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
 		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
-
+		setDebugTemporaryFiles(config.getBoolean(keyDebugTemporaryFiles, defaultDebugTemporaryFiles));
 	}
 
 	@Override
@@ -139,6 +152,7 @@ public class PetrifyUtilitySettings implements Settings {
 		config.set(keyDrawAstgArgs, getDrawAstgArgs());
 		config.set(keyWriteSgCommand, getWriteSgCommand());
 		config.set(keyWriteSgArgs, getWriteSgArgs());
+		config.setBoolean(keyDebugTemporaryFiles, getDebugTemporaryFiles());
 	}
 
 	@Override
@@ -197,6 +211,14 @@ public class PetrifyUtilitySettings implements Settings {
 
 	public static void setWriteSgArgs(String value) {
 		writeSgArgs = value;
+	}
+
+	public static Boolean getDebugTemporaryFiles() {
+		return debigTemporaryFiles;
+	}
+
+	public static void setDebugTemporaryFiles(Boolean value) {
+		debigTemporaryFiles = value;
 	}
 
 }

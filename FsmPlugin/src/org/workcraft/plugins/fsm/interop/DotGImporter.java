@@ -19,7 +19,7 @@
  *
  */
 
-package org.workcraft.plugins.interop;
+package org.workcraft.plugins.fsm.interop;
 
 import java.io.File;
 import java.io.InputStream;
@@ -27,31 +27,36 @@ import java.io.InputStream;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.stg.STGModel;
-import org.workcraft.plugins.stg.STGModelDescriptor;
-import org.workcraft.plugins.stg.javacc.DotGParser;
-import org.workcraft.plugins.stg.javacc.ParseException;
+import org.workcraft.plugins.fsm.Fsm;
+import org.workcraft.plugins.fsm.FsmModelDescriptor;
+import org.workcraft.plugins.fsm.javacc.DotGParser;
+import org.workcraft.plugins.fsm.javacc.ParseException;
+import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class DotGImporter implements Importer {
+
+	private static final String STATEGRAPH_KEYWORD = ".state graph";
+
 	@Override
 	public boolean accept(File file) {
-		return file.getName().endsWith(".g");
+		return (file.getName().endsWith(".g")
+				&& FileUtils.fileContainsKeyword(file, STATEGRAPH_KEYWORD));
 	}
 
 	@Override
 	public String getDescription() {
-		return "Signal Transition Graph (.g)";
+		return "State Graph (.g)";
 	}
 
 	@Override
 	public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-		return new ModelEntry(new STGModelDescriptor(), importSTG(in));
+		return new ModelEntry(new FsmModelDescriptor(), importSG(in));
 	}
 
-	public STGModel importSTG(InputStream in) throws DeserialisationException {
+	public Fsm importSG(InputStream in) throws DeserialisationException {
 		try {
-			STGModel result = new DotGParser(in).parse();
+			Fsm result = new DotGParser(in).parse();
 			return result;
 		} catch (FormatException e) {
 			throw new DeserialisationException(e);

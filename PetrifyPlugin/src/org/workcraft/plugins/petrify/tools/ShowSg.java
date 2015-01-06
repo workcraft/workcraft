@@ -28,6 +28,11 @@ public class ShowSg implements Tool {
 	}
 
 	@Override
+	public String getDisplayName() {
+		return "Show state graph [Petrify]";
+	}
+
+	@Override
 	public void run(WorkspaceEntry we) {
 		DrawSgTask task = new DrawSgTask(WorkspaceUtils.getAs(we, PetriNetModel.class));
 		final Framework framework = Framework.getInstance();
@@ -52,35 +57,27 @@ public class ShowSg implements Tool {
 			@Override
 			public void finished(Result<? extends DrawSgResult> result, String description) {
 
-				if (result.getOutcome() == Outcome.FINISHED)
+				if (result.getOutcome() == Outcome.FINISHED) {
 					SystemOpen.open(result.getReturnValue().getPsFile());
-				else
-					if (result.getOutcome() != Outcome.CANCELLED)
-					{
+				} else  if (result.getOutcome() != Outcome.CANCELLED) {
 						String errorMessage = "Petrify tool chain execution failed :-(";
-
 						Throwable cause = result.getCause();
-
-						if (cause != null)
+						if (cause != null) {
 							errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
-						else
+						} else {
 							errorMessage += "\n\nFailure caused by: \n" + result.getReturnValue().getErrorMessages();
+						}
 
 						final String err = errorMessage;
-
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
-								JOptionPane.showMessageDialog(null, err, "Oops..", JOptionPane.ERROR_MESSAGE);				}
+								JOptionPane.showMessageDialog(null, err, "Oops..", JOptionPane.ERROR_MESSAGE);
+							}
 						});
 					}
-
 			}
 		});
 	}
 
-	@Override
-	public String getDisplayName() {
-		return "Show state graph [Petrify]";
-	}
 }

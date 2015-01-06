@@ -54,10 +54,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 		try {
 			// Common variables
 			monitor.progressUpdate(0.10);
-			String title = we.getWorkspacePath().getNode();
-			if (title.endsWith(".work")) {
-				title = title.substring(0, title.length() - 5);
-			}
+			String title = we.getTitle();
 			workingDirectory = FileUtils.createTempDirectory(title + "-");
 
 			STG devStg = (STG)we.getModelEntry().getVisualModel().getMathModel();

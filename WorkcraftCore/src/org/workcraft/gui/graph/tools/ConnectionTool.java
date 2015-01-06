@@ -242,7 +242,11 @@ public class ConnectionTool extends AbstractTool {
 			}
 			VisualModel model = editor.getModel();
 			VisualConnection connection = model.connect(firstNode, currentNode);
-			ConnectionHelper.addControlPoints(connection, controlPoints);
+			if (controlPoints.isEmpty() && (firstNode == currentNode)) {
+				connection.getGraphic().setDefaultControlPoints();
+			} else {
+				ConnectionHelper.addControlPoints(connection, controlPoints);
+			}
 		} catch (InvalidConnectionException exeption) {
 			Toolkit.getDefaultToolkit().beep();
 		}
@@ -265,7 +269,7 @@ public class ConnectionTool extends AbstractTool {
 			if (firstNode == null) {
 				message = "Click on the first component.";
 			} else {
-				message = "Click on the second component or create a node point. Hold Ctrl to connect continuously.";
+				message = "Click on the second component or create a polyline segment. Hold Ctrl to connect continuously.";
 			}
 			GUI.drawEditorMessage(editor, g, Color.BLACK, message);
 		}

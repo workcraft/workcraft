@@ -122,7 +122,6 @@ public class SignalTransition extends NamedTransition
 		sendNotification(new PropertyChangedEvent(this, "signalName"));
 	}
 
-
 	@NoAutoSerialisation
 	@Override
 	public String getName() {

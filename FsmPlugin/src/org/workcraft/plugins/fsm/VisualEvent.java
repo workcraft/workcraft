@@ -39,16 +39,6 @@ public class VisualEvent extends VisualConnection {
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration<VisualEvent, String>(
-				this, "Symbol", String.class) {
-			public void setter(VisualEvent object, String value) {
-				object.getReferencedEvent().setSymbol(value);
-			}
-			public String getter(VisualEvent object) {
-				return object.getReferencedEvent().getSymbol();
-			}
-		});
-
 		addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Color>(
 				this, "Symbol color", Color.class) {
 			protected void setter(VisualEvent object, Color value) {
@@ -70,12 +60,13 @@ public class VisualEvent extends VisualConnection {
 	}
 
 	protected void cacheSymbolRenderedText(DrawRequest r) {
-		String symbol = getReferencedEvent().getSymbol();
-		if (symbol == null || symbol.equals("")) {
-			symbol = "ε";
+		String symbolName = "ε";
+		Symbol symbol = getReferencedEvent().getSymbol();
+		if (symbol != null) {
+			symbolName = r.getModel().getMathName(symbol);
 		}
-		if (symbolRenderedText.isDifferent(symbol, symbolFont, Positioning.CENTER, new Point2D.Double())) {
-			symbolRenderedText = new RenderedText(symbol, symbolFont, Positioning.CENTER, new Point2D.Double());
+		if (symbolRenderedText.isDifferent(symbolName, symbolFont, Positioning.CENTER, new Point2D.Double())) {
+			symbolRenderedText = new RenderedText(symbolName, symbolFont, Positioning.CENTER, new Point2D.Double());
 		}
 	}
 

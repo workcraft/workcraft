@@ -32,8 +32,9 @@ public class DotGProvider {
 				throw new RuntimeException ("Unexpected model class " + we.getClass().getName());
 			try {
 				String prefix = model.getTitle();
-				if (prefix.isEmpty())
+				if (prefix.isEmpty()) {
 					prefix = "untitled";
+				}
 				File file = File.createTempFile(prefix, ".g");
 				Export.exportToFile(model, file, Format.STG, framework.getPluginManager());
 				return file;

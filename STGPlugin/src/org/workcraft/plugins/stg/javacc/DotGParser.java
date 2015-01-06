@@ -100,10 +100,12 @@ public class DotGParser implements DotGParserConstants {
                         if (signals.containsKey(name)) {
                                 Type prevType = signals.get(name);
                                 if (!prevType.equals(type)) {
-                                        throw new FormatException ("The " + type + " signal \u005c"" + name + "\u005c" was already listed as an " + prevType + " signal.");
+                                        throw new FormatException ("The " + type + " signal \u005c"" + name
+                                           + "\u005c" was already listed as an " + prevType + " signal.");
                                 }
                         } else if (dummies.contains(name)) {
-                                throw new FormatException ("The " + type + " \u005c"" + name + "\u005c" was already listed as a dummy.");
+                                throw new FormatException ("The " + type + " \u005c"" + name
+                                    + "\u005c" was already listed as a dummy.");
                         } else {
                                 signals.put(name, type);
                         }
@@ -114,7 +116,8 @@ public class DotGParser implements DotGParserConstants {
                 for (String name : list) {
                         if (signals.containsKey(name)) {
                                 Type type = signals.get(name);
-                                throw new FormatException ("The dummy \u005c"" + name + "\u005c" was already listed as an " + type + " signal.");
+                                throw new FormatException ("The dummy \u005c"" + name
+                                    + "\u005c" was already listed as an " + type + " signal.");
                         } else {
                                 dummies.add(name);
                         }
@@ -122,7 +125,7 @@ public class DotGParser implements DotGParserConstants {
         }
 
   final public STG parse() throws ParseException {
-          init();
+        init();
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -171,12 +174,12 @@ public class DotGParser implements DotGParserConstants {
       jj_consume_token(ANY);
     }
     jj_consume_token(0);
-          {if (true) return stg;}
+        {if (true) return stg;}
     throw new Error("Missing return statement in function");
   }
 
   final public void header() throws ParseException {
-                  List<String> list;
+    List < String > list;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LINEBREAK:
       jj_consume_token(LINEBREAK);
@@ -189,22 +192,22 @@ public class DotGParser implements DotGParserConstants {
     case INPUT_HEADER:
       jj_consume_token(INPUT_HEADER);
       list = stringList();
-                                                     addSignals (list, Type.INPUT);
+            addSignals(list, Type.INPUT);
       break;
     case OUTPUT_HEADER:
       jj_consume_token(OUTPUT_HEADER);
       list = stringList();
-                                                       addSignals (list, Type.OUTPUT);
+            addSignals(list, Type.OUTPUT);
       break;
     case INTERNAL_HEADER:
       jj_consume_token(INTERNAL_HEADER);
       list = stringList();
-                                                         addSignals (list, Type.INTERNAL);
+            addSignals(list, Type.INTERNAL);
       break;
     case DUMMY_HEADER:
       jj_consume_token(DUMMY_HEADER);
       list = stringList();
-                                                      addDummies (list);
+            addDummies(list);
       break;
     case UNSUPPORTED_HEADER:
       jj_consume_token(UNSUPPORTED_HEADER);
@@ -217,8 +220,9 @@ public class DotGParser implements DotGParserConstants {
     }
   }
 
-  final public List<String> stringList() throws ParseException {
-                              Token t; List<String> list = new LinkedList<String>();
+  final public List < String > stringList() throws ParseException {
+    Token t;
+    List < String > list = new LinkedList < String > ();
     label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -230,9 +234,9 @@ public class DotGParser implements DotGParserConstants {
         break label_4;
       }
       t = jj_consume_token(NAME);
-                       list.add (t.image);
+            list.add(t.image);
     }
-         {if (true) return list;}
+        {if (true) return list;}
     throw new Error("Missing return statement in function");
   }
 
@@ -274,7 +278,8 @@ public class DotGParser implements DotGParserConstants {
   }
 
   final public void capacityEntry() throws ParseException {
-                         STGPlace p; int value;
+    STGPlace p;
+    int value;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 21:
       p = implicitPlaceReference();
@@ -288,7 +293,7 @@ public class DotGParser implements DotGParserConstants {
       throw new ParseException();
     }
     value = assignment();
-                p.setCapacity(value);
+        p.setCapacity(value);
   }
 
   final public void marking() throws ParseException {
@@ -310,15 +315,16 @@ public class DotGParser implements DotGParserConstants {
   }
 
   final public int assignment() throws ParseException {
-                     Token t;
+    Token t;
     jj_consume_token(25);
     t = jj_consume_token(INTEGER);
-                            {if (true) return Integer.parseInt(t.image);}
+        {if (true) return Integer.parseInt(t.image);}
     throw new Error("Missing return statement in function");
   }
 
   final public void markingEntry() throws ParseException {
-                        STGPlace p; int value = 1;
+    STGPlace p;
+    int value = 1;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 21:
       p = implicitPlaceReference();
@@ -339,29 +345,29 @@ public class DotGParser implements DotGParserConstants {
       jj_la1[11] = jj_gen;
       ;
     }
-                p.setTokens(value);
+        p.setTokens(value);
   }
 
   final public STGPlace implicitPlaceReference() throws ParseException {
-        Node t1, t2;
-        Token t;
-        Integer tokens = null;
+    Node t1, t2;
+    Token t;
+    Integer tokens = null;
     jj_consume_token(21);
     t1 = anyTransition();
     jj_consume_token(23);
     t2 = anyTransition();
     jj_consume_token(22);
-                {if (true) return implicitPlaces.get(Pair.of(t1,t2));}
+        {if (true) return implicitPlaces.get(Pair.of(t1, t2));}
     throw new Error("Missing return statement in function");
   }
 
   final public STGPlace explicitPlaceReference() throws ParseException {
-        Token t;
-        String name;
-        Integer tokens = null;
+    Token t;
+    String name;
+    Integer tokens = null;
     t = jj_consume_token(NAME);
-                       name = t.image;
-                {if (true) return (STGPlace) stg.getNodeByReference (name);}
+        name = t.image;
+        {if (true) return (STGPlace) stg.getNodeByReference(name);}
     throw new Error("Missing return statement in function");
   }
 
@@ -383,61 +389,61 @@ public class DotGParser implements DotGParserConstants {
     }
   }
 
-  final public Triple<String, Direction, Integer> signalTransition() throws ParseException {
-        Token t;
-        String name;
-        Direction direction;
-        Integer instance = null;
+  final public Triple < String, Direction, Integer > signalTransition() throws ParseException {
+    Token t;
+    String name;
+    Direction direction;
+    Integer instance = null;
     t = jj_consume_token(NAME);
-                     name = t.image;
+        name = t.image;
     t = jj_consume_token(DIRECTION);
-                          direction = Direction.fromString(t.image);
+        direction = Direction.fromString(t.image);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 24:
       jj_consume_token(24);
       t = jj_consume_token(INTEGER);
-                                        instance = Integer.parseInt(t.image);
+            instance = Integer.parseInt(t.image);
       break;
     default:
       jj_la1[13] = jj_gen;
       ;
     }
-          {if (true) return Triple.of (name, direction, instance);}
+        {if (true) return Triple.of(name, direction, instance);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Pair<String, Integer> dummyTransition() throws ParseException {
-        Token t;
-        String name;
-        Integer instance = null;
+  final public Pair < String, Integer > dummyTransition() throws ParseException {
+    Token t;
+    String name;
+    Integer instance = null;
     t = jj_consume_token(NAME);
-                     name = t.image;
+        name = t.image;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 24:
       jj_consume_token(24);
       t = jj_consume_token(INTEGER);
-                               instance = Integer.parseInt(t.image);
+            instance = Integer.parseInt(t.image);
       break;
     default:
       jj_la1[14] = jj_gen;
       ;
     }
-          {if (true) return Pair.of (name, instance);}
+        {if (true) return Pair.of(name, instance);}
     throw new Error("Missing return statement in function");
   }
 
   final public Node anyTransition() throws ParseException {
-        Triple<String, Direction, Integer> r;
-        Pair<String, Integer> r2;
-        Node t;
+    Triple < String, Direction, Integer > r;
+    Pair < String, Integer > r2;
+    Node t;
     if (jj_2_1(2147483647)) {
       r = signalTransition();
-                                   t = getOrCreate(r);
+            t = getOrCreate(r);
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
         r2 = dummyTransition();
-                                   t = getOrCreate(r2);
+            t = getOrCreate(r2);
         break;
       default:
         jj_la1[15] = jj_gen;
@@ -445,20 +451,20 @@ public class DotGParser implements DotGParserConstants {
         throw new ParseException();
       }
     }
-                {if (true) return t;}
+        {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
   final public void graphLine() throws ParseException {
-        Token t;
-        Node from, to;
+    Token t;
+    Node from, to;
     if (jj_2_2(2147483647)) {
       from = anyTransition();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
         t = jj_consume_token(NAME);
-                       from = getOrCreate(t.image);
+            from = getOrCreate(t.image);
         break;
       default:
         jj_la1[16] = jj_gen;
@@ -482,7 +488,7 @@ public class DotGParser implements DotGParserConstants {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case NAME:
           t = jj_consume_token(NAME);
-                               to = getOrCreate(t.image);
+                to = getOrCreate(t.image);
           break;
         default:
           jj_la1[18] = jj_gen;
@@ -490,7 +496,7 @@ public class DotGParser implements DotGParserConstants {
           throw new ParseException();
         }
       }
-                    createArc(from, to);
+            createArc(from, to);
     }
   }
 
@@ -515,7 +521,7 @@ public class DotGParser implements DotGParserConstants {
     finally { jj_save(2, xla); }
   }
 
-  private boolean jj_3_3() {
+  private boolean jj_3_2() {
     if (jj_scan_token(NAME)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -523,6 +529,11 @@ public class DotGParser implements DotGParserConstants {
     jj_scanpos = xsp;
     if (jj_scan_token(24)) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_9()) return true;
     return false;
   }
 
@@ -541,12 +552,7 @@ public class DotGParser implements DotGParserConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_3R_9()) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
+  private boolean jj_3_3() {
     if (jj_scan_token(NAME)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -574,7 +580,7 @@ public class DotGParser implements DotGParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x87c0,0xb000,0x20,0x40,0x8780,0x10000,0xb000,0x210000,0x210000,0x210000,0x210000,0x2000000,0x10000,0x1000000,0x1000000,0x10000,0x10000,0x10000,0x10000,};
+      jj_la1_0 = new int[] {0x87c0,0xb000,0x10,0x40,0x8780,0x10000,0xb000,0x210000,0x210000,0x210000,0x210000,0x2000000,0x10000,0x1000000,0x1000000,0x10000,0x10000,0x10000,0x10000,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[3];
   private boolean jj_rescan = false;
