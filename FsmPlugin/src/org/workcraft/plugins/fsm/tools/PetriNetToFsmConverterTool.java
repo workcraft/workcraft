@@ -22,7 +22,7 @@ public class PetriNetToFsmConverterTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Finate state machine [draw_astg]";
+		return "Finate state machine [Petrify]";
 	}
 
 	@Override

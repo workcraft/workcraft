@@ -739,4 +739,38 @@ public class VisualCircuitComponent extends VisualComponent implements
 		groupImpl.removeAllObservers();
 	}
 
+	@Override
+	public void rotateClockwise() {
+		super.rotateClockwise();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			vc.rotateClockwise();
+		}
+		setContactsDefaultPosition();
+	}
+
+	@Override
+	public void rotateCounterclockwise() {
+		super.rotateCounterclockwise();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			vc.rotateCounterclockwise();
+		}
+		setContactsDefaultPosition();
+	}
+
+	@Override
+	public void flipHorizontal() {
+		super.flipHorizontal();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			vc.flipHorizontal();
+		}
+	}
+
+	@Override
+	public void flipVertical() {
+		super.flipVertical();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			vc.flipVertical();
+		}
+	}
+
 }

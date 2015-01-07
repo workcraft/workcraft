@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
@@ -64,14 +66,17 @@ public class FsmToPetriNetConverter {
 
 	private Map<VisualEvent, VisualTransition> convertEvents() {
 		Map<VisualEvent, VisualTransition> result = new HashMap<VisualEvent, VisualTransition>();
+		HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)dstModel.getPetriNet().getReferenceManager();
+		NameManager nameManagerer = refManager.getNameManager(null);
 		for(VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
-			String name = srcModel.getMathModel().getNodeReference(event.getReferencedConnection());
-			VisualTransition transition = dstModel.createTransition(name, null);
 			Symbol symbol = event.getReferencedEvent().getSymbol();
+			String symbolName = srcModel.getMathName(symbol);
+			String name = nameManagerer.getDerivedName(null, symbolName);
+			VisualTransition transition = dstModel.createTransition(name, null);
 			transition.setPosition(event.getCenter());
 			transition.setForegroundColor(event.getColor());
 			if (symbol != null) {
-				transition.setLabel(srcModel.getMathName(symbol));
+				transition.setLabel(symbolName);
 			}
 			transition.setLabelColor(event.getSymbolColor());
 			result.put(event, transition);

@@ -387,4 +387,24 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		}
 	}
 
+	public void rotateClockwise() {
+		setNamePositioning(getNamePositioning().rotateClockwise());
+		setLabelPositioning(getLabelPositioning().rotateClockwise());
+	}
+
+	public void rotateCounterclockwise() {
+		setNamePositioning(getNamePositioning().rotateCounterclockwise());
+		setLabelPositioning(getLabelPositioning().rotateCounterclockwise());
+	}
+
+	public void flipHorizontal() {
+		setNamePositioning(getNamePositioning().flipHorizontal());
+		setLabelPositioning(getLabelPositioning().flipHorizontal());
+	}
+
+	public void flipVertical() {
+		setNamePositioning(getNamePositioning().flipVertical());
+		setLabelPositioning(getLabelPositioning().flipVertical());
+	}
+
 }

@@ -52,7 +52,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.SelectionChangedEvent;
@@ -87,10 +86,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		new DefaultMathNodeRemover().attach(getRoot());
 
 		new StateSupervisor() {
-			@Override
-			public void handleHierarchyEvent(HierarchyEvent e) {
-				observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
-			}
 			@Override
 			public void handleEvent(StateEvent e) {
 				observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));

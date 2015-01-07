@@ -282,12 +282,9 @@ public class STGGenerator {
 		Point2D plusDirection;
 		Point2D minusDirection;
 
-//		int maxC = Math.max(set.getClauses().size(), reset.getClauses().size());
-
 		VisualContact.Direction dir = contact.getDirection();
-
-		if (contact.getIOType()==IOType.INPUT) {
-			dir = VisualContact.Direction.flipDirection(dir);
+		if (contact.getIOType() == IOType.INPUT) {
+			dir = dir.flip();
 		}
 
 		switch(dir) {

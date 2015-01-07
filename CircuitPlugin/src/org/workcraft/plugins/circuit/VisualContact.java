@@ -47,6 +47,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -64,14 +65,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 		private Direction(String name) {
 			this.name = name;
-		}
-
-		public static Direction flipDirection(Direction direction) {
-			if (direction==Direction.WEST) return Direction.EAST;
-			if (direction==Direction.NORTH) return Direction.SOUTH;
-			if (direction==Direction.EAST) return Direction.WEST;
-			if (direction==Direction.SOUTH) return Direction.NORTH;
-			return null;
 		}
 
 		static public AffineTransform getDirectionTransform(Direction dir) {
@@ -102,6 +95,53 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			}
 			return choice;
 		}
+
+		public Direction rotateClockwise() {
+			switch (this) {
+			case WEST: return NORTH;
+			case NORTH: return EAST;
+			case EAST: return SOUTH;
+			case SOUTH: return WEST;
+			default: return this;
+			}
+		}
+
+		public Direction rotateCounterclockwise() {
+			switch (this) {
+			case WEST: return SOUTH;
+			case NORTH: return WEST;
+			case EAST: return NORTH;
+			case SOUTH: return EAST;
+			default: return this;
+			}
+		}
+
+		public Direction flipHorizontal() {
+			switch (this) {
+			case WEST: return EAST;
+			case EAST: return WEST;
+			default: return this;
+			}
+		}
+
+		public Direction flipVertical() {
+			switch (this) {
+			case NORTH: return SOUTH;
+			case SOUTH: return NORTH;
+			default: return this;
+			}
+		}
+
+		public Direction flip() {
+			switch (this) {
+			case WEST: return EAST;
+			case NORTH: return SOUTH;
+			case EAST: return WEST;
+			case SOUTH: return NORTH;
+			default: return this;
+			}
+		}
+
 	};
 
 	public static final Color inputColor = Color.RED;
@@ -379,6 +419,42 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public Place getReferencedZeroPlace() {
 		return referencedZeroPlace;
+	}
+
+	@Override
+	public void rotateClockwise() {
+		super.rotateClockwise();
+		setDirection(getDirection().rotateClockwise());
+	}
+
+	@Override
+	public void rotateCounterclockwise() {
+		super.rotateCounterclockwise();
+		setDirection(getDirection().rotateCounterclockwise());
+	}
+
+	@Override
+	public void flipHorizontal() {
+		super.flipHorizontal();
+		setDirection(getDirection().flipHorizontal());
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				setX(-getX());
+			}
+		}
+	}
+
+	@Override
+	public void flipVertical() {
+		super.flipVertical();
+		setDirection(getDirection().flipVertical());
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				setY(-getY());
+			}
+		}
 	}
 
 }

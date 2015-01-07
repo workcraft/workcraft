@@ -74,7 +74,7 @@ public class VisualState extends VisualComponent {
 			shape.moveTo(-s/2, -size/2 - s);
 			shape.lineTo(0.0, -size/2);
 			shape.lineTo(s/2, -size/2 - s);
-			g.setStroke(new BasicStroke(strokeWidth/2));
+			g.setStroke(new BasicStroke(strokeWidth));
 			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 			g.draw(shape);
 		}
