@@ -14,7 +14,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.interop.DotGImporter;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petrify.tasks.WriteSgTask;
 import org.workcraft.plugins.shared.PetrifyUtilitySettings;
@@ -101,13 +100,13 @@ public class ConversionTask implements Task<ConversionResult> {
 						writeSgTask, "Building state graph", subtaskMonitor);
 
 				if (writeSgResult.getOutcome() == Outcome.FINISHED) {
-					try {
-						ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
-						final Fsm fsm = new DotGImporter().importSG(in);
-						return Result.finished(new ConversionResult(null, fsm));
-					} catch (DeserialisationException e) {
-						return Result.exception(e);
-					}
+//					try {
+//						ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
+//						final Fsm fsm = new DotGImporter().importSG(in);
+//						return Result.finished(new ConversionResult(null, fsm));
+//					} catch (DeserialisationException e) {
+//						return Result.exception(e);
+//					}
 				}
 				if (writeSgResult.getOutcome() == Outcome.CANCELLED) {
 					return Result.cancelled();

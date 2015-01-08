@@ -22,8 +22,8 @@ import org.workcraft.util.Geometry;
 public class VisualEvent extends VisualConnection {
 	public static final Font symbolFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
-	private RenderedText symbolRenderedText = new RenderedText("", symbolFont, Positioning.CENTER, new Point2D.Double());
-	private Color symbolColor = CommonVisualSettings.getLabelColor();
+	private RenderedText labelRenderedText = new RenderedText("", symbolFont, Positioning.CENTER, new Point2D.Double());
+	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	public VisualEvent() {
 		this(null, null, null);
@@ -55,19 +55,24 @@ public class VisualEvent extends VisualConnection {
 		return (Event)getReferencedConnection();
 	}
 
-	public boolean getSymbolVisibility() {
+	public boolean getLabelVisibility() {
 		return CommonVisualSettings.getNameVisibility();
 	}
 
-	protected void cacheSymbolRenderedText(DrawRequest r) {
+	protected void cacheLabelRenderedText(DrawRequest r) {
+		String label = getSymbolName(r);
+		if (labelRenderedText.isDifferent(label, symbolFont, Positioning.CENTER, new Point2D.Double())) {
+			labelRenderedText = new RenderedText(label, symbolFont, Positioning.CENTER, new Point2D.Double());
+		}
+	}
+
+	public String getSymbolName(DrawRequest r) {
 		String symbolName = "ε";
 		Symbol symbol = getReferencedEvent().getSymbol();
 		if (symbol != null) {
 			symbolName = r.getModel().getMathName(symbol);
 		}
-		if (symbolRenderedText.isDifferent(symbolName, symbolFont, Positioning.CENTER, new Point2D.Double())) {
-			symbolRenderedText = new RenderedText(symbolName, symbolFont, Positioning.CENTER, new Point2D.Double());
-		}
+		return symbolName;
 	}
 
 	private AffineTransform getSymbolTransform() {
@@ -79,7 +84,7 @@ public class VisualEvent extends VisualConnection {
 			firstDerivative = Geometry.multiply(firstDerivative, -1);
 		}
 
-		Rectangle2D bb = symbolRenderedText.getBoundingBox();
+		Rectangle2D bb = labelRenderedText.getBoundingBox();
 		Point2D symbolPosition = new Point2D.Double(bb.getCenterX(), bb.getMaxY());
 		if (Geometry.crossProduct(firstDerivative, secondDerivative) < 0) {
 			symbolPosition.setLocation(symbolPosition.getX(), bb.getMinY());
@@ -94,16 +99,16 @@ public class VisualEvent extends VisualConnection {
 	}
 
 	protected void drawSymbolInLocalSpace(DrawRequest r) {
-		if (getSymbolVisibility()) {
-			cacheSymbolRenderedText(r);
+		if (getLabelVisibility()) {
+			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 
 			AffineTransform oldTransform = g.getTransform();
 			AffineTransform transform = getSymbolTransform();
 			g.transform(transform);
-			g.setColor(Coloriser.colorise(symbolColor, d.getColorisation()));
-			symbolRenderedText.draw(g);
+			g.setColor(Coloriser.colorise(labelColor, d.getColorisation()));
+			labelRenderedText.draw(g);
 			g.setTransform(oldTransform);
 		}
 	}
@@ -114,7 +119,7 @@ public class VisualEvent extends VisualConnection {
 	}
 
 	private Rectangle2D getSymbolBoundingBox() {
-		return BoundingBoxHelper.transform(symbolRenderedText.getBoundingBox(), getSymbolTransform());
+		return BoundingBoxHelper.transform(labelRenderedText.getBoundingBox(), getSymbolTransform());
 	}
 
 	@Override
@@ -132,11 +137,11 @@ public class VisualEvent extends VisualConnection {
 	}
 
 	public Color getSymbolColor() {
-		return symbolColor;
+		return labelColor;
 	}
 
 	public void setSymbolColor(Color symbolColor) {
-		this.symbolColor = symbolColor;
+		this.labelColor = symbolColor;
 	}
 
 }

@@ -144,9 +144,9 @@ public class Fsm extends AbstractMathModel {
 		return createNode(name, null, Symbol.class);
 	}
 
-	public Event connect(State first, State second, Symbol symbol) {
-		Container container = Hierarchy.getNearestContainer(first, second);
+	public Event createEvent(State first, State second, Symbol symbol) {
 		Event event = new Event(first, second, symbol);
+		Container container = Hierarchy.getNearestContainer(first, second);
 		container.add(event);
 		return event;
 	}

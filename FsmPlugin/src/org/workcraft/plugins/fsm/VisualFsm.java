@@ -64,7 +64,7 @@ public class VisualFsm extends AbstractVisualModel {
 		State mState1 = vState1.getReferencedState();
 		State mState2 = vState2.getReferencedState();
 
-		Event mEvent = ((Fsm)getMathModel()).connect(mState1, mState2, null);
+		Event mEvent = ((Fsm)getMathModel()).createEvent(mState1, mState2, null);
 		VisualEvent vEvent = new VisualEvent(mEvent, vState1, vState2);
 
 		Container container = Hierarchy.getNearestContainer(vState1, vState2);

@@ -8,9 +8,7 @@ import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.tools.AbstractContractorTool;
 import org.workcraft.interop.Exporter;
-import org.workcraft.interop.Importer;
 import org.workcraft.plugins.fsm.interop.DotGExporter;
-import org.workcraft.plugins.fsm.interop.DotGImporter;
 import org.workcraft.plugins.fsm.serialisation.DotGSerialiser;
 import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
@@ -34,7 +32,6 @@ public class FsmModule  implements Module {
 		pm.registerClass(ModelDescriptor.class, FsmModelDescriptor.class);
 
 		pm.registerClass(Exporter.class, DotGExporter.class);
-		pm.registerClass(Importer.class, DotGImporter.class);
 
 		pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
 

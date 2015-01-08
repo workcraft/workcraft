@@ -47,14 +47,10 @@ public class DeterminismCheckerTool implements Tool {
 		HashSet<State> nondeterministicStates = new HashSet<State>();
 		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateEventsMap(fsm);
 		for (State state: stateEvents.keySet()) {
-			HashSet<Symbol> symbols = new HashSet<Symbol>();
 			for (Event event: stateEvents.get(state)) {
 				Symbol symbol = event.getSymbol();
-				boolean symbolIsDummy = fsm.getName(symbol).isEmpty();
-				if (symbolIsDummy || symbols.contains(symbol)) {
+				if (symbol == null) {
 					nondeterministicStates.add(state);
-				} else {
-					symbols.add(symbol);
 				}
 			}
 		}
