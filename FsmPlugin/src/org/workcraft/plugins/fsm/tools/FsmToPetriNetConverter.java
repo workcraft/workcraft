@@ -8,6 +8,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
@@ -70,7 +71,7 @@ public class FsmToPetriNetConverter {
 		NameManager nameManagerer = refManager.getNameManager(null);
 		for(VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
 			Symbol symbol = event.getReferencedEvent().getSymbol();
-			String symbolName = srcModel.getMathName(symbol);
+			String symbolName = ((symbol == null) ? Fsm.EPSILON_SERIALISATION : srcModel.getMathName(symbol));
 			String name = nameManagerer.getDerivedName(null, symbolName);
 			VisualTransition transition = dstModel.createTransition(name, null);
 			transition.setPosition(event.getCenter());

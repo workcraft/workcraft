@@ -263,6 +263,7 @@ public class SelectionTool extends AbstractTool {
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(true);
+		editor.getWorkspaceEntry().setCanSelect(true);
 		currentNode = null;
 	}
 

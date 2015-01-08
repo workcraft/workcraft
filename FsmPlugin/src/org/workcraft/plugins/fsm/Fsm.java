@@ -37,9 +37,31 @@ public class Fsm extends AbstractMathModel {
 					handleInitialStateChange((State)sender);
 				} else if ((sender instanceof Event) && pce.getPropertyName().equals("symbol")) {
 					// Update the collection of symbols on a change of event symbol property
-					handleSymbolChange();
+					handleEventSymbolChange((Event)sender);
 				}
 			}
+		}
+
+		private void handleInitialStateChange(State state) {
+			for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
+				if ( !s.equals(state) ) {
+					if (state.isInitial()) {
+						s.setInitialQuiet(false);
+					} else {
+						s.setInitialQuiet(true);
+						break;
+					}
+				}
+			}
+		}
+
+		private void handleEventSymbolChange(Event event) {
+			HashSet<Node> unusedSymbols = new HashSet<Node>(getSymbols());
+			for (Event e: getEvents()) {
+				Symbol symbol = e.getSymbol();
+				unusedSymbols.remove(symbol);
+			}
+			remove(unusedSymbols);
 		}
 	}
 
@@ -50,7 +72,7 @@ public class Fsm extends AbstractMathModel {
 				for (Node node: e.getAffectedNodes()) {
 					if (node instanceof State) {
 						// Move the initial property to another state on state removal
-						handleInitialStateRemoval((State)node);
+						handleStateRemoval((State)node);
 					} else if (node instanceof Event) {
 						// Remove unused symbols on event deletion
 						handleEventRemoval((Event)node);
@@ -63,6 +85,32 @@ public class Fsm extends AbstractMathModel {
 						((State)node).setInitialQuiet(false);
 					}
 				}
+			}
+		}
+
+		private void handleStateRemoval(State state) {
+			if (state.isInitial()) {
+				for (State s: getStates()) {
+					if ( !s.equals(state) ) {
+						s.setInitial(true);
+						break;
+					}
+				}
+			}
+		}
+
+
+		private void handleEventRemoval(Event event) {
+			boolean symbolIsUnused = true;
+			Symbol symbol = event.getSymbol();
+			for (Event e: getEvents()) {
+				if ((e != event) && (e.getSymbol() == symbol)) {
+					symbolIsUnused = false;
+					break;
+				}
+			}
+			if (symbolIsUnused) {
+				remove(symbol);
 			}
 		}
 	}
@@ -84,55 +132,8 @@ public class Fsm extends AbstractMathModel {
 				return super.getPrefix(node);
 			}
 		});
-
 		new HierarchySupervisorExtension().attach(getRoot());
 		new StateSupervisorExtension().attach(getRoot());
-	}
-
-	private void handleInitialStateRemoval(State state) {
-		if (state.isInitial()) {
-			for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-				if ( !s.equals(state) ) {
-					s.setInitial(true);
-					break;
-				}
-			}
-		}
-	}
-
-	private void handleInitialStateChange(State state) {
-		for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-			if ( !s.equals(state) ) {
-				if (state.isInitial()) {
-					s.setInitialQuiet(false);
-				} else {
-					s.setInitialQuiet(true);
-					break;
-				}
-			}
-		}
-	}
-
-	private void handleSymbolChange() {
-		HashSet<Node> symbols = new HashSet<Node>(getSymbols());
-		for (Event e: Hierarchy.getChildrenOfType(getRoot(), Event.class)) {
-			symbols.remove(e.getSymbol());
-		}
-		remove(symbols);
-	}
-
-	private void handleEventRemoval(Event event) {
-		boolean symbolIsUnused = true;
-		Symbol symbol = event.getSymbol();
-		for (Event e: Hierarchy.getChildrenOfType(event.getParent(), Event.class)) {
-			if ((e != event) && (e.getSymbol() == symbol)) {
-				symbolIsUnused = false;
-				break;
-			}
-		}
-		if (symbolIsUnused) {
-			remove(symbol);
-		}
 	}
 
 	public State createState(String name) {

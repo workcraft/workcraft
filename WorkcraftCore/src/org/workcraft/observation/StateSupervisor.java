@@ -27,19 +27,21 @@ import org.workcraft.dom.Node;
 public abstract class StateSupervisor extends HierarchySupervisor implements StateObserver {
 
 	private void nodeAdded(Node node) {
-		if (node instanceof ObservableState)
+		if (node instanceof ObservableState) {
 			((ObservableState)node).addObserver(this);
-
-		for (Node n : node.getChildren())
+		}
+		for (Node n : node.getChildren()) {
 			nodeAdded(n);
+		}
 	}
 
 	private void nodeRemoved(Node node) {
-		if (node instanceof ObservableState)
+		if (node instanceof ObservableState) {
 			((ObservableState)node).removeObserver(this);
-
-		for (Node n : node.getChildren())
+		}
+		for (Node n : node.getChildren()) {
 			nodeRemoved(n);
+		}
 	}
 
 	@Override
@@ -48,7 +50,6 @@ public abstract class StateSupervisor extends HierarchySupervisor implements Sta
 			for (Node n : e.getAffectedNodes()) {
 				nodeAdded(n);
 			}
-
 		} else if (e instanceof NodesDeletedEvent) {
 			for (Node n : e.getAffectedNodes()) {
 				nodeRemoved(n);
