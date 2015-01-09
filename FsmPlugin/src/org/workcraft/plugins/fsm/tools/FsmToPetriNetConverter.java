@@ -79,7 +79,7 @@ public class FsmToPetriNetConverter {
 			if (symbol != null) {
 				transition.setLabel(symbolName);
 			}
-			transition.setLabelColor(event.getSymbolColor());
+			transition.setLabelColor(event.getLabelColor());
 			result.put(event, transition);
 		}
 		return result;
