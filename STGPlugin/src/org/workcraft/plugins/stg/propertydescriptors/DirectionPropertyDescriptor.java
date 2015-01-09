@@ -7,7 +7,6 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 
 public class DirectionPropertyDescriptor implements PropertyDescriptor {
@@ -17,6 +16,21 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
 	public DirectionPropertyDescriptor(STG stg, Node st) {
 		this.stg = stg;
 		this.st = st;
+	}
+
+	@Override
+	public String getName() {
+		return "Direction";
+	}
+
+	@Override
+	public Class<?> getType() {
+		return int.class;
+	}
+
+	@Override
+	public boolean isCombinable() {
+		return true;
 	}
 
 	@Override
@@ -35,26 +49,12 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
-	public Map<Object, String> getChoice() {
-		LinkedHashMap<Object, String> directions = new LinkedHashMap<Object, String>();
-		directions.put(SignalTransition.Direction.PLUS, "+");
-		directions.put(SignalTransition.Direction.MINUS, "-");
-		directions.put(SignalTransition.Direction.TOGGLE, "~");
-		return directions;
+	public Map<Direction, String> getChoice() {
+		Map<Direction, String> result = new LinkedHashMap<Direction, String>();
+		for (Direction item : Direction.values()) {
+			result.put(item, item.toString());
+		}
+		return result;
 	}
 
-	@Override
-	public String getName() {
-		return "Direction";
-	}
-
-	@Override
-	public Class<?> getType() {
-		return int.class;
-	}
-
-	@Override
-	public boolean isCombinable() {
-		return true;
-	}
 }

@@ -1,7 +1,5 @@
 package org.workcraft.dom.visual;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public enum Positioning {
 	TOP("Top", 0.0, -0.2),
@@ -28,12 +26,9 @@ public enum Positioning {
 		this.ySign = (yOffset == 0.0) ? 0 : (yOffset > 0.0) ? 1 : -1;
 	}
 
-	static public Map<String, Positioning> getChoice() {
-		LinkedHashMap<String, Positioning> choice = new LinkedHashMap<String, Positioning>();
-		for (Positioning item : Positioning.values()) {
-			choice.put(item.name, item);
-		}
-		return choice;
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	public Positioning flipHorizontal() {

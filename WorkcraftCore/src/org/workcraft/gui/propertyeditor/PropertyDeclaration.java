@@ -29,7 +29,6 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
 	private final O object;
 	private String name;
 	private Class<V> cls;
-	private Map<V, String> valueNames;
 	private boolean combinable;
 	private boolean writable;
 
@@ -38,25 +37,9 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
 	}
 
 	public PropertyDeclaration(O object, String name, Class<V> cls, boolean writable, boolean combinable) {
-		this(object, name, cls, null, writable, combinable);
-	}
-
-	public PropertyDeclaration(O object, String name, Class<V> cls, Map<String, V> predefinedValues) {
-		this(object, name, cls, predefinedValues, true, true);
-	}
-
-	public PropertyDeclaration(O object, String name, Class<V> cls, Map<String, V> choiceValues, boolean writable, boolean combinable) {
 		this.object = object;
 		this.name = name;
 		this.cls = cls;
-		if (choiceValues != null) {
-			valueNames = new LinkedHashMap<V, String>();
-			for (String k : choiceValues.keySet()) {
-				valueNames.put(choiceValues.get(k), k);
-			}
-		} else {
-			valueNames = null;
-		}
 		this.writable = writable;
 		this.combinable = combinable;
 	}
@@ -66,8 +49,15 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
 	abstract protected V getter(O object);
 
 	@Override
-	public Map<? extends Object, String> getChoice() {
-		return valueNames;
+	public Map<V, String> getChoice() {
+		LinkedHashMap<V, String> result = null;
+		if (cls.isEnum()) {
+			result = new LinkedHashMap<V, String>();
+			for (V item : cls.getEnumConstants()) {
+				result.put(item, item.toString());
+			}
+		}
+		return result;
 	}
 
 	@Override

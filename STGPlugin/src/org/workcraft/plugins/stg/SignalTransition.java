@@ -24,7 +24,6 @@ package org.workcraft.plugins.stg;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -33,55 +32,45 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 public class SignalTransition extends NamedTransition
 {
 	public enum Type {
-		INPUT,
-		OUTPUT,
-		INTERNAL;
+		INPUT("input"),
+		OUTPUT("output"),
+		INTERNAL("internal");
+
+		private final String name;
+
+		private Type(String name) {
+			this.name = name;
+		}
 
 		@Override
 		public String toString() {
-			switch(this)
-			{
-			case INPUT:
-				return "input";
-			case OUTPUT:
-				return "output";
-			case INTERNAL:
-				return "internal";
-			default:
-				throw new NotSupportedException();
-			}
+			return name;
 		}
 	}
 
 	public enum Direction {
-		PLUS,
-		MINUS,
-		TOGGLE;
+		PLUS("+"),
+		MINUS("-"),
+		TOGGLE("~");
+
+		private final String name;
+
+		private Direction(String name) {
+			this.name = name;
+		}
 
 		public static Direction fromString(String s) {
-			if (s.equals("+"))
-				return PLUS;
-			else if (s.equals("-"))
-				return MINUS;
-			else if (s.equals("~"))
-				return TOGGLE;
-
+			for (Direction item : Direction.values()) {
+				if ((s != null) && (s.equals(item.name))) {
+					return item;
+				}
+			}
 			throw new ArgumentException ("Unexpected string: " + s);
 		}
 
 		@Override
 		public String toString() {
-			switch(this)
-			{
-			case PLUS:
-				return "+";
-			case MINUS:
-				return "-";
-			case TOGGLE:
-				return "~";
-			default:
-				throw new NotSupportedException();
-			}
+			return name;
 		}
 	}
 

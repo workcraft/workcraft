@@ -33,8 +33,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
@@ -67,6 +65,11 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			this.name = name;
 		}
 
+		@Override
+		public String toString() {
+			return name;
+		}
+
 		static public AffineTransform getDirectionTransform(Direction dir) {
 			AffineTransform at = new AffineTransform();
 			if (dir!=null) {
@@ -86,14 +89,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				}
 			}
 			return at;
-		}
-
-		static public Map<String, Direction> getChoice() {
-			LinkedHashMap<String, Direction> choice = new LinkedHashMap<String, Direction>();
-			for (Direction item : Direction.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
 		}
 
 		public Direction rotateClockwise() {
@@ -184,7 +179,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
-				this, "Direction", Direction.class, Direction.getChoice()) {
+				this, "Direction", Direction.class) {
 			protected void setter(VisualContact object, Direction value) {
 				object.setDirection(value);
 			}
@@ -194,7 +189,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
-				this, "I/O type", IOType.class, IOType.getChoice()) {
+				this, "I/O type", IOType.class) {
 			protected void setter(VisualContact object, IOType value) {
 				object.setIOType(value);
 			}

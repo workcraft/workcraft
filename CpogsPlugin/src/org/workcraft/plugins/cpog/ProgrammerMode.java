@@ -8,8 +8,7 @@ public enum ProgrammerMode {
 	private String description;
 	private boolean reach;
 
-	public static final ProgrammerMode[] modes =
-	{
+	public static final ProgrammerMode[] modes = {
 		MICROCONTROLLER,
 		CPOG_SIZE
 	};
@@ -27,6 +26,7 @@ public enum ProgrammerMode {
 		this.reach = reach;
 	}
 
+	@Override
 	public String toString() {
 		return description;
 	}

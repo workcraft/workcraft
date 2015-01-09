@@ -136,7 +136,7 @@ public class StgGenerator {
 		}
 	}
 
-	static Color[] tokenColors = DfsSettings.getTokenPalette().colors;
+	static Color[] tokenColors = DfsSettings.getTokenPalette().getColors();
 	private ColorGenerator createColorGenerator(boolean required) {
 		ColorGenerator result = null;
 		if (required) {

@@ -20,8 +20,8 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
+import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 
 
 public class VisualPlaceNode extends VisualComponent{
@@ -51,7 +51,7 @@ public class VisualPlaceNode extends VisualComponent{
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Positioning>(
-				this, "Error Positioning", Positioning.class, Positioning.getChoice()) {
+				this, "Error Positioning", Positioning.class) {
 			protected void setter(VisualPlaceNode object, Positioning value) {
 				object.setErrLabelPositioning(value);
 			}

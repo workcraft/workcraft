@@ -70,12 +70,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			this.name = name;
 		}
 
-		static public Map<String, ConnectionType> getChoice() {
-			LinkedHashMap<String, ConnectionType> choice = new LinkedHashMap<String, ConnectionType>();
-			for (ConnectionType item : ConnectionType.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	};
 
@@ -92,12 +89,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			this.name = name;
 		}
 
-		static public Map<String, ScaleMode> getChoice() {
-			LinkedHashMap<String, ScaleMode> choice = new LinkedHashMap<String, ScaleMode>();
-			for (ScaleMode item : ScaleMode.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 
@@ -157,41 +151,51 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
 				this, "Line width", Double.class) {
-			protected void setter(VisualConnection object, Double value) {
+			@Override
+			public void setter(VisualConnection object, Double value) {
 				object.setLineWidth(value);
 			}
-			protected Double getter(VisualConnection object) {
+			@Override
+			public Double getter(VisualConnection object) {
 				return object.getLineWidth();
 			}
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
 				this, "Arrow width", Double.class) {
-			protected void setter(VisualConnection object, Double value) {
+			@Override
+			public void setter(VisualConnection object, Double value) {
 				object.setArrowWidth(value);
 			}
-			protected Double getter(VisualConnection object) {
+			@Override
+			public Double getter(VisualConnection object) {
 				return object.getArrowWidth();
 			}
 		});
 
-		LinkedHashMap<String, Double> arrowLengths = new LinkedHashMap<String, Double>();
-		arrowLengths.put("none", 0.0);
-		arrowLengths.put("short", 0.2);
-		arrowLengths.put("medium", 0.4);
-		arrowLengths.put("long", 0.8);
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-				this, "Arrow length", Double.class, arrowLengths) {
-			protected void setter(VisualConnection object, Double value) {
+				this, "Arrow length", Double.class) {
+			@Override
+			public void setter(VisualConnection object, Double value) {
 				object.setArrowLength(value);
 			}
-			protected Double getter(VisualConnection object) {
+			@Override
+			public Double getter(VisualConnection object) {
 				return object.getArrowLength();
+			}
+			@Override
+			public Map<Double, String> getChoice() {
+				LinkedHashMap<Double, String> result = new LinkedHashMap<Double, String>();
+				result.put(0.0, "none");
+				result.put(0.2, "short");
+				result.put(0.4, "medium");
+				result.put(0.8, "long");
+				return result;
 			}
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ConnectionType>(
-				this, "Connection type", ConnectionType.class, ConnectionType.getChoice()) {
+				this, "Connection type", ConnectionType.class) {
 			protected void setter(VisualConnection object, ConnectionType value) {
 				object.setConnectionType(value);
 			}
@@ -201,7 +205,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ScaleMode>(
-				this, "Scale mode", ScaleMode.class, ScaleMode.getChoice()) {
+				this, "Scale mode", ScaleMode.class) {
 			protected void setter(VisualConnection object, ScaleMode value) {
 				object.setScaleMode(value);
 			}

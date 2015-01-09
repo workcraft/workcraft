@@ -21,8 +21,6 @@
 
 package org.workcraft.plugins.cpog;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public enum VariableState
 {
@@ -33,45 +31,33 @@ public enum VariableState
 	public final char value;
 	private final String name;
 
-	private VariableState(char value, String name)
-	{
+	private VariableState(char value, String name) {
 		this.value = value;
 		this.name = name;
 	}
 
-	static public Map<String, VariableState> getChoice() {
-		LinkedHashMap<String, VariableState> choice = new LinkedHashMap<String, VariableState>();
-		for (VariableState item : VariableState.values()) {
-			choice.put(item.name, item);
-		}
-		return choice;
+	@Override
+	public String toString() {
+		return name;
 	}
 
-	@Override
-	public String toString()
-	{
+	public static VariableState fromChar(char c) {
+		if (c == TRUE.value) return TRUE;
+		if (c == FALSE.value) return FALSE;
+		return UNDEFINED;
+	}
+	public String getValueAsString() {
 		return Character.toString(value);
 	}
 
-	public static VariableState fromChar(char c)
-	{
-		if (c == TRUE.value) return TRUE;
-		if (c == FALSE.value) return FALSE;
-
-		return UNDEFINED;
-	}
-
-	public boolean matches(VariableState state)
-	{
+	public boolean matches(VariableState state) {
 		if (value == state.value) return true;
 		if (value == '?' || state.value == '?') return true;
 		return false;
 	}
 
-	public VariableState toggle()
-	{
-		switch(this)
-		{
+	public VariableState toggle() {
+		switch(this) {
 			case TRUE: return VariableState.FALSE;
 			case FALSE: return VariableState.UNDEFINED;
 			default: return VariableState.TRUE;

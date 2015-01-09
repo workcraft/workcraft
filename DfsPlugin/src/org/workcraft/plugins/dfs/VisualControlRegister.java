@@ -42,7 +42,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, SynchronisationType>(
-				this, "Synchronisation type", SynchronisationType.class, SynchronisationType.getChoice()) {
+				this, "Synchronisation type", SynchronisationType.class) {
 			public void setter(VisualControlRegister object, SynchronisationType value) {
 				object.getReferencedControlRegister().setSynchronisationType(value);
 			}

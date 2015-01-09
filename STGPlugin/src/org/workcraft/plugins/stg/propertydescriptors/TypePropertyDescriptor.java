@@ -19,6 +19,21 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 	}
 
 	@Override
+	public String getName() {
+		return "Signal type";
+	}
+
+	@Override
+	public Class<?> getType() {
+		return int.class;
+	}
+
+	@Override
+	public boolean isCombinable() {
+		return true;
+	}
+
+	@Override
 	public boolean isWritable() {
 		return true;
 	}
@@ -34,27 +49,12 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 	}
 
 	@Override
-	public Map<Object, String> getChoice() {
-		LinkedHashMap<Object, String> result = new LinkedHashMap<Object, String>();
-		for (Type type: Type.values()) {
-			result.put(type, type.toString());
+	public Map<Type, String> getChoice() {
+		Map<Type, String> result = new LinkedHashMap<Type, String>();
+		for (Type item : Type.values()) {
+			result.put(item, item.toString());
 		}
 		return result;
-	}
-
-	@Override
-	public String getName() {
-		return "Signal type";
-	}
-
-	@Override
-	public Class<?> getType() {
-		return int.class;
-	}
-
-	@Override
-	public boolean isCombinable() {
-		return true;
 	}
 
 }

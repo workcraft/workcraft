@@ -104,7 +104,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, RenderType>(
-				this, "Render type", RenderType.class, RenderType.getChoice()) {
+				this, "Render type", RenderType.class) {
 			protected void setter(VisualCircuitComponent object,
 					RenderType value) {
 				object.setRenderType(value);

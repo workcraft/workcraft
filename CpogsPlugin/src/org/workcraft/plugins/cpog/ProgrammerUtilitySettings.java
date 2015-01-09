@@ -37,7 +37,7 @@ public class ProgrammerUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<ProgrammerUtilitySettings, GenerationMode>(
-				this, "Check mode", GenerationMode.class, GenerationMode.getChoice()) {
+				this, "Check mode", GenerationMode.class) {
 			protected void setter(ProgrammerUtilitySettings object, GenerationMode value) {
 				ProgrammerUtilitySettings.setSolutionMode(value);
 			}

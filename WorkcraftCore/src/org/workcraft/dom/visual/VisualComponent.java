@@ -122,7 +122,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-				this, "Label positioning", Positioning.class, Positioning.getChoice()) {
+				this, "Label positioning", Positioning.class) {
 			protected void setter(VisualComponent object, Positioning value) {
 				object.setLabelPositioning(value);
 			}
@@ -144,7 +144,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void addNamePropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-				this, "Name positioning", Positioning.class, Positioning.getChoice()) {
+				this, "Name positioning", Positioning.class) {
 			protected void setter(VisualComponent object, Positioning value) {
 				object.setNamePositioning(value);
 			}

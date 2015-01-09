@@ -49,6 +49,7 @@ public class Trace extends ArrayList<String> {
 		return super.remove(index);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer("");
 		// position

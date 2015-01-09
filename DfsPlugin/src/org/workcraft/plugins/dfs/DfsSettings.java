@@ -22,10 +22,8 @@
 package org.workcraft.plugins.dfs;
 
 import java.awt.Color;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -54,20 +52,21 @@ public class DfsSettings implements Settings {
 		NONE("Empty palette", new Color[]{Color.BLACK}),
 		RANDOM("Large Lab palette", null);
 
-		public final String name;
-		public final Color[] colors;
+		private final String name;
+		private final Color[] colors;
 
 		private Palette(String name, Color[] colors) {
 			this.name = name;
 			this.colors = colors;
 		}
 
-		static public Map<String, Palette> getChoice() {
-			LinkedHashMap<String, Palette> choice = new LinkedHashMap<String, Palette>();
-			for (Palette item : Palette.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
+		}
+
+		public Color[] getColors() {
+			return colors;
 		}
 	}
 
@@ -93,7 +92,7 @@ public class DfsSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<DfsSettings, Palette>(
-				this, "Token palette", Palette.class, Palette.getChoice()) {
+				this, "Token palette", Palette.class) {
 			protected void setter(DfsSettings object, Palette value) {
 				setTokenPalette(value);
 			}

@@ -1,8 +1,5 @@
 package org.workcraft.plugins.dfs;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
@@ -23,12 +20,9 @@ public class ControlRegister extends BinaryRegister {
 			this.name = name;
 		}
 
-		static public Map<String, SynchronisationType> getChoice() {
-			LinkedHashMap<String, SynchronisationType> choice = new LinkedHashMap<String, SynchronisationType>();
-			for (SynchronisationType item : SynchronisationType.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 

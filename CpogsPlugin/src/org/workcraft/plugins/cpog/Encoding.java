@@ -18,6 +18,7 @@ public class Encoding
 		states.put(variable, state);
 	}
 
+	@Override
 	public String toString() {
 		String result = "";
 		Set<Variable> sortedVariables = new TreeSet<Variable>(states.keySet());

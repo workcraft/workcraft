@@ -1,9 +1,7 @@
 package org.workcraft.plugins.cpog;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -22,12 +20,9 @@ public class CpogSettings implements Settings {
 			this.name = name;
 		}
 
-		static public Map<String, SatSolver> getChoice() {
-			LinkedHashMap<String, SatSolver> choice = new LinkedHashMap<String, SatSolver>();
-			for (SatSolver item : SatSolver.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 
@@ -63,7 +58,7 @@ public class CpogSettings implements Settings {
 
 	public CpogSettings() {
 		properties.add(new PropertyDeclaration<CpogSettings, SatSolver>(
-				this, "SAT solver", SatSolver.class, SatSolver.getChoice()) {
+				this, "SAT solver", SatSolver.class) {
 			protected void setter(CpogSettings object, SatSolver value) {
 				CpogSettings.setSatSolver(value);
 			}
