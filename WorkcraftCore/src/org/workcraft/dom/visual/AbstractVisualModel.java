@@ -531,7 +531,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return new ModelProperties();
 	}
 
-	public static Collection<Node> getMathChildren(Collection<Node> nodes) {
+	public Collection<Node> getMathChildren(Collection<Node> nodes) {
 		Collection<Node> ret = new HashSet<Node>();
 		for (Node node: nodes) {
 			if (node instanceof DependentNode) {

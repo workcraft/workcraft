@@ -111,20 +111,22 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 	}
 
 	@Override
-	public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
-		if (sourceModel==null) sourceModel = this;
+	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+		if (srcModel == null) {
+			srcModel = this;
+		}
 		HierarchicalUniqueNameReferenceManager manager = null;
 		if (getReferenceManager() instanceof HierarchicalUniqueNameReferenceManager) {
 			manager = (HierarchicalUniqueNameReferenceManager)getReferenceManager();
 		}
 		if (manager!=null) {
 			NamespaceProvider provider = null;
-			if (targetContainer instanceof NamespaceProvider) {
-				provider = (NamespaceProvider)targetContainer;
+			if (dstContainer instanceof NamespaceProvider) {
+				provider = (NamespaceProvider)dstContainer;
 			} else {
-				provider = manager.getNamespaceProvider(targetContainer);
+				provider = manager.getNamespaceProvider(dstContainer);
 			}
-			setNamespaceRecursively(manager, provider, sourceModel, sourceRoot, sourceChildren);
+			setNamespaceRecursively(manager, provider, srcModel, srcRoot, srcChildren);
 		}
 	}
 
