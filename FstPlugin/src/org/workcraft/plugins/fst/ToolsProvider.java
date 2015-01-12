@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fsm;
+package org.workcraft.plugins.fst;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,8 @@ import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
+import org.workcraft.plugins.fsm.State;
+import org.workcraft.plugins.fst.tools.FstSimulationTool;
 
 public class ToolsProvider implements CustomToolsProvider {
 
@@ -21,7 +22,7 @@ public class ToolsProvider implements CustomToolsProvider {
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool(false));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
-		result.add(new FsmSimulationTool());
+		result.add(new FstSimulationTool());
 		return result;
 	}
 }

@@ -285,6 +285,7 @@ public class VisualSTG extends AbstractVisualModel {
 			mathName = signalName + direction.toString();
 		}
 		SignalTransition mathTransition = stg.createSignalTransition(mathName, mathContainer);
+		mathTransition.setSignalType(type);
 		return createComponent(mathTransition, container, VisualSignalTransition.class);
 	}
 

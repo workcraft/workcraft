@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.fsm.serialisation;
+package org.workcraft.plugins.fst.serialisation;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -35,6 +35,10 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
+import org.workcraft.plugins.fst.Fst;
+import org.workcraft.plugins.fst.Signal;
+import org.workcraft.plugins.fst.Signal.Type;
+import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -86,32 +90,67 @@ public class DotGSerialiser implements ModelSerialiser {
 		return Format.SG;
 	}
 
-	private String getSrialisedName(Fsm fsm, Node node) {
+	private String getSrialisedNodeName(Fsm fsm, Node node) {
+		String ref = fsm.getNodeReference(node);
+		return NamespaceHelper.hierarchicalToFlatName(ref);
+	}
+
+	private String getSrialisedEventName(Fsm fsm, Event event) {
 		String result = null;
-		if (node instanceof Event) {
-			Event event = (Event)node;
+		if (event instanceof SignalEvent) {
+			SignalEvent signalEvent = (SignalEvent)event;
+			Signal signal = signalEvent.getSignal();
+			result = fsm.getNodeReference(signal);
+			if (signal.hasDirection()) {
+				result += signalEvent.getDirection();
+			}
+		} else {
 			Symbol symbol = event.getSymbol();
 			if (symbol == null) {
 				result = Fsm.EPSILON_SERIALISATION;
 			} else {
-				result = fsm.getName(symbol);
+				result = fsm.getNodeReference(symbol);
 			}
-		} else {
-			String ref = fsm.getNodeReference(node);
-			result = NamespaceHelper.hierarchicalToFlatName(ref);
-
 		}
-		return result;
+		return NamespaceHelper.hierarchicalToFlatName(result);
 	}
 
-	private void writeHeader(PrintWriter out, Fsm fsm, String header) {
+	private void writeSignalHeader(PrintWriter out, Fst fst, Type type) {
 		HashSet<String> names = new HashSet<String>();
-		for (Event event: fsm.getEvents()) {
-			String eventStr = getSrialisedName(fsm, event);
-			names.add(eventStr);
+		for (Signal signal: fst.getSignals(type)) {
+			String name = getSrialisedNodeName(fst, signal);
+			names.add(name);
 		}
 		if ( !names.isEmpty() ) {
-			out.write(header);
+			switch (type) {
+			case INPUT:
+				out.write(".inputs");
+				break;
+			case OUTPUT:
+				out.write(".outputs");
+				break;
+			case INTERNAL:
+				out.write(".internal");
+				break;
+			case DUMMY:
+				out.write(".dummy");
+				break;
+			}
+			for (String name: names) {
+				out.write(" " + name);
+			}
+			out.write("\n");
+		}
+	}
+
+	private void writeSymbolHeader(PrintWriter out, Fsm fsm) {
+		HashSet<String> names = new HashSet<String>();
+		for (Event event: fsm.getEvents()) {
+			String name = getSrialisedEventName(fsm, event);
+			names.add(name);
+		}
+		if ( !names.isEmpty() ) {
+			out.write(".dummy");
 			for (String s: names) {
 				out.write(" " + s);
 			}
@@ -124,23 +163,31 @@ public class DotGSerialiser implements ModelSerialiser {
 			State firstState = (State)event.getFirst();
 			State secondState = (State)event.getSecond();
 			if ((firstState != null) && (secondState != null)) {
-				String eventStr = getSrialisedName(fsm, event);
-				String firstStateStr = getSrialisedName(fsm, firstState);
-				String secondStateStr = getSrialisedName(fsm, secondState);
-				out.write(firstStateStr + " " + eventStr + " " + secondStateStr + "\n");
+				String eventName = getSrialisedEventName(fsm, event);
+				String firstStateName = getSrialisedNodeName(fsm, firstState);
+				String secondStateName = getSrialisedNodeName(fsm, secondState);
+				out.write(firstStateName + " " + eventName + " " + secondStateName + "\n");
 			}
 		}
 	}
 
 	private void writeMarking(PrintWriter out, Fsm fsm, State state) {
 		if (state != null) {
-			String stateStr = getSrialisedName(fsm, state);
+			String stateStr = getSrialisedNodeName(fsm, state);
 			out.print(".marking {" + stateStr + "}\n");
 		}
 	}
 
 	private void writeFsm(PrintWriter out, Fsm fsm) {
-		writeHeader(out, fsm, ".dummy");
+		if (fsm instanceof Fst) {
+			Fst fst = (Fst)fsm;
+			writeSignalHeader(out, fst, Type.INPUT);
+			writeSignalHeader(out, fst, Type.OUTPUT);
+			writeSignalHeader(out, fst, Type.INTERNAL);
+			writeSignalHeader(out, fst, Type.DUMMY);
+		} else {
+			writeSymbolHeader(out, fsm);
+		}
 
 		out.print(".state graph\n");
 		for (Event event : fsm.getEvents()) {

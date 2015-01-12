@@ -1,0 +1,60 @@
+/**
+ * JavaCC file
+ */options{    JDK_VERSION = "1.7";    LOOKAHEAD= 1;    STATIC = false;}PARSER_BEGIN(DotGParser)package org.workcraft.plugins.fst.javacc;import java.util.HashSet;import java.util.HashMap;import java.util.List;
+import java.util.LinkedList;
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.fsm.Event;
+import org.workcraft.plugins.fsm.State;
+import org.workcraft.plugins.fst.Fst;
+import org.workcraft.plugins.fst.Signal;
+import org.workcraft.plugins.fst.Signal.Type;
+import org.workcraft.plugins.fst.SignalEvent;
+import org.workcraft.plugins.fst.SignalEvent.Direction;
+import org.workcraft.util.Pair;import org.workcraft.exceptions.FormatException;public class DotGParser{    private HashMap < String, Type > signals;    private HashSet < String > dummies;    private Fst fst;    private void init() {        signals = new HashMap < String, Type > ();        dummies = new HashSet < String > ();        fst = new Fst();    }
+    private State getOrCreateState(String name) {
+        Node node = fst.getNodeByReference(name);
+        if (node == null) {
+            node = fst.createState(name);
+        }
+        if (!(node instanceof State)) {
+            throw new FormatException("Node " + name + " is not a state.");
+        }
+        return (State) node;
+    }
+
+    private Signal getOrCreateSignal(String name) {
+        Signal signal = null;
+        Node node = fst.getNodeByReference(name);
+       	if (node == null) {
+       	    if (signals.containsKey(name)) {
+	       	    Type type = signals.get(name);                signal = fst.createSignal(name, type);
+            }
+       	} else if (node instanceof Signal) {
+       	    signal = (Signal)node;
+       	} else {           	throw new FormatException("Node \"" + name + "\" already exists and it is not a signal.");
+        }
+        return signal;
+    }
+    private Event createEvent(State fromState, State toState, Signal signal) {
+        Event event = fst.createSignalEvent(fromState, toState, signal);
+        return event;    }    private void addSignals(List < String > list, Type type) {        for (String name : list) {            if (signals.containsKey(name)) {                Type oldType = signals.get(name);                if (!oldType.equals(type)) {                    throw new FormatException("The " + type + " signal \"" + name
+                        + "\" was already listed as an " + oldType + " signal.");                }            } else {                signals.put(name, type);            }        }    }}PARSER_END(DotGParser)<* >SKIP :{    " "
+|   "\t"
+}< IGNORE_LINE >TOKEN :{    < REST : (~["\r", "\n"])* > : DEFAULT}< IGNORE_ALL >TOKEN :{    < ANY : ~[ ] >}TOKEN :{
+    < COMMENT: "#" (~["\r", "\n"])* >|   < LINEBREAK : ((< COMMENT >)? [ "\r", "\n" ])+ >|   < INPUT_HEADER : ".inputs" >|   < OUTPUT_HEADER : ".outputs" >|   < INTERNAL_HEADER : ".internal" >|   < DUMMY_HEADER : ".dummy" >|   < STATE_GRAPH : ".state graph" >|   < MARKING : ".marking" >|   < END : ".end" > : IGNORE_ALL|   < UNSUPPORTED_HEADER : "." < NAME >> : IGNORE_LINE|   < NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >|   < DIRECTION : [ "+", "-", "~" ] >|   < INTEGER : ([ "0"-"9" ])+ >|   "{"|   "}"|   "<"|   ">"|   ","|   "/"|   "="}Fst parse() :{}{    {        init();    }    (        header() < LINEBREAK >    )*    graph()    (        footer() < LINEBREAK >    )*    < END > (< ANY >)* < EOF >    {        return fst;    }}void header() :{    List < String > list;}{    (< LINEBREAK >)?    (        < INPUT_HEADER > list = stringList()        {            addSignals(list, Type.INPUT);        }    |   < OUTPUT_HEADER > list = stringList()        {            addSignals(list, Type.OUTPUT);        }    |   < INTERNAL_HEADER > list = stringList()        {            addSignals(list, Type.INTERNAL);        }    |   < DUMMY_HEADER > list = stringList()        {            addSignals(list, Type.DUMMY);        }    |   < UNSUPPORTED_HEADER > < REST >    )}List < String > stringList() :{    Token t;    List < String > list = new LinkedList < String > ();}{    (        t = < NAME >        {            list.add(t.image);        }    )*    {        return list;    }}void footer() :{}{    < MARKING > marking()|   < UNSUPPORTED_HEADER > < REST >}void marking() :{    Token t;
+    State state;}{    "{" t = < NAME > "}"    {
+        state = getOrCreateState(t.image);    }    {        state.setInitial(true);    }}void graph() :{}{    < STATE_GRAPH > < LINEBREAK >    (        graphLine() < LINEBREAK >    )*}void graphLine() :{    Token t;    State fromState;
+    Signal signal;
+    Direction direction;
+    Event event;
+    State toState;}{    (        t = < NAME >        {            fromState = getOrCreateState(t.image);        }    )    (        (
+            t = < NAME >            {                signal = getOrCreateSignal(t.image);
+                direction = Direction.TOGGLE;            }            (
+                t = <  DIRECTION >
+                {                    direction = Direction.fromString(t.image);
+                }
+            )?
+        )        (            t = < NAME >            {                toState = getOrCreateState(t.image);            }        )        {            event = createEvent(fromState, toState, signal);
+            if (event instanceof SignalEvent) {
+                SignalEvent signalEvent = (SignalEvent)event;                signalEvent.setDirection(direction);
+            }            fromState = toState;        }    )+}
