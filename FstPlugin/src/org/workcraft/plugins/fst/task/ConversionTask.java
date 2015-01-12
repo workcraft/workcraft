@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fsm.task;
+package org.workcraft.plugins.fst.task;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -13,9 +13,9 @@ import javax.swing.SwingUtilities;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.interop.DotGImporter;
-import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.fst.Fst;
+import org.workcraft.plugins.fst.interop.DotGImporter;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.WriteSgTask;
 import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -57,7 +57,7 @@ public class ConversionTask implements Task<ConversionResult> {
 	}
 
 	final private WorkspaceEntry we;
-	final Pattern hugeSgPattern = Pattern.compile("with ([0-9]+) states");
+	final Pattern hugeSgPattern = Pattern.compile("Do you really want to dump a state graph with ([0-9]+) states ?");
 
 	public ConversionTask(WorkspaceEntry we) {
 		this.we = we;
@@ -70,7 +70,7 @@ public class ConversionTask implements Task<ConversionResult> {
 		try {
 			// Common variables
 			monitor.progressUpdate(0.05);
-			PetriNet pn = (PetriNet)we.getModelEntry().getMathModel();
+			PetriNetModel pn = (PetriNetModel)we.getModelEntry().getMathModel();
 			pn.setTitle(we.getTitle());
 			Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
 			if (pnExporter == null) {
@@ -103,8 +103,8 @@ public class ConversionTask implements Task<ConversionResult> {
 				if (writeSgResult.getOutcome() == Outcome.FINISHED) {
 					try {
 						ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
-						final Fsm fsm = new DotGImporter().importSG(in);
-						return Result.finished(new ConversionResult(null, fsm));
+						final Fst fst = new DotGImporter().importSG(in);
+						return Result.finished(new ConversionResult(null, fst));
 					} catch (DeserialisationException e) {
 						return Result.exception(e);
 					}

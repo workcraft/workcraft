@@ -50,6 +50,7 @@ public class Trace extends ArrayList<Step>{
 		return super.remove(index);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer("");
 		// position

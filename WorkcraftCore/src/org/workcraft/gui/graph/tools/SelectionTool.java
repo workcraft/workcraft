@@ -263,6 +263,7 @@ public class SelectionTool extends AbstractTool {
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(true);
+		editor.getWorkspaceEntry().setCanSelect(true);
 		currentNode = null;
 	}
 
@@ -787,6 +788,11 @@ public class SelectionTool extends AbstractTool {
 		if (!model.getSelection().isEmpty()) {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
+			for(Node node : model.getSelection()) {
+				if(node instanceof VisualComponent) {
+					((VisualComponent) node).rotateClockwise();
+				}
+			}
 			afterSelectionModification(editor);
 		}
 	}
@@ -796,6 +802,11 @@ public class SelectionTool extends AbstractTool {
 		if (!model.getSelection().isEmpty()) {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
+			for(Node node : model.getSelection()) {
+				if(node instanceof VisualComponent) {
+					((VisualComponent) node).rotateCounterclockwise();
+				}
+			}
 			afterSelectionModification(editor);
 		}
 	}
@@ -805,6 +816,11 @@ public class SelectionTool extends AbstractTool {
 		if (!model.getSelection().isEmpty()) {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, -1, 1);
+			for(Node node : model.getSelection()) {
+				if(node instanceof VisualComponent) {
+					((VisualComponent) node).flipHorizontal();
+				}
+			}
 			afterSelectionModification(editor);
 		}
 	}
@@ -814,6 +830,11 @@ public class SelectionTool extends AbstractTool {
 		if (!model.getSelection().isEmpty()) {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, 1, -1);
+			for(Node node : model.getSelection()) {
+				if(node instanceof VisualComponent) {
+					((VisualComponent)node).flipVertical();
+				}
+			}
 			afterSelectionModification(editor);
 		}
 	}

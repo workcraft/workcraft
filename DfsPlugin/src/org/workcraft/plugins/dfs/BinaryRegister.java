@@ -1,8 +1,5 @@
 package org.workcraft.plugins.dfs;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.workcraft.observation.PropertyChangedEvent;
 
 public class BinaryRegister extends MathDelayNode {
@@ -18,12 +15,9 @@ public class BinaryRegister extends MathDelayNode {
 			this.name = name;
 		}
 
-		static public Map<String, Marking> getChoice() {
-			LinkedHashMap<String, Marking> choice = new LinkedHashMap<String, Marking>();
-			for (Marking item : Marking.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 

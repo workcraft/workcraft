@@ -177,7 +177,6 @@ public class CycleAnaliserTool extends AbstractTool {
 		selectedCycle = null;
 		dfs = null;
 		cycleTable.clearSelection();
-		editor.getWorkspaceEntry().setCanModify(true);
 	}
 
 	@Override

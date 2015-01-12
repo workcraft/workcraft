@@ -9,7 +9,7 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings
 
 	public MpsatSettings fromXML (Element element) {
 		String name = XmlUtil.readStringAttr(element, "name");
-		MpsatMode mode = MpsatMode.getMode(element.getAttribute("mode"));
+		MpsatMode mode = MpsatMode.getModeByArgument(element.getAttribute("mode"));
 		int verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
 		int solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
 		SolutionMode solutionMode = SolutionMode.valueOf(XmlUtil.readStringAttr(element, "solutionMode"));

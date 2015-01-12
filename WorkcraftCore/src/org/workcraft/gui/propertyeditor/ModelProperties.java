@@ -2,6 +2,7 @@ package org.workcraft.gui.propertyeditor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -73,6 +74,15 @@ public class ModelProperties implements Properties {
 	@Override
 	public Collection<PropertyDescriptor> getDescriptors() {
 		return Collections.unmodifiableList(propertyDescriptors);
+	}
+
+	public void sortByPropertyName() {
+		Collections.sort(propertyDescriptors, new Comparator<PropertyDescriptor>() {
+			@Override
+			public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {
+				return (o1.getName().compareTo(o2.getName()));
+			}
+		});
 	}
 
 }

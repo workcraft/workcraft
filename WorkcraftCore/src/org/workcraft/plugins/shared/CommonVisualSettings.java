@@ -161,7 +161,7 @@ public class CommonVisualSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-				this, "Label positioning", Positioning.class, Positioning.getChoice()) {
+				this, "Label positioning", Positioning.class) {
 			protected void setter(CommonVisualSettings object, Positioning value) {
 				CommonVisualSettings.setLabelPositioning(value);
 			}
@@ -191,7 +191,7 @@ public class CommonVisualSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-				this, "Name positioning", Positioning.class, Positioning.getChoice()) {
+				this, "Name positioning", Positioning.class) {
 			protected void setter(CommonVisualSettings object, Positioning value) {
 				CommonVisualSettings.setNamePositioning(value);
 			}

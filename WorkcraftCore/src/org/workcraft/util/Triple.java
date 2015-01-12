@@ -58,6 +58,7 @@ public class Triple <T1, T2, T3> {
 		return true;
 	}
 
+	@Override
 	public String toString() {
 		return "<" + first.toString() + ", " + second.toString() + ", " + third.toString() + ">";
 	}

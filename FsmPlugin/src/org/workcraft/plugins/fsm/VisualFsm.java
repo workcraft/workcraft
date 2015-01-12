@@ -64,13 +64,25 @@ public class VisualFsm extends AbstractVisualModel {
 		State mState1 = vState1.getReferencedState();
 		State mState2 = vState2.getReferencedState();
 
-		Event mEvent = ((Fsm)getMathModel()).connect(mState1, mState2, null);
+		Event mEvent = ((Fsm)getMathModel()).createEvent(mState1, mState2, null);
 		VisualEvent vEvent = new VisualEvent(mEvent, vState1, vState2);
 
 		Container container = Hierarchy.getNearestContainer(vState1, vState2);
 		container.add(vEvent);
 		return vEvent;
 	}
+//
+//	@Override
+//	public Collection<Node> getMathChildren(Collection<Node> nodes) {
+//		Collection<Node> ret = super.getMathChildren(nodes);
+//		for (Node node: new LinkedList<Node>(ret)) {
+//			if (node instanceof Event) {
+//				Event event = (Event)node;
+//				ret.add(event.getSymbol());
+//			}
+//		}
+//		return ret;
+//	}
 
 	public String getStateName(VisualState state) {
 		return getMathModel().getName(state.getReferencedComponent());

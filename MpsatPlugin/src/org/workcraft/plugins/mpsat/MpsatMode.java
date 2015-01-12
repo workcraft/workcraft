@@ -21,35 +21,24 @@ public enum MpsatMode {
 	private String description;
 	private boolean reach;
 
-	public static final MpsatMode[] modes = {
-		DEADLOCK,
-		REACHABILITY,
-		STG_REACHABILITY,
-		CSC_CONFLICT_DETECTION,
-		NORMALCY,
-		RESOLVE_ENCODING_CONFLICTS,
-		USC_CONFLICT_DETECTION,
-		COMPLEX_GATE_IMPLEMENTATION,
-		GENERALISED_CELEMENT_IMPLEMENTATION,
-		STANDARD_CELEMENT_IMPLEMENTATION,
-		TECH_MAPPING
-	};
-
-	public static MpsatMode getMode (String arg) {
-		for (int i=0; i<modes.length; i++) {
-			if (modes[i].getArgument().equals(arg)) {
-				return modes[i];
-			}
-		}
-		return null;
-	}
-
 	MpsatMode(String argument, String description, boolean reach) {
 		this.argument = argument;
 		this.description = description;
 		this.reach = reach;
 	}
 
+	public static MpsatMode getModeByArgument(String arg) {
+		MpsatMode result = null;
+		for (MpsatMode mode: MpsatMode.values()) {
+			if (mode.getArgument().equals(arg)) {
+				result = mode;
+				break;
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public String toString() {
 		return description;
 	}

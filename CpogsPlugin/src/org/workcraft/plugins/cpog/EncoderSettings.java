@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cpog;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class EncoderSettings {
 
@@ -15,26 +13,13 @@ public class EncoderSettings {
 
 		public final String name;
 
-		public static final GenerationMode[] modes =
-			{
-				OPTIMAL_ENCODING,
-				RECURSIVE,
-				RANDOM,
-				SCENCO,
-				OLD_SYNT,
-				SEQUENTIAL
-			};
-
 		private GenerationMode(String name){
 			this.name = name;
 		}
 
-		static public Map<String, GenerationMode> getChoice() {
-			LinkedHashMap<String, GenerationMode> choice = new LinkedHashMap<String, GenerationMode>();
-			for (GenerationMode item : GenerationMode.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 

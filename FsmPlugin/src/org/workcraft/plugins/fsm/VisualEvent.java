@@ -20,10 +20,10 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Geometry;
 
 public class VisualEvent extends VisualConnection {
-	public static final Font symbolFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
-	private RenderedText symbolRenderedText = new RenderedText("", symbolFont, Positioning.CENTER, new Point2D.Double());
-	private Color symbolColor = CommonVisualSettings.getLabelColor();
+	private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
+	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	public VisualEvent() {
 		this(null, null, null);
@@ -40,12 +40,12 @@ public class VisualEvent extends VisualConnection {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Color>(
-				this, "Symbol color", Color.class) {
+				this, "Label color", Color.class) {
 			protected void setter(VisualEvent object, Color value) {
-				object.setSymbolColor(value);
+				object.setLabelColor(value);
 			}
 			protected Color getter(VisualEvent object) {
-				return object.getSymbolColor();
+				return object.getLabelColor();
 			}
 		});
 
@@ -55,22 +55,27 @@ public class VisualEvent extends VisualConnection {
 		return (Event)getReferencedConnection();
 	}
 
-	public boolean getSymbolVisibility() {
+	public boolean getLabelVisibility() {
 		return CommonVisualSettings.getNameVisibility();
 	}
 
-	protected void cacheSymbolRenderedText(DrawRequest r) {
-		String symbolName = "ε";
-		Symbol symbol = getReferencedEvent().getSymbol();
-		if (symbol != null) {
-			symbolName = r.getModel().getMathName(symbol);
-		}
-		if (symbolRenderedText.isDifferent(symbolName, symbolFont, Positioning.CENTER, new Point2D.Double())) {
-			symbolRenderedText = new RenderedText(symbolName, symbolFont, Positioning.CENTER, new Point2D.Double());
+	protected void cacheLabelRenderedText(DrawRequest r) {
+		String labelText = getLabel(r);
+		if (labelRenderedText.isDifferent(labelText, labelFont, Positioning.CENTER, new Point2D.Double())) {
+			labelRenderedText = new RenderedText(labelText, labelFont, Positioning.CENTER, new Point2D.Double());
 		}
 	}
 
-	private AffineTransform getSymbolTransform() {
+	public String getLabel(DrawRequest r) {
+		String label = "ε";
+		Symbol symbol = getReferencedEvent().getSymbol();
+		if (symbol != null) {
+			label = r.getModel().getMathName(symbol);
+		}
+		return label;
+	}
+
+	private AffineTransform getLabelTransform() {
 		ConnectionGraphic graphic = getGraphic();
 		Point2D middlePoint = graphic.getPointOnCurve(0.5);
 		Point2D firstDerivative = graphic.getDerivativeAt(0.5);
@@ -79,64 +84,64 @@ public class VisualEvent extends VisualConnection {
 			firstDerivative = Geometry.multiply(firstDerivative, -1);
 		}
 
-		Rectangle2D bb = symbolRenderedText.getBoundingBox();
-		Point2D symbolPosition = new Point2D.Double(bb.getCenterX(), bb.getMaxY());
+		Rectangle2D bb = labelRenderedText.getBoundingBox();
+		Point2D labelPosition = new Point2D.Double(bb.getCenterX(), bb.getMaxY());
 		if (Geometry.crossProduct(firstDerivative, secondDerivative) < 0) {
-			symbolPosition.setLocation(symbolPosition.getX(), bb.getMinY());
+			labelPosition.setLocation(labelPosition.getX(), bb.getMinY());
 		}
 
 		AffineTransform transform = AffineTransform.getTranslateInstance(
-				middlePoint.getX() - symbolPosition.getX(), middlePoint.getY() - symbolPosition.getY());
+				middlePoint.getX() - labelPosition.getX(), middlePoint.getY() - labelPosition.getY());
 		AffineTransform rotateTransform = AffineTransform.getRotateInstance(
-				firstDerivative.getX(), firstDerivative.getY(), symbolPosition.getX(), symbolPosition.getY());
+				firstDerivative.getX(), firstDerivative.getY(), labelPosition.getX(), labelPosition.getY());
 		transform.concatenate(rotateTransform);
 		return transform;
 	}
 
-	protected void drawSymbolInLocalSpace(DrawRequest r) {
-		if (getSymbolVisibility()) {
-			cacheSymbolRenderedText(r);
+	protected void drawLabelInLocalSpace(DrawRequest r) {
+		if (getLabelVisibility()) {
+			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 
 			AffineTransform oldTransform = g.getTransform();
-			AffineTransform transform = getSymbolTransform();
+			AffineTransform transform = getLabelTransform();
 			g.transform(transform);
-			g.setColor(Coloriser.colorise(symbolColor, d.getColorisation()));
-			symbolRenderedText.draw(g);
+			g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+			labelRenderedText.draw(g);
 			g.setTransform(oldTransform);
 		}
 	}
 
 	@Override
 	public void draw(DrawRequest r) {
-		drawSymbolInLocalSpace(r);
+		drawLabelInLocalSpace(r);
 	}
 
-	private Rectangle2D getSymbolBoundingBox() {
-		return BoundingBoxHelper.transform(symbolRenderedText.getBoundingBox(), getSymbolTransform());
+	private Rectangle2D getLabelBoundingBox() {
+		return BoundingBoxHelper.transform(labelRenderedText.getBoundingBox(), getLabelTransform());
 	}
 
 	@Override
 	public Rectangle2D getBoundingBox() {
-		Rectangle2D symbolBB = getSymbolBoundingBox();
-		return BoundingBoxHelper.union(super.getBoundingBox(), symbolBB);
+		Rectangle2D labelBB = getLabelBoundingBox();
+		return BoundingBoxHelper.union(super.getBoundingBox(), labelBB);
 	}
 
 
 	@Override
 	public boolean hitTest(Point2D pointInParentSpace) {
-		Rectangle2D symbolBB = getSymbolBoundingBox();
-		if (symbolBB != null && symbolBB.contains(pointInParentSpace)) return true;
+		Rectangle2D labelBB = getLabelBoundingBox();
+		if (labelBB != null && labelBB.contains(pointInParentSpace)) return true;
 		return super.hitTest(pointInParentSpace);
 	}
 
-	public Color getSymbolColor() {
-		return symbolColor;
+	public Color getLabelColor() {
+		return labelColor;
 	}
 
-	public void setSymbolColor(Color symbolColor) {
-		this.symbolColor = symbolColor;
+	public void setLabelColor(Color symbolColor) {
+		this.labelColor = symbolColor;
 	}
 
 }

@@ -19,7 +19,7 @@
  *
  */
 
-package org.workcraft.plugins.fsm.interop;
+package org.workcraft.plugins.fst.interop;
 
 import java.io.File;
 import java.io.InputStream;
@@ -27,10 +27,10 @@ import java.io.InputStream;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.FsmModelDescriptor;
-import org.workcraft.plugins.fsm.javacc.DotGParser;
-import org.workcraft.plugins.fsm.javacc.ParseException;
+import org.workcraft.plugins.fst.FstModelDescriptor;
+import org.workcraft.plugins.fst.Fst;
+import org.workcraft.plugins.fst.javacc.DotGParser;
+import org.workcraft.plugins.fst.javacc.ParseException;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -51,12 +51,12 @@ public class DotGImporter implements Importer {
 
 	@Override
 	public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-		return new ModelEntry(new FsmModelDescriptor(), importSG(in));
+		return new ModelEntry(new FstModelDescriptor(), importSG(in));
 	}
 
-	public Fsm importSG(InputStream in) throws DeserialisationException {
+	public Fst importSG(InputStream in) throws DeserialisationException {
 		try {
-			Fsm result = new DotGParser(in).parse();
+			Fst result = new DotGParser(in).parse();
 			return result;
 		} catch (FormatException e) {
 			throw new DeserialisationException(e);

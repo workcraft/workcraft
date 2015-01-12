@@ -5,9 +5,12 @@ import java.util.HashSet;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
@@ -37,9 +40,31 @@ public class Fsm extends AbstractMathModel {
 					handleInitialStateChange((State)sender);
 				} else if ((sender instanceof Event) && pce.getPropertyName().equals("symbol")) {
 					// Update the collection of symbols on a change of event symbol property
-					handleSymbolChange();
+					handleEventSymbolChange((Event)sender);
 				}
 			}
+		}
+
+		private void handleInitialStateChange(State state) {
+			for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
+				if ( !s.equals(state) ) {
+					if (state.isInitial()) {
+						s.setInitialQuiet(false);
+					} else {
+						s.setInitialQuiet(true);
+						break;
+					}
+				}
+			}
+		}
+
+		private void handleEventSymbolChange(Event event) {
+			HashSet<Node> unusedSymbols = new HashSet<Node>(getSymbols());
+			for (Event e: getEvents()) {
+				Symbol symbol = e.getSymbol();
+				unusedSymbols.remove(symbol);
+			}
+			remove(unusedSymbols);
 		}
 	}
 
@@ -50,7 +75,7 @@ public class Fsm extends AbstractMathModel {
 				for (Node node: e.getAffectedNodes()) {
 					if (node instanceof State) {
 						// Move the initial property to another state on state removal
-						handleInitialStateRemoval((State)node);
+						handleStateRemoval((State)node);
 					} else if (node instanceof Event) {
 						// Remove unused symbols on event deletion
 						handleEventRemoval((Event)node);
@@ -65,18 +90,41 @@ public class Fsm extends AbstractMathModel {
 				}
 			}
 		}
+
+		private void handleStateRemoval(State state) {
+			if (state.isInitial()) {
+				for (State s: getStates()) {
+					if ( !s.equals(state) ) {
+						s.setInitial(true);
+						break;
+					}
+				}
+			}
+		}
+
+		private void handleEventRemoval(Event event) {
+			Symbol symbol = event.getSymbol();
+			if (symbol != null) {
+				boolean symbolIsUnused = true;
+				for (Event e: getEvents()) {
+					if ((e != event) && (e.getSymbol() == symbol)) {
+						symbolIsUnused = false;
+						break;
+					}
+				}
+				if (symbolIsUnused) {
+					remove(symbol);
+				}
+			}
+		}
 	}
 
 	public Fsm() {
-		this(null, null);
-	}
-
-	public Fsm(Container root) {
-		this(root, null);
+		this(null, (References)null);
 	}
 
 	public Fsm(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+		this(root, new HierarchicalUniqueNameReferenceManager(refs) {
 			@Override
 			public String getPrefix(Node node) {
                 if (node instanceof State) return "s";
@@ -84,56 +132,14 @@ public class Fsm extends AbstractMathModel {
 				return super.getPrefix(node);
 			}
 		});
+	}
 
+	public Fsm(Container root, ReferenceManager man) {
+		super(root, man);
 		new HierarchySupervisorExtension().attach(getRoot());
 		new StateSupervisorExtension().attach(getRoot());
 	}
 
-	private void handleInitialStateRemoval(State state) {
-		if (state.isInitial()) {
-			for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-				if ( !s.equals(state) ) {
-					s.setInitial(true);
-					break;
-				}
-			}
-		}
-	}
-
-	private void handleInitialStateChange(State state) {
-		for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-			if ( !s.equals(state) ) {
-				if (state.isInitial()) {
-					s.setInitialQuiet(false);
-				} else {
-					s.setInitialQuiet(true);
-					break;
-				}
-			}
-		}
-	}
-
-	private void handleSymbolChange() {
-		HashSet<Node> symbols = new HashSet<Node>(getSymbols());
-		for (Event e: Hierarchy.getChildrenOfType(getRoot(), Event.class)) {
-			symbols.remove(e.getSymbol());
-		}
-		remove(symbols);
-	}
-
-	private void handleEventRemoval(Event event) {
-		boolean symbolIsUnused = true;
-		Symbol symbol = event.getSymbol();
-		for (Event e: Hierarchy.getChildrenOfType(event.getParent(), Event.class)) {
-			if ((e != event) && (e.getSymbol() == symbol)) {
-				symbolIsUnused = false;
-				break;
-			}
-		}
-		if (symbolIsUnused) {
-			remove(symbol);
-		}
-	}
 
 	public State createState(String name) {
 		return createNode(name, null, State.class);
@@ -143,9 +149,9 @@ public class Fsm extends AbstractMathModel {
 		return createNode(name, null, Symbol.class);
 	}
 
-	public Event connect(State first, State second, Symbol symbol) {
-		Container container = Hierarchy.getNearestContainer(first, second);
+	public Event createEvent(State first, State second, Symbol symbol) {
 		Event event = new Event(first, second, symbol);
+		Container container = Hierarchy.getNearestContainer(first, second);
 		container.add(event);
 		return event;
 	}
@@ -178,6 +184,36 @@ public class Fsm extends AbstractMathModel {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+		if (srcModel == null) {
+			srcModel = this;
+		}
+		HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)getReferenceManager();
+		NameManager nameManagerer = refManager.getNameManager(null);
+		for (Node srcNode: srcChildren) {
+			if (srcNode instanceof Event) {
+				Event srcEvent = (Event)srcNode;
+				Symbol dstSymbol = null;
+				Symbol srcSymbol = srcEvent.getSymbol();
+				if (srcSymbol != null) {
+					String symbolName = srcModel.getNodeReference(srcSymbol);
+					Node dstNode = getNodeByReference(symbolName);
+					if (dstNode instanceof Symbol) {
+						dstSymbol = (Symbol)dstNode;
+					} else {
+						if (dstNode != null) {
+							symbolName = nameManagerer.getDerivedName(null, symbolName);
+						}
+						dstSymbol = createSymbol(symbolName);
+					}
+				}
+				srcEvent.setSymbol(dstSymbol);
+			}
+		}
+		super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fsm.task;
+package org.workcraft.plugins.fst.task;
 
 import java.io.File;
 
@@ -9,8 +9,8 @@ import org.workcraft.Framework;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.FsmModelDescriptor;
+import org.workcraft.plugins.fst.Fst;
+import org.workcraft.plugins.fst.FstModelDescriptor;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -38,11 +38,11 @@ public class ConversionResultHandler extends DummyProgressMonitor<ConversionResu
 				WorkspaceEntry we = task.getWorkspaceEntry();
 				Path<String> path = we.getWorkspacePath();
 				if (result.getOutcome() == Outcome.FINISHED) {
-					Fsm model = result.getReturnValue().getResult();
+					Fst model = result.getReturnValue().getResult();
 					final Workspace workspace = framework.getWorkspace();
 					final Path<String> directory = path.getParent();
 					final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));;
-					final ModelEntry me = new ModelEntry(new FsmModelDescriptor() , model);
+					final ModelEntry me = new ModelEntry(new FstModelDescriptor() , model);
 					workspace.add(directory, name, me, true, true);
 				} else if (result.getOutcome() != Outcome.CANCELLED) {
 					MainWindow mainWindow = framework.getMainWindow();

@@ -97,6 +97,7 @@ public class ConnectionTool extends AbstractTool {
 		mouseLeftFirstNode = false;
 		editor.getModel().selectNone();
 		editor.getWorkspaceEntry().setCanModify(true);
+		editor.getWorkspaceEntry().setCanSelect(false);
 	}
 
 	protected void updateState(GraphEditor editor) {

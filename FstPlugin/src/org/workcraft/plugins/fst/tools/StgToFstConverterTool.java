@@ -1,14 +1,14 @@
-package org.workcraft.plugins.fsm.tools;
+package org.workcraft.plugins.fst.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.plugins.fsm.task.ConversionResultHandler;
-import org.workcraft.plugins.fsm.task.ConversionTask;
+import org.workcraft.plugins.fst.task.ConversionResultHandler;
+import org.workcraft.plugins.fst.task.ConversionTask;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetriNetToFsmConverterTool implements Tool {
+public class StgToFstConverterTool implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -22,7 +22,7 @@ public class PetriNetToFsmConverterTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Finate state machine [draw_astg]";
+		return "Finate State Transducer [Petrify]";
 	}
 
 	@Override

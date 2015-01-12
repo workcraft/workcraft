@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.fsm.interop;
+package org.workcraft.plugins.fst.interop;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,7 +29,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.fsm.serialisation.DotGSerialiser;
+import org.workcraft.plugins.fst.serialisation.DotGSerialiser;
 import org.workcraft.serialisation.Format;
 
 public class DotGExporter implements Exporter {

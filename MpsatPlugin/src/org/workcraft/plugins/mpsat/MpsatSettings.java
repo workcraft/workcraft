@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,18 +25,15 @@ public class MpsatSettings {
 		FIRST("First solution"),
 		ALL("First 10 solutions");
 
-		public final String name;
+		private final String name;
 
 		private SolutionMode(String name) {
 			this.name = name;
 		}
 
-		static public Map<String, SolutionMode> getChoice() {
-			LinkedHashMap<String, SolutionMode> choice = new LinkedHashMap<String, SolutionMode>();
-			for (SolutionMode item : SolutionMode.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 

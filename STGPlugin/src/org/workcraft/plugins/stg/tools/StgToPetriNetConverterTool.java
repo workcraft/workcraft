@@ -7,10 +7,7 @@ import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.PetriNetModelDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.VisualDummyTransition;
-import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
-import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -37,7 +34,6 @@ public class StgToPetriNetConverterTool implements Tool {
 		we.captureMemento();
 		try {
 			final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
-			prepareForConversion(stg);
 			final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
 			final StgToPetriNetConverter converter = new StgToPetriNetConverter(stg, pn);
 			final Framework framework = Framework.getInstance();
@@ -48,20 +44,6 @@ public class StgToPetriNetConverterTool implements Tool {
 			workspace.add(directory, name, me, false, true);
 		} finally {
 			we.cancelMemento();
-		}
-	}
-
-	private void prepareForConversion(VisualSTG stg) {
-		for (VisualImplicitPlaceArc connection: stg.getVisualImplicitPlaceArcs()) {
-			stg.makeExplicit(connection);
-		}
-		for (VisualSignalTransition signalTransition: stg.getVisualSignalTransitions()) {
-			signalTransition.setLabel(stg.getMathName(signalTransition));
-			StgTransformationUtils.convertSignalToDummyTransition(stg, signalTransition);
-		}
-		for (VisualDummyTransition dummyTransition: stg.getVisualDummyTransitions()) {
-			dummyTransition.setLabel(stg.getMathName(dummyTransition));
-			StgTransformationUtils.convertDummyToDummyWithouInstance(stg, dummyTransition);
 		}
 	}
 

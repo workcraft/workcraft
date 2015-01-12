@@ -175,7 +175,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		AffineTransform at = new AffineTransform();
 		Direction dir = getDirection();
 		if (!(getParent() instanceof VisualFunctionComponent)) {
-			dir = Direction.flipDirection(dir);
+			dir = dir.flip();
 		}
 
 		switch (dir) {

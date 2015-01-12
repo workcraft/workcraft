@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat.gui;
 
 import info.clearthought.layout.TableLayout;
 
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -11,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -57,14 +55,15 @@ public class MpsatConfigurationDialog extends JDialog {
 	private int modalResult = 0;
 
 	class IntMode {
-		public int value;
-		public String description;
+		private final int value;
+		private final String description;
 
 		public IntMode(int value, String description) {
 			this.value = value;
 			this.description = description;
 		}
 
+		@Override
 		public String toString() {
 			return description;
 		}
@@ -98,7 +97,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 		modeCombo = new JComboBox();
 		modeCombo.setEditable(false);
-		for (MpsatMode mode : MpsatMode.modes) {
+		for (MpsatMode mode : MpsatMode.values()) {
 			modeCombo.addItem(mode);
 		}
 		modeCombo.addActionListener(new ActionListener() {

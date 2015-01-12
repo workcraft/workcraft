@@ -36,6 +36,16 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
+	public boolean isWritable() {
+		return true;
+	}
+
+	@Override
+	public boolean isCombinable() {
+		return false;
+	}
+
+	@Override
 	public Object getValue() throws InvocationTargetException {
 		return fsm.getName(symbol);
 	}
@@ -53,16 +63,6 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
     	} else {
     		throw new FormatException("Node \"" + name + "\" already exists and it is not a symbol.");
     	}
-	}
-
-	@Override
-	public boolean isWritable() {
-		return true;
-	}
-
-	@Override
-	public boolean isCombinable() {
-		return false;
 	}
 
 }

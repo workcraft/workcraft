@@ -53,6 +53,16 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 		return result;
 	}
 
+	public String convertNodeName(String srcName, Container container) {
+		return srcName;
+	}
+
+	public void afterConversion() {
+	}
+
+	public void beforeConversion() {
+	}
+
 	private Class<? extends VisualComponent> getVisualComponentClass(Class<? extends MathNode> mathNodeClass) {
 		VisualClass visualClassAnnotation = mathNodeClass.getAnnotation(VisualClass.class);
 		Class<?> visualClass = visualClassAnnotation.value();
@@ -61,11 +71,13 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 	}
 
 	private void convert() {
+		beforeConversion();
 		convertPages();
 		convertComponents();
 		convertGroups();
 		// Connections must be converted the last as their shapes change with node relocation.
 		convertConnections();
+		afterConversion();
 	}
 
 	private void convertPages() {
@@ -90,13 +102,14 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 			Class<? extends VisualComponent> srcVisualComponentClass = getVisualComponentClass(srcMathNodeClass);
 			Class<? extends VisualComponent> dstVisualComponentClass = getVisualComponentClass(dstMathNodeClass);
 			for(VisualComponent srcComponent: Hierarchy.getDescendantsOfType(srcModel.getRoot(), srcVisualComponentClass)) {
-				String ref = srcModel.getNodeMathReference(srcComponent);
-				if (ref != null) {
-					String path = NamespaceHelper.getParentReference(ref);
-					String name = NamespaceHelper.getNameFromReference(ref);
+				String srcRef = srcModel.getNodeMathReference(srcComponent);
+				if (srcRef != null) {
+					String path = NamespaceHelper.getParentReference(srcRef);
 					Container container = refToPage.get(path);
+					String srcName = NamespaceHelper.getNameFromReference(srcRef);
+					String dstName = convertNodeName(srcName, container);
 					Container mathContainer = NamespaceHelper.getMathContainer(dstModel, container);
-					MathNode dstMathNode = dstModel.getMathModel().createNode(name, mathContainer, dstMathNodeClass);
+					MathNode dstMathNode = dstModel.getMathModel().createNode(dstName, mathContainer, dstMathNodeClass);
 					VisualComponent dstComponent = dstModel.createComponent(dstMathNode, container, dstVisualComponentClass);
 					dstComponent.copyStyle(srcComponent);
 					putSrcToDstNode(srcComponent, dstComponent);

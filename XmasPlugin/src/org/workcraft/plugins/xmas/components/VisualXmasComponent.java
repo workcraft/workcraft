@@ -28,8 +28,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
@@ -63,12 +61,9 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 			this.quadrant = quadrant;
 		}
 
-		static public Map<String, Orientation> getChoice() {
-			LinkedHashMap<String, Orientation> choice = new LinkedHashMap<String, Orientation>();
-			for (Orientation item : Orientation.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	};
 
@@ -83,7 +78,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualXmasComponent, Orientation>(
-				this, "Orientation", Orientation.class, Orientation.getChoice()) {
+				this, "Orientation", Orientation.class) {
 			protected void setter(VisualXmasComponent object, Orientation value) {
 				object.setOrientation(value);
 			}

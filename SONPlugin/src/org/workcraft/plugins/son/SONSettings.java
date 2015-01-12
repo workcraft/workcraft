@@ -69,7 +69,7 @@ public class SONSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Positioning>(
-				this, "Error label positioning", Positioning.class, Positioning.getChoice()) {
+				this, "Error label positioning", Positioning.class) {
 			protected void setter(SONSettings object, Positioning value) {
 				SONSettings.setErrLabelPositioning(value);
 			}

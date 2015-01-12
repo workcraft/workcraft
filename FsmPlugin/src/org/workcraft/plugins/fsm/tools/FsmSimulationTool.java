@@ -27,7 +27,7 @@ import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
-public class SimulationTool extends PetriNetSimulationTool {
+public class FsmSimulationTool extends PetriNetSimulationTool {
 	private FsmToPetriNetConverter generator;
 
 	@Override

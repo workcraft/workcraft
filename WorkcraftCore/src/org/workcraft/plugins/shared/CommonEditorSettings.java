@@ -21,10 +21,8 @@
 
 package org.workcraft.plugins.shared;
 import java.awt.Color;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -44,12 +42,9 @@ public class CommonEditorSettings implements Settings {
 			this.name = name;
 		}
 
-		static public Map<String, TitleStyle> getChoice() {
-			LinkedHashMap<String, TitleStyle> choice = new LinkedHashMap<String, TitleStyle>();
-			for (TitleStyle item : TitleStyle.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 
@@ -135,7 +130,7 @@ public class CommonEditorSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, TitleStyle>(
-				this, "Model title style", TitleStyle.class, TitleStyle.getChoice()) {
+				this, "Model title style", TitleStyle.class) {
 			protected void setter(CommonEditorSettings object, TitleStyle value) {
 				CommonEditorSettings.setTitleStyle(value);
 			}

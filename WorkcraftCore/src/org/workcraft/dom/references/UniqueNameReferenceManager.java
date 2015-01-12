@@ -24,6 +24,10 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 		};
 	}
 
+	public NameManager getNameManager() {
+		return mgr;
+	}
+
 	@Override
 	public void attach(Node root) {
 		if (refs != null) {

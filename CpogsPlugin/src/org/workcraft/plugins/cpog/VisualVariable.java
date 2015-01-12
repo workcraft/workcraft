@@ -54,13 +54,16 @@ public class VisualVariable extends VisualComponent {
 	private static Font valueFont;
 
 	private final RenderedFormula valueFalseRenderedFormula = new RenderedFormula(
-			VariableState.FALSE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
+			VariableState.FALSE.getValueAsString(), One.instance(),
+			valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
 	private final RenderedFormula valueTrueRenderedFormula = new RenderedFormula(
-			VariableState.TRUE.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
+			VariableState.TRUE.getValueAsString(), One.instance(),
+			valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
 	private final RenderedFormula valueUndefinedRenderedFormula = new RenderedFormula(
-			VariableState.UNDEFINED.toString(), One.instance(), valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
+			VariableState.UNDEFINED.getValueAsString(), One.instance(),
+			valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
 	private RenderedFormula variableRenderedFormula = new RenderedFormula("", One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
 
@@ -79,7 +82,7 @@ public class VisualVariable extends VisualComponent {
 	public VisualVariable(Variable variable) {
 		super(variable);
 		addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
-				this, "State", VariableState.class, VariableState.getChoice()) {
+				this, "State", VariableState.class) {
 			public void setter(VisualVariable object, VariableState value) {
 				object.setState(value);
 			}

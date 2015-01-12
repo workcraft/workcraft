@@ -33,8 +33,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
@@ -47,6 +45,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -66,12 +65,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			this.name = name;
 		}
 
-		public static Direction flipDirection(Direction direction) {
-			if (direction==Direction.WEST) return Direction.EAST;
-			if (direction==Direction.NORTH) return Direction.SOUTH;
-			if (direction==Direction.EAST) return Direction.WEST;
-			if (direction==Direction.SOUTH) return Direction.NORTH;
-			return null;
+		@Override
+		public String toString() {
+			return name;
 		}
 
 		static public AffineTransform getDirectionTransform(Direction dir) {
@@ -95,13 +91,52 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			return at;
 		}
 
-		static public Map<String, Direction> getChoice() {
-			LinkedHashMap<String, Direction> choice = new LinkedHashMap<String, Direction>();
-			for (Direction item : Direction.values()) {
-				choice.put(item.name, item);
+		public Direction rotateClockwise() {
+			switch (this) {
+			case WEST: return NORTH;
+			case NORTH: return EAST;
+			case EAST: return SOUTH;
+			case SOUTH: return WEST;
+			default: return this;
 			}
-			return choice;
 		}
+
+		public Direction rotateCounterclockwise() {
+			switch (this) {
+			case WEST: return SOUTH;
+			case NORTH: return WEST;
+			case EAST: return NORTH;
+			case SOUTH: return EAST;
+			default: return this;
+			}
+		}
+
+		public Direction flipHorizontal() {
+			switch (this) {
+			case WEST: return EAST;
+			case EAST: return WEST;
+			default: return this;
+			}
+		}
+
+		public Direction flipVertical() {
+			switch (this) {
+			case NORTH: return SOUTH;
+			case SOUTH: return NORTH;
+			default: return this;
+			}
+		}
+
+		public Direction flip() {
+			switch (this) {
+			case WEST: return EAST;
+			case NORTH: return SOUTH;
+			case EAST: return WEST;
+			case SOUTH: return NORTH;
+			default: return this;
+			}
+		}
+
 	};
 
 	public static final Color inputColor = Color.RED;
@@ -144,7 +179,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
-				this, "Direction", Direction.class, Direction.getChoice()) {
+				this, "Direction", Direction.class) {
 			protected void setter(VisualContact object, Direction value) {
 				object.setDirection(value);
 			}
@@ -154,7 +189,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
-				this, "I/O type", IOType.class, IOType.getChoice()) {
+				this, "I/O type", IOType.class) {
 			protected void setter(VisualContact object, IOType value) {
 				object.setIOType(value);
 			}
@@ -379,6 +414,42 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	public Place getReferencedZeroPlace() {
 		return referencedZeroPlace;
+	}
+
+	@Override
+	public void rotateClockwise() {
+		super.rotateClockwise();
+		setDirection(getDirection().rotateClockwise());
+	}
+
+	@Override
+	public void rotateCounterclockwise() {
+		super.rotateCounterclockwise();
+		setDirection(getDirection().rotateCounterclockwise());
+	}
+
+	@Override
+	public void flipHorizontal() {
+		super.flipHorizontal();
+		setDirection(getDirection().flipHorizontal());
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				setX(-getX());
+			}
+		}
+	}
+
+	@Override
+	public void flipVertical() {
+		super.flipVertical();
+		setDirection(getDirection().flipVertical());
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				setY(-getY());
+			}
+		}
 	}
 
 }

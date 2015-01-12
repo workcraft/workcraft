@@ -192,7 +192,8 @@ public abstract class Path<Node>
 		return EmptyPath.instance();
 	}
 
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		if(isEmpty())
 			return "";
 		final Path<Node> parent = getParent();

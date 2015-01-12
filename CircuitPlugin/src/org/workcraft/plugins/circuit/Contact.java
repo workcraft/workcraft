@@ -21,9 +21,6 @@
 
 package org.workcraft.plugins.circuit;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -43,12 +40,9 @@ public class Contact extends MathNode implements BooleanVariable {
 			this.name = name;
 		}
 
-		static public Map<String, IOType> getChoice() {
-			LinkedHashMap<String, IOType> choice = new LinkedHashMap<String, IOType>();
-			for (IOType item : IOType.values()) {
-				choice.put(item.name, item);
-			}
-			return choice;
+		@Override
+		public String toString() {
+			return name;
 		}
 	};
 

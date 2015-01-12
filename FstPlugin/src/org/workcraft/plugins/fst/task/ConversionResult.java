@@ -1,14 +1,14 @@
-package org.workcraft.plugins.fsm.task;
+package org.workcraft.plugins.fst.task;
 
-import org.workcraft.plugins.fsm.Fsm;
+import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.Result;
 
 public class ConversionResult {
 	private Result<? extends ExternalProcessResult> petrifyResult;
-	private Fsm result;
+	private Fst result;
 
-	public ConversionResult(Result<? extends ExternalProcessResult> petrifyResult, Fsm result) {
+	public ConversionResult(Result<? extends ExternalProcessResult> petrifyResult, Fst result) {
 		this.petrifyResult = petrifyResult;
 		this.result = result;
 	}
@@ -17,7 +17,7 @@ public class ConversionResult {
 		return petrifyResult;
 	}
 
-	public Fsm getResult() {
+	public Fst getResult() {
 		return result;
 	}
 }

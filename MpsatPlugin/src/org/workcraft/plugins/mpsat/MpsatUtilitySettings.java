@@ -66,7 +66,7 @@ public class MpsatUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, SolutionMode>(
-				this, "Check mode", SolutionMode.class, SolutionMode.getChoice()) {
+				this, "Check mode", SolutionMode.class) {
 			protected void setter(MpsatUtilitySettings object, SolutionMode value) {
 				MpsatUtilitySettings.setSolutionMode(value);
 			}
