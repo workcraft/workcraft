@@ -18,8 +18,8 @@ public class PetriNetToStgConverter extends DefaultModelConverter<VisualPetriNet
 	}
 
 	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getClassMap();
+	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getNodeClassMap() {
+		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getNodeClassMap();
 		result.put(Place.class, STGPlace.class);
 		result.put(Transition.class, DummyTransition.class);
 		return result;

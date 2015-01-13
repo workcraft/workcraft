@@ -2,6 +2,7 @@ package org.workcraft.plugins.fsm.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.VisualFsm;
@@ -26,7 +27,8 @@ public class FsmToPetriNetConverterTool implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof Fsm;
+		MathModel mathModel = we.getModelEntry().getMathModel();
+		return (mathModel.getClass().equals(Fsm.class));
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
+import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.fst.propertydescriptors.EventSignalPropertyDescriptor;
@@ -56,6 +57,18 @@ public class Fst extends Fsm {
 		});
 
 		new StateSupervisorExtension().attach(getRoot());
+	}
+
+	@Override
+	public boolean isDeterministicSymbol(Symbol symbol) {
+		boolean result = false;
+		if (symbol instanceof Signal) {
+			Signal signal = (Signal)symbol;
+			result = (signal.getType() != Type.DUMMY);
+		} else {
+			result = super.isDeterministicSymbol(symbol);
+		}
+		return result;
 	}
 
 	public Signal createSignal(String name, Type type) {

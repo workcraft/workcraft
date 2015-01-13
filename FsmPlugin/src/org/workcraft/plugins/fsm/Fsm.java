@@ -164,6 +164,10 @@ public class Fsm extends AbstractMathModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), Symbol.class);
 	}
 
+	public boolean isDeterministicSymbol(Symbol symbol) {
+		return (symbol != null);
+	}
+
 	final public Collection<Event> getEvents() {
 		return Hierarchy.getDescendantsOfType(getRoot(), Event.class);
 	}

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -47,9 +48,15 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 		return srcToDstNodes.get(srcNode);
 	}
 
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getClassMap() {
+	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getNodeClassMap() {
 		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = new HashMap<>();
 		result.put(CommentNode.class, CommentNode.class);
+		return result;
+	}
+
+	public Map<Class<? extends Connection>, Class<? extends Connection>> getConnectionClassMap() {
+		Map<Class<? extends Connection>, Class<? extends Connection>> result = new HashMap<>();
+		result.put(Connection.class, Connection.class);
 		return result;
 	}
 
@@ -68,6 +75,13 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 		Class<?> visualClass = visualClassAnnotation.value();
 		Class<? extends VisualComponent> visualComponentClass = visualClass.asSubclass(VisualComponent.class);
 		return visualComponentClass;
+	}
+
+	private Class<? extends VisualConnection> getVisualConnectionClass(Class<? extends Connection> connectionClass) {
+		VisualClass visualClassAnnotation = connectionClass.getAnnotation(VisualClass.class);
+		Class<?> visualClass = visualClassAnnotation.value();
+		Class<? extends VisualConnection> visualConnectionClass = visualClass.asSubclass(VisualConnection.class);
+		return visualConnectionClass;
 	}
 
 	private void convert() {
@@ -96,7 +110,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 
 	private void convertComponents() {
 		HashMap<String, Container> refToPage = NamespaceHelper.getRefToPageMapping(dstModel);
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> clsMap = getClassMap();
+		Map<Class<? extends MathNode>, Class<? extends MathNode>> clsMap = getNodeClassMap();
 		for (Class<? extends MathNode> srcMathNodeClass: clsMap.keySet()) {
 			Class<? extends MathNode> dstMathNodeClass = clsMap.get(srcMathNodeClass);
 			Class<? extends VisualComponent> srcVisualComponentClass = getVisualComponentClass(srcMathNodeClass);
@@ -119,21 +133,31 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 	}
 
 	private void convertConnections() {
-		for(VisualConnection srcConnection : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualConnection.class)) {
-			VisualComponent srcFirst = srcConnection.getFirst();
-			VisualComponent srcSecond = srcConnection.getSecond();
-			VisualNode dstFirst = getSrcToDstNode(srcFirst);
-			VisualNode dstSecond= getSrcToDstNode(srcSecond);
-			if ((dstFirst != null) && (dstSecond != null)) {
-				try {
-					VisualConnection dstConnection = dstModel.connect(dstFirst, dstSecond);
-					dstConnection.copyStyle(srcConnection);
-					putSrcToDstNode(srcConnection, dstConnection);
-				} catch (InvalidConnectionException e) {
-					e.printStackTrace();
+		Map<Class<? extends Connection>, Class<? extends Connection>> clsMap = getConnectionClassMap();
+		for (Class<? extends Connection> srcConnectionClass: clsMap.keySet()) {
+			Class<? extends Connection> dstConnectionClass = clsMap.get(srcConnectionClass);
+			Class<? extends VisualConnection> srcVisualConnectionClass = getVisualConnectionClass(srcConnectionClass);
+			Class<? extends VisualConnection> dstVisualConnectionClass = getVisualConnectionClass(dstConnectionClass);
+			for(VisualConnection srcConnection : Hierarchy.getDescendantsOfType(srcModel.getRoot(), srcVisualConnectionClass)) {
+				VisualComponent srcFirst = srcConnection.getFirst();
+				VisualComponent srcSecond = srcConnection.getSecond();
+				VisualNode dstFirst = getSrcToDstNode(srcFirst);
+				VisualNode dstSecond = getSrcToDstNode(srcSecond);
+				if ((dstFirst != null) && (dstSecond != null)) {
+					try {
+						VisualConnection dstConnection = dstModel.connect(dstFirst, dstSecond);
+						dstConnection.copyStyle(srcConnection);
+						afterConnectionConversion(srcConnection, dstConnection);
+						putSrcToDstNode(srcConnection, dstConnection);
+					} catch (InvalidConnectionException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
+	}
+
+	public void afterConnectionConversion(VisualConnection srcConnection, VisualConnection dstConnection) {
 	}
 
 	private void convertGroups() {

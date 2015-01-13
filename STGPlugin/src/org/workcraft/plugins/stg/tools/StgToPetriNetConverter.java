@@ -23,8 +23,8 @@ public 	class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG, Vi
 	}
 
 	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getClassMap();
+	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getNodeClassMap() {
+		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getNodeClassMap();
 		result.put(STGPlace.class, Place.class);
 		result.put(Transition.class, Transition.class);
 		return result;

@@ -35,11 +35,26 @@ public class DeadlockCheckerTool implements Tool {
 		final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
 		HashSet<State> deadlockStates = checkDeadlock(fsm);
 		if (deadlockStates.isEmpty()) {
-			JOptionPane.showMessageDialog(null,	"FSM is deadlock-free." ,
+			JOptionPane.showMessageDialog(null,	"The model is deadlock-free." ,
 					"Verification result", JOptionPane.INFORMATION_MESSAGE);
 		} else {
-			String stateStr = FsmUtils.statesToString(fsm, deadlockStates);
-			JOptionPane.showMessageDialog(null,	"FSM has deadlock states:\n" + stateStr,
+			HashSet<State> finalDeadlockStates = new HashSet<State>();
+			for (State state: deadlockStates) {
+				if (state.isFinal()) {
+					finalDeadlockStates.add(state);
+				}
+			}
+			deadlockStates.removeAll(finalDeadlockStates);
+			String message = "The model has a deadlock.";
+			if ( !deadlockStates.isEmpty() ) {
+				String stateStr = FsmUtils.statesToString(fsm, deadlockStates);
+				message += "\n\nNon-final deadlock states: \n" + stateStr;
+			}
+			if ( !finalDeadlockStates.isEmpty() ) {
+				String stateStr = FsmUtils.statesToString(fsm, finalDeadlockStates);
+				message += "\n\nFinal deadlockstates: \n" + stateStr;
+			}
+			JOptionPane.showMessageDialog(null,	message,
 					"Verification result", JOptionPane.WARNING_MESSAGE);
 		}
 	}
