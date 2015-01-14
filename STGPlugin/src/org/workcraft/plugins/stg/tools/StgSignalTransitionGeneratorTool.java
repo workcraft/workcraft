@@ -13,11 +13,11 @@ import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.util.GUI;
 
-public class STGSignalTransitionGeneratorTool  extends NodeGeneratorTool {
+public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 	static boolean shiftPressed;
 	static boolean controlPressed;
 
-	public STGSignalTransitionGeneratorTool() {
+	public StgSignalTransitionGeneratorTool() {
 		super(new DefaultNodeGenerator(SignalTransition.class)
 		{
 			@Override

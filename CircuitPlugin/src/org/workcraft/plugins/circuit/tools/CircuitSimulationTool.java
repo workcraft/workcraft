@@ -26,11 +26,11 @@ import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.tools.STGSimulationTool;
+import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
-public class CircuitSimulationTool extends STGSimulationTool {
+public class CircuitSimulationTool extends StgSimulationTool {
 	JButton copyInitButton;
 
 	@Override

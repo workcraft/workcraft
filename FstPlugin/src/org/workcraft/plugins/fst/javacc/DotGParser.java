@@ -26,38 +26,6 @@ public class DotGParser implements DotGParserConstants {
         fst = new Fst();
     }
 
-    private State getOrCreateState(String name) {
-        Node node = fst.getNodeByReference(name);
-        if (node == null) {
-            node = fst.createState(name);
-        }
-        if (!(node instanceof State)) {
-            throw new FormatException("Node " + name + " is not a state.");
-        }
-        return (State) node;
-    }
-
-    private Signal getOrCreateSignal(String name) {
-        Signal signal = null;
-        Node node = fst.getNodeByReference(name);
-        if (node == null) {
-            if (signals.containsKey(name)) {
-                    Type type = signals.get(name);
-                signal = fst.createSignal(name, type);
-            }
-        } else if (node instanceof Signal) {
-            signal = (Signal)node;
-        } else {
-                throw new FormatException("Node \u005c"" + name + "\u005c" already exists and it is not a signal.");
-        }
-        return signal;
-    }
-
-    private Event createEvent(State fromState, State toState, Signal signal) {
-        Event event = fst.createSignalEvent(fromState, toState, signal);
-        return event;
-    }
-
     private void addSignals(List < String > list, Type type) {
         for (String name : list) {
             if (signals.containsKey(name)) {
@@ -210,7 +178,7 @@ public class DotGParser implements DotGParserConstants {
     jj_consume_token(18);
     t = jj_consume_token(NAME);
     jj_consume_token(19);
-        state = getOrCreateState(t.image);
+        state = fst.getOrCreateState(t.image);
         state.setInitial(true);
   }
 
@@ -237,14 +205,15 @@ public class DotGParser implements DotGParserConstants {
     State fromState;
     Signal signal;
     Direction direction;
-    Event event;
+    SignalEvent signalEvent;
     State toState;
     t = jj_consume_token(NAME);
-            fromState = getOrCreateState(t.image);
+            fromState = fst.getOrCreateState(t.image);
     label_6:
     while (true) {
       t = jj_consume_token(NAME);
-                signal = getOrCreateSignal(t.image);
+                Type type = signals.get(t.image);
+                signal = fst.getOrCreateSignal(t.image, type);
                 direction = Direction.TOGGLE;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DIRECTION:
@@ -256,12 +225,9 @@ public class DotGParser implements DotGParserConstants {
         ;
       }
       t = jj_consume_token(NAME);
-                toState = getOrCreateState(t.image);
-            event = createEvent(fromState, toState, signal);
-            if (event instanceof SignalEvent) {
-                SignalEvent signalEvent = (SignalEvent)event;
-                signalEvent.setDirection(direction);
-            }
+                toState = fst.getOrCreateState(t.image);
+            signalEvent = fst.createSignalEvent(fromState, toState, signal);
+            signalEvent.setDirection(direction);
             fromState = toState;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:

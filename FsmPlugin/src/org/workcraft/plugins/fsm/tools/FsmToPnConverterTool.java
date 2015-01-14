@@ -13,7 +13,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class FsmToPetriNetConverterTool implements Tool {
+public class FsmToPnConverterTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
@@ -35,7 +35,7 @@ public class FsmToPetriNetConverterTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final VisualFsm fsm = (VisualFsm)we.getModelEntry().getVisualModel();
 		final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
-		final FsmToPetriNetConverter converter = new FsmToPetriNetConverter(fsm, pn);
+		final FsmToPnConverter converter = new FsmToPnConverter(fsm, pn);
 		final Framework framework = Framework.getInstance();
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();

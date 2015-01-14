@@ -61,7 +61,7 @@ public class DeadlockCheckerTool implements Tool {
 
 	private HashSet<State> checkDeadlock(final Fsm fsm) {
 		HashSet<State> deadlockStates = new HashSet<State>();
-		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateEventsMap(fsm);
+		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
 		HashSet<State> visited = new HashSet<State>();
 		Queue<State> queue = new LinkedList<State>();

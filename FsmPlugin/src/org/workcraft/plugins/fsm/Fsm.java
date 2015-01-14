@@ -11,6 +11,7 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
@@ -145,8 +146,34 @@ public class Fsm extends AbstractMathModel {
 		return createNode(name, null, State.class);
 	}
 
+    public State getOrCreateState(String name) {
+    	State state = null;
+        Node node = getNodeByReference(name);
+        if (node == null) {
+            state = createState(name);
+        } else if (node instanceof State) {
+        	state = (State)node;
+        } else {
+            throw new ArgumentException("Node '" + name + "' is not a state.");
+        }
+        return state;
+    }
+
 	public Symbol createSymbol(String name) {
 		return createNode(name, null, Symbol.class);
+	}
+
+	public Symbol getOrCreateSymbol(String name) {
+		Symbol symbol = null;
+		Node node = getNodeByReference(name);
+		if (node == null) {
+			symbol = createSymbol(name);
+		} else if (node instanceof Symbol) {
+			symbol = (Symbol)node;
+		} else {
+			throw new ArgumentException("Node '" + name + "' already exists and it is not a symbol.");
+		}
+		return symbol;
 	}
 
 	public Event createEvent(State first, State second, Symbol symbol) {

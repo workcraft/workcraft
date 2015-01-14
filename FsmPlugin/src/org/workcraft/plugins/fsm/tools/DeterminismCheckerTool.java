@@ -34,18 +34,18 @@ public class DeterminismCheckerTool implements Tool {
 		final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
 		HashSet<State> nondeterministicStates = checkDeterminism(fsm);
 		if (nondeterministicStates.isEmpty()) {
-			JOptionPane.showMessageDialog(null,	"FSM is deterministic." ,
+			JOptionPane.showMessageDialog(null,	"The model is deterministic." ,
 					"Verification result", JOptionPane.INFORMATION_MESSAGE);
 		} else {
 			String stateStr = FsmUtils.statesToString(fsm, nondeterministicStates);
-			JOptionPane.showMessageDialog(null,	"FSM has non-deterministic states:\n" + stateStr,
+			JOptionPane.showMessageDialog(null,	"The model has non-deterministic states:\n" + stateStr,
 					"Verification result", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
 	private HashSet<State> checkDeterminism(final Fsm fsm) {
 		HashSet<State> nondeterministicStates = new HashSet<State>();
-		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateEventsMap(fsm);
+		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 		for (State state: stateEvents.keySet()) {
 			HashSet<Symbol> symbols = new HashSet<Symbol>();
 			for (Event event: stateEvents.get(state)) {

@@ -1,9 +1,7 @@
 package org.workcraft.plugins.fst.tools;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.tools.DefaultModelConverter;
@@ -26,36 +24,30 @@ public 	class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualF
 	}
 
 	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getNodeClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getNodeClassMap();
+	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
+		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
 		result.put(State.class, State.class);
-//		result.put(Signal.class, Symbol.class);
 		return result;
 	}
 
 	@Override
-	public Map<Class<? extends Connection>, Class<? extends Connection>> getConnectionClassMap() {
-		Map<Class<? extends Connection>, Class<? extends Connection>> result = new HashMap<>();
-		result.put(SignalEvent.class, Event.class);
-		return result;
-	}
-
-	@Override
-	public void afterConnectionConversion(VisualConnection srcConnection, VisualConnection dstConnection) {
+	public VisualConnection convertConnection(VisualConnection srcConnection) {
+		VisualConnection dstConnection = super.convertConnection(srcConnection);
 		if ( (srcConnection instanceof VisualSignalEvent) && (dstConnection instanceof VisualEvent) ) {
-			VisualSignalEvent srcSignalEvent = (VisualSignalEvent)srcConnection;
-			VisualEvent dstEvent = (VisualEvent)dstConnection;
 			Fst fst = (Fst)getSrcModel().getMathModel();
-			Fsm fsm = (Fsm)getDstModel().getMathModel();
-			SignalEvent signalEvent = srcSignalEvent.getReferencedSignalEvent();
-			Signal signal = signalEvent.getSignal();
-			String name = fst.getName(signal);
-			if (signal.hasDirection()) {
-				name += signalEvent.getDirection().toString().replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
+			SignalEvent srcSignalEvent = (SignalEvent)srcConnection.getReferencedConnection();
+			Signal srcSignal = srcSignalEvent.getSignal();
+			String name = fst.getName(srcSignal);
+			if (srcSignal.hasDirection()) {
+				name += srcSignalEvent.getDirection();
+				name = name.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
 			}
-			Symbol symbol = fsm.createSymbol(name);
-			dstEvent.getReferencedEvent().setSymbol(symbol);
+			Fsm fsm = (Fsm)getDstModel().getMathModel();
+			Event dstEvent = (Event)dstConnection.getReferencedConnection();
+			Symbol symbol = fsm.getOrCreateSymbol(name);
+			dstEvent.setSymbol(symbol);
 		}
+		return dstConnection;
 	}
 
 }

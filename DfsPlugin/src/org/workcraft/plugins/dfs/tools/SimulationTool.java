@@ -37,10 +37,10 @@ import org.workcraft.plugins.dfs.stg.StgGenerator;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.tools.STGSimulationTool;
+import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
 
-public class SimulationTool extends STGSimulationTool {
+public class SimulationTool extends StgSimulationTool {
 	private StgGenerator generator;
 
 	@Override

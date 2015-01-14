@@ -11,8 +11,10 @@ import org.workcraft.gui.graph.tools.DefaultModelConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STGPlace;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 
@@ -23,10 +25,11 @@ public 	class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG, Vi
 	}
 
 	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getNodeClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getNodeClassMap();
+	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
+		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
 		result.put(STGPlace.class, Place.class);
-		result.put(Transition.class, Transition.class);
+		result.put(DummyTransition.class, Transition.class);
+		result.put(SignalTransition.class, Transition.class);
 		return result;
 	}
 
@@ -44,7 +47,7 @@ public 	class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG, Vi
 	}
 
 	@Override
-	public void beforeConversion() {
+	public void preprocessing() {
 		VisualSTG stg = getSrcModel();
 		for (VisualImplicitPlaceArc connection: stg.getVisualImplicitPlaceArcs()) {
 			stg.makeExplicit(connection);

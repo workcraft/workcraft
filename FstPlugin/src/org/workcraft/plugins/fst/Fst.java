@@ -6,6 +6,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -76,6 +77,23 @@ public class Fst extends Fsm {
 		signal.setType(type);
 		return signal;
 	}
+
+    public Signal getOrCreateSignal(String name, Type type) {
+        Signal signal = null;
+        Node node = getNodeByReference(name);
+       	if (node == null) {
+            signal = createSignal(name, type);
+       	} else if (node instanceof Signal) {
+       	    signal = (Signal)node;
+       	    if (signal.getType() != type) {
+       	    	throw new ArgumentException("Signal '" + name + "' already exists and its type '"
+       	    			+ signal.getType() + "' is different from the required \'" + type +"' type.");
+       	    }
+       	} else {
+           	throw new ArgumentException("Node '" + name + "' already exists and it is not a signal.");
+        }
+        return signal;
+    }
 
 	public SignalEvent createSignalEvent(State first, State second, Signal symbol) {
 		Container container = Hierarchy.getNearestContainer(first, second);

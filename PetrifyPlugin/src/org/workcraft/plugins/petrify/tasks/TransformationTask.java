@@ -2,13 +2,17 @@ package org.workcraft.plugins.petrify.tasks;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.UUID;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.fsm.Fsm;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -16,7 +20,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationTask implements Task<TransformationResult>{
@@ -36,23 +39,32 @@ public class TransformationTask implements Task<TransformationResult>{
 
 	@Override
 	public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
-		File stgFile = null;
+		File modelFile = null;
 		try {
 			final Framework framework = Framework.getInstance();
-			stgFile = File.createTempFile("stg_", ".g");
+			modelFile = File.createTempFile("stg_", ".g");
 
-			STGModel inStg = WorkspaceUtils.getAs(workspaceEntry, STGModel.class);
-			ExportTask exportTask = Export.createExportTask(inStg, stgFile, Format.STG, framework.getPluginManager());
+			Model model = workspaceEntry.getModelEntry().getMathModel();
+			UUID format = null;
+			if (model instanceof PetriNetModel) {
+				format = Format.STG;
+			} else if (model instanceof Fsm) {
+				format = Format.SG;
+			}
+
+			ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
 
 			final Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, description +": writing .g");
 
-			if (exportResult.getOutcome() != Outcome.FINISHED)
-				if (exportResult.getOutcome() == Outcome.CANCELLED)
+			if (exportResult.getOutcome() != Outcome.FINISHED) {
+				if (exportResult.getOutcome() == Outcome.CANCELLED) {
 					return Result.cancelled();
-				else
+				} else {
 					return Result.exception(exportResult.getCause());
+				}
+			}
 
-			PetrifyTask petrifyTask = new PetrifyTask(parameters, stgFile.getAbsolutePath());
+			PetrifyTask petrifyTask = new PetrifyTask(parameters, modelFile.getAbsolutePath());
 
 			final Result<? extends ExternalProcessResult> petrifyResult
 					= framework.getTaskManager().execute(petrifyTask, description + ": executing Petrify");
@@ -76,8 +88,8 @@ public class TransformationTask implements Task<TransformationResult>{
 		} catch (Throwable e) {
 			return Result.exception(e);
 		} finally {
-			if ((stgFile != null) && !PetrifyUtilitySettings.getDebugTemporaryFiles() ) {
-				stgFile.delete();
+			if ((modelFile != null) && !PetrifyUtilitySettings.getDebugTemporaryFiles() ) {
+				modelFile.delete();
 			}
 		}
 	}

@@ -35,7 +35,6 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -43,9 +42,9 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	public static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
 	private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, getRenderedTextOffset());
 
-	public VisualNamedTransition(Transition transition) {
-		super(transition, false, false, false);
-		transition.addObserver(this);
+	public VisualNamedTransition(NamedTransition namedTransition) {
+		super(namedTransition, false, false, false);
+		namedTransition.addObserver(this);
 		updateRenderedText();
 	}
 

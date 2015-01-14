@@ -34,7 +34,7 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.util.ColorGenerator;
 
-public class STGSimulationTool extends PetriNetSimulationTool {
+public class StgSimulationTool extends PetriNetSimulationTool {
 	private static Color inputsColor = Color.RED.darker();
 	private static Color outputsColor = Color.BLUE.darker();
 	private static Color internalsColor = Color.GREEN.darker();

@@ -27,7 +27,7 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 
-public class STGSelectionTool extends SelectionTool {
+public class StgSelectionTool extends SelectionTool {
 	private boolean cancelInPlaceEdit = false;
 
 	@Override

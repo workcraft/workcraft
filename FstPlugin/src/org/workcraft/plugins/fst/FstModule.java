@@ -14,6 +14,7 @@ import org.workcraft.plugins.fst.interop.DotGImporter;
 import org.workcraft.plugins.fst.serialisation.DotGSerialiser;
 import org.workcraft.plugins.fst.tools.FstToFsmConverterTool;
 import org.workcraft.plugins.fst.tools.FstToStgConverterTool;
+import org.workcraft.plugins.fst.tools.PnToFsmConverterTool;
 import org.workcraft.plugins.fst.tools.StgToFstConverterTool;
 import org.workcraft.serialisation.ModelSerialiser;
 
@@ -43,6 +44,13 @@ public class FstModule  implements Module {
 			@Override
 			public Tool create() {
 				return new FstToStgConverterTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new PnToFsmConverterTool();
 			}
 		});
 
