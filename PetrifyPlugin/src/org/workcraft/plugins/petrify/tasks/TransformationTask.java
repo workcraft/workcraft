@@ -51,6 +51,9 @@ public class TransformationTask implements Task<TransformationResult>{
 			} else if (model instanceof Fsm) {
 				format = Format.SG;
 			}
+			if (format == null) {
+				return Result.exception(new Throwable("Only STG or FST models can be transformed."));
+			}
 
 			ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
 

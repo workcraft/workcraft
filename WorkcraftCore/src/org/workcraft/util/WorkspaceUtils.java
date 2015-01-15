@@ -9,14 +9,15 @@ public class WorkspaceUtils {
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> T getAs(WorkspaceEntry entry, Class<T> cls) {
-		if(cls.isInstance(entry.getModelEntry().getModel()))
+		if(cls.isInstance(entry.getModelEntry().getModel())) {
 			return (T)entry.getModelEntry().getModel();
+		}
 
-		if(entry.getModelEntry().isVisual())
-		{
+		if(entry.getModelEntry().isVisual()) {
 			final MathModel mathModel = entry.getModelEntry().getMathModel();
-			if(cls.isInstance(mathModel))
+			if(cls.isInstance(mathModel)) {
 				return (T) mathModel;
+			}
 		}
 		return null;
 	}

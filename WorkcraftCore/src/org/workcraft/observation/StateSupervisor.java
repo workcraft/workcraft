@@ -55,6 +55,11 @@ public abstract class StateSupervisor extends HierarchySupervisor implements Sta
 				nodeRemoved(n);
 			}
 		}
+		handleHierarchyEvent(e);
+	}
+
+	public void handleHierarchyEvent(HierarchyEvent e) {
+
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package org.workcraft.plugins.fsm;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -13,13 +12,6 @@ import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddingEvent;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.fsm.propertydescriptors.EventSymbolPropertyDescriptor;
 import org.workcraft.plugins.fsm.propertydescriptors.SymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
@@ -29,96 +21,6 @@ import org.workcraft.util.Hierarchy;
 @VisualClass(org.workcraft.plugins.fsm.VisualFsm.class)
 public class Fsm extends AbstractMathModel {
 	public static String EPSILON_SERIALISATION = "epsilon";
-
-	private final class StateSupervisorExtension extends StateSupervisor {
-		@Override
-		public void handleEvent(StateEvent e) {
-			if (e instanceof PropertyChangedEvent) {
-				PropertyChangedEvent pce = (PropertyChangedEvent)e;
-				Object sender = e.getSender();
-				if ((sender instanceof State) && pce.getPropertyName().equals("initial")) {
-					// Update all the states on a change of the initial property
-					handleInitialStateChange((State)sender);
-				} else if ((sender instanceof Event) && pce.getPropertyName().equals("symbol")) {
-					// Update the collection of symbols on a change of event symbol property
-					handleEventSymbolChange((Event)sender);
-				}
-			}
-		}
-
-		private void handleInitialStateChange(State state) {
-			for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-				if ( !s.equals(state) ) {
-					if (state.isInitial()) {
-						s.setInitialQuiet(false);
-					} else {
-						s.setInitialQuiet(true);
-						break;
-					}
-				}
-			}
-		}
-
-		private void handleEventSymbolChange(Event event) {
-			HashSet<Node> unusedSymbols = new HashSet<Node>(getSymbols());
-			for (Event e: getEvents()) {
-				Symbol symbol = e.getSymbol();
-				unusedSymbols.remove(symbol);
-			}
-			remove(unusedSymbols);
-		}
-	}
-
-	private final class HierarchySupervisorExtension extends HierarchySupervisor {
-		@Override
-		public void handleEvent(HierarchyEvent e) {
-			if (e instanceof NodesDeletingEvent) {
-				for (Node node: e.getAffectedNodes()) {
-					if (node instanceof State) {
-						// Move the initial property to another state on state removal
-						handleStateRemoval((State)node);
-					} else if (node instanceof Event) {
-						// Remove unused symbols on event deletion
-						handleEventRemoval((Event)node);
-					}
-				}
-			} else if (e instanceof NodesAddingEvent) {
-				for (Node node: e.getAffectedNodes()) {
-					if (node instanceof State) {
-						// Make pasted states non-initial
-						((State)node).setInitialQuiet(false);
-					}
-				}
-			}
-		}
-
-		private void handleStateRemoval(State state) {
-			if (state.isInitial()) {
-				for (State s: getStates()) {
-					if ( !s.equals(state) ) {
-						s.setInitial(true);
-						break;
-					}
-				}
-			}
-		}
-
-		private void handleEventRemoval(Event event) {
-			Symbol symbol = event.getSymbol();
-			if (symbol != null) {
-				boolean symbolIsUnused = true;
-				for (Event e: getEvents()) {
-					if ((e != event) && (e.getSymbol() == symbol)) {
-						symbolIsUnused = false;
-						break;
-					}
-				}
-				if (symbolIsUnused) {
-					remove(symbol);
-				}
-			}
-		}
-	}
 
 	public Fsm() {
 		this(null, (References)null);
@@ -137,8 +39,8 @@ public class Fsm extends AbstractMathModel {
 
 	public Fsm(Container root, ReferenceManager man) {
 		super(root, man);
-		new HierarchySupervisorExtension().attach(getRoot());
-		new StateSupervisorExtension().attach(getRoot());
+		new InitialStateSupervisor(this).attach(getRoot());
+		new SymbolConsistencySupervisor(this).attach(getRoot());
 	}
 
 
