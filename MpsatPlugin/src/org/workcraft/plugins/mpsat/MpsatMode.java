@@ -30,7 +30,8 @@ public enum MpsatMode {
 	public static MpsatMode getModeByArgument(String arg) {
 		MpsatMode result = null;
 		for (MpsatMode mode: MpsatMode.values()) {
-			if (mode.getArgument().equals(arg)) {
+			String modeArg = mode.getArgument();
+			if ((modeArg != null) && modeArg.equals(arg)) {
 				result = mode;
 				break;
 			}
