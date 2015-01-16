@@ -38,7 +38,7 @@ public class BezierSerialiser implements CustomXMLSerialiser {
 			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
 			throws SerialisationException {
 		Bezier b = (Bezier)object;
-		BezierControlPoint[] cp = b.getControlPoints();
+		BezierControlPoint[] cp = b.getBezierControlPoints();
 
 		Element cp1e = XmlUtil.createChildElement("cp1", element);
 		Element cp2e = XmlUtil.createChildElement("cp2", element);

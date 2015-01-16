@@ -22,6 +22,8 @@
 package org.workcraft.dom.visual.connections;
 
 
+import java.util.List;
+
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
@@ -37,4 +39,5 @@ public interface ConnectionGraphic extends Node, Drawable, Touchable, Parametric
 	public void invalidate();
 
 	public void setDefaultControlPoints();
+	public List<ControlPoint> getControlPoints();
 }

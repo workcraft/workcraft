@@ -61,14 +61,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		this.parent = parent;
 	}
 
-//	public void setDefaultControlPoints() {
-//        initControlPoints (new BezierControlPoint(), new BezierControlPoint());
-//        cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
-//        cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
-//        finaliseControlPoints();
-//    }
-
-//	@Override
+	@Override
 	public void setDefaultControlPoints() {
 		initControlPoints(new BezierControlPoint(), new BezierControlPoint());
 		if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001 ) {
@@ -79,8 +72,6 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 			cp1.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.3));
 			cp2.setPosition(Geometry.lerp(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(), 0.6));
 		}
-		cp1.setHidden(true);
-		cp2.setHidden(true);
 		finaliseControlPoints();
 	}
 
@@ -97,7 +88,12 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		cp2.addObserver(this);
 	}
 
-	public BezierControlPoint[] getControlPoints() {
+	@Override
+	public List<ControlPoint> getControlPoints() {
+		return Arrays.asList( new ControlPoint[] { cp1, cp2 });
+	}
+
+	public BezierControlPoint[] getBezierControlPoints() {
 		return new BezierControlPoint[] { cp1, cp2 };
 	}
 

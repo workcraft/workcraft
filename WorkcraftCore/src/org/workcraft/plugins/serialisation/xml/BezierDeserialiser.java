@@ -43,9 +43,11 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
 			ReferenceResolver internalReferenceResolver,
 			ReferenceResolver externalReferenceResolver,
 			NodeFinaliser nodeFinaliser) throws DeserialisationException {
-		for (BezierControlPoint cp : ((Bezier)instance).getControlPoints())
+		Bezier bezier = (Bezier)instance;
+		for (BezierControlPoint cp : bezier.getBezierControlPoints()) {
 			nodeFinaliser.finaliseInstance(cp);
-		((Bezier)instance).finaliseControlPoints();
+		}
+		bezier.finaliseControlPoints();
 	}
 
 	@Override

@@ -198,6 +198,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 				this, "Connection type", ConnectionType.class) {
 			protected void setter(VisualConnection object, ConnectionType value) {
 				object.setConnectionType(value);
+				for (ControlPoint cp: object.getGraphic().getControlPoints()) {
+					cp.setHidden(false);
+				}
 			}
 			protected ConnectionType getter(VisualConnection object) {
 				return object.getConnectionType();
@@ -522,18 +525,15 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			if (srcGraphics instanceof Polyline) {
 				Polyline polyline = (Polyline)getGraphic();
 				polyline.resetControlPoints();
-				for (Node srcNode: srcGraphics.getChildren()) {
-					if (srcNode instanceof ControlPoint) {
-						ControlPoint srcCp = (ControlPoint)srcNode;
-						polyline.addControlPoint(srcCp.getPosition());
-					}
+				for (ControlPoint srcControlPoint: polyline.getControlPoints()) {
+					polyline.addControlPoint(srcControlPoint.getPosition());
 				}
 			} else if (srcGraphics instanceof Bezier) {
-				BezierControlPoint[] p = ((Bezier)srcGraphics).getControlPoints();
+				BezierControlPoint[] srcControlPoints = ((Bezier)srcGraphics).getBezierControlPoints();
 				BezierControlPoint cp1 = new BezierControlPoint();
-				cp1.setPosition(p[0].getPosition());
+				cp1.setPosition(srcControlPoints[0].getPosition());
 				BezierControlPoint cp2 = new BezierControlPoint();
-				cp2.setPosition(p[1].getPosition());
+				cp2.setPosition(srcControlPoints[1].getPosition());
 				Bezier bezier = (Bezier)getGraphic();
 				bezier.initControlPoints(cp1, cp2);
 			}
