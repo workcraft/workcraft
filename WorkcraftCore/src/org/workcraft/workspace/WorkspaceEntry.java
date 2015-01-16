@@ -374,7 +374,10 @@ public class WorkspaceEntry implements ObservableState {
 				saveMemento();
 				setModelEntry(result);
 				setChanged(true);
-				VisualModelTransformer.translateSelection(result.getVisualModel(), 1.0, 1.0);
+
+				VisualModel model = result.getVisualModel();
+				VisualModelTransformer.translateSelectionAndControlPoints(model, 1.0, 1.0);
+
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
 						"Clipboard paste failed", JOptionPane.ERROR_MESSAGE);

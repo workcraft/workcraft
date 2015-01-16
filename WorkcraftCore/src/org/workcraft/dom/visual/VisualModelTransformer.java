@@ -4,8 +4,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
+import org.workcraft.util.Hierarchy;
 
 public class VisualModelTransformer {
 	/**
@@ -102,6 +107,34 @@ public class VisualModelTransformer {
 				selectionBB = bbUnion(selectionBB, ((VisualTransformableNode)vn).getPosition());
 		}
 		return selectionBB;
+	}
+
+
+	// FIXME: A hack for correct recalculation of ControlPoint positions.
+	public static void translateSelectionAndControlPoints(VisualModel vm, double tx, double ty) {
+		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(vm.getRoot(), VisualConnection.class);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
+		translateNodes(vm.getSelection(), tx, ty);
+		setConnectionsScaleMode(connectionToScaleModeMap);
+	}
+
+	public static HashMap<VisualConnection, ScaleMode> setConnectionsScaleMode(Collection<VisualConnection> connections, ScaleMode scaleMode) {
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = new HashMap<>();
+		for (VisualConnection vc: connections) {
+			connectionToScaleModeMap.put(vc, vc.getScaleMode());
+			vc.setScaleMode(scaleMode);
+		}
+		return connectionToScaleModeMap;
+	}
+
+	public static void setConnectionsScaleMode(HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap) {
+		if (connectionToScaleModeMap != null) {
+			for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
+				VisualConnection vc = entry.getKey();
+				ScaleMode scaleMode = entry.getValue();
+				vc.setScaleMode(scaleMode);
+			}
+		}
 	}
 
 }
