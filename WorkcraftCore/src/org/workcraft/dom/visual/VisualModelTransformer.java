@@ -43,7 +43,6 @@ public class VisualModelTransformer {
 
 	public static void translateNodes(Collection<Node> nodes, double tx, double ty) {
 		AffineTransform t = AffineTransform.getTranslateInstance(tx, ty);
-
 		transformNodePosition(nodes, t);
 	}
 
@@ -108,7 +107,6 @@ public class VisualModelTransformer {
 		}
 		return selectionBB;
 	}
-
 
 	// FIXME: A hack for correct recalculation of ControlPoint positions.
 	public static void translateSelectionAndControlPoints(VisualModel vm, double tx, double ty) {

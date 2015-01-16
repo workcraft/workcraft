@@ -560,9 +560,37 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		Collection<Node> dstChildren = new HashSet<Node>();
-		dstChildren.addAll(srcChildren);
-		srcRoot.reparent(dstChildren, dstContainer);
+//		if (dstContainer instanceof VisualTransformableNode) {
+//			HashMap<Node, Point2D> nodePositions = new HashMap<>();
+//			for (Node node: srcChildren) {
+//				if (node instanceof VisualTransformableNode) {
+//					Point2D pos = ((VisualTransformableNode)node).getRootSpacePosition();
+//					System.out.println(">> " + node + " - " + pos);
+//					nodePositions.put(node, pos);
+//				}
+//			}
+//
+//			Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
+//			HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
+//
+			Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
+			srcRoot.reparent(dstChildren, dstContainer);
+//
+//
+//			//Point2D dstPos = ((VisualTransformableNode) dstContainer).getPosition();
+//			//VisualModelTransformer.translateNodes(srcChildren, -dstPos.getX(), -dstPos.getY());
+//
+//			for (Node node: dstChildren) {
+//				if (node instanceof VisualTransformableNode) {
+//					Point2D pos = nodePositions.get(node);
+//					if (pos != null) {
+//						System.out.println("<< " + node + " - " + pos);
+//						((VisualTransformableNode)node).setRootSpacePosition(pos);
+//					}
+//				}
+//				VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
+//			}
+//		}
 	}
 
 }
