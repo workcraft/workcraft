@@ -29,12 +29,14 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -178,9 +180,14 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 		groupImpl.reparent(nodesToReparent, newParent);
-		for (Node node : nodesToReparent) {
-			TransformHelper.applyTransform(node, localToParentTransform);
-		}
+
+		// FIXME: (!!!)
+		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(newParent, VisualConnection.class);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
+
+		TransformHelper.applyTransformToNodes(nodesToReparent, localToParentTransform);
+
+		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 		return nodesToReparent;
 	}
 

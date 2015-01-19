@@ -292,6 +292,7 @@ public class SelectionTool extends AbstractTool {
 					if (model.getCurrentLevel() instanceof VisualGroup) {
 						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
 						if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
+//						if ( !currentGroup.getBoundingBoxInRootSpace().contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}
@@ -299,6 +300,7 @@ public class SelectionTool extends AbstractTool {
 					if ( model.getCurrentLevel() instanceof VisualPage) {
 						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
 						if ( !currentPage.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
+//						if ( !currentPage.getBoundingBoxInRootSpace().contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}

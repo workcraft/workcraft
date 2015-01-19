@@ -332,7 +332,6 @@ public class WorkspaceEntry implements ObservableState {
 		if (model.getSelection().size() > 0) {
 			captureMemento();
 			try {
-
 				// copy selected nodes inside a group as if it was the root
 				while (model.getCurrentLevel() != model.getRoot()) {
 					Collection<Node> nodes = new HashSet<Node>(model.getSelection());
