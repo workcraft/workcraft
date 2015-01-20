@@ -92,7 +92,7 @@ public class VisualCircuit extends AbstractVisualModel {
 				throw new InvalidConnectionException ("Inputs of components cannot be drivers.");
 
 			if (!(fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT))
-				throw new InvalidConnectionException ("Output from the environment cannot be driver.");
+				throw new InvalidConnectionException ("Outputs from the environment cannot be drivers.");
 		}
 
 		if (second instanceof VisualContact) {
