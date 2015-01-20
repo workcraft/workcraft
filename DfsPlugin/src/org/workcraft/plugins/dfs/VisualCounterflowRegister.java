@@ -12,6 +12,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -146,6 +147,16 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
 
 	public CounterflowRegister getReferencedCounterflowRegister() {
 		return (CounterflowRegister)getReferencedComponent();
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualCounterflowRegister) {
+			CounterflowRegister srcRegister = ((VisualCounterflowRegister)src).getReferencedCounterflowRegister();
+			getReferencedCounterflowRegister().setOrMarked(srcRegister.isOrMarked());
+			getReferencedCounterflowRegister().setAndMarked(srcRegister.isAndMarked());
+		}
 	}
 
 }

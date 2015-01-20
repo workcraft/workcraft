@@ -33,6 +33,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -111,6 +112,15 @@ public class VisualRegister extends VisualAbstractRegister {
 
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualRegister) {
+			Register srcRegister = ((VisualRegister)src).getReferencedRegister();
+			getReferencedRegister().setMarked(srcRegister.isMarked());
+		}
 	}
 
 }

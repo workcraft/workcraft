@@ -1,5 +1,6 @@
 package org.workcraft.plugins.dfs;
 
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 
@@ -24,6 +25,16 @@ public abstract class VisualBinaryRegister extends VisualAbstractRegister {
 
 	public BinaryRegister getReferencedBinaryRegister() {
 		return (BinaryRegister)getReferencedComponent();
+	}
+
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualBinaryRegister) {
+			BinaryRegister srcBinaryRegister = ((VisualBinaryRegister)src).getReferencedBinaryRegister();
+			getReferencedBinaryRegister().setMarking(srcBinaryRegister.getMarking());
+		}
 	}
 
 }

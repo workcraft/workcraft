@@ -519,6 +519,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			setLineWidth(srcConnection.getLineWidth());
 			setArrowLength(srcConnection.getArrowLength());
 			setArrowWidth(srcConnection.getArrowWidth());
+			setBubble(srcConnection.hasBubble());
 			setBubbleSize(srcConnection.getBubbleSize());
 			setScaleMode(srcConnection.getScaleMode());
 

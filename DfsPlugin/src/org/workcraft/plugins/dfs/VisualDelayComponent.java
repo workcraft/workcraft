@@ -1,5 +1,6 @@
 package org.workcraft.plugins.dfs;
 
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
@@ -24,6 +25,15 @@ public abstract class VisualDelayComponent extends VisualComponent {
 				return object.getReferencedDelayComponent().getDelay();
 			}
 		});
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualDelayComponent) {
+			MathDelayNode srcDelay = ((VisualDelayComponent)src).getReferencedDelayComponent();
+			getReferencedDelayComponent().setDelay(srcDelay.getDelay());
+		}
 	}
 
 }

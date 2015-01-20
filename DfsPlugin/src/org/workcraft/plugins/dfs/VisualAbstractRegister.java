@@ -2,6 +2,7 @@ package org.workcraft.plugins.dfs;
 
 import java.awt.Color;
 
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -31,6 +32,15 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualAbstractRegister) {
+			VisualAbstractRegister srcComponent = (VisualAbstractRegister)src;
+			setTokenColor(srcComponent.getTokenColor());
+		}
 	}
 
 }
