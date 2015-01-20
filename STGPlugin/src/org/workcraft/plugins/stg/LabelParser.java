@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
@@ -50,8 +49,6 @@ public class LabelParser {
 				instance =  Integer.parseInt(instanceGroup);
 			}
 			result = Triple.of(signalName, direction, instance);
-		} else {
-			throw new ArgumentException();
 		}
 		return result;
 	}
@@ -75,18 +72,20 @@ public class LabelParser {
 	}
 
 	public static Pair<String, Integer> parseInstancedTransition(String s) {
+		Pair<String, Integer> result = null;
 		final Matcher matcher = instancedTransitionPattern.matcher(s);
-
-		if (!matcher.find()) {
-			return null;
+		if (matcher.find() && (matcher.end() == s.length())) {
+			final String name = matcher.group(1);
+			final Integer instance;
+			String instanceGroup = matcher.group(2);
+			if (instanceGroup == null) {
+				instance = null;
+			} else {
+				instance =  Integer.parseInt(instanceGroup);
+			}
+			result = Pair.of(name, instance);
 		}
-		if (! (matcher.end() == s.length())) {
-			return null;
-		}
-		final String instanceGroup = matcher.group(3);
-
-		return Pair.of(matcher.group(1),
-				instanceGroup == null? null : Integer.parseInt(instanceGroup));
+		return result;
 	}
 
 }
