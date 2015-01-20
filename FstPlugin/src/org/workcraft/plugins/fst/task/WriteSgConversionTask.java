@@ -30,7 +30,7 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
-public class ConversionTask implements Task<ConversionResult> {
+public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
 	private final class HugeSgRunnable implements Runnable {
 		private final String stateCountMsg;
@@ -57,21 +57,25 @@ public class ConversionTask implements Task<ConversionResult> {
 	}
 
 	final private WorkspaceEntry we;
-	final Pattern hugeSgPattern = Pattern.compile("Do you really want to dump a state graph with ([0-9]+) states ?");
+	final private Pattern hugeSgPattern = Pattern.compile("Do you really want to dump a state graph with ([0-9]+) states ?");
 
-	public ConversionTask(WorkspaceEntry we) {
+	public WriteSgConversionTask(WorkspaceEntry we) {
 		this.we = we;
 	}
 
+	public WorkspaceEntry getWorkspaceEntry() {
+		return we;
+	}
+
 	@Override
-	public Result<? extends ConversionResult> run(ProgressMonitor<? super ConversionResult> monitor) {
+	public Result<? extends WriteSgConversionResult> run(ProgressMonitor<? super WriteSgConversionResult> monitor) {
 		final Framework framework = Framework.getInstance();
 		File pnFile = null;
 		try {
 			// Common variables
 			monitor.progressUpdate(0.05);
-			PetriNetModel pn = (PetriNetModel)we.getModelEntry().getMathModel();
-			pn.setTitle(we.getTitle());
+			PetriNetModel pn = (PetriNetModel)getWorkspaceEntry().getModelEntry().getMathModel();
+			pn.setTitle(getWorkspaceEntry().getTitle());
 			Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
 			if (pnExporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + pn.getClass().getName() + " to format STG.");
@@ -87,9 +91,9 @@ public class ConversionTask implements Task<ConversionResult> {
 
 			if (pnExportResult.getOutcome() != Outcome.FINISHED) {
 				if (pnExportResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<ConversionResult>(Outcome.CANCELLED);
+					return new Result<WriteSgConversionResult>(Outcome.CANCELLED);
 				}
-				return new Result<ConversionResult>(Outcome.FAILED);
+				return new Result<WriteSgConversionResult>(Outcome.FAILED);
 			}
 			monitor.progressUpdate(0.20);
 
@@ -104,7 +108,7 @@ public class ConversionTask implements Task<ConversionResult> {
 					try {
 						ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
 						final Fst fst = new DotGImporter().importSG(in);
-						return Result.finished(new ConversionResult(null, fst));
+						return Result.finished(new WriteSgConversionResult(null, fst));
 					} catch (DeserialisationException e) {
 						return Result.exception(e);
 					}
@@ -127,22 +131,18 @@ public class ConversionTask implements Task<ConversionResult> {
 							return Result.cancelled();
 						}
 					} else {
-						return Result.failed(new ConversionResult(writeSgResult, null));
+						return Result.failed(new WriteSgConversionResult(writeSgResult, null));
 					}
 				}
 			}
 
 		} catch (Throwable e) {
-			return new Result<ConversionResult>(e);
+			return new Result<WriteSgConversionResult>(e);
 		} finally {
 			if ((pnFile != null) && !PetrifyUtilitySettings.getDebugTemporaryFiles() ) {
 				pnFile.delete();
 			}
 		}
-	}
-
-	public WorkspaceEntry getWorkspaceEntry() {
-		return we;
 	}
 
 }

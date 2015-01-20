@@ -171,7 +171,7 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	}
 
 	@Override
-	public void reparent (Collection<Node> nodes) {
+	public void reparent(Collection<Node> nodes) {
 		for (Node node : nodes) {
 			addInternal(node, false);
 		}

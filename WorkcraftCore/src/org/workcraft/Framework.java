@@ -689,7 +689,7 @@ public class Framework {
 			vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
 			vmodel1.select(children);
 
-			// FIXME: dirty hack to avoid any hanging observers (serialise and deserialise the model)
+			// FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
 			Memento memo = save(me1);
 			ModelEntry me3 = load(memo);
 			return me3;

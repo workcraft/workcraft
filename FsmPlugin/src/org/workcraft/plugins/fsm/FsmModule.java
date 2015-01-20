@@ -11,8 +11,9 @@ import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
 import org.workcraft.plugins.fsm.tools.DeadlockCheckerTool;
 import org.workcraft.plugins.fsm.tools.DeterminismCheckerTool;
-import org.workcraft.plugins.fsm.tools.FsmToPetriNetConverterTool;
+import org.workcraft.plugins.fsm.tools.FsmToPnConverterTool;
 import org.workcraft.plugins.fsm.tools.ReachabilityCheckerTool;
+import org.workcraft.plugins.fsm.tools.ReversibilityCheckerTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -32,7 +33,7 @@ public class FsmModule  implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new FsmToPetriNetConverterTool();
+				return new FsmToPnConverterTool();
 			}
 		});
 
@@ -54,6 +55,13 @@ public class FsmModule  implements Module {
 			@Override
 			public Tool create() {
 				return new ReachabilityCheckerTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new ReversibilityCheckerTool();
 			}
 		});
 

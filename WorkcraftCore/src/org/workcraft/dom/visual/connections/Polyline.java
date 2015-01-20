@@ -75,12 +75,10 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 			ControlPoint cp1 = new ControlPoint();
 			cp1.setPosition(new Point2D.Double(p.getX() - 1.0, p.getY() + 1.5));
-			cp1.setHidden(true);
 			addControlPoint(cp1);
 
 			ControlPoint cp2 = new ControlPoint();
 			cp2.setPosition(new Point2D.Double(p.getX() + 1.0, p.getY() + 1.5));
-			cp2.setHidden(true);
 			addControlPoint(cp2);
 		}
 	}
@@ -218,6 +216,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<ControlPoint> getControlPoints() {
 		return Collections.unmodifiableList((List)getChildren());
 	}

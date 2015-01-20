@@ -17,7 +17,7 @@ public class ReachabilityCheckerTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for unreachable states";
+		return "Check for reachability";
 	}
 
 	@Override
@@ -35,17 +35,17 @@ public class ReachabilityCheckerTool implements Tool {
 		final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
 		HashSet<State> unreachableStates = checkReachability(fsm);
 		if (unreachableStates.isEmpty()) {
-			JOptionPane.showMessageDialog(null,	"FSM does not have unreachable states." ,
+			JOptionPane.showMessageDialog(null,	"The model does not have unreachable states." ,
 					"Verification result", JOptionPane.INFORMATION_MESSAGE);
 		} else {
 			String stateStr = FsmUtils.statesToString(fsm, unreachableStates);
-			JOptionPane.showMessageDialog(null,	"FSM has unreachable states:\n" + stateStr,
+			JOptionPane.showMessageDialog(null,	"The model has unreachable states:\n" + stateStr,
 					"Verification result", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
 	private HashSet<State> checkReachability(final Fsm fsm) {
-		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateEventsMap(fsm);
+		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
 		HashSet<State> visited = new HashSet<State>();
 		Queue<State> queue = new LinkedList<State>();

@@ -10,9 +10,9 @@ import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
-import org.workcraft.plugins.stg.tools.STGSelectionTool;
-import org.workcraft.plugins.stg.tools.STGSignalTransitionGeneratorTool;
-import org.workcraft.plugins.stg.tools.STGSimulationTool;
+import org.workcraft.plugins.stg.tools.StgSelectionTool;
+import org.workcraft.plugins.stg.tools.StgSignalTransitionGeneratorTool;
+import org.workcraft.plugins.stg.tools.StgSimulationTool;
 
 public class STGToolsProvider implements CustomToolsProvider {
 
@@ -20,7 +20,7 @@ public class STGToolsProvider implements CustomToolsProvider {
 	public Iterable<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new STGSelectionTool());
+		result.add(new StgSelectionTool());
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool(true) {
 			@Override
@@ -29,9 +29,9 @@ public class STGToolsProvider implements CustomToolsProvider {
 			}
 		});
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(STGPlace.class)));
-		result.add(new STGSignalTransitionGeneratorTool());
+		result.add(new StgSignalTransitionGeneratorTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(DummyTransition.class)));
-		result.add(new STGSimulationTool());
+		result.add(new StgSimulationTool());
 		return result;
 	}
 

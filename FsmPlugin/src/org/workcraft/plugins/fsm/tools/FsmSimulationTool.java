@@ -28,7 +28,7 @@ import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
 public class FsmSimulationTool extends PetriNetSimulationTool {
-	private FsmToPetriNetConverter generator;
+	private FsmToPnConverter generator;
 
 	@Override
 	public void activated(final GraphEditor editor) {
@@ -53,7 +53,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		final VisualFsm fsm = (VisualFsm)model;
 		final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
-		generator = new FsmToPetriNetConverter(fsm, pn);
+		generator = new FsmToPnConverter(fsm, pn);
 		return generator.getDstModel();
 	}
 

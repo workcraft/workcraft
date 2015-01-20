@@ -17,6 +17,7 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
 import org.workcraft.plugins.dfs.ControlConnection;
 import org.workcraft.plugins.dfs.ControlRegister;
@@ -88,10 +89,12 @@ public class WaggingGenerator {
 			WaggingData waggingData = new WaggingData();
 			for (VisualComponent component: selectedComponents) {
 				VisualComponent replicaComponenet = replicateComponent(component);
-				replicaComponenet.setY(replicaComponenet.getY() + step * (2*i+1 - count)/2);
-				mapComponentToReplica.put(component, replicaComponenet);
-				replicaToOriginalMap.put(replicaComponenet, component);
-				waggingData.dataComponents.add(replicaComponenet);
+				if (replicaComponenet != null) {
+					replicaComponenet.setY(replicaComponenet.getY() + step * (2*i+1 - count)/2);
+					mapComponentToReplica.put(component, replicaComponenet);
+					replicaToOriginalMap.put(replicaComponenet, component);
+					waggingData.dataComponents.add(replicaComponenet);
+				}
 			}
 			for (VisualConnection connection: selectedConnections) {
 				replicateConnection(connection, mapComponentToReplica);
@@ -103,29 +106,19 @@ public class WaggingGenerator {
 	private VisualComponent replicateComponent(VisualComponent component) {
 		VisualComponent replica = null;
 		if (component instanceof VisualLogic) {
-			Logic ref = ((VisualLogic)component).getReferencedLogic();
-			Logic replicaRef = new Logic();
-			replicaRef.setDelay(ref.getDelay());
-			replicaRef.setEarlyEvaluation(ref.isEarlyEvaluation());
-			replicaRef.setComputed(ref.isComputed());
-			replica = new VisualLogic(replicaRef);
+			replica = new VisualLogic(new Logic());
 		} else if (component instanceof VisualRegister) {
-			Register ref = ((VisualRegister)component).getReferencedRegister();
-			Register replicaRef = new Register();
-			replicaRef.setDelay(ref.getDelay());
-			replicaRef.setMarked(ref.isMarked());
-			replica = new VisualRegister(replicaRef);
+			replica = new VisualRegister(new Register());
+		} else if (component instanceof VisualControlRegister) {
+			replica = new VisualControlRegister(new ControlRegister());
+		} else if (component instanceof VisualPushRegister) {
+			replica = new VisualPushRegister(new PushRegister());
+		} else if (component instanceof VisualPopRegister) {
+			replica = new VisualPopRegister(new PopRegister());
 		}
 
 		if (replica != null) {
-			replica.setPosition(component.getPosition());
-			replica.setLabel(component.getLabel());
-			replica.setLabelColor(component.getLabelColor());
-			replica.setLabelPositioning(component.getLabelPositioning());
-			replica.setFillColor(component.getFillColor());
-			replica.setForegroundColor(component.getForegroundColor());
-			replica.setNameColor(component.getNameColor());
-			replica.setNamePositioning(component.getNamePositioning());
+			replica.copyStyle(component);
 			// postpone adding to the model so no notifications are sent too early
 			Dfs mathDfs = (Dfs)dfs.getMathModel();
 			mathDfs.add(replica.getReferencedComponent());
@@ -138,13 +131,14 @@ public class WaggingGenerator {
 		VisualConnection replica = null;
 		VisualComponent first = c2c.get(connection.getFirst());
 		VisualComponent second = c2c.get(connection.getSecond());
-		if (first != null && second != null) {
+		if ((first != null) && (second != null)) {
 			if (connection instanceof VisualControlConnection) {
 				ControlConnection connectionRef = ((VisualControlConnection)connection).getReferencedControlConnection();
 				replica = createControlConnection(first, second, connectionRef.isInverting());
 			} else {
 				replica = createConnection(first, second);
 			}
+			replica.copyStyle(connection);
 		}
 		return replica;
 	}
@@ -377,6 +371,7 @@ public class WaggingGenerator {
 		connectionRef.setInverting(inversing);
 		VisualControlConnection connection = new VisualControlConnection(connectionRef, first, second);
 		connection.setBubble(inversing);
+		connection.setScaleMode(ScaleMode.ADAPTIVE);
 		Hierarchy.getNearestContainer(first, second).add(connection);
 		return connection;
 	}

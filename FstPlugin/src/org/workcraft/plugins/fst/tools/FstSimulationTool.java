@@ -24,10 +24,10 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
-import org.workcraft.plugins.stg.tools.STGSimulationTool;
+import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
 
-public class FstSimulationTool extends STGSimulationTool {
+public class FstSimulationTool extends StgSimulationTool {
 	private FstToStgConverter generator;
 
 	@Override

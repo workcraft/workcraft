@@ -214,7 +214,7 @@ public class VisualScenario extends VisualGroup
 
 				variableBBs.put(tmpBB, var);
 
-				text = encoding.getState(var).toString();
+				text = encoding.getState(var).getValueAsString();
 				if (text.equals("?")) text = "\u2013";
 
 				result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());

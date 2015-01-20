@@ -13,18 +13,32 @@ import org.workcraft.plugins.fsm.State;
 
 public class FsmUtils {
 
-	static public HashMap<State, HashSet<Event>> calcStateEventsMap(final Fsm fsm) {
-		HashMap<State, HashSet<Event>> stateEvents = new HashMap<State, HashSet<Event>>();
+	static public HashMap<State, HashSet<Event>> calcStateOutgoingEventsMap(final Fsm fsm) {
+		HashMap<State, HashSet<Event>> stateOutgoingEvents = new HashMap<State, HashSet<Event>>();
 		for (State state: fsm.getStates()) {
 			HashSet<Event> events = new HashSet<Event>();
-			stateEvents.put(state, events);
+			stateOutgoingEvents.put(state, events);
 		}
 		for (Event event: fsm.getEvents()) {
-			State state = (State)event.getFirst();
-			HashSet<Event> events = stateEvents.get(state);
+			State fromState = (State)event.getFirst();
+			HashSet<Event> events = stateOutgoingEvents.get(fromState);
 			events.add(event);
 		}
-		return stateEvents;
+		return stateOutgoingEvents;
+	}
+
+	static public HashMap<State, HashSet<Event>> calcStateIncommingEventsMap(final Fsm fsm) {
+		HashMap<State, HashSet<Event>> stateIncommingEvents = new HashMap<State, HashSet<Event>>();
+		for (State state: fsm.getStates()) {
+			HashSet<Event> events = new HashSet<Event>();
+			stateIncommingEvents.put(state, events);
+		}
+		for (Event event: fsm.getEvents()) {
+			State toState = (State)event.getSecond();
+			HashSet<Event> events = stateIncommingEvents.get(toState);
+			events.add(event);
+		}
+		return stateIncommingEvents;
 	}
 
 	static public String statesToString(final Fsm fsm, Collection<State> states) {

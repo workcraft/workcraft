@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.Icon;
@@ -58,9 +57,9 @@ import javax.swing.text.StyledDocument;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.Flippable;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.Movable;
-import org.workcraft.dom.visual.MovableHelper;
+import org.workcraft.dom.visual.Rotatable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
@@ -294,14 +293,16 @@ public class SelectionTool extends AbstractTool {
 				if (e.getClickCount() > 1) {
 					if (model.getCurrentLevel() instanceof VisualGroup) {
 						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
-						if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
+						Rectangle2D bb = currentGroup.getBoundingBoxInRootSpace();
+						if ( !bb.contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}
 					}
 					if ( model.getCurrentLevel() instanceof VisualPage) {
 						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
-						if ( !currentPage.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
+						Rectangle2D bb = currentPage.getBoundingBoxInRootSpace();
+						if ( !bb.contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}
@@ -352,7 +353,7 @@ public class SelectionTool extends AbstractTool {
 			Point2D.Double pos2 = new Point2D.Double(e.getX() + offset.getX(), e.getY() + offset.getY());
 			Point2D snapPos2 = editor.snap(pos2, snaps);
 			// Intermediate move of the selection - no need for beforeSelectionModification or afterSelectionModification
-			selectionOffset(editor, snapPos2.getX() - snapPos1.getX(), snapPos2.getY() - snapPos1.getY());
+			VisualModelTransformer.translateSelection(model, snapPos2.getX() - snapPos1.getX(), snapPos2.getY() - snapPos1.getY());
 		} else if (dragState == DrugState.SELECT) {
 			selected.clear();
 			selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
@@ -431,7 +432,7 @@ public class SelectionTool extends AbstractTool {
 				offset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
 				// Initial move of the selection - beforeSelectionModification is needed
 				beforeSelectionModification(editor);
-				selectionOffset(editor, snapPos.getX() - pos.getX(), snapPos.getY() - pos.getY());
+				VisualModelTransformer.translateSelection(model, snapPos.getX() - pos.getX(), snapPos.getY() - pos.getY());
 			} else {
 				// Do nothing if pressed on a node with modifiers
 			}
@@ -737,13 +738,9 @@ public class SelectionTool extends AbstractTool {
 	private void selectionOffset(final GraphEditor editor, double dx, double dy) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			// Note that no memento should not be saved until the drug action is complete
-			for(Node node : model.getSelection()) {
-				if(node instanceof Movable) {
-					Movable mv = (Movable) node;
-					MovableHelper.translate(mv, dx, dy);
-				}
-			}
+			beforeSelectionModification(editor);
+			VisualModelTransformer.translateSelection(model, dx, dy);
+			afterSelectionModification(editor);
 		}
 	}
 
@@ -789,8 +786,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent) node).rotateClockwise();
+				if(node instanceof Rotatable) {
+					((Rotatable)node).rotateClockwise();
 				}
 			}
 			afterSelectionModification(editor);
@@ -803,8 +800,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent) node).rotateCounterclockwise();
+				if(node instanceof Rotatable) {
+					((Rotatable)node).rotateCounterclockwise();
 				}
 			}
 			afterSelectionModification(editor);
@@ -817,8 +814,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, -1, 1);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent) node).flipHorizontal();
+				if(node instanceof Flippable) {
+					((Flippable)node).flipHorizontal();
 				}
 			}
 			afterSelectionModification(editor);
@@ -831,8 +828,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, 1, -1);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent)node).flipVertical();
+				if(node instanceof Flippable) {
+					((Flippable)node).flipVertical();
 				}
 			}
 			afterSelectionModification(editor);
@@ -842,28 +839,17 @@ public class SelectionTool extends AbstractTool {
 	private void beforeSelectionModification(final GraphEditor editor) {
 		// Capture model memento for use in afterSelectionModification
 		editor.getWorkspaceEntry().captureMemento();
-
 		// FIXME: Save connections scale mode and force it LOCK_RELATIVELY for modification
-		connectionToScaleModeMap = new HashMap<>();
-		for (VisualConnection vc: Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualConnection.class)) {
-			connectionToScaleModeMap.put(vc, vc.getScaleMode());
-			vc.setScaleMode(ScaleMode.LOCK_RELATIVELY);
-		}
+		Container root = editor.getModel().getRoot();
+		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(root, VisualConnection.class);
+		connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.ADAPTIVE);
 	}
 
 	private void afterSelectionModification(final GraphEditor editor) {
 		// FIXME: Restore connections scale mode
-		if (connectionToScaleModeMap != null) {
-			for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
-				VisualConnection vc = entry.getKey();
-				ScaleMode scaleMode = entry.getValue();
-				vc.setScaleMode(scaleMode);
-			}
-		}
-
+		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 		// Save memento that was captured in beforeSelectionModification
 		editor.getWorkspaceEntry().saveMemento();
-
 		// Redraw the editor window to recalculate all the bounding boxes
 		editor.forceRedraw();
 	}

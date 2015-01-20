@@ -71,18 +71,6 @@ public class VisualFsm extends AbstractVisualModel {
 		container.add(vEvent);
 		return vEvent;
 	}
-//
-//	@Override
-//	public Collection<Node> getMathChildren(Collection<Node> nodes) {
-//		Collection<Node> ret = super.getMathChildren(nodes);
-//		for (Node node: new LinkedList<Node>(ret)) {
-//			if (node instanceof Event) {
-//				Event event = (Event)node;
-//				ret.add(event.getSymbol());
-//			}
-//		}
-//		return ret;
-//	}
 
 	public String getStateName(VisualState state) {
 		return getMathModel().getName(state.getReferencedComponent());

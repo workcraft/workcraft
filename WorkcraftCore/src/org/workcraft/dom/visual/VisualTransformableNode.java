@@ -34,7 +34,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
 
 
-public abstract class VisualTransformableNode extends VisualNode implements Movable {
+public abstract class VisualTransformableNode extends VisualNode implements Movable, Rotatable, Flippable {
 	protected AffineTransform localToParentTransform = new AffineTransform();
 	protected AffineTransform parentToLocalTransform = new AffineTransform();
 
@@ -151,6 +151,17 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
+	public void setRootSpacePosition(Point2D pos) {
+		setRootSpaceX(pos.getX());
+		setRootSpaceY(pos.getY());
+	}
+
+	@NoAutoSerialisation
+	public Point2D getRootSpacePosition() {
+		return new Point2D.Double(getRootSpaceX(), getRootSpaceY());
+	}
+
+	@NoAutoSerialisation
 	public void setPosition(Point2D pos) {
 		transformChanging();
 		double dx = pos.getX() - localToParentTransform.getTranslateX();
@@ -185,6 +196,10 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	@Override
     public final Rectangle2D getBoundingBox() {
     	return transformToParentSpace(getBoundingBoxInLocalSpace());
+    }
+
+    public final Rectangle2D getBoundingBoxInRootSpace() {
+		return BoundingBoxHelper.move(getBoundingBox(), getRootSpacePosition());
     }
 
 	public abstract Point2D getCenterInLocalSpace();
@@ -273,6 +288,42 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		if (src instanceof VisualTransformableNode) {
 			VisualTransformableNode srcNode = (VisualTransformableNode)src;
 			setPosition(srcNode.getPosition());
+		}
+	}
+
+	@Override
+	public void rotateClockwise() {
+		for (Node node: getChildren()) {
+			if (node instanceof Rotatable) {
+				((Rotatable)node).rotateClockwise();
+			}
+		}
+	}
+
+	@Override
+	public void rotateCounterclockwise() {
+		for (Node node: getChildren()) {
+			if (node instanceof Rotatable) {
+				((Rotatable)node).rotateCounterclockwise();
+			}
+		}
+	}
+
+	@Override
+	public void flipHorizontal() {
+		for (Node node: getChildren()) {
+			if (node instanceof Flippable) {
+				((Flippable)node).flipHorizontal();
+			}
+		}
+	}
+
+	@Override
+	public void flipVertical() {
+		for (Node node: getChildren()) {
+			if (node instanceof Flippable) {
+				((Flippable)node).flipVertical();
+			}
 		}
 	}
 

@@ -84,14 +84,25 @@ public class VisualCircuit extends AbstractVisualModel {
 			}
 		}
 
+		if (first instanceof VisualContact) {
+			Node fromParent = ((VisualComponent)first).getParent();
+			Contact.IOType toType = ((Contact)((VisualComponent)first).getReferencedComponent()).getIOType();
+
+			if ((fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT))
+				throw new InvalidConnectionException ("Inputs of components cannot be drivers.");
+
+			if (!(fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT))
+				throw new InvalidConnectionException ("Outputs from the environment cannot be drivers.");
+		}
+
 		if (second instanceof VisualContact) {
 			Node toParent = ((VisualComponent)second).getParent();
 			Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
 
-			if ((toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.OUTPUT)
+			if ((toParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT))
 				throw new InvalidConnectionException ("Outputs of the components cannot be driven.");
 
-			if (!(toParent instanceof VisualCircuitComponent) && toType == Contact.IOType.INPUT)
+			if (!(toParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT))
 				throw new InvalidConnectionException ("Inputs from the environment cannot be driven.");
 		}
 	}

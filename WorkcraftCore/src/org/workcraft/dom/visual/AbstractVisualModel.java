@@ -49,6 +49,7 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -560,9 +561,19 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		Collection<Node> dstChildren = new HashSet<Node>();
-		dstChildren.addAll(srcChildren);
+		// FIXME: A hack to preserve the root coordinates of reparented nodes.
+		// Save root-space position of components and set connections scale mode to follow components.
+		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
+		Collection<VisualConnection> srcConnections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcConnections, ScaleMode.ADAPTIVE);
+
+		Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
 		srcRoot.reparent(dstChildren, dstContainer);
+
+		// FIXME: A hack to preserve the root coordinates of reparented nodes.
+		// Restore root-space position of components and connections scale mode.
+		VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
+		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 	}
 
 }

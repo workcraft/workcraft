@@ -11,6 +11,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -100,6 +101,16 @@ public class VisualLogic extends VisualDelayComponent {
 
 	public Logic getReferencedLogic() {
 		return (Logic)getReferencedComponent();
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualLogic) {
+			Logic srcLogic = ((VisualLogic)src).getReferencedLogic();
+			getReferencedLogic().setEarlyEvaluation(srcLogic.isEarlyEvaluation());
+			getReferencedLogic().setComputed(srcLogic.isComputed());
+		}
 	}
 
 }

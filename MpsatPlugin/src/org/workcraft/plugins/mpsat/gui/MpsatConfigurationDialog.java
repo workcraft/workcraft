@@ -43,7 +43,8 @@ public class MpsatConfigurationDialog extends JDialog {
 	private JPanel content, optionsPanel, buttonsPanel;
 	private PresetManagerPanel<MpsatSettings> presetPanel;
 	private JScrollPane reachPanel;
-	private JComboBox modeCombo, verbosityCombo;
+	private JComboBox<MpsatMode> modeCombo;
+	private JComboBox<IntMode> verbosityCombo;
 	private JButton runButton, cancelButton, helpButton;
 	private JLabel numberOfSolutionsLabel;
 	private JTextField solutionLimitText, propertyNameText;
@@ -95,11 +96,12 @@ public class MpsatConfigurationDialog extends JDialog {
 		optionsPanel = new JPanel(new SimpleFlowLayout());
 		optionsPanel.setBorder(BorderFactory.createTitledBorder("MPSat settings"));
 
-		modeCombo = new JComboBox();
+		modeCombo = new JComboBox<MpsatMode>();
 		modeCombo.setEditable(false);
-		for (MpsatMode mode : MpsatMode.values()) {
-			modeCombo.addItem(mode);
-		}
+		modeCombo.addItem(MpsatMode.DEADLOCK);
+		modeCombo.addItem(MpsatMode.REACHABILITY);
+		modeCombo.addItem(MpsatMode.STG_REACHABILITY);
+
 		modeCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -139,7 +141,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		optionsPanel.add(new SimpleFlowLayout.LineBreak(8));
 
 		JPanel verbosityAndNamePanel =  new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
-		verbosityCombo = new JComboBox();
+		verbosityCombo = new JComboBox<IntMode>();
 		for (int i=0; i<=9; i++) {
 			verbosityCombo.addItem(new IntMode(i, "level " + i));
 		}

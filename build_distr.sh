@@ -6,6 +6,7 @@ model_plugin_dirs="
     CpogsPlugin 
     DfsPlugin 
     FsmPlugin 
+    FstPlugin 
     GraphPlugin 
     PetriNetPlugin 
     PolicyNetPlugin 

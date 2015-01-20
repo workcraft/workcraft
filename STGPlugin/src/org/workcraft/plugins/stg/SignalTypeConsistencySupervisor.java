@@ -55,10 +55,9 @@ class SignalTypeConsistencySupervisor extends StateSupervisor {
 				}
 				if (pce.getPropertyName().equals("signalName")) {
 					for (SignalTransition tt : transitions) {
-						if (tt != t) {
-							t.setSignalType(tt.getSignalType());
-							break;
-						}
+						if (tt == t) continue;
+						t.setSignalType(tt.getSignalType());
+						break;
 					}
 				}
 			}

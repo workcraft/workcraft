@@ -19,25 +19,11 @@
 *
 */
 
-package org.workcraft.dom.visual.connections;
-
-
-import java.util.List;
+package org.workcraft.dom.visual;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Drawable;
-import org.workcraft.dom.visual.Touchable;
 
-public interface ConnectionGraphic extends Node, Drawable, Touchable, ParametricCurve {
-	public void draw (DrawRequest r);
-
-	public void componentsTransformChanging ();
-	public void componentsTransformChanged ();
-
-	public void controlPointsChanged();
-	public void invalidate();
-
-	public void setDefaultControlPoints();
-	public List<ControlPoint> getControlPoints();
+public interface Flippable extends Node {
+	public void flipHorizontal();
+	public void flipVertical();
 }

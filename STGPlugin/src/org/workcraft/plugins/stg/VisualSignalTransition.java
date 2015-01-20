@@ -28,7 +28,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
@@ -36,8 +35,8 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @SVGIcon("images/icons/svg/signal-transition.svg")
 public class VisualSignalTransition extends VisualNamedTransition implements StateObserver {
 
-	public VisualSignalTransition(Transition transition) {
-		super(transition);
+	public VisualSignalTransition(SignalTransition signalTransition) {
+		super(signalTransition);
 	}
 
 	@Override
