@@ -57,7 +57,9 @@ import javax.swing.text.StyledDocument;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.Flippable;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.Rotatable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
@@ -291,16 +293,16 @@ public class SelectionTool extends AbstractTool {
 				if (e.getClickCount() > 1) {
 					if (model.getCurrentLevel() instanceof VisualGroup) {
 						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
-						if ( !currentGroup.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
-//						if ( !currentGroup.getBoundingBoxInRootSpace().contains(e.getPosition()) ) {
+						Rectangle2D bb = currentGroup.getBoundingBoxInRootSpace();
+						if ( !bb.contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}
 					}
 					if ( model.getCurrentLevel() instanceof VisualPage) {
 						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
-						if ( !currentPage.getBoundingBoxInLocalSpace().contains(e.getPosition()) ) {
-//						if ( !currentPage.getBoundingBoxInRootSpace().contains(e.getPosition()) ) {
+						Rectangle2D bb = currentPage.getBoundingBoxInRootSpace();
+						if ( !bb.contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}
@@ -784,8 +786,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent) node).rotateClockwise();
+				if(node instanceof Rotatable) {
+					((Rotatable)node).rotateClockwise();
 				}
 			}
 			afterSelectionModification(editor);
@@ -798,8 +800,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent) node).rotateCounterclockwise();
+				if(node instanceof Rotatable) {
+					((Rotatable)node).rotateCounterclockwise();
 				}
 			}
 			afterSelectionModification(editor);
@@ -812,8 +814,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, -1, 1);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent) node).flipHorizontal();
+				if(node instanceof Flippable) {
+					((Flippable)node).flipHorizontal();
 				}
 			}
 			afterSelectionModification(editor);
@@ -826,8 +828,8 @@ public class SelectionTool extends AbstractTool {
 			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, 1, -1);
 			for(Node node : model.getSelection()) {
-				if(node instanceof VisualComponent) {
-					((VisualComponent)node).flipVertical();
+				if(node instanceof Flippable) {
+					((Flippable)node).flipVertical();
 				}
 			}
 			afterSelectionModification(editor);
@@ -840,7 +842,7 @@ public class SelectionTool extends AbstractTool {
 		// FIXME: Save connections scale mode and force it LOCK_RELATIVELY for modification
 		Container root = editor.getModel().getRoot();
 		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(root, VisualConnection.class);
-		connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
+		connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.ADAPTIVE);
 	}
 
 	private void afterSelectionModification(final GraphEditor editor) {

@@ -108,7 +108,7 @@ public class VisualModelTransformer {
 		return selectionBB;
 	}
 
-	// FIXME: A hack for correct recalculation of ControlPoint positions.
+	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components.
 	public static void translateSelectionAndControlPoints(VisualModel vm, double tx, double ty) {
 		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(vm.getRoot(), VisualConnection.class);
 		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
@@ -131,6 +131,28 @@ public class VisualModelTransformer {
 				VisualConnection vc = entry.getKey();
 				ScaleMode scaleMode = entry.getValue();
 				vc.setScaleMode(scaleMode);
+			}
+		}
+	}
+
+	public static HashMap<VisualTransformableNode, Point2D> getRootSpacePositions(Collection<Node> nodes) {
+		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<>();
+		for (Node node: nodes) {
+			if (node instanceof VisualTransformableNode) {
+				VisualTransformableNode component = (VisualTransformableNode)node;
+				Point2D position = component.getRootSpacePosition();
+				componentToPositionMap.put(component, position);
+			}
+		}
+		return componentToPositionMap;
+	}
+
+	public static void setRootSpacePositions(HashMap<VisualTransformableNode, Point2D> componentToPositionMap) {
+		if (componentToPositionMap != null) {
+			for (Entry<VisualTransformableNode, Point2D> entry: componentToPositionMap.entrySet()) {
+				VisualTransformableNode component = entry.getKey();
+				Point2D position = entry.getValue();
+				component.setRootSpacePosition(position);
 			}
 		}
 	}

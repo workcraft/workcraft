@@ -561,33 +561,19 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		if (dstContainer instanceof VisualTransformableNode) {
-			// FIXME: (!!!)
-			HashMap<Node, Point2D> nodePositions = new HashMap<>();
-			for (Node node: srcChildren) {
-				if (node instanceof VisualTransformableNode) {
-					Point2D pos = ((VisualTransformableNode)node).getRootSpacePosition();
-					nodePositions.put(node, pos);
-				}
-			}
+		// FIXME: A hack to preserve the root coordinates of reparented nodes.
+		// Save root-space position of components and set connections scale mode to follow components.
+		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
+		Collection<VisualConnection> srcConnections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcConnections, ScaleMode.ADAPTIVE);
 
-			Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
-			HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
+		Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
+		srcRoot.reparent(dstChildren, dstContainer);
 
-			Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
-			srcRoot.reparent(dstChildren, dstContainer);
-
-			for (Node node: dstChildren) {
-				if (node instanceof VisualTransformableNode) {
-					Point2D pos = nodePositions.get(node);
-					if (pos != null) {
-						((VisualTransformableNode)node).setRootSpacePosition(pos);
-					}
-				}
-			}
-
-			VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
-		}
+		// FIXME: A hack to preserve the root coordinates of reparented nodes.
+		// Restore root-space position of components and connections scale mode.
+		VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
+		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 	}
 
 }

@@ -68,8 +68,12 @@ public class BoundingBoxHelper {
 		return result;
 	}
 
-	public static Rectangle2D move(Rectangle2D rect, double x, double y) {
-		return new Rectangle2D.Double(rect.getX()+x, rect.getY()+y, rect.getWidth(), rect.getHeight());
+	public static Rectangle2D move(Rectangle2D rect, double dx, double dy) {
+		return new Rectangle2D.Double(rect.getX() + dx, rect.getY() + dy, rect.getWidth(), rect.getHeight());
+	}
+
+	public static Rectangle2D move(Rectangle2D rect, Point2D d) {
+		return move(rect, d.getX(), d.getY());
 	}
 
 	public static Rectangle2D transform(Rectangle2D rect, AffineTransform transform) {
