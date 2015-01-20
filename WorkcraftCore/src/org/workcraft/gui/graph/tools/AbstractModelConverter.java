@@ -17,15 +17,14 @@ import org.workcraft.util.Hierarchy;
 abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> implements ModelConverter<TSrcModel, TDstModel> {
 	final private TSrcModel srcModel;
 	final private TDstModel dstModel;
-	final private HashMap<VisualNode, VisualNode> srcToDstNodes;
-	final private HashMap<String, Container> refToDstPage;
+	final private HashMap<VisualNode, VisualNode> srcToDstNodes = new HashMap<>();
+	final private HashMap<String, Container> refToDstPage = new HashMap<>();
 
 	public AbstractModelConverter(TSrcModel srcModel, TDstModel dstModel) {
 		this.srcModel = srcModel;
 		this.dstModel = dstModel;
-		this.srcToDstNodes = new HashMap<>();
 		preprocessing();
-		refToDstPage = convertPages();
+		convertPages();
 		convertComponents();
 		convertGroups();
 		// Connections must be converted the last as their shapes change with node relocation.
@@ -65,13 +64,14 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
 		return visualComponentClass;
 	}
 
-	private HashMap<String, Container> convertPages() {
+	private void convertPages() {
 		NamespaceHelper.copyPageStructure(getSrcModel(), getDstModel());
+		HashMap<String, Container> tmp = NamespaceHelper.getRefToPageMapping(getDstModel());
+		refToDstPage.putAll(tmp);
 		for (VisualPage srcPage: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualPage.class)) {
 			VisualPage dstPage = convertPage(srcPage);
 			putSrcToDstNode(srcPage, dstPage);
 		}
-		return NamespaceHelper.getRefToPageMapping(getDstModel());
 	}
 
 	private void convertComponents() {

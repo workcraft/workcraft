@@ -526,7 +526,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			if (srcGraphics instanceof Polyline) {
 				Polyline polyline = (Polyline)getGraphic();
 				polyline.resetControlPoints();
-				for (ControlPoint srcControlPoint: polyline.getControlPoints()) {
+				for (ControlPoint srcControlPoint: srcGraphics.getControlPoints()) {
 					polyline.addControlPoint(srcControlPoint.getPosition());
 				}
 			} else if (srcGraphics instanceof Bezier) {
