@@ -77,7 +77,7 @@ public class LabelParser {
 		if (matcher.find() && (matcher.end() == s.length())) {
 			final String name = matcher.group(1);
 			final Integer instance;
-			String instanceGroup = matcher.group(2);
+			String instanceGroup = matcher.group(3);
 			if (instanceGroup == null) {
 				instance = null;
 			} else {
