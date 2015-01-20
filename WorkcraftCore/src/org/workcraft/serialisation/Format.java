@@ -38,7 +38,7 @@ public class Format {
 		if (format.equals(STG))
 			return ".g (Signal Transition Graph)";
 		else if (format.equals(SG))
-			return ".g (State Graph)";
+			return ".sg (State Graph)";
 		else if (format.equals(SVG))
 			return ".svg (Scalable Vector Graphics)";
 		else if (format.equals(PS))

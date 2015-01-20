@@ -93,6 +93,7 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
@@ -268,10 +269,13 @@ public class MainWindow extends JFrame {
 				}
 				visualModel = vmd.create((MathModel) modelEntry.getModel());
 				modelEntry.setModel(visualModel);
-				RandomLayoutTool layout = new RandomLayoutTool();
-//				DotLayoutTool layout = new DotLayoutTool(framework);
-				layout.run(we);
-				we.setModelEntry(modelEntry);
+				try {
+					DotLayoutTool dotLayout = new DotLayoutTool();
+					dotLayout.run(we);
+				} catch (LayoutException e) {
+					RandomLayoutTool randomLayout = new RandomLayoutTool();
+					randomLayout.run(we);
+				}
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
 			} catch (VisualModelInstantiationException e) {
@@ -283,7 +287,7 @@ public class MainWindow extends JFrame {
 			}
 		}
 
-		final GraphEditorPanel editor = new GraphEditorPanel(MainWindow.this, we);
+		final GraphEditorPanel editor = new GraphEditorPanel(this, we);
 		String title = getTitle(we, visualModel);
 
 		final DockableWindow editorWindow;
@@ -1333,26 +1337,28 @@ public class MainWindow extends JFrame {
 	}
 
 	public void zoomFit() {
-		Viewport viewport = editorInFocus.getViewport();
-		Rectangle2D viewportBox = viewport.getShape();
-		VisualModel model = editorInFocus.getModel();
-		Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
-		if (!model.getSelection().isEmpty()) {
-			nodes.retainAll(model.getSelection());
-		}
-		Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-		if ((modelBox != null) && (viewportBox != null)) {
-			double ratioX = 1.0;
-			double ratioY = 1.0;
-			if (viewportBox.getHeight() > VIEWPORT_MARGIN) {
-				ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getHeight();
-				ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getHeight();
+		if (editorInFocus != null) {
+			Viewport viewport = editorInFocus.getViewport();
+			Rectangle2D viewportBox = viewport.getShape();
+			VisualModel model = editorInFocus.getModel();
+			Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+			if (!model.getSelection().isEmpty()) {
+				nodes.retainAll(model.getSelection());
 			}
-			double scaleX = ratioX / modelBox.getWidth();
-			double scaleY = ratioY / modelBox.getHeight();
-			double scale = 2.0 * Math.min(scaleX, scaleY);
-			viewport.scale(scale);
-			panCenter();
+			Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+			if ((modelBox != null) && (viewportBox != null)) {
+				double ratioX = 1.0;
+				double ratioY = 1.0;
+				if (viewportBox.getHeight() > VIEWPORT_MARGIN) {
+					ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getHeight();
+					ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getHeight();
+				}
+				double scaleX = ratioX / modelBox.getWidth();
+				double scaleY = ratioY / modelBox.getHeight();
+				double scale = 2.0 * Math.min(scaleX, scaleY);
+				viewport.scale(scale);
+				panCenter();
+			}
 		}
 	}
 

@@ -1,9 +1,17 @@
 :: Change to Workcraft home directory and put it into the WORKCRAFT_HOME variable
 set WORKCRAFT_HOME=%~dp0
-pushd "%WORKCRAFT_HOME%"
+set TOOLS_DIR=%WORKCRAFT_HOME%\tools
+set PETRIFY_DIR=%TOOLS_DIR%\petrify
+set PUNF_DIR=%TOOLS_DIR%\punf
+set MPSAT_DIR=%TOOLS_DIR%\mpsat
+set PCOMP_DIR=%TOOLS_DIR%\pcomp
+set SCENCO_DIR=%TOOLS_DIR%\scenco
+set DOT_DIR=%TOOLS_DIR%\dot
 
 :: Add location of the third-party tools to the PATH variable
-set PATH=%PATH%;%WORKCRAFT_HOME%\tools
+set PATH=%PATH%;%PETRIFY_DIR%;%PUNF_DIR%;%MPSAT_DIR%;%PCOMP_DIR%;%SCENCO_DIR%;%DOT_DIR%
+
+pushd "%WORKCRAFT_HOME%"
 
 :: Set the JVM executable in the JAVA_BIN variable (if not defined yet)
 IF "%JAVA_BIN%"=="" (

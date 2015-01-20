@@ -40,13 +40,13 @@ public class DotGImporter implements Importer {
 
 	@Override
 	public boolean accept(File file) {
-		return (file.getName().endsWith(".g")
+		return (file.getName().endsWith(".sg")
 				&& FileUtils.fileContainsKeyword(file, STATEGRAPH_KEYWORD));
 	}
 
 	@Override
 	public String getDescription() {
-		return "State Graph (.g)";
+		return "State Graph (.sg)";
 	}
 
 	@Override

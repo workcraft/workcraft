@@ -23,6 +23,7 @@ package org.workcraft.plugins.layout;
 
 import java.util.Random;
 
+import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -61,6 +62,7 @@ public class RandomLayoutTool implements Tool {
 			connection.setConnectionType(ConnectionType.POLYLINE);
 			connection.getGraphic().setDefaultControlPoints();
 		}
+		Framework.getInstance().getMainWindow().zoomFit();
 	}
 
 }
