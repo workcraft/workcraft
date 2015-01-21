@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.shared;
+package org.workcraft.plugins.petrify;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String keyDebugTemporaryFiles = prefix + ".debugTemporaryFiles";
 
 	private static final String defaultPetrifyCommand = "petrify";
-	private static final String defaultPetrifyArgs = "-lib tools/petrify.lib";
+	private static final String defaultPetrifyArgs = "-lib tools/petrify/petrify.lib";
 	private static final String defaultDrawAstgCommand = "draw_astg";
 	private static final String defaultDrawAstgArgs = "";
 	private static final String defaultWriteSgCommand = "write_sg";
