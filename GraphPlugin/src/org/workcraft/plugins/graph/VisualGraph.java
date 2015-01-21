@@ -32,14 +32,13 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Directed Graph")
 @CustomTools(ToolsProvider.class)
 public class VisualGraph extends AbstractVisualModel {
 
-	public VisualGraph(Graph model) throws VisualModelInstantiationException {
+	public VisualGraph(Graph model) {
 		this(model, null);
 	}
 
