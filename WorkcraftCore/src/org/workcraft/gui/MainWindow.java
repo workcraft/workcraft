@@ -276,6 +276,7 @@ public class MainWindow extends JFrame {
 					RandomLayoutTool randomLayout = new RandomLayoutTool();
 					randomLayout.run(we);
 				}
+				we.setModelEntry(modelEntry);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
 			} catch (VisualModelInstantiationException e) {
