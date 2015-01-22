@@ -60,6 +60,7 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Flippable;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Rotatable;
+import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
@@ -839,14 +840,15 @@ public class SelectionTool extends AbstractTool {
 	private void beforeSelectionModification(final GraphEditor editor) {
 		// Capture model memento for use in afterSelectionModification
 		editor.getWorkspaceEntry().captureMemento();
-		// FIXME: Save connections scale mode and force it LOCK_RELATIVELY for modification
-		Container root = editor.getModel().getRoot();
-		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(root, VisualConnection.class);
-		connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.ADAPTIVE);
+		// FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (intro).
+		VisualModel model = editor.getModel();
+		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
+		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
+		connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(includedConnections, ScaleMode.ADAPTIVE);
 	}
 
 	private void afterSelectionModification(final GraphEditor editor) {
-		// FIXME: Restore connections scale mode
+		// FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (outro).
 		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 		// Save memento that was captured in beforeSelectionModification
 		editor.getWorkspaceEntry().saveMemento();

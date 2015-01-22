@@ -181,12 +181,14 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 		groupImpl.reparent(nodesToReparent, newParent);
 
-		// FIXME: (!!!)
+		// FIXME: A hack to preserve the shape of ungrouped connections (intro).
 		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(newParent, VisualConnection.class);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
+		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(nodesToReparent, connections);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.ADAPTIVE);
 
 		TransformHelper.applyTransformToNodes(nodesToReparent, localToParentTransform);
 
+		// FIXME: A hack to preserve the shape of ungrouped connections (outro).
 		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 		return nodesToReparent;
 	}

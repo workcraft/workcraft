@@ -146,7 +146,7 @@ public class MainMenu extends JMenuBar {
 		addFileMenu(mainWindow);
 		addEditMenu(mainWindow);
 		addViewMenu(mainWindow);
-		addUtilityMenu(mainWindow);
+		//addUtilityMenu(mainWindow);
 		add(mnTools);
 		addHelpMenu(mainWindow);
 	}

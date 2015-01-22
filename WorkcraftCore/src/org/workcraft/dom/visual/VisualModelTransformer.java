@@ -108,14 +108,16 @@ public class VisualModelTransformer {
 		return selectionBB;
 	}
 
-	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components.
+	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components (intro).
 	public static void translateSelectionAndControlPoints(VisualModel vm, double tx, double ty) {
 		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(vm.getRoot(), VisualConnection.class);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	setConnectionsScaleMode(connections, ScaleMode.LOCK_RELATIVELY);
+		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(vm.getSelection(), connections);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	setConnectionsScaleMode(includedConnections, ScaleMode.LOCK_RELATIVELY);
 		translateNodes(vm.getSelection(), tx, ty);
 		setConnectionsScaleMode(connectionToScaleModeMap);
 	}
 
+	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components (outro).
 	public static HashMap<VisualConnection, ScaleMode> setConnectionsScaleMode(Collection<VisualConnection> connections, ScaleMode scaleMode) {
 		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = new HashMap<>();
 		for (VisualConnection vc: connections) {

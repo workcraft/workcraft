@@ -22,9 +22,9 @@ public class SelectionHelper {
 		return result;
 	}
 
-	static public Collection<Node> getRecursiveSelection(VisualModel model) {
+	static public Collection<Node> getRecursivelyIncludedNodes(Collection<Node> nodes) {
 		HashSet<Node> result = new HashSet<Node>();
-		for (Node node : model.getSelection()) {
+		for (Node node : nodes) {
 			if (node instanceof VisualNode) {
 				result.add(node);
 				result.addAll(Hierarchy.getDescendantsOfType(node, VisualNode.class));
@@ -45,16 +45,23 @@ public class SelectionHelper {
             	result.add(node);
             }
         }
-        Collection<Node> recursiveSelection = getRecursiveSelection(model);
 		Collection<VisualConnection> currentLevelConnections = getCurrentLevelConnections(model);
-        for (VisualConnection connection : currentLevelConnections) {
+        Collection<VisualConnection> includedConnections = getIncludedConnections(model.getSelection(), currentLevelConnections);
+        result.addAll(includedConnections);
+		return result;
+	}
+
+	static public Collection<VisualConnection> getIncludedConnections(Collection<Node> nodes, Collection<VisualConnection> connections) {
+		Collection<VisualConnection> result = new HashSet<VisualConnection>();
+        Collection<Node> recursiveNodes = getRecursivelyIncludedNodes(nodes);
+        for (VisualConnection connection : connections) {
         	VisualComponent first = connection.getFirst();
-        	VisualComponent second = connection.getSecond();
-        	if (recursiveSelection.contains(first) && recursiveSelection.contains(second)) {
+			VisualComponent second = connection.getSecond();
+			if (recursiveNodes.contains(first) && recursiveNodes.contains(second)) {
         		result.add(connection);
         	}
         }
-		return result;
+        return result;
 	}
 
 }

@@ -561,16 +561,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		// FIXME: A hack to preserve the root coordinates of reparented nodes.
+		// FIXME: A hack to preserve the root coordinates of reparented nodes and shape of included connections (intro).
 		// Save root-space position of components and set connections scale mode to follow components.
 		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
 		Collection<VisualConnection> srcConnections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
+		Collection<VisualConnection> srcIncludedConnections = SelectionHelper.getIncludedConnections(srcChildren, srcConnections);
 		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcConnections, ScaleMode.ADAPTIVE);
 
 		Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
 		srcRoot.reparent(dstChildren, dstContainer);
 
-		// FIXME: A hack to preserve the root coordinates of reparented nodes.
+		// FIXME: A hack to preserve the root coordinates of reparented nodes and shape of included connections (outro).
 		// Restore root-space position of components and connections scale mode.
 		VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
 		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
