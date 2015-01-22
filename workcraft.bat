@@ -6,10 +6,12 @@ set PUNF_DIR=%TOOLS_DIR%\punf
 set MPSAT_DIR=%TOOLS_DIR%\mpsat
 set PCOMP_DIR=%TOOLS_DIR%\pcomp
 set SCENCO_DIR=%TOOLS_DIR%\scenco
+set ESPRESSO_DIR=%TOOLS_DIR%\espresso
+set ABC_DIR=%TOOLS_DIR%\abc
 set DOT_DIR=%TOOLS_DIR%\dot
 
 :: Add location of the third-party tools to the PATH variable
-set PATH=%PATH%;%PETRIFY_DIR%;%PUNF_DIR%;%MPSAT_DIR%;%PCOMP_DIR%;%SCENCO_DIR%;%DOT_DIR%
+set PATH=%PATH%;%PETRIFY_DIR%;%PUNF_DIR%;%MPSAT_DIR%;%PCOMP_DIR%;%SCENCO_DIR%;%ESPRESSO_DIR%;%ABC_DIR%;%DOT_DIR%
 
 pushd "%WORKCRAFT_HOME%"
 

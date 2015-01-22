@@ -1,29 +1,27 @@
-package org.workcraft.plugins.cpog;
+package org.workcraft.plugins.cpog.tasks;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
-import org.workcraft.plugins.cpog.tasks.ProgrammerChainResult;
-import org.workcraft.plugins.cpog.tasks.ProgrammerChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 
-public class ProgrammerChainResultHandler extends DummyProgressMonitor<ProgrammerChainResult> {
+public class ScencoChainResultHandler extends DummyProgressMonitor<ScencoChainResult> {
 	private String errorMessage;
-	private final ProgrammerChainTask task;
+	private final ScencoChainTask task;
 
-	public ProgrammerChainResultHandler(ProgrammerChainTask task) {
+	public ScencoChainResultHandler(ScencoChainTask task) {
 		this.task = task;
 	}
 
 	@Override
-	public void finished(final Result<? extends ProgrammerChainResult> result, String description) {
+	public void finished(final Result<? extends ScencoChainResult> result, String description) {
 		if (result.getOutcome() == Outcome.FINISHED) {
-			final GenerationMode programmerMode = result.getReturnValue().getProgrammerSettings().getGenMode();
-			switch (programmerMode) {
+			final GenerationMode scencoMode = result.getReturnValue().getScencoSettings().getGenMode();
+			switch (scencoMode) {
 			case OPTIMAL_ENCODING:
 			case RECURSIVE:
 				//SwingUtilities.invokeLater(new MpsatStgReachabilityResultHandler(task, result));
@@ -33,7 +31,7 @@ public class ProgrammerChainResultHandler extends DummyProgressMonitor<Programme
 					@Override
 					public void run() {
 						JOptionPane.showMessageDialog(null,
-								"Scenco mode \"" + programmerMode + "\" is not (yet) supported." ,
+								"Scenco mode \"" + scencoMode + "\" is not (yet) supported." ,
 								"Sorry..", JOptionPane.WARNING_MESSAGE);
 					}
 				});
@@ -59,29 +57,17 @@ public class ProgrammerChainResultHandler extends DummyProgressMonitor<Programme
 					else
 						errorMessage += "\n\nThe exporter class did not offer further explanation.";
 				} else {
-					Result<? extends ExternalProcessResult> punfResult = result.getReturnValue().getPunfResult();
-
-					if (punfResult.getOutcome() == Outcome.FAILED) {
-						errorMessage += "\n\nPunf could not build the unfolding prefix.";
-						Throwable cause = punfResult.getCause();
+					Result<? extends ExternalProcessResult> encoderResult = result.getReturnValue().getEncoderResult();
+					if (encoderResult.getOutcome() == Outcome.FAILED) {
+						errorMessage += "\n\nEncoder failed to execute as expected.";
+						Throwable cause = encoderResult.getCause();
 						if (cause != null)
 							errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
 						else
-							errorMessage += "\n\nFailure caused by the following errors:\n" + new String(punfResult.getReturnValue().getErrors());
-					} else {
-						Result<? extends ExternalProcessResult> encoderResult = result.getReturnValue().getEncoderResult();
-
-						if (encoderResult.getOutcome() == Outcome.FAILED) {
-							errorMessage += "\n\nEncoder failed to execute as expected.";
-							Throwable cause = encoderResult.getCause();
-							if (cause != null)
-								errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
-							else
-								errorMessage += "\n\nFailure caused by the following errors:\n" + new String(encoderResult.getReturnValue().getErrors());
-						}
-						else {
-							errorMessage += "\n\nEncoder chain task returned failure status without further explanation. This should not have happened -_-a.";
-						}
+							errorMessage += "\n\nFailure caused by the following errors:\n" + new String(encoderResult.getReturnValue().getErrors());
+					}
+					else {
+						errorMessage += "\n\nEncoder chain task returned failure status without further explanation. This should not have happened -_-a.";
 					}
 				}
 			}

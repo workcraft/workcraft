@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cpog;
+package org.workcraft.plugins.cpog.tasks;
 
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,16 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.plugins.cpog.CpogSettings;
+import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
+import org.workcraft.plugins.cpog.Variable;
+import org.workcraft.plugins.cpog.VariableState;
+import org.workcraft.plugins.cpog.VisualArc;
+import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.VisualScenario;
+import org.workcraft.plugins.cpog.VisualVariable;
+import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
@@ -33,23 +41,21 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CpogProgrammer {
-	// FIXME: Relative path to the directory with programmer results. Currently this is hard-coded in programmer.
+public class ScencoTask {
+	// FIXME: Relative path to the directory with scenco results. Currently this is hard-coded in scenco.
 	//private static final String genEncodingDir = "../tools/results/generated_encoding/";
 
 	private EncoderSettings settings;
 	private File scenarioFile, encodingFile,resultDir;
 	private Double minArea;
 
-	// SETTING PARAMETERS FOR CALLING PROGRAMMER
-	private String genEncodingDir;
-	private String programmerCommand;
+	// SETTING PARAMETERS FOR CALLING SCENCO
+	private String scencoCommand;
 	private String espressoCommand;
 	private String abcFolder;
 	private String gatesLibrary;
@@ -80,7 +86,7 @@ public class CpogProgrammer {
 	private int v;
 	private int a;
 
-	public CpogProgrammer(EncoderSettings settings){
+	public ScencoTask(EncoderSettings settings){
 		this.setSettings(settings);
 	}
 
@@ -236,7 +242,7 @@ public class CpogProgrammer {
 
 		instantiateParameters(n, m);
 
-		// CALLING PROGRAMMER
+		// CALLING SCENCO
 		boolean SCENCO = false;
 		try {
 			if(settings.isAbcFlag()){
@@ -338,11 +344,11 @@ public class CpogProgrammer {
 
 			//new File(genEncodingDir).mkdirs();
 
-			// IF SCENCO MODE IS NOT SELECTED, PROGRAMMER IS CALLED ITERATIVELY
+			// IF SCENCO MODE IS NOT SELECTED, SCENCO IS CALLED ITERATIVELY
 		// BECAUSE, IF CONTINUOUS OPTION IS SELECTED, TOOL IS CALLED
 		// TILL USER PRESSES STOP BUTTON
 		if(!SCENCO){
-			// CALLING PROGRAMMER
+			// CALLING SCENCO
 			boolean out = false;
 			boolean continuous = false;
 			int limit, it = 0;
@@ -356,7 +362,7 @@ public class CpogProgrammer {
 				minArea = Double.MAX_VALUE;
 				Double currArea = Double.MAX_VALUE;
 				while(!out && it < limit){
-					if(callingProgrammer(currArea, we,it, continuous) != 0){
+					if(callingScenco(currArea, we,it, continuous) != 0){
 						deleteTempFiles();
 						we.cancelMemento();
 						return;
@@ -445,7 +451,7 @@ public class CpogProgrammer {
 				System.out.println();
 			}
 
-			// READ OUTPUT OF PROGRAMMER INSTANTIATING THE OPTIMAL ENCODING SOLUTION
+			// READ OUTPUT OF SCENCO INSTANTIATING THE OPTIMAL ENCODING SOLUTION
 			// AND CONNECTING IT TO EACH VISUAL VERTEX EXPLOITING A MAP
 			if(!SCENCO){
 				System.out.println("Op-code selected for graphs:");
@@ -502,7 +508,7 @@ public class CpogProgrammer {
 		boolean[][] encoding = solution.getEncoding();
 
 		// IF OLD SCENDO MODE IS SELECTED, GET THE ENCODING SOLUTION FROM IT AND
-		// SYNTHESISE IT THROUGH PROGRAMMER IN ORDER TO OUTPUT THE MICROCONTROLLER
+		// SYNTHESISE IT THROUGH SCENCO IN ORDER TO OUTPUT THE MICROCONTROLLER
 		// AND AREA INFORMATION
 		if(settings.getGenMode() == GenerationMode.SCENCO){
 
@@ -528,7 +534,7 @@ public class CpogProgrammer {
 			    //System.out.println(settings.getBits());
 			     Output.close();
 			     customPath = encodingFile.getAbsolutePath();
-			     if(callingProgrammer(Double.MAX_VALUE, we, 0, false) != 0){
+			     if(callingScenco(Double.MAX_VALUE, we, 0, false) != 0){
 			    	deleteTempFiles();
 					we.cancelMemento();
 					return;
@@ -712,7 +718,7 @@ public class CpogProgrammer {
 		return trivial;
 	}
 
-	// FUNCTION FOR PREPARING FILES NEEDED TO PROGRAMMER TOOL TO WORK PROPERLY.
+	// FUNCTION FOR PREPARING FILES NEEDED TO SCENCO TOOL TO WORK PROPERLY.
 	// IT FILLS IN FILE CONTAINING ALL THE SCENARIOS AND THE CUSTOM ENCODING
 	// FILE, IF USER WANTS TO USE A CUSTOM SOLUTION.
 	private int WriteCpogIntoFile(int m, ArrayList<VisualScenario> scenarios)
@@ -873,7 +879,7 @@ public class CpogProgrammer {
 		return;
 	}
 
-	// FUNCTION FOR DELETING TEMPORARY FILE USED BY PROGRAMMER TOOL
+	// FUNCTION FOR DELETING TEMPORARY FILE USED BY SCENCO TOOL
 	private void deleteTempFiles(){
 		if ((scenarioFile != null) &&scenarioFile.exists()) {
 			scenarioFile.delete();
@@ -886,18 +892,18 @@ public class CpogProgrammer {
 		}
 	}
 
-	// THIS FUNCTION CALLS PROGRAMMER TOOL BY PASSING ALL THE NEEDED ARGUMENTS BY COMMAND LINE.
+	// THIS FUNCTION CALLS SCENCO TOOL BY PASSING ALL THE NEEDED ARGUMENTS BY COMMAND LINE.
 	// IN ADDITION, IT PARSES THE OUTPUT OF THE TOOL INSTAINTIANING ALL THE VARIABLES NEEDED
 	// TO WORKCRAFT TO BUILD THE COMPOSITIONAL GRAPH
-	private int callingProgrammer(Double currArea, WorkspaceEntry we, int it, boolean continuous) throws IOException{
+	private int callingScenco(Double currArea, WorkspaceEntry we, int it, boolean continuous) throws IOException{
 		//Debug Printing: launching executable
-		/*System.out.println(programmerCommand + " " + scenarioFile.getAbsolutePath() + " " +
+		/*System.out.println(scencoCommand + " " + scenarioFile.getAbsolutePath() + " " +
 		"-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
 		verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
 		espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
 		gatesLibrary);*/
 
-				process = new ProcessBuilder(programmerCommand, scenarioFile.getAbsolutePath(),
+				process = new ProcessBuilder(scencoCommand, scenarioFile.getAbsolutePath(),
 				"-m", effort, genMode, numSol, customFlag, customPath, verbose, cpogSize, disableFunction, oldSynt,
 				espressoFlag, espressoCommand, abcFlag, abcFolder, gateLibFlag, gatesLibrary, "-res", resultDir.getAbsolutePath()).start();
 		InputStream is = process.getInputStream();
@@ -963,7 +969,7 @@ public class CpogProgrammer {
 								while(line.contains(".end_error") == false){
 									JOptionPane.showMessageDialog(null,
 											line,
-											"Programmer error",
+											"scenco error",
 											JOptionPane.ERROR_MESSAGE);
 									line = br.readLine();
 								}
@@ -1031,7 +1037,7 @@ public class CpogProgrammer {
 					while(line.contains(".end_error") == false){
 						JOptionPane.showMessageDialog(null,
 								line,
-								"Programmer error",
+								"scenco error",
 								JOptionPane.ERROR_MESSAGE);
 						line = br.readLine();
 					}
@@ -1048,7 +1054,7 @@ public class CpogProgrammer {
 		return 0;
 	}
 
-	// RESET ALL THE PARAMETERS TO CALL PROGRAMMER TOOL
+	// RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
 	private void reset_vars(){
 		verbose = ""; genMode= ""; numSol= ""; customFlag= ""; customPath= ""; effort= ""; espressoFlag= "";
 		abcFlag= ""; gateLibFlag= ""; cpogSize= ""; disableFunction= ""; oldSynt= "";
@@ -1065,7 +1071,7 @@ public class CpogProgrammer {
 		opt_formulaeArcs = new String[elements*elements];
 		truthTableArcs =  new String[elements*elements];
 		arcNames = new String[elements*elements];
-		programmerCommand = CpogSettings.getProgrammerCommand();
+		scencoCommand = CpogSettings.getScencoCommand();
 		espressoCommand = CpogSettings.getEspressoCommand();
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();

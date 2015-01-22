@@ -33,7 +33,7 @@ public class CpogSettings implements Settings {
 	private static final String keyCircuitSize = prefix + ".circuitSize";
 	private static final String keyClaspCommand = prefix + ".claspCommand";
 	private static final String keyMinisatCommand = prefix + ".minisatCommand";
-	private static final String keyProgrammerCommand = prefix + ".programmerCommand";
+	private static final String keyScencoCommand = prefix + ".scencoCommand";
 	private static final String keyEspressoCommand = prefix + ".espressoCommand";
 	private static final String keyAbcFolder = prefix + ".abcFolder";
 	private static final String keyGatesLibrary = prefix + ".gatesLibrary";
@@ -42,7 +42,7 @@ public class CpogSettings implements Settings {
 	private static final int defaultCircuitSize = 4;
 	private static final String defaultClaspCommand = "clasp";
 	private static final String defaultMinisatCommand = "minisat";
-	private static final String defaultProgrammerCommand = "programmer";
+	private static final String defaultScencoCommand = "scenco";
 	private static final String defaultEspressoCommand = "espresso";
 	private static final String defaultAbcFolder = "abc/";
 	private static final String defaultGatesLibrary = "90nm.genlib";
@@ -51,7 +51,7 @@ public class CpogSettings implements Settings {
 	private static int circuitSize = defaultCircuitSize;
 	private static String claspCommand = defaultClaspCommand;
 	private static String minisatCommand = defaultMinisatCommand;
-	private static String programmerCommand = defaultProgrammerCommand;
+	private static String scencoCommand = defaultScencoCommand;
 	private static String espressoCommand = defaultEspressoCommand;
 	private static String abcFolder = defaultAbcFolder;
 	private static String gatesLibrary = defaultGatesLibrary;
@@ -98,12 +98,12 @@ public class CpogSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "Programmer command", String.class) {
+				this, "Scenco command", String.class) {
 			protected void setter(CpogSettings object, String value) {
-				CpogSettings.setProgrammerCommand(value);
+				CpogSettings.setScencoCommand(value);
 			}
 			protected String getter(CpogSettings object) {
-				return CpogSettings.getProgrammerCommand();
+				return CpogSettings.getScencoCommand();
 			}
 		});
 
@@ -144,7 +144,7 @@ public class CpogSettings implements Settings {
 		setCircuitSize(config.getInt(keyCircuitSize, defaultCircuitSize));
 		setClaspCommand(config.getString(keyClaspCommand, defaultClaspCommand));
 		setMinisatCommand(config.getString(keyMinisatCommand, defaultMinisatCommand));
-		setProgrammerCommand(config.getString(keyProgrammerCommand, defaultProgrammerCommand));
+		setScencoCommand(config.getString(keyScencoCommand, defaultScencoCommand));
 		setEspressoCommand(config.getString(keyEspressoCommand, defaultEspressoCommand));
 		setAbcFolder(config.getString(keyAbcFolder, defaultAbcFolder));
 		setGatesLibrary(config.getString(keyGatesLibrary, defaultGatesLibrary));
@@ -156,7 +156,7 @@ public class CpogSettings implements Settings {
 		config.setInt(keyCircuitSize, getCircuitSize());
 		config.set(keyClaspCommand, getClaspCommand());
 		config.set(keyMinisatCommand, getMinisatCommand());
-		config.set(keyProgrammerCommand, getProgrammerCommand());
+		config.set(keyScencoCommand, getScencoCommand());
 		config.set(keyEspressoCommand, getEspressoCommand());
 		config.set(keyAbcFolder, getAbcFolder());
 		config.set(keyGatesLibrary, getGatesLibrary());
@@ -209,12 +209,12 @@ public class CpogSettings implements Settings {
 		minisatCommand = value;
 	}
 
-	public static String getProgrammerCommand() {
-		return programmerCommand;
+	public static String getScencoCommand() {
+		return scencoCommand;
 	}
 
-	public static void setProgrammerCommand(String value) {
-		programmerCommand = value;
+	public static void setScencoCommand(String value) {
+		scencoCommand = value;
 	}
 
 	public static String getEspressoCommand() {

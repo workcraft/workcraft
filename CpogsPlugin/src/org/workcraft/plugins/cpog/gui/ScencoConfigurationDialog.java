@@ -28,15 +28,15 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.workcraft.gui.SimpleFlowLayout;
-import org.workcraft.plugins.cpog.CpogProgrammer;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualScenario;
+import org.workcraft.plugins.cpog.tasks.ScencoTask;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
-public class EncoderConfigurationDialog extends JDialog {
+public class ScencoConfigurationDialog extends JDialog {
 
 	private JLabel numberOfSolutionsLabel, contLabel,
 					verboseModeLabel,exampleLabel,exampleLabel2,exampleLabel3,exampleLabel4,
@@ -57,7 +57,7 @@ public class EncoderConfigurationDialog extends JDialog {
 	private ButtonGroup group;
 
 	// Core variables
-	private CpogProgrammer encoder;
+	private ScencoTask encoder;
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
 
@@ -75,7 +75,7 @@ public class EncoderConfigurationDialog extends JDialog {
 		return settings;
 	}
 
-	public EncoderConfigurationDialog(Window owner, PresetManager<EncoderSettings> presetManager, EncoderSettings settings,WorkspaceEntry we) {
+	public ScencoConfigurationDialog(Window owner, PresetManager<EncoderSettings> presetManager, EncoderSettings settings,WorkspaceEntry we) {
 		super(owner, "SCENCO configuration", ModalityType.APPLICATION_MODAL);
 		this.presetManager = presetManager;
 		this.settings = settings;
@@ -187,9 +187,9 @@ public class EncoderConfigurationDialog extends JDialog {
 				}
 
 				// Set them on encoder
-				encoder = new CpogProgrammer(settings);
+				encoder = new ScencoTask(settings);
 
-				// Execute programmer
+				// Execute scenco
 				encoder.run(we);
 			}
 		});
