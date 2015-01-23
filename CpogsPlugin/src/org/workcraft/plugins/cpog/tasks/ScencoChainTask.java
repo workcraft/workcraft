@@ -17,20 +17,20 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ProgrammerChainTask implements Task<ProgrammerChainResult> {
+public class ScencoChainTask implements Task<ScencoChainResult> {
 
 	private final WorkspaceEntry we;
 	private final EncoderSettings settings;
 	private VisualModel model;
 
-	public ProgrammerChainTask(WorkspaceEntry we, EncoderSettings settings) {
+	public ScencoChainTask(WorkspaceEntry we, EncoderSettings settings) {
 		this.we = we;
 		this.settings = settings;
 		this.model = null;
 	}
 
 	@Override
-	public Result<? extends ProgrammerChainResult> run(ProgressMonitor<? super ProgrammerChainResult> monitor) {
+	public Result<? extends ScencoChainResult> run(ProgressMonitor<? super ScencoChainResult> monitor) {
 		final Framework framework = Framework.getInstance();
 		try {
 			if(model == null) {
@@ -48,17 +48,17 @@ public class ProgrammerChainTask implements Task<ProgrammerChainResult> {
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
 				netFile.delete();
 				if (exportResult.getOutcome() == Outcome.CANCELLED)
-					return new Result<ProgrammerChainResult>(Outcome.CANCELLED);
-				return new Result<ProgrammerChainResult>(Outcome.FAILED, new ProgrammerChainResult(exportResult, null, null, settings));
+					return new Result<ScencoChainResult>(Outcome.CANCELLED);
+				return new Result<ScencoChainResult>(Outcome.FAILED, new ScencoChainResult(exportResult, null, settings));
 			}
 			monitor.progressUpdate(0.33);
 
 
 			monitor.progressUpdate(1.0);
 
-			return new Result<ProgrammerChainResult>(Outcome.FINISHED, null);
+			return new Result<ScencoChainResult>(Outcome.FINISHED, null);
 		} catch (Throwable e) {
-			return new Result<ProgrammerChainResult>(e);
+			return new Result<ScencoChainResult>(e);
 		}
 	}
 

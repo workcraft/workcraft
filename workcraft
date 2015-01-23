@@ -12,9 +12,10 @@ PUNF_DIR=$TOOLS_DIR/punf
 MPSAT_DIR=$TOOLS_DIR/mpsat
 PCOMP_DIR=$TOOLS_DIR/pcomp
 SCENCO_DIR=$TOOLS_DIR/scenco
+ESPRESSO_DIR=$TOOLS_DIR/espresso
 
 # Add location of the third-party tools to the PATH variable
-export PATH=$PATH:$PETRIFY_DIR:$PUNF_DIR:$MPSAT_DIR:$PCOMP_DIR:$SCENCO_DIR
+export PATH=$PATH:$PETRIFY_DIR:$PUNF_DIR:$MPSAT_DIR:$PCOMP_DIR:$SCENCO_DIR:$ESPRESSO_DIR
 
 # Set the JVM executable in JAVA_BIN variable (if not defined yet)
 if [ -z "$JAVA_BIN" ]

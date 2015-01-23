@@ -9,15 +9,15 @@ import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.gui.EncoderConfigurationDialog;
+import org.workcraft.plugins.cpog.gui.ScencoConfigurationDialog;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class EncoderPreferencesTool implements Tool {
+public class ScencoTool implements Tool {
 
 	private EncoderSettings settings;
-	private EncoderConfigurationDialog dialog;
+	private ScencoConfigurationDialog dialog;
 	PresetManager<EncoderSettings> pmgr;
 
 	@Override
@@ -43,14 +43,14 @@ public class EncoderPreferencesTool implements Tool {
 		MainWindow mainWindow = framework.getMainWindow();
 		settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
 		pmgr = new PresetManager<EncoderSettings>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-		dialog = new EncoderConfigurationDialog(mainWindow, pmgr, settings, we);
+		dialog = new ScencoConfigurationDialog(mainWindow, pmgr, settings, we);
 
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
 		// TASK INSERTION
-		/*final ProgrammerChainTask programmerTask = new ProgrammerChainTask(we, dialog.getSettings(), framework);
-		framework.getTaskManager().queue(programmerTask, "Scenco tool chain",
-				new ProgrammerChainResultHandler(programmerTask));*/
+		/*final ScencoChainTask scencoTask = new ScencoChainTask(we, dialog.getSettings(), framework);
+		framework.getTaskManager().queue(scencoTask, "Scenco tool chain",
+				new ScencoChainResultHandler(scencoTask));*/
 	}
 
 }
