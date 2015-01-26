@@ -412,6 +412,9 @@ public class MainMenu extends JMenuBar {
 		JMenu mnHelp = new JMenu();
 		mnHelp.setText("Help");
 
+		ActionMenuItem miOverview = new ActionMenuItem(MainWindowActions.HELP_OVERVIEW_ACTION);
+		miOverview.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		ActionMenuItem miContents = new ActionMenuItem(MainWindowActions.HELP_CONTENTS_ACTION);
 		miContents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		miContents.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -428,6 +431,7 @@ public class MainMenu extends JMenuBar {
 		ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
 		miAbout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		mnHelp.add(miOverview);
 		mnHelp.add(miContents);
 		mnHelp.add(miTutorials);
 		mnHelp.addSeparator();

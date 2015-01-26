@@ -364,6 +364,18 @@ public class MainWindowActions {
 
 	};
 
+	public static final Action HELP_OVERVIEW_ACTION = new Action() {
+		@Override
+		public void run() {
+			final Framework f = Framework.getInstance();
+			f.openExternally("overview/start.html");
+		}
+
+		public String getText() {
+			return "Overview";
+		};
+	};
+
 	public static final Action HELP_CONTENTS_ACTION = new Action() {
 		@Override
 		public void run() {

@@ -15,7 +15,7 @@ model_plugin_dirs="
     XmasPlugin"
 tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
 third_party_dirs="ThirdParty"
-doc_dirs="help tutorial"
+doc_dirs="overview help tutorial"
 core_dirs="WorkcraftCore"
 core_files="LICENSE README workcraft workcraft.bat"
 
