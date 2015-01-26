@@ -21,37 +21,26 @@
 
 package org.workcraft.plugins.layout;
 
-import org.workcraft.Tool;
+import java.awt.geom.Point2D;
+
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
-public class NullLayoutTool implements Tool {
-
-	@Override
-	public String getSection() {
-		return "Layout";
-	}
-
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, VisualModel.class);
-	}
-
-	@Override
-	public void run(WorkspaceEntry we) {
-		for (Node n : WorkspaceUtils.getAs(we, VisualModel.class).getRoot().getChildren()) {
-			if (n instanceof VisualTransformableNode) {
-				((VisualTransformableNode)n).setX(0);
-				((VisualTransformableNode)n).setY(0);
-			}
-		}
-	}
+public class NullLayoutTool extends AbstractLayoutTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Reset layout";
+		return "Reset";
+	}
+
+	@Override
+	public void layout(VisualModel model) {
+		Point2D.Double pos = new Point2D.Double(0.0 ,0.0);
+		for (Node node : model.getRoot().getChildren()) {
+			if (node instanceof VisualTransformableNode) {
+				((VisualTransformableNode)node).setPosition(pos);
+			}
+		}
 	}
 }

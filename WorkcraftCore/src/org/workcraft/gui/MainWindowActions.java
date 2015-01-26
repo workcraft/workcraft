@@ -73,24 +73,6 @@ public class MainWindowActions {
 			return "Close all works";
 		};
 	};
-	public static final Action EXIT_ACTION = new Action() {
-		@Override public void run() {
-			final Framework f = Framework.getInstance();
-			f.shutdown();
-		}
-		public String getText() {
-			return "Exit";
-		};
-	};
-	public static final Action SHUTDOWN_GUI_ACTION = new Action() {
-		@Override public void run() {
-			final Framework f = Framework.getInstance();
-			try { f.shutdownGUI(); } catch (OperationCancelledException e) { }
-		}
-		public String getText() {
-			return "Switch to console mode";
-		};
-	};
 
 	public static final Action RECONFIGURE_PLUGINS_ACTION = new Action() {
 		@Override
@@ -105,6 +87,26 @@ public class MainWindowActions {
 			} catch (PluginInstantiationException e) {
 				e.printStackTrace();
 			}
+		};
+	};
+
+	public static final Action SHUTDOWN_GUI_ACTION = new Action() {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
+			try { f.shutdownGUI(); } catch (OperationCancelledException e) { }
+		}
+		public String getText() {
+			return "Switch to console mode";
+		};
+	};
+
+	public static final Action EXIT_ACTION = new Action() {
+		@Override public void run() {
+			final Framework f = Framework.getInstance();
+			f.shutdown();
+		}
+		public String getText() {
+			return "Exit";
 		};
 	};
 

@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
@@ -57,10 +56,8 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
-public class DotLayoutTool implements Tool {
+public class DotLayoutTool extends AbstractLayoutTool {
 
 	private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
 		final Framework framework = Framework.getInstance();
@@ -72,78 +69,65 @@ public class DotLayoutTool implements Tool {
 		out.close();
 	}
 
-	List<Point2D> parseConnectionSpline(String pos) throws ParseException
-	{
-		try
-		{
+	private List<Point2D> parseConnectionSpline(String pos) throws ParseException {
+		try	{
 			ArrayList<Point2D> result = new ArrayList<Point2D>();
 			Point2D end = null;
 			String [] split = pos.split(" ");
 
-			for(String s : split)
-			{
+			for (String s : split) {
 				String [] ss = s.split(",");
 				if(ss.length <2 || ss.length>3)
 					throw new ParseException("bad connection position format");
 				double pointsToInches = 1.0/72;
-				if(ss.length == 3)
-				{
+				if (ss.length == 3) {
 					double x = Double.parseDouble(ss[1])*pointsToInches;
 					double y = -Double.parseDouble(ss[2])*pointsToInches;
 					Point2D p = new Point2D.Double(x,y);
-					if(ss[0].equals("s"))
+					if(ss[0].equals("s")) {
 						result.add(0,p);
-					else
-						if(ss[0].equals("e"))
+					} else {
+						if(ss[0].equals("e")) {
 							end = p;
-						else
+						} else {
 							throw new ParseException("bad connection position format");
-				}
-				else
-				{
+						}
+					}
+				} else {
 					double x = Double.parseDouble(ss[0])*pointsToInches;
 					double y = -Double.parseDouble(ss[1])*pointsToInches;
 					result.add(0,new Point2D.Double(x,y));
 				}
 			}
 
-			if(end!=null)
+			if (end != null) {
 				result.add(0,end);
+			}
 			return result;
-		}
-		catch(NumberFormatException ex)
-		{
+		} catch(NumberFormatException ex) {
 			throw new ParseException(ex.getMessage());
 		}
 	}
 
 	private void applyLayout(String in, final VisualModel model) {
-
 		DotParser parser = new DotParser(new StringReader(in.replace("\\\n", "")));
-
 		try {
-			parser.graph(new DotListener()
-			{
+			parser.graph(new DotListener() {
 				@Override
 				public void node(String id, Map<String, String> properties) {
 					Node comp = model.getNodeByReference(id);
 
-					if(comp!=null && comp instanceof Movable)
-					{
+					if(comp!=null && comp instanceof Movable) {
 						Movable m = (Movable)comp;
 						String posStr = properties.get("pos");
-						if(posStr!=null)
-						{
+						if (posStr!=null) {
 							String [] posParts = posStr.split(",");
-							if(posParts.length==2)
-							{
+							if(posParts.length==2) {
 								MovableHelper.resetTransform(m);
 								MovableHelper.translate(m,
 									Double.parseDouble(posParts[0])*1.0/72,
 									-Double.parseDouble(posParts[1])*1.0/72);
-							}
-							else
-							{
+							} else {
 								System.err.println("Dot graph parse error: node 'pos' attribute has value '"
 										+ posStr + "', which is not a comma-separated pair of integers");
 							}
@@ -154,19 +138,17 @@ public class DotLayoutTool implements Tool {
 				@Override
 				public void arc(String from, String to, Map<String, String> properties) {
 
-					if(DotLayoutSettings.getImportConnectionsShape())
-					{
+					if (DotLayoutSettings.getImportConnectionsShape()) {
 						Node comp1 = model.getNodeByReference(from);
 						Node comp2 = model.getNodeByReference(to);
 						Set<Connection> connections = model.getConnections(comp1);
 						Connection con = null;
-						for(Connection c : connections)
-						{
-							if(c.getSecond() == comp2)
+						for (Connection c : connections) {
+							if (c.getSecond() == comp2) {
 								con = c;
+							}
 						}
-						if(con!=null)
-						{
+						if (con != null) {
 							VisualConnection vc = (VisualConnection)con;
 							vc.setConnectionType(ConnectionType.POLYLINE);
 							vc.setScaleMode(ScaleMode.ADAPTIVE);
@@ -177,20 +159,16 @@ public class DotLayoutTool implements Tool {
 							try {
 								points = parseConnectionSpline(properties.get("pos"));
 
-								for(int i=points.size()-1;i>=0;i--)
-								{
+								for (int i = points.size() - 1; i >= 0; i--) {
 									Point2D p = points.get(i);
 									ControlPoint cp = new ControlPoint();
 									cp.setPosition(p);
 									poly.add(cp);
 								}
-
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}
-						}
-						else
-						{
+						} else {
 							System.err.println(String.format("Unable to find a connection from %s to %s", from, to));
 						}
 					}
@@ -201,9 +179,15 @@ public class DotLayoutTool implements Tool {
 		}
 	}
 
-	public void run (WorkspaceEntry entry) {
-		VisualModel model = WorkspaceUtils.getAs(entry, VisualModel.class);
-		File original = null, layout = null;
+	@Override
+	public String getDisplayName() {
+		return "Graphviz DOT";
+	}
+
+	@Override
+	public void layout(VisualModel model) {
+		File original = null;
+		File layout = null;
 		try {
 			original = File.createTempFile("work", ".dot");
 			layout = File.createTempFile("worklayout", ".dot");
@@ -221,45 +205,35 @@ public class DotLayoutTool implements Tool {
 			final Framework framework = Framework.getInstance();
 			Result<? extends ExternalProcessResult> res = framework.getTaskManager().execute(task, "Laying out the graph...");
 
-			if(res.getOutcome() == Outcome.CANCELLED)
+			if(res.getOutcome() == Outcome.CANCELLED) {
 				return;
-			if(res.getOutcome() == Outcome.FAILED)
+			}
+			if(res.getOutcome() == Outcome.FAILED) {
 				throw new LayoutException("Failed to execute external process:\n" + res.getCause());
+			}
 			if(res.getReturnValue().getReturnCode() == 0) {
 				String in = FileUtils.readAllText(layout);
 				applyLayout(in, (VisualModel)model);
-				framework.getMainWindow().zoomFit();
 			} else {
 				throw new LayoutException("External process (dot) failed (code " +
 					res.getReturnValue().getReturnCode() +")\n\n" +
 					new String(res.getReturnValue().getOutput()) + "\n\n" +
 					new String(res.getReturnValue().getErrors()));
 			}
-		} catch(IOException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (ModelValidationException e) {
 			throw new RuntimeException(e);
 		} catch (SerialisationException e) {
 			throw new RuntimeException(e);
 		} finally {
-			if(original!=null)
+			if (original != null) {
 				original.delete();
-			if(layout!=null)
+			}
+			if (layout != null) {
 				layout.delete();
+			}
 		}
 	}
 
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, VisualModel.class);
-	}
-
-	@Override
-	public String getSection() {
-		return "Layout";
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Layout using dot";
-	}
 }

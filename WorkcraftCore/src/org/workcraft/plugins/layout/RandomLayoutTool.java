@@ -21,48 +21,35 @@
 
 package org.workcraft.plugins.layout;
 
+import java.util.Collection;
 import java.util.Random;
 
-import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
-public class RandomLayoutTool implements Tool {
+public class RandomLayoutTool extends AbstractLayoutTool {
 	Random r = new Random();
 
 	@Override
-	public String getSection() {
-		return "Layout";
-	}
-
-	@Override
 	public String getDisplayName() {
-		return "Randomize layout";
+		return "Random";
 	}
 
 	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, VisualModel.class);
-	}
-
-	@Override
-	public void run(WorkspaceEntry we) {
-		VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
-		for (VisualTransformableNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualTransformableNode.class)) {
+	public void layout(VisualModel model) {
+		Collection<VisualTransformableNode> nodes = Hierarchy.getDescendantsOfType(model.getRoot(), VisualTransformableNode.class);
+		for (VisualTransformableNode node : nodes) {
 			node.setX(RandomLayoutSettings.getStartX() + r.nextDouble() * RandomLayoutSettings.getRangeX());
 			node.setY(RandomLayoutSettings.getStartY() + r.nextDouble() * RandomLayoutSettings.getRangeY());
 		}
-		for (VisualConnection connection: Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class)) {
+		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
+		for (VisualConnection connection: connections) {
 			connection.setConnectionType(ConnectionType.POLYLINE);
 			connection.getGraphic().setDefaultControlPoints();
 		}
-		Framework.getInstance().getMainWindow().zoomFit();
 	}
 
 }

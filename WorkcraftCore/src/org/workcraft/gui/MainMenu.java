@@ -200,6 +200,9 @@ public class MainMenu extends JMenuBar {
 		ActionMenuItem miSaveWorkspaceAs = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
 		miSaveWorkspaceAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
+		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindowActions.RECONFIGURE_PLUGINS_ACTION);
+		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
+
 		ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindowActions.SHUTDOWN_GUI_ACTION);
 		miShutdownGUI.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
@@ -231,7 +234,9 @@ public class MainMenu extends JMenuBar {
 //		mnFile.add(miSaveWorkspaceAs);
 
 		mnFile.addSeparator();
+		mnFile.add(miReconfigure);
 		mnFile.add(miShutdownGUI);
+		mnFile.addSeparator();
 		mnFile.add(miExit);
 
 		add(mnFile);
@@ -301,9 +306,6 @@ public class MainMenu extends JMenuBar {
 		ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
 		miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		ActionMenuItem miReconfigure = new ActionMenuItem(MainWindowActions.RECONFIGURE_PLUGINS_ACTION);
-		miReconfigure.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
 		mnEdit.add(miUndo);
 		mnEdit.add(miRedo);
 		mnEdit.addSeparator();
@@ -317,7 +319,6 @@ public class MainMenu extends JMenuBar {
 		mnEdit.add(miSelectNone);
 		mnEdit.addSeparator();
 		mnEdit.add(miProperties);
-		mnEdit.add(miReconfigure);
 
 		add(mnEdit);
 	}

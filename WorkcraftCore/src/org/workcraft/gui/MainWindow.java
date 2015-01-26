@@ -271,10 +271,10 @@ public class MainWindow extends JFrame {
 				modelEntry.setModel(visualModel);
 				try {
 					DotLayoutTool dotLayout = new DotLayoutTool();
-					dotLayout.run(we);
+					dotLayout.layout(visualModel);
 				} catch (LayoutException e) {
 					RandomLayoutTool randomLayout = new RandomLayoutTool();
-					randomLayout.run(we);
+					randomLayout.layout(visualModel);
 				}
 				we.setModelEntry(modelEntry);
 			} catch (LayoutException e) {
