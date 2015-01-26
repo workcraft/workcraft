@@ -52,7 +52,7 @@ public class TransformationTask implements Task<TransformationResult>{
 				format = Format.SG;
 			}
 			if (format == null) {
-				return Result.exception(new Throwable("Only STG or FST models can be transformed."));
+				return Result.exception(new Throwable("This tool is not applicable to " + model.getDisplayName() + " model."));
 			}
 
 			ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());

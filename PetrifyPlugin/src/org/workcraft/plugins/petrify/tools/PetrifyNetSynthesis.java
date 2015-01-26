@@ -18,12 +18,12 @@ public class PetrifyNetSynthesis implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Net synthesis";
+		return "Conversion";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Net synthesis (with -er option) [Petrify]";
+		return "Net synthesis [Petrify]";
 	}
 
 	@Override

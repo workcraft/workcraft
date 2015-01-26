@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
+import org.workcraft.plugins.fst.SignalEvent.Direction;
 
 public class VisualSignalEvent extends VisualEvent {
 
@@ -39,7 +40,9 @@ public class VisualSignalEvent extends VisualEvent {
 	public String getLabel(DrawRequest r) {
 		String result = super.getLabel(r);
 		if (getReferencedSignalEvent().getSignal().hasDirection()) {
-			result += getReferencedSignalEvent().getDirection();
+			if (FstSettings.getShowToggle() || (getReferencedSignalEvent().getDirection() != Direction.TOGGLE)) {
+				result += getReferencedSignalEvent().getDirection();
+			}
 		}
 		return result;
 	}

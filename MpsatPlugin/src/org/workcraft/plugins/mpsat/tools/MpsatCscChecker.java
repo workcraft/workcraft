@@ -12,7 +12,7 @@ public class MpsatCscChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for CSC [MPSat]";
+		return "Complete State Coding [MPSat]";
 	}
 
 	@Override

@@ -21,7 +21,7 @@ public class MpsatConformationChecker implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for conformation (without dummies) [MPSat]...";
+		return "Conformation (without dummies) [MPSat]...";
 	}
 
 	@Override

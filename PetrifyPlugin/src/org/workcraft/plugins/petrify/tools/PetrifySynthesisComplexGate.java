@@ -11,6 +11,6 @@ public class PetrifySynthesisComplexGate extends PetrifySynthesis {
 
 	@Override
 	public String getDisplayName() {
-		return "Complex gate synthesis [Petrify]";
+		return "Complex gate [Petrify]";
 	}
 }

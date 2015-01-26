@@ -17,7 +17,7 @@ public class PetrifyDummyContraction implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Net synthesis";
+		return "Conversion";
 	}
 
 	@Override

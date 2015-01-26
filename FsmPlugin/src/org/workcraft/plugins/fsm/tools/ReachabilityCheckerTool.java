@@ -17,7 +17,7 @@ public class ReachabilityCheckerTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for reachability";
+		return "Unreachable state";
 	}
 
 	@Override

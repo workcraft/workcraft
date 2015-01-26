@@ -82,7 +82,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
 	@Override
 	public String getExtension() {
-		return ".g";
+		return ".sg";
 	}
 
 	@Override

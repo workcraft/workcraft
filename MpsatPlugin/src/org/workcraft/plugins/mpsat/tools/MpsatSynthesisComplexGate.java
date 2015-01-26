@@ -11,7 +11,7 @@ public class MpsatSynthesisComplexGate extends MpsatSynthesis {
 
 	@Override
 	public String getDisplayName() {
-		return "Complex gate synthesis [MPSat]";
+		return "Complex gate [MPSat]";
 	}
 
 }

@@ -17,7 +17,7 @@ public class ReversibilityCheckerTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for reversibility";
+		return "Reversibility";
 	}
 
 	@Override

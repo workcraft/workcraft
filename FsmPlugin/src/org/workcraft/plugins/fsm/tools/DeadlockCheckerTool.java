@@ -17,7 +17,7 @@ public class DeadlockCheckerTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for deadlock";
+		return "Deadlock";
 	}
 
 	@Override

@@ -16,7 +16,7 @@ public class DeterminismCheckerTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for determinism";
+		return "Determinism";
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class ReachabilityTool implements Tool{
 
 	@Override
 	public String getDisplayName() {
-		return "Check for reachability";
+		return "Reachability";
 	}
 
 	@Override

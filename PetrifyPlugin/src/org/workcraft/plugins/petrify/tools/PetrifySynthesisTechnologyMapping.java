@@ -11,7 +11,7 @@ public class PetrifySynthesisTechnologyMapping extends PetrifySynthesis {
 
 	@Override
 	public String getDisplayName() {
-		return "Technology mapping synthesis [Petrify]";
+		return "Technology mapping [Petrify]";
 	}
 
 }

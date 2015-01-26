@@ -12,7 +12,7 @@ public class MpsatUscChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Check for USC [MPSat]";
+		return "Unique State Coding [MPSat]";
 	}
 
 	@Override

@@ -38,16 +38,19 @@ public class FstSettings implements Settings {
 	private static final String keyOutputColor = prefix + ".outputColor";
 	private static final String keyInternalColor = prefix + ".internalColor";
 	private static final String keyDummyColor = prefix + ".dummyColor";
+	private static final String keyShowToggle = prefix + ".showToggle";
 
 	private static final Color defaultInputColor = Color.RED.darker();
 	private static final Color defaultOutputColor = Color.BLUE.darker();
 	private static final Color defaultInternalColor = Color.GREEN.darker();
 	private static final Color defaultDummyColor = Color.BLACK.darker();
+	private static final boolean defaultShowToggle = false;
 
 	private static Color inputColor = defaultInputColor;
 	private static Color outputColor = defaultOutputColor;
 	private static Color internalColor = defaultInternalColor;
 	private static Color dummyColor = defaultDummyColor;
+	private static boolean showToggle = defaultShowToggle;
 
 	public FstSettings() {
 		properties.add(new PropertyDeclaration<FstSettings, Color>(
@@ -89,6 +92,16 @@ public class FstSettings implements Settings {
 				return FstSettings.getDummyColor();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<FstSettings, Boolean>(
+				this, "Show signal toggle (~)", Boolean.class) {
+			protected void setter(FstSettings object, Boolean value) {
+				FstSettings.setShowToggle(value);
+			}
+			protected Boolean getter(FstSettings object) {
+				return FstSettings.getShowToggle();
+			}
+		});
 	}
 
 	@Override
@@ -102,6 +115,7 @@ public class FstSettings implements Settings {
 		setOutputColor(config.getColor(keyOutputColor, defaultOutputColor));
 		setInternalColor(config.getColor(keyInternalColor, defaultInternalColor));
 		setDummyColor(config.getColor(keyDummyColor, defaultDummyColor));
+		setShowToggle(config.getBoolean(keyShowToggle, defaultShowToggle));
 	}
 
 	@Override
@@ -110,6 +124,7 @@ public class FstSettings implements Settings {
 		config.setColor(keyOutputColor, getOutputColor());
 		config.setColor(keyInternalColor, getInternalColor());
 		config.setColor(keyDummyColor, getDummyColor());
+		config.setBoolean(keyShowToggle, getShowToggle());
 	}
 
 	@Override
@@ -152,6 +167,14 @@ public class FstSettings implements Settings {
 
 	public static Color getDummyColor() {
 		return dummyColor;
+	}
+
+	public static Boolean getShowToggle() {
+		return showToggle;
+	}
+
+	public static void setShowToggle(Boolean value) {
+		showToggle = value;
 	}
 
 }

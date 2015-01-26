@@ -43,9 +43,17 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 	public String getName() {
 		final StringBuffer result = new StringBuffer(getReferencedTransition().getSignalName());
 		switch (getReferencedTransition().getDirection()) {
-			case PLUS:		result.append("+"); break;
-			case MINUS:		result.append("-"); break;
-			case TOGGLE: 	result.append("~"); break;
+			case PLUS:
+				result.append("+");
+				break;
+			case MINUS:
+				result.append("-");
+				break;
+			case TOGGLE:
+				if (STGSettings.getShowToggle()) {
+					result.append("~");
+				}
+				break;
 		}
 		return result.toString();
 	}

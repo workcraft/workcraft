@@ -11,7 +11,7 @@ public class MpsatSynthesisGeneralisedCelement extends MpsatSynthesis {
 
 	@Override
 	public String getDisplayName() {
-		return "Generalised C-element synthesis [MPSat]";
+		return "Generalised C-element [MPSat]";
 	}
 
 }

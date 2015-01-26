@@ -23,7 +23,7 @@ public class StructurePropertyChecker implements Tool {
 	}
 
 	public String getDisplayName(){
-		return "Check for structural properties...";
+		return "Structural properties...";
 	}
 
 	public void run(WorkspaceEntry we){
