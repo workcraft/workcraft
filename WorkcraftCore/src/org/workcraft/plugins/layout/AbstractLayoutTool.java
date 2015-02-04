@@ -3,6 +3,7 @@ package org.workcraft.plugins.layout;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -23,7 +24,10 @@ abstract public class AbstractLayoutTool implements Tool {
 		we.saveMemento();
 		VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
 		layout(model);
-		Framework.getInstance().getMainWindow().zoomFit();
+		MainWindow mainWindow = Framework.getInstance().getMainWindow();
+		if (mainWindow != null) {
+			mainWindow.zoomFit();
+		}
 	}
 
 	abstract public void layout(VisualModel model);

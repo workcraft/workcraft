@@ -41,6 +41,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.observation.ModelModifiedEvent;
@@ -196,8 +197,10 @@ public class WorkspaceEntry implements ObservableState {
 		MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
 		MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
 		MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
-		final Framework framework = Framework.getInstance();
-		framework.getMainWindow().getMainMenu().getToolsMenu().setEnabled(canModify);
+		MainWindow mainWindow = Framework.getInstance().getMainWindow();
+		if (mainWindow != null) {
+			mainWindow.getMainMenu().getToolsMenu().setEnabled(canModify);
+		}
 	}
 
 	public void setCanModify(boolean canModify) {
