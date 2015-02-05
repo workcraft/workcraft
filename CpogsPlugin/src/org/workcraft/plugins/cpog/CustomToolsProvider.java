@@ -17,7 +17,7 @@ public class CustomToolsProvider implements
 	{
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new CpogSelectionTool(false));
+		result.add(new CpogSelectionTool(true));
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
 

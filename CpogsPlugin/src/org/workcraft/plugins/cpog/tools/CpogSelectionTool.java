@@ -30,9 +30,8 @@ import javax.swing.text.BadLocationException;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -68,11 +67,12 @@ public class CpogSelectionTool extends SelectionTool {
 	HashMap<String, CpogFormula> graphMap = new HashMap<String, CpogFormula>();
 	final HashMap<String, Variable> variableMap = new HashMap<String, Variable>();
 	private HashMap<String, String> refMap = new HashMap<String, String>();
+	private HashMap<String, HashMap<String, VisualVertex>> refVertMap = new HashMap<String, HashMap<String, VisualVertex>>();
 	private Checkbox insertTransitives;
 
 	private double highestY = 0; //Sets first graph at y co-ordinate of 0
 
-	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, maxX, maxY, refMap);
+	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, maxX, maxY, refMap, refVertMap);
 
 	public CpogSelectionTool() {
 		super();
@@ -422,6 +422,43 @@ public class CpogSelectionTool extends SelectionTool {
 				parsingTool.removeTransitives(visualCpog, roots);
 			}
 
+            //remember selection
+            ArrayList<Node> prevSelection = new ArrayList<Node>();
+            for (Node n1 : visualCpog.getSelection()) prevSelection.add(n1);
+
+
+            ArrayList<String> usedReferences = parsingTool.getUsedReferences();
+            ArrayList<VisualVertex> pageVerts;
+
+            for (String k : usedReferences) {
+                visualCpog.selectNone();
+                pageVerts = new ArrayList<VisualVertex>();
+                if (refVertMap.containsKey(k)) {
+                    HashMap<String, VisualVertex> vMap = refVertMap.get(k);
+                    for(String k1 : vMap.keySet()) {
+                        pageVerts.add(localVertices.get(k1));
+                        visualCpog.add(localVertices.get(k1));
+                        visualCpog.addToSelection(localVertices.get(k1));
+                    }
+                    prevSelection.removeAll(pageVerts);
+                    selectionPageGroup(editor);
+                    if (visualCpog.getSelection().size() == 1)
+                    {
+                        for (Node n1 : visualCpog.getSelection()) {
+                            if (n1 instanceof VisualPage) {
+                                VisualPage vp = (VisualPage) n1;
+                                vp.setLabel(k);
+                                vp.setIsCollapsed(true);
+                                prevSelection.add(vp);
+                            }
+                        }
+                    }
+                }
+                visualCpog.addToSelection(prevSelection);
+
+            }
+
+
 			if (roots.isEmpty()) {
 				double y = maxY + 2.5;
 				for (VisualVertex v : vertexMap.values()) {
@@ -446,13 +483,33 @@ public class CpogSelectionTool extends SelectionTool {
 				}
 			}
 
+
+
 			editor.requestFocus();
 			Point2D.Double coordinate = (Double) parsingTool.getLowestVertex(visualCpog);
+            VisualPage vp = null;
+            HashSet<VisualPage> pageList = new HashSet<VisualPage>();
 			if (PGF.getGraphName() != null)	{
-				VisualScenario vs = visualCpog.groupSelection(PGF.getGraphName());
-				System.out.println("X" + coordinate.getX());
-				coordinate.setLocation(coordinate.getX(), coordinate.getY() + (vs.getBoundingBox().getHeight()/2));
-				vs.setPosition(coordinate);
+
+                for (Node n0 : visualCpog.getSelection()) {
+                    if (n0 instanceof VisualPage) {
+                        pageList.add((VisualPage) n0);
+                        //visualCpog.removeFromSelection(n0);
+                    }
+                }
+
+                PageNode pageNode = new PageNode();
+                visualCpog.getVisualModel().getMathModel().add(pageNode);
+                VisualPage page = new VisualPage(pageNode);
+                visualCpog.getCurrentLevel().add(page);
+                visualCpog.reparent(page, visualCpog, visualCpog.getCurrentLevel(), visualCpog.getSelection());
+                visualCpog.select(page);
+
+                page.setLabel(PGF.getGraphName());
+
+
+				coordinate.setLocation(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight()/2));
+				page.setPosition(coordinate);
 			} else {
 				for (Node node : visualCpog.getSelection())
 				{
@@ -463,6 +520,10 @@ public class CpogSelectionTool extends SelectionTool {
 					}
 				}
 			}
+
+
+
+
 		} else {
 			String normalForm = "";
 			Collection<VisualVertex> verts = localVertices.values();
@@ -498,6 +559,10 @@ public class CpogSelectionTool extends SelectionTool {
 			}
 
 			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, normalForm);
+            String graphName = PGF.getGraphName();
+            graphName = graphName.replace("{", "");
+            graphName = graphName.replace("}", "");
+			refVertMap.put(graphName,(HashMap<String, VisualVertex>) localVertices.clone());
 			visualCpog.remove(visualCpog.getSelection());
 		}
 
@@ -533,10 +598,10 @@ public class CpogSelectionTool extends SelectionTool {
 		}
 	}
 
-	public Checkbox getCheckbox()
+/*	public Checkbox getCheckbox()
 	{
 		return insertTransitives;
-	}
+	}*/
 }
 
 

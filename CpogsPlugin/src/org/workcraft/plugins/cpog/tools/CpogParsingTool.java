@@ -15,7 +15,9 @@ import javax.swing.JTextArea;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
@@ -37,13 +39,14 @@ import sun.misc.Queue;
 
 public class CpogParsingTool {
 
-	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, double maxX, double maxY, HashMap<String, String> refMap)
+	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, double maxX, double maxY, HashMap<String, String> refMap, HashMap<String, HashMap<String, VisualVertex>> refVertMap)
 	 {
 		 this.variableMap = variableMap;
 		 this.xpos = xpos;
 		 this.maxX = maxX;
 		 this.maxY = maxY;
 		 this.refMap = refMap;
+		 this.refVertMap = refVertMap;
 	 }
 
 	private HashMap<String, Variable> variableMap;
@@ -51,6 +54,8 @@ public class CpogParsingTool {
 	private double maxX;
 	private double maxY;
 	private HashMap<String, String> refMap;
+	private HashMap<String, HashMap<String, VisualVertex>> refVertMap;
+	private ArrayList<String> usedReferences;
 
 	 public BooleanFormula parseBool(String bool, final VisualCPOG visualCpog) throws ParseException
 	 {
@@ -204,6 +209,7 @@ public class CpogParsingTool {
 				 {
 					 groups.add(s);
 				 }
+
 			 }
 		 //Add vertices from group
 		 if (!groups.isEmpty())
@@ -600,28 +606,44 @@ public class CpogParsingTool {
 
 	 public String replaceReferences(String text)
 	 {
+		 usedReferences = new ArrayList<String>();
+		 boolean added;
 		 for (String k : refMap.keySet())
 			{
+			 added = false;
 				if (text.contains(" " + k + " ")){
 					if (k.startsWith("[")) {
 						text = text.replaceAll(" " + k + " ", " " + refMap.get(k) + " ");
+						added = true;
 					} else {
 						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k) + ") ");
+						added = true;
 					}
 				} if (text.contains("]" + k + " ")) {
 						text = text.replaceAll("]" + k + " ", "](" + refMap.get(k) + ") ");
+						added = true;
 				} if (text.contains("(" + k + ")")) {
 						text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k) + "\\)");
+						added = true;
 				} if (text.contains("(" + k + " ")) {
 						text = text.replaceAll("\\(" + k + " ", "\\(" + refMap.get(k) + " ");
+						added = true;
 				} if (text.contains(" " + k + ")")) {
 						text = text.replaceAll(" " + k + "\\)", " " + refMap.get(k) + "\\)");
+						added = true;
 				} if (text.endsWith(" " + k)) {
 						text = text.replace(" " + k, " " + refMap.get(k));
+						added = true;
 				} if (text.endsWith("]" + k)) {
 						text = text.replace("]" + k, "](" + refMap.get(k) + ")");
+						added = true;
 				} if (text.endsWith(" " + k + ")")) {
 						text = text.replace(" " + k + "\\)", " " + refMap.get(k) + "\\)");
+						added = true;
+				}
+
+				if (added) {
+					usedReferences.add(k);
 				}
 			}
 		 return text;
@@ -735,10 +757,22 @@ public class CpogParsingTool {
 	 {
 		 Collection<VisualVertex> vertices =  visualCpog.getVertices(visualCpog.getCurrentLevel());
 		 vertices.removeAll(visualCpog.getSelection());
-		 Collection<VisualScenario> groups = visualCpog.getGroups();
 
-		 vertices.removeAll(visualCpog.getSelection());
-		 groups.removeAll(visualCpog.getSelection());
+         ArrayList<Node> prevSelection = new ArrayList<Node>();
+         for (Node n : visualCpog.getSelection()) prevSelection.add(n);
+
+         ArrayList<VisualPage> pages = new ArrayList<VisualPage>();
+         visualCpog.selectAll();
+         for (Node n : visualCpog.getSelection()) {
+             if (n instanceof VisualPage) {
+                 System.out.println(n.getParent());
+                 pages.add((VisualPage) n);
+             }
+         }
+
+         visualCpog.select(prevSelection);
+
+         pages.removeAll(visualCpog.getSelection());
 
 		 Point2D.Double centre, startPoint = null;
 
@@ -757,8 +791,8 @@ public class CpogParsingTool {
 			 }
 
 		 }
-		 for(VisualScenario group : groups) {
-			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) group.getBoundingBox();
+		 for(VisualPage page : pages) {
+			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) page.getBoundingBox();
 			 Point2D.Double bl = new Point2D.Double(rect.getCenterX(), rect.getCenterY() + (rect.getHeight()/2));
 
 
@@ -783,4 +817,10 @@ public class CpogParsingTool {
 		 return startPoint;
 
 	 }
+
+	 public ArrayList<String> getUsedReferences()
+	 {
+		 return usedReferences;
+	 }
+
 }
