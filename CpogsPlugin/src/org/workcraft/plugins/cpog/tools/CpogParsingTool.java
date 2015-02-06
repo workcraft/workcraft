@@ -93,99 +93,95 @@ public class CpogParsingTool {
 	    return boolForm;
 	  }
 
-	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX, double originalY)
+	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX, double originalY) {
+         ArrayList<ArrayList<Node>> outer = new ArrayList<ArrayList<Node>>();
+         outer.add(new ArrayList<Node>());
+         Node current = null;
+         ArrayList<Node> children = new ArrayList<Node>();
+         try {
+             current = (Node) q.dequeue();
+         } catch (InterruptedException e) {
+             // TODO Auto-generated catch block
+             e.printStackTrace();
+         }
+         outer.get(0).add(current);
+         children = getChildren(visualCpog, current);
+         outer.add(new ArrayList<Node>());
+
+
+         for (Node child : children) {
+             q.enqueue(child);
+             outer.get(1).add(child);
+         }
+
+         int index = 0;
+         while (!q.isEmpty()) {
+             try {
+                 current = (Node) q.dequeue();
+             } catch (InterruptedException e) {
+                 // TODO Auto-generated catch block
+                 e.printStackTrace();
+             }
+             index = findVertex(outer, current);
+             children = getChildren(visualCpog, current);
+             for (Node child : children) {
+                 q.enqueue(child);
+                 addNode(child, index + 1, outer);
+             }
+         }
+
+         Point2D.Double centre = new Point2D.Double(0, originalY);
+         int maxSize = 0;
+
+         for (ArrayList<Node> inner : outer) {
+             if (inner.size() > maxSize) {
+                 maxSize = inner.size();
+             }
+         }
+
+         double x = originalX;
+         double y = 0;
+
+         Iterator<ArrayList<Node>> it = outer.iterator();
+
+         while (it.hasNext()) {
+             ArrayList<Node> inner = it.next();
+             if (inner.size() > 1) {
+                 y = centre.getY() - (inner.size() / 2);
+             } else {
+                 y = centre.getY();
+             }
+             for (Node n : inner) {
+                 if (n instanceof VisualVertex){
+                     VisualVertex v = (VisualVertex) n;
+                     v.setPosition(new Point2D.Double(x, y));
+                 } else if (n instanceof VisualPage) {
+                     VisualPage p = (VisualPage) n;
+                     p.setPosition(new Point2D.Double(x, y));
+                 }
+             }
+
+             //y += 2.5;
+             if (it.hasNext())
+                 x += 2.5;
+         }
+
+     }
+
+	 public ArrayList<Node> getChildren(VisualCPOG visualCpog, Node node)
 	 {
-		 ArrayList<ArrayList<VisualVertex>> outer = new ArrayList<ArrayList<VisualVertex>>();
-		 outer.add(new ArrayList<VisualVertex>());
-		 VisualVertex current = null;
-		 ArrayList<VisualVertex> children = new ArrayList<VisualVertex>();
-		 try {
-			 current = (VisualVertex) q.dequeue();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 outer.get(0).add(current);
-		 children = getChildren(visualCpog, current);
-		 outer.add(new ArrayList<VisualVertex>());
-
-
-		 for (VisualVertex child : children)
-		 {
-			 q.enqueue(child);
-			 outer.get(1).add(child);
-		 }
-
-		 int index = 0;
-		 while (!q.isEmpty())
-		 {
-			 try {
-				current = (VisualVertex) q.dequeue();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			 index = findVertex(outer, current);
-			 children = getChildren(visualCpog, current);
-			 for (VisualVertex child : children)
-			 {
-				q.enqueue(child);
-				addVertex(child, index + 1, outer);
-			 }
-		 }
-
-		 Point2D.Double centre = new Point2D.Double(0, originalY);
-		 int maxSize = 0;
-
-			 for (ArrayList<VisualVertex> inner : outer)
-			 {
-				 if (inner.size() > maxSize)
-				 {
-					 maxSize = inner.size();
-				 }
-			 }
-
-		 double x = originalX;
-		 double y = 0;
-
-		 Iterator<ArrayList<VisualVertex>> it = outer.iterator();
-
-		 while(it.hasNext())
-		 {
-			 ArrayList<VisualVertex> inner = it.next();
-			 if (inner.size() > 1)
-			 {
-				 y = centre.getY() - (inner.size() / 2);
-			 } else
-			 {
-				 y = centre.getY();
-			 }
-			 for(VisualVertex v : inner)
-			 {
-				 v.setPosition(new Point2D.Double(x, y));
-				 y += 2.5;
-
-			 }
-			 if (it.hasNext())
-			 {
-				 x += 2.5;
-			 }
-		 }
-	 }
-
-	 public ArrayList<VisualVertex> getChildren(VisualCPOG visualCpog, VisualVertex vertex)
-	 {
-		 ArrayList<VisualVertex> children = new ArrayList<VisualVertex>();
+		 ArrayList<Node> children = new ArrayList<Node>();
 		 Connection connection;
 
-		 Iterator<Connection> i = visualCpog.getConnections(vertex).iterator();
+		 Iterator<Connection> i = visualCpog.getConnections(node).iterator();
 		 while (i.hasNext())
 		 {
 			 connection = i.next();
-			 if (!(connection.getSecond().equals(vertex)))
+			 if (!(connection.getSecond().equals(node)))
 			 {
-				 children.add((VisualVertex) connection.getSecond());
-				 VisualVertex v = (VisualVertex) connection.getSecond();
+                 if (connection.getSecond().getParent() instanceof VisualPage) {
+                     children.add(connection.getSecond().getParent());
+                 } else children.add(connection.getSecond());
 			 }
 		 }
 
@@ -506,10 +502,10 @@ public class CpogParsingTool {
 
 	 }
 
-	 public int findVertex(ArrayList<ArrayList<VisualVertex>> outer, VisualVertex target)
+	 public int findVertex(ArrayList<ArrayList<Node>> outer, Node target)
 	 {
 		 int index = 0;
-		 for (ArrayList<VisualVertex> inner : outer)
+		 for (ArrayList<Node> inner : outer)
 		 {
 			 if (inner.contains(target))
 			 {
@@ -520,7 +516,7 @@ public class CpogParsingTool {
 		 return -1;
 	 }
 
-	 public void addVertex(VisualVertex v, int index, ArrayList<ArrayList<VisualVertex>> outer)
+	 public void addNode(Node v, int index, ArrayList<ArrayList<Node>> outer)
 	 {
 		 int removalIndex = 0;
 
@@ -531,41 +527,41 @@ public class CpogParsingTool {
 		 }
 		 if (outer.size() - 1 < index)
 		 {
-			 outer.add(new ArrayList<VisualVertex>());
+			 outer.add(new ArrayList<Node>());
 		 }
 
 		 outer.get(index).add(v);
 
 	 }
 
-	 public HashSet<VisualArc> findTransitives(VisualCPOG visualCpog, HashSet<VisualVertex> roots)
+	 public HashSet<VisualArc> findTransitives(VisualCPOG visualCpog, HashSet<Node> roots)
 	 {
 		 Queue q = new Queue();
 		 HashSet<VisualArc> transitives = new HashSet<VisualArc>();
-		 ArrayList<VisualVertex> children, allChildren = new ArrayList<VisualVertex>();
-		 VisualVertex current = null;
+		 ArrayList<Node> children, allChildren = new ArrayList<Node>();
+		 Node current = null;
 		 boolean transitiveFound = false;
 
 
-		 for(VisualVertex root: roots)
+		 for(Node root: roots)
 		 {
 			 q.enqueue(root);
 			 while(!q.isEmpty())
 			 {
 				try {
-					current = (VisualVertex) q.dequeue();
+					current = (Node) q.dequeue();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				children = getChildren(visualCpog, current);
-				for (VisualVertex child : children)
+				for (Node child : children)
 				{
 					q.enqueue(child);
 				}
-				for(VisualVertex target : children)
+				for(Node target : children)
 				{
-					for (VisualVertex c : children)
+					for (Node c : children)
 					{
 						if (!c.equals(target))
 						{
@@ -597,7 +593,7 @@ public class CpogParsingTool {
 		 return transitives;
 	 }
 
-	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<VisualVertex> roots) {
+	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots) {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
 			 visualCpog.remove(t);
@@ -765,7 +761,6 @@ public class CpogParsingTool {
          visualCpog.selectAll();
          for (Node n : visualCpog.getSelection()) {
              if (n instanceof VisualPage) {
-                 System.out.println(n.getParent());
                  pages.add((VisualPage) n);
              }
          }

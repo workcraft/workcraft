@@ -394,26 +394,26 @@ public class CpogSelectionTool extends SelectionTool {
 
 			parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
-			HashSet<VisualVertex> roots = new HashSet<VisualVertex>();
+			HashSet<Node> roots = new HashSet<Node>();
 			Set<Connection> arcs;
 			Iterator<Connection> it;
 			Connection connection;
 			boolean second = false;
 			for (Node node : visualCpog.getSelection()) {
 				//VisualVertex vertex = (VisualVertex) node;
-				VisualVertex v = (VisualVertex) node;
-				arcs = visualCpog.getConnections(v);
+				//VisualVertex v = (VisualVertex) node;
+				arcs = visualCpog.getConnections(node);
 				it = arcs.iterator();
 				//The following covers root nodes, and nodes with no connections
 				while (it.hasNext()) {
 					connection = it.next();
-					if (!connection.getFirst().equals(v)) {
+					if (!connection.getFirst().equals(node)) {
 						second = true;
 						break;
 					}
 				}
 				if (!second) {
-					roots.add(v);
+					roots.add(node);
 				}
 				second = false;
 			}
@@ -473,7 +473,7 @@ public class CpogSelectionTool extends SelectionTool {
 					i++;
 				}
 			} else {
-				Iterator<VisualVertex> root = roots.iterator();
+				Iterator<Node> root = roots.iterator();
 				Queue q = new Queue();
 				double originalX = 0, originalY = 0;
 				while(root.hasNext()) {
