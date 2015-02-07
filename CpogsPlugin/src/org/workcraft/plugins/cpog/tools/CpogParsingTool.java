@@ -95,6 +95,7 @@ public class CpogParsingTool {
 
 	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX, double originalY) {
          ArrayList<ArrayList<Node>> outer = new ArrayList<ArrayList<Node>>();
+         HashSet<VisualPage> pages = new HashSet<VisualPage>();
          outer.add(new ArrayList<Node>());
          Node current = null;
          ArrayList<Node> children = new ArrayList<Node>();
@@ -123,6 +124,10 @@ public class CpogParsingTool {
                  e.printStackTrace();
              }
              index = findVertex(outer, current);
+             if (current.getParent() instanceof VisualPage) {
+                 VisualPage vp = (VisualPage) current.getParent();
+                 pages.add(vp);
+             }
              children = getChildren(visualCpog, current);
              for (Node child : children) {
                  q.enqueue(child);
@@ -159,11 +164,42 @@ public class CpogParsingTool {
                      VisualPage p = (VisualPage) n;
                      p.setPosition(new Point2D.Double(x, y));
                  }
+                 y += 1.5;
              }
 
-             //y += 2.5;
              if (it.hasNext())
                  x += 2.5;
+         }
+         y += 2.5;
+
+
+         for (VisualPage page : pages) {
+             Point2D.Double pagePos = new Point2D.Double();
+             double pageLeft = x;
+             double pageRight = -x;
+             //Leftmost vertex
+             for (VisualComponent c : page.getComponents()) {
+                 if (c.getPosition().getX() < pageLeft) {
+                     pageLeft = c.getPosition().getX();
+                 }
+             }
+             //Rightmost vertex
+             for (VisualComponent c : page.getComponents()) {
+                 if (c.getPosition().getX() > pageRight) {
+                     pageRight = c.getPosition().getX();
+                 }
+             }
+
+             double pageCentre = ((pageLeft + pageRight) / 2);
+
+             pagePos.setLocation(pageCentre, page.getPosition().getY());
+
+             //page.setPosition(pagePos);
+             for (VisualComponent c : page.getComponents()) {
+                 c.setX(c.getPosition().getX() - pageCentre);
+             }
+             page.setX(pageCentre);
+
          }
 
      }
@@ -179,9 +215,7 @@ public class CpogParsingTool {
 			 connection = i.next();
 			 if (!(connection.getSecond().equals(node)))
 			 {
-                 if (connection.getSecond().getParent() instanceof VisualPage) {
-                     children.add(connection.getSecond().getParent());
-                 } else children.add(connection.getSecond());
+                 children.add(connection.getSecond());
 			 }
 		 }
 
@@ -194,35 +228,41 @@ public class CpogParsingTool {
 		 VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 		 Collection<VisualScenario> scenarios =  visualCpog.getGroups();
 		 Collection<Node> selection =  visualCpog.getSelection();
-		 ArrayList<VisualScenario> groups = new ArrayList<VisualScenario>();
-		 ArrayList<VisualVertex> vertices = new ArrayList<VisualVertex>();
+		 ArrayList<VisualPage> groups = new ArrayList<VisualPage>();
+		 ArrayList<Node> vertices = new ArrayList<Node>();
 		 ArrayList<String> expression = new ArrayList<String>();
 
-		 //Get selected scenarios
-			 for(VisualScenario s : scenarios)
-			 {
-				 if (selection.contains(s))
-				 {
-					 groups.add(s);
-				 }
+		 //Get selected pages
+         Collection<Node> prevSelection = visualCpog.getSelection();
 
+         visualCpog.selectAll();
+
+			 for(Node n : visualCpog.getSelection()) {
+			    if (n instanceof VisualPage) {
+                    if (prevSelection.contains(n)) {
+                        groups.add((VisualPage) n);
+                    }
+                }
 			 }
+         visualCpog.select(prevSelection);
 		 //Add vertices from group
 		 if (!groups.isEmpty())
 		 {
-			 for (VisualScenario group : groups) {
+			 for (VisualPage group : groups) {
 				 expression.add(group.getLabel() + " =");
 				 vertices.clear();
 				 for (VisualComponent v : group.getComponents()) {
-					 vertices.add((VisualVertex) v);
+                     if (v instanceof VisualPage) {
+                         vertices.addAll(getPageVertices((VisualPage) v));
+                     } else vertices.add(v);
 				 }
 				 Set<Connection> arcs;
 				 Iterator<Connection> it;
 				 Connection connection;
 				 boolean second = false;
-				 HashSet<VisualVertex> roots = new HashSet<VisualVertex>();
+				 HashSet<Node> roots = new HashSet<Node>();
 				 //get root(s)
-				 for (VisualVertex v : vertices)
+				 for (Node v : vertices)
 				 {
 					arcs = visualCpog.getConnections(v);
 					it = arcs.iterator();
@@ -243,7 +283,7 @@ public class CpogParsingTool {
 					second = false;
 				 }
 
-				 Iterator<VisualVertex> i = roots.iterator();
+				 Iterator<Node> i = roots.iterator();
 				 VisualVertex current = null;
 				 Set<Connection> totalConnections;
 				 ArrayList<Connection> connections = new ArrayList<Connection>();
@@ -364,9 +404,9 @@ public class CpogParsingTool {
 			 Iterator<Connection> it;
 			 Connection connection;
 			 boolean second = false;
-			 HashSet<VisualVertex> roots = new HashSet<VisualVertex>();
+			 HashSet<Node> roots = new HashSet<Node>();
 			 //get root(s)
-			 for (VisualVertex v : vertices)
+			 for (Node v : vertices)
 			 {
 				arcs = visualCpog.getConnections(v);
 				it = arcs.iterator();
@@ -387,7 +427,7 @@ public class CpogParsingTool {
 				second = false;
 			 }
 
-			 Iterator<VisualVertex> i = roots.iterator();
+			 Iterator<Node> i = roots.iterator();
 			 VisualVertex current = null;
 			 Set<Connection> totalConnections;
 			 ArrayList<Connection> connections = new ArrayList<Connection>();
@@ -609,7 +649,7 @@ public class CpogParsingTool {
 			 added = false;
 				if (text.contains(" " + k + " ")){
 					if (k.startsWith("[")) {
-						text = text.replaceAll(" " + k + " ", " " + refMap.get(k) + " ");
+						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k) + ") ");
 						added = true;
 					} else {
 						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k) + ") ");
@@ -622,19 +662,19 @@ public class CpogParsingTool {
 						text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k) + "\\)");
 						added = true;
 				} if (text.contains("(" + k + " ")) {
-						text = text.replaceAll("\\(" + k + " ", "\\(" + refMap.get(k) + " ");
+						text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k) + "\\) ");
 						added = true;
 				} if (text.contains(" " + k + ")")) {
-						text = text.replaceAll(" " + k + "\\)", " " + refMap.get(k) + "\\)");
+						text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k) + "\\)\\)");
 						added = true;
 				} if (text.endsWith(" " + k)) {
-						text = text.replace(" " + k, " " + refMap.get(k));
+						text = text.replace(" " + k, " (" + refMap.get(k) + ")");
 						added = true;
 				} if (text.endsWith("]" + k)) {
 						text = text.replace("]" + k, "](" + refMap.get(k) + ")");
 						added = true;
 				} if (text.endsWith(" " + k + ")")) {
-						text = text.replace(" " + k + "\\)", " " + refMap.get(k) + "\\)");
+						text = text.replace(" " + k + "\\)", " (" + refMap.get(k) + "\\)\\)");
 						added = true;
 				}
 
@@ -817,5 +857,18 @@ public class CpogParsingTool {
 	 {
 		 return usedReferences;
 	 }
+
+     public ArrayList<VisualComponent> getPageVertices(VisualPage p) {
+         ArrayList<VisualComponent> result = new ArrayList<VisualComponent>();
+
+         for (VisualComponent c : p.getComponents()) {
+             if (c instanceof VisualPage) {
+                result.addAll(getPageVertices((VisualPage) c));
+             } else {
+                 result.add(c);
+             }
+         }
+         return result;
+     }
 
 }

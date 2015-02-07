@@ -527,7 +527,7 @@ public class CpogSelectionTool extends SelectionTool {
 		} else {
 			String normalForm = "";
 			Collection<VisualVertex> verts = localVertices.values();
-			Iterator<VisualVertex> it= verts.iterator();
+			Iterator<VisualVertex> it = verts.iterator();
 			VisualVertex v;
 			while (it.hasNext()) {
 				v = it.next();
@@ -557,7 +557,6 @@ public class CpogSelectionTool extends SelectionTool {
 					normalForm = normalForm + " + ";
 				}
 			}
-
 			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, normalForm);
             String graphName = PGF.getGraphName();
             graphName = graphName.replace("{", "");
