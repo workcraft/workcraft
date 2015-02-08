@@ -29,6 +29,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.*;
@@ -50,6 +51,7 @@ import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.workspace.handlers.SystemOpen;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import sun.misc.Queue;
@@ -217,6 +219,16 @@ public class CpogSelectionTool extends SelectionTool {
 		WorkspaceEntry we = editor.getWorkspaceEntry();
 		final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 		we.captureMemento();
+        System.out.println(visualCpog.getCurrentLevel());
+
+        if (visualCpog.getCurrentLevel() instanceof VisualPage) {
+            while (visualCpog.getCurrentLevel() instanceof VisualPage) {
+                Container c = (Container) visualCpog.getCurrentLevel().getParent();
+                visualCpog.setCurrentLevel(c);
+
+
+            }
+        }
 
 		final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
 		final HashSet<ArcCondition> arcConditionList = new HashSet<ArcCondition>();
@@ -520,8 +532,6 @@ public class CpogSelectionTool extends SelectionTool {
 					}
 				}
 			}
-
-
 
 
 		} else {
