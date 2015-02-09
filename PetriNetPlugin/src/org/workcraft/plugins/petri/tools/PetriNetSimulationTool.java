@@ -785,10 +785,15 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return interfacePanel;
 	}
 
-	public void setTrace(Trace t, GraphEditor editor) {
-		mainTrace.clear();
-		mainTrace.addAll(t);
-		branchTrace.clear();
+	public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
+		this.mainTrace.clear();
+		if (mainTrace != null) {
+			this.mainTrace.addAll(mainTrace);
+		}
+		this.branchTrace.clear();
+		if (branchTrace != null) {
+			this.branchTrace.addAll(branchTrace);
+		}
 		updateState(editor);
 	}
 

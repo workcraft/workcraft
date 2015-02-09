@@ -13,7 +13,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.workcraft.Framework;
-import org.workcraft.Trace;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
@@ -27,14 +26,14 @@ public class SolutionPanel extends JPanel {
 	private JPanel buttonsPanel;
 	private JTextArea traceText;
 
-	public SolutionPanel(final MpsatChainTask task, final Trace trace, final ActionListener closeAction) {
+	public SolutionPanel(final MpsatChainTask task, final Solution solution, final ActionListener closeAction) {
 		super (new TableLayout(new double[][]
 		        { { TableLayout.FILL, TableLayout.PREFERRED },
 				{TableLayout.FILL} }
 		));
 
 		traceText = new JTextArea();
-		traceText.setText(trace.toString());
+		traceText.setText(solution.toString());
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(traceText);
@@ -62,7 +61,7 @@ public class SolutionPanel extends JPanel {
 				final ToolboxPanel toolbox = currentEditor.getToolBox();
 				final PetriNetSimulationTool tool = toolbox.getToolInstance(PetriNetSimulationTool.class);
 				toolbox.selectTool(tool);
-				tool.setTrace(trace, currentEditor);
+				tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), currentEditor);
 				closeAction.actionPerformed(null);
 			}
 		});
