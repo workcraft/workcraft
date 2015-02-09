@@ -25,7 +25,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
@@ -121,13 +120,13 @@ public class STGGenerator {
 		VisualPlace zeroPlace = stg.createPlace(contactName+"_0", curContainer);
 		zeroPlace.setLabel(contactName+"=0");
 
-		if (!contact.getInitOne()) {
+		if (!contact.getReferencedContact().getInitOne()) {
 			zeroPlace.getReferencedPlace().setTokens(1);
 		}
 
 		VisualPlace onePlace = stg.createPlace(contactName+"_1", curContainer);
 		onePlace.setLabel(contactName+"=1");
-		if (contact.getInitOne()) {
+		if (contact.getReferencedContact().getInitOne()) {
 			onePlace.getReferencedPlace().setTokens(1);
 		}
 
@@ -283,7 +282,7 @@ public class STGGenerator {
 		Point2D minusDirection;
 
 		VisualContact.Direction dir = contact.getDirection();
-		if (contact.getIOType() == IOType.INPUT) {
+		if (contact.isInput()) {
 			dir = dir.flip();
 		}
 

@@ -60,7 +60,6 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.util.Func;
@@ -98,8 +97,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 			}
 
 			protected Boolean getter(VisualCircuitComponent object) {
-				return object.getReferencedCircuitComponent()
-						.getIsEnvironment();
+				return object.getReferencedCircuitComponent().getIsEnvironment();
 			}
 		});
 
@@ -127,7 +125,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 		if (ret == null) {
 			for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-				if (vc.getIOType() == IOType.OUTPUT) {
+				if (vc.isOutput()) {
 					setMainContact(vc);
 					ret = vc;
 					break;
@@ -490,7 +488,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
 		Color colorisation = d.getColorisation();
-		Color color = (vc.getIOType() == IOType.INPUT) ? inputColor : outputColor;
+		Color color = (vc.isInput() ? inputColor : outputColor);
 		g.setColor(Coloriser.colorise(color, colorisation));
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();

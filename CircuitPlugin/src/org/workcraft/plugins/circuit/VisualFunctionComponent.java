@@ -20,7 +20,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.CElementRenderer;
 import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
@@ -51,7 +50,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		for (Node node: getChildren()) {
 			if (node instanceof VisualFunctionContact) {
 				VisualFunctionContact vc = (VisualFunctionContact)node;
-				if (vc.getIOType() == IOType.OUTPUT) {
+				if (vc.isOutput()) {
 					if (gateOutput == null) {
 						gateOutput = vc;
 					} else {
@@ -141,7 +140,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
 					if (contactIsFree(vc, connections)) {
 						bt.setTransform(at);
-						if (vc.getIOType() == IOType.INPUT) {
+						if (vc.isInput()) {
 							String vcName = vc.getName();
 							Point2D position = res.contactPositions().get(vcName);
 							if (position != null) {
@@ -186,7 +185,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			if (node instanceof VisualFunctionContact) {
 				VisualFunctionContact vc = (VisualFunctionContact)node;
 				Point2D pinPosition = null;
-				if (vc.getIOType() == IOType.INPUT) {
+				if (vc.isInput()) {
 					String cname = vc.getReferencedContact().getName();
 					pinPosition = rr.contactPositions().get(cname);
 				} else {

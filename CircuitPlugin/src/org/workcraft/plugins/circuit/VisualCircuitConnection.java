@@ -18,15 +18,16 @@ public class VisualCircuitConnection extends VisualConnection {
 	private Place referencedOnePlace = null;
 
 	public VisualCircuitConnection() {
-		super();
+		this(null, null, null);
 	}
 
-	public VisualCircuitConnection(MathConnection c) {
-		super();
+	public VisualCircuitConnection(MathConnection refConnection) {
+		this(refConnection, null, null);
 	}
 
-	public VisualCircuitConnection(MathConnection con, VisualComponent c1, VisualComponent c2) {
-		super(con, c1, c2);
+	public VisualCircuitConnection(MathConnection refConnection, VisualComponent c1, VisualComponent c2) {
+		super(refConnection, c1, c2);
+		removePropertyDeclarationByName("Line width");
 	}
 
 	@Override

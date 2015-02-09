@@ -46,7 +46,6 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
@@ -215,11 +214,11 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		Node parent = getParent();
 		if (parent != null) {
 			// Primary input port
-			if (!(parent instanceof VisualCircuitComponent) && (getIOType() == IOType.INPUT)) {
+			if (!(parent instanceof VisualCircuitComponent) && isInput()) {
 				needsFormulas = true;
 			}
 			// Output port of a BOX-rendered component
-			if ((parent instanceof VisualCircuitComponent) && (getIOType() == IOType.OUTPUT)) {
+			if ((parent instanceof VisualCircuitComponent) && isOutput()) {
 				VisualCircuitComponent component = (VisualCircuitComponent)parent;
 				if (component.getRenderType() == RenderType.BOX) {
 					needsFormulas = true;

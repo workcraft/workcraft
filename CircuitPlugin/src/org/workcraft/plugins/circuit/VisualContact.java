@@ -191,32 +191,22 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
 				this, "I/O type", IOType.class) {
 			protected void setter(VisualContact object, IOType value) {
-				object.setIOType(value);
+				object.getReferencedContact().setIOType(value);
 			}
 			protected IOType getter(VisualContact object) {
-				return object.getIOType();
+				return object.getReferencedContact().getIOType();
 			}
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
 				this, "Init to one", Boolean.class) {
 			protected void setter(VisualContact object, Boolean value) {
-				object.setInitOne(value);
+				object.getReferencedContact().setInitOne(value);
 			}
 			protected Boolean getter(VisualContact object) {
-				return object.getInitOne();
+				return object.getReferencedContact().getInitOne();
 			}
 		});
-	}
-
-	@NoAutoSerialisation
-	public boolean getInitOne() {
-		return getReferencedContact().getInitOne();
-	}
-
-	@NoAutoSerialisation
-	public void setInitOne(boolean value) {
-		getReferencedContact().setInitOne(value);
 	}
 
 	@Override
@@ -233,7 +223,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 		AffineTransform oldTransform = g.getTransform();
 		AffineTransform at = Direction.getDirectionTransform(getDirection());
-		if (getIOType()==IOType.INPUT) {
+		if (isInput()) {
 			at.quadrantRotate(2);
 		}
 		g.transform(at);
@@ -260,7 +250,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 			GlyphVector gv = getNameGlyphs(r);
 			Rectangle2D cur = gv.getVisualBounds();
-			g.setColor(Coloriser.colorise((getIOType()==IOType.INPUT)?inputColor:outputColor, colorisation));
+			g.setColor(Coloriser.colorise(isInput() ? inputColor : outputColor, colorisation));
 
 			float xx = (float)size;
 			if (getDirection() == Direction.SOUTH || getDirection() == Direction.WEST) {
@@ -301,7 +291,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				at.quadrantRotate(3);
 				break;
 			}
-			if (getIOType()==IOType.INPUT) {
+			if (isInput()) {
 				at.quadrantRotate(2);
 			}
 			at.transform(pointInLocalSpace, p2);
@@ -343,23 +333,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	}
 
 	@NoAutoSerialisation
-	public void setIOType(IOType type) {
-		getReferencedContact().setIOType(type);
-	}
-
-	@NoAutoSerialisation
-	public IOType getIOType() {
-		return getReferencedContact().getIOType();
-	}
-
-	@NoAutoSerialisation
 	public String getName() {
 		return getReferencedContact().getName();
-	}
-
-	@NoAutoSerialisation
-	public void setName(String name) {
-		getReferencedContact().setName(name);
 	}
 
 	public Contact getReferencedContact() {

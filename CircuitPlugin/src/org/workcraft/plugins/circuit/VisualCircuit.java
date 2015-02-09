@@ -233,11 +233,11 @@ public class VisualCircuit extends AbstractVisualModel {
 		return Hierarchy.getChildrenOfType(getRoot(), Environment.class);
 	}
 
-	private File getBase() {
+	private WorkspaceEntry getWorkspaceEntry() {
 		Framework framework = Framework.getInstance();
 		GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
 		WorkspaceEntry we = editor.getWorkspaceEntry();
-		return we.getFile().getParentFile();
+		return we;
 	}
 
 	@NoAutoSerialisation
@@ -249,7 +249,8 @@ public class VisualCircuit extends AbstractVisualModel {
 			if (base != null) {
 				URI relativeUri = base.toURI().relativize(result.toURI());
 				if (!relativeUri.equals(result.toURI())) {
-					result = new File(getBase(), relativeUri.getPath());
+					base = getWorkspaceEntry().getFile().getParentFile();
+					result = new File(base, relativeUri.getPath());
 				}
 			}
 			break;
@@ -259,13 +260,27 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@NoAutoSerialisation
 	public void setEnvironmentFile(File value) {
+		boolean envChanged = false;
+		getWorkspaceEntry().captureMemento();
+
 		for (Environment env: getEnvironments()) {
 			remove(env);
+			envChanged = true;
 		}
-		Environment env = new Environment();
-		env.setFile(value);
-		env.setBase(getBase());
-		add(env);
+
+		if (value != null) {
+			Environment env = new Environment();
+			env.setFile(value);
+			File base = getWorkspaceEntry().getFile().getParentFile();
+			env.setBase(base);
+			add(env);
+			envChanged = true;
+		}
+
+		if (envChanged) {
+			getWorkspaceEntry().setChanged(true);
+			getWorkspaceEntry().saveMemento();
+		}
 	}
 
 	@Override

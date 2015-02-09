@@ -118,12 +118,10 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 		if (rowClasses[row] != null) {
 			value = rowClasses[row].fromCellEditorValue(value);
 		}
-		if (value != null) {
-			try {
-				desc.setValue(value);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e.getCause().getMessage(), e);
-			}
+		try {
+			desc.setValue(value);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e.getCause().getMessage(), e);
 		}
 	}
 
