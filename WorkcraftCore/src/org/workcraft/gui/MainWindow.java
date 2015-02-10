@@ -1058,15 +1058,17 @@ public class MainWindow extends JFrame {
 			final Framework framework = Framework.getInstance();
 			Workspace ws = framework.getWorkspace();
 
-			final Path<String> wsFrom = we.getWorkspacePath();
+			Path<String> wsFrom = we.getWorkspacePath();
 			Path<String> wsTo = ws.getWorkspacePath(destination);
 			if (wsTo == null) {
 				wsTo = ws.tempMountExternalFile(destination);
 			}
-			ws.moved(wsFrom, wsTo);
+			if (wsFrom != wsTo) {
+				ws.moved(wsFrom, wsTo);
+			}
 
 			if (we.getModelEntry() != null) {
-				framework.save(we.getModelEntry(), we.getFile().getPath());
+				framework.save(we.getModelEntry(), path);
 			} else {
 				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
 			}
@@ -1076,8 +1078,7 @@ public class MainWindow extends JFrame {
 			pushRecentFile(we.getFile().getPath(), true);
 		} catch (SerialisationException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(),
-					"Model export failed", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

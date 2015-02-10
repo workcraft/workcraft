@@ -45,6 +45,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.workspace.Workspace;
 
 public class TreeWindow<Node> extends JPanel
 {
@@ -121,8 +122,8 @@ public class TreeWindow<Node> extends JPanel
 						}
 
 						if(!externalExpanded) {
-							for(Node n : source.getChildren(getRoot())) {
-								if(decorator.getName(n) == "!External") {
+							for (Node n : source.getChildren(getRoot())) {
+								if (Workspace.EXTERNAL_PATH.equals(decorator.getName(n))) {
 									expanded.add(new TreePath(Path.getPath(source.getPath(n)).toArray()));
 									externalExpanded = true;
 								}

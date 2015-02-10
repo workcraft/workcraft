@@ -37,18 +37,17 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Scanner;
 
-public class FileUtils{
-	public static void copyFile(File in, File out)  throws IOException
-	{
-		   FileOutputStream outStream = new FileOutputStream(out);
-		   try
-		   {
+public class FileUtils {
+
+	public static void copyFile(File in, File out)  throws IOException {
+		if (out.getParentFile().mkdirs()) {
+			FileOutputStream outStream = new FileOutputStream(out);
+			try {
 			   copyFileToStream(in, outStream);
-		   }
-		   finally
-		   {
-			   outStream.close();
-		   }
+			} finally {
+				outStream.close();
+			}
+		}
 	}
 
 	public static String getFileNameWithoutExtension(File file) {
