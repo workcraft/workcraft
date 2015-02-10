@@ -10,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,8 +18,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Queue;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -55,7 +59,6 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import sun.misc.Queue;
 
 public class CpogSelectionTool extends SelectionTool {
 
@@ -141,7 +144,7 @@ public class CpogSelectionTool extends SelectionTool {
 		});
 		buttonPanel.add(btnInsert);
 
-		JButton btnOverlay = new JButton("Overlay");
+		/*JButton btnOverlay = new JButton("Overlay");
 		btnOverlay.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -163,7 +166,7 @@ public class CpogSelectionTool extends SelectionTool {
 				}
 			}
 		});
-		buttonPanel.add(btnOverlay);
+		buttonPanel.add(btnOverlay);*/
 
 		final JButton btnTextInsert = new JButton("Text File");
 		btnTextInsert.addActionListener(new ActionListener() {
@@ -487,10 +490,10 @@ public class CpogSelectionTool extends SelectionTool {
 				}
 			} else {
 				Iterator<Node> root = roots.iterator();
-				Queue q = new Queue();
+				ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 				double originalX = 0, originalY = 0;
 				while(root.hasNext()) {
-					q.enqueue(root.next());
+					q.add(root.next());
 					parsingTool.bfsLayout(q, visualCpog, originalX, originalY);
 					originalY += 2.5;
 				}

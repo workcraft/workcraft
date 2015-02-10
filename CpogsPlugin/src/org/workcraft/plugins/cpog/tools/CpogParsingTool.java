@@ -8,7 +8,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JTextArea;
 
@@ -30,8 +32,6 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import sun.misc.Queue;
 
 public class CpogParsingTool {
 
@@ -89,36 +89,26 @@ public class CpogParsingTool {
 	    return boolForm;
 	  }
 
-	 public void bfsLayout(Queue q, VisualCPOG visualCpog, double originalX, double originalY) {
+	 public void bfsLayout(Queue<Node> q, VisualCPOG visualCpog, double originalX, double originalY) {
          ArrayList<ArrayList<Node>> outer = new ArrayList<ArrayList<Node>>();
          HashSet<VisualPage> pages = new HashSet<VisualPage>();
          outer.add(new ArrayList<Node>());
          Node current = null;
          ArrayList<Node> children = new ArrayList<Node>();
-         try {
-             current = (Node) q.dequeue();
-         } catch (InterruptedException e) {
-             // TODO Auto-generated catch block
-             e.printStackTrace();
-         }
+         current = (Node) q.remove();
          outer.get(0).add(current);
          children = getChildren(visualCpog, current);
          outer.add(new ArrayList<Node>());
 
 
          for (Node child : children) {
-             q.enqueue(child);
+             q.add(child);
              outer.get(1).add(child);
          }
 
          int index = 0;
          while (!q.isEmpty()) {
-             try {
-                 current = (Node) q.dequeue();
-             } catch (InterruptedException e) {
-                 // TODO Auto-generated catch block
-                 e.printStackTrace();
-             }
+             current = (Node) q.remove();
              index = findVertex(outer, current);
              if (current.getParent() instanceof VisualPage) {
                  VisualPage vp = (VisualPage) current.getParent();
@@ -126,7 +116,7 @@ public class CpogParsingTool {
              }
              children = getChildren(visualCpog, current);
              for (Node child : children) {
-                 q.enqueue(child);
+                 q.add(child);
                  addNode(child, index + 1, outer);
              }
          }
@@ -285,20 +275,14 @@ public class CpogParsingTool {
 				 ArrayList<Connection> connections = new ArrayList<Connection>();
 				 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
 				 HashSet<Connection> visitedConnections = new HashSet<Connection>();
-				 Queue q = new Queue();
+				 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 				 while(i.hasNext())
 				 {
 
-				   q.enqueue(i.next());
+				   q.add(i.next());
 				   while(!q.isEmpty()){
 					   connections.clear();
-					   try {
-						current = (VisualVertex) q.dequeue();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						//Should never throw an exception
-					}
+					   current = (VisualVertex) q.remove();
 
 					   totalConnections = visualCpog.getConnections(current);
 
@@ -353,7 +337,7 @@ public class CpogParsingTool {
 
 						   visitedConnections.add(connection);
 						   visitedVertices.add(child);
-						   q.enqueue(child);
+						   q.add(child);
 
 						   if (conIt.hasNext())
 						   {
@@ -429,21 +413,15 @@ public class CpogParsingTool {
 			 ArrayList<Connection> connections = new ArrayList<Connection>();
 			 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
 			 HashSet<Connection> visitedConnections = new HashSet<Connection>();
-			 Queue q = new Queue();
+			 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 			// String label = "";
 			 while(i.hasNext())
 			 {
 
-			   q.enqueue(i.next());
+			   q.add(i.next());
 			   while(!q.isEmpty()){
 				   connections.clear();
-				   try {
-					current = (VisualVertex) q.dequeue();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					//Should never throw an exception
-				}
+				   current = (VisualVertex) q.remove();
 
 				   totalConnections = visualCpog.getConnections(current);
 
@@ -498,7 +476,7 @@ public class CpogParsingTool {
 
 					   visitedConnections.add(connection);
 					   visitedVertices.add(child);
-					   q.enqueue(child);
+					   q.add(child);
 
 					   if (conIt.hasNext())
 					   {
@@ -572,7 +550,7 @@ public class CpogParsingTool {
 
 	 public HashSet<VisualArc> findTransitives(VisualCPOG visualCpog, HashSet<Node> roots)
 	 {
-		 Queue q = new Queue();
+		 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 		 HashSet<VisualArc> transitives = new HashSet<VisualArc>();
 		 ArrayList<Node> children, allChildren = new ArrayList<Node>();
 		 Node current = null;
@@ -581,19 +559,14 @@ public class CpogParsingTool {
 
 		 for(Node root: roots)
 		 {
-			 q.enqueue(root);
+			 q.add(root);
 			 while(!q.isEmpty())
 			 {
-				try {
-					current = (Node) q.dequeue();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				current = (Node) q.remove();
 				children = getChildren(visualCpog, current);
 				for (Node child : children)
 				{
-					q.enqueue(child);
+					q.add(child);
 				}
 				for(Node target : children)
 				{

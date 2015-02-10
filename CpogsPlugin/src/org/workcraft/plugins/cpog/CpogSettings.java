@@ -146,7 +146,7 @@ public class CpogSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, Boolean>(
-				this, "Use subscript", Boolean.class) {
+				this, "\'_\' causes following text to be subscript in vertex and graph labels", Boolean.class) {
 			protected void setter(CpogSettings object, Boolean value) {
 				CpogSettings.setUseSubscript(value);
 			}
