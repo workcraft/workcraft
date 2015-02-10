@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -32,14 +33,15 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.cpog.Variable;
-import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.CpogConnector;
@@ -51,7 +53,6 @@ import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.workspace.handlers.SystemOpen;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import sun.misc.Queue;
@@ -406,12 +407,12 @@ public class CpogSelectionTool extends SelectionTool {
 
 			parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
-			HashSet<Node> roots = new HashSet<Node>();
+			LinkedHashSet<Node> roots = new LinkedHashSet<Node>();
 			Set<Connection> arcs;
 			Iterator<Connection> it;
 			Connection connection;
 			boolean second = false;
-			for (Node node : visualCpog.getSelection()) {
+			for (Node node : vertexMap.values()) {
 				//VisualVertex vertex = (VisualVertex) node;
 				//VisualVertex v = (VisualVertex) node;
 				arcs = visualCpog.getConnections(node);
@@ -436,7 +437,9 @@ public class CpogSelectionTool extends SelectionTool {
 
             //remember selection
             ArrayList<Node> prevSelection = new ArrayList<Node>();
-            for (Node n1 : visualCpog.getSelection()) prevSelection.add(n1);
+            for (Node n1 : vertexMap.values()) {
+            	prevSelection.add(n1);
+            }
 
 
             ArrayList<String> usedReferences = parsingTool.getUsedReferences();
@@ -467,9 +470,7 @@ public class CpogSelectionTool extends SelectionTool {
                     }
                 }
                 visualCpog.addToSelection(prevSelection);
-
             }
-
 
 			if (roots.isEmpty()) {
 				double y = maxY + 2.5;

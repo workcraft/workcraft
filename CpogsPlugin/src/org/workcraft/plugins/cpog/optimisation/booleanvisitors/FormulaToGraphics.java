@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -83,7 +84,7 @@ public class FormulaToGraphics
 			res = print(text.charAt(0), defaultFont.deriveFont(fontSize), fontRenderContext);
 		}
 
-		int subIndex = text.lastIndexOf('_');
+		int subIndex = (CpogSettings.getUseSubscript() ? text.lastIndexOf('_') : -1);
 		if (subIndex < 0) subIndex = text.length();
 
 		for(int i = 1; i < text.length(); i++) {
