@@ -12,7 +12,7 @@ public class MpsatConsistencyChecker extends AbstractMpsatChecker implements Too
 
 	@Override
 	public String getDisplayName() {
-		return "Consistency [MPSat]";
+		return " Consistency [MPSat]";
 	}
 
 	@Override

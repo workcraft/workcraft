@@ -10,7 +10,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDataflowHazardTool implements Tool {
 
 	public String getDisplayName() {
-		return "Check dataflow for hazards";
+		return " Hazard [MPSat]";
 	}
 
 	@Override

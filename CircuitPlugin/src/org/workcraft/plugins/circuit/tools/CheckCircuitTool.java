@@ -10,7 +10,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckCircuitTool implements Tool {
 
 	public String getDisplayName() {
-		return "Check circuit for conformation, deadlocks and hazards (reuse unfolding)";
+		return "Conformation, deadlock and hazard (reuse unfolding) [MPSat]";
 	}
 
 	@Override

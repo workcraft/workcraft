@@ -11,7 +11,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDeadlockTool implements Tool {
 
 	public String getDisplayName() {
-		return "Check policy net for deadlocks (taking bundels into account)";
+		return " Deadlock with bundels [MPSat]";
 	}
 
 	@Override
