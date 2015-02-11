@@ -16,8 +16,10 @@ import org.workcraft.plugins.cpog.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VertexSerialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
-import org.workcraft.plugins.cpog.tools.ScencoTool;
+import org.workcraft.plugins.cpog.tools.CpogToGraphConverterTool;
 import org.workcraft.plugins.cpog.tools.GraphStatisticsTool;
+import org.workcraft.plugins.cpog.tools.GraphToCpogConverterTool;
+import org.workcraft.plugins.cpog.tools.ScencoTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
@@ -52,6 +54,21 @@ public class CpogModule implements Module {
 				return new GraphStatisticsTool();
 			}
 		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new CpogToGraphConverterTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new GraphToCpogConverterTool();
+			}
+		});
+
 	}
 
 	@Override
