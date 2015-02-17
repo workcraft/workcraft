@@ -41,7 +41,7 @@ public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
 		GUI.drawEditorMessage(editor, g, Color.BLACK,
-				"Click to create a rising (or falling with Ctrl) transition of an output (or input with Shift) signal.");
+				"Click to create falling (or rising with Ctrl) transition of output (or input with Shift) signal.");
 	}
 }
 

@@ -53,10 +53,11 @@ public class FileUtils {
 	public static String getFileNameWithoutExtension(File file) {
 		String name = file.getName();
 		int k = name.lastIndexOf('.');
-		if (k==-1)
+		if (k==-1) {
 			return name;
-		else
+		} else {
 			return name.substring(0, k);
+		}
 	}
 
 	public static void dumpString (File out, String string) throws IOException {
@@ -65,8 +66,7 @@ public class FileUtils {
 		fos.close();
 	}
 
-	public static void copyFileToStream(File in, OutputStream out)  throws IOException
-	{
+	public static void copyFileToStream(File in, OutputStream out)  throws IOException {
 	    FileChannel inChannel = new FileInputStream(in).getChannel();
 	    WritableByteChannel outChannel = Channels.newChannel(out);
 	    try {
@@ -81,8 +81,7 @@ public class FileUtils {
 	    }
 	}
 
-	public static File createTempDirectory(String prefix)
-	{
+	public static File createTempDirectory(String prefix) {
 		File tempDir;
 		try {
 			tempDir = File.createTempFile(prefix, "");
@@ -90,53 +89,51 @@ public class FileUtils {
 			throw new RuntimeException("can't create a temp file");
 		}
 		tempDir.delete();
-		if(!tempDir.mkdir())
+		if (!tempDir.mkdir()) {
 			throw new RuntimeException("can't create a temp directory");
+		}
 		return tempDir;
 	}
 
 	public static void copyAll(File source, File targetDir) throws IOException {
-		if (!targetDir.isDirectory())
+		if (!targetDir.isDirectory()) {
 			throw new RuntimeException ("Cannot copy files to a file that is not a directory.");
-
+		}
 		File target = new File(targetDir, source.getName());
 
 		if (source.isDirectory()) {
-			if (!target.mkdir())
+			if (!target.mkdir()) {
 				throw new RuntimeException ("Cannot create directory " + target.getAbsolutePath());
-			for (File f : source.listFiles())
+			}
+			for (File f : source.listFiles()) {
 				copyAll (f, target);
+			}
 		} else {
 			copyFile(source, target);
 		}
 	}
 
-	public static void deleteDirectoryTree(File dir)
-	{
+	public static void deleteDirectoryTree(File dir) {
 		File [] files = dir.listFiles();
-		if(files != null)
-			for(File file : files)
+		if (files != null) {
+			for(File file : files) {
 				deleteDirectoryTree(file);
-
+			}
+		}
 		dir.delete();
 	}
 
-	public static void writeAllText(File file, String source) throws IOException
-	{
+	public static void writeAllText(File file, String source) throws IOException {
 		FileWriter writer = new FileWriter(file);
 		writer.write(source);
 		writer.close();
 	}
 
-	public static String readAllText (File file) throws IOException
-	{
+	public static String readAllText (File file) throws IOException {
 		InputStream stream = new FileInputStream(file);
-		try
-		{
+		try {
 			return readAllText(stream);
-		}
-		finally
-		{
+		} finally {
 			stream.close();
 		}
 	}
@@ -147,14 +144,12 @@ public class FileUtils {
 	 */
 	public static String readAllText(InputStream stream) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-
 		StringBuilder result = new StringBuilder();
-
 		while (true) {
 		 String s = reader.readLine();
-		 if (s==null)
+		 if (s==null) {
 			 return result.toString();
-
+		 }
 		 result.append(s);
 		 result.append('\n');
 		}

@@ -249,17 +249,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		return result;
 	}
 
-	public boolean contactIsFree(VisualContact contact, Collection<VisualConnection> connections) {
-		boolean result= true;
-		for (VisualConnection connection: connections) {
-			if ((connection.getFirst() == contact) || (connection.getSecond() == contact)) {
-				result = false;
-				break;
-			}
-		}
-		return result;
-	}
-
 	public void setContactsDefaultPosition() {
 		spreadContactsEvenly();
 
@@ -268,24 +257,25 @@ public class VisualCircuitComponent extends VisualComponent implements
 		Collection<VisualContact> contacts = getContacts();
 		Collection<VisualConnection> connections = getRelevantConnections(contacts);
 		for (VisualContact vc: contacts) {
-			if (contactIsFree(vc, connections)) {
-				switch (vc.getDirection()) {
-				case WEST:
-					vc.setX(bb.getMinX() - contactLength);
-					break;
-				case NORTH:
-					vc.setY(bb.getMinY() - contactLength);
-					break;
-				case EAST:
-					vc.setX(bb.getMaxX() + contactLength);
-					break;
-				case SOUTH:
-					vc.setY(bb.getMaxY() + contactLength);
-					break;
-				}
+			switch (vc.getDirection()) {
+			case WEST:
+				vc.setX(bb.getMinX() - contactLength);
+				invalidateBoundingBox();
+				break;
+			case NORTH:
+				vc.setY(bb.getMinY() - contactLength);
+				invalidateBoundingBox();
+				break;
+			case EAST:
+				vc.setX(bb.getMaxX() + contactLength);
+				invalidateBoundingBox();
+				break;
+			case SOUTH:
+				vc.setY(bb.getMaxY() + contactLength);
+				invalidateBoundingBox();
+				break;
 			}
 		}
-		invalidateBoundingBox();
 	}
 
 	public static double snapP5(double x) {
@@ -740,35 +730,37 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void rotateClockwise() {
 		super.rotateClockwise();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.rotateClockwise();
-		}
+//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+//			vc.rotateClockwise();
+//		}
 		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
 		super.rotateCounterclockwise();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.rotateCounterclockwise();
-		}
+//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+//			vc.rotateCounterclockwise();
+//		}
 		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipHorizontal() {
 		super.flipHorizontal();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.flipHorizontal();
-		}
+//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+//			vc.flipHorizontal();
+//		}
+		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipVertical() {
 		super.flipVertical();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.flipVertical();
-		}
+//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+//			vc.flipVertical();
+//		}
+		setContactsDefaultPosition();
 	}
 
 }
