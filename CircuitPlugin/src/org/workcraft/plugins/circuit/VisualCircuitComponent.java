@@ -25,6 +25,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
@@ -255,27 +256,23 @@ public class VisualCircuitComponent extends VisualComponent implements
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 
 		Collection<VisualContact> contacts = getContacts();
-		Collection<VisualConnection> connections = getRelevantConnections(contacts);
 		for (VisualContact vc: contacts) {
 			switch (vc.getDirection()) {
 			case WEST:
 				vc.setX(bb.getMinX() - contactLength);
-				invalidateBoundingBox();
 				break;
 			case NORTH:
 				vc.setY(bb.getMinY() - contactLength);
-				invalidateBoundingBox();
 				break;
 			case EAST:
 				vc.setX(bb.getMaxX() + contactLength);
-				invalidateBoundingBox();
 				break;
 			case SOUTH:
 				vc.setY(bb.getMaxY() + contactLength);
-				invalidateBoundingBox();
 				break;
 			}
 		}
+		invalidateBoundingBox();
 	}
 
 	public static double snapP5(double x) {
@@ -474,6 +471,14 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 	}
 
+	private GlyphVector getContactLabelGlyphs(DrawRequest r, VisualContact vc) {
+		Circuit circuit = (Circuit)r.getModel().getMathModel();
+		String name = circuit.getName(vc.getReferencedContact());
+		final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
+		GlyphVector gv = nameFont.createGlyphVector(context, name);
+		return gv;
+	}
+
 	private void drawContactLabel(DrawRequest r, VisualContact vc) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
@@ -482,7 +487,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		g.setColor(Coloriser.colorise(color, colorisation));
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		GlyphVector gv = vc.getNameGlyphs(r);
+		GlyphVector gv = getContactLabelGlyphs(r, vc);
 		Rectangle2D labelBB = gv.getVisualBounds();
 
 		float labelX = 0.0f;
@@ -704,7 +709,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 					if (node instanceof VisualFunctionContact) {
 						VisualFunctionContact vc = (VisualFunctionContact) node;
 						vc.invalidateRenderedFormula();
-						vc.invalidateNameGlyph();
 					}
 				}
 				invalidateBoundingBox();
@@ -730,36 +734,24 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void rotateClockwise() {
 		super.rotateClockwise();
-//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-//			vc.rotateClockwise();
-//		}
 		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
 		super.rotateCounterclockwise();
-//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-//			vc.rotateCounterclockwise();
-//		}
 		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipHorizontal() {
 		super.flipHorizontal();
-//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-//			vc.flipHorizontal();
-//		}
 		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipVertical() {
 		super.flipVertical();
-//		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-//			vc.flipVertical();
-//		}
 		setContactsDefaultPosition();
 	}
 

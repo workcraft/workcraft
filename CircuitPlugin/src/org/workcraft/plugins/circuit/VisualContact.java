@@ -26,15 +26,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -144,7 +144,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 	private double size = 0.3;
-	private GlyphVector nameGlyph = null;
 	private Direction direction = Direction.WEST;
 
 	private HashSet<SignalTransition> referencedTransitions=new HashSet<SignalTransition>();
@@ -247,28 +246,51 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				at.quadrantRotate(-1);
 			}
 			g.transform(at);
-
-			GlyphVector gv = getNameGlyphs(r);
-			Rectangle2D cur = gv.getVisualBounds();
-			g.setColor(Coloriser.colorise(isInput() ? inputColor : outputColor, colorisation));
-
-			float xx = (float)size;
-			if (getDirection() == Direction.SOUTH || getDirection() == Direction.WEST) {
-				xx = (float)(-cur.getWidth() - size);
-			}
-			g.drawGlyphVector(gv,xx, (float)size/2);
+			drawNameInLocalSpace(r);
 		}
 	}
 
 	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Shape shape = getShape();
-		if (shape != null) {
-			return shape.getBounds2D();
-		} else {
-			return new Rectangle2D.Double(-size/2, -size/2, size, size);
+	public Positioning getNamePositioning() {
+		Positioning result = Positioning.CENTER;
+		Direction direction = getDirection();
+		if (direction != null) {
+			if ((direction == Direction.NORTH) || (direction == Direction.EAST)) {
+				result = Positioning.RIGHT;
+			} else {
+				result = Positioning.LEFT;
+			}
 		}
+		return result;
 	}
+
+	@Override
+	public Color getNameColor() {
+		return (isInput() ? inputColor : outputColor);
+	}
+
+	@Override
+	public Rectangle2D getNameBoundingBox() {
+		Rectangle2D bb = super.getNameBoundingBox();
+		if (bb != null) {
+			AffineTransform at = new AffineTransform();
+			if (getDirection() == Direction.NORTH || getDirection() == Direction.SOUTH) {
+				at.quadrantRotate(-1);
+			}
+			bb = BoundingBoxHelper.transform(bb, at);
+		}
+		return bb;
+	}
+
+	@Override
+	public boolean getNameVisibility() {
+		return true;
+	}
+
+	@Override
+	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+        return getShape().getBounds2D();
+    }
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
@@ -304,24 +326,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 	}
 
-	public void invalidateNameGlyph() {
-		nameGlyph = null;
-	}
-
-	public GlyphVector getNameGlyphs(DrawRequest r) {
-		if (nameGlyph == null) {
-			final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
-			Circuit circuit = (Circuit)r.getModel().getMathModel();
-			String name = circuit.getName(this.getReferencedContact());
-			nameGlyph = nameFont.createGlyphVector(context, name);
-		}
-		return nameGlyph;
-	}
-
 	public void setDirection(Direction dir) {
 		if (dir != direction) {
 			sendNotification(new TransformChangingEvent(this));
-			invalidateNameGlyph();
 			this.direction = dir;
 			sendNotification(new PropertyChangedEvent(this, "direction"));
 			sendNotification(new TransformChangedEvent(this));
@@ -367,12 +374,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void notify(StateEvent e) {
-		if (e instanceof PropertyChangedEvent) {
-			PropertyChangedEvent pc = (PropertyChangedEvent)e;
-			if (pc.getPropertyName().equals("name")) {
-				invalidateNameGlyph();
-			}
-		}
 	}
 
 	public void setReferencedOnePlace(Place referencedOnePlace) {

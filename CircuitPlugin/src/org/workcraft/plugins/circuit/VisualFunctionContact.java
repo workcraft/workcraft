@@ -22,7 +22,6 @@
 package org.workcraft.plugins.circuit;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
@@ -31,6 +30,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Collection;
@@ -40,6 +40,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -60,6 +61,7 @@ import org.workcraft.util.Hierarchy;
 public class VisualFunctionContact extends VisualContact implements StateObserver {
 
 	private double size = 0.3;
+	private static FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
 	private static Font font;
 	static {
 		try {
@@ -119,25 +121,95 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		renderedResetFormula = null;
 	}
 
-	FormulaRenderingResult getRenderedSetFormula(FontRenderContext fcon) {
+	private FormulaRenderingResult getRenderedSetFormula() {
 		if (((FunctionContact)getReferencedContact()).getSetFunction() == null) {
-			return null;
+			renderedSetFormula = null;
 		} else if (renderedSetFormula == null) {
-			renderedSetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getSetFunction(), fcon, font);
+			renderedSetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getSetFunction(), context, font);
 		}
 		return renderedSetFormula;
 	}
 
-	FormulaRenderingResult getRenderedResetFormula(FontRenderContext fcon) {
+	private Point2D getSetFormulaOffset() {
+		double xOffset = size;
+		double yOffset = -size/2;
+		FormulaRenderingResult renderingResult = getRenderedSetFormula();
+		if (renderingResult != null) {
+			Direction dir = getDirection();
+			if (!(getParent() instanceof VisualFunctionComponent)) {
+				dir = dir.flip();
+			}
+			if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
+				xOffset = -(size + renderingResult.boundingBox.getWidth());
+			}
+		}
+		return new Point2D.Double(xOffset, yOffset);
+	}
+
+	private Rectangle2D getSetBoundingBox() {
+		Rectangle2D bb = null;
+		FormulaRenderingResult setRenderingResult = getRenderedSetFormula();
+		if (setRenderingResult != null) {
+			bb = BoundingBoxHelper.move(setRenderingResult.boundingBox, getSetFormulaOffset());
+			Direction dir = getDirection();
+			if (!(getParent() instanceof VisualFunctionComponent)) {
+				dir = dir.flip();
+			}
+			if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
+				AffineTransform at = new AffineTransform();
+				at.quadrantRotate(-1);
+				bb = BoundingBoxHelper.transform(bb, at);
+			}
+		}
+		return bb;
+	}
+
+	private FormulaRenderingResult getRenderedResetFormula() {
 		if (((FunctionContact)getReferencedContact()).getResetFunction() == null) {
-			return null;
+			renderedResetFormula = null;
 		} else if (renderedResetFormula == null) {
-			renderedResetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getResetFunction(), fcon, font);
+			renderedResetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getResetFunction(), context, font);
 		}
 		return renderedResetFormula;
 	}
 
+	private Point2D getResetFormulaOffset() {
+		double xOffset = size;
+		double yOffset = size/2;
+		FormulaRenderingResult renderingResult = getRenderedResetFormula();
+		if (renderingResult != null) {
+			Direction dir = getDirection();
+			if (!(getParent() instanceof VisualFunctionComponent)) {
+				dir = dir.flip();
+			}
+			if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
+				xOffset = -(size + renderingResult.boundingBox.getWidth());
+			}
+			yOffset = size/2 + renderingResult.boundingBox.getHeight();
+		}
+		return new Point2D.Double(xOffset, yOffset);
+	}
+
+	private Rectangle2D getResetBoundingBox() {
+		Rectangle2D bb = null;
+		FormulaRenderingResult renderingResult = getRenderedResetFormula();
+		if (renderingResult != null) {
+			bb = BoundingBoxHelper.move(renderingResult.boundingBox, getResetFormulaOffset());
+			Direction dir = getDirection();
+			if (!(getParent() instanceof VisualFunctionComponent)) {
+				dir = dir.flip();
+			}
+			if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
+				AffineTransform at = new AffineTransform();
+				at.quadrantRotate(-1);
+				bb = BoundingBoxHelper.transform(bb, at);
+			}
+		}
+		return bb;
+	}
+
 	private void drawArrow(Graphics2D g, int arrowType, double arrX, double arrY) {
+		g.setStroke(new BasicStroke((float)0.02));
 		if (arrowType == 1) {
 			// arrow down
 			Line2D line = new Line2D.Double(arrX, arrY-0.15, arrX, arrY-0.375);
@@ -161,85 +233,84 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 		}
 	}
 
-	private void drawFormula(Graphics2D g, int arrowType, double xOffset, double yOffset, Color foreground, Color background, FormulaRenderingResult result) {
-		if (result == null) return;
+	private void drawFormula(Graphics2D g, int arrowType, Point2D offset, FormulaRenderingResult renderingResult) {
+		if (renderingResult != null) {
+			Direction dir = getDirection();
+			if (!(getParent() instanceof VisualFunctionComponent)) {
+				dir = dir.flip();
+			}
 
-		Rectangle2D textBB = result.boundingBox;
-		double textX = 0;
-		double textY = yOffset;
-		double arrX = 0;
-		double arrY = yOffset;
+			AffineTransform transform = g.getTransform();
+			AffineTransform at = new AffineTransform();
+			if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
+				at.quadrantRotate(-1);
+				g.transform(at);
+			}
 
-		AffineTransform transform = g.getTransform();
-		AffineTransform at = new AffineTransform();
-		Direction dir = getDirection();
-		if (!(getParent() instanceof VisualFunctionComponent)) {
-			dir = dir.flip();
+			double dXArrow = -0.15;
+			if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
+				dXArrow = renderingResult.boundingBox.getWidth() + 0.15;
+			}
+
+			drawArrow(g, arrowType, offset.getX() + dXArrow, offset.getY());
+
+			g.translate(offset.getX(), offset.getY());
+			renderingResult.draw(g);
+			g.setTransform(transform);
 		}
-
-		switch (dir) {
-		case EAST:
-			textX = xOffset;
-			arrX = (xOffset - 0.15);
-			break;
-		case NORTH:
-			at.quadrantRotate(-1);
-			g.transform(at);
-			textX = xOffset;
-			arrX = (xOffset - 0.15);
-			break;
-		case WEST:
-			textX = -(textBB.getWidth() + xOffset);
-			arrX = -(xOffset - 0.15);
-			break;
-		case SOUTH:
-			at.quadrantRotate(-1);
-			g.transform(at);
-			textX = -(textBB.getWidth() + xOffset);
-			arrX = -(xOffset - 0.15);
-			break;
-		}
-
-		g.setColor(foreground);
-		g.setStroke(new BasicStroke((float)0.02));
-		drawArrow(g, arrowType, arrX, arrY);
-		g.translate(textX, textY);
-		result.draw(g);
-		g.setTransform(transform);
 	}
 
 	@Override
 	public void draw(DrawRequest r) {
-		boolean needsFormulas = false;
+	    if (needsFormulas()) {
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+			{
+				FormulaRenderingResult renderingResult = getRenderedSetFormula();
+				if (renderingResult != null) {
+					Point2D offset = getSetFormulaOffset();
+					drawFormula(g, 2, offset, renderingResult);
+				}
+			}
+			{
+				FormulaRenderingResult renderingResult = getRenderedResetFormula();
+				if (renderingResult != null) {
+					Point2D offset = getResetFormulaOffset();
+					drawFormula(g, 1, offset, renderingResult);
+				}
+			}
+		}
+		super.draw(r);
+	}
+
+	private boolean needsFormulas() {
+		boolean result = false;
 		Node parent = getParent();
 		if (parent != null) {
 			// Primary input port
 			if (!(parent instanceof VisualCircuitComponent) && isInput()) {
-				needsFormulas = true;
+				result = true;
 			}
 			// Output port of a BOX-rendered component
 			if ((parent instanceof VisualCircuitComponent) && isOutput()) {
 				VisualCircuitComponent component = (VisualCircuitComponent)parent;
 				if (component.getRenderType() == RenderType.BOX) {
-					needsFormulas = true;
+					result = true;
 				}
 		    }
 		}
-	    if (needsFormulas) {
-			Graphics2D g = r.getGraphics();
-			Decoration d = r.getDecoration();
-			Color foreground = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-			Color background = Coloriser.colorise(getFillColor(), d.getBackground());
-			FormulaRenderingResult setResult = getRenderedSetFormula(g.getFontRenderContext());
-			if (setResult != null) {
-				drawFormula(g, 2, size, -size/2, foreground, background, setResult);
-			}
-			FormulaRenderingResult resetResult = getRenderedResetFormula(g.getFontRenderContext());
-			if (resetResult != null) {
-				drawFormula(g, 1, size, size/2+resetResult.boundingBox.getHeight(), foreground, background, resetResult);
-			}
+		return result;
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+		if (needsFormulas()) {
+			bb = BoundingBoxHelper.union(bb, getSetBoundingBox());
+			bb = BoundingBoxHelper.union(bb, getResetBoundingBox());
 		}
-		super.draw(r);
+		return bb;
 	}
 
 	private Collection<VisualFunctionContact> getAllContacts() {
