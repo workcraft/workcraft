@@ -717,10 +717,20 @@ public class CpogParsingTool {
 	 public Point2D.Double getLowestVertex(VisualCPOG visualCpog)
 	 {
 		 Collection<VisualVertex> vertices =  visualCpog.getVertices(visualCpog.getCurrentLevel());
-         ArrayList<VisualPage> pages = new ArrayList<VisualPage>();
 		 vertices.removeAll(visualCpog.getSelection());
 
-         getPages(visualCpog, pages);
+         ArrayList<Node> prevSelection = new ArrayList<Node>();
+         for (Node n : visualCpog.getSelection()) prevSelection.add(n);
+
+         ArrayList<VisualPage> pages = new ArrayList<VisualPage>();
+         visualCpog.selectAll();
+         for (Node n : visualCpog.getSelection()) {
+             if (n instanceof VisualPage) {
+                 pages.add((VisualPage) n);
+             }
+         }
+
+         visualCpog.select(prevSelection);
 
          pages.removeAll(visualCpog.getSelection());
 
@@ -758,7 +768,7 @@ public class CpogParsingTool {
 			 startPoint = new Point2D.Double(0,0);
 		 } else
 		 {
-			 startPoint.setLocation(startPoint.getX(), startPoint.getY() + 3);
+			 startPoint.setLocation(startPoint.getX(), startPoint.getY() + 2);
 		 }
 
 		 return startPoint;
