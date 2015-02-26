@@ -37,6 +37,7 @@ public class CpogSettings implements Settings {
 	private static final String keyEspressoCommand = prefix + ".espressoCommand";
 	private static final String keyAbcFolder = prefix + ".abcFolder";
 	private static final String keyGatesLibrary = prefix + ".gatesLibrary";
+	private static final String keyUseSubscript = prefix + ".useSubscript";
 
 	private static final SatSolver defaultSatSolver = SatSolver.CLASP;
 	private static final int defaultCircuitSize = 4;
@@ -46,6 +47,7 @@ public class CpogSettings implements Settings {
 	private static final String defaultEspressoCommand = "espresso";
 	private static final String defaultAbcFolder = "abc/";
 	private static final String defaultGatesLibrary = "90nm.genlib";
+	private static final boolean defaultUseSubscript = false;
 
 	private static SatSolver satSolver = defaultSatSolver;
 	private static int circuitSize = defaultCircuitSize;
@@ -55,6 +57,7 @@ public class CpogSettings implements Settings {
 	private static String espressoCommand = defaultEspressoCommand;
 	private static String abcFolder = defaultAbcFolder;
 	private static String gatesLibrary = defaultGatesLibrary;
+	private static boolean useSubscript = defaultUseSubscript;
 
 	public CpogSettings() {
 		properties.add(new PropertyDeclaration<CpogSettings, SatSolver>(
@@ -136,6 +139,16 @@ public class CpogSettings implements Settings {
 				return CpogSettings.getGatesLibrary();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<CpogSettings, Boolean>(
+				this, "\'_\' causes following text to be subscript in vertex and graph labels", Boolean.class) {
+			protected void setter(CpogSettings object, Boolean value) {
+				CpogSettings.setUseSubscript(value);
+			}
+			protected Boolean getter(CpogSettings object) {
+				return CpogSettings.getUseSubscript();
+			}
+		});
 	}
 
 	@Override
@@ -148,6 +161,7 @@ public class CpogSettings implements Settings {
 		setEspressoCommand(config.getString(keyEspressoCommand, defaultEspressoCommand));
 		setAbcFolder(config.getString(keyAbcFolder, defaultAbcFolder));
 		setGatesLibrary(config.getString(keyGatesLibrary, defaultGatesLibrary));
+		setUseSubscript(config.getBoolean(keyUseSubscript, defaultUseSubscript));
 	}
 
 	@Override
@@ -160,6 +174,7 @@ public class CpogSettings implements Settings {
 		config.set(keyEspressoCommand, getEspressoCommand());
 		config.set(keyAbcFolder, getAbcFolder());
 		config.set(keyGatesLibrary, getGatesLibrary());
+		config.setBoolean(keyUseSubscript, getUseSubscript());
 	}
 
 	@Override
@@ -239,6 +254,14 @@ public class CpogSettings implements Settings {
 
 	public static void setGatesLibrary(String value) {
 		gatesLibrary = value;
+	}
+
+	public static boolean getUseSubscript() {
+		return useSubscript;
+	}
+
+	public static void setUseSubscript(boolean value) {
+		useSubscript = value;
 	}
 
 }

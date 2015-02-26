@@ -17,13 +17,14 @@ public class CustomToolsProvider implements
 	{
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new CpogSelectionTool(false));
+		result.add(new CpogSelectionTool(true));
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
 
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Variable.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(RhoClause.class)));
+
 
 		return result;
 	}

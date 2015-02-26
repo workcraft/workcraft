@@ -60,7 +60,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	static {
 		try {
-			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/eurm10.pfb"));
+			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb"));
 			conditionFont = font.deriveFont(0.5f);
 		} catch (FontFormatException e) {
 			e.printStackTrace();
