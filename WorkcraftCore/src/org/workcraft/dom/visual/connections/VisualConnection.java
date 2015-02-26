@@ -273,17 +273,19 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 	}
 
 	@NoAutoSerialisation
-	public void setConnectionType(ConnectionType t) {
-		if (connectionType != t) {
-			this.connectionType = t;
+	public void setConnectionType(ConnectionType value) {
+		if (connectionType != value) {
+			this.connectionType = value;
 			this.observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, getGraphic()));
 			this.children.remove(getGraphic());
 			this.observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, getGraphic()));
 
 			if (connectionType == ConnectionType.POLYLINE) {
 				graphic = new Polyline(this);
+				setScaleMode(ScaleMode.NONE);
 			} else if (connectionType == ConnectionType.BEZIER) {
 				graphic = new Bezier(this);
+				setScaleMode(ScaleMode.LOCK_RELATIVELY);
 			}
 			graphic.setDefaultControlPoints();
 
