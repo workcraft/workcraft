@@ -77,6 +77,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public void setIsEnvironment(boolean isEnvironment) {
 		this.isEnvironment = isEnvironment;
+		sendNotification(new PropertyChangedEvent(this, "is environment"));
 	}
 
 	@Override

@@ -52,10 +52,11 @@ public class DotGImporterTests {
 
 		OutputStreamWriter writer = new OutputStreamWriter(fileStream);
 
-		writer.write("\n");
-		writer.write("   #test \n");
-		writer.write("   # for DotGImporter\n");
-		writer.write("\n");
+//		writer.write("\n");
+//		writer.write(" #test \n");
+//		writer.write(" \t# for DotGImporter\n");
+		writer.write(" \n");
+		writer.write(" \n");
 		writer.write(".outputs  x\t y   z\n");
 		writer.write("\n");
 		writer.write(".inputs  a\tb \tc\n");

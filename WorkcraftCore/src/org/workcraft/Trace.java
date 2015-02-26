@@ -71,22 +71,22 @@ public class Trace extends ArrayList<String> {
 	public void fromString(String str) {
 		clear();
 		int tmpPosition = 0;
-		boolean first = true;
+		boolean needToParsePosition = str.contains(":");
 		for (String s : str.split(":")) {
-			if (first) {
+			if (needToParsePosition) {
 				// position
 				try {
 					tmpPosition = Integer.valueOf(s.trim());
 				} catch (Exception e) {
 
 				}
+				needToParsePosition = false;
 			} else {
 				// trace
 				for (String st : s.trim().split(",")) {
 					add(st.trim());
 				}
 			}
-			first = false;
 		}
 		setPosition(tmpPosition);
 	}

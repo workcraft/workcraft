@@ -25,6 +25,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
@@ -34,6 +35,7 @@ import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -60,7 +62,6 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.util.Func;
@@ -81,8 +82,10 @@ public class VisualCircuitComponent extends VisualComponent implements
 	protected Rectangle2D internalBB = null;
 	private WeakReference<VisualContact> mainContact = null;
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-	RenderType renderType = RenderType.BOX;
+	protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private RenderType renderType = RenderType.BOX;
+
+	private HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<VisualContact, GlyphVector>();
 
 	public VisualCircuitComponent(CircuitComponent component) {
 		super(component, true, true, true);
@@ -98,8 +101,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 			}
 
 			protected Boolean getter(VisualCircuitComponent object) {
-				return object.getReferencedCircuitComponent()
-						.getIsEnvironment();
+				return object.getReferencedCircuitComponent().getIsEnvironment();
 			}
 		});
 
@@ -127,7 +129,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 		if (ret == null) {
 			for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-				if (vc.getIOType() == IOType.OUTPUT) {
+				if (vc.isOutput()) {
 					setMainContact(vc);
 					ret = vc;
 					break;
@@ -251,40 +253,26 @@ public class VisualCircuitComponent extends VisualComponent implements
 		return result;
 	}
 
-	public boolean contactIsFree(VisualContact contact, Collection<VisualConnection> connections) {
-		boolean result= true;
-		for (VisualConnection connection: connections) {
-			if ((connection.getFirst() == contact) || (connection.getSecond() == contact)) {
-				result = false;
-				break;
-			}
-		}
-		return result;
-	}
-
 	public void setContactsDefaultPosition() {
 		spreadContactsEvenly();
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 
 		Collection<VisualContact> contacts = getContacts();
-		Collection<VisualConnection> connections = getRelevantConnections(contacts);
 		for (VisualContact vc: contacts) {
-			if (contactIsFree(vc, connections)) {
-				switch (vc.getDirection()) {
-				case WEST:
-					vc.setX(bb.getMinX() - contactLength);
-					break;
-				case NORTH:
-					vc.setY(bb.getMinY() - contactLength);
-					break;
-				case EAST:
-					vc.setX(bb.getMaxX() + contactLength);
-					break;
-				case SOUTH:
-					vc.setY(bb.getMaxY() + contactLength);
-					break;
-				}
+			switch (vc.getDirection()) {
+			case WEST:
+				vc.setX(bb.getMinX() - contactLength);
+				break;
+			case NORTH:
+				vc.setY(bb.getMinY() - contactLength);
+				break;
+			case EAST:
+				vc.setX(bb.getMaxX() + contactLength);
+				break;
+			case SOUTH:
+				vc.setY(bb.getMaxY() + contactLength);
+				break;
 			}
 		}
 		invalidateBoundingBox();
@@ -486,15 +474,27 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 	}
 
+	private GlyphVector getContactLabelGlyphs(DrawRequest r, VisualContact vc) {
+		Circuit circuit = (Circuit)r.getModel().getMathModel();
+		String name = circuit.getName(vc.getReferencedContact());
+		final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
+		GlyphVector gv = contactLableGlyphs.get(vc);
+		if (gv == null) {
+			gv = nameFont.createGlyphVector(context, name);
+			contactLableGlyphs.put(vc, gv);
+		}
+		return gv;
+	}
+
 	private void drawContactLabel(DrawRequest r, VisualContact vc) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
 		Color colorisation = d.getColorisation();
-		Color color = (vc.getIOType() == IOType.INPUT) ? inputColor : outputColor;
+		Color color = (vc.isInput() ? inputColor : outputColor);
 		g.setColor(Coloriser.colorise(color, colorisation));
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		GlyphVector gv = vc.getNameGlyphs(r);
+		GlyphVector gv = getContactLabelGlyphs(r, vc);
 		Rectangle2D labelBB = gv.getVisualBounds();
 
 		float labelX = 0.0f;
@@ -629,6 +629,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void remove(Node node) {
 		if (node instanceof VisualContact) {
 			invalidateBoundingBox();
+			contactLableGlyphs.remove(node);
 		}
 		groupImpl.remove(node);
 	}
@@ -716,10 +717,10 @@ public class VisualCircuitComponent extends VisualComponent implements
 					if (node instanceof VisualFunctionContact) {
 						VisualFunctionContact vc = (VisualFunctionContact) node;
 						vc.invalidateRenderedFormula();
-						vc.invalidateNameGlyph();
 					}
 				}
 				invalidateBoundingBox();
+				contactLableGlyphs.clear();
 			}
 		}
 	}
@@ -742,35 +743,25 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void rotateClockwise() {
 		super.rotateClockwise();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.rotateClockwise();
-		}
 		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
 		super.rotateCounterclockwise();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.rotateCounterclockwise();
-		}
 		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipHorizontal() {
 		super.flipHorizontal();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.flipHorizontal();
-		}
+		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipVertical() {
 		super.flipVertical();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			vc.flipVertical();
-		}
+		setContactsDefaultPosition();
 	}
 
 }

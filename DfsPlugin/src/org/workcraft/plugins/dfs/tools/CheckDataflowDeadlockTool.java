@@ -11,7 +11,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDataflowDeadlockTool implements Tool {
 
 	public String getDisplayName() {
-		return "Check dataflow for deadlocks";
+		return " Deadlock [MPSat]";
 	}
 
 	@Override

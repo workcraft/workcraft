@@ -95,13 +95,17 @@ public class DotGParser implements DotGParserConstants {
 
   final public void header() throws ParseException {
     List < String > list;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LINEBREAK:
+    label_4:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LINEBREAK:
+        ;
+        break;
+      default:
+        jj_la1[3] = jj_gen;
+        break label_4;
+      }
       jj_consume_token(LINEBREAK);
-      break;
-    default:
-      jj_la1[3] = jj_gen;
-      ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INPUT_HEADER:
@@ -138,7 +142,7 @@ public class DotGParser implements DotGParserConstants {
   final public List < String > stringList() throws ParseException {
     Token t;
     List < String > list = new LinkedList < String > ();
-    label_4:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -146,7 +150,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[5] = jj_gen;
-        break label_4;
+        break label_5;
       }
       t = jj_consume_token(NAME);
             list.add(t.image);
@@ -185,7 +189,7 @@ public class DotGParser implements DotGParserConstants {
   final public void graph() throws ParseException {
     jj_consume_token(STATE_GRAPH);
     jj_consume_token(LINEBREAK);
-    label_5:
+    label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -193,7 +197,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[7] = jj_gen;
-        break label_5;
+        break label_6;
       }
       graphLine();
       jj_consume_token(LINEBREAK);
@@ -209,7 +213,7 @@ public class DotGParser implements DotGParserConstants {
     State toState;
     t = jj_consume_token(NAME);
             fromState = fst.getOrCreateState(t.image);
-    label_6:
+    label_7:
     while (true) {
       t = jj_consume_token(NAME);
                 Type type = signals.get(t.image);
@@ -235,7 +239,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[9] = jj_gen;
-        break label_6;
+        break label_7;
       }
     }
   }

@@ -46,6 +46,7 @@ import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 public class Workspace {
+	public static final String EXTERNAL_PATH = "!External";
 	private LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<Path<String>, WorkspaceEntry>();
 	private List<WorkspaceListener> workspaceListeners = new ArrayList<WorkspaceListener>();
 
@@ -451,10 +452,8 @@ public class Workspace {
 		return new MountTree(baseDir(), allMounts, Path.<String>empty());
 	}
 
-
-	public Path<String> tempMountExternalFile(File file)
-	{
-		final Path<String> path = newName(Path.root("!External"), file.getName());
+	public Path<String> tempMountExternalFile(File file) {
+		final Path<String> path = newName(Path.root(EXTERNAL_PATH), file.getName());
 		addMount(path, file, true);
 		return path;
 	}
@@ -462,7 +461,7 @@ public class Workspace {
 	private void move(Path<String> from, Path<String> to) throws IOException {
 		File fileFrom = getFile(from);
 		File fileTo = getFile(to);
-		if(fileFrom.exists()) {
+		if (fileFrom.exists()) {
 			FileUtils.moveFile(fileFrom, fileTo);
 		}
 		moved(from, to);
@@ -481,17 +480,16 @@ public class Workspace {
 	public void moved(Path<String> from, Path<String> to) throws IOException {
 		final WorkspaceEntry openFileFrom = openFiles.getValue(from);
 		final WorkspaceEntry openFileTo = openFiles.getValue(to);
-		if(openFileTo != null)
-		{
+		if (openFileTo != null) {
 			final Path<String> newName = newName(to.getParent(), to.getNode());
 			final File toDelete = openFileTo.getFile();
 			if (toDelete.exists() && !toDelete.delete()) {
-				throw new IOException("Unable to delete '"+toDelete.getAbsolutePath()+"'");
+				throw new IOException("Unable to delete '" + toDelete.getAbsolutePath() + "'");
 			}
 			move(to, newName);
 		}
 
-		System.out.println("moved from "+from+" to "+to);
+		System.out.println("moved from " + from + " to " + to);
 		if (openFileFrom != null) {
 			System.out.println("correcting open file path...");
 			openFiles.removeKey(from);

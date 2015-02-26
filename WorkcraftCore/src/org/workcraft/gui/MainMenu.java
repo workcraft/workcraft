@@ -61,7 +61,7 @@ public class MainMenu extends JMenuBar {
 
 		public ToolAction(Pair<String, Tool> tool) {
 			this.tool = tool.getSecond();
-			this.text = tool.getFirst();
+			this.text = tool.getFirst().trim();
 		}
 
 		public String getText() {

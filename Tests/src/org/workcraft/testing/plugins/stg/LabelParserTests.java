@@ -1,9 +1,9 @@
 package org.workcraft.testing.plugins.stg;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Triple;
@@ -30,19 +30,19 @@ public class LabelParserTests {
 
 	}
 
-	@Test(expected = ArgumentException.class)
+	@Test
 	public void testWrongFormat1() {
-		LabelParser.parseSignalTransition("x/");
+		assertNull(LabelParser.parseSignalTransition("x/"));
 	}
 
-	@Test(expected = ArgumentException.class)
+	@Test
 	public void testWrongFormat2() {
-		LabelParser.parseSignalTransition("x@/3");
+		assertNull(LabelParser.parseSignalTransition("x@/3"));
 	}
 
-	@Test(expected = ArgumentException.class)
+	@Test
 	public void testWrongFormat3() {
-		LabelParser.parseSignalTransition("x-/fifty");
+		assertNull(LabelParser.parseSignalTransition("x-/fifty"));
 	}
 
 }

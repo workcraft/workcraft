@@ -35,7 +35,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
@@ -105,7 +104,7 @@ public class VisualCPOG extends AbstractVisualModel
 
 	private CPOG mathModel;
 
-	public VisualCPOG(CPOG model) throws VisualModelInstantiationException {
+	public VisualCPOG(CPOG model) {
 		this(model, null);
 	}
 

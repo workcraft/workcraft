@@ -9,18 +9,15 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.CElementRenderer;
 import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
@@ -51,7 +48,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		for (Node node: getChildren()) {
 			if (node instanceof VisualFunctionContact) {
 				VisualFunctionContact vc = (VisualFunctionContact)node;
-				if (vc.getIOType() == IOType.OUTPUT) {
+				if (vc.isOutput()) {
 					if (gateOutput == null) {
 						gateOutput = vc;
 					} else {
@@ -113,7 +110,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	@Override
 	public void setRenderType(RenderType renderType) {
-		if (this.renderType != renderType) {
+		if (getRenderType() != renderType) {
 			invalidateRenderingResult();
 		}
 		super.setRenderType(renderType);
@@ -134,27 +131,23 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			double inputPositionX = snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
 			double outputPositionX = snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
 
-			Collection<VisualContact> contacts = getContacts();
-			Collection<VisualConnection> connections = getRelevantConnections(contacts);
 			for (Node n: this.getChildren()) {
 				if (n instanceof VisualFunctionContact) {
 					VisualFunctionContact vc = (VisualFunctionContact)n;
-					if (contactIsFree(vc, connections)) {
-						bt.setTransform(at);
-						if (vc.getIOType() == IOType.INPUT) {
-							String vcName = vc.getName();
-							Point2D position = res.contactPositions().get(vcName);
-							if (position != null) {
-								bt.translate(inputPositionX, position.getY());
-							}
-						} else {
-							bt.translate(outputPositionX, 0);
+					bt.setTransform(at);
+					if (vc.isInput()) {
+						String vcName = vc.getName();
+						Point2D position = res.contactPositions().get(vcName);
+						if (position != null) {
+							bt.translate(inputPositionX, position.getY());
 						}
-						// Here we only need to change position, do not do the rotation
-						AffineTransform ct = new AffineTransform();
-						ct.translate(bt.getTranslateX(), bt.getTranslateY());
-						vc.setTransform(ct);
+					} else {
+						bt.translate(outputPositionX, 0);
 					}
+					// Here we only need to change position, do not do the rotation
+					AffineTransform ct = new AffineTransform();
+					ct.translate(bt.getTranslateX(), bt.getTranslateY());
+					vc.setTransform(ct);
 				}
 			}
 		}
@@ -186,7 +179,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			if (node instanceof VisualFunctionContact) {
 				VisualFunctionContact vc = (VisualFunctionContact)node;
 				Point2D pinPosition = null;
-				if (vc.getIOType() == IOType.INPUT) {
+				if (vc.isInput()) {
 					String cname = vc.getReferencedContact().getName();
 					pinPosition = rr.contactPositions().get(cname);
 				} else {

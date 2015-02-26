@@ -74,7 +74,7 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public String getName() {
-				return "Set Function";
+				return "Set function";
 			}
 
 			@Override
@@ -119,7 +119,7 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public String getName() {
-				return "Reset Function";
+				return "Reset function";
 			}
 
 			@Override

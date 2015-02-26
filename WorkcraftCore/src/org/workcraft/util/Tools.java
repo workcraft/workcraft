@@ -1,6 +1,7 @@
 package org.workcraft.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -12,26 +13,21 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class Tools {
+
 	public static ListMap<String, Pair<String, Tool>> getTools(WorkspaceEntry we) {
 		ListMap<String, Pair<String, Tool>> toolSections = new ListMap<String, Pair<String, Tool>>();
 
 		final Framework framework = Framework.getInstance();
-		for (PluginInfo<? extends Tool> info : framework.getPluginManager().getPlugins(Tool.class)) {
+		Collection<PluginInfo<? extends Tool>> toolPlugins = framework.getPluginManager().getPlugins(Tool.class);
+		for (PluginInfo<? extends Tool> info : toolPlugins) {
 			Tool tool = info.getSingleton();
-
-			if (!isApplicable(we, tool))
-				continue;
-
-			toolSections.put(tool.getSection(), new Pair <String,Tool> (tool.getDisplayName(), tool));
+			if (tool.isApplicableTo(we)) {
+				String toolDisplayName = tool.getDisplayName();
+				Pair<String, Tool> toolDescription = new Pair <String,Tool>(toolDisplayName, tool);
+				toolSections.put(tool.getSection(), toolDescription);
+			}
 		}
-
 		return toolSections;
-	}
-
-	private static boolean isApplicable(WorkspaceEntry we, Tool tool) {
-		if (tool.isApplicableTo(we))
-			return true;
-		return false;
 	}
 
 	public static void run(WorkspaceEntry we, Tool tool) {

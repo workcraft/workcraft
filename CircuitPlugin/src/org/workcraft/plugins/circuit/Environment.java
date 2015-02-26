@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit;
 import java.io.File;
 
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.PropertyChangedEvent;
 
 public class Environment extends MathNode {
 	private File file;
@@ -18,6 +19,7 @@ public class Environment extends MathNode {
 
 	public void setFile(File file) {
 		this.file = file;
+		sendNotification(new PropertyChangedEvent(this, "file"));
 	}
 
 	public File getBase() {
@@ -26,6 +28,7 @@ public class Environment extends MathNode {
 
 	public void setBase(File base) {
 		this.base = base;
+		sendNotification(new PropertyChangedEvent(this, "base"));
 	}
 
 }

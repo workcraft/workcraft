@@ -53,7 +53,7 @@ public class CircuitModule implements Module {
 				return new CheckCircuitTool() {
 					@Override
 					public String getDisplayName() {
-						return "Check circuit only for conformation";
+						return " Conformation [MPSat]";
 					}
 					@Override
 					public boolean checkDeadlock() {
@@ -73,7 +73,7 @@ public class CircuitModule implements Module {
 				return new CheckCircuitTool() {
 					@Override
 					public String getDisplayName() {
-						return "Check circuit only for deadlocks";
+						return " Deadlock [MPSat]";
 					}
 					@Override
 					public boolean checkConformation() {
@@ -93,7 +93,7 @@ public class CircuitModule implements Module {
 				return new CheckCircuitTool() {
 					@Override
 					public String getDisplayName() {
-						return "Check circuit only for hazards";
+						return " Hazard [MPSat]";
 					}
 					@Override
 					public boolean checkConformation() {

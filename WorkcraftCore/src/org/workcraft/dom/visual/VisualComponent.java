@@ -54,11 +54,11 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private String label = "";
 	private Positioning labelPositioning = CommonVisualSettings.getLabelPositioning();
-	private RenderedText labelRenderedText = new RenderedText("", labelFont, labelPositioning, getLabelOffset());
+	private RenderedText labelRenderedText = new RenderedText("", labelFont, getLabelPositioning(), getLabelOffset());
 	private Color labelColor = CommonVisualSettings.getLabelColor();
 
 	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
-	private RenderedText nameRenderedText = new RenderedText("", nameFont, namePositioning, getNameOffset());
+	private RenderedText nameRenderedText = new RenderedText("", nameFont, getNamePositioning(), getNameOffset());
 	private Color nameColor = CommonVisualSettings.getNameColor();
 
 	public VisualComponent(MathNode refNode) {
@@ -177,8 +177,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return labelPositioning;
 	}
 
-	public void setLabelPositioning(Positioning labelPositioning) {
-		this.labelPositioning = labelPositioning;
+	public void setLabelPositioning(Positioning value) {
+		labelPositioning = value;
 		sendNotification(new PropertyChangedEvent(this, "label positioning"));
 	}
 
@@ -186,8 +186,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return labelColor;
 	}
 
-	public void setLabelColor(Color labelColor) {
-		this.labelColor = labelColor;
+	public void setLabelColor(Color value) {
+		labelColor = value;
 		sendNotification(new PropertyChangedEvent(this, "label color"));
 	}
 
@@ -195,8 +195,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return namePositioning;
 	}
 
-	public void setNamePositioning(Positioning referencePositioning) {
-		this.namePositioning = referencePositioning;
+	public void setNamePositioning(Positioning value) {
+		namePositioning = value;
 		sendNotification(new PropertyChangedEvent(this, "reference positioning"));
 	}
 
@@ -204,8 +204,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return nameColor;
 	}
 
-	public void setNameColor(Color referenceColor) {
-		this.nameColor = referenceColor;
+	public void setNameColor(Color value) {
+		nameColor = value;
 		sendNotification(new PropertyChangedEvent(this, "reference color"));
 	}
 
@@ -213,8 +213,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return foregroundColor;
 	}
 
-	public void setForegroundColor(Color foregroundColor) {
-		this.foregroundColor = foregroundColor;
+	public void setForegroundColor(Color value) {
+		foregroundColor = value;
 		sendNotification(new PropertyChangedEvent(this, "foreground color"));
 	}
 
@@ -222,8 +222,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return fillColor;
 	}
 
-	public void setFillColor(Color fillColor) {
-		this.fillColor = fillColor;
+	public void setFillColor(Color value) {
+		fillColor = value;
 		sendNotification(new PropertyChangedEvent(this, "fill color"));
 	}
 
@@ -255,12 +255,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	}
 
 	public Point2D getLabelOffset() {
-        return getOffset(labelPositioning);
+        return getOffset(getLabelPositioning());
 	}
 
 	protected void cacheLabelRenderedText(DrawRequest r) {
-		if (labelRenderedText.isDifferent(getLabel(), labelFont, labelPositioning, getLabelOffset())) {
-			labelRenderedText = new RenderedText(getLabel(), labelFont, labelPositioning, getLabelOffset());
+		if (labelRenderedText.isDifferent(getLabel(), labelFont, getLabelPositioning(), getLabelOffset())) {
+			labelRenderedText = new RenderedText(getLabel(), labelFont, getLabelPositioning(), getLabelOffset());
 		}
 	}
 
@@ -269,7 +269,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(labelColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
 			labelRenderedText.draw(g);
 		}
 	}
@@ -286,13 +286,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		g.draw(p);
 	}
 
-
 	public boolean getNameVisibility() {
 		return CommonVisualSettings.getNameVisibility();
 	}
 
 	public Point2D getNameOffset() {
-        return getOffset(namePositioning);
+        return getOffset(getNamePositioning());
 	}
 
 
@@ -310,8 +309,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 		Point2D offset = getNameOffset();
 
-		if (nameRenderedText.isDifferent(name, nameFont, namePositioning, offset)) {
-			nameRenderedText = new RenderedText(name, nameFont, namePositioning, getNameOffset());
+		if (nameRenderedText.isDifferent(name, nameFont, getNamePositioning(), offset)) {
+			nameRenderedText = new RenderedText(name, nameFont, getNamePositioning(), getNameOffset());
 		}
 	}
 
@@ -320,7 +319,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			cacheNameRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(nameColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(getNameColor(), d.getColorisation()));
 			nameRenderedText.draw(g);
 		}
 	}

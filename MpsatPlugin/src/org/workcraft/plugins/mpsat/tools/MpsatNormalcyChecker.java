@@ -12,7 +12,7 @@ public class MpsatNormalcyChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Normalcy [MPSat]";
+		return " Normalcy [MPSat]";
 	}
 
 	@Override

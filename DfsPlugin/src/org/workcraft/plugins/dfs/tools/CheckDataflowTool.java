@@ -10,7 +10,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDataflowTool implements Tool {
 
 	public String getDisplayName() {
-		return "Check dataflow for deadlocks and hazards (reuse unfolding data)";
+		return "Deadlock and hazard (reuse unfolding) [MPSat]";
 	}
 
 	@Override

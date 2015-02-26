@@ -180,13 +180,17 @@ public class DotGParser implements DotGParserConstants {
 
   final public void header() throws ParseException {
     List < String > list;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LINEBREAK:
+    label_4:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LINEBREAK:
+        ;
+        break;
+      default:
+        jj_la1[3] = jj_gen;
+        break label_4;
+      }
       jj_consume_token(LINEBREAK);
-      break;
-    default:
-      jj_la1[3] = jj_gen;
-      ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INPUT_HEADER:
@@ -223,7 +227,7 @@ public class DotGParser implements DotGParserConstants {
   final public List < String > stringList() throws ParseException {
     Token t;
     List < String > list = new LinkedList < String > ();
-    label_4:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -231,7 +235,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[5] = jj_gen;
-        break label_4;
+        break label_5;
       }
       t = jj_consume_token(NAME);
             list.add(t.image);
@@ -262,7 +266,7 @@ public class DotGParser implements DotGParserConstants {
   }
 
   final public void capacity() throws ParseException {
-    label_5:
+    label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -271,7 +275,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[7] = jj_gen;
-        break label_5;
+        break label_6;
       }
       capacityEntry();
     }
@@ -298,7 +302,7 @@ public class DotGParser implements DotGParserConstants {
 
   final public void marking() throws ParseException {
     jj_consume_token(19);
-    label_6:
+    label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -307,7 +311,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[9] = jj_gen;
-        break label_6;
+        break label_7;
       }
       markingEntry();
     }
@@ -374,7 +378,7 @@ public class DotGParser implements DotGParserConstants {
   final public void graph() throws ParseException {
     jj_consume_token(GRAPH);
     jj_consume_token(LINEBREAK);
-    label_7:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -382,7 +386,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[12] = jj_gen;
-        break label_7;
+        break label_8;
       }
       graphLine();
       jj_consume_token(LINEBREAK);
@@ -472,7 +476,7 @@ public class DotGParser implements DotGParserConstants {
         throw new ParseException();
       }
     }
-    label_8:
+    label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
@@ -480,7 +484,7 @@ public class DotGParser implements DotGParserConstants {
         break;
       default:
         jj_la1[17] = jj_gen;
-        break label_8;
+        break label_9;
       }
       if (jj_2_3(2147483647)) {
         to = anyTransition();
@@ -533,22 +537,22 @@ public class DotGParser implements DotGParserConstants {
   }
 
   private boolean jj_3_1() {
-    if (jj_3R_9()) return true;
+    if (jj_3R_10()) return true;
     return false;
   }
 
-  private boolean jj_3R_10() {
+  private boolean jj_3R_11() {
     if (jj_scan_token(24)) return true;
     if (jj_scan_token(INTEGER)) return true;
     return false;
   }
 
-  private boolean jj_3R_9() {
+  private boolean jj_3R_10() {
     if (jj_scan_token(NAME)) return true;
     if (jj_scan_token(DIRECTION)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_10()) jj_scanpos = xsp;
+    if (jj_3R_11()) jj_scanpos = xsp;
     return false;
   }
 

@@ -292,6 +292,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			this.graphic.invalidate();
 			this.observableStateImpl.sendNotification(new PropertyChangedEvent(this, "connectionType"));
 		}
+		sendNotification(new PropertyChangedEvent(this, "connection type"));
 	}
 
 	public Color getColor() {
@@ -300,6 +301,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	public void setColor(Color color) {
 		this.color = color;
+		sendNotification(new PropertyChangedEvent(this, "color"));
 	}
 
 	@Override
@@ -319,6 +321,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		this.lineWidth = lineWidth;
 
 		invalidate();
+		sendNotification(new PropertyChangedEvent(this, "line width"));
 	}
 
 	@Override
@@ -345,6 +348,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		if (value < 0.0) value = 0.0;
 		this.arrowWidth = value;
 		invalidate();
+		sendNotification(new PropertyChangedEvent(this, "arrow width"));
+
 	}
 
 	@Override
@@ -358,6 +363,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		if (value < 0.0) value = 0.0;
 		this.arrowLength = value;
 		invalidate();
+		sendNotification(new PropertyChangedEvent(this, "arrow length"));
 	}
 
 	public void invalidate() {
@@ -506,6 +512,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 
 	public void setScaleMode(ScaleMode scaleMode) {
 		this.scaleMode = scaleMode;
+		sendNotification(new PropertyChangedEvent(this, "scale mode"));
 	}
 
 	@Override
