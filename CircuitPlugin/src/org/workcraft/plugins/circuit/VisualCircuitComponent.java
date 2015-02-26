@@ -35,6 +35,7 @@ import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -81,8 +82,10 @@ public class VisualCircuitComponent extends VisualComponent implements
 	protected Rectangle2D internalBB = null;
 	private WeakReference<VisualContact> mainContact = null;
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-	RenderType renderType = RenderType.BOX;
+	protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private RenderType renderType = RenderType.BOX;
+
+	private HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<VisualContact, GlyphVector>();
 
 	public VisualCircuitComponent(CircuitComponent component) {
 		super(component, true, true, true);
@@ -475,7 +478,11 @@ public class VisualCircuitComponent extends VisualComponent implements
 		Circuit circuit = (Circuit)r.getModel().getMathModel();
 		String name = circuit.getName(vc.getReferencedContact());
 		final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
-		GlyphVector gv = nameFont.createGlyphVector(context, name);
+		GlyphVector gv = contactLableGlyphs.get(vc);
+		if (gv == null) {
+			gv = nameFont.createGlyphVector(context, name);
+			contactLableGlyphs.put(vc, gv);
+		}
 		return gv;
 	}
 
@@ -622,6 +629,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void remove(Node node) {
 		if (node instanceof VisualContact) {
 			invalidateBoundingBox();
+			contactLableGlyphs.remove(node);
 		}
 		groupImpl.remove(node);
 	}
@@ -712,6 +720,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 					}
 				}
 				invalidateBoundingBox();
+				contactLableGlyphs.clear();
 			}
 		}
 	}

@@ -110,7 +110,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	@Override
 	public void setRenderType(RenderType renderType) {
-		if (this.renderType != renderType) {
+		if (getRenderType() != renderType) {
 			invalidateRenderingResult();
 		}
 		super.setRenderType(renderType);

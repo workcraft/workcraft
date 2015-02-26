@@ -23,7 +23,6 @@ package org.workcraft.plugins.circuit;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -142,7 +141,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public static final Color inputColor = Color.RED;
 	public static final Color outputColor = Color.BLUE;
 
-	private static Font nameFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 	private double size = 0.3;
 	private Direction direction = Direction.WEST;
 
