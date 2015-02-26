@@ -150,16 +150,16 @@ public class WaggingGenerator {
 			for (VisualComponent cur: waggingData.dataComponents) {
 				for (Node pred: dfs.getPreset(replicaToOriginalMap.get(cur))) {
 					if (selectedComponents.contains(pred)) continue;
-					VisualPushRegister push = createPushRegister(Hierarchy.getNearestContainer(cur, pred),
-							new Point2D.Double(cur.getX()/2 + ((VisualComponent)pred).getX()/2, cur.getY()));
+					Point2D.Double position = new Point2D.Double(cur.getX()/2 + ((VisualComponent)pred).getX()/2, cur.getY());
+					VisualPushRegister push = createPushRegister(Hierarchy.getNearestContainer(cur, pred), position);
 					createConnection((VisualComponent)pred, push);
 					createConnection(push, cur);
 					waggingData.pushRegisters.add(push);
 				}
 				for (Node succ: dfs.getPostset(replicaToOriginalMap.get(cur))) {
 					if (selectedComponents.contains(succ)) continue;
-					VisualPopRegister pop = createPopRegister(Hierarchy.getNearestContainer(cur, succ),
-							new Point2D.Double((cur.getX()/2 + ((VisualComponent)succ).getX())/2, cur.getY()));
+					Point2D.Double position = new Point2D.Double(cur.getX()/2 + ((VisualComponent)succ).getX()/2, cur.getY());
+					VisualPopRegister pop = createPopRegister(Hierarchy.getNearestContainer(cur, succ),	position);
 					createConnection(cur, pop);
 					createConnection(pop, (VisualComponent)succ);
 					waggingData.popRegisters.add(pop);
