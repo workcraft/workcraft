@@ -163,7 +163,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void setRenderType(RenderType renderType) {
 		if (this.renderType != renderType) {
 			this.renderType = renderType;
-			//spreadContactsEvenly();
 			setContactsDefaultPosition();
 			invalidateBoundingBox();
 			sendNotification(new PropertyChangedEvent(this, "render type"));
@@ -278,6 +277,18 @@ public class VisualCircuitComponent extends VisualComponent implements
 		invalidateBoundingBox();
 	}
 
+	public void centerPivotPoint() {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		setX(getX() + bb.getCenterX());
+		setY(getY() + bb.getCenterY());
+		Collection<VisualContact> contacts = getContacts();
+		for (VisualContact vc: contacts) {
+			vc.setX(vc.getX() - bb.getCenterX());
+			vc.setY(vc.getY() - bb.getCenterY());
+		}
+		invalidateBoundingBox();
+	}
+
 	public static double snapP5(double x) {
 		return (double) (Math.round(x * 2)) / 2;
 	}
@@ -329,7 +340,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		double y1 = -size/2;
 		double x2 = size/2;
 		double y2 = size/2;
-
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
 			switch (vc.getDirection()) {
 			case WEST:
@@ -358,26 +368,42 @@ public class VisualCircuitComponent extends VisualComponent implements
 				break;
 			}
 		}
+		return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
+	}
 
+	private Rectangle2D getContactExpandedBox() {
+		Rectangle2D minBox = getContactMinimalBox();
+		double x1 = minBox.getMinX();
+		double y1 = minBox.getMinY();
+		double x2 = minBox.getMaxX();
+		double y2 = minBox.getMaxY();
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
 			double x = vc.getX();
 			double y = vc.getY();
 			switch (vc.getDirection()) {
 			case WEST:
-				y1 = Math.min(y1, y - contactStep / 2);
-				y2 = Math.max(y2, y + contactStep / 2);
+				if (vc.getX() < minBox.getMinX()) {
+					y1 = Math.min(y1, y - contactStep / 2);
+					y2 = Math.max(y2, y + contactStep / 2);
+				}
 				break;
 			case NORTH:
-				x1 = Math.min(x1, x - contactStep / 2);
-				x2 = Math.max(x2, x + contactStep / 2);
+				if (vc.getY() < minBox.getMinY()) {
+					x1 = Math.min(x1, x - contactStep / 2);
+					x2 = Math.max(x2, x + contactStep / 2);
+				}
 				break;
 			case EAST:
-				y1 = Math.min(y1, y - contactStep / 2);
-				y2 = Math.max(y2, y + contactStep / 2);
+				if (vc.getX() > minBox.getMaxX()) {
+					y1 = Math.min(y1, y - contactStep / 2);
+					y2 = Math.max(y2, y + contactStep / 2);
+				}
 				break;
 			case SOUTH:
-				x1 = Math.min(x1, x - contactStep / 2);
-				x2 = Math.max(x2, x + contactStep / 2);
+				if (vc.getY() > minBox.getMaxY()) {
+					x1 = Math.min(x1, x - contactStep / 2);
+					x2 = Math.max(x2, x + contactStep / 2);
+				}
 				break;
 			}
 		}
@@ -385,11 +411,11 @@ public class VisualCircuitComponent extends VisualComponent implements
 	}
 
 	private Rectangle2D getContactBestBox() {
-		Rectangle2D minBox = getContactMinimalBox();
-		double x1 = minBox.getMinX();
-		double y1 = minBox.getMinY();
-		double x2 = minBox.getMaxX();
-		double y2 = minBox.getMaxY();
+		Rectangle2D expBox = getContactExpandedBox();
+		double x1 = expBox.getMinX();
+		double y1 = expBox.getMinY();
+		double x2 = expBox.getMaxX();
+		double y2 = expBox.getMaxY();
 
 		boolean westFirst = true;
 		boolean northFirst = true;
@@ -442,7 +468,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 			y1 = y2 = (y1 + y2) / 2;
 		}
 		Rectangle2D maxBox = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
-		return BoundingBoxHelper.union(minBox, maxBox);
+		return BoundingBoxHelper.union(expBox, maxBox);
 	}
 
 	private void drawContactLines(DrawRequest r) {
@@ -688,17 +714,17 @@ public class VisualCircuitComponent extends VisualComponent implements
 			AffineTransform at = t.sender.getTransform();
 			double x = at.getTranslateX();
 			double y = at.getTranslateY();
-			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-			if ((x < bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+			Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox();//getInternalBoundingBoxInLocalSpace();
+			if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
 				vc.setDirection(Direction.WEST);
 			}
-			if ((x > bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+			if ((x >= bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
 				vc.setDirection(Direction.EAST);
 			}
-			if ((y < bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+			if ((y <= bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
 				vc.setDirection(Direction.NORTH);
 			}
-			if ((y > bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+			if ((y >= bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
 				vc.setDirection(Direction.SOUTH);
 			}
 			invalidateBoundingBox();
@@ -738,30 +764,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void removeAllObservers() {
 		groupImpl.removeAllObservers();
-	}
-
-	@Override
-	public void rotateClockwise() {
-		super.rotateClockwise();
-		setContactsDefaultPosition();
-	}
-
-	@Override
-	public void rotateCounterclockwise() {
-		super.rotateCounterclockwise();
-		setContactsDefaultPosition();
-	}
-
-	@Override
-	public void flipHorizontal() {
-		super.flipHorizontal();
-		setContactsDefaultPosition();
-	}
-
-	@Override
-	public void flipVertical() {
-		super.flipVertical();
-		setContactsDefaultPosition();
 	}
 
 }

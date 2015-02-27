@@ -388,30 +388,30 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	@Override
 	public void rotateClockwise() {
-		super.rotateClockwise();
 		setNamePositioning(getNamePositioning().rotateClockwise());
 		setLabelPositioning(getLabelPositioning().rotateClockwise());
+		super.rotateClockwise();
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
-		super.rotateCounterclockwise();
 		setNamePositioning(getNamePositioning().rotateCounterclockwise());
 		setLabelPositioning(getLabelPositioning().rotateCounterclockwise());
+		super.rotateCounterclockwise();
 	}
 
 	@Override
 	public void flipHorizontal() {
-		super.flipHorizontal();
 		setNamePositioning(getNamePositioning().flipHorizontal());
 		setLabelPositioning(getLabelPositioning().flipHorizontal());
+		super.flipHorizontal();
 	}
 
 	@Override
 	public void flipVertical() {
-		super.flipVertical();
 		setNamePositioning(getNamePositioning().flipVertical());
 		setLabelPositioning(getLabelPositioning().flipVertical());
+		super.flipVertical();
 	}
 
 }

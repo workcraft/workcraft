@@ -155,25 +155,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		addPropertyDeclarations();
 	}
 
-	private Shape getShape() {
-		if (getParent() instanceof VisualCircuitComponent) {
-			return new Rectangle2D.Double(
-					-size / 2 + CircuitSettings.getWireWidth(),
-					-size / 2 + CircuitSettings.getWireWidth(),
-					size - CircuitSettings.getWireWidth() * 2,
-					size - CircuitSettings.getWireWidth() * 2);
-		} else {
-			Path2D path = new Path2D.Double();
-			path.moveTo(-size / 2, -size / 2);
-			path.lineTo(0, -size / 2);
-			path.lineTo(size / 2, 0);
-			path.lineTo(0, size / 2);
-			path.lineTo(-size / 2, size / 2);
-			path.closePath();
-			return path;
-		}
-	}
-
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
 				this, "Direction", Direction.class) {
@@ -204,6 +185,25 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				return object.getReferencedContact().getInitOne();
 			}
 		});
+	}
+
+	private Shape getShape() {
+		if (getParent() instanceof VisualCircuitComponent) {
+			return new Rectangle2D.Double(
+					-size / 2 + CircuitSettings.getWireWidth(),
+					-size / 2 + CircuitSettings.getWireWidth(),
+					size - CircuitSettings.getWireWidth() * 2,
+					size - CircuitSettings.getWireWidth() * 2);
+		} else {
+			Path2D path = new Path2D.Double();
+			path.moveTo(-size / 2, -size / 2);
+			path.lineTo(0, -size / 2);
+			path.lineTo(size / 2, 0);
+			path.lineTo(0, size / 2);
+			path.lineTo(-size / 2, size / 2);
+			path.closePath();
+			return path;
+		}
 	}
 
 	@Override
@@ -392,38 +392,56 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void rotateClockwise() {
-		super.rotateClockwise();
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				AffineTransform at = new AffineTransform();
+				at.quadrantRotate(1);
+				Point2D pos = at.transform(getPosition(), null);
+				setPosition(pos);
+			}
+		}
 		setDirection(getDirection().rotateClockwise());
+		super.rotateClockwise();
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
-		super.rotateCounterclockwise();
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				AffineTransform at = new AffineTransform();
+				at.quadrantRotate(-1);
+				Point2D pos = at.transform(getPosition(), null);
+				setPosition(pos);
+			}
+		}
 		setDirection(getDirection().rotateCounterclockwise());
+		super.rotateCounterclockwise();
 	}
 
 	@Override
 	public void flipHorizontal() {
-		super.flipHorizontal();
-		setDirection(getDirection().flipHorizontal());
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				setX(-getX());
 			}
 		}
+		setDirection(getDirection().flipHorizontal());
+		super.flipHorizontal();
 	}
 
 	@Override
 	public void flipVertical() {
-		super.flipVertical();
-		setDirection(getDirection().flipVertical());
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				setY(-getY());
 			}
 		}
+		setDirection(getDirection().flipVertical());
+		super.flipVertical();
 	}
 
 }
