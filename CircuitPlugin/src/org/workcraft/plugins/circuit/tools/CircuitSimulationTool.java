@@ -23,6 +23,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -56,30 +57,50 @@ public class CircuitSimulationTool extends StgSimulationTool {
 		controlPanel.add(copyInitButton);
 	}
 
+	@Override
+	public void initialiseSignalState() {
+		super.initialiseSignalState();
+		for (String signalName: stateMap.keySet()) {
+			SignalState signalState = stateMap.get(signalName);
+			Node zeroNode = net.getNodeByReference(signalName + "_0");
+			if (zeroNode instanceof Place) {
+				Place zeroPlace = (Place)zeroNode;
+				signalState.value = ((zeroPlace.getTokens() > 0) ? 0 : 1);
+			}
+			Node oneNode= net.getNodeByReference(signalName + "_1");
+			if (oneNode instanceof Place) {
+				Place onePlace = (Place)oneNode;
+				signalState.value = ((onePlace.getTokens() > 0) ? 1 : 0);
+			}
+		}
+	}
+
 	// return first enabled transition
 	public SignalTransition isContactExcited(VisualContact c) {
 		boolean up = false;
 		boolean down = false;
-
 		SignalTransition st = null;
-		if (c == null)
-			return null;
-
-		for (SignalTransition tr : c.getReferencedTransitions()) {
-			if (net.isEnabled(tr)) {
-				if (st == null)
-					st = tr;
-				if (tr.getDirection() == Direction.MINUS)
-					down = true;
-				if (tr.getDirection() == Direction.PLUS)
-					up = true;
-				if (up && down)
-					break;
+		if (c != null) {
+			for (SignalTransition tr : c.getReferencedTransitions()) {
+				if (net.isEnabled(tr)) {
+					if (st == null) {
+						st = tr;
+					}
+					if (tr.getDirection() == Direction.MINUS) {
+						down = true;
+					}
+					if (tr.getDirection() == Direction.PLUS) {
+						up = true;
+					}
+					if (up && down) {
+						break;
+					}
+				}
+			}
+			if (up && down) {
+				st = null;
 			}
 		}
-
-		if (up && down)
-			return null;
 		return st;
 	}
 
@@ -93,11 +114,11 @@ public class CircuitSimulationTool extends StgSimulationTool {
 				}
 			});
 
-		if (node == null)
-			return;
-		SignalTransition st = isContactExcited((VisualContact) node);
-		if (st != null) {
-			executeTransition(e.getEditor(), st);
+		if (node != null) {
+			SignalTransition st = isContactExcited((VisualContact) node);
+			if (st != null) {
+				executeTransition(e.getEditor(), st);
+			}
 		}
 	}
 
@@ -229,11 +250,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
 						}
 					};
 				} else if (node instanceof VisualPage || node instanceof VisualGroup) {
-
 					final boolean ret = isContainerExcited((Container)node);
-
 					return new ContainerDecoration() {
-
 						@Override
 						public Color getColorisation() {
 							return null;
@@ -251,8 +269,6 @@ public class CircuitSimulationTool extends StgSimulationTool {
 					};
 
 				}
-
-
 
 				return null;
 			}

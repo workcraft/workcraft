@@ -39,7 +39,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 	protected Map<String, SignalState> stateMap;
 	protected JTable stateTable;
 
-	private final class SignalState {
+	public final class SignalState {
 		public String name = "";
 		public Color color = Color.BLACK;
 		public boolean excited = false;
@@ -191,18 +191,18 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 	@Override
 	public void updateState(final GraphEditor editor) {
 		super.updateState(editor);
+		updateSignalState();
+		stateTable.tableChanged(new TableModelEvent(traceTable.getModel()));
+	}
+
+	public void updateSignalState() {
+		initialiseSignalState();
 		ArrayList<String> combinedTrace = new ArrayList<String>();
 		if (!mainTrace.isEmpty()) {
 			combinedTrace.addAll(mainTrace.subList(0, mainTrace.getPosition()));
 		}
 		if (!branchTrace.isEmpty()) {
 			combinedTrace.addAll(branchTrace.subList(0, branchTrace.getPosition()));
-		}
-
-		for (String signalName: stateMap.keySet()) {
-			SignalState signalState = stateMap.get(signalName);
-			signalState.value = -1;
-			signalState.excited = false;
 		}
 
 		for (String ref : combinedTrace) {
@@ -243,7 +243,14 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 				}
 			}
 		}
-		stateTable.tableChanged(new TableModelEvent(traceTable.getModel()));
+	}
+
+	public void initialiseSignalState() {
+		for (String signalName: stateMap.keySet()) {
+			SignalState signalState = stateMap.get(signalName);
+			signalState.value = -1;
+			signalState.excited = false;
+		}
 	}
 
 	@Override
@@ -276,6 +283,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 				}
 			}
 		}
+		updateSignalState();
 	}
 
 
