@@ -743,25 +743,25 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void rotateClockwise() {
 		super.rotateClockwise();
-		setContactsDefaultPosition();
+//		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
 		super.rotateCounterclockwise();
-		setContactsDefaultPosition();
+//		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipHorizontal() {
 		super.flipHorizontal();
-		setContactsDefaultPosition();
+//		setContactsDefaultPosition();
 	}
 
 	@Override
 	public void flipVertical() {
 		super.flipVertical();
-		setContactsDefaultPosition();
+//		setContactsDefaultPosition();
 	}
 
 }

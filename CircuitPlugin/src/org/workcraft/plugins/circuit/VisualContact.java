@@ -394,12 +394,30 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public void rotateClockwise() {
 		super.rotateClockwise();
 		setDirection(getDirection().rotateClockwise());
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				AffineTransform at = new AffineTransform();
+				at.quadrantRotate(1);
+				Point2D pos = at.transform(getPosition(), null);
+				setPosition(pos);
+			}
+		}
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
 		super.rotateCounterclockwise();
 		setDirection(getDirection().rotateCounterclockwise());
+		if (getParent() instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+			if (component.getRenderType() == RenderType.BOX) {
+				AffineTransform at = new AffineTransform();
+				at.quadrantRotate(-1);
+				Point2D pos = at.transform(getPosition(), null);
+				setPosition(pos);
+			}
+		}
 	}
 
 	@Override
