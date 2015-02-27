@@ -392,8 +392,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void rotateClockwise() {
-		super.rotateClockwise();
-		setDirection(getDirection().rotateClockwise());
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
@@ -403,12 +401,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				setPosition(pos);
 			}
 		}
+		setDirection(getDirection().rotateClockwise());
+		super.rotateClockwise();
 	}
 
 	@Override
 	public void rotateCounterclockwise() {
-		super.rotateCounterclockwise();
-		setDirection(getDirection().rotateCounterclockwise());
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
@@ -418,30 +416,32 @@ public class VisualContact extends VisualComponent implements StateObserver {
 				setPosition(pos);
 			}
 		}
+		setDirection(getDirection().rotateCounterclockwise());
+		super.rotateCounterclockwise();
 	}
 
 	@Override
 	public void flipHorizontal() {
-		super.flipHorizontal();
-		setDirection(getDirection().flipHorizontal());
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				setX(-getX());
 			}
 		}
+		setDirection(getDirection().flipHorizontal());
+		super.flipHorizontal();
 	}
 
 	@Override
 	public void flipVertical() {
-		super.flipVertical();
-		setDirection(getDirection().flipVertical());
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				setY(-getY());
 			}
 		}
+		setDirection(getDirection().flipVertical());
+		super.flipVertical();
 	}
 
 }

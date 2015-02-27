@@ -163,7 +163,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void setRenderType(RenderType renderType) {
 		if (this.renderType != renderType) {
 			this.renderType = renderType;
-			//spreadContactsEvenly();
 			setContactsDefaultPosition();
 			invalidateBoundingBox();
 			sendNotification(new PropertyChangedEvent(this, "render type"));
@@ -274,6 +273,18 @@ public class VisualCircuitComponent extends VisualComponent implements
 				vc.setY(bb.getMaxY() + contactLength);
 				break;
 			}
+		}
+		invalidateBoundingBox();
+	}
+
+	public void centerPivotPoint() {
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		setX(getX() + bb.getCenterX());
+		setY(getY() + bb.getCenterY());
+		Collection<VisualContact> contacts = getContacts();
+		for (VisualContact vc: contacts) {
+			vc.setX(vc.getX() - bb.getCenterX());
+			vc.setY(vc.getY() - bb.getCenterY());
 		}
 		invalidateBoundingBox();
 	}
@@ -703,17 +714,17 @@ public class VisualCircuitComponent extends VisualComponent implements
 			AffineTransform at = t.sender.getTransform();
 			double x = at.getTranslateX();
 			double y = at.getTranslateY();
-			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-			if ((x < bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+			Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox();//getInternalBoundingBoxInLocalSpace();
+			if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
 				vc.setDirection(Direction.WEST);
 			}
-			if ((x > bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+			if ((x >= bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
 				vc.setDirection(Direction.EAST);
 			}
-			if ((y < bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+			if ((y <= bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
 				vc.setDirection(Direction.NORTH);
 			}
-			if ((y > bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+			if ((y >= bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
 				vc.setDirection(Direction.SOUTH);
 			}
 			invalidateBoundingBox();
@@ -753,26 +764,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void removeAllObservers() {
 		groupImpl.removeAllObservers();
-	}
-
-	@Override
-	public void rotateClockwise() {
-		super.rotateClockwise();
-	}
-
-	@Override
-	public void rotateCounterclockwise() {
-		super.rotateCounterclockwise();
-	}
-
-	@Override
-	public void flipHorizontal() {
-		super.flipHorizontal();
-	}
-
-	@Override
-	public void flipVertical() {
-		super.flipVertical();
 	}
 
 }
