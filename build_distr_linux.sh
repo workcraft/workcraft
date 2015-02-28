@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 src_dir="."
-distr_dir="../../workcraft_3.0.3"
+distr_dir="../../workcraft_3.0.4_alpha"
 template_dir="../../distr-template-linux"
 
 ./build_distr.sh -s $src_dir -d $distr_dir -t $template_dir
