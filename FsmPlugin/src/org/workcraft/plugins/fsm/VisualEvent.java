@@ -20,6 +20,9 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Geometry;
 
 public class VisualEvent extends VisualConnection {
+	// Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+	public static final char EPSILON_SYMBOL = 0x03B5;
+
 	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
 
 	private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
@@ -67,7 +70,7 @@ public class VisualEvent extends VisualConnection {
 	}
 
 	public String getLabel(DrawRequest r) {
-		String label = "ε";
+		String label = Character.toString(EPSILON_SYMBOL);
 		Symbol symbol = getReferencedEvent().getSymbol();
 		if (symbol != null) {
 			label = r.getModel().getMathName(symbol);

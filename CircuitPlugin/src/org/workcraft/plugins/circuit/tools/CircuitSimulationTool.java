@@ -3,9 +3,11 @@ package org.workcraft.plugins.circuit.tools;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -17,26 +19,108 @@ import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
+import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
+import org.workcraft.serialisation.Format;
+import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.Export;
+import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitSimulationTool extends StgSimulationTool {
 	JButton copyInitButton;
 
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
-		return STGGenerator.generate((VisualCircuit)model);
+		Framework framework = Framework.getInstance();
+		VisualCircuit visualCircuit = (VisualCircuit)model;
+		VisualSTG visualStg = STGGenerator.generate(visualCircuit);
+//		File workingDirectory = null;
+//		try {
+//			String title = visualCircuit.getTitle();
+//			File envFile = visualCircuit.getEnvironmentFile();
+//			boolean hasEnvironment = ((envFile != null) && envFile.exists());
+//
+//			workingDirectory = FileUtils.createTempDirectory(title + "-");
+//
+//			STG devStg = (STG)visualStg.getMathModel();
+//			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
+//			if (devStgExporter == null) {
+//				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
+//			}
+//
+//			// Generating .g for the circuit
+//			String devStgName = (hasEnvironment ? "dev.g" : "system.g");
+//			File devStgFile =  new File(workingDirectory, devStgName);
+//			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
+//			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
+//					devExportTask, "Exporting circuit .g", null);
+//
+//			if (devExportResult.getOutcome() == Outcome.FINISHED) {
+//				// Generating .g for the environment
+//				STG stg;
+//				File stgFile = null;
+//				Result<? extends ExternalProcessResult>  pcompResult = null;
+//				if ( !hasEnvironment ) {
+//					stgFile = devStgFile;
+//					stg = devStg;
+//				} else {
+//					File envStgFile = null;
+//					if (envFile.getName().endsWith(".g")) {
+//						envStgFile = envFile;
+//					} else {
+//						STG envStg = (STG)framework.loadFile(envFile).getMathModel();
+//						Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
+//						envStgFile = new File(workingDirectory, "env.g");
+//						ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
+//						Result<? extends Object> envExportResult = framework.getTaskManager().execute(
+//								envExportTask, "Exporting environment .g", null);
+//
+//						if (envExportResult.getOutcome() == Outcome.FINISHED) {
+//
+//							// Generating .g for the whole system (circuit and environment)
+//							stgFile = new File(workingDirectory, "system.g");
+//							PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
+//							pcompResult = framework.getTaskManager().execute(
+//									pcompTask, "Running pcomp", null);
+//
+//							if (pcompResult.getOutcome() == Outcome.FINISHED) {
+//								FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
+//								WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
+//								stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+//								visualStg = new VisualSTG(stg);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		} catch (Throwable e) {
+//		} finally {
+//			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
+//				FileUtils.deleteDirectoryTree(workingDirectory);
+//			}
+//		}
+		return visualStg;
 	}
 
 	@Override

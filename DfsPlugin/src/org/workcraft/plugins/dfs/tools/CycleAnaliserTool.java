@@ -42,6 +42,9 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.graph.cycle.ElementaryCyclesSearch;
 
 public class CycleAnaliserTool extends AbstractTool {
+	// Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+	public static final char INFINITY_SYMBOL = 0x221E;
+
 	final private int COLUMN_THROUGHPUT = 0;
 	final private int COLUMN_TOKEN = 1;
 	final private int COLUMN_DELAY = 2;
@@ -278,7 +281,9 @@ public class CycleAnaliserTool extends AbstractTool {
 			LinkedHashSet<VisualDelayComponent> components = new LinkedHashSet<VisualDelayComponent>();
 			for (int j = 0; j < tmpCycle.size(); j++) {
 				VisualDelayComponent component = (VisualDelayComponent)tmpCycle.get(j);
-				if (toString.length() > 0) toString += "→";
+				if (toString.length() > 0) {
+					toString += Character.toString((char)0x2192); // arrow symbol
+				}
 				toString += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
 				components.add(component);
 			}
@@ -350,7 +355,7 @@ public class CycleAnaliserTool extends AbstractTool {
 					break;
 				case COLUMN_THROUGHPUT:
 					if (cycle.totalDelay == 0) {
-						result = "∞";
+						result = Character.toString(INFINITY_SYMBOL);
 					} else {
 						result = new DecimalFormat("#.###").format(cycle.throughput);
 					}
