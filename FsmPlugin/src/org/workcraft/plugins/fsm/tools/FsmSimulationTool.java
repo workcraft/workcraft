@@ -28,6 +28,7 @@ import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
 public class FsmSimulationTool extends PetriNetSimulationTool {
+
 	private FsmToPnConverter generator;
 
 	@Override
@@ -41,7 +42,9 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 		String label = null;
 		if (ref != null) {
 			label = generator.getSymbol(ref);
-			if (label == "") label = "ε";
+			if (label == "") {
+				label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+			}
 		}
 		if (label == null) {
 			label = super.getTraceLabelByReference(ref);

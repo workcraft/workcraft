@@ -19,6 +19,9 @@ import org.workcraft.plugins.dfs.VisualPushRegister;
 import org.workcraft.plugins.dfs.VisualRegister;
 
 public class Cycle implements Comparable<Cycle> {
+	// Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+	public static final char RIGHT_ARROW_SYMBOL = 0x2192;
+
 	public final VisualDfs dfs;
 	public final LinkedHashSet<VisualDelayComponent> components;
 	public final int tokenCount;
@@ -163,7 +166,7 @@ public class Cycle implements Comparable<Cycle> {
 		if (components != null && dfs != null) {
 			for (VisualDelayComponent component: components) {
 				if (result.length() > 0) {
-					result += "→";
+					result += Character.toString(RIGHT_ARROW_SYMBOL);
 				}
 				result += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
 			}
