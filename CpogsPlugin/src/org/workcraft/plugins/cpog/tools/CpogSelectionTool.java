@@ -424,6 +424,14 @@ public class CpogSelectionTool extends SelectionTool {
 
 		editor.forceRedraw();
 
+        Collection<Node> prevSelection = visualCpog.getSelection();
+
+        visualCpog.selectAll();
+
+        editor.getMainWindow().zoomFit();
+
+        visualCpog.select(prevSelection);
+
 		we.saveMemento();
 	}
 
