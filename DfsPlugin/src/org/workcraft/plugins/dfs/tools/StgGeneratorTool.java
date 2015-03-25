@@ -6,6 +6,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -37,6 +38,7 @@ public class StgGeneratorTool implements Tool {
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
 		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), generator.getSTG());
-		workspace.add(directory, desiredName, me, false, true);
+		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+		workspace.add(directory, desiredName, me, false, openInEditor);
 	}
 }

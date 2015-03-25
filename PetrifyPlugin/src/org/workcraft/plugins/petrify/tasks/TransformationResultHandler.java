@@ -9,6 +9,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.stg.STGModelDescriptor;
@@ -43,7 +44,8 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
 					final Path<String> directory = path.getParent();
 					final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
 					final ModelEntry me = new ModelEntry(new STGModelDescriptor() , model);
-					workspace.add(directory, name, me, true, true);
+					boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+					workspace.add(directory, name, me, true, openInEditor);
 				} else {
 					MainWindow mainWindow = framework.getMainWindow();
 					if (result.getCause() == null) {

@@ -6,6 +6,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriNetModelDescriptor;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -36,6 +37,7 @@ public class PetriNetGeneratorTool implements Tool {
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
 		final ModelEntry me = new ModelEntry(new PetriNetModelDescriptor(), generator.getPetriNet());
-		workspace.add(directory, desiredName, me, false, true);
+		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+		workspace.add(directory, desiredName, me, false, openInEditor);
 	}
 }

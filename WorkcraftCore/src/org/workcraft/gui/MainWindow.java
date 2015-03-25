@@ -1138,7 +1138,8 @@ public class MainWindow extends JFrame {
 					try {
 						ModelEntry me = Import.importFromFile(importer, f);
 						me.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
-						framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, me.isVisual());
+						boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+						framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, openInEditor);
 						lastOpenPath = f.getParent();
 						break;
 					} catch (IOException e) {
