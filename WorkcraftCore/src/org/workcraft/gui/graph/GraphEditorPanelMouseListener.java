@@ -33,6 +33,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
+import org.workcraft.observation.PropertyChangedEvent;
 
 class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
 	protected GraphEditor editor;
@@ -134,6 +135,8 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 				tool.mouseReleased(adaptEvent(e));
 			}
 			startPosition = null;
+
+
 		}
 	}
 

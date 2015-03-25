@@ -119,7 +119,7 @@ public class VisualModelTransformer {
 
 	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components (outro).
 	public static HashMap<VisualConnection, ScaleMode> setConnectionsScaleMode(Collection<VisualConnection> connections, ScaleMode scaleMode) {
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = new HashMap<>();
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = new HashMap<VisualConnection, ScaleMode>();
 		for (VisualConnection vc: connections) {
 			connectionToScaleModeMap.put(vc, vc.getScaleMode());
 			vc.setScaleMode(scaleMode);
@@ -138,7 +138,7 @@ public class VisualModelTransformer {
 	}
 
 	public static HashMap<VisualTransformableNode, Point2D> getRootSpacePositions(Collection<Node> nodes) {
-		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<>();
+		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<VisualTransformableNode, Point2D>();
 		for (Node node: nodes) {
 			if (node instanceof VisualTransformableNode) {
 				VisualTransformableNode component = (VisualTransformableNode)node;

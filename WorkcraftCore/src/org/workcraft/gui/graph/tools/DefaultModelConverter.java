@@ -26,7 +26,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 
 	@Override
 	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = new HashMap<>();
+		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = new HashMap<Class<? extends MathNode>, Class<? extends MathNode>>();
 		result.put(CommentNode.class, CommentNode.class);
 		return result;
 	}
@@ -98,7 +98,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 	@Override
 	public VisualGroup convertGroup(VisualGroup srcGroup) {
 		VisualGroup dstGroup = null;
-		HashSet<Node> dstSelection = new HashSet<>();
+		HashSet<Node> dstSelection = new HashSet<Node>();
 		for (Node srcNode: srcGroup.getChildren()) {
 			Node dstNode = null;
 			if (srcNode instanceof VisualNode) {

@@ -187,6 +187,9 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		groupImpl.remove(nodes);
 	}
 
+    public void removeWithoutNotify(Node node) {
+        groupImpl.removeWithoutNotify(node);
+    }
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);

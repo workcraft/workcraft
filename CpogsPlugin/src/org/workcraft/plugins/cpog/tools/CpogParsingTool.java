@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JTextArea;
 
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
@@ -215,10 +216,8 @@ public class CpogParsingTool {
 		 return children;
 	 }
 
-	 public void getExpressionFromGraph(GraphEditor editor, JTextArea expressionText)
+	 public String getExpressionFromGraph(VisualCPOG visualCpog, VisualVertex exclude)
 	 {
-		 WorkspaceEntry we = editor.getWorkspaceEntry();
-		 VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 		 Collection<Node> originalSelection;
 		 ArrayList<VisualPage> groups = new ArrayList<VisualPage>();
 		 ArrayList<Node> vertices = new ArrayList<Node>();
@@ -227,8 +226,7 @@ public class CpogParsingTool {
          getPages(visualCpog, groups);
          originalSelection = copySelected(visualCpog);
 		 //Add vertices from group
-		 if (!groups.isEmpty())
-		 {
+		 if (!groups.isEmpty()) {
 			 for (VisualPage group : groups) {
 				 expression.add(group.getLabel() + " =");
 
@@ -236,7 +234,6 @@ public class CpogParsingTool {
 
                  HashSet<Node> roots = getRoots(visualCpog, vertices);
 
-                 Connection connection;
 				 Iterator<Node> i = roots.iterator();
 				 VisualVertex current;
 				 Set<Connection> totalConnections;
@@ -254,7 +251,7 @@ public class CpogParsingTool {
 
 					   totalConnections = visualCpog.getConnections(current);
 
-                       getExpressionConditions(expression, current, totalConnections, connections, visitedVertices, visitedConnections);
+                       getExpressionConditions(expression, current, totalConnections, connections, visitedVertices, visitedConnections, vertices);
 
 					   if (connections.size() > 1)
 					   {
@@ -292,14 +289,22 @@ public class CpogParsingTool {
 			 expression.add("\n");
 			 vertices.clear();
 			 for (Node n : originalSelection) {
-				 if (n instanceof VisualVertex) {
-					 vertices.add(n);
-				 }
-			 }
-			 Set<Connection> arcs;
-			 Iterator<Connection> it;
-			 Connection connection;
-			 boolean second = false;
+                 if (n instanceof VisualVertex) {
+                     vertices.add(n);
+                 } else if (n instanceof VisualPage) {
+                     VisualPage p = (VisualPage) n;
+                     for (Node child : p.getChildren()) {
+                         if (child instanceof VisualVertex) {
+                             vertices.add(child);
+                         }
+                     }
+                 }
+             }
+
+             if ((exclude != null) && (vertices.contains(exclude))) {
+                 vertices.remove(exclude);
+             }
+
 			 HashSet<Node> roots = getRoots(visualCpog, vertices);
 
 			 Iterator<Node> i = roots.iterator();
@@ -320,7 +325,7 @@ public class CpogParsingTool {
 
 				   totalConnections = visualCpog.getConnections(current);
 
-                   getExpressionConditions(expression, current, totalConnections, connections, visitedVertices, visitedConnections);
+                   getExpressionConditions(expression, current, totalConnections, connections, visitedVertices, visitedConnections, vertices);
 
 				   if (connections.size() > 1)
 				   {
@@ -350,15 +355,20 @@ public class CpogParsingTool {
 
 		 String total = "";
 
+         if (expression.get(expression.size() - 1).compareTo("+") == 0) {
+             expression.remove(expression.size() - 1);
+         }
+
 		 for (String ex : expression)
 		 {
 				 total = total + " " + ex;
 		 }
-		 expressionText.setText(total);
+         return total;
 
 	 }
 
-    public void getConnectionExpressions(ArrayList<String> expression, ArrayList<Connection> connections, HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections, ConcurrentLinkedQueue<Node> q) {
+    public void getConnectionExpressions(ArrayList<String> expression, ArrayList<Connection> connections, HashSet<VisualVertex> visitedVertices,
+                                         HashSet<Connection> visitedConnections, ConcurrentLinkedQueue<Node> q) {
         Connection connection;Iterator<Connection> conIt = connections.iterator();
         VisualVertex child;
         while(conIt.hasNext())
@@ -386,10 +396,11 @@ public class CpogParsingTool {
         }
     }
 
-    public void getExpressionConditions(ArrayList<String> expression, VisualVertex current, Set<Connection> totalConnections, ArrayList<Connection> connections, HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections) {
+    public void getExpressionConditions(ArrayList<String> expression, VisualVertex current, Set<Connection> totalConnections, ArrayList<Connection> connections,
+                                        HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections, ArrayList<Node> vertices) {
         for (Connection c : totalConnections)
         {
-            if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)))
+            if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)) && (vertices.contains(c.getSecond())))
             {
                 connections.add(c);
             }
@@ -432,7 +443,7 @@ public class CpogParsingTool {
            while (it.hasNext())
            {
                connection = it.next();
-               if (!connection.getFirst().equals(v))
+               if ((!connection.getFirst().equals(v)) && (vertices.contains(connection.getFirst())))
                {
                    second = true;
                    break;
@@ -802,4 +813,7 @@ public class CpogParsingTool {
          return result;
      }
 
+    public void ignoreArcsToNonSelectedNodes(ArrayList<Node> vertices) {
+
+    }
 }

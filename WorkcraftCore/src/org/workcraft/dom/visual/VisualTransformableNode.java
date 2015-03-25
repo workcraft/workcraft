@@ -28,6 +28,7 @@ import java.awt.geom.Rectangle2D;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -168,6 +169,8 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		double dy = pos.getY() - localToParentTransform.getTranslateY();
 		localToParentTransform.translate(dx, dy);
 		transformChanged();
+
+
 	}
 
 	@NoAutoSerialisation
