@@ -41,6 +41,10 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 	}
 
 	@Override
+	public void postprocessing() {
+	}
+
+	@Override
 	public VisualPage convertPage(VisualPage srcPage) {
 		VisualPage dstPage = null;
 		String ref = getSrcModel().getNodeMathReference(srcPage);

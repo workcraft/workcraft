@@ -11,6 +11,7 @@ import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.SignalEvent;
@@ -48,6 +49,20 @@ public 	class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualF
 			dstEvent.setSymbol(symbol);
 		}
 		return dstConnection;
+	}
+
+
+	@Override
+	public void postprocessing() {
+		VisualFst fst = getSrcModel();
+		for (VisualState srcState: fst.getVisualStates()) {
+			if (srcState.getReferencedState().isInitial()) {
+				VisualState dstState = (VisualState)getSrcToDstNode(srcState);
+				if (dstState != null) {
+					dstState.getReferencedState().setInitial(true);
+				}
+			}
+		}
 	}
 
 }

@@ -14,6 +14,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddingEvent;
+import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Finite State Machine")
@@ -74,6 +75,14 @@ public class VisualFsm extends AbstractVisualModel {
 
 	public String getStateName(VisualState state) {
 		return getMathModel().getName(state.getReferencedComponent());
+	}
+
+	public Collection<VisualState> getVisualStates() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualState.class);
+	}
+
+	public Collection<VisualEvent> getVisualSymbols() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualEvent.class);
 	}
 
 }
