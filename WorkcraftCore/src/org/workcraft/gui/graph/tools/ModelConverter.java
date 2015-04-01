@@ -22,6 +22,8 @@ public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends
 	public VisualNode getSrcToDstNode(VisualNode srcNode);
 
 	public void preprocessing();
+	public void postprocessing();
+
 	public VisualPage convertPage(VisualPage srcPage);
 	public VisualComponent convertComponent(VisualComponent srcComponent);
 	public VisualGroup convertGroup(VisualGroup srcGroup);
