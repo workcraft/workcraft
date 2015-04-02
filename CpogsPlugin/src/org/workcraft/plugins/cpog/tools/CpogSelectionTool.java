@@ -38,6 +38,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -196,8 +197,8 @@ public class CpogSelectionTool extends SelectionTool {
 		final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 		we.captureMemento();
 
-        if (visualCpog.getCurrentLevel() instanceof VisualPage) {
-            while (visualCpog.getCurrentLevel() instanceof VisualPage) {
+        if (visualCpog.getCurrentLevel() instanceof VisualScenarioPage) {
+            while (visualCpog.getCurrentLevel() instanceof VisualScenarioPage) {
                 Container c = (Container) visualCpog.getCurrentLevel().getParent();
                 visualCpog.setCurrentLevel(c);
 
@@ -475,16 +476,16 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public void insertAsPage(VisualCPOG visualCpog, GraphFunc<String, CpogFormula> PGF, Double coordinate) {
-        HashSet<VisualPage> pageList = new HashSet<VisualPage>();
+        HashSet<VisualScenarioPage> pageList = new HashSet<VisualScenarioPage>();
         for (Node n0 : visualCpog.getSelection()) {
-            if (n0 instanceof VisualPage) {
-                pageList.add((VisualPage) n0);
+            if (n0 instanceof VisualScenarioPage) {
+                pageList.add((VisualScenarioPage) n0);
             }
         }
 
         PageNode pageNode = new PageNode();
         visualCpog.getMathModel().add(pageNode);
-        VisualPage page = new VisualPage(pageNode);
+        VisualScenarioPage page = new VisualScenarioPage(pageNode);
         visualCpog.getCurrentLevel().add(page);
         visualCpog.reparent(page, visualCpog, visualCpog.getCurrentLevel(), visualCpog.getSelection());
         visualCpog.select(page);

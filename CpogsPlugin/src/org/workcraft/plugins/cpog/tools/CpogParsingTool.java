@@ -18,11 +18,11 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
@@ -136,7 +136,6 @@ public class CpogParsingTool {
 
             pagePos.setLocation(pageCentre, page.getPosition().getY());
 
-            //page.setPosition(pagePos);
             for (VisualComponent c : page.getComponents()) {
                 c.setX(c.getPosition().getX() - pageCentre);
             }
@@ -164,8 +163,8 @@ public class CpogParsingTool {
                 if (n instanceof VisualVertex){
                     VisualVertex v = (VisualVertex) n;
                     v.setPosition(new Double(x, y));
-                } else if (n instanceof VisualPage) {
-                    VisualPage p = (VisualPage) n;
+                } else if (n instanceof VisualScenarioPage) {
+                    VisualScenarioPage p = (VisualScenarioPage) n;
                     p.setPosition(new Double(x, y));
                 }
                 y += 1.5;
@@ -220,7 +219,7 @@ public class CpogParsingTool {
 		 WorkspaceEntry we = editor.getWorkspaceEntry();
 		 VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 		 Collection<Node> originalSelection;
-		 ArrayList<VisualPage> groups = new ArrayList<VisualPage>();
+		 ArrayList<VisualScenarioPage> groups = new ArrayList<VisualScenarioPage>();
 		 ArrayList<Node> vertices = new ArrayList<Node>();
 		 ArrayList<String> expression = new ArrayList<String>();
 
@@ -229,7 +228,7 @@ public class CpogParsingTool {
 		 //Add vertices from group
 		 if (!groups.isEmpty())
 		 {
-			 for (VisualPage group : groups) {
+			 for (VisualScenarioPage group : groups) {
 				 expression.add(group.getLabel() + " =");
 
                  getAllGroupVertices(vertices, group);
@@ -447,24 +446,24 @@ public class CpogParsingTool {
         return roots;
     }
 
-    public void getAllGroupVertices(ArrayList<Node> vertices, VisualPage group) {
+    public void getAllGroupVertices(ArrayList<Node> vertices, VisualScenarioPage group) {
         vertices.clear();
         for (VisualComponent v : group.getComponents()) {
-            if (v instanceof VisualPage) {
-                vertices.addAll(getPageVertices((VisualPage) v));
+            if (v instanceof VisualScenarioPage) {
+                vertices.addAll(getPageVertices((VisualScenarioPage) v));
             } else vertices.add(v);
         }
     }
 
-    public void getPages(VisualCPOG visualCpog, ArrayList<VisualPage> groups) {
+    public static void getPages(VisualCPOG visualCpog, ArrayList<VisualScenarioPage> groups) {
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
 
         for(Node n : visualCpog.getSelection()) {
-           if (n instanceof VisualPage) {
+           if (n instanceof VisualScenarioPage) {
                 if (prevSelection.contains(n)) {
-                groups.add((VisualPage) n);
-                prevSelection.remove(n);
+                groups.add((VisualScenarioPage) n);
+                //prevSelection.remove(n);
                 }
            }
         }
@@ -722,11 +721,11 @@ public class CpogParsingTool {
          ArrayList<Node> prevSelection = new ArrayList<Node>();
          for (Node n : visualCpog.getSelection()) prevSelection.add(n);
 
-         ArrayList<VisualPage> pages = new ArrayList<VisualPage>();
+         ArrayList<VisualScenarioPage> pages = new ArrayList<VisualScenarioPage>();
          visualCpog.selectAll();
          for (Node n : visualCpog.getSelection()) {
-             if (n instanceof VisualPage) {
-                 pages.add((VisualPage) n);
+             if (n instanceof VisualScenarioPage) {
+                 pages.add((VisualScenarioPage) n);
              }
          }
 
@@ -749,7 +748,7 @@ public class CpogParsingTool {
 				 }
 			 }
 		 }
-		 for(VisualPage page : pages) {
+		 for(VisualScenarioPage page : pages) {
 			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) page.getBoundingBox();
 			 Point2D.Double bl = new Point2D.Double(rect.getCenterX(), rect.getCenterY() + (rect.getHeight()/2));
 
@@ -780,12 +779,12 @@ public class CpogParsingTool {
 		 return usedReferences;
 	 }
 
-     public ArrayList<VisualComponent> getPageVertices(VisualPage p) {
+     public ArrayList<VisualComponent> getPageVertices(VisualScenarioPage p) {
          ArrayList<VisualComponent> result = new ArrayList<VisualComponent>();
 
          for (VisualComponent c : p.getComponents()) {
-             if (c instanceof VisualPage) {
-                result.addAll(getPageVertices((VisualPage) c));
+             if (c instanceof VisualScenarioPage) {
+                result.addAll(getPageVertices((VisualScenarioPage) c));
              } else {
                  result.add(c);
              }
@@ -793,7 +792,7 @@ public class CpogParsingTool {
          return result;
      }
 
-     public ArrayList<Node> copySelected(VisualCPOG visualCpog) {
+     public static ArrayList<Node> copySelected(VisualCPOG visualCpog) {
          ArrayList<Node> result = new ArrayList<Node>();
          for (Node n : visualCpog.getSelection()) {
              result.add(n);

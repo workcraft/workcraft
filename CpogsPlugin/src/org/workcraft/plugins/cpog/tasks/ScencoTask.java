@@ -26,6 +26,7 @@ import org.workcraft.plugins.cpog.VariableState;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualScenario;
+import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
@@ -41,6 +42,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
@@ -94,6 +96,10 @@ public class ScencoTask {
 	{
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
 
+		ArrayList<VisualScenarioPage> scenarios = new ArrayList<VisualScenarioPage>();
+
+		CpogParsingTool.getPages(cpog, scenarios);
+
 		we.captureMemento();
 
 		reset_vars();
@@ -101,7 +107,6 @@ public class ScencoTask {
 		HashMap<String, Integer> events = new HashMap<String, Integer>();
 		ArrayList<Point2D> positions = new ArrayList<Point2D>();
 		ArrayList<Integer> count = new ArrayList<Integer>();
-		ArrayList<VisualScenario> scenarios = new ArrayList<VisualScenario>(cpog.getGroups());
 		int n = 0;
 
 		// Scenario contains single graphs compose CPOG
@@ -724,7 +729,7 @@ public class ScencoTask {
 	// FUNCTION FOR PREPARING FILES NEEDED TO SCENCO TOOL TO WORK PROPERLY.
 	// IT FILLS IN FILE CONTAINING ALL THE SCENARIOS AND THE CUSTOM ENCODING
 	// FILE, IF USER WANTS TO USE A CUSTOM SOLUTION.
-	private int WriteCpogIntoFile(int m, ArrayList<VisualScenario> scenarios)
+	private int WriteCpogIntoFile(int m, ArrayList<VisualScenarioPage> scenarios)
 	{
 		try{
 			scenarioFile = File.createTempFile("scenarios", "cpog");
