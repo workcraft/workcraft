@@ -20,7 +20,7 @@ public class SimpleContainer extends JPanel {
 
 	public void setContent(JPanel panel) {
 		remove(activePanel);
-		JPanel newPanel = panel!=null?panel:emptyPanel;
+		JPanel newPanel = ((panel != null) ? panel : emptyPanel);
 		add(newPanel, BorderLayout.CENTER);
 		activePanel = newPanel;
 		doLayout();

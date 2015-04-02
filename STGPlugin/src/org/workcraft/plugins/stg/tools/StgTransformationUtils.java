@@ -33,6 +33,7 @@ public class StgTransformationUtils {
 				VisualConnection oldSuccConnection = (VisualConnection)stg.getConnection(oldTransition, succ);
 				VisualConnection newSuccConnection = stg.connect(newTransition, succ);
 				newSuccConnection.copyStyle(oldSuccConnection);
+				newSuccConnection.copyShape(oldSuccConnection);
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}

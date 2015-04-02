@@ -139,6 +139,7 @@ public class WaggingGenerator {
 				replica = createConnection(first, second);
 			}
 			replica.copyStyle(connection);
+			replica.copyShape(connection);
 		}
 		return replica;
 	}

@@ -528,14 +528,19 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	public void updatePropertyView() {
 		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
 		Properties properties;
-		Collection<Node> selection = getModel().getSelection();
-		if (selection.size() == 0) {
-			properties = getModelProperties();
-		} else	if (selection.size() == 1) {
-			Node node = selection.iterator().next();
-			properties = getNodeProperties(node);
+		VisualNode templateNode = getModel().getTemplateNode();
+		if (templateNode != null) {
+			properties = getNodeProperties(templateNode);
 		} else {
-			properties = getSelectionProperties(selection);
+			Collection<Node> selection = getModel().getSelection();
+			if (selection.size() == 0) {
+				properties = getModelProperties();
+			} else	if (selection.size() == 1) {
+				Node node = selection.iterator().next();
+				properties = getNodeProperties(node);
+			} else {
+				properties = getSelectionProperties(selection);
+			}
 		}
 
 		if(properties.getDescriptors().isEmpty()) {

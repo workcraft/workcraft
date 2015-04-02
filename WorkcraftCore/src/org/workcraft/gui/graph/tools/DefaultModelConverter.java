@@ -92,6 +92,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 			try {
 				dstConnection = getDstModel().connect(dstFirst, dstSecond);
 				dstConnection.copyStyle(srcConnection);
+				dstConnection.copyShape(srcConnection);
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}

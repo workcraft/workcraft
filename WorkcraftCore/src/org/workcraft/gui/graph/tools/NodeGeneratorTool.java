@@ -24,9 +24,11 @@ package org.workcraft.gui.graph.tools;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 import javax.swing.Icon;
 
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -66,6 +68,13 @@ public class NodeGeneratorTool extends AbstractTool {
 	public void activated(GraphEditor editor) {
 		super.activated(editor);
 		resetState(editor);
+		VisualModel visualModel = editor.getModel();
+		try {
+			VisualNode templateNode = generator.generate(visualModel, new Point2D.Double(0.0, 0.0));
+			visualModel.setTemplateNode(templateNode);
+		} catch (NodeCreationException e) {
+			throw new RuntimeException (e);
+		}
 	}
 
 

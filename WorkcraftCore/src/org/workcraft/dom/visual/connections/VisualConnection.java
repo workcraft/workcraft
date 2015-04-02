@@ -40,6 +40,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DependentNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
+import org.workcraft.dom.visual.Shapable;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
@@ -57,7 +58,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-public class VisualConnection extends VisualNode implements Node, Drawable, DependentNode,
+public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, DependentNode,
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
 	public enum ConnectionType {
@@ -523,7 +524,6 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 		if (src instanceof VisualConnection) {
 			VisualConnection srcConnection = (VisualConnection)src;
 			setConnectionType(srcConnection.getConnectionType());
-			ConnectionGraphic srcGraphics = srcConnection.getGraphic();
 			setColor(srcConnection.getColor());
 			setLineWidth(srcConnection.getLineWidth());
 			setArrowLength(srcConnection.getArrowLength());
@@ -531,6 +531,15 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Depe
 			setBubble(srcConnection.hasBubble());
 			setBubbleSize(srcConnection.getBubbleSize());
 			setScaleMode(srcConnection.getScaleMode());
+		}
+	}
+
+	@Override
+	public void copyShape(Shapable src) {
+		if (src instanceof VisualConnection) {
+			VisualConnection srcConnection = (VisualConnection)src;
+			setConnectionType(srcConnection.getConnectionType());
+			ConnectionGraphic srcGraphics = srcConnection.getGraphic();
 
 			if (srcGraphics instanceof Polyline) {
 				Polyline polyline = (Polyline)getGraphic();

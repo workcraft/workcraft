@@ -68,6 +68,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	private Set<Node> selection = new HashSet<Node>();
 	private ObservableStateImpl observableState = new ObservableStateImpl();
 
+	private VisualNode templateNode = null;
+
 	public AbstractVisualModel() {
 		this(null, null);
 	}
@@ -575,6 +577,16 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		// Restore root-space position of components and connections scale mode.
 		VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
 		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
+	}
+
+	@Override
+	public void setTemplateNode(VisualNode node) {
+		templateNode = node;
+	}
+
+	@Override
+	public VisualNode getTemplateNode() {
+		return templateNode;
 	}
 
 }

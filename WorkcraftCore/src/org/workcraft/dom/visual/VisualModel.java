@@ -71,4 +71,8 @@ public interface VisualModel extends Model, ObservableState {
 	public void ungroupPageSelection();
 
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
+
+	public void setTemplateNode(VisualNode node);
+	public VisualNode getTemplateNode();
+
 }
