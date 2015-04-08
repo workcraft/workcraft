@@ -62,6 +62,7 @@ public class PetriNetGenerator {
 			if (bundles.size() == 0) {
 				String name = policyNet.getPolicyNet().getNodeReference(transition.getReferencedTransition());
 				VisualTransition newTransition = petriNet.createTransition(name, null);
+				newTransition.copyPosition(transition);
 				newTransition.copyStyle(transition);
 				result.put(transition, newTransition);
 			}

@@ -16,6 +16,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 public class StgTransformationUtils {
 
 	private static void replaceNamedTransition(VisualSTG stg, VisualNamedTransition oldTransition, VisualNamedTransition newTransition) {
+		newTransition.copyPosition(oldTransition);
 		newTransition.copyStyle(oldTransition);
 
 		for (Node pred: stg.getPreset(oldTransition)) {

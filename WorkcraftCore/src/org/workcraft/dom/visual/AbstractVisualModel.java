@@ -582,6 +582,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public void setTemplateNode(VisualNode node) {
 		templateNode = node;
+		notifySelectionChanged(null);
 	}
 
 	@Override

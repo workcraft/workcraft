@@ -17,14 +17,11 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
 	static boolean shiftPressed;
 
 	public ContactGeneratorTool() {
-		super(new DefaultNodeGenerator(FunctionContact.class)
-		{
+		super(new DefaultNodeGenerator(FunctionContact.class) {
 			@Override
-			protected MathNode createMathNode()
-					throws NodeCreationException {
+			public MathNode createMathNode()	throws NodeCreationException {
 				MathNode node = super.createMathNode();
 				((FunctionContact)node).setIOType(shiftPressed ? FunctionContact.IOType.INPUT : FunctionContact.IOType.OUTPUT);
-
 				return node;
 			}
 		});

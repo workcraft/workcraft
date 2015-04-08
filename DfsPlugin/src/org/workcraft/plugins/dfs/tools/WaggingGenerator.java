@@ -118,6 +118,7 @@ public class WaggingGenerator {
 		}
 
 		if (replica != null) {
+			replica.copyPosition(component);
 			replica.copyStyle(component);
 			// postpone adding to the model so no notifications are sent too early
 			Dfs mathDfs = (Dfs)dfs.getMathModel();

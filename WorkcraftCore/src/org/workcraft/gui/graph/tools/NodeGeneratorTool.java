@@ -36,11 +36,17 @@ import org.workcraft.util.GUI;
 
 public class NodeGeneratorTool extends AbstractTool {
 	private final NodeGenerator generator;
+	private VisualNode templateNode = null;
 	private VisualNode lastGeneratedNode = null;
 	private String warningMessage = null;
 
-	public NodeGeneratorTool (NodeGenerator generator) {
+	public NodeGeneratorTool(NodeGenerator generator) {
 		this.generator = generator;
+		try {
+			templateNode = generator.createVisualNode(generator.createMathNode());
+		} catch (NodeCreationException e) {
+			throw new RuntimeException (e);
+		}
 	}
 
 	@Override
@@ -68,15 +74,8 @@ public class NodeGeneratorTool extends AbstractTool {
 	public void activated(GraphEditor editor) {
 		super.activated(editor);
 		resetState(editor);
-		VisualModel visualModel = editor.getModel();
-		try {
-			VisualNode templateNode = generator.generate(visualModel, new Point2D.Double(0.0, 0.0));
-			visualModel.setTemplateNode(templateNode);
-		} catch (NodeCreationException e) {
-			throw new RuntimeException (e);
-		}
+		editor.getModel().setTemplateNode(templateNode);
 	}
-
 
 	@Override
 	public void deactivated(GraphEditor editor) {
@@ -104,7 +103,10 @@ public class NodeGeneratorTool extends AbstractTool {
 			try {
 				if (e.getButton() == MouseEvent.BUTTON1) {
 					editor.getWorkspaceEntry().saveMemento();
-					lastGeneratedNode = generator.generate(e.getModel(), editor.snap(e.getPosition(), null));
+					VisualModel model = e.getModel();
+					Point2D snapPosition = editor.snap(e.getPosition(), null);
+					lastGeneratedNode = generator.generate(model, snapPosition);
+					lastGeneratedNode.copyStyle(templateNode);
 				}
 			} catch (NodeCreationException e1) {
 				throw new RuntimeException (e1);

@@ -26,7 +26,6 @@ import java.awt.geom.Point2D;
 
 import javax.swing.Icon;
 
-import org.workcraft.NodeFactory;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Movable;
@@ -62,12 +61,10 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 			mathContainer = (Container)((VisualComponent)visualNamespace).getReferencedComponent();
 		}
 
-
 		MathNode mn = createMathNode();
 		mathContainer.add(mn);
 
-		VisualNode vc = NodeFactory.createVisualComponent(mn);
-
+		VisualNode vc = createVisualNode(mn);
 		visualContainer.add(vc);
 
 		if (vc instanceof Movable) {
@@ -94,5 +91,4 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
 		return -1; // undefined hotkey
 	}
 
-	protected abstract MathNode createMathNode() throws NodeCreationException;
 }

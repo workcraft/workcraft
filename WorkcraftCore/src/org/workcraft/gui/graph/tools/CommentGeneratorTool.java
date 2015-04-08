@@ -14,8 +14,7 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
 		super(new DefaultNodeGenerator(CommentNode.class)
 		{
 			@Override
-			protected MathNode createMathNode()
-					throws NodeCreationException {
+			public MathNode createMathNode() throws NodeCreationException {
 				MathNode node = super.createMathNode();
 				return node;
 			}
