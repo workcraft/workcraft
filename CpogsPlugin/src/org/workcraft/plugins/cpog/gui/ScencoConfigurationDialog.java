@@ -27,11 +27,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualScenario;
+import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.tasks.ScencoTask;
+import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -211,7 +214,8 @@ public class ScencoConfigurationDialog extends JDialog {
 		setMinimumSize(new Dimension(600, 400));
 		generationPanel = new JPanel(new SimpleFlowLayout());
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
-		ArrayList<VisualScenario> scenarios = new ArrayList<VisualScenario>(cpog.getGroups());
+		ArrayList<VisualScenarioPage> scenarios = new ArrayList<VisualScenarioPage>();
+		CpogParsingTool.getPages(cpog, scenarios);
 		m = scenarios.size();
 
 		// ABC TOOL DISABLE FLAG
