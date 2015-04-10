@@ -216,7 +216,7 @@ public class CpogParsingTool {
 		 return children;
 	 }
 
-	 public String getExpressionFromGraph(VisualCPOG visualCpog, VisualVertex exclude)
+	 public String getExpressionFromGraph(VisualCPOG visualCpog)
 	 {
 		 Collection<Node> originalSelection;
 		 ArrayList<VisualPage> groups = new ArrayList<VisualPage>();
@@ -301,9 +301,9 @@ public class CpogParsingTool {
                  }
              }
 
-             if ((exclude != null) && (vertices.contains(exclude))) {
+             /*if ((exclude != null) && (vertices.contains(exclude))) {
                  vertices.remove(exclude);
-             }
+             }*/
 
 			 HashSet<Node> roots = getRoots(visualCpog, vertices);
 
@@ -468,6 +468,7 @@ public class CpogParsingTool {
     }
 
     public void getPages(VisualCPOG visualCpog, ArrayList<VisualPage> groups) {
+    	Container prevLevel = visualCpog.getCurrentLevel();
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
 

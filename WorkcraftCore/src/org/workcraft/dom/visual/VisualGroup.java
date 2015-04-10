@@ -227,6 +227,10 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		groupImpl.remove(node);
 	}
 
+	public void removeWithoutNotify(Node node) {
+		groupImpl.removeWithoutNotify(node);
+	}
+
 
 	@Override
 	public void removeObserver(HierarchyObserver obs) {

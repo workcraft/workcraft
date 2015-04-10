@@ -32,6 +32,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -264,6 +265,14 @@ public class VisualCPOG extends AbstractVisualModel
 			}
 		}
 		return properties;
+	}
+
+	public void removeWithoutNotify(Node node) {
+		if (node.getParent() instanceof VisualPage) {
+			((VisualPage) node.getParent()).removeWithoutNotify(node);
+		} else if (node.getParent() instanceof VisualGroup) {
+			((VisualGroup) node.getParent()).removeWithoutNotify(node);
+		}
 	}
 
 }
