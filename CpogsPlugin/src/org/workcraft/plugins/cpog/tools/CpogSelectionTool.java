@@ -181,12 +181,7 @@ public class CpogSelectionTool extends SelectionTool {
         final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
         we.captureMemento();
 
-        if ((visualCpog.getCurrentLevel() instanceof VisualPage) && (!getVertList)) {
-            while (visualCpog.getCurrentLevel() instanceof VisualPage) {
-                Container c = (Container) visualCpog.getCurrentLevel().getParent();
-                visualCpog.setCurrentLevel(c);
-            }
-        }
+        visualCpog.setCurrentLevel(visualCpog.getRoot());
 
         final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
         final HashSet<ArcCondition> arcConditionList = new HashSet<ArcCondition>();
@@ -345,7 +340,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         if (getVertList) {
             for (VisualVertex v :vertexMap.values()) {
-                ((VisualPage) visualCpog.getCurrentLevel()).removeWithoutNotify(v);
+                visualCpog.removeWithoutNotify(v);
             }
             return localVertices;
         } else {
@@ -469,16 +464,16 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public void insertAsPage(VisualCPOG visualCpog, GraphFunc<String, CpogFormula> PGF, Double coordinate, GraphEditor editor) {
-        HashSet<VisualPage> pageList = new HashSet<VisualPage>();
+        HashSet<VisualScenarioPage> pageList = new HashSet<VisualScenarioPage>();
         for (Node n0 : visualCpog.getSelection()) {
-            if (n0 instanceof VisualPage) {
-                pageList.add((VisualPage) n0);
+            if (n0 instanceof VisualScenarioPage) {
+                pageList.add((VisualScenarioPage) n0);
             }
         }
 
         PageNode pageNode = new PageNode();
         visualCpog.getMathModel().add(pageNode);
-        VisualPage page = new VisualPage(pageNode);
+        VisualScenarioPage page = new VisualScenarioPage(pageNode);
         visualCpog.getCurrentLevel().add(page);
         visualCpog.reparent(page, visualCpog, visualCpog.getCurrentLevel(), visualCpog.getSelection());
         visualCpog.select(page);
@@ -694,8 +689,8 @@ public class CpogSelectionTool extends SelectionTool {
                     {
                         if (pce.getSender() instanceof VisualVertex) {
                             VisualVertex v = (VisualVertex) pce.getSender();
-                            if (v.getParent() instanceof VisualPage) {
-                                VisualPage page = (VisualPage) v.getParent();
+                            if (v.getParent() instanceof VisualScenarioPage) {
+                                VisualScenarioPage page = (VisualScenarioPage) v.getParent();
 
                                 String refKey = page.getLabel();
 

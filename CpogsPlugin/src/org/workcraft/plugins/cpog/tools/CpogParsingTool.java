@@ -1,38 +1,22 @@
 package org.workcraft.plugins.cpog.tools;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.JTextArea;
-
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.Container;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.cpog.Variable;
-import org.workcraft.plugins.cpog.VisualArc;
-import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.VisualScenario;
-import org.workcraft.plugins.cpog.VisualVariable;
-import org.workcraft.plugins.cpog.VisualVertex;
+import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Func;
-import org.workcraft.workspace.WorkspaceEntry;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CpogParsingTool {
 
@@ -93,7 +77,7 @@ public class CpogParsingTool {
 	 public void bfsLayout(Queue<Node> q, VisualCPOG visualCpog, double originalX, double originalY) {
 
          ArrayList<ArrayList<Node>> outer = new ArrayList<ArrayList<Node>>();
-         HashSet<VisualPage> pages = new HashSet<VisualPage>();
+         HashSet<VisualScenarioPage> pages = new HashSet<VisualScenarioPage>();
          Node current = q.remove();
          ArrayList<Node> children = getChildren(visualCpog, current);
 
@@ -115,8 +99,8 @@ public class CpogParsingTool {
 
      }
 
-    public void positionPages(HashSet<VisualPage> pages, double x) {
-        for (VisualPage page : pages) {
+    public void positionPages(HashSet<VisualScenarioPage> pages, double x) {
+        for (VisualScenarioPage page : pages) {
             Double pagePos = new Double();
             double pageLeft = x;
             double pageRight = -x;
@@ -165,8 +149,8 @@ public class CpogParsingTool {
                 if (n instanceof VisualVertex){
                     VisualVertex v = (VisualVertex) n;
                     v.setPosition(new Double(x, y));
-                } else if (n instanceof VisualPage) {
-                    VisualPage p = (VisualPage) n;
+                } else if (n instanceof VisualScenarioPage) {
+                    VisualScenarioPage p = (VisualScenarioPage) n;
                     p.setPosition(new Double(x, y));
                 }
                 y += 1.5;
@@ -179,15 +163,15 @@ public class CpogParsingTool {
         return x;
     }
 
-    public void findAllChildren(Queue<Node> q, VisualCPOG visualCpog, ArrayList<ArrayList<Node>> outer, HashSet<VisualPage> pages) {
+    public void findAllChildren(Queue<Node> q, VisualCPOG visualCpog, ArrayList<ArrayList<Node>> outer, HashSet<VisualScenarioPage> pages) {
         Node current;
         ArrayList<Node> children;
         int index = 0;
         while (!q.isEmpty()) {
             current = (Node) q.remove();
             index = findVertex(outer, current);
-            if (current.getParent() instanceof VisualPage) {
-                VisualPage vp = (VisualPage) current.getParent();
+            if (current.getParent() instanceof VisualScenarioPage) {
+                VisualScenarioPage vp = (VisualScenarioPage) current.getParent();
                 pages.add(vp);
             }
             children = getChildren(visualCpog, current);
@@ -291,8 +275,8 @@ public class CpogParsingTool {
 			 for (Node n : originalSelection) {
                  if (n instanceof VisualVertex) {
                      vertices.add(n);
-                 } else if (n instanceof VisualPage) {
-                     VisualPage p = (VisualPage) n;
+                 } else if (n instanceof VisualScenarioPage) {
+                     VisualScenarioPage p = (VisualScenarioPage) n;
                      for (Node child : p.getChildren()) {
                          if (child instanceof VisualVertex) {
                              vertices.add(child);
@@ -461,24 +445,40 @@ public class CpogParsingTool {
     public void getAllGroupVertices(ArrayList<Node> vertices, VisualPage group) {
         vertices.clear();
         for (VisualComponent v : group.getComponents()) {
-            if (v instanceof VisualPage) {
-                vertices.addAll(getPageVertices((VisualPage) v));
+            if (v instanceof VisualScenarioPage) {
+                vertices.addAll(getPageVertices((VisualScenarioPage) v));
             } else vertices.add(v);
         }
     }
 
-    public void getPages(VisualCPOG visualCpog, ArrayList<VisualPage> groups) {
-    	Container prevLevel = visualCpog.getCurrentLevel();
+
+    public static void getPages(VisualCPOG visualCpog, ArrayList<VisualPage> groups) {
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
 
         for(Node n : visualCpog.getSelection()) {
-           if (n instanceof VisualPage) {
+            if (n instanceof VisualPage) {
                 if (prevSelection.contains(n)) {
-                groups.add((VisualPage) n);
-                prevSelection.remove(n);
+                    groups.add((VisualPage) n);
+                    //prevSelection.remove(n);
                 }
-           }
+            }
+        }
+
+        visualCpog.select(prevSelection);
+    }
+
+    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualScenarioPage> groups) {
+        ArrayList<Node> prevSelection = copySelected(visualCpog);
+        visualCpog.selectAll();
+
+        for(Node n : visualCpog.getSelection()) {
+            if (n instanceof VisualScenarioPage) {
+                if (prevSelection.contains(n)) {
+                    groups.add((VisualScenarioPage) n);
+                    //prevSelection.remove(n);
+                }
+            }
         }
 
         visualCpog.select(prevSelection);
@@ -734,11 +734,11 @@ public class CpogParsingTool {
          ArrayList<Node> prevSelection = new ArrayList<Node>();
          for (Node n : visualCpog.getSelection()) prevSelection.add(n);
 
-         ArrayList<VisualPage> pages = new ArrayList<VisualPage>();
+         ArrayList<VisualScenarioPage> pages = new ArrayList<VisualScenarioPage>();
          visualCpog.selectAll();
          for (Node n : visualCpog.getSelection()) {
-             if (n instanceof VisualPage) {
-                 pages.add((VisualPage) n);
+             if (n instanceof VisualScenarioPage) {
+                 pages.add((VisualScenarioPage) n);
              }
          }
 
@@ -761,7 +761,7 @@ public class CpogParsingTool {
 				 }
 			 }
 		 }
-		 for(VisualPage page : pages) {
+		 for(VisualScenarioPage page : pages) {
 			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) page.getBoundingBox();
 			 Point2D.Double bl = new Point2D.Double(rect.getCenterX(), rect.getCenterY() + (rect.getHeight()/2));
 
@@ -792,12 +792,12 @@ public class CpogParsingTool {
 		 return usedReferences;
 	 }
 
-     public ArrayList<VisualComponent> getPageVertices(VisualPage p) {
+     public ArrayList<VisualComponent> getPageVertices(VisualScenarioPage p) {
          ArrayList<VisualComponent> result = new ArrayList<VisualComponent>();
 
          for (VisualComponent c : p.getComponents()) {
-             if (c instanceof VisualPage) {
-                result.addAll(getPageVertices((VisualPage) c));
+             if (c instanceof VisualScenarioPage) {
+                result.addAll(getPageVertices((VisualScenarioPage) c));
              } else {
                  result.add(c);
              }
@@ -805,16 +805,13 @@ public class CpogParsingTool {
          return result;
      }
 
-     public ArrayList<Node> copySelected(VisualCPOG visualCpog) {
-         ArrayList<Node> result = new ArrayList<Node>();
-         for (Node n : visualCpog.getSelection()) {
-             result.add(n);
-         }
 
-         return result;
-     }
+    public static ArrayList<Node> copySelected(VisualCPOG visualCpog) {
+        ArrayList<Node> result = new ArrayList<Node>();
+        for (Node n : visualCpog.getSelection()) {
+            result.add(n);
+        }
 
-    public void ignoreArcsToNonSelectedNodes(ArrayList<Node> vertices) {
-
+        return result;
     }
 }

@@ -91,7 +91,7 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 	}
 
 	private void update() {
-
+		//This check is for connections which are not correctly deleted, and causes errors when they are updated.
 
 		VisualNode firstComponent = connection.getFirst();
 

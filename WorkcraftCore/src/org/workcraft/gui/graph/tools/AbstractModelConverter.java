@@ -29,6 +29,7 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
 		convertGroups();
 		// Connections must be converted the last as their shapes change with node relocation.
 		convertConnections();
+		postprocessing();
 	}
 
 	@Override

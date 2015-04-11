@@ -23,8 +23,12 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.DisplayMode;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.font.FontRenderContext;
@@ -346,6 +350,21 @@ public class MainWindow extends JFrame {
 		utilityWindows.add(dockableWindow);
 	}
 
+	public void setWindowSize(boolean maximised, int width, int height){
+	    if(maximised){
+	        DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
+	        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
+	        this.setMaximizedBounds(new Rectangle(
+	                mode.getWidth() - insets.right - insets.left,
+	                mode.getHeight() - insets.top - insets.bottom
+	        ));
+	        this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+	        this.setSize(mode.getWidth() - insets.right - insets.left, mode.getHeight() - insets.top - insets.bottom);
+	    }else{
+	        this.setExtendedState(JFrame.NORMAL);
+	    }
+	}
+
 	public void startup() {
 		MainWindowIconManager.apply(this);
 
@@ -375,13 +394,6 @@ public class MainWindow extends JFrame {
 		rootDockingPort = new DefaultDockingPort("defaultDockingPort");
 		content.add(rootDockingPort, BorderLayout.CENTER);
 
-		boolean maximised = Boolean.parseBoolean(framework
-				.getConfigVar("gui.main.maximised"));
-		String w = framework.getConfigVar("gui.main.width");
-		String h = framework.getConfigVar("gui.main.height");
-		int width = (w == null) ? 800 : Integer.parseInt(w);
-		int height = (h == null) ? 600 : Integer.parseInt(h);
-
 		lastSavePath = framework.getConfigVar("gui.main.lastSavePath");
 		lastOpenPath = framework.getConfigVar("gui.main.lastOpenPath");
 		for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
@@ -390,11 +402,22 @@ public class MainWindow extends JFrame {
 		}
 		mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
 
-		this.setSize(width, height);
+		String maximisedStr = framework.getConfigVar("gui.main.maximised");
+		String widthStr = framework.getConfigVar("gui.main.width");
+		String heightStr = framework.getConfigVar("gui.main.height");
 
-		if (maximised) {
-			setExtendedState(MAXIMIZED_BOTH);
-		}
+		boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
+        this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
+
+       	DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
+       	Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
+        int width = mode.getWidth() - insets.right - insets.left;
+        int height = mode.getHeight() - insets.top - insets.bottom;
+        if ((widthStr != null) && (heightStr != null)) {
+        	width = Integer.parseInt(widthStr);
+        	height = Integer.parseInt(heightStr);
+        }
+		this.setSize(width, height);
 
 		createWindows();
 
@@ -404,44 +427,50 @@ public class MainWindow extends JFrame {
 		rootDockingPort.setBorderManager(new StandardBorderManager(
 				new ShadowBorder()));
 
-		outputDockable = createDockableWindow(outputWindow, "Output",
+		float xSplit = 0.88f;
+		float ySplit = 0.82f;
+		outputDockable = createDockableWindow(
+				outputWindow, "Output",
 				DockableWindowContentPanel.CLOSE_BUTTON,
-				DockingManager.SOUTH_REGION, 0.8f);
+				DockingManager.SOUTH_REGION, ySplit);
 
-		DockableWindow problems = createDockableWindow(errorWindow, "Problems",
-				outputDockable, DockableWindowContentPanel.CLOSE_BUTTON);
-
-
-		DockableWindow javaScript = createDockableWindow(jsWindow,
-				"Javascript", outputDockable,
+		DockableWindow problems = createDockableWindow(
+				errorWindow, "Problems", outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
-		DockableWindow wsvd = createDockableWindow(workspaceWindow,
-				"Workspace", DockableWindowContentPanel.CLOSE_BUTTON,
-				DockingManager.EAST_REGION, 0.8f);
+		DockableWindow javaScript = createDockableWindow(
+				jsWindow, "Javascript",	outputDockable,
+				DockableWindowContentPanel.CLOSE_BUTTON);
+
+		DockableWindow wsvd = createDockableWindow(
+				workspaceWindow, "Workspace",
+				DockableWindowContentPanel.CLOSE_BUTTON,
+				DockingManager.EAST_REGION, xSplit);
+
 		DockableWindow propertyEditor = createDockableWindow(
 				propertyEditorWindow, "Property editor", wsvd,
 				DockableWindowContentPanel.CLOSE_BUTTON,
-				DockingManager.NORTH_REGION, 0.5f);
-		DockableWindow toolbox = createDockableWindow(toolboxWindow,
-				"Editor tools", propertyEditor,
-				DockableWindowContentPanel.HEADER
-						| DockableWindowContentPanel.CLOSE_BUTTON,
-				DockingManager.SOUTH_REGION, 0.5f);
-		DockableWindow tiw = createDockableWindow(toolInterfaceWindow,
-				"Tool controls", toolbox,
-				DockableWindowContentPanel.CLOSE_BUTTON,
-				DockingManager.SOUTH_REGION, 0.5f);
+				DockingManager.NORTH_REGION, ySplit);
 
-		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(),
-				"", null, outputDockable, 0, DockingManager.NORTH_REGION, 0.8f,
-				"DocumentPlaceholder");
+		DockableWindow tiw = createDockableWindow(
+				toolInterfaceWindow, "Tool controls", propertyEditor,
+				DockableWindowContentPanel.CLOSE_BUTTON,
+				DockingManager.SOUTH_REGION, 0.4f);
+
+		DockableWindow toolbox = createDockableWindow(
+				toolboxWindow, "Editor tools", tiw,
+				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+				DockingManager.SOUTH_REGION, 0.82f);
+
+		documentPlaceholder = createDockableWindow(
+				new DocumentPlaceholder(), "", null, outputDockable,
+				0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
 
 		DockingManager.display(outputDockable);
-		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,
-				0.5f));
+		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,	0.5f));
 
-		DockableWindow tasks = createDockableWindow(new TaskManagerWindow(), "Tasks", outputDockable,
+		DockableWindow tasks = createDockableWindow(
+				new TaskManagerWindow(), "Tasks", outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		setVisible(true);
@@ -719,7 +748,8 @@ public class MainWindow extends JFrame {
 
 		content.remove(rootDockingPort);
 
-		framework.setConfigVar("gui.main.maximised", Boolean.toString((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0));
+		boolean maximised = ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0);
+		framework.setConfigVar("gui.main.maximised", Boolean.toString(maximised));
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
 		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
 
@@ -928,7 +958,6 @@ public class MainWindow extends JFrame {
 				}
 				openWork(f);
 			}
-			lastOpenPath = fc.getCurrentDirectory().getPath();
 		} else {
 			throw new OperationCancelledException("Open operation cancelled by user.");
 		}
@@ -943,6 +972,7 @@ public class MainWindow extends JFrame {
 					createEditorWindow(we);
 				}
 				pushRecentFile(f.getPath(), true);
+				lastOpenPath = f.getParent();
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(this,
 					"A problem was encountered while trying to load \""	+ f.getPath() + "\".\n"
@@ -964,7 +994,6 @@ public class MainWindow extends JFrame {
 				}
 				mergeWork(f);
 			}
-			lastOpenPath = fc.getCurrentDirectory().getPath();
 		} else {
 			throw new OperationCancelledException("Merge operation cancelled by user.");
 		}
@@ -1098,7 +1127,6 @@ public class MainWindow extends JFrame {
 			for (File f : fc.getSelectedFiles()) {
 				importFrom(f, importers);
 			}
-			lastOpenPath = fc.getCurrentDirectory().getPath();
 		}
 	}
 
@@ -1110,7 +1138,9 @@ public class MainWindow extends JFrame {
 					try {
 						ModelEntry me = Import.importFromFile(importer, f);
 						me.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
-						framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, me.isVisual());
+						boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+						framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, openInEditor);
+						lastOpenPath = f.getParent();
 						break;
 					} catch (IOException e) {
 						e.printStackTrace();

@@ -38,14 +38,16 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
 	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
 	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
+	private static final String keyGateLibrary = prefix + ".petrify.gateLibrary";
 	private static final String keyDebugTemporaryFiles = prefix + ".debugTemporaryFiles";
 
 	private static final String defaultPetrifyCommand = "petrify";
-	private static final String defaultPetrifyArgs = "-lib tools/petrify/petrify.lib";
+	private static final String defaultPetrifyArgs = "";
 	private static final String defaultDrawAstgCommand = "draw_astg";
 	private static final String defaultDrawAstgArgs = "";
 	private static final String defaultWriteSgCommand = "write_sg";
 	private static final String defaultWriteSgArgs = "";
+	private static final String defaultGateLibrary = "tools/petrify/petrify.lib";
 	private static final Boolean defaultDebugTemporaryFiles = false;
 
 	private static String petrifyCommand = defaultPetrifyCommand;
@@ -54,6 +56,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static String drawAstgArgs = defaultDrawAstgArgs;
 	private static String writeSgCommand = defaultWriteSgCommand;
 	private static String writeSgArgs = defaultWriteSgArgs;
+	private static String gateLibrary = defaultGateLibrary;
 	private static Boolean debigTemporaryFiles = defaultDebugTemporaryFiles;
 
 	public PetrifyUtilitySettings() {
@@ -117,6 +120,16 @@ public class PetrifyUtilitySettings implements Settings {
 			}
 		});
 
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+				this, "Gate library for technology mapping", String.class) {
+			protected void setter(PetrifyUtilitySettings object, String value) {
+				PetrifyUtilitySettings.setGateLibrary(value);
+			}
+			protected String getter(PetrifyUtilitySettings object) {
+				return PetrifyUtilitySettings.getGateLibrary();
+			}
+		});
+
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
 				this, "Keep temporary files (debug)", Boolean.class) {
 			protected void setter(PetrifyUtilitySettings object, Boolean value) {
@@ -141,6 +154,7 @@ public class PetrifyUtilitySettings implements Settings {
 		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
 		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
 		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
+		setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
 		setDebugTemporaryFiles(config.getBoolean(keyDebugTemporaryFiles, defaultDebugTemporaryFiles));
 	}
 
@@ -152,6 +166,7 @@ public class PetrifyUtilitySettings implements Settings {
 		config.set(keyDrawAstgArgs, getDrawAstgArgs());
 		config.set(keyWriteSgCommand, getWriteSgCommand());
 		config.set(keyWriteSgArgs, getWriteSgArgs());
+		config.set(keyGateLibrary, getGateLibrary());
 		config.setBoolean(keyDebugTemporaryFiles, getDebugTemporaryFiles());
 	}
 
@@ -211,6 +226,14 @@ public class PetrifyUtilitySettings implements Settings {
 
 	public static void setWriteSgArgs(String value) {
 		writeSgArgs = value;
+	}
+
+	public static String getGateLibrary() {
+		return gateLibrary;
+	}
+
+	public static void setGateLibrary(String value) {
+		gateLibrary = value;
 	}
 
 	public static Boolean getDebugTemporaryFiles() {

@@ -9,6 +9,7 @@ import org.workcraft.plugins.cpog.CpogModelDescriptor;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.VisualGraph;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -43,7 +44,8 @@ public class GraphToCpogConverterTool implements Tool {
 			final Path<String> directory = we.getWorkspacePath().getParent();
 			final String name = we.getWorkspacePath().getNode();
 			final ModelEntry me = new ModelEntry(new CpogModelDescriptor(), converter.getDstModel());
-			workspace.add(directory, name, me, false, true);
+			boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+			workspace.add(directory, name, me, false, openInEditor);
 		} finally {
 			we.cancelMemento();
 		}

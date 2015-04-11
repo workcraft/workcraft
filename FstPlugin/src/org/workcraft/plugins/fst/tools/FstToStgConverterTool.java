@@ -5,6 +5,7 @@ import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.STGModelDescriptor;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -39,6 +40,7 @@ public class FstToStgConverterTool implements Tool {
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
 		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), converter.getDstModel());
-		workspace.add(directory, desiredName, me, false, true);
+		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+		workspace.add(directory, desiredName, me, false, openInEditor);
 	}
 }

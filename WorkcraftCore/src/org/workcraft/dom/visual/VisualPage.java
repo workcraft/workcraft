@@ -1,14 +1,5 @@
 package org.workcraft.dom.visual;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -29,6 +20,14 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.util.Hierarchy;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 
 @Hotkey(KeyEvent.VK_P)
 @DisplayName("Page")
@@ -40,6 +39,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	private boolean isCollapsed = false;
 	@Override
 	public void setIsCollapsed(boolean isCollapsed) {
+		sendNotification(new TransformChangingEvent(this));
 		sendNotification(new TransformChangingEvent(this));
 		this.isCollapsed = isCollapsed;
 		sendNotification(new TransformChangedEvent(this));

@@ -92,9 +92,3 @@ for i in $core_files
 do
     cp -r $src_dir/$i $distr_dir/
 done
-
-# Copy config
-if [ -e $src_dir/config ]
-then
-    cp -r $src_dir/config $distr_dir/
-fi

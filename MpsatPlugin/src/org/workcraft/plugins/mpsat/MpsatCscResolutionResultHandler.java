@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
@@ -58,7 +59,8 @@ public class MpsatCscResolutionResultHandler implements Runnable {
 			String name = fileName + "_resolved";
 			ModelEntry me = new ModelEntry(new STGModelDescriptor(), model);
 			Workspace workspace = framework.getWorkspace();
-			workspace.add(directory, name, me, true, true);
+			boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+			workspace.add(directory, name, me, true, openInEditor);
 		}
 	}
 }

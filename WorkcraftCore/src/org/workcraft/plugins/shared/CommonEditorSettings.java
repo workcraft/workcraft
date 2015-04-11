@@ -59,6 +59,7 @@ public class CommonEditorSettings implements Settings {
 	private static final String keyTitleStyle = prefix + ".titleStyle";
 	private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
 	private static final String keyDebugClipboard = prefix + ".debugClipboard";
+	private static final String keyOpenNonvisual = prefix + ".openNonvisual";
 
 	private static final Color defaultBackgroundColor = Color.WHITE;
 	private static final boolean defaultShowGrid = true;
@@ -68,6 +69,7 @@ public class CommonEditorSettings implements Settings {
 	private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
 	private static final boolean defaultShowAbsolutePaths = false;
 	private static final boolean defaultDebugClipboard = false;
+	private static final boolean defaultOpenNonvisual = true;
 
 	private static Color backgroundColor = defaultBackgroundColor;
 	private static boolean showGrid = defaultShowGrid;
@@ -77,6 +79,7 @@ public class CommonEditorSettings implements Settings {
 	private static TitleStyle titleStyle = defaultTitleStyle;
 	private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
 	private static boolean debugClipboard = defaultDebugClipboard;
+	private static boolean openNonvisual = defaultOpenNonvisual;
 
 	public CommonEditorSettings() {
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
@@ -158,6 +161,16 @@ public class CommonEditorSettings implements Settings {
 				return CommonEditorSettings.getDebugClipboard();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+				this, "Open non-visual models (imported or transformed)", Boolean.class) {
+			protected void setter(CommonEditorSettings object, Boolean value) {
+				CommonEditorSettings.setOpenNonvisual(value);
+			}
+			protected Boolean getter(CommonEditorSettings object) {
+				return CommonEditorSettings.getOpenNonvisual();
+			}
+		});
 	}
 
 	@Override
@@ -175,6 +188,7 @@ public class CommonEditorSettings implements Settings {
 		setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
 		setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
 		setDebugClipboard(config.getBoolean(keyDebugClipboard, defaultDebugClipboard));
+		setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
 	}
 
 	@Override
@@ -187,6 +201,7 @@ public class CommonEditorSettings implements Settings {
 		config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
 		config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
 		config.setBoolean(keyDebugClipboard, getDebugClipboard());
+		config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
 	}
 
 	@Override
@@ -267,13 +282,20 @@ public class CommonEditorSettings implements Settings {
 		return showAbsolutePaths;
 	}
 
-
 	public static Boolean getDebugClipboard() {
 		return debugClipboard;
 	}
 
 	public static void setDebugClipboard(Boolean value) {
 		debugClipboard = value;
+	}
+
+	public static Boolean getOpenNonvisual() {
+		return openNonvisual;
+	}
+
+	public static void setOpenNonvisual(Boolean value) {
+		openNonvisual = value;
 	}
 
 }

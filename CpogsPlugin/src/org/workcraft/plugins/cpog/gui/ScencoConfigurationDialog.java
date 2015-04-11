@@ -1,39 +1,21 @@
 package org.workcraft.plugins.cpog.gui;
 
 import info.clearthought.layout.TableLayout;
+import org.workcraft.gui.SimpleFlowLayout;
+import org.workcraft.plugins.cpog.EncoderSettings;
+import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.VisualScenarioPage;
+import org.workcraft.plugins.cpog.tasks.ScencoTask;
+import org.workcraft.plugins.cpog.tools.CpogParsingTool;
+import org.workcraft.plugins.shared.presets.PresetManager;
+import org.workcraft.workspace.WorkspaceEntry;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
-import org.workcraft.gui.SimpleFlowLayout;
-import org.workcraft.plugins.cpog.EncoderSettings;
-import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.VisualScenario;
-import org.workcraft.plugins.cpog.tasks.ScencoTask;
-import org.workcraft.plugins.shared.presets.PresetManager;
-import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class ScencoConfigurationDialog extends JDialog {
@@ -211,7 +193,8 @@ public class ScencoConfigurationDialog extends JDialog {
 		setMinimumSize(new Dimension(600, 400));
 		generationPanel = new JPanel(new SimpleFlowLayout());
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
-		ArrayList<VisualScenario> scenarios = new ArrayList<VisualScenario>(cpog.getGroups());
+		ArrayList<VisualScenarioPage> scenarios = new ArrayList<VisualScenarioPage>();
+		CpogParsingTool.getScenarios(cpog, scenarios);
 		m = scenarios.size();
 
 		// ABC TOOL DISABLE FLAG
