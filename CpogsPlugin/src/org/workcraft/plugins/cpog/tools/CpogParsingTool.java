@@ -213,6 +213,7 @@ public class CpogParsingTool {
 		 if (!groups.isEmpty()) {
 			 for (VisualPage group : groups) {
 				 expression.add(group.getLabel() + " =");
+                 originalSelection.remove(group);
 
                  getAllGroupVertices(vertices, group);
 
@@ -227,7 +228,6 @@ public class CpogParsingTool {
 				 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 				 while(i.hasNext())
 				 {
-
 				   q.add(i.next());
 				   while(!q.isEmpty()){
 					   connections.clear();
@@ -270,13 +270,12 @@ public class CpogParsingTool {
 		 }
 		 if (!originalSelection.isEmpty())
 		 {
-			 expression.add("\n");
 			 vertices.clear();
 			 for (Node n : originalSelection) {
                  if (n instanceof VisualVertex) {
                      vertices.add(n);
-                 } else if (n instanceof VisualScenarioPage) {
-                     VisualScenarioPage p = (VisualScenarioPage) n;
+                 } else if ((n instanceof VisualScenarioPage) || (n instanceof VisualPage)) {
+                     VisualPage p = (VisualPage) n;
                      for (Node child : p.getChildren()) {
                          if (child instanceof VisualVertex) {
                              vertices.add(child);
@@ -445,8 +444,8 @@ public class CpogParsingTool {
     public void getAllGroupVertices(ArrayList<Node> vertices, VisualPage group) {
         vertices.clear();
         for (VisualComponent v : group.getComponents()) {
-            if (v instanceof VisualScenarioPage) {
-                vertices.addAll(getPageVertices((VisualScenarioPage) v));
+            if (v instanceof VisualPage) {
+                vertices.addAll(getPageVertices((VisualPage) v));
             } else vertices.add(v);
         }
     }
@@ -792,12 +791,12 @@ public class CpogParsingTool {
 		 return usedReferences;
 	 }
 
-     public ArrayList<VisualComponent> getPageVertices(VisualScenarioPage p) {
+     public ArrayList<VisualComponent> getPageVertices(VisualPage p) {
          ArrayList<VisualComponent> result = new ArrayList<VisualComponent>();
 
          for (VisualComponent c : p.getComponents()) {
-             if (c instanceof VisualScenarioPage) {
-                result.addAll(getPageVertices((VisualScenarioPage) c));
+             if (c instanceof VisualPage) {
+                result.addAll(getPageVertices((VisualPage) c));
              } else {
                  result.add(c);
              }
