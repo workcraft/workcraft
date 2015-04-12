@@ -11,7 +11,7 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
-public class BSONCycleAlg extends ONCycleAlg{
+public class BSONCycleAlg extends CSONCycleAlg{
 
 	private SON net;
 	private BSONAlg bsonAlg;
@@ -65,12 +65,23 @@ public class BSONCycleAlg extends ONCycleAlg{
 
 		for(int i = 0; i < nodes.size(); i++){
 			//add before relation
-			if(nodes.get(i) instanceof TransitionNode){
-				for(Condition[] before : bsonAlg.before((TransitionNode)nodes.get(i))){
-					result[nodeIndex.get(before[0])].add(nodeIndex.get(before[1]));
-				}
-			}
-		}
+            Node n = nodes.get(i);
+            if(n instanceof TransitionNode){
+                for(Condition[] before : bsonAlg.before((TransitionNode)n)){
+                    Condition c0 = before[0];
+                    Condition c1 = before[1];
+                    int index = nodeIndex.get(c0);
+                    if(result[index] == null){
+                            result[index] = new ArrayList<Integer>();
+                    }
+                    result[index].add(nodeIndex.get(c1));
+                }
+            }
+        }
+        System.out.println("Index");
+        for(Node key : nodeIndex.keySet()){
+                System.out.println(net.getComponentLabel(key) + " " + nodeIndex.get(key) + " " + result[nodeIndex.get(key)].toString());
+        }
 		return result;
 	}
 
@@ -79,21 +90,20 @@ public class BSONCycleAlg extends ONCycleAlg{
 		 return cyclePathFliter(super.cycleTask(nodes));
 	}
 
+	//if cycle contains before relation
 	private Collection<Path> cyclePathFliter(Collection<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
+		CycleAlgorithm cycleAlg = new CycleAlgorithm();
+
 		for(Path cycle : paths){
-			int outputBhvLine = 0;
-			int inputBhvLine = 0;
-			if(!net.getSONConnectionTypes(cycle).contains(Semantics.PNLINE))
-				delList.add(cycle);
-			for(Node n : cycle){
-				if(net.getOutputSONConnections(n).contains(Semantics.BHVLINE))
-					outputBhvLine ++;
-				if(net.getInputSONConnections(n).contains(Semantics.BHVLINE))
-					inputBhvLine ++;
-			if(inputBhvLine==0 || outputBhvLine==0)
-				delList.add(cycle);
+			boolean hasCycle = false;
+			for(List<Integer> cycleIndex : cycleAlg.getCycles(super.createGraph(cycle))){
+				 if(cycleIndex.size() > 1){
+					  hasCycle = true;
+				 }
 			}
+			if(!hasCycle)
+				delList.add(cycle);
 		}
 		paths.removeAll(delList);
 		return paths;

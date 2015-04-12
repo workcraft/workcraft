@@ -962,6 +962,18 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			List<TransitionNode> minFires = simuAlg.getMinFires(selected, sync, enabledEvents);
 			List<TransitionNode> maxFires = simuAlg.getMaxFires(selected, sync, enabledEvents);
 
+			//test
+			System.out.println("alg1");
+			for(TransitionNode n : maxFires){
+				 System.out.print(net.getName(n) + " ");
+			}
+			System.out.println("");
+			System.out.println("alg2");
+			List<TransitionNode> maxFires2 = simuAlg.getMaxFire2(selected, sync, enabledEvents);
+			 for(TransitionNode n : maxFires2){
+				 System.out.print(net.getName(n) + " ");
+			 }
+
 			if(!reverse){
 				List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
 				for(TransitionNode pe : enabledEvents)

@@ -90,8 +90,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			we.cancelMemento();
 			net = (SON)we.getModelEntry().getMathModel();
 			int result = JOptionPane.showConfirmDialog(null,
-					"The selected marking is REACHABLE from initial states. \n" +
-					"Select OK to analysis the trace leading to the marking in the simulation tool.",
+					"The selected marking is REACHABLE from the initial states. \n" +
+					"Select OK to analyze the trace leading to the marking in the simulation tool.",
 					"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
 			if(result == 0){
 				Map<PlaceNode, Boolean> finalStates = simulation();

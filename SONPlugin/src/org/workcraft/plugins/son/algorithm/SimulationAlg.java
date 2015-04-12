@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -36,114 +37,103 @@ public class SimulationAlg extends RelationAlgorithm {
 		bhvGroups = bsonAlg.getBhvGroups(net.getGroups());
 	}
 
-	private Collection<Node> getSyncMinimum (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
-		Collection<Node> result = new HashSet<Node>();
-		HashSet<Node> syncEvents = new HashSet<Node>();
-		//get related synchronous events
-		for(Path cycle : sync){
-			if(cycle.contains(e))
-				syncEvents.addAll(cycle);
-		}
-		//e is in synchronous cycle
-		if(!syncEvents.isEmpty()){
-			for(Node n : syncEvents){
-				//add all related synchronous cycle to result
-				if(enabledEvents.contains(n) && !result.contains(n)){
-					result.add(n);
-					//continue to check the event which is the pre-aysn-event of related synchronous cycle
-					for(TransitionNode pre : getPreAsynEvents((TransitionNode)n)){
-						if(!syncEvents.contains(pre) && enabledEvents.contains(pre)){
-							result.addAll(getSyncMinimum((TransitionNode)pre, sync, enabledEvents));
-						}
-					}
-				}
-				if(!enabledEvents.contains(n))
-					throw new RuntimeException("algorithm error: has unenabled event in sync cycle  "+net.getNodeReference(n));
-			}
-		}
-		//e is not in synchronous cycle	but has pre asyn event
-		else if(!getPreAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
-			if(!result.contains(e))
-				result.add(e);
-
-			for(TransitionNode n : getPreAsynEvents(e))
-				if(!result.contains(n) && enabledEvents.contains(n)){
-					result.add(n);
-					result.addAll(getSyncMinimum((TransitionNode)n, sync, enabledEvents));
-				}
-		}
-		else{
-			result.add(e);
-		}
-		return result;
-	}
-
 	/**
 	 * return minimal execution set of a given node.
-	 * contain other nodes which have synchronous with the clicked node.
+	 * contain other nodes which have synchronous relation with the selected one.
 	 */
-	public List<TransitionNode> getMinFires (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
+    public List<TransitionNode> getMinFires(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
+        List<TransitionNode> result = new ArrayList<TransitionNode>();
+        Collection<TransitionNode> u = new ArrayList<TransitionNode>();
+        Stack<TransitionNode> stack = new Stack<TransitionNode>();
+        u.addAll(enabledEvents);
 
-		for(Node n : getSyncMinimum(e, sync, enabledEvents))
-			if(n instanceof TransitionNode)
-				result.add((TransitionNode)n);;
+        if(e!= null){
+            stack.push(e);
+            while(!stack.empty()){
+	            e = stack.pop();
+	            if(!result.contains(e)){
+                    result.add(e);
+                    u.remove(e);
+	            }
 
-		return result;
-	}
+	            for(Path cycle : sync){
+                    if(cycle.contains(e))
+                        for(Node e2 : cycle){
+                            if(e2 instanceof TransitionNode && u.contains(e2)){
+                                u.remove(e2);
+                                stack.push((TransitionNode)e2);
+                            }
+                            else if(!enabledEvents.contains(e2)){
+                            	throw new RuntimeException
+                            	("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
+                            }
+                        }
+	            }
+	            if(!getPreAsynEvents(e).isEmpty()){
+                    for(TransitionNode e3 : getPreAsynEvents(e)){
+                        if(u.contains(e3)){
+                            u.remove(e3);
+                            stack.push((TransitionNode)e3);
+                        }
+                        else if(!enabledEvents.contains(e3)){
+                        	throw new RuntimeException
+                        	("algorithm error: unenabled event in sync cycle "+net.getNodeReference(e3));
+                        }
+                    }
+	            }
+            }
+        }
+        return result;
+    }
 
+	/**
+	 * return maximal execution set of a given node.
+	 * contain other nodes which have synchronous relation with the selected one.
+	 */
+    public List<TransitionNode> getMaxFires(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
+        List<TransitionNode> result = new ArrayList<TransitionNode>();
+        Collection<TransitionNode> u = new ArrayList<TransitionNode>();
+        Stack<TransitionNode> stack = new Stack<TransitionNode>();
+        u.addAll(enabledEvents);
 
-	private Collection<Node> getMaxFireSet(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
-		Collection<Node> result = new HashSet<Node>();
-		Collection<Node> syncEvents = new HashSet<Node>();
+        if(e!= null){
+            stack.push(e);
+            while(!stack.empty()){
+	            e = stack.pop();
+	            if(!result.contains(e)){
+                    result.add(e);
+                    u.remove(e);
+	            }
 
-		for(Path cycle : sync){
-			if(cycle.contains(e))
-				syncEvents.addAll(cycle);
-		}
-
-		if(!syncEvents.isEmpty()){
-			for(Node n : syncEvents){
-				if(enabledEvents.contains(n) && !result.contains(n)){
-					result.add(n);
-
-					for(TransitionNode post : this.getPostAsynEvents((TransitionNode)n)){
-						if(!syncEvents.contains(post) && enabledEvents.contains(post)){
-							result.add(post);
-							result.addAll(getMaxFireSet((TransitionNode)post, sync, enabledEvents));
-						}
-					}
-
-				}
-				if(!enabledEvents.contains(n))
-					throw new RuntimeException("algorithm error: has unenable event in sync cycle");
-			}
-		}
-		else if(!getPostAsynEvents(e).isEmpty() && enabledEvents.contains(e)){
-			if(!result.contains(e))
-				result.add(e);
-
-			for(TransitionNode n : getPostAsynEvents(e))
-				if(!result.contains(n) && enabledEvents.contains(n)){
-					result.add(n);
-					result.addAll(getMaxFireSet((TransitionNode)n, sync, enabledEvents));
-				}
-		}
-		else{
-			result.add(e);
-		}
-		return result;
-	}
-
-	public List<TransitionNode> getMaxFires (TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
-
-		for(Node n : getMaxFireSet(e, sync, enabledEvents))
-			if(n instanceof TransitionNode)
-				result.add((TransitionNode)n);
-
-		return result;
-	}
+	            for(Path cycle : sync){
+                    if(cycle.contains(e))
+                        for(Node e2 : cycle){
+                            if(e2 instanceof TransitionNode && u.contains(e2)){
+                                u.remove(e2);
+                                stack.push((TransitionNode)e2);
+                            }
+                            else if(!enabledEvents.contains(e2)){
+                            	throw new RuntimeException
+                            	("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
+                            }
+                        }
+	            }
+	            if(!getPostAsynEvents(e).isEmpty()){
+                    for(TransitionNode e3 : getPostAsynEvents(e)){
+                        if(u.contains(e3)){
+                            u.remove(e3);
+                            stack.push((TransitionNode)e3);
+                        }
+                        else if(!enabledEvents.contains(e3)){
+                        	throw new RuntimeException
+                        	("algorithm error: unenabled event in sync cycle "+net.getNodeReference(e3));
+                        }
+                    }
+	            }
+            }
+        }
+        return result;
+    }
 
 	private boolean isPNEnabled (TransitionNode e) {
 		// gather number of connections for each pre-place

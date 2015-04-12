@@ -195,9 +195,9 @@ public class SONMainTask implements Task<VerificationResult>{
 				before =  bsonAlg.before(e);
 				if(!before.isEmpty()){
 					Collection<String> subResult = new ArrayList<String>();
-					logger.info("before("+ net.getNodeReference(e)+"): ");
+					logger.info("before("+ net.getComponentLabel(e)+"): ");
 					for(Condition[] condition : before)
-						subResult.add("("+net.getNodeReference(condition[0]) + " " + net.getNodeReference(condition[1])+ ")");
+						subResult.add("("+net.getComponentLabel(condition[0]) + " " + net.getComponentLabel(condition[1])+ ")");
 					logger.info(subResult);
 				}
 			}

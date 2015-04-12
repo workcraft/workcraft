@@ -53,6 +53,10 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			return;
 		}
 
+		 ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
+		 relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
+		 components.addAll(relatedCPlaces);
+
 		//Abstract group structure task
 		infoMsg("Running model structure and component relation tasks...");
 		infoMsg("Running Abstract ON structure task...");
