@@ -110,7 +110,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				String result = "";
 				for(ONGroup group : abstractGroups)
 					for(Condition c : group.getConditions()){
-						result = phaseTask3(getBSONAlg().getPhase(c), c);
+						result = phaseTask3(getBSONAlg().getPhases(c), c);
 							if(result!=""){
 								hasErr = true;
 								errMsg("ERROR:"+ result, c);
@@ -244,13 +244,13 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		for(ONGroup group : abstractGroups)
 			for(Condition c : group.getConditions()){
 				if(getRelationAlg().getPrePNSet(c).isEmpty()){
-					ArrayList<Condition> min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhase(c));
+					ArrayList<Condition> min = getBSONAlg().getMinimalPhase(getBSONAlg().getPhases(c));
 					for(Condition c2 : min)
 						if(!getRelationAlg().isInitial(c2))
 							result.add(c);
 				}
 				if(getRelationAlg().getPostPNSet(c).isEmpty()){
-					ArrayList<Condition> max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhase(c));
+					ArrayList<Condition> max = getBSONAlg().getMaximalPhase(getBSONAlg().getPhases(c));
 					for(Condition c2 : max)
 						if(!getRelationAlg().isFinal(c2))
 							result.add(c);
@@ -330,7 +330,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		//Joint checking
 		Collection<Condition> preConditions = getRelationAlg().getPrePNCondition(c);
 		for(Condition pre : preConditions){
-			Phase prePhase = getBSONAlg().getPhase(pre);
+			Phase prePhase = getBSONAlg().getPhases(pre);
 			ArrayList<Condition> preMaximal = getBSONAlg().getMaximalPhase(prePhase);
 			ONGroup preBhvGroup = getBSONAlg().getBhvGroup(prePhase);
 

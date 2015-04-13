@@ -38,8 +38,8 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	/**
-	 * return minimal execution set of a given node.
-	 * contain other nodes which have synchronous relation with the selected one.
+	 * return minimal execution set for a given node.
+	 * contain other nodes which have synchronous and PRE- relation with the selected one.
 	 */
     public List<TransitionNode> getMinFires(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
         List<TransitionNode> result = new ArrayList<TransitionNode>();
@@ -55,7 +55,7 @@ public class SimulationAlg extends RelationAlgorithm {
                     result.add(e);
                     u.remove(e);
 	            }
-
+	            //event in sync cycle belong to the result
 	            for(Path cycle : sync){
                     if(cycle.contains(e))
                         for(Node e2 : cycle){
@@ -69,6 +69,7 @@ public class SimulationAlg extends RelationAlgorithm {
                             }
                         }
 	            }
+	            //event which is the preset w.r.t weak causality of selected event belongs to the result.
 	            if(!getPreAsynEvents(e).isEmpty()){
                     for(TransitionNode e3 : getPreAsynEvents(e)){
                         if(u.contains(e3)){
@@ -87,8 +88,8 @@ public class SimulationAlg extends RelationAlgorithm {
     }
 
 	/**
-	 * return maximal execution set of a given node.
-	 * contain other nodes which have synchronous relation with the selected one.
+	 * return maximal execution set for a given node.
+	 * contain other nodes which have synchronous and POST- relation with the selected one.
 	 */
     public List<TransitionNode> getMaxFires(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> enabledEvents){
         List<TransitionNode> result = new ArrayList<TransitionNode>();
@@ -289,11 +290,11 @@ public class SimulationAlg extends RelationAlgorithm {
 			Collection<Condition> postMin = new HashSet<Condition>();
 			for(Node pre : getPrePNSet(e)){
 				if(bsonAlg.isAbstractCondition(pre))
-					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhases((Condition)pre)));
 			}
 			for(Node post : getPostPNSet(e)){
 				if(bsonAlg.isAbstractCondition(post))
-					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
+					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post)));
 			}
 			//if preMax and postMin are in separate ONs.
 			if(!preMax.containsAll(postMin)){
@@ -480,11 +481,11 @@ public class SimulationAlg extends RelationAlgorithm {
 			Collection<Condition> postMin = new HashSet<Condition>();
 			for(Node pre : getPrePNSet(e)){
 				if(bsonAlg.isAbstractCondition(pre))
-					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhase((Condition)pre)));
+					preMax.addAll(bsonAlg.getMaximalPhase(bsonAlg.getPhases((Condition)pre)));
 			}
 			for(Node post : getPostPNSet(e)){
 				if(bsonAlg.isAbstractCondition(post))
-					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post)));
+					postMin.addAll(bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post)));
 			}
 			//if preMax and postMin are in separate ONs.
 			if(!preMax.containsAll(postMin)){

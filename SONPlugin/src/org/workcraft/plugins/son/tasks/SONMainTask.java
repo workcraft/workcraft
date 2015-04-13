@@ -11,6 +11,7 @@ import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -190,14 +191,14 @@ public class SONMainTask implements Task<VerificationResult>{
 		}else{
 			BSONAlg bsonAlg = new BSONAlg(net);
 			logger.info("\nOutput before(e):");
-			Collection<Condition[]> before = new ArrayList<Condition[]>();
+			Collection<TransitionNode[]> before = new ArrayList<TransitionNode[]>();
 			for(Event e : net.getEvents()){
 				before =  bsonAlg.before(e);
 				if(!before.isEmpty()){
 					Collection<String> subResult = new ArrayList<String>();
 					logger.info("before("+ net.getComponentLabel(e)+"): ");
-					for(Condition[] condition : before)
-						subResult.add("("+net.getComponentLabel(condition[0]) + " " + net.getComponentLabel(condition[1])+ ")");
+					for(TransitionNode[] t : before)
+						subResult.add("("+net.getComponentLabel(t[0]) + " " + net.getComponentLabel(t[1])+ ")");
 					logger.info(subResult);
 				}
 			}

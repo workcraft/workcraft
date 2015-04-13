@@ -3,6 +3,8 @@ package org.workcraft.plugins.son.tools;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Tool;
@@ -12,15 +14,20 @@ import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
+import org.workcraft.plugins.son.algorithm.PathAlgorithm;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -49,7 +56,9 @@ public class TestTool extends AbstractTool implements Tool{
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
-		csonCycleTest(net);
+		outputBefore(net);
+		//phaseTest(net);
+		//csonCycleTest(net);
 		//abtreactConditionTest(net);
 		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
 		//syncCycleTest(net);
@@ -61,6 +70,31 @@ public class TestTool extends AbstractTool implements Tool{
 		//conditionOutputTest(vnet);
 	}
 
+	private void outputBefore(SON net){
+
+		BSONAlg bsonAlg = new BSONAlg(net);
+		System.out.println("\nOutput before(e):");
+		Collection<TransitionNode[]> before = new ArrayList<TransitionNode[]>();
+
+		Collection<ONGroup> groups = bsonAlg.getAbstractGroups(net.getGroups());
+		Collection<TransitionNode> set = new HashSet<TransitionNode>();
+		for(ONGroup group : groups){
+			set.addAll(group.getEventNodes());
+		}
+
+
+		for(TransitionNode e : set){
+			before =  bsonAlg.before(e);
+			if(!before.isEmpty()){
+				Collection<String> subResult = new ArrayList<String>();
+				System.out.println("before("+ net.getComponentLabel(e)+"): ");
+				for(TransitionNode[] t : before)
+					subResult.add("("+net.getComponentLabel(t[0]) + " " + net.getComponentLabel(t[1])+ ")");
+				System.out.println(subResult);
+			}
+		}
+
+	}
 
 	@Override
 	public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
@@ -75,6 +109,23 @@ public class TestTool extends AbstractTool implements Tool{
 			System.out.println("node name: "+net.getName(node) + "  node pre size:" + net.getPreset(node).size()
 					+ "  node post size:" + net.getPostset(node).size());
 		}
+	}
+
+	private void phaseTest(SON net){
+		BSONAlg alg = new BSONAlg(net);
+
+		System.out.println("phase test");
+		for(ONGroup group : alg.getAbstractGroups(net.getGroups())){
+			System.out.println("group = " + net.getNodeReference(group));
+			for(Condition c : group.getConditions()){
+				System.out.println("condition = " + net.getNodeReference(c));
+				for(Phase phase : alg.getPhases(c)){
+					System.out.println("phase = " + phase.toString(net));
+				}
+				System.out.println();
+			}
+		}
+
 	}
 
 	private void conditionOutputTest(VisualSON vnet, WorkspaceEntry we){

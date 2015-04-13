@@ -58,7 +58,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 				markingRefs.add(net.getNodeReference(node));
 		}
 
-		phases = bsonAlg.getPhases();
+		phases = bsonAlg.getAllPhases();
 	}
 
 	@Override

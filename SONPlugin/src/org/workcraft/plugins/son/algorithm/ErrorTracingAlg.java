@@ -107,7 +107,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 				((Condition)post).setErrors(err);
 				//set err number to low level states
 				if(!isBhv)
-					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
+					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post))){
 						((Condition) min).setErrors(((Condition) min).getErrors()+((Condition)post).getErrors());
 					}
 			}
@@ -140,7 +140,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 						((Condition)post).setErrors(err);
 						//set err number from high level states
 						if(!isBhv)
-							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
+							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post))){
 								((Condition) min).setErrors(((Condition) min).getErrors()+((Condition)post).getErrors());
 							}
 					}
@@ -228,7 +228,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 			if(post instanceof Condition){
 				//set err number to low level states
 				if(!isBhv)
-					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
+					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post))){
 						((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 					}
 				((Condition)post).setErrors(((Condition)post).getErrors() - err);
@@ -262,7 +262,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 					if(post instanceof Condition){
 						//set err number from high level states
 						if(!isBhv)
-							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhase((Condition)post))){
+							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post))){
 								((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 							}
 						((Condition)post).setErrors(((Condition)post).getErrors() - err);

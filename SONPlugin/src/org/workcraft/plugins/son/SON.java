@@ -233,8 +233,8 @@ public class SON extends AbstractMathModel {
 	public SONConnection getSONConnection(Node first, Node second){
 		ArrayList<SONConnection> connection =  new ArrayList<SONConnection>();
 
-		for (SONConnection con : this.getSONConnections(first))
-			if (this.getSONConnections(second).contains(con))
+		for (SONConnection con : getSONConnections(first))
+			if (getSONConnections(second).contains(con))
 				connection.add(con);
 		if(connection.size() > 1)
 			throw new RuntimeException("Conection size between"+ first.toString() + "and"+ second.toString()+ "> 1");

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
@@ -37,6 +38,7 @@ public class PathAlgorithm{
 		}
 		return result;
 	}
+
 
 	private static void DFS(Node s, Node v, List<Node[]> adj){
 		history.add(s);
@@ -76,58 +78,32 @@ public class PathAlgorithm{
 		return pathResult;
 	}
 
+	public Collection<Node> traverse (Collection<Node> s, Collection<Node> v){
+		Collection<Node> result = new ArrayList<Node>();
+        Stack<Node> stack = new Stack<Node>();
 
-//	public static Collection<Path> getCycles(Node s, Node v, List<Node[]> adj){
-//		clear();
-//		DFS(s, v, adj);
-//		return cycleResult;
-//	}
+		for(Node s1 : s){
+			for(Node v1 : v){
+				stack.push(s1);
+	            while(!stack.empty()){
+            		s1 = stack.pop();
+	            	if(!result.contains(s1)){
+	            		result.add(s1);
+	            	}
 
-//	public static  List<Path> merging (List<Path> cycles){
-//		List<Path> result = new ArrayList<Path>();
-//
-//		while (cycles.size() > 0){
-//			Path first = cycles.get(0);
-//			List<Path> rest = cycles;
-//			rest.remove(0);
-//
-//			int i = -1;
-//			while (first.size() > i){
-//				i = first.size();
-//
-//				List<Path> rest2 = new ArrayList<Path>();
-//				for(Path path : rest){
-//					if(hasCommonElements(first, path)){
-//						first.addAll(path);
-//					}
-//					else{
-//						rest2.add(path);
-//					}
-//				}
-//				rest = rest2;
-//			}
-//
-//			HashSet<Node> filter = new HashSet<Node>();
-//			for(Node node : first){
-//				filter.add(node);
-//			}
-//
-//			Path subResult = new Path();
-//			subResult.addAll(filter);
-//			result.add(subResult);
-//			cycles = rest;
-//		}
-//		return result;
-//	}
-//
-//	private static boolean hasCommonElements(Collection<Node> cycle1, Collection<Node> cycle2){
-//		for(Node n : cycle1)
-//			if(cycle2.contains(n))
-//				return true;
-//		for(Node n : cycle2)
-//			if(cycle1.contains(n))
-//				return true;
-//		return false;
-//	}
+	            	if(s1 == v1){
+	            		continue;
+	            	}
+
+	    			for (Node next: net.getPostset(s1)){
+	    				if(!result.contains(next)){
+	    					stack.push(next);
+	    				}
+	    			}
+	            }
+			}
+		}
+		return result;
+	}
 }
 
