@@ -40,7 +40,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
-				this, "X", Double.class) {
+				this, "X", Double.class, true, true, false) {
 			@Override
 			public void setter(VisualTransformableNode object, Double value) {
 				object.setRootSpaceX(value);
@@ -52,7 +52,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
-				this, "Y", Double.class) {
+				this, "Y", Double.class, true, true, false) {
 			@Override
 			public void setter(VisualTransformableNode object, Double value) {
 				object.setRootSpaceY(value);

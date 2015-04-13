@@ -19,7 +19,7 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
 	public ContactGeneratorTool() {
 		super(new DefaultNodeGenerator(FunctionContact.class) {
 			@Override
-			public MathNode createMathNode()	throws NodeCreationException {
+			public MathNode createMathNode() throws NodeCreationException {
 				MathNode node = super.createMathNode();
 				((FunctionContact)node).setIOType(shiftPressed ? FunctionContact.IOType.INPUT : FunctionContact.IOType.OUTPUT);
 				return node;

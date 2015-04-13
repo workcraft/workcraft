@@ -17,11 +17,6 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
-	public boolean isWritable() {
-		return true;
-	}
-
-	@Override
 	public Object getValue() throws InvocationTargetException {
 		return stg.getInstanceNumber(st);
 	}
@@ -47,7 +42,18 @@ public class InstancePropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
+	public boolean isWritable() {
+		return true;
+	}
+
+	@Override
 	public boolean isCombinable() {
 		return false;
 	}
+
+	@Override
+	public boolean isTemplatable() {
+		return false;
+	}
+
 }

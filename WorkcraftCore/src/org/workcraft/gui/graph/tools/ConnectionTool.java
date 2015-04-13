@@ -53,6 +53,7 @@ public class ConnectionTool extends AbstractTool {
 	static protected final Color incompleteConnectionColor = Color.GREEN;
 	static protected final Color validConnectionColor = Color.BLUE;
 	static protected final Color invalidConnectionColor = Color.RED;
+	static private final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
 	protected boolean forbidSelfLoops = true;
 
@@ -63,14 +64,15 @@ public class ConnectionTool extends AbstractTool {
 	private String warningMessage = null;
 	private boolean mouseLeftFirstNode = false;
 	private LinkedList<Point2D> controlPoints = null;
-
-	private static Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
+	private VisualConnection templateNode = null;
 
 	public ConnectionTool() {
+		this(true);
 	}
 
 	public ConnectionTool(boolean forbidSelfLoops) {
 		this.forbidSelfLoops = forbidSelfLoops;
+		templateNode = new VisualConnection();
 	}
 
 	@Override
@@ -119,6 +121,7 @@ public class ConnectionTool extends AbstractTool {
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		resetState(editor);
+		editor.getModel().setTemplateNode(templateNode);
 	}
 
 
@@ -243,6 +246,7 @@ public class ConnectionTool extends AbstractTool {
 			}
 			VisualModel model = editor.getModel();
 			VisualConnection connection = model.connect(firstNode, currentNode);
+			connection.copyStyle(templateNode);
 			if (controlPoints.isEmpty() && (firstNode == currentNode)) {
 				connection.getGraphic().setDefaultControlPoints();
 			} else {

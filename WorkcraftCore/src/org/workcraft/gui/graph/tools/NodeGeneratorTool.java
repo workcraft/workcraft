@@ -42,11 +42,6 @@ public class NodeGeneratorTool extends AbstractTool {
 
 	public NodeGeneratorTool(NodeGenerator generator) {
 		this.generator = generator;
-		try {
-			templateNode = generator.createVisualNode(generator.createMathNode());
-		} catch (NodeCreationException e) {
-			throw new RuntimeException (e);
-		}
 	}
 
 	@Override
@@ -74,6 +69,13 @@ public class NodeGeneratorTool extends AbstractTool {
 	public void activated(GraphEditor editor) {
 		super.activated(editor);
 		resetState(editor);
+		if (templateNode == null) {
+			try {
+				templateNode = generator.createVisualNode(generator.createMathNode());
+			} catch (NodeCreationException e) {
+				throw new RuntimeException (e);
+			}
+		}
 		editor.getModel().setTemplateNode(templateNode);
 	}
 

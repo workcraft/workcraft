@@ -151,7 +151,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-				this, "Line width", Double.class) {
+				this, "Line width", Double.class, true, true, true) {
 			@Override
 			public void setter(VisualConnection object, Double value) {
 				object.setLineWidth(value);
@@ -163,7 +163,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-				this, "Arrow width", Double.class) {
+				this, "Arrow width", Double.class, true, true, true) {
 			@Override
 			public void setter(VisualConnection object, Double value) {
 				object.setArrowWidth(value);
@@ -175,7 +175,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-				this, "Arrow length", Double.class) {
+				this, "Arrow length", Double.class, true, true, true) {
 			@Override
 			public void setter(VisualConnection object, Double value) {
 				object.setArrowLength(value);
@@ -196,11 +196,13 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ConnectionType>(
-				this, "Connection type", ConnectionType.class) {
+				this, "Connection type", ConnectionType.class, true, true, false) {
 			protected void setter(VisualConnection object, ConnectionType value) {
 				object.setConnectionType(value);
 				for (ControlPoint cp: object.getGraphic().getControlPoints()) {
-					cp.setHidden(false);
+					if (cp != null) {
+						cp.setHidden(false);
+					}
 				}
 			}
 			protected ConnectionType getter(VisualConnection object) {
@@ -209,7 +211,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ScaleMode>(
-				this, "Scale mode", ScaleMode.class) {
+				this, "Scale mode", ScaleMode.class, true, true, true) {
 			protected void setter(VisualConnection object, ScaleMode value) {
 				object.setScaleMode(value);
 			}
@@ -219,7 +221,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Color>(
-				this, "Color", Color.class) {
+				this, "Color", Color.class, true, true, true) {
 			protected void setter(VisualConnection object, Color value) {
 				object.setColor(value);
 			}
@@ -276,24 +278,25 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 	@NoAutoSerialisation
 	public void setConnectionType(ConnectionType value) {
 		if (connectionType != value) {
-			this.connectionType = value;
-			this.observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, getGraphic()));
-			this.children.remove(getGraphic());
-			this.observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, getGraphic()));
-
-			if (connectionType == ConnectionType.POLYLINE) {
+			connectionType = value;
+			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, getGraphic()));
+			children.remove(getGraphic());
+			observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, getGraphic()));
+			if (connectionType == null) {
+			} else if (connectionType == ConnectionType.POLYLINE) {
 				graphic = new Polyline(this);
 				setScaleMode(ScaleMode.NONE);
 			} else if (connectionType == ConnectionType.BEZIER) {
 				graphic = new Bezier(this);
 				setScaleMode(ScaleMode.LOCK_RELATIVELY);
 			}
-			graphic.setDefaultControlPoints();
-
-			this.children.add(graphic);
-			this.observableHierarchyImpl.sendNotification(new NodesAddedEvent(this,	getGraphic()));
-			this.graphic.invalidate();
-			this.observableStateImpl.sendNotification(new PropertyChangedEvent(this, "connectionType"));
+			if ((first != null) && (second != null)) {
+				graphic.setDefaultControlPoints();
+			}
+			children.add(graphic);
+			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this,	getGraphic()));
+			graphic.invalidate();
+			observableStateImpl.sendNotification(new PropertyChangedEvent(this, "connectionType"));
 		}
 		sendNotification(new PropertyChangedEvent(this, "connection type"));
 	}

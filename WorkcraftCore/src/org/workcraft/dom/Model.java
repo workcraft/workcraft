@@ -25,7 +25,7 @@ import java.util.Collection;
 
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
-import org.workcraft.gui.propertyeditor.Properties;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 
 
 public interface Model extends NodeContext {
@@ -63,5 +63,5 @@ public interface Model extends NodeContext {
 	public void remove (Node node);
 	public void remove (Collection<Node> nodes);
 
-	public Properties getProperties(Node node);
+	public ModelProperties getProperties(Node node);
 }

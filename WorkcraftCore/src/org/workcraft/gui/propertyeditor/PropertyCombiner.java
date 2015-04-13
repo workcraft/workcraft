@@ -72,4 +72,13 @@ public final class PropertyCombiner implements PropertyDescriptor {
 		return result;
 	}
 
+	@Override
+	public boolean isTemplatable() {
+		boolean result = true;
+		for (PropertyDescriptor descriptor: values) {
+			result = result && descriptor.isTemplatable();
+		}
+		return result;
+	}
+
 }

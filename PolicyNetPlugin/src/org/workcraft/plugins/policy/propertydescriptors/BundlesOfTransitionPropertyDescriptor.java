@@ -38,17 +38,23 @@ public final class BundlesOfTransitionPropertyDescriptor implements PropertyDesc
 	}
 
 	@Override
-	public boolean isWritable() {
-		return true;
+	public void setValue(Object value) throws InvocationTargetException {
+		model.setBundlesOfTransitionAsString(transition, (String)value);
 	}
 
 	@Override
-	public void setValue(Object value) throws InvocationTargetException {
-		model.setBundlesOfTransitionAsString(transition, (String)value);
+	public boolean isWritable() {
+		return true;
 	}
 
 	@Override
 	public boolean isCombinable() {
 		return false;
 	}
+
+	@Override
+	public boolean isTemplatable() {
+		return false;
+	}
+
 }

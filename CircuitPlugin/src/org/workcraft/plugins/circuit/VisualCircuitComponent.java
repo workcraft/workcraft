@@ -49,6 +49,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -764,6 +765,15 @@ public class VisualCircuitComponent extends VisualComponent implements
 	@Override
 	public void removeAllObservers() {
 		groupImpl.removeAllObservers();
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualCircuitComponent) {
+			VisualCircuitComponent srcComponent = (VisualCircuitComponent)src;
+			setIsEnvironment(srcComponent.getIsEnvironment());
+		}
 	}
 
 }

@@ -34,6 +34,7 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -46,12 +47,14 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
+	// Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+	public static final char DEGREE_SYMBOL = 0x00B0;
 
 	public enum Orientation {
-		ORIENTATION_0("0°", 0),
-		ORIENTATION_90("90°", 1),
-		ORIENTATION_180("180°", 2),
-		ORIENTATION_270("270°", 3);
+		ORIENTATION_0("0" + Character.toString(DEGREE_SYMBOL), 0),
+		ORIENTATION_90("90" + Character.toString(DEGREE_SYMBOL), 1),
+		ORIENTATION_180("180" + Character.toString(DEGREE_SYMBOL), 2),
+		ORIENTATION_270("270" + Character.toString(DEGREE_SYMBOL), 3);
 
 		private final String name;
 		private final int quadrant;
@@ -213,7 +216,6 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 		groupImpl.removeAllObservers();
 	}
 
-
 	abstract public Shape getShape();
 
 	@Override
@@ -230,6 +232,15 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 		drawNameInLocalSpace(r);
 		drawLabelInLocalSpace(r);
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualXmasComponent) {
+			VisualXmasComponent srcComponent = (VisualXmasComponent)src;
+			setOrientation(srcComponent.getOrientation());
+		}
 	}
 
 }

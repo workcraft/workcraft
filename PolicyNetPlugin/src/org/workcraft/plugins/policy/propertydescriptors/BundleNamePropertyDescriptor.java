@@ -51,4 +51,10 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
 	public boolean isCombinable() {
 		return false;
 	}
+
+	@Override
+	public boolean isTemplatable() {
+		return false;
+	}
+
 }

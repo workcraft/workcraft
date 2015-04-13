@@ -52,4 +52,10 @@ public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
 	public boolean isCombinable() {
 		return false;
 	}
+
+	@Override
+	public boolean isTemplatable() {
+		return false;
+	}
+
 }

@@ -43,6 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -433,14 +434,13 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return mainWindow;
 	}
 
-	private Properties propertiesWrapper(final Properties mix) {
+	private Properties propertiesWrapper(final ModelProperties mix) {
 		return new Properties() {
 			@Override
 			public Collection<PropertyDescriptor> getDescriptors() {
 				ArrayList<PropertyDescriptor> list = new ArrayList<PropertyDescriptor>();
 				for(final PropertyDescriptor d : mix.getDescriptors()) {
 					list.add(new PropertyDescriptor() {
-
 						@Override
 						public void setValue(Object value) throws InvocationTargetException {
 							workspaceEntry.saveMemento();
@@ -476,6 +476,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 						public boolean isCombinable() {
 							return d.isCombinable();
 						}
+
+						@Override
+						public boolean isTemplatable() {
+							return d.isTemplatable();
+						}
 					});
 				}
 				return list;
@@ -483,7 +488,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		};
 	}
 
-	private Properties getModelProperties() {
+	private ModelProperties getModelProperties() {
 		ModelProperties properties = new ModelProperties();
 		// Properties of the visual model
 		Properties modelProperties = getModel().getProperties(null);
@@ -494,7 +499,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return properties;
 	}
 
-	private Properties getNodeProperties(Node node) {
+	private ModelProperties getNodeProperties(Node node) {
 		ModelProperties properties = new ModelProperties();
 		// Properties of the visual node
 		Properties nodeProperties = getModel().getProperties(node);
@@ -515,7 +520,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return properties;
 	}
 
-	private Properties getSelectionProperties(Collection<Node> nodes) {
+	private ModelProperties getSelectionProperties(Collection<Node> nodes) {
 		ModelProperties allProperties = new ModelProperties();
 		for (Node node: nodes) {
 			Properties nodeProperties = getNodeProperties(node);
@@ -527,10 +532,15 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public void updatePropertyView() {
 		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
-		Properties properties;
+		ModelProperties properties;
 		VisualNode templateNode = getModel().getTemplateNode();
 		if (templateNode != null) {
 			properties = getNodeProperties(templateNode);
+			for (PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
+				if (!pd.isTemplatable()) {
+					properties.remove(pd);
+				}
+			}
 		} else {
 			Collection<Node> selection = getModel().getSelection();
 			if (selection.size() == 0) {

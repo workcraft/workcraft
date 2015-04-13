@@ -34,6 +34,7 @@ import java.util.HashSet;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -167,7 +168,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
-				this, "I/O type", IOType.class) {
+				this, "I/O type", IOType.class, true, true, false) {
 			protected void setter(VisualContact object, IOType value) {
 				object.getReferencedContact().setIOType(value);
 			}
@@ -324,10 +325,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 	}
 
-	public void setDirection(Direction dir) {
-		if (dir != direction) {
+	public void setDirection(Direction value) {
+		if (value != direction) {
 			sendNotification(new TransformChangingEvent(this));
-			this.direction = dir;
+			this.direction = value;
 			sendNotification(new PropertyChangedEvent(this, "direction"));
 			sendNotification(new TransformChangedEvent(this));
 		}
@@ -442,6 +443,20 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 		setDirection(getDirection().flipVertical());
 		super.flipVertical();
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualContact) {
+			VisualContact srcComponent = (VisualContact)src;
+			setDirection(srcComponent.getDirection());
+			getReferencedContact().setInitOne(srcComponent.getReferencedContact().getInitOne());
+			// TODO: Note that IOType is currently NOT copied to allow
+			//       input/output port generation with Shift key (and
+			//       not to be copied from a template node).
+			// getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());
+		}
 	}
 
 }

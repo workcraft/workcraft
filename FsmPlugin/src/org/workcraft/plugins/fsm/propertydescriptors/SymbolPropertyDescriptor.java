@@ -46,6 +46,11 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
+	public boolean isTemplatable() {
+		return false;
+	}
+
+	@Override
 	public Object getValue() throws InvocationTargetException {
 		return fsm.getName(symbol);
 	}

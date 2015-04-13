@@ -29,13 +29,18 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
 	}
 
 	@Override
+	public boolean isWritable() {
+		return true;
+	}
+
+	@Override
 	public boolean isCombinable() {
 		return false;
 	}
 
 	@Override
-	public boolean isWritable() {
-		return true;
+	public boolean isTemplatable() {
+		return false;
 	}
 
 	@Override
