@@ -52,8 +52,9 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			}
 			monitor.progressUpdate(0.33);
 
-			unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension());
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			boolean tryPnml = settings.getMode().canPnml();
+			unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension(tryPnml));
+			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), tryPnml);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", mon);
 
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
@@ -65,7 +66,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 			monitor.progressUpdate(0.66);
 
-			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), unfoldingFile.getCanonicalPath(), null);
+			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), unfoldingFile.getCanonicalPath(), null, tryPnml);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running mpsat model-checking", mon);
 
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {

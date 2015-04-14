@@ -152,8 +152,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension());
-			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension(true));
+			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -181,7 +181,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 						MpsatUtilitySettings.getSolutionCount(), reachConformation);
 
 				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
-						unfoldingFile.getCanonicalPath(), workingDirectory);
+						unfoldingFile.getCanonicalPath(), workingDirectory, true);
 				Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 						mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
@@ -206,7 +206,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			// Check for deadlock
 			if (checkDeadlock) {
 				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(),
-						unfoldingFile.getCanonicalPath(), workingDirectory);
+						unfoldingFile.getCanonicalPath(), workingDirectory, true);
 				Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
 						mpsatDeadlockTask, "Running deadlock check [MPSat]", subtaskMonitor);
 
@@ -231,7 +231,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			// Check for hazards
 			if (checkHazard) {
 				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(),
-						unfoldingFile.getCanonicalPath(), workingDirectory);
+						unfoldingFile.getCanonicalPath(), workingDirectory, true);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the hazard property:");
 					System.out.println(hazardSettings.getReach());

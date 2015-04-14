@@ -13,19 +13,22 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 
 public class PunfTask implements Task<ExternalProcessResult> {
-	private String inputPath, outputPath;
+	private String inputPath;
+	private String outputPath;
+	private boolean tryPnml;
 
-	public PunfTask(String inputPath, String outputPath)
+	public PunfTask(String inputPath, String outputPath, boolean tryPnml)
 	{
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
+		this.tryPnml = tryPnml;
 	}
 
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
 	{
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PunfUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix());
+		command.add(PunfUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix(tryPnml));
 
 		for (String arg : PunfUtilitySettings.getExtraArgs().split(" ")) {
 			if (!arg.isEmpty()) {
