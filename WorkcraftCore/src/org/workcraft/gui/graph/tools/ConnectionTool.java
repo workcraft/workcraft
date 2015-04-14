@@ -72,7 +72,6 @@ public class ConnectionTool extends AbstractTool {
 
 	public ConnectionTool(boolean forbidSelfLoops) {
 		this.forbidSelfLoops = forbidSelfLoops;
-		templateNode = new VisualConnection();
 	}
 
 	@Override
@@ -121,14 +120,21 @@ public class ConnectionTool extends AbstractTool {
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		resetState(editor);
+		if (templateNode == null) {
+			templateNode = new VisualConnection();
+		}
 		editor.getModel().setTemplateNode(templateNode);
 	}
-
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
 		super.deactivated(editor);
 		resetState(editor);
+	}
+
+	@Override
+	public void reactivated(final GraphEditor editor) {
+		templateNode = null;
 	}
 
 	@Override

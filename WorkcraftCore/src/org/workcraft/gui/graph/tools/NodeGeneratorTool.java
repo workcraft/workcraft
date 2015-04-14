@@ -86,6 +86,11 @@ public class NodeGeneratorTool extends AbstractTool {
 	}
 
 	@Override
+	public void reactivated(GraphEditor editor) {
+		templateNode = null;
+	}
+
+	@Override
 	public void mouseMoved(GraphEditorMouseEvent e) {
 		if (lastGeneratedNode != null) {
 			if (!lastGeneratedNode.hitTest(e.getPosition())) {

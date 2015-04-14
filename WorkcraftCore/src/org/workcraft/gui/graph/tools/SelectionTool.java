@@ -265,7 +265,6 @@ public class SelectionTool extends AbstractTool {
 		editor.getWorkspaceEntry().setCanModify(true);
 		editor.getWorkspaceEntry().setCanSelect(true);
 		currentNode = null;
-		editor.getModel().setTemplateNode(null);
 	}
 
 	@Override

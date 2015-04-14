@@ -65,6 +65,7 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.gui.DockableWindow;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
@@ -531,8 +532,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	}
 
 	public void updatePropertyView() {
-		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
 		ModelProperties properties;
+		String titlePrefix = "Property editor";
+		String titleSuffix = "";
 		VisualNode templateNode = getModel().getTemplateNode();
 		if (templateNode != null) {
 			properties = getNodeProperties(templateNode);
@@ -541,23 +543,35 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 					properties.remove(pd);
 				}
 			}
+			titlePrefix += " [template]";
 		} else {
 			Collection<Node> selection = getModel().getSelection();
 			if (selection.size() == 0) {
 				properties = getModelProperties();
+				titleSuffix += " [model]";
 			} else	if (selection.size() == 1) {
 				Node node = selection.iterator().next();
 				properties = getNodeProperties(node);
+				titleSuffix += " [single node]";
 			} else {
 				properties = getSelectionProperties(selection);
+				titleSuffix += " [several nodes]";
 			}
 		}
 
+		final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
 		if(properties.getDescriptors().isEmpty()) {
-			propertyWindow.clearObject();
+			propertyEditorWindow.clearObject();
+			titleSuffix = "";
 		} else {
-			propertyWindow.setObject(propertiesWrapper(properties));
+			propertyEditorWindow.setObject(propertiesWrapper(properties));
 		}
+
+		final DockableWindow propertyEditorDockable = mainWindow.getPropertyEditor();
+		String title = titlePrefix + titleSuffix;
+		propertyEditorDockable.getContentPanel().setTitle(title);
+		propertyEditorDockable.setTabText(title);
+
 		updatePropertyViewRequested = false;
 	}
 
