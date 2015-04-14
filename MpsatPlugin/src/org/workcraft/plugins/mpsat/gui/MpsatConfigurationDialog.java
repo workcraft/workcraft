@@ -106,7 +106,7 @@ public class MpsatConfigurationDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MpsatMode selectedMode = (MpsatMode)modeCombo.getSelectedItem();
-				if (selectedMode.isReach()) {
+				if (selectedMode.hasReach()) {
 					reachPanel.setVisible(true);
 					layout.setRow(2, TableLayout.FILL);
 				} else {

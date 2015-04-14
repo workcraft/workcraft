@@ -253,7 +253,7 @@ public class MpsatSettings {
 			args.add(option);
 		}
 
-		if (getMode().isReach()) {
+		if (getMode().hasReach()) {
 			try {
 				File reach = File.createTempFile("reach", null);
 				reach.deleteOnExit();
@@ -285,4 +285,5 @@ public class MpsatSettings {
 
 		return args.toArray(new String[args.size()]);
 	}
+
 }

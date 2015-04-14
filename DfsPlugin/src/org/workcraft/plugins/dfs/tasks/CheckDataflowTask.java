@@ -71,8 +71,8 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.20);
 
-			File unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension());
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			File unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension(true));
+			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", mon);
 
@@ -87,7 +87,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.40);
 
-			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
+			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath(), null, true);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -108,7 +108,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.70);
 
-			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath());
+			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath(), null, true);
 			mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {

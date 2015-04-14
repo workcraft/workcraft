@@ -19,26 +19,23 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 	private final String[] args;
 	private final String inputFileName;
 	private final File workingDirectory;
+	private final boolean tryPnml;
 
-	public MpsatTask(String[] args, String inputFileName) {
-		this(args, inputFileName, null);
-	}
-
-	public MpsatTask(String[] args, String inputFileName, File workingDirectory) {
+	public MpsatTask(String[] args, String inputFileName, File workingDirectory, boolean tryPnml) {
 		this.args = args;
 		this.inputFileName = inputFileName;
 		if (workingDirectory == null) {
 			workingDirectory = FileUtils.createTempDirectory("mpsat_");
 		}
 		this.workingDirectory = workingDirectory;
+		this.tryPnml = tryPnml;
 	}
 
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
-
 		ArrayList<String> command = new ArrayList<String>();
 		// Name of the executable
-		command.add(MpsatUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix());
+		command.add(MpsatUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix(tryPnml));
 		// Built-in arguments
 		for (String arg : args) {
 			command.add(arg);
@@ -60,7 +57,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
 		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 		try {
-			String unfoldingFileName = "mpsat" + MpsatUtilitySettings.getUnfoldingExtension();
+			String unfoldingFileName = "mpsat" + MpsatUtilitySettings.getUnfoldingExtension(tryPnml);
 			File unfoldingFile = new File(workingDirectory, unfoldingFileName);
 			if(unfoldingFile.exists()) {
 				outputFiles.put(unfoldingFileName, FileUtils.readAllBytes(unfoldingFile));

@@ -43,7 +43,7 @@ public class MpsatUtilitySettings implements Settings {
 	private static final String defaultCommand = "mpsat";
 	private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
 	private static final String defaultExtraArgs = "";
-	private static final Boolean defaultUsePnmlUnfolding = false;
+	private static final Boolean defaultUsePnmlUnfolding = true;
 	private static final Boolean defaultDebugReach = false;
 	private static final Boolean defaultDebugTemporaryFiles = false;
 
@@ -203,12 +203,12 @@ public class MpsatUtilitySettings implements Settings {
 		debigTemporaryFiles = value;
 	}
 
-	public static String getUnfoldingExtension() {
-		return (getUsePnmlUnfolding() ? ".pnml" : ".mci");
+	public static String getUnfoldingExtension(boolean tryPnml) {
+		return (tryPnml && getUsePnmlUnfolding() ? ".pnml" : ".mci");
 	}
 
-	public static String getCommandSuffix() {
-		return (getUsePnmlUnfolding() ? "_pnml" : "");
+	public static String getCommandSuffix(boolean tryPnml) {
+		return (tryPnml && getUsePnmlUnfolding() ? "_pnml" : "");
 	}
 
 }

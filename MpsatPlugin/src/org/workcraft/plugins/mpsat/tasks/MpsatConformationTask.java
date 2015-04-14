@@ -122,8 +122,8 @@ public class MpsatConformationTask extends MpsatChainTask {
 			monitor.progressUpdate(0.50);
 
 			// Generate unfolding
-			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension());
-			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension(true));
+			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -150,7 +150,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 					MpsatUtilitySettings.getSolutionCount(), reachConformation);
 
 			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
-					unfoldingFile.getCanonicalPath(), workingDirectory);
+					unfoldingFile.getCanonicalPath(), workingDirectory, true);
 			Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 					mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
