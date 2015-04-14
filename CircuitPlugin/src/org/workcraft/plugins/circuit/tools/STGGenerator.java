@@ -24,6 +24,7 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
@@ -39,7 +40,9 @@ import org.workcraft.plugins.cpog.optimisation.dnf.Dnf;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfClause;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -176,9 +179,9 @@ public class STGGenerator {
 			Map<VisualContact, ContactSTG> drivers = new HashMap<VisualContact, ContactSTG>();
 
 			// generate all possible drivers and fill out the targets
+			LinkedList<ContactSTG> contactStgs = new LinkedList<ContactSTG>();
 			for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
-				ContactSTG cstg;
-
+				ContactSTG cstg = null;
 				if(contact.isDriver()) {
 					// if it is a driver, add it to the list of drivers
 					cstg = generatePlaces(circuit, stg, contact);
@@ -199,6 +202,9 @@ public class STGGenerator {
 						attachConnections(circuit, contact, cstg);
 					}
 					targetDrivers.put(contact.getReferencedContact(), driver);
+				}
+				if (cstg != null) {
+					contactStgs.add(cstg);
 				}
 			}
 
@@ -234,9 +240,31 @@ public class STGGenerator {
 				Dnf resetDnf = DnfGenerator.generate(resetFunc);
 				implementDriver(circuit, stg, driver, drivers, targetDrivers, setDnf, resetDnf, signalType);
 			}
+			if (CircuitSettings.getSimplifyStg()) {
+				// remove dead transitions
+				simplifyStg(stg, circuit, contactStgs);
+			}
 			return stg;
 		} catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private static void simplifyStg(VisualSTG stg, VisualCircuit circuit, LinkedList<ContactSTG> contactStgs) {
+		LinkedList<Transition> redundantTransitions = new LinkedList<>();
+		for (ContactSTG cstg: contactStgs) {
+			HashSet<Node> postset = new HashSet<Node>(stg.getPostset(cstg.p0));
+			postset.retainAll(stg.getPostset(cstg.p1));
+			for (Node node: postset) {
+				if (node instanceof VisualTransition) {
+					stg.remove(node);
+					VisualTransition t = (VisualTransition)node;
+					redundantTransitions.add(t.getReferencedTransition());
+				}
+			}
+		}
+		for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+			contact.getReferencedTransitions().removeAll(redundantTransitions);
 		}
 	}
 

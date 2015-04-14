@@ -19,18 +19,21 @@ public class CircuitSettings implements Settings {
 	private static final String keyInactiveWireColor  = prefix + ".inactiveWireColor";
 	private static final String keyBorderWidth  = prefix + ".borderWidth";
 	private static final String keyWireWidth  = prefix + ".wireWidth";
+	private static final String keySimplifyStg = prefix + ".simplifyStg";
 
 	private static final boolean defaultShowContacts = true;
 	private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
 	private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
 	private static final Double defaultBorderWidth = 0.06;
 	private static final Double defaultWireWidth = 0.04;
+	private static final boolean defaultSimplifyStg = true;
 
 	private static boolean showContacts = defaultShowContacts;
 	private static Color activeWireColor = defaultActiveWireColor;
 	private static Color inactiveWireColor = defaultInactiveWireColor;
 	private static Double borderWidth = defaultBorderWidth;
 	private static Double wireWidth = defaultWireWidth;
+	private static boolean simplifyStg = defaultSimplifyStg;
 
 	public CircuitSettings() {
 		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
@@ -82,6 +85,16 @@ public class CircuitSettings implements Settings {
 				return CircuitSettings.getWireWidth();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+				this, "Simplify generated circuit STG", Boolean.class) {
+			protected void setter(CircuitSettings object, Boolean value) {
+				CircuitSettings.setSimplifyStg(value);
+			}
+			protected Boolean getter(CircuitSettings object) {
+				return CircuitSettings.getSimplifyStg();
+			}
+		});
 	}
 
 	@Override
@@ -106,6 +119,7 @@ public class CircuitSettings implements Settings {
 		setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
 		setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
 		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
+		setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
 	}
 
 	@Override
@@ -115,6 +129,7 @@ public class CircuitSettings implements Settings {
 		config.setColor(keyInactiveWireColor, getInactiveWireColor());
 		config.setDouble(keyBorderWidth, getBorderWidth());
 		config.setDouble(keyWireWidth, getWireWidth());
+		config.setBoolean(keySimplifyStg, getSimplifyStg());
 	}
 
 	public static boolean getShowContacts() {
@@ -155,6 +170,14 @@ public class CircuitSettings implements Settings {
 
 	public static void setWireWidth(double value) {
 		wireWidth = value;
+	}
+
+	public static boolean getSimplifyStg() {
+		return simplifyStg;
+	}
+
+	public static void setSimplifyStg(boolean value) {
+		simplifyStg = value;
 	}
 
 }
