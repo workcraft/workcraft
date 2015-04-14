@@ -164,6 +164,7 @@ public class NamespaceHelper {
 
 				VisualPage dstPage = new VisualPage(new PageNode());
 				dstContainer.add(dstPage);
+				dstPage.copyPosition(srcPage);
 				dstPage.copyStyle(srcPage);
 
 				Container dstMathContainer = NamespaceHelper.getMathContainer(dstModel, dstContainer);

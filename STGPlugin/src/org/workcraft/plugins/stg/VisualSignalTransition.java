@@ -41,7 +41,11 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 
 	@Override
 	public String getName() {
-		final StringBuffer result = new StringBuffer(getReferencedTransition().getSignalName());
+		String signalName = getReferencedTransition().getSignalName();
+		if (signalName == null) {
+			signalName = "";
+		}
+		final StringBuffer result = new StringBuffer(signalName);
 		switch (getReferencedTransition().getDirection()) {
 			case PLUS:
 				result.append("+");

@@ -58,4 +58,9 @@ public class SignalNamePropertyDescriptor implements PropertyDescriptor {
 		return false;
 	}
 
+	@Override
+	public boolean isTemplatable() {
+		return false;
+	}
+
 }

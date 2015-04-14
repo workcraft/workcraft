@@ -126,6 +126,7 @@ public class Fst extends Fsm {
 			for (final Signal signal: getSignals()) {
 				properties.add(new SignalTypePropertyDescriptor(this, signal));
 			}
+			properties.sortByPropertyName();
 		} else if (node instanceof SignalEvent) {
 			SignalEvent signalEvent = (SignalEvent) node;
 			properties.add(new EventSignalPropertyDescriptor(this, signalEvent));
@@ -136,7 +137,6 @@ public class Fst extends Fsm {
 			}
 			properties.removeByName("Symbol");
 		}
-		properties.sortByPropertyName();
 		return properties;
 	}
 

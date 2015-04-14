@@ -29,6 +29,7 @@ public interface PropertyDescriptor {
 	public Class<?> getType();
 	public boolean isWritable();
 	public boolean isCombinable();
+	public boolean isTemplatable();
 	public Object getValue() throws InvocationTargetException;
 	public void setValue(Object value) throws InvocationTargetException;
 	public Map<? extends Object, String> getChoice();

@@ -35,7 +35,7 @@ import org.workcraft.util.ConstructorParametersMatcher;
 
 public class NodeFactory {
 
-	public static VisualConnection createVisualConnection (MathConnection connection)
+	public static VisualConnection createVisualConnection(MathConnection connection)
 	throws NodeCreationException {
 
 		// Find the corresponding visual class
@@ -66,7 +66,7 @@ public class NodeFactory {
 		}
 	}
 
-	public static MathNode createNode (Class<?> cls) throws NodeCreationException {
+	public static MathNode createNode(Class<?> cls) throws NodeCreationException {
 		try {
 			Constructor<?> ctor = cls.getConstructor();
 			MathNode component = (MathNode)ctor.newInstance();
@@ -87,7 +87,8 @@ public class NodeFactory {
 			throw new NodeCreationException (ex);
 		}
 	}
-	public static MathNode createNode (String className) throws NodeCreationException {
+
+	public static MathNode createNode(String className) throws NodeCreationException {
 		try {
 			return createNode (Class.forName(className));
 		} catch (ClassNotFoundException e) {
@@ -95,11 +96,11 @@ public class NodeFactory {
 		}
 	}
 
-	public static VisualComponent createVisualComponent (MathNode component) throws NodeCreationException {
+	public static VisualComponent createVisualComponent(MathNode component) throws NodeCreationException {
 		return createVisualComponentInternal(component);
 	}
 
-	public static VisualComponent createVisualComponentInternal (MathNode component, Object ... constructorParameters) throws NodeCreationException {
+	private static VisualComponent createVisualComponentInternal(MathNode component, Object ... constructorParameters) throws NodeCreationException {
 		VisualComponentGeneratorAttribute generator = component.getClass().getAnnotation(VisualComponentGeneratorAttribute.class);
 		if(generator != null) {
 			try {
@@ -114,7 +115,7 @@ public class NodeFactory {
 		}
 	}
 
-	private static VisualComponent createVisualComponentSimple (MathNode component, Object ... constructorParameters) throws NodeCreationException {
+	private static VisualComponent createVisualComponentSimple(MathNode component, Object ... constructorParameters) throws NodeCreationException {
 		// Find the corresponding visual class
 		VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 

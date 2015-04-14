@@ -72,4 +72,9 @@ public class EventSignalPropertyDescriptor implements PropertyDescriptor {
 		return true;
 	}
 
+	@Override
+	public boolean isTemplatable() {
+		return true;
+	}
+
 }

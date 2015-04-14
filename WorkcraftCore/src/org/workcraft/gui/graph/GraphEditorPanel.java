@@ -43,6 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,6 +65,7 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.gui.DockableWindow;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
@@ -433,14 +435,13 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return mainWindow;
 	}
 
-	private Properties propertiesWrapper(final Properties mix) {
+	private Properties propertiesWrapper(final ModelProperties mix) {
 		return new Properties() {
 			@Override
 			public Collection<PropertyDescriptor> getDescriptors() {
 				ArrayList<PropertyDescriptor> list = new ArrayList<PropertyDescriptor>();
 				for(final PropertyDescriptor d : mix.getDescriptors()) {
 					list.add(new PropertyDescriptor() {
-
 						@Override
 						public void setValue(Object value) throws InvocationTargetException {
 							workspaceEntry.saveMemento();
@@ -476,6 +477,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 						public boolean isCombinable() {
 							return d.isCombinable();
 						}
+
+						@Override
+						public boolean isTemplatable() {
+							return d.isTemplatable();
+						}
 					});
 				}
 				return list;
@@ -483,7 +489,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		};
 	}
 
-	private Properties getModelProperties() {
+	private ModelProperties getModelProperties() {
 		ModelProperties properties = new ModelProperties();
 		// Properties of the visual model
 		Properties modelProperties = getModel().getProperties(null);
@@ -494,7 +500,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return properties;
 	}
 
-	private Properties getNodeProperties(Node node) {
+	private ModelProperties getNodeProperties(Node node) {
 		ModelProperties properties = new ModelProperties();
 		// Properties of the visual node
 		Properties nodeProperties = getModel().getProperties(node);
@@ -515,7 +521,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 		return properties;
 	}
 
-	private Properties getSelectionProperties(Collection<Node> nodes) {
+	private ModelProperties getSelectionProperties(Collection<Node> nodes) {
 		ModelProperties allProperties = new ModelProperties();
 		for (Node node: nodes) {
 			Properties nodeProperties = getNodeProperties(node);
@@ -526,23 +532,46 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	}
 
 	public void updatePropertyView() {
-		final PropertyEditorWindow propertyWindow = mainWindow.getPropertyView();
-		Properties properties;
-		Collection<Node> selection = getModel().getSelection();
-		if (selection.size() == 0) {
-			properties = getModelProperties();
-		} else	if (selection.size() == 1) {
-			Node node = selection.iterator().next();
-			properties = getNodeProperties(node);
+		ModelProperties properties;
+		String titlePrefix = "Property editor";
+		String titleSuffix = "";
+		VisualNode templateNode = getModel().getTemplateNode();
+		if (templateNode != null) {
+			properties = getNodeProperties(templateNode);
+			for (PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
+				if (!pd.isTemplatable()) {
+					properties.remove(pd);
+				}
+			}
+			titlePrefix += " [template]";
 		} else {
-			properties = getSelectionProperties(selection);
+			Collection<Node> selection = getModel().getSelection();
+			if (selection.size() == 0) {
+				properties = getModelProperties();
+				titleSuffix += " [model]";
+			} else	if (selection.size() == 1) {
+				Node node = selection.iterator().next();
+				properties = getNodeProperties(node);
+				titleSuffix += " [single node]";
+			} else {
+				properties = getSelectionProperties(selection);
+				titleSuffix += " [several nodes]";
+			}
 		}
 
+		final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
 		if(properties.getDescriptors().isEmpty()) {
-			propertyWindow.clearObject();
+			propertyEditorWindow.clearObject();
+			titleSuffix = "";
 		} else {
-			propertyWindow.setObject(propertiesWrapper(properties));
+			propertyEditorWindow.setObject(propertiesWrapper(properties));
 		}
+
+		final DockableWindow propertyEditorDockable = mainWindow.getPropertyEditor();
+		String title = titlePrefix + titleSuffix;
+		propertyEditorDockable.getContentPanel().setTitle(title);
+		propertyEditorDockable.setTabText(title);
+
 		updatePropertyViewRequested = false;
 	}
 

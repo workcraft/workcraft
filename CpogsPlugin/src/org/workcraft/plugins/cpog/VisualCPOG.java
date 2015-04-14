@@ -100,6 +100,11 @@ public class VisualCPOG extends AbstractVisualModel
 		public boolean isCombinable() {
 			return true;
 		}
+
+		@Override
+		public boolean isTemplatable() {
+			return true;
+		}
 	}
 
 	private CPOG mathModel;

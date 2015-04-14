@@ -27,12 +27,17 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
+	public boolean isWritable() {
+		return true;
+	}
+
+	@Override
 	public boolean isCombinable() {
 		return true;
 	}
 
 	@Override
-	public boolean isWritable() {
+	public boolean isTemplatable() {
 		return true;
 	}
 

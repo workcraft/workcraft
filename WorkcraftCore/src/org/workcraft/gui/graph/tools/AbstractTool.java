@@ -35,10 +35,15 @@ public abstract class AbstractTool implements GraphEditorTool {
 	@Override
 	public void activated(final GraphEditor editor) {
 		editor.forceRedraw();
+		editor.getModel().setTemplateNode(null);
 	}
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
+	}
+
+	@Override
+	public void reactivated(final GraphEditor editor) {
 	}
 
 	@Override

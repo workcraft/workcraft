@@ -123,30 +123,31 @@ public class MainWindow extends JFrame {
 		}
 	};
 
-	private WorkspaceWindow workspaceWindow;
-
-	public WorkspaceWindow getWorkspaceWindow() {
-		return workspaceWindow;
-	}
-
-	private OutputWindow outputWindow;
-	private ErrorWindow errorWindow;
-	private JavaScriptWindow jsWindow;
-	private PropertyEditorWindow propertyEditorWindow;
-	private SimpleContainer toolboxWindow;
-	private SimpleContainer toolInterfaceWindow;
-
 	private JPanel content;
 
 	private DefaultDockingPort rootDockingPort;
-	private DockableWindow outputDockable;
 	private DockableWindow documentPlaceholder;
+	private DockableWindow outputDockable;
+	private DockableWindow erroDockable;
+	private DockableWindow javaScriptDockable;
+	private DockableWindow tasksDockable;
+	private DockableWindow workspaceDockable;
+	private DockableWindow propertyEditorDockable;
+	private DockableWindow toolControlsDockable;
+	private DockableWindow editorToolsDockable;
+
+	private OutputWindow outputWindow;
+	private ErrorWindow errorWindow;
+	private JavaScriptWindow javaScriptWindow;
+	private PropertyEditorWindow propertyEditorWindow;
+	private SimpleContainer toolControlsWindow;
+	private SimpleContainer editorToolsWindow;
+	private WorkspaceWindow workspaceWindow;
 
 	private ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<WorkspaceEntry, DockableWindow>();
 	private LinkedList<DockableWindow> utilityWindows = new LinkedList<DockableWindow>();
 
 	private GraphEditorPanel editorInFocus;
-
 	private MainMenu mainMenu;
 
 	private String lastSavePath = null;
@@ -159,19 +160,14 @@ public class MainWindow extends JFrame {
 	protected void createWindows() {
 		workspaceWindow = new WorkspaceWindow();
 		workspaceWindow.setVisible(true);
-		propertyEditorWindow = new PropertyEditorWindow();
 
 		outputWindow = new OutputWindow();
-
 		errorWindow = new ErrorWindow();
-		jsWindow = new JavaScriptWindow();
+		javaScriptWindow = new JavaScriptWindow();
 
-		toolboxWindow = new SimpleContainer();
-
-		toolInterfaceWindow = new SimpleContainer();
-
-		outputDockable = null;
-		editorInFocus = null;
+		propertyEditorWindow = new PropertyEditorWindow();
+		toolControlsWindow = new SimpleContainer();
+		editorToolsWindow = new SimpleContainer();
 	}
 
 	public MainWindow() {
@@ -434,31 +430,31 @@ public class MainWindow extends JFrame {
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, ySplit);
 
-		DockableWindow problems = createDockableWindow(
+		erroDockable = createDockableWindow(
 				errorWindow, "Problems", outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
-		DockableWindow javaScript = createDockableWindow(
-				jsWindow, "Javascript",	outputDockable,
+		javaScriptDockable = createDockableWindow(
+				javaScriptWindow, "Javascript",	outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
-		DockableWindow wsvd = createDockableWindow(
+		workspaceDockable = createDockableWindow(
 				workspaceWindow, "Workspace",
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.EAST_REGION, xSplit);
 
-		DockableWindow propertyEditor = createDockableWindow(
-				propertyEditorWindow, "Property editor", wsvd,
+		propertyEditorDockable = createDockableWindow(
+				propertyEditorWindow, "Property editor", workspaceDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.NORTH_REGION, ySplit);
 
-		DockableWindow tiw = createDockableWindow(
-				toolInterfaceWindow, "Tool controls", propertyEditor,
+		toolControlsDockable = createDockableWindow(
+				editorToolsWindow, "Tool controls", propertyEditorDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.4f);
 
-		DockableWindow toolbox = createDockableWindow(
-				toolboxWindow, "Editor tools", tiw,
+		editorToolsDockable = createDockableWindow(
+				toolControlsWindow, "Editor tools", toolControlsDockable,
 				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.82f);
 
@@ -469,7 +465,7 @@ public class MainWindow extends JFrame {
 		DockingManager.display(outputDockable);
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,	0.5f));
 
-		DockableWindow tasks = createDockableWindow(
+		tasksDockable = createDockableWindow(
 				new TaskManagerWindow(), "Tasks", outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
@@ -479,13 +475,13 @@ public class MainWindow extends JFrame {
 		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
 		registerUtilityWindow(outputDockable);
-		registerUtilityWindow(problems);
-		registerUtilityWindow(javaScript);
-		registerUtilityWindow(wsvd);
-		registerUtilityWindow(propertyEditor);
-		registerUtilityWindow(toolbox);
-		registerUtilityWindow(tasks);
-		registerUtilityWindow(tiw);
+		registerUtilityWindow(erroDockable);
+		registerUtilityWindow(javaScriptDockable);
+		registerUtilityWindow(tasksDockable);
+		registerUtilityWindow(propertyEditorDockable);
+		registerUtilityWindow(editorToolsDockable);
+		registerUtilityWindow(toolControlsDockable);
+		registerUtilityWindow(workspaceDockable);
 
 		utilityWindows.add(documentPlaceholder);
 
@@ -591,7 +587,7 @@ public class MainWindow extends JFrame {
 			}
 
 			if (editorInFocus == editor) {
-				toolboxWindow.setContent(null);
+				toolControlsWindow.setContent(null);
 				mainMenu.reset();
 				editorInFocus = null;
 			}
@@ -607,8 +603,8 @@ public class MainWindow extends JFrame {
 				DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
 				utilityWindows.add(documentPlaceholder);
 				propertyEditorWindow.removeAll();
-				toolboxWindow.removeAll();
-				toolInterfaceWindow.removeAll();
+				toolControlsWindow.removeAll();
+				editorToolsWindow.removeAll();
 				setWorkActionsEnableness(false);
 			}
 
@@ -843,8 +839,8 @@ public class MainWindow extends JFrame {
 		if (editorInFocus != sender) {
 			editorInFocus = sender;
 
-			toolboxWindow.setContent(sender.getToolBox());
-			toolInterfaceWindow.setContent(sender.getToolBox().getControlPanel());
+			toolControlsWindow.setContent(sender.getToolBox());
+			editorToolsWindow.setContent(sender.getToolBox().getControlPanel());
 
 			mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
 
@@ -1222,10 +1218,6 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public PropertyEditorWindow getPropertyView() {
-		return propertyEditorWindow;
-	}
-
 	public void closeActiveEditor() throws OperationCancelledException {
 		for (WorkspaceEntry k : editorWindows.keySet()) {
 			for (DockableWindow w : editorWindows.get(k)) {
@@ -1433,12 +1425,20 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public WorkspaceWindow getWorkspaceView() {
-		return workspaceWindow;
-	}
-
 	public MainMenu getMainMenu() {
 		return mainMenu;
+	}
+
+	public DockableWindow getPropertyEditor() {
+		return propertyEditorDockable;
+	}
+
+	public PropertyEditorWindow getPropertyView() {
+		return propertyEditorWindow;
+	}
+
+	public WorkspaceWindow getWorkspaceView() {
+		return workspaceWindow;
 	}
 
 }

@@ -29,19 +29,21 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
 	private final O object;
 	private String name;
 	private Class<V> cls;
-	private boolean combinable;
 	private boolean writable;
+	private boolean combinable;
+	private boolean templatable;
 
 	public PropertyDeclaration(O object, String name, Class<V> cls) {
-		this(object, name, cls, true, true);
+		this(object, name, cls, true, true, true);
 	}
 
-	public PropertyDeclaration(O object, String name, Class<V> cls, boolean writable, boolean combinable) {
+	public PropertyDeclaration(O object, String name, Class<V> cls, boolean writable, boolean combinable, boolean templatable) {
 		this.object = object;
 		this.name = name;
 		this.cls = cls;
 		this.writable = writable;
 		this.combinable = combinable;
+		this.templatable = templatable;
 	}
 
 	abstract protected void setter(O object, V value);
@@ -92,5 +94,10 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
 	@Override
 	public boolean isCombinable() {
 		return combinable;
+	}
+
+	@Override
+	public boolean isTemplatable() {
+		return templatable;
 	}
 }

@@ -43,7 +43,6 @@ public class PropertyEditorWindow extends JPanel {
 		setLayout(new BorderLayout(0,0));
 		add(new DisabledPanel(), BorderLayout.CENTER);
 		validate();
-
 	}
 
 	public Properties getObject () {
@@ -66,6 +65,6 @@ public class PropertyEditorWindow extends JPanel {
 			validate();
 			repaint();
 		}
-
 	}
+
 }

@@ -86,6 +86,11 @@ public class VisualContactFormulaProperties {
 			public boolean isCombinable() {
 				return true;
 			}
+
+			@Override
+			public boolean isTemplatable() {
+				return false;
+			}
 		};
 	}
 
@@ -130,6 +135,11 @@ public class VisualContactFormulaProperties {
 			@Override
 			public boolean isCombinable() {
 				return true;
+			}
+
+			@Override
+			public boolean isTemplatable() {
+				return false;
 			}
 		};
 	}

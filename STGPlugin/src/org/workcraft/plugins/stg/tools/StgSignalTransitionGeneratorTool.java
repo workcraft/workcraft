@@ -21,7 +21,7 @@ public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 		super(new DefaultNodeGenerator(SignalTransition.class)
 		{
 			@Override
-			protected MathNode createMathNode() throws NodeCreationException {
+			public MathNode createMathNode() throws NodeCreationException {
 				MathNode node = super.createMathNode();
 				SignalTransition t = (SignalTransition)node;
 				t.setSignalType(shiftPressed ? SignalTransition.Type.INPUT : SignalTransition.Type.OUTPUT);

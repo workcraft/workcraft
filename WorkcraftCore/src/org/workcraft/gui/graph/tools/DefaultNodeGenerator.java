@@ -26,6 +26,7 @@ import javax.swing.Icon;
 import org.workcraft.NodeFactory;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.util.GUI;
 
@@ -60,8 +61,13 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
 	}
 
 	@Override
-	protected MathNode createMathNode() throws NodeCreationException {
+	public MathNode createMathNode() throws NodeCreationException {
 		return NodeFactory.createNode(cls);
+	}
+
+	@Override
+	public VisualNode createVisualNode(MathNode mathNode) throws NodeCreationException {
+		return NodeFactory.createVisualComponent(mathNode);
 	}
 
 	@Override

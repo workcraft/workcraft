@@ -37,18 +37,23 @@ public class SignalPropertyDescriptor implements PropertyDescriptor {
 	}
 
 	@Override
-	public boolean isWritable() {
-		return true;
-	}
-
-	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 		stg.setName(transition, (String)value);
 	}
 
 	@Override
+	public boolean isWritable() {
+		return true;
+	}
+
+	@Override
 	public boolean isCombinable() {
 		return true;
+	}
+
+	@Override
+	public boolean isTemplatable() {
+		return false;
 	}
 
 }

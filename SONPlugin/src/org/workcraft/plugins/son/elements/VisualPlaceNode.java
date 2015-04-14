@@ -13,6 +13,7 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -43,10 +44,10 @@ public class VisualPlaceNode extends VisualComponent{
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Boolean>(
 				this, "marked", Boolean.class) {
 			public void setter(VisualPlaceNode object, Boolean value) {
-				((PlaceNode)getReferencedComponent()).setMarked(value);
+				setMarked(value);
 			}
 			public Boolean getter(VisualPlaceNode object) {
-				return ((PlaceNode)getReferencedComponent()).isMarked();
+				return isMarked();
 			}
 		});
 
@@ -71,8 +72,9 @@ public class VisualPlaceNode extends VisualComponent{
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, String>(
-				this, "interface", String.class) {
+				this, "interface", String.class, true, true, false) {
 			protected void setter(VisualPlaceNode object, String value) {
+				object.setInterface(value);
 			}
 			protected String getter(VisualPlaceNode object) {
 				return object.getInterface();
@@ -267,5 +269,17 @@ public class VisualPlaceNode extends VisualComponent{
 
 	public void setErrLabelColor(Color errLabelColor){
 		this.errLabelColor = errLabelColor;
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualPlaceNode) {
+			VisualPlaceNode srcComponent = (VisualPlaceNode)src;
+			setMarked(srcComponent.isMarked());
+			setErrLabelPositioning(srcComponent.getErrLabelPositioning());
+			setErrLabelColor(srcComponent.getErrLabelColor());
+			setInterface(srcComponent.getInterface());
+		}
 	}
 }

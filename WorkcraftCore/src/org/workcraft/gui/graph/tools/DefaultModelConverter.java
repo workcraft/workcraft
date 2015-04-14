@@ -51,6 +51,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 		Container dstContainer = getRefToDstPage(ref);
 		if (dstContainer instanceof VisualPage) {
 			dstPage = (VisualPage)dstContainer;
+			dstPage.copyPosition(srcPage);
 			dstPage.copyStyle(srcPage);
 		}
 		return dstPage;
@@ -74,6 +75,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 					MathNode dstMathNode = getDstModel().getMathModel().createNode(dstName, mathContainer, dstMathNodeClass);
 
 					dstComponent = getDstModel().createComponent(dstMathNode, container, dstVisualComponentClass);
+					dstComponent.copyPosition(srcComponent);
 					dstComponent.copyStyle(srcComponent);
 				}
 			}
@@ -92,6 +94,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 			try {
 				dstConnection = getDstModel().connect(dstFirst, dstSecond);
 				dstConnection.copyStyle(srcConnection);
+				dstConnection.copyShape(srcConnection);
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}
@@ -118,6 +121,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 			getDstModel().addToSelection(dstSelection);
 			dstGroup = getDstModel().groupSelection();
 			getDstModel().selectNone();
+			dstGroup.copyPosition(srcGroup);
 			dstGroup.copyStyle(srcGroup);
 		}
 		return dstGroup;

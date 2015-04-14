@@ -31,6 +31,7 @@ import org.workcraft.dom.visual.VisualModel;
 public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMouseListener {
 	public void activated(final GraphEditor editor);
 	public void deactivated(final GraphEditor editor);
+	public void reactivated(final GraphEditor editor);
 
 	public void drawInUserSpace(final GraphEditor editor, Graphics2D g);
 	public void drawInScreenSpace(final GraphEditor editor, Graphics2D g);

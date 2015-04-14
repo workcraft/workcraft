@@ -32,6 +32,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -98,6 +99,15 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		this.color = new Color(255, 0, 0, 255);
 		this.setForegroundColor(new Color(255, 0, 0, 255));
 		sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualQueueComponent) {
+			VisualQueueComponent srcComponent = (VisualQueueComponent)src;
+			getReferencedQueueComponent().setCapacity(srcComponent.getReferencedQueueComponent().getCapacity());
+		}
 	}
 
 }

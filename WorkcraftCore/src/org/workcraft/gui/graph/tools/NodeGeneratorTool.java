@@ -24,9 +24,11 @@ package org.workcraft.gui.graph.tools;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 import javax.swing.Icon;
 
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -34,10 +36,11 @@ import org.workcraft.util.GUI;
 
 public class NodeGeneratorTool extends AbstractTool {
 	private final NodeGenerator generator;
+	private VisualNode templateNode = null;
 	private VisualNode lastGeneratedNode = null;
 	private String warningMessage = null;
 
-	public NodeGeneratorTool (NodeGenerator generator) {
+	public NodeGeneratorTool(NodeGenerator generator) {
 		this.generator = generator;
 	}
 
@@ -66,13 +69,25 @@ public class NodeGeneratorTool extends AbstractTool {
 	public void activated(GraphEditor editor) {
 		super.activated(editor);
 		resetState(editor);
+		if (templateNode == null) {
+			try {
+				templateNode = generator.createVisualNode(generator.createMathNode());
+			} catch (NodeCreationException e) {
+				throw new RuntimeException (e);
+			}
+		}
+		editor.getModel().setTemplateNode(templateNode);
 	}
-
 
 	@Override
 	public void deactivated(GraphEditor editor) {
 		super.deactivated(editor);
 		resetState(editor);
+	}
+
+	@Override
+	public void reactivated(GraphEditor editor) {
+		templateNode = null;
 	}
 
 	@Override
@@ -95,7 +110,10 @@ public class NodeGeneratorTool extends AbstractTool {
 			try {
 				if (e.getButton() == MouseEvent.BUTTON1) {
 					editor.getWorkspaceEntry().saveMemento();
-					lastGeneratedNode = generator.generate(e.getModel(), editor.snap(e.getPosition(), null));
+					VisualModel model = e.getModel();
+					Point2D snapPosition = editor.snap(e.getPosition(), null);
+					lastGeneratedNode = generator.generate(model, snapPosition);
+					lastGeneratedNode.copyStyle(templateNode);
 				}
 			} catch (NodeCreationException e1) {
 				throw new RuntimeException (e1);

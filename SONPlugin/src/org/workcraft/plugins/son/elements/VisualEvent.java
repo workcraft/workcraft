@@ -12,6 +12,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
@@ -31,7 +32,7 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Boolean>(
-				this, "Fault", Boolean.class) {
+				this, "Fault", Boolean.class, true, true, true) {
 			public void setter(VisualEvent object, Boolean value) {
 				((Event)getReferencedComponent()).setFaulty(value);
 			}
@@ -108,6 +109,15 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 
 	public Color getFillColor(){
 		return ((Event)getReferencedComponent()).getFillColor();
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualEvent) {
+			VisualEvent srcComponent = (VisualEvent)src;
+			setFaulty(srcComponent.isFaulty());
+		}
 	}
 
 }

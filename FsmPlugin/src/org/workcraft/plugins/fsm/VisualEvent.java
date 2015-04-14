@@ -131,7 +131,6 @@ public class VisualEvent extends VisualConnection {
 		return BoundingBoxHelper.union(super.getBoundingBox(), labelBB);
 	}
 
-
 	@Override
 	public boolean hitTest(Point2D pointInParentSpace) {
 		Rectangle2D labelBB = getLabelBoundingBox();

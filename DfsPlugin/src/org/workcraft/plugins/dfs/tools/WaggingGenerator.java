@@ -118,6 +118,7 @@ public class WaggingGenerator {
 		}
 
 		if (replica != null) {
+			replica.copyPosition(component);
 			replica.copyStyle(component);
 			// postpone adding to the model so no notifications are sent too early
 			Dfs mathDfs = (Dfs)dfs.getMathModel();
@@ -139,6 +140,7 @@ public class WaggingGenerator {
 				replica = createConnection(first, second);
 			}
 			replica.copyStyle(connection);
+			replica.copyShape(connection);
 		}
 		return replica;
 	}
