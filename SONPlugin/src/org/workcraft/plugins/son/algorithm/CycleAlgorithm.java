@@ -26,7 +26,7 @@ public class CycleAlgorithm {
         low = new int[V];
         visited = new boolean[V];
         stack = new Stack<Integer>();
-        sccComp = new ArrayList<>();
+        sccComp = new ArrayList<List<Integer>>();
 
         for (int v = 0; v < V; v++)
             if (!visited[v])

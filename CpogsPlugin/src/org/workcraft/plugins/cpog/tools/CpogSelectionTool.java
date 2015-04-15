@@ -1,51 +1,19 @@
 package org.workcraft.plugins.cpog.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Checkbox;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.BadLocationException;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.cpog.Variable;
-import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.VisualVariable;
-import org.workcraft.plugins.cpog.VisualVertex;
+import org.workcraft.observation.*;
+import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.expressions.CpogConnector;
 import org.workcraft.plugins.cpog.expressions.CpogFormula;
 import org.workcraft.plugins.cpog.expressions.CpogFormulaToString;
@@ -56,6 +24,21 @@ import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 
 public class CpogSelectionTool extends SelectionTool {
@@ -77,6 +60,8 @@ public class CpogSelectionTool extends SelectionTool {
 	private double highestY = 0; //Sets first graph at y co-ordinate of 0
 
 	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, maxX, maxY, refMap, refVertMap);
+
+	private ArrayList<VisualPage> refPages = new ArrayList<VisualPage>();
 
 	public CpogSelectionTool() {
 		super();
@@ -113,7 +98,6 @@ public class CpogSelectionTool extends SelectionTool {
 						if (exp.compareTo("") != 0)
 						{
 							expressions.add(exp);
-							//insertExpression(editor, exp, false);
 						}
 
 						prevLineEnd = expressionText.getLineEndOffset(i);
@@ -124,14 +108,14 @@ public class CpogSelectionTool extends SelectionTool {
 							exp = exp + " " + s;
 						} else {
 							if (exp.compareTo("") != 0) {
-								insertExpression(editor, exp, false);
+								insertExpression(editor, exp, false, false);
 								exp = "";
 							}
 							exp = s;
 						}
 					}
 					if (exp.compareTo("") != 0) {
-						insertExpression(editor, exp, false);
+						insertExpression(editor, exp, false, false);
 					}
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
@@ -166,7 +150,7 @@ public class CpogSelectionTool extends SelectionTool {
 				}
 				while (fileIn.hasNextLine()) {
 					equation = fileIn.nextLine();
-					insertExpression(editor, equation, true);
+					insertExpression(editor, equation, true, false);
 				}
 			}
 
@@ -178,7 +162,7 @@ public class CpogSelectionTool extends SelectionTool {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				parsingTool.getExpressionFromGraph(editor, expressionText);
+				expressionText.setText(parsingTool.getExpressionFromGraph((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel()));
 			}
 
 		});
@@ -191,206 +175,199 @@ public class CpogSelectionTool extends SelectionTool {
 		interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
-	private void insertExpression(final GraphEditor editor, String text,
-			final boolean createDuplicates) {
-		WorkspaceEntry we = editor.getWorkspaceEntry();
-		final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
-		we.captureMemento();
+	private HashMap<String, VisualVertex> insertExpression(final GraphEditor editor, String text,
+			final boolean createDuplicates, boolean getVertList) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+        we.captureMemento();
 
-        if (visualCpog.getCurrentLevel() instanceof VisualScenarioPage) {
-            while (visualCpog.getCurrentLevel() instanceof VisualScenarioPage) {
-                Container c = (Container) visualCpog.getCurrentLevel().getParent();
-                visualCpog.setCurrentLevel(c);
+        visualCpog.setCurrentLevel(visualCpog.getRoot());
 
+        final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
+        final HashSet<ArcCondition> arcConditionList = new HashSet<ArcCondition>();
+        text = text.replace("\n", "");
+        text = parsingTool.replaceReferences(text);
 
-            }
+        CpogFormula f = null;
+        GraphFunc<String, CpogFormula> PGF = null;
+        final HashMap<String, VisualVertex> localVertices = new HashMap<String, VisualVertex>();
+        try {
+            f = CpogExpressionParser.parse(text,
+                    PGF = new GraphFunc<String, CpogFormula>() {
+
+                        String name;
+                        boolean ref;
+
+                        @Override
+                        public CpogFormula eval(String label) {
+                            VisualVertex vertex = null;
+
+                            if (vertexMap.containsKey(label)) {
+                                vertex = vertexMap.get(label);
+                                localVertices.put(label, vertex);
+                                return vertex;
+                            }
+
+                            vertex = null;
+
+                            // TODO: Optimise!
+
+                            if (!createDuplicates)
+                                for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
+                                    if (v.getLabel().equals(label)) {
+                                        vertex = v;
+                                        localVertices.put(label, vertex);
+                                        break;
+                                    }
+
+                            if (vertex == null) {
+                                vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+                                vertex.setLabel(label);
+                                vertexMap.put(label, vertex);
+                                localVertices.put(label, vertex);
+                            }
+                            return vertex;
+                        }
+
+                        @Override
+                        public GraphFunc<String, CpogFormula> removeGraphName(String name) {
+                            if (vertexMap.containsKey(name)) {
+                                vertexMap.remove(name);
+                            }
+                            return this;
+                        }
+
+                        @Override
+                        public CpogFormula eval(String label, String boolExpression) throws ParseException {
+
+                            VisualVertex vertex = null;
+                            BooleanFormula bf;
+
+                            if (vertexMap.containsKey(label)) {
+                                vertex = vertexMap.get(label);
+                                if (boolExpression != "") {
+                                    if (FormulaToString.toString(vertex.getCondition()) == "") {
+                                        try {
+                                            vertex.setCondition(parsingTool.parseBool(boolExpression, visualCpog));
+                                        } catch (ParseException e) {
+                                            throw new ParseException("Boolean error in: " + boolExpression);
+                                        }
+                                    } else {
+                                        try {
+                                            vertex.setCondition(parsingTool.parseBool(FormulaToString.toString(vertex.getCondition()) + "|" + boolExpression, visualCpog));
+                                        } catch (ParseException e) {
+                                            throw new ParseException("Boolean error in: " + boolExpression);
+                                        }
+                                    }
+                                }
+                                return vertex;
+                            }
+
+                            // TODO: Optimise!
+
+                            if (!createDuplicates)
+                                for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
+                                    if (v.getLabel().equals(label)) {
+                                        vertex = v;
+                                        localVertices.put(label, vertex);
+                                        break;
+                                    }
+
+                            if (vertex == null) {
+                                vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+                                vertex.setLabel(label);
+                                vertexMap.put(label, vertex);
+                                localVertices.put(label, vertex);
+                            }
+
+                            if (boolExpression != "") {
+                                if (FormulaToString.toString(vertex.getCondition()) == "") {
+                                    try {
+                                        bf = parsingTool.parseBool(boolExpression, visualCpog);
+                                        vertex.setCondition(bf);
+                                    } catch (ParseException e) {
+                                        throw new ParseException("Boolean error in: " + boolExpression);
+                                    }
+                                } else {
+                                    try {
+                                        bf = parsingTool.parseBool(boolExpression, visualCpog);
+                                        vertex.setCondition(bf);
+                                    } catch (ParseException e) {
+                                        throw new ParseException("Boolean error in: " + boolExpression);
+                                    }
+                                }
+                            }
+                            return vertex;
+                        }
+
+                        @Override
+                        public String getGraphName() {
+                            return name;
+                        }
+
+                        @Override
+                        public void setGraphName(String graphName) {
+                            this.name = graphName;
+                            if ((name.contains("{")) && (name.contains("}"))) {
+                                ref = true;
+                            }
+                        }
+
+                        @Override
+                        public void setSequenceCondition(CpogFormula formula, String boolForm) {
+                            ArcCondition a = new ArcCondition(formula, boolForm);
+                            arcConditionList.add(a);
+                        }
+
+                        @Override
+                        public boolean getRef() {
+                            // TODO Auto-generated method stub
+                            return ref;
+                        }
+
+                    });
+        } catch (ParseException e) {
+            we.cancelMemento();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        } catch (TokenMgrError e) {
+            we.cancelMemento();
+            JOptionPane.showMessageDialog(null, e.getMessage(),
+                    "Lexical error", JOptionPane.ERROR_MESSAGE);
+            return null;
         }
 
-		final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
-		final HashSet<ArcCondition> arcConditionList = new HashSet<ArcCondition>();
-		text = text.replace("\n", "");
-		text = parsingTool.replaceReferences(text);
+        if (getVertList) {
+            for (VisualVertex v :vertexMap.values()) {
+                visualCpog.removeWithoutNotify(v);
+            }
+            return localVertices;
+        } else {
 
+        visualCpog.selectNone();
+        int n = vertexMap.size();
+        int i = 0;
+        for (VisualVertex v : vertexMap.values()) {
+            visualCpog.addToSelection(v);
+        }
 
-		CpogFormula f = null;
-		GraphFunc<String, CpogFormula> PGF = null;
-		final HashMap<String, VisualVertex> localVertices = new HashMap<String, VisualVertex>();
-		try {
-			f = CpogExpressionParser.parse(text,
-					PGF = new GraphFunc<String, CpogFormula>() {
+        if (!PGF.getRef()) {//If this graph is not for reference
+            CpogConnector cc = new CpogConnector(visualCpog);
+            f.accept(cc);
+            graphMap.put(PGF.getGraphName(), f);
 
-				String name;
-				boolean ref;
+            parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
-				@Override
-				public CpogFormula eval(String label) {
-					VisualVertex vertex = null;
+            LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());//new LinkedHashSet<Node>();
 
-					if (vertexMap.containsKey(label)) {
-						vertex = vertexMap.get(label);
-						localVertices.put(label, vertex);
-						return vertex; }
-
-					vertex = null;
-
-					// TODO: Optimise!
-
-					if (!createDuplicates)
-						for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
-							if (v.getLabel().equals(label)) {
-								vertex = v;
-								localVertices.put(label, vertex);
-								break;
-							}
-
-					if (vertex == null) {
-						vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
-						vertex.setLabel(label);
-						vertexMap.put(label, vertex);
-						localVertices.put(label, vertex);
-					}
-					return vertex;
-				}
-
-				@Override
-				public GraphFunc<String, CpogFormula> removeGraphName(String name){
-					if (vertexMap.containsKey(name)) {
-						vertexMap.remove(name);
-					}
-					return this;
-				}
-
-				@Override
-				public CpogFormula eval(String label, String boolExpression) throws ParseException {
-
-					VisualVertex vertex = null;
-					BooleanFormula bf;
-
-					if (vertexMap.containsKey(label))
-					{
-						vertex = vertexMap.get(label);
-						if (boolExpression != "")
-						{
-							if (FormulaToString.toString(vertex.getCondition()) == "")
-							{
-								try {
-									vertex.setCondition(parsingTool.parseBool(boolExpression, visualCpog));
-								} catch (ParseException e) {
-									throw new ParseException("Boolean error in: " + boolExpression);
-								}
-							} else
-							{
-								try {
-									vertex.setCondition(parsingTool.parseBool(FormulaToString.toString(vertex.getCondition()) + "|" + boolExpression, visualCpog));
-								} catch (ParseException e) {
-									throw new ParseException("Boolean error in: " + boolExpression);
-								}
-							}
-						}
-						return vertex;
-					}
-
-					// TODO: Optimise!
-
-					if (!createDuplicates)
-						for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
-							if (v.getLabel().equals(label)) {
-								vertex = v;
-								localVertices.put(label, vertex);
-								break;
-							}
-
-					if (vertex == null) {
-						vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
-						vertex.setLabel(label);
-						vertexMap.put(label, vertex);
-						localVertices.put(label, vertex);
-					}
-
-					if (boolExpression != "")
-					{
-						if (FormulaToString.toString(vertex.getCondition()) == "")
-						{
-							try {
-								bf = parsingTool.parseBool(boolExpression, visualCpog);
-								vertex.setCondition(bf);
-							} catch (ParseException e) {
-								throw new ParseException("Boolean error in: " + boolExpression);
-							}
-						} else
-						{
-							try {
-								bf = parsingTool.parseBool(boolExpression, visualCpog);
-								vertex.setCondition(bf);
-							} catch (ParseException e) {
-								throw new ParseException("Boolean error in: " + boolExpression);
-							}
-						}
-					}
-					return vertex;
-				}
-
-				@Override
-				public String getGraphName() {
-					return name;
-				}
-
-				@Override
-				public void setGraphName(String graphName) {
-					this.name = graphName;
-					if ((name.contains("{")) && (name.contains("}"))){
-						ref = true;
-					}
-				}
-
-				@Override
-				public void setSequenceCondition(CpogFormula formula, String boolForm) {
-					ArcCondition a = new ArcCondition(formula, boolForm);
-					arcConditionList.add(a);
-				}
-
-				@Override
-				public boolean getRef() {
-					// TODO Auto-generated method stub
-					return ref;
-				}
-
-			});
-		} catch (ParseException e) {
-			we.cancelMemento();
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		} catch (TokenMgrError e) {
-			we.cancelMemento();
-			JOptionPane.showMessageDialog(null, e.getMessage(),
-					"Lexical error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
-		visualCpog.selectNone();
-		int n = vertexMap.size();
-		int i = 0;
-		for (VisualVertex v : vertexMap.values()) {
-			visualCpog.addToSelection(v);
-		}
-
-		if (!PGF.getRef()) {//If this graph is not for reference
-			CpogConnector cc = new CpogConnector(visualCpog);
-			f.accept(cc);
-			graphMap.put(PGF.getGraphName(), f);
-
-			parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
-
-			LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());//new LinkedHashSet<Node>();
-
-			if (!insertTransitives.getState()) {
-				parsingTool.removeTransitives(visualCpog, roots);
-			}
+            if (!insertTransitives.getState()) {
+                parsingTool.removeTransitives(visualCpog, roots);
+            }
 
             ArrayList<Node> prevSelection = new ArrayList<Node>();
             for (Node n1 : vertexMap.values()) {
-            	prevSelection.add(n1);
+                prevSelection.add(n1);
             }
 
 
@@ -398,34 +375,49 @@ public class CpogSelectionTool extends SelectionTool {
 
             addUsedReferences(visualCpog, editor, usedReferences, localVertices, prevSelection);
 
-			if (roots.isEmpty()) {
+            if (roots.isEmpty()) {
                 noRootLayout(vertexMap, n, i);
-			} else {
+            } else {
                 bfsLayout(visualCpog, roots);
-			}
+            }
 
-			editor.requestFocus();
-			Point2D.Double coordinate = (Double) parsingTool.getLowestVertex(visualCpog);
+            editor.requestFocus();
+            Point2D.Double coordinate = (Double) parsingTool.getLowestVertex(visualCpog);
 
-			if (PGF.getGraphName() != null)	{
-                insertAsPage(visualCpog, PGF, coordinate);
-			} else {
+            if (PGF.getGraphName() != null) {
+                insertAsPage(visualCpog, PGF, coordinate, editor);
+            } else {
                 insertLoose(visualCpog, coordinate);
             }
 
-		} else { //If this graph is for reference only
+        } else { //If this graph is for reference only
             String normalForm = getNormalForm(arcConditionList, localVertices);
-			parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, normalForm);
+            parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, normalForm);
             String graphName = PGF.getGraphName();
             graphName = graphName.replace("{", "");
             graphName = graphName.replace("}", "");
-			refVertMap.put(graphName,(HashMap<String, VisualVertex>) localVertices.clone());
-			visualCpog.remove(visualCpog.getSelection());
-		}
+            LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
+            bfsLayout(visualCpog, roots);
+            refVertMap.put(graphName, (HashMap<String, VisualVertex>) localVertices.clone());
+            GraphReference ref = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
+            visualCpog.remove(visualCpog.getSelection());
 
-		editor.forceRedraw();
+        }
 
-		we.saveMemento();
+        editor.forceRedraw();
+
+        Collection<Node> prevSelection = visualCpog.getSelection();
+
+        visualCpog.selectAll();
+
+        editor.getMainWindow().zoomFit();
+
+        visualCpog.select(prevSelection);
+
+        we.saveMemento();
+
+        return null;
+    }
 	}
 
     public String getNormalForm(HashSet<ArcCondition> arcConditionList, HashMap<String, VisualVertex> localVertices) {
@@ -475,7 +467,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
     }
 
-    public void insertAsPage(VisualCPOG visualCpog, GraphFunc<String, CpogFormula> PGF, Double coordinate) {
+    public void insertAsPage(VisualCPOG visualCpog, GraphFunc<String, CpogFormula> PGF, Double coordinate, GraphEditor editor) {
         HashSet<VisualScenarioPage> pageList = new HashSet<VisualScenarioPage>();
         for (Node n0 : visualCpog.getSelection()) {
             if (n0 instanceof VisualScenarioPage) {
@@ -494,6 +486,9 @@ public class CpogSelectionTool extends SelectionTool {
 
         coordinate.setLocation(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight()/2));
         page.setPosition(coordinate);
+
+        attatchRefEventHandler(visualCpog, page, editor);
+
     }
 
     public void bfsLayout(VisualCPOG visualCpog, LinkedHashSet<Node> roots) {
@@ -545,6 +540,17 @@ public class CpogSelectionTool extends SelectionTool {
 		}
 	}
 
+    @Override
+    public void mouseReleased(GraphEditorMouseEvent e) {
+        super.mouseReleased(e);
+
+        VisualVertex v = getVertex(e.getEditor());
+        if (v != null) {
+            v.sendNotification(new PropertyChangedEvent(v, "position"));
+        }
+    }
+
+
     public LinkedHashSet<Node> getRootNodes(VisualCPOG visualCpog, Collection<VisualVertex> vertexMap) {
         LinkedHashSet<Node> roots = new LinkedHashSet<Node>();
         Set<Connection> arcs;
@@ -589,8 +595,9 @@ public class CpogSelectionTool extends SelectionTool {
                         if (n1 instanceof VisualPage) {
                             VisualPage vp = (VisualPage) n1;
                             vp.setLabel(k);
-                            vp.setIsCollapsed(true);
+                            vp.setIsCollapsed(false);
                             prevSelection.add(vp);
+                            refPages.add(vp);
                         }
                     }
                 }
@@ -598,6 +605,146 @@ public class CpogSelectionTool extends SelectionTool {
             visualCpog.addToSelection(prevSelection);
         }
     }
+
+    public void attatchRefEventHandler(final VisualCPOG visualCpog, final Container page, final GraphEditor editor) {
+        new HierarchySupervisor() {
+        	DefaultHangingConnectionRemover arcRemover = new DefaultHangingConnectionRemover(visualCpog, "CPOG");
+        	ArrayList<Node> toBeRemoved = new ArrayList<Node>();
+        	String refKey = "";
+
+            @Override
+            public void handleEvent(HierarchyEvent e) {
+                ArrayList<VisualPage> relaventPages = new ArrayList<VisualPage>();
+                if (e instanceof NodesDeletingEvent) {
+                    for (Node node: e.getAffectedNodes()) {
+                    	if (node instanceof VisualVertex) {
+                            final VisualVertex vert = (VisualVertex) node;
+                            if (vert.getParent() instanceof VisualPage) {
+                                VisualPage page = (VisualPage) vert.getParent();
+                                refKey = page.getLabel();
+                                relaventPages.addAll(getRefPages(visualCpog, refKey, vert));
+                                relaventPages.remove(page);
+                                for (VisualPage p : relaventPages) {
+                                    for (Node n : p.getChildren()) {
+                                        if (n instanceof VisualVertex) {
+                                            VisualVertex v = (VisualVertex) n;
+                                            if (v.getLabel().compareTo(vert.getLabel()) == 0) {
+                                                if (!(e.getAffectedNodes().contains(v))) {
+                                                    toBeRemoved.add(v);
+                                                }
+                                            	break;
+                                            }
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                }
+                    for (Node n : toBeRemoved) {
+                        if (n.getParent() != null) {
+                            visualCpog.removeWithoutNotify(n);
+                            arcRemover.handleEvent(new NodesDeletingEvent(n.getParent(), n));
+                        }
+                    }
+
+                    //Update referenced expression
+                    if (relaventPages.size() > 0) {
+                        Container previousLevel = visualCpog.getCurrentLevel();
+                        Collection<Node> selection = visualCpog.getSelection();
+
+
+                        VisualPage page = relaventPages.get(0);
+                        visualCpog.setCurrentLevel((Container) page.getParent());
+                        visualCpog.select(page);
+
+                        String newExpression = parsingTool.getExpressionFromGraph(visualCpog);
+                        newExpression = newExpression.replace("\n", "");
+                        while (newExpression.startsWith(" ")) {
+                            newExpression = newExpression.substring(1);
+                        }
+                        while (newExpression.endsWith(" "))  {
+                            newExpression = newExpression.substring(0, newExpression.length() - 1);
+                        }
+
+                        refMap.remove(page.getLabel());
+                        int eqLocation = 0;
+                        eqLocation = newExpression.indexOf('=');
+                        refMap.put(page.getLabel(), newExpression.substring(eqLocation + 1));
+
+                        //newExpression = page.getLabel() + " = " + newExpression;
+                        refVertMap.remove(page.getLabel());
+                        refVertMap.put(page.getLabel(), (HashMap<String, VisualVertex>) insertExpression(editor, newExpression, true, true).clone());
+
+                        visualCpog.setCurrentLevel(previousLevel);
+                        visualCpog.select(selection);
+                    }
+
+
+            }
+            }
+        }.attach(page);
+
+        final class StateSupervisorExtension extends StateSupervisor {
+            @Override
+            public void handleEvent(StateEvent e) {
+                if (e instanceof PropertyChangedEvent) {
+                    PropertyChangedEvent pce = (PropertyChangedEvent) e;
+                    if (((PropertyChangedEvent) e).getPropertyName().compareTo("position") == 0)
+                    {
+                        if (pce.getSender() instanceof VisualVertex) {
+                            VisualVertex v = (VisualVertex) pce.getSender();
+                            if (v.getParent() instanceof VisualPage) {
+                                VisualPage page = (VisualPage) v.getParent();
+
+                                String refKey = page.getLabel();
+
+                                ArrayList<VisualPage> refPages = getRefPages(visualCpog, refKey, v);
+                                refPages.remove(page);
+
+                                for (VisualPage p : refPages) {
+                                    for (Node n : p.getChildren()) {
+                                        if ((n instanceof VisualVertex) && (((VisualVertex) n).getLabel().compareTo(v.getLabel()) == 0)) {
+                                            ((VisualVertex) n).setPosition(v.getPosition());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        new StateSupervisorExtension().attach(page);
+    }
+
+    public ArrayList<VisualPage> getRefPages(VisualCPOG visualCpog, String refKey, VisualVertex v) {
+        ArrayList<VisualPage> result = new ArrayList<VisualPage>();
+
+
+        for (VisualPage p : refPages) {
+        	if (p.getLabel().compareTo(refKey) == 0) {
+        		result.add(p);
+
+        	}
+        }
+        return result;
+    }
+
+    public VisualVertex getVertex(GraphEditor editor) {
+
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+
+        if (visualCpog.getSelection().size() == 1) {
+            for (Node n : visualCpog.getSelection()) {
+                if (n instanceof VisualVertex) {
+                    return (VisualVertex) n;
+                }
+            }
+        }
+
+        return null;
+    }
+
+
 }
-
-

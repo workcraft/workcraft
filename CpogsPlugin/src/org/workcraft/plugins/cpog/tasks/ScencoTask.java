@@ -1,42 +1,10 @@
 package org.workcraft.plugins.cpog.tasks;
 
-import java.awt.geom.Point2D;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.swing.JOptionPane;
-
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.cpog.CpogSettings;
-import org.workcraft.plugins.cpog.EncoderSettings;
+import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
-import org.workcraft.plugins.cpog.Variable;
-import org.workcraft.plugins.cpog.VariableState;
-import org.workcraft.plugins.cpog.VisualArc;
-import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.VisualScenario;
-import org.workcraft.plugins.cpog.VisualScenarioPage;
-import org.workcraft.plugins.cpog.VisualVariable;
-import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
-import org.workcraft.plugins.cpog.optimisation.CpogOptimisationTask;
-import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
-import org.workcraft.plugins.cpog.optimisation.OneHotIntBooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
-import org.workcraft.plugins.cpog.optimisation.Optimiser;
+import org.workcraft.plugins.cpog.optimisation.*;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
@@ -47,6 +15,14 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.geom.Point2D;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class ScencoTask {
 	// FIXME: Relative path to the directory with scenco results. Currently this is hard-coded in scenco.
@@ -98,7 +74,7 @@ public class ScencoTask {
 
 		ArrayList<VisualScenarioPage> scenarios = new ArrayList<VisualScenarioPage>();
 
-		CpogParsingTool.getPages(cpog, scenarios);
+		CpogParsingTool.getScenarios(cpog, scenarios);
 
 		we.captureMemento();
 

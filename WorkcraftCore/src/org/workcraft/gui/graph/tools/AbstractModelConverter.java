@@ -17,8 +17,8 @@ import org.workcraft.util.Hierarchy;
 abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> implements ModelConverter<TSrcModel, TDstModel> {
 	final private TSrcModel srcModel;
 	final private TDstModel dstModel;
-	final private HashMap<VisualNode, VisualNode> srcToDstNodes = new HashMap<>();
-	final private HashMap<String, Container> refToDstPage = new HashMap<>();
+	final private HashMap<VisualNode, VisualNode> srcToDstNodes = new HashMap<VisualNode, VisualNode>();
+	final private HashMap<String, Container> refToDstPage = new HashMap<String, Container>();
 
 	public AbstractModelConverter(TSrcModel srcModel, TDstModel dstModel) {
 		this.srcModel = srcModel;
