@@ -396,8 +396,12 @@ public class CpogSelectionTool extends SelectionTool {
             String graphName = PGF.getGraphName();
             graphName = graphName.replace("{", "");
             graphName = graphName.replace("}", "");
+            LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
+            bfsLayout(visualCpog, roots);
             refVertMap.put(graphName, (HashMap<String, VisualVertex>) localVertices.clone());
+            GraphReference ref = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
             visualCpog.remove(visualCpog.getSelection());
+
         }
 
         editor.forceRedraw();
@@ -689,8 +693,8 @@ public class CpogSelectionTool extends SelectionTool {
                     {
                         if (pce.getSender() instanceof VisualVertex) {
                             VisualVertex v = (VisualVertex) pce.getSender();
-                            if (v.getParent() instanceof VisualScenarioPage) {
-                                VisualScenarioPage page = (VisualScenarioPage) v.getParent();
+                            if (v.getParent() instanceof VisualPage) {
+                                VisualPage page = (VisualPage) v.getParent();
 
                                 String refKey = page.getLabel();
 
