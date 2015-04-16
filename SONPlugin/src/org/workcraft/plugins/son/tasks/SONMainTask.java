@@ -8,10 +8,6 @@ import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.StructureVerifySettings;
-import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -74,8 +70,8 @@ public class SONMainTask implements Task<VerificationResult>{
 			totalErrNum = totalErrNum + bsonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
 
-			if(settings.getOuputBefore())
-				outputBefore(net);
+			//if(settings.getOuputBefore())
+				//outputBefore(net);
 		}
 
 		//group structure tasks
@@ -119,8 +115,8 @@ public class SONMainTask implements Task<VerificationResult>{
 			totalErrNum = totalErrNum + bsonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
 
-			if(settings.getOuputBefore())
-				outputBefore(net);
+			//if(settings.getOuputBefore())
+				//outputBefore(net);
 		}
 
 
@@ -184,26 +180,6 @@ public class SONMainTask implements Task<VerificationResult>{
 	    }
 	}
 
-	private void outputBefore(SON net){
-		if(totalErrNum > 0){
-			totalWarningNum++;
-			logger.info("WARNING : Structure error exist, cannot output before(e).");
-		}else{
-			BSONAlg bsonAlg = new BSONAlg(net);
-			logger.info("\nOutput before(e):");
-			Collection<TransitionNode[]> before = new ArrayList<TransitionNode[]>();
-			for(Event e : net.getEvents()){
-				before =  bsonAlg.before(e);
-				if(!before.isEmpty()){
-					Collection<String> subResult = new ArrayList<String>();
-					logger.info("before("+ net.getComponentLabel(e)+"): ");
-					for(TransitionNode[] t : before)
-						subResult.add("("+net.getComponentLabel(t[0]) + " " + net.getComponentLabel(t[1])+ ")");
-					logger.info(subResult);
-				}
-			}
-		}
-	}
 
 	private void errNodesHighlight(boolean b, SON net){
 		if(b){

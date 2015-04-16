@@ -21,7 +21,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Collection<Path> cycleErrors = new HashSet<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
-	private boolean hasErr = false;
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
@@ -60,7 +59,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 			if(!getRelationAlg().hasFinal(groupComponents) || !getRelationAlg().hasInitial(groupComponents)){
 				errMsg("ERROR : Occurrence net must have at least one input and one output.");
-				hasErr = true;
 				errNumber ++;
 				continue;
 			}
@@ -71,7 +69,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (task1.isEmpty())
 				infoMsg("Valid occurrence net input.");
 			else{
-				hasErr = true;
 				errNumber = errNumber + task1.size();
 				for(Node node : task1){
 					relationErrors.add(node);
@@ -84,7 +81,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (task2.isEmpty())
 				infoMsg("Valid occurrence net output.");
 			else{
-				hasErr = true;
 				errNumber = errNumber + task2.size();
 				for(Node node : task2){
 					relationErrors.add(node);
@@ -99,7 +95,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (task3.isEmpty() && task4.isEmpty())
 				infoMsg("Occurrence net is conflict free.");
 			else{
-				hasErr = true;
 				errNumber = errNumber + task3.size()+ task4.size();
 				for(Node condition : task3){
 					relationErrors.add(condition);
@@ -122,7 +117,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (cycleResult.isEmpty())
 				infoMsg("Occurrence net is cycle free");
 			else{
-				hasErr = true;
 				errNumber++;
 				errMsg("ERROR : Occurrence net involves cycle paths = "+ cycleResult.size() + ".");
 				int i = 1;
@@ -186,10 +180,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 		return getGroupErrorsSetReferences(groupErrors);
 	}
 
-	@Override
-	public boolean hasErr(){
-		return this.hasErr;
-	}
 	@Override
 	public int getErrNumber(){
 		return this.errNumber;

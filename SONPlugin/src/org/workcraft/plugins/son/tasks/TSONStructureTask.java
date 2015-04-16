@@ -18,7 +18,6 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 	private Collection<Path> cycleErrors = new ArrayList<Path>();
 
-	private boolean hasErr = false;
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
@@ -105,11 +104,6 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 	@Override
 	public Collection<String> getGroupErrors() {
 		return getGroupErrorsSetReferences(groupErrors);
-	}
-
-	@Override
-	public boolean hasErr() {
-		return hasErr;
 	}
 
 	@Override

@@ -4,21 +4,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
-public class BSONCycleAlg extends CSONCycleAlg{
+public class BSONCycleAlg extends ONCycleAlg{
 
 	private SON net;
 	private BSONAlg bsonAlg;
+	private Map<Condition, Collection<Phase>> phases;
 
-	public BSONCycleAlg(SON net){
+	public BSONCycleAlg(SON net, Map<Condition, Collection<Phase>> phases){
 		super(net);
 		this.net = net;
+		this.phases = phases;
 		bsonAlg =new BSONAlg(net);
 	}
 
@@ -63,13 +69,19 @@ public class BSONCycleAlg extends CSONCycleAlg{
 			throw new RuntimeException("fail to create graph, input size is not equal to nodeIndex size");
 		}
 
+		//get upper-level transition nodes.
+		Collection<ONGroup> upperGroups = bsonAlg.getAbstractGroups(net.getGroups());
+		Collection<TransitionNode> upperT = new ArrayList<TransitionNode>();
+		for(ONGroup group : upperGroups)
+			upperT.addAll(group.getEventNodes());
+
 		for(int i = 0; i < nodes.size(); i++){
 			//add before relation
             Node n = nodes.get(i);
-            if(n instanceof TransitionNode){
-                for(Condition[] before : bsonAlg.before((TransitionNode)n)){
-                    Condition c0 = before[0];
-                    Condition c1 = before[1];
+            if(upperT.contains(n)){
+                for(TransitionNode[] before : bsonAlg.before((TransitionNode)n, phases)){
+                	TransitionNode c0 = before[0];
+                	TransitionNode c1 = before[1];
                     int index = nodeIndex.get(c0);
                     if(result[index] == null){
                             result[index] = new ArrayList<Integer>();
@@ -78,31 +90,36 @@ public class BSONCycleAlg extends CSONCycleAlg{
                 }
             }
         }
-        System.out.println("Index");
-        for(Node key : nodeIndex.keySet()){
-                System.out.println(net.getComponentLabel(key) + " " + nodeIndex.get(key) + " " + result[nodeIndex.get(key)].toString());
-        }
+//        System.out.println("Index");
+//        for(Node key : nodeIndex.keySet()){
+//                System.out.println(net.getComponentLabel(key) + " " + nodeIndex.get(key) + " " + result[nodeIndex.get(key)].toString());
+//        }
 		return result;
 	}
 
 	@Override
 	public Collection<Path> cycleTask (Collection<? extends Node> nodes){
+		//remove all paths which do not involve before(e) relation.
 		 return cyclePathFliter(super.cycleTask(nodes));
 	}
 
-	//if cycle contains before relation
 	private Collection<Path> cyclePathFliter(Collection<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
-		CycleAlgorithm cycleAlg = new CycleAlgorithm();
 
 		for(Path cycle : paths){
-			boolean hasCycle = false;
-			for(List<Integer> cycleIndex : cycleAlg.getCycles(super.createGraph(cycle))){
-				 if(cycleIndex.size() > 1){
-					  hasCycle = true;
-				 }
+			int u = 0;
+			int l = 0;
+
+			for(Node n : cycle){
+				if(n instanceof ChannelPlace)
+					continue;
+				else if(bsonAlg.isUpperNode(n))
+					u++;
+				else
+					l++;
 			}
-			if(!hasCycle)
+			//all cycle nodes are in the same level
+			if(u==0 || l==0)
 				delList.add(cycle);
 		}
 		paths.removeAll(delList);

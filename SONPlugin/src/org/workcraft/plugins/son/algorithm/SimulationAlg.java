@@ -55,7 +55,7 @@ public class SimulationAlg extends RelationAlgorithm {
                     result.add(e);
                     u.remove(e);
 	            }
-	            //event in sync cycle belong to the result
+	            //event in sync cycle belongs to the result
 	            for(Path cycle : sync){
                     if(cycle.contains(e))
                         for(Node e2 : cycle){
@@ -69,7 +69,7 @@ public class SimulationAlg extends RelationAlgorithm {
                             }
                         }
 	            }
-	            //event which is the preset w.r.t weak causality of selected event belongs to the result.
+	            //event which is the preset w.r.t weak causality, of selected event belongs to the result.
 	            if(!getPreAsynEvents(e).isEmpty()){
                     for(TransitionNode e3 : getPreAsynEvents(e)){
                         if(u.contains(e3)){

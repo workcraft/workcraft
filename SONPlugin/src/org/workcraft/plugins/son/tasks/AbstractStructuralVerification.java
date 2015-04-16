@@ -2,10 +2,12 @@ package org.workcraft.plugins.son.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.BSONCycleAlg;
@@ -14,6 +16,7 @@ import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
+import org.workcraft.plugins.son.elements.Condition;
 
 abstract class AbstractStructuralVerification implements StructuralVerification{
 
@@ -33,7 +36,7 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		relationAlg = new RelationAlgorithm(net);
 		csonPathAlg = new CSONCycleAlg(net);
 		bsonAlg = new BSONAlg(net);
-		bsonPathAlg = new BSONCycleAlg(net);
+		bsonPathAlg = new BSONCycleAlg(net, getAllPhases());
 		onPathAlg = new ONCycleAlg(net);
 		tsonAlg = new TSONAlg(net);
 
@@ -65,6 +68,10 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 			}
 		}
 		return result;
+	}
+
+	public Map<Condition, Collection<Phase>> getAllPhases(){
+		return bsonAlg.getAllPhases();
 	}
 
 	public void infoMsg(String msg){

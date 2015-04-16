@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -59,7 +58,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get phases collection for a given abstract condition
+	 * get phases collection for a given upper-level condition
 	 */
 	public Collection<Phase> getPhases(Condition c){
 		Collection<Phase> result = new ArrayList<Phase>();
@@ -75,61 +74,23 @@ public class BSONAlg extends RelationAlgorithm{
 				if(con != null && con.getSemantics()==Semantics.BHVLINE)
 					nodes.add(n);
 			}
-
-			Phase phase = new Phase();
-			for(Node node : dfs(nodes, nodes)){
-				if(node instanceof Condition)
-					phase.add((Condition)node);
+			if(!nodes.isEmpty()){
+				Phase phase = new Phase();
+				for(Node node : PathAlgorithm.dfs(nodes, nodes, net)){
+					if(node instanceof Condition)
+						phase.add((Condition)node);
+				}
+				result.add(phase);
 			}
-			result.add(phase);
-		}
-		return result;
-	}
-
-	private Collection<Node> dfs (Collection<Node> s, Collection<Node> v){
-		Collection<Node> result = new HashSet<Node>();
-		RelationAlgorithm relation = new RelationAlgorithm(net);
-        Stack<Node> stack = new Stack<Node>();
-
-		for(Node s1 : s){
-			Collection<Node> visit = new ArrayList<Node>();
-			stack.push(s1);
-			visit.add(s1);
-
-            while(!stack.empty()){
-        		s1 = stack.peek();
-
-            	if(v.contains(s1)){
-            		result.add(s1);
-            	}
-
-            	Node post = null;
-    			for (Node n: relation.getPostPNSet(s1)){
-    				if(result.contains(n)){
-    					result.add(s1);
-    				}
-    				if(!visit.contains(n)){
-    					post = n;
-    					break;
-    				}
-    			}
-
-    			if(post != null){
-    				visit.add(post);
-    				stack.push(post);
-    			}else{
-    				stack.pop();
-    			}
-            }
 		}
 		return result;
 	}
 
 	/**
-	 * get the phase collection for all abstract conditions.
+	 * get the phase collection for all upper-level conditions.
 	 */
 	public Map<Condition, Collection<Phase>> getAllPhases(){
-		Map<Condition, Collection<Phase>> result = new  HashMap<Condition, Collection<Phase>>();
+		Map<Condition, Collection<Phase>> result = new HashMap<Condition, Collection<Phase>>();
 		Collection<ONGroup> abstractGroups =getAbstractGroups(net.getGroups());
 
 		for(ONGroup group : abstractGroups){
@@ -138,6 +99,7 @@ public class BSONAlg extends RelationAlgorithm{
 		}
 		return result;
 	}
+
 
 	private Collection<Condition> Max(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
@@ -176,7 +138,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get the set of corresponding abstract conditions for a given node
+	 * get the set of corresponding upper-level conditions for a given node
 	 */
 	public Collection<Condition> getAbstractConditions(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
@@ -196,7 +158,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * return true if the given node is in abstract group.
+	 * return true if the given node is an upper-level condition.
 	 */
 	public boolean isAbstractCondition(Node node){
 		if((node instanceof Condition)
@@ -208,52 +170,60 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get behavioral group for a set of phase bounds
+	 * return true if the given node is in upper-level group.
 	 */
-	public ONGroup getBhvGroup(Collection<Condition> phase_bound){
+	public boolean isUpperNode(Node node){
+		if(isAbstractCondition(node))
+			return true;
+		for(Node pre : getPrePNSet(node))
+			if(isAbstractCondition(pre))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * get lower-level group for a set of phase bounds
+	 */
+	public ONGroup getLowerGroup(Collection<Condition> phaseBound){
 		Collection<ONGroup> groups = new HashSet<ONGroup>();
 		for(ONGroup group : net.getGroups())
-			if(!getCommonElements(group.getComponents(), phase_bound).isEmpty())
+			if(!getCommonElements(group.getComponents(), phaseBound).isEmpty())
 				groups.add(group);
 
 		return groups.iterator().next();
 	}
 
 	/**
-	 * get corresponding behavioral groups for a given abstract condition;
-	 * each abstract condition must map to a phase.
+	 * get all lower-level groups for a given upper-level group
+	 */
+	public Collection<ONGroup> getBhvGroup(ONGroup upperGroup){
+		Collection<ONGroup> result = new HashSet<ONGroup>();
+
+		for(Condition c : upperGroup.getConditions()){
+			result.addAll(getLowerGroups(c));
+		}
+
+		return result;
+	}
+
+	/**
+	 * get all lower-level groups for a given upper-level condition;
 	 *
 	 */
-	public Collection<ONGroup> getBhvGroups(Condition abs_condition){
+	public Collection<ONGroup> getLowerGroups(Condition upperCondition){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 
-		for(SONConnection con : net.getInputSONConnections(abs_condition)){
-			if(con.getSemantics() == Semantics.BHVLINE)
-				for(ONGroup group : net.getGroups())
-					if(group.getConditions().contains(con.getFirst()))
-						result.add(group);
+		for(Node pre : getPreBhvSet(upperCondition)){
+			result.add(net.getGroup(pre));
 		}
-		return result;
-	}
 
-	/**
-	 * get corresponding abstract groups for a given behavioral condition
-	 */
-	public Collection<ONGroup> getAbstractGroups(Condition bhv_condition){
-		Collection<ONGroup> result = new HashSet<ONGroup>();
-		Collection<Condition> absConditions = getAbstractConditions(bhv_condition);
-
-		for(ONGroup group : net.getGroups()){
-			for(Condition c : absConditions)
-				if(group.getComponents().contains(c))
-					result.add(group);
-		}
 		return result;
 	}
 
 
 	/**
-	 * get behavioural groups for a given group set.
+	 * get lower-level groups for a given group set.
 	 */
 	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -274,7 +244,23 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get abstract groups for a given group set.
+	 * get corresponding upper-level groups for a given lower-level condition
+	 */
+	public Collection<ONGroup> getAbstractGroups(Condition lowerCondition){
+		Collection<ONGroup> result = new HashSet<ONGroup>();
+		Collection<Condition> absConditions = getAbstractConditions(lowerCondition);
+
+		for(ONGroup group : net.getGroups()){
+			for(Condition c : absConditions)
+				if(group.getComponents().contains(c))
+					result.add(group);
+		}
+		return result;
+	}
+
+
+	/**
+	 * get upper-level groups for a given group set.
 	 */
 	public Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
@@ -296,7 +282,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get minimal phase of a given phase
+	 * get minimal phase for a given phase
 	 */
 	public ArrayList<Condition> getMinimalPhase(Phase phase){
 		ArrayList<Condition> result = new ArrayList<Condition>();
@@ -312,7 +298,18 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get maximal phase of a given phase
+	 * get minimal phase collection for a set of phase
+	 */
+	public ArrayList<Condition> getMinimalPhase(Collection<Phase> phases){
+		ArrayList<Condition> result = new ArrayList<Condition>();
+		for(Phase phase : phases){
+			result.addAll(getMinimalPhase(phase));
+		}
+		return result;
+	}
+
+	/**
+	 * get maximal phase for a given phase
 	 */
 	public ArrayList<Condition> getMaximalPhase(Phase phase){
 		ArrayList<Condition> result = new ArrayList<Condition>();
@@ -328,7 +325,18 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * return true if a transitionNode is in abstract group
+	 * get maximal phase collection for a set of phase
+	 */
+	public ArrayList<Condition> getMaximalPhase(Collection<Phase> phases){
+		ArrayList<Condition> result = new ArrayList<Condition>();
+		for(Phase phase : phases){
+			result.addAll(getMaximalPhase(phase));
+		}
+		return result;
+	}
+
+	/**
+	 * return true if a transitionNode is in upper-level group
 	 */
 	public boolean isAbstractEvent(TransitionNode n){
 		if(getPrePNSet(n).size() == 1){
@@ -343,9 +351,9 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get before(e) relation for a given abstract transition node
+	 * get before(e) relation for a given upper-level transition node
 	 */
-	public Collection<TransitionNode[]> before(TransitionNode e){
+	public Collection<TransitionNode[]> before(TransitionNode e, Map<Condition, Collection<Phase>> phases){
 		Collection<TransitionNode[]> result = new ArrayList<TransitionNode[]>();
 
 		Collection<Condition> PRE = getPREset(e);
@@ -354,7 +362,7 @@ public class BSONAlg extends RelationAlgorithm{
 		//get Pre(e)
 		for(Condition c : PRE){
 			//get phase collection for each Pre(e)
-			Collection<Phase> prePhases = getPhases(c);
+			Collection<Phase> prePhases = phases.get(c);
 			//get maximal phase
 			for(Phase phase : prePhases){
 				Collection<Condition> max = getMaximalPhase(phase);
@@ -376,7 +384,7 @@ public class BSONAlg extends RelationAlgorithm{
 		//get Post(e)
 		for(Condition c : POST){
 			//get phase collection for each Pre(e)
-			Collection<Phase> postPhases = getPhases(c);
+			Collection<Phase> postPhases =  phases.get(c);
 			//get minimal phase
 			for(Phase phase : postPhases){
 				Collection<Condition> min = getMinimalPhase(phase);

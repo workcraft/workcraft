@@ -70,6 +70,10 @@ public class TestTool extends AbstractTool implements Tool{
 		//conditionOutputTest(vnet);
 	}
 
+	private void phaseDecompositionTest(SON net){
+
+	}
+
 	private void outputBefore(SON net){
 
 		BSONAlg bsonAlg = new BSONAlg(net);
@@ -84,7 +88,7 @@ public class TestTool extends AbstractTool implements Tool{
 
 
 		for(TransitionNode e : set){
-			before =  bsonAlg.before(e);
+			//before =  bsonAlg.before(e);
 			if(!before.isEmpty()){
 				Collection<String> subResult = new ArrayList<String>();
 				System.out.println("before("+ net.getComponentLabel(e)+"): ");

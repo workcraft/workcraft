@@ -337,6 +337,14 @@ public class SON extends AbstractMathModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), ONGroup.class);
 	}
 
+	public ONGroup getGroup(Node node){
+		for(ONGroup group : getGroups()){
+			if(group.contains(node))
+				return group;
+		}
+		return null;
+	}
+
 	public boolean isInSameGroup (Node first, Node second){
 		for (ONGroup group : getGroups()){
 			if (group.contains(first) && group.contains(second))
