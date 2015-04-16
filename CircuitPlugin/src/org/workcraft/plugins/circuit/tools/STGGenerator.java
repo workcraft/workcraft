@@ -1,20 +1,5 @@
 package org.workcraft.plugins.circuit.tools;
 
-import static org.workcraft.util.Geometry.add;
-import static org.workcraft.util.Geometry.subtract;
-
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -24,15 +9,7 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
-import org.workcraft.plugins.circuit.VisualCircuitConnection;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
-import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.Literal;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
@@ -50,6 +27,13 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.Hierarchy;
+
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.*;
+
+import static org.workcraft.util.Geometry.add;
+import static org.workcraft.util.Geometry.subtract;
 
 public class STGGenerator {
 

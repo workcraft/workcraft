@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -53,15 +54,16 @@ public class CpogSelectionTool extends SelectionTool {
 	private JTextArea expressionText;
 	HashMap<String, CpogFormula> graphMap = new HashMap<String, CpogFormula>();
 	final HashMap<String, Variable> variableMap = new HashMap<String, Variable>();
-	private HashMap<String, String> refMap = new HashMap<String, String>();
-	private HashMap<String, HashMap<String, VisualVertex>> refVertMap = new HashMap<String, HashMap<String, VisualVertex>>();
+	//private HashMap<String, String> refMap = new HashMap<String, String>();
+	//private HashMap<String, HashMap<String, VisualVertex>> refVertMap = new HashMap<String, HashMap<String, VisualVertex>>();
+    private HashMap<String, GraphReference> referenceMap = new HashMap<>();
 	private Checkbox insertTransitives;
 
 	private double highestY = 0; //Sets first graph at y co-ordinate of 0
 
-	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, maxX, maxY, refMap, refVertMap);
+	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, referenceMap);
 
-	private ArrayList<VisualPage> refPages = new ArrayList<VisualPage>();
+	private ArrayList<VisualPage> refPages = new ArrayList<>();
 
 	public CpogSelectionTool() {
 		super();
@@ -392,14 +394,12 @@ public class CpogSelectionTool extends SelectionTool {
 
         } else { //If this graph is for reference only
             String normalForm = getNormalForm(arcConditionList, localVertices);
-            parsingTool.addToReferenceList(PGF.getGraphName(), visualCpog, normalForm);
             String graphName = PGF.getGraphName();
             graphName = graphName.replace("{", "");
             graphName = graphName.replace("}", "");
             LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
             bfsLayout(visualCpog, roots);
-            refVertMap.put(graphName, (HashMap<String, VisualVertex>) localVertices.clone());
-            GraphReference ref = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
+            referenceMap.put(graphName, new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone()));
             visualCpog.remove(visualCpog.getSelection());
 
         }
@@ -580,8 +580,9 @@ public class CpogSelectionTool extends SelectionTool {
         for (String k : usedReferences) {
             visualCpog.selectNone();
             ArrayList<VisualVertex> pageVerts = new ArrayList<VisualVertex>();
-            if (refVertMap.containsKey(k)) {
-                HashMap<String, VisualVertex> vMap = refVertMap.get(k);
+            if (referenceMap.containsKey(k)) {
+                GraphReference g = referenceMap.get(k);
+                HashMap<String, VisualVertex> vMap = g.getVertMap();
                 for(String k1 : vMap.keySet()) {
                     pageVerts.add(localVertices.get(k1));
                     visualCpog.add(localVertices.get(k1));
@@ -597,6 +598,7 @@ public class CpogSelectionTool extends SelectionTool {
                             vp.setLabel(k);
                             vp.setIsCollapsed(false);
                             prevSelection.add(vp);
+                            referenceMap.get(k).addRefPage(vp);
                             refPages.add(vp);
                         }
                     }
@@ -611,7 +613,6 @@ public class CpogSelectionTool extends SelectionTool {
         	DefaultHangingConnectionRemover arcRemover = new DefaultHangingConnectionRemover(visualCpog, "CPOG");
         	ArrayList<Node> toBeRemoved = new ArrayList<Node>();
         	String refKey = "";
-
             @Override
             public void handleEvent(HierarchyEvent e) {
                 ArrayList<VisualPage> relaventPages = new ArrayList<VisualPage>();
@@ -619,10 +620,15 @@ public class CpogSelectionTool extends SelectionTool {
                     for (Node node: e.getAffectedNodes()) {
                     	if (node instanceof VisualVertex) {
                             final VisualVertex vert = (VisualVertex) node;
+                            try {
+                                reconnectArcs(vert, visualCpog);
+                            } catch (InvalidConnectionException ex) {
+                                System.out.println("Error reconnecting vertices");
+                            }
                             if (vert.getParent() instanceof VisualPage) {
                                 VisualPage page = (VisualPage) vert.getParent();
                                 refKey = page.getLabel();
-                                relaventPages.addAll(getRefPages(visualCpog, refKey, vert));
+                                relaventPages.addAll(referenceMap.get(page.getLabel()).getRefPages());
                                 relaventPages.remove(page);
                                 for (VisualPage p : relaventPages) {
                                     for (Node n : p.getChildren()) {
@@ -642,6 +648,12 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                     for (Node n : toBeRemoved) {
                         if (n.getParent() != null) {
+                            try {
+                                reconnectArcs(n, visualCpog);
+                            } catch (InvalidConnectionException ex)
+                            {
+                                System.out.println("Error reconnecting vertices");
+                            }
                             visualCpog.removeWithoutNotify(n);
                             arcRemover.handleEvent(new NodesDeletingEvent(n.getParent(), n));
                         }
@@ -666,14 +678,19 @@ public class CpogSelectionTool extends SelectionTool {
                             newExpression = newExpression.substring(0, newExpression.length() - 1);
                         }
 
-                        refMap.remove(page.getLabel());
-                        int eqLocation = 0;
+                        GraphReference g = referenceMap.get(page.getLabel());
+
+                        int eqLocation;
                         eqLocation = newExpression.indexOf('=');
-                        refMap.put(page.getLabel(), newExpression.substring(eqLocation + 1));
+                        g.updateNormalForm(newExpression.substring(eqLocation + 1));
 
                         //newExpression = page.getLabel() + " = " + newExpression;
-                        refVertMap.remove(page.getLabel());
-                        refVertMap.put(page.getLabel(), (HashMap<String, VisualVertex>) insertExpression(editor, newExpression, true, true).clone());
+                        HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(editor, newExpression, true, true).clone();
+                        for (VisualVertex v : vertMap.values()) {
+                            v.setPosition(new Point2D.Double(g.getVertMap().get(v.getLabel()).getX(), g.getVertMap().get(v.getLabel()).getY()));
+                        }
+
+                        g.updateVertMap(vertMap);
 
                         visualCpog.setCurrentLevel(previousLevel);
                         visualCpog.select(selection);
@@ -746,5 +763,20 @@ public class CpogSelectionTool extends SelectionTool {
         return null;
     }
 
+    public void reconnectArcs(Node n, VisualCPOG visualCpog) throws InvalidConnectionException {
+        if (n instanceof VisualVertex) {
+
+            HashSet<Node> parents = parsingTool.getParents(visualCpog, n);
+
+            HashSet<Node> children =  parsingTool.getChildren(visualCpog, n);
+
+            for (Node parent : parents) {
+                for (Node child : children) {
+                    visualCpog.connect(parent, child);
+                }
+
+            }
+        }
+    }
 
 }

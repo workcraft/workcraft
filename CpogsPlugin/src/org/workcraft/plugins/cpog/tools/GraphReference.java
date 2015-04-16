@@ -16,4 +16,37 @@ public class GraphReference {
         this.normalForm = normalForm;
         this.vertMap = vertMap;
     }
+
+    public void addRefPage(VisualPage refPage) {
+        refPages.add(refPage);
+    }
+
+    public void removeRefPage(VisualPage removedPage) {
+        refPages.remove(removedPage);
+    }
+
+    public HashMap<String, VisualVertex> getVertMap() {
+        return vertMap;
+    }
+
+    public boolean vertMapContainsKey(String key) {
+        return vertMap.containsKey(key);
+    }
+
+    public void updateNormalForm(String normalForm) {
+        this.normalForm = normalForm;
+    }
+
+    public void updateVertMap(HashMap<String, VisualVertex> newVertMap){
+        this.vertMap = newVertMap;
+    }
+
+    public String getNormalForm() {
+        return normalForm;
+    }
+
+    public HashSet<VisualPage> getRefPages() {
+        return refPages;
+    }
+
 }

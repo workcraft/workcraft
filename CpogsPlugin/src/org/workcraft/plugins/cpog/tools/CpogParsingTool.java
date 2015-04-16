@@ -1,9 +1,10 @@
 package org.workcraft.plugins.cpog.tools;
 
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
@@ -20,22 +21,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CpogParsingTool {
 
-	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, double maxX, double maxY, HashMap<String, String> refMap, HashMap<String, HashMap<String, VisualVertex>> refVertMap)
+	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, HashMap<String, GraphReference> refMap)
 	 {
 		 this.variableMap = variableMap;
 		 this.xpos = xpos;
-		 this.maxX = maxX;
-		 this.maxY = maxY;
 		 this.refMap = refMap;
-		 this.refVertMap = refVertMap;
 	 }
 
 	private HashMap<String, Variable> variableMap;
 	private int xpos;
-	private double maxX;
-	private double maxY;
-	private HashMap<String, String> refMap;
-	private HashMap<String, HashMap<String, VisualVertex>> refVertMap;
+	private HashMap<String, GraphReference> refMap;
 	private ArrayList<String> usedReferences;
 
 	 public BooleanFormula parseBool(String bool, final VisualCPOG visualCpog) throws ParseException
@@ -79,7 +74,7 @@ public class CpogParsingTool {
          ArrayList<ArrayList<Node>> outer = new ArrayList<ArrayList<Node>>();
          HashSet<VisualScenarioPage> pages = new HashSet<VisualScenarioPage>();
          Node current = q.remove();
-         ArrayList<Node> children = getChildren(visualCpog, current);
+         HashSet<Node> children = getChildren(visualCpog, current);
 
          outer.add(new ArrayList<Node>());
          outer.get(0).add(current);
@@ -165,10 +160,10 @@ public class CpogParsingTool {
 
     public void findAllChildren(Queue<Node> q, VisualCPOG visualCpog, ArrayList<ArrayList<Node>> outer, HashSet<VisualScenarioPage> pages) {
         Node current;
-        ArrayList<Node> children;
+        HashSet<Node> children;
         int index = 0;
         while (!q.isEmpty()) {
-            current = (Node) q.remove();
+            current = q.remove();
             index = findVertex(outer, current);
             if (current.getParent() instanceof VisualScenarioPage) {
                 VisualScenarioPage vp = (VisualScenarioPage) current.getParent();
@@ -182,23 +177,36 @@ public class CpogParsingTool {
         }
     }
 
-    public ArrayList<Node> getChildren(VisualCPOG visualCpog, Node node)
+    public HashSet<Node> getChildren(VisualCPOG visualCpog, Node node)
 	 {
-		 ArrayList<Node> children = new ArrayList<Node>();
-		 Connection connection;
+         HashSet<Node> children = new HashSet<>();
+         HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
 
-		 Iterator<Connection> i = visualCpog.getConnections(node).iterator();
-		 while (i.hasNext())
+
+		 for (VisualArc arc : arcs)
 		 {
-			 connection = i.next();
-			 if (!(connection.getSecond().equals(node)))
-			 {
-                 children.add(connection.getSecond());
+			 if ((arc.getFirst().equals(node))) {
+                 children.add(arc.getSecond());
 			 }
 		 }
 
 		 return children;
 	 }
+
+    public HashSet<Node> getParents(VisualCPOG visualCpog, Node node)
+    {
+        HashSet<Node> parents = new HashSet<>();
+        HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
+
+        for (VisualArc arc : arcs)
+        {
+            if ((arc.getSecond().equals(node))) {
+                parents.add(arc.getFirst());
+            }
+        }
+
+        return parents;
+    }
 
 	 public String getExpressionFromGraph(VisualCPOG visualCpog)
 	 {
@@ -283,10 +291,6 @@ public class CpogParsingTool {
                      }
                  }
              }
-
-             /*if ((exclude != null) && (vertices.contains(exclude))) {
-                 vertices.remove(exclude);
-             }*/
 
 			 HashSet<Node> roots = getRoots(visualCpog, vertices);
 
@@ -519,7 +523,8 @@ public class CpogParsingTool {
 	 {
 		 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 		 HashSet<VisualArc> transitives = new HashSet<VisualArc>();
-		 ArrayList<Node> children, allChildren = new ArrayList<Node>();
+		 ArrayList<Node>  allChildren = new ArrayList<Node>();
+         HashSet<Node> children = new HashSet<>();
 		 Node current = null;
 		 boolean transitiveFound = false;
 
@@ -578,39 +583,39 @@ public class CpogParsingTool {
 
 	 public String replaceReferences(String text)
 	 {
-		 usedReferences = new ArrayList<String>();
+		 usedReferences = new ArrayList<>();
 		 boolean added;
 		 for (String k : refMap.keySet())
 			{
 			 added = false;
 				if (text.contains(" " + k + " ")){
 					if (k.startsWith("[")) {
-						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k) + ") ");
+						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
 						added = true;
 					} else {
-						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k) + ") ");
+						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
 						added = true;
 					}
 				} if (text.contains("]" + k + " ")) {
-						text = text.replaceAll("]" + k + " ", "](" + refMap.get(k) + ") ");
+						text = text.replaceAll("]" + k + " ", "](" + refMap.get(k).getNormalForm() + ") ");
 						added = true;
 				} if (text.contains("(" + k + ")")) {
-						text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k) + "\\)");
+						text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k).getNormalForm() + "\\)");
 						added = true;
 				} if (text.contains("(" + k + " ")) {
-						text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k) + "\\) ");
+						text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k).getNormalForm() + "\\) ");
 						added = true;
 				} if (text.contains(" " + k + ")")) {
-						text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k) + "\\)\\)");
+						text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k).getNormalForm() + "\\)\\)");
 						added = true;
 				} if (text.endsWith(" " + k)) {
-						text = text.replace(" " + k, " (" + refMap.get(k) + ")");
+						text = text.replace(" " + k, " (" + refMap.get(k).getNormalForm() + ")");
 						added = true;
 				} if (text.endsWith("]" + k)) {
-						text = text.replace("]" + k, "](" + refMap.get(k) + ")");
+						text = text.replace("]" + k, "](" + refMap.get(k).getNormalForm() + ")");
 						added = true;
 				} if (text.endsWith(" " + k + ")")) {
-						text = text.replace(" " + k + "\\)", " (" + refMap.get(k) + "\\)\\)");
+						text = text.replace(" " + k + "\\)", " (" + refMap.get(k).getNormalForm() + "\\)\\)");
 						added = true;
 				}
 
@@ -717,14 +722,6 @@ public class CpogParsingTool {
 				}
 	 }
 
-	 public void addToReferenceList(String gn, VisualCPOG visualCpog, String text)
-	 {
-			gn = gn.replace("{", "");
-			gn = gn.replace("}", "");
-
-			refMap.put(gn, text);
-	 }
-
 	 public Point2D.Double getLowestVertex(VisualCPOG visualCpog)
 	 {
 		 Collection<VisualVertex> vertices =  visualCpog.getVertices(visualCpog.getCurrentLevel());
@@ -809,6 +806,19 @@ public class CpogParsingTool {
         ArrayList<Node> result = new ArrayList<Node>();
         for (Node n : visualCpog.getSelection()) {
             result.add(n);
+        }
+
+        return result;
+    }
+
+    public HashSet<VisualArc> getAllArcs(Container root, VisualCPOG visualCpog) {
+        HashSet<VisualArc> result = new HashSet<>();
+        for (Node node : root.getChildren()) {
+            if ((node instanceof VisualPage) || (node instanceof VisualScenarioPage)) {
+                result.addAll(getAllArcs((VisualPage) node, visualCpog));
+            } else if ((node instanceof VisualVertex) || node instanceof VisualArc) {
+                result.addAll(visualCpog.getArcs(root));
+            }
         }
 
         return result;
