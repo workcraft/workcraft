@@ -387,12 +387,12 @@ public class WorkspaceEntry implements ObservableState {
 		}
 	}
 
-
 	public void delete() {
 		VisualModel model = modelEntry.getVisualModel();
 		if (model.getSelection().size() > 0) {
 			saveMemento();
 			model.deleteSelection();
+			setChanged(true);
 		}
 	}
 

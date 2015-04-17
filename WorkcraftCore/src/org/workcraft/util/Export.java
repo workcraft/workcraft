@@ -54,7 +54,13 @@ public class Export {
 		@Override
 		public Result<? extends Object> run(ProgressMonitor<? super Object> monitor) {
 			FileOutputStream fos;
-			System.out.println("Exporting model \"" + model.getTitle() + "\" to file \"" + file.getAbsolutePath() + "\".");
+
+			String message = "Exporting model ";
+			if (!model.getTitle().isEmpty()) {
+				message += "\"" + model.getTitle() + "\" ";
+			}
+			message += "to file \"" + file.getAbsolutePath() + "\".";
+			System.out.println(message);
 			try {
 				file.createNewFile();
 				fos = new FileOutputStream(file);

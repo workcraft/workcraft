@@ -34,6 +34,7 @@ public class SolutionPanel extends JPanel {
 
 		traceText = new JTextArea();
 		traceText.setText(solution.toString());
+		traceText.setEditable(false);
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(traceText);
