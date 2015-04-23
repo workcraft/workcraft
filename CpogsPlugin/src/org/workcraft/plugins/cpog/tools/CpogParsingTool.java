@@ -71,8 +71,8 @@ public class CpogParsingTool {
 
 	 public void bfsLayout(Queue<Node> q, VisualCPOG visualCpog, double originalX, double originalY) {
 
-         ArrayList<ArrayList<Node>> outer = new ArrayList<ArrayList<Node>>();
-         HashSet<VisualScenarioPage> pages = new HashSet<VisualScenarioPage>();
+         ArrayList<ArrayList<Node>> outer = new ArrayList<>();
+         HashSet<VisualPage> pages = new HashSet<>();
          Node current = q.remove();
          HashSet<Node> children = getChildren(visualCpog, current);
 
@@ -90,40 +90,8 @@ public class CpogParsingTool {
          double x = positionNodes(originalX, originalY, outer);
 
 
-         positionPages(pages, x);
-
      }
 
-    public void positionPages(HashSet<VisualScenarioPage> pages, double x) {
-        for (VisualScenarioPage page : pages) {
-            Double pagePos = new Double();
-            double pageLeft = x;
-            double pageRight = -x;
-            //Leftmost vertex
-            for (VisualComponent c : page.getComponents()) {
-                if (c.getPosition().getX() < pageLeft) {
-                    pageLeft = c.getPosition().getX();
-                }
-            }
-            //Rightmost vertex
-            for (VisualComponent c : page.getComponents()) {
-                if (c.getPosition().getX() > pageRight) {
-                    pageRight = c.getPosition().getX();
-                }
-            }
-
-            double pageCentre = ((pageLeft + pageRight) / 2);
-
-            pagePos.setLocation(pageCentre, page.getPosition().getY());
-
-            //page.setPosition(pagePos);
-            for (VisualComponent c : page.getComponents()) {
-                c.setX(c.getPosition().getX() - pageCentre);
-            }
-            page.setX(pageCentre);
-
-        }
-    }
 
     public double positionNodes(double originalX, double originalY, ArrayList<ArrayList<Node>> outer) {
         Double centre = new Double(0, originalY);
@@ -143,10 +111,16 @@ public class CpogParsingTool {
             for (Node n : inner) {
                 if (n instanceof VisualVertex){
                     VisualVertex v = (VisualVertex) n;
-                    v.setPosition(new Double(x, y));
-                } else if (n instanceof VisualScenarioPage) {
-                    VisualScenarioPage p = (VisualScenarioPage) n;
-                    p.setPosition(new Double(x, y));
+                    if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
+                        VisualPage p = (VisualPage) v.getParent();
+                        p.setPosition(new Double(x, y));
+                        Point2D.Double newPosition = new
+                                Point2D.Double (refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
+                                                refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());
+                        v.setPosition(newPosition);
+                    } else {
+                        v.setPosition(new Double(x, y));
+                    }
                 }
                 y += 1.5;
             }
@@ -158,15 +132,15 @@ public class CpogParsingTool {
         return x;
     }
 
-    public void findAllChildren(Queue<Node> q, VisualCPOG visualCpog, ArrayList<ArrayList<Node>> outer, HashSet<VisualScenarioPage> pages) {
+    public void findAllChildren(Queue<Node> q, VisualCPOG visualCpog, ArrayList<ArrayList<Node>> outer, HashSet<VisualPage> pages) {
         Node current;
         HashSet<Node> children;
         int index = 0;
         while (!q.isEmpty()) {
             current = q.remove();
             index = findVertex(outer, current);
-            if (current.getParent() instanceof VisualScenarioPage) {
-                VisualScenarioPage vp = (VisualScenarioPage) current.getParent();
+            if ((current.getParent() instanceof VisualScenarioPage) | (current.getParent() instanceof VisualPage)) {
+                VisualPage vp = (VisualPage) current.getParent();
                 pages.add(vp);
             }
             children = getChildren(visualCpog, current);
@@ -816,11 +790,13 @@ public class CpogParsingTool {
         for (Node node : root.getChildren()) {
             if ((node instanceof VisualPage) || (node instanceof VisualScenarioPage)) {
                 result.addAll(getAllArcs((VisualPage) node, visualCpog));
-            } else if ((node instanceof VisualVertex) || node instanceof VisualArc) {
-                result.addAll(visualCpog.getArcs(root));
+            } else if (node instanceof VisualArc) {
+                result.add((VisualArc) node);
             }
         }
 
         return result;
     }
+
+
 }
