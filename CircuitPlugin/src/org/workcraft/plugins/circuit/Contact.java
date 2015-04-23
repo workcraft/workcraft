@@ -30,6 +30,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 @VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
 public class Contact extends MathNode implements BooleanVariable {
 
+	public static final String PROPERTY_INIT_TO_ONE = "init to one";
+	public static final String PROPERTY_IO_TYPE = "IO type";
+
+	public static final String PROPERTY_NAME = "name";
 	public enum IOType {
 		INPUT("Input"),
 		OUTPUT("Output");
@@ -46,31 +50,34 @@ public class Contact extends MathNode implements BooleanVariable {
 		}
 	};
 
+	private boolean initToOne = false;
 	private IOType ioType = IOType.OUTPUT;
-
 	private String name = "";
-	private boolean initOne = false;
-
-	public boolean getInitOne() {
-		return initOne;
-	}
-
-	public void setInitOne(boolean initOne) {
-		this.initOne = initOne;
-		sendNotification(new PropertyChangedEvent(this, "initOne"));
-	}
 
 	public Contact() {
 	}
 
-	public Contact(IOType iot) {
+	public Contact(IOType ioType) {
 		super();
-		setIOType(iot);
+		setIOType(ioType);
+	}
+
+	public boolean getInitToOne() {
+		return initToOne;
+	}
+
+	public void setInitToOne(boolean value) {
+		if (this.initToOne != value) {
+			this.initToOne = value;
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
+		}
 	}
 
 	public void setIOType(IOType t) {
-		this.ioType = t;
-		sendNotification(new PropertyChangedEvent(this, "ioType"));
+		if (this.ioType != t) {
+			this.ioType = t;
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
+		}
 	}
 
 	public IOType getIOType() {
@@ -78,9 +85,11 @@ public class Contact extends MathNode implements BooleanVariable {
 	}
 
 	// this is only for information, use Circuit to set component's names
-	public void setName(String name) {
-		this.name = name;
-		sendNotification(new PropertyChangedEvent(this, "name"));
+	public void setName(String value) {
+		if (!this.name.equals(value)) {
+			this.name = value;
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+		}
 	}
 
 	public String getName() {

@@ -77,7 +77,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 			File envFile = visualCircuit.getEnvironmentFile();
 			boolean hasEnvironment = ((envFile != null) && envFile.exists());
 
-			workingDirectory = FileUtils.createTempDirectory(title + "-");
+			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
+			workingDirectory = FileUtils.createTempDirectory(prefix);
 
 			STG devStg = (STG)STGGenerator.generate(visualCircuit).getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);

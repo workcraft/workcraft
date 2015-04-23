@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.workcraft.dom.Connection;
@@ -25,12 +23,11 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
@@ -53,64 +50,27 @@ import org.workcraft.util.Hierarchy;
 
 public class STGGenerator {
 
-	static class ContactSTG
-	{
-		public ContactSTG(VisualPlace p0, VisualPlace p1)
-		{
+	static class ContactSTG {
+		public final VisualPlace p0;
+		public final VisualPlace p1;
+
+		public ContactSTG(VisualPlace p0, VisualPlace p1) {
 			this.p0 = p0;
 			this.p1 = p1;
 		}
-		public final VisualPlace p0;
-		public final VisualPlace p1;
 	}
 
 	private static final double xScaling = 4;
 	private static final double yScaling = 4;
+	// store created containers in a separate map
+	private static HashMap<String, Container> createdContainers = null;
 
 	static void setPosition(Movable node, Point2D point) {
 		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(point.getX(), point.getY()));
 	}
 
-	public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact) {
-		VisualContact result = null;
-        Queue<Node> queue = new LinkedList<Node>(circuit.getPreset(contact));
-        while (!queue.isEmpty()) {
-			if (queue.size() != 1) {
-				throw new RuntimeException("Found more than one potential driver for target "
-						+ getContactName(circuit, contact) + "!");
-			}
-            Node node = queue.remove();
-			if (node instanceof VisualContact) {
-				VisualContact vc = (VisualContact)node;
-				if (vc.isDriver()) {
-					result = vc;
-				}
-			} else {
-				queue.addAll(circuit.getPreset(node));
-			}
-		}
-		return result;
-	}
-
-	public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
-		Set<VisualContact> result = new HashSet<VisualContact>();
-        Queue<Node> queue = new LinkedList<Node>(circuit.getPostset(contact));
-        while (!queue.isEmpty()) {
-            Node node = queue.remove();
-			if (node instanceof VisualContact) {
-				VisualContact vc = (VisualContact)node;
-				if (vc.isDriven()) {
-					result.add(vc);
-				}
-			} else {
-                queue.addAll(circuit.getPostset(node));
-            }
-        }
-		return result;
-	}
-
 	private static ContactSTG generatePlaces(VisualCircuit circuit, VisualSTG stg, VisualContact contact) {
-		String contactName = getContactName(circuit, contact);
+		String contactName = CircuitUtils.getContactName(circuit, contact);
 
 		String path = NamespaceHelper.getParentReference(circuit.getMathModel().getNodeReference(contact.getReferencedComponent()));
 		Container curContainer = (Container)createdContainers.get(path);
@@ -123,13 +83,13 @@ public class STGGenerator {
 		VisualPlace zeroPlace = stg.createPlace(contactName+"_0", curContainer);
 		zeroPlace.setLabel(contactName+"=0");
 
-		if (!contact.getReferencedContact().getInitOne()) {
+		if (!contact.getReferencedContact().getInitToOne()) {
 			zeroPlace.getReferencedPlace().setTokens(1);
 		}
 
 		VisualPlace onePlace = stg.createPlace(contactName+"_1", curContainer);
 		onePlace.setLabel(contactName+"=1");
-		if (contact.getReferencedContact().getInitOne()) {
+		if (contact.getReferencedContact().getInitToOne()) {
 			onePlace.getReferencedPlace().setTokens(1);
 		}
 
@@ -164,9 +124,6 @@ public class STGGenerator {
 		}
 	}
 
-	// store created containers in a separate map
-	private static HashMap<String, Container> createdContainers = null;
-
 	public synchronized static VisualSTG generate(VisualCircuit circuit) {
 		try {
 			VisualSTG stg = new VisualSTG(new STG());
@@ -192,7 +149,7 @@ public class STGGenerator {
 					targetDrivers.put(contact.getReferencedContact(), contact);
 				} else {
 					// if not a driver, find related driver, add to the map of targets
-					VisualContact driver = findDriver(circuit, contact);
+					VisualContact driver = CircuitUtils.findDriver(circuit, contact);
 					if (driver == null) {
 						// if target driver was not found, create artificial one that looks like input
 						driver = contact;
@@ -216,11 +173,11 @@ public class STGGenerator {
 				if (driver instanceof VisualFunctionContact) {
 					// Determine signal type
 					VisualFunctionContact contact = (VisualFunctionContact)driver;
-					signalType = getSignalType(circuit, contact);
+					signalType = CircuitUtils.getSignalType(circuit, contact);
 
 					if (contact.isOutput() && contact.isPort()) {
 						// Driver of the primary output port
-						VisualContact outputDriver = findDriver(circuit, contact);
+						VisualContact outputDriver = CircuitUtils.findDriver(circuit, contact);
 						if (outputDriver != null) {
 							setFunc = outputDriver.getReferencedContact();
 						}
@@ -266,34 +223,6 @@ public class STGGenerator {
 		for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
 			contact.getReferencedTransitions().removeAll(redundantTransitions);
 		}
-	}
-
-	private static Type getSignalType(VisualCircuit circuit, VisualFunctionContact contact) {
-		Type result = Type.INTERNAL;
-		if (contact.isPort()) {
-			// Primary port
-			if (contact.isInput()) {
-				result = Type.INPUT;
-			} else if (contact.isOutput()) {
-				result = Type.OUTPUT;
-			}
-		} else {
-			VisualCircuitComponent component = (VisualCircuitComponent)contact.getParent();
-			if (component.getIsEnvironment()) {
-				// Contact of an environment component
-				if (contact.isInput()) {
-					result = Type.OUTPUT;
-				} else if (contact.isOutput()) {
-					result = Type.INPUT;
-				}
-			} else {
-				// Contact of an ordinary component
-				if (contact.isOutput() && (getDrivenOutputPort(circuit, contact) != null)) {
-					result = Type.OUTPUT;
-				}
-			}
-		  }
-		  return result;
 	}
 
 	private static void implementDriver(VisualCircuit circuit, VisualSTG stg,
@@ -342,7 +271,7 @@ public class STGGenerator {
 			default: throw new RuntimeException();
 		}
 
-		String signalName = getContactName(circuit, contact);
+		String signalName = CircuitUtils.getContactName(circuit, contact);
 
 		ContactSTG p = drivers.get(contact);
 
@@ -455,80 +384,6 @@ public class STGGenerator {
 		}
 
 		return nodes;
-	}
-
-	private static String getContactName(VisualCircuit circuit, VisualContact contact) {
-		String result = null;
-		if (contact.isPort()) {
-			result = circuit.getMathName(contact);
-		} else {
-			if (contact.isInput()) {
-				result = getInputContactName(circuit, contact);
-			} else if (contact.isOutput()) {
-				result = getOutputContactName(circuit, contact);
-			}
-		}
-		return result;
-	}
-
-	private static String getInputContactName(VisualCircuit circuit, VisualContact contact) {
-		String result = null;
-		Node parent = contact.getParent();
-		if (parent instanceof VisualFunctionComponent) {
-			VisualFunctionComponent component = (VisualFunctionComponent)parent;
-			String componentName = NamespaceHelper.hierarchicalToFlatName(circuit.getMathName(component));
-			String contactName = circuit.getMathName(contact);
-			result = componentName + "_" + contactName;
-		}
-		return result;
-	}
-
-	private static String getOutputContactName(VisualCircuit circuit, VisualContact contact) {
-		String result = null;
-		Node parent = contact.getParent();
-		if (parent instanceof VisualFunctionComponent) {
-			VisualFunctionComponent component = (VisualFunctionComponent)parent;
-
-			VisualContact outputPort = getDrivenOutputPort(circuit, contact);
-			if (outputPort != null) {
-				// If a single output port is driven, then take its name.
-				result = circuit.getMathName(outputPort);
-			} else {
-				// If the component has a single output, use the component name. Otherwise append the contact.
-				result = NamespaceHelper.hierarchicalToFlatName(circuit.getMathName(component));
-				int output_cnt = 0;
-				for (Node node: component.getChildren()) {
-					if (node instanceof VisualContact) {
-						VisualContact vc = (VisualContact)node;
-						if (vc.isOutput()) {
-							output_cnt++;
-						}
-					}
-				}
-				if (output_cnt > 1) {
-					String suffix = "_" + circuit.getMathName(contact);
-					result += suffix;
-				}
-			}
-		}
-		return result;
-	}
-
-	private static VisualContact getDrivenOutputPort(VisualCircuit circuit, VisualContact contact) {
-		VisualContact result = null;
-		boolean multipleOutputPorts = false;
-		for (VisualContact vc: findDriven(circuit, contact)) {
-			if (vc.isPort() && vc.isOutput()) {
-				if (result != null) {
-					multipleOutputPorts = true;
-				}
-				result = vc;
-			}
-		}
-		if (multipleOutputPorts) {
-			result = null;
-		}
-		return result;
 	}
 
 }

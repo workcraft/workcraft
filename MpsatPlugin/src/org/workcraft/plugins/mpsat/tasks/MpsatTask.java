@@ -25,7 +25,8 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		this.args = args;
 		this.inputFileName = inputFileName;
 		if (workingDirectory == null) {
-			workingDirectory = FileUtils.createTempDirectory("mpsat_");
+			// Prefix must be at least 3 symbols long.
+			workingDirectory = FileUtils.createTempDirectory("mpsat-");
 		}
 		this.workingDirectory = workingDirectory;
 		this.tryPnml = tryPnml;

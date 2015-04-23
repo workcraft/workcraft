@@ -55,7 +55,8 @@ public class MpsatConformationTask extends MpsatChainTask {
 			// Common variables
 			monitor.progressUpdate(0.10);
 			String title = we.getTitle();
-			workingDirectory = FileUtils.createTempDirectory(title + "-");
+			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
+			workingDirectory = FileUtils.createTempDirectory(prefix);
 
 			STG devStg = (STG)we.getModelEntry().getVisualModel().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
