@@ -150,11 +150,11 @@ public class CircuitUtils {
 		return result;
 	}
 
-	public static Type getSignalType(VisualCircuit circuit, VisualFunctionContact contact) {
-		return getSignalType((Circuit)circuit.getMathModel(), contact.getReferencedFunctionContact());
+	public static Type getSignalType(VisualCircuit circuit, VisualContact contact) {
+		return getSignalType((Circuit)circuit.getMathModel(), contact.getReferencedContact());
 	}
 
-	public static Type getSignalType(Circuit circuit, FunctionContact contact) {
+	public static Type getSignalType(Circuit circuit, Contact contact) {
 		Type result = Type.INTERNAL;
 		if (contact.isPort()) {
 			// Primary port

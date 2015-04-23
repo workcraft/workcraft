@@ -552,10 +552,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			} else	if (selection.size() == 1) {
 				Node node = selection.iterator().next();
 				properties = getNodeProperties(node);
-				titleSuffix += " [single node]";
+				titleSuffix += " [single element]";
 			} else {
 				properties = getSelectionProperties(selection);
-				titleSuffix += " [several nodes]";
+				int nodeCount = selection.size();
+				titleSuffix += " [" + nodeCount + "selected elements]";
 			}
 		}
 

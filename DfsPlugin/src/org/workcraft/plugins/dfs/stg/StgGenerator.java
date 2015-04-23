@@ -74,11 +74,14 @@ public class StgGenerator {
 
 	public StgGenerator(VisualDfs dfs) {
 		this.dfs = dfs;
-		try {
-			this.stg = new VisualSTG(new STG());
+		this.stg = new VisualSTG(new STG());
+		convert();
+	}
 
+	private void convert() {
+		try {
 			for(VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
-				LogicStg lstg = generateLogicSTG(l);
+				LogicStg lstg = generateLogicStg(l);
 				logicMap.put(l, lstg);
 			}
 			for(VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
@@ -87,7 +90,7 @@ public class StgGenerator {
 			}
 
 			for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
-				CounterflowLogicStg lstg = generateCounterflowLogicSTG(l);
+				CounterflowLogicStg lstg = generateCounterflowLogicStg(l);
 				counterflowLogicMap.put(l, lstg);
 			}
 			for(VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
@@ -96,15 +99,15 @@ public class StgGenerator {
 			}
 
 			for(VisualControlRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualControlRegister.class)) {
-				BinaryRegisterStg rstg = generateControlRegisterSTG(r);
+				BinaryRegisterStg rstg = generateControlRegisterStg(r);
 				controlRegisterMap.put(r, rstg);
 			}
 			for(VisualPushRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualPushRegister.class)) {
-				BinaryRegisterStg rstg = generatePushRegisterSTG(r);
+				BinaryRegisterStg rstg = generatePushRegisterStg(r);
 				pushRegisterMap.put(r, rstg);
 			}
 			for(VisualPopRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualPopRegister.class)) {
-				BinaryRegisterStg rstg = generatePopRegisterSTG(r);
+				BinaryRegisterStg rstg = generatePopRegisterStg(r);
 				popRegisterMap.put(r, rstg);
 			}
 
@@ -148,7 +151,7 @@ public class StgGenerator {
 		return result;
 	}
 
-	public VisualSTG getSTG() {
+	public VisualSTG getStg() {
 		return stg;
 	}
 
@@ -189,7 +192,7 @@ public class StgGenerator {
 		}
 	}
 
-	private LogicStg generateLogicSTG(VisualLogic l) throws InvalidConnectionException {
+	private LogicStg generateLogicStg(VisualLogic l) throws InvalidConnectionException {
 		String name = dfs.getName(l);
 		AffineTransform transform = TransformHelper.getTransformToRoot(l);
 		double x =	xScaling * (transform.getTranslateX() + l.getX());
@@ -418,7 +421,7 @@ public class StgGenerator {
 		return registerMap.get(register);
 	}
 
-	private CounterflowLogicStg generateCounterflowLogicSTG(VisualCounterflowLogic l) throws InvalidConnectionException {
+	private CounterflowLogicStg generateCounterflowLogicStg(VisualCounterflowLogic l) throws InvalidConnectionException {
 		String name = dfs.getName(l);
 		AffineTransform transform = TransformHelper.getTransformToRoot(l);
 		double x =	xScaling * (transform.getTranslateX() + l.getX());
@@ -890,7 +893,7 @@ public class StgGenerator {
 		return new BinaryRegisterStg(M0, M1, tM0, tM1, tMRs, tMF, fM0, fM1, fMRs, fMF);
 	}
 
-	private BinaryRegisterStg generateControlRegisterSTG(VisualControlRegister r) throws InvalidConnectionException {
+	private BinaryRegisterStg generateControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
 		boolean andSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND);
 		boolean orSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR);
 		return generateBinaryRegisterSTG(r, andSync, orSync);
@@ -1001,7 +1004,7 @@ public class StgGenerator {
 		return controlRegisterMap.get(register);
 	}
 
-	private BinaryRegisterStg generatePushRegisterSTG(VisualPushRegister r) throws InvalidConnectionException {
+	private BinaryRegisterStg generatePushRegisterStg(VisualPushRegister r) throws InvalidConnectionException {
 		return generateBinaryRegisterSTG(r, false, false);
 	}
 
@@ -1080,7 +1083,7 @@ public class StgGenerator {
 	}
 
 
-	private BinaryRegisterStg generatePopRegisterSTG(VisualPopRegister r) throws InvalidConnectionException {
+	private BinaryRegisterStg generatePopRegisterStg(VisualPopRegister r) throws InvalidConnectionException {
 		return generateBinaryRegisterSTG(r, false, false);
 	}
 

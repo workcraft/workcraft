@@ -58,7 +58,7 @@ public class SimulationTool extends StgSimulationTool {
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		generator = new StgGenerator((VisualDfs)model);
-		return generator.getSTG();
+		return generator.getStg();
 	}
 
 	@Override

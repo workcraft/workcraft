@@ -26,6 +26,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.circuit.stg.StgGenerator;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
@@ -54,7 +55,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		Framework framework = Framework.getInstance();
 		VisualCircuit visualCircuit = (VisualCircuit)model;
-		VisualSTG visualStg = STGGenerator.generate(visualCircuit);
+		VisualSTG visualStg = StgGenerator.generate(visualCircuit);
 //		File workingDirectory = null;
 //		try {
 //			String title = visualCircuit.getTitle();
