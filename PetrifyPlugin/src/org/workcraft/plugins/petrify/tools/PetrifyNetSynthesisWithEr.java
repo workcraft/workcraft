@@ -9,7 +9,7 @@ import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyNetSynthesis implements Tool {
+public class PetrifyNetSynthesisWithEr implements Tool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -23,12 +23,12 @@ public class PetrifyNetSynthesis implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Net synthesis [Petrify]";
+		return "Net synthesis [Petrify with -er option]";
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final TransformationTask task = new TransformationTask(we, "Net synthesis", new String[] { });
+		final TransformationTask task = new TransformationTask(we, "Net synthesis", new String[] { "-er" });
 		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, "Petrify net synthesis", new TransformationResultHandler(task));
 	}

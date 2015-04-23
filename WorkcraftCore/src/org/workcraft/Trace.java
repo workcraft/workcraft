@@ -53,15 +53,14 @@ public class Trace extends ArrayList<String> {
 	public String toString() {
 		StringBuffer result = new StringBuffer("");
 		// position
-		result.append(String.valueOf(getPosition()));
-		result.append(':');
+//		result.append(String.valueOf(getPosition()));
+		//result.append(':');
 		// trace
 		boolean first = true;
 		for (String t : this) {
 			if (!first) {
-				result.append(',');
+				result.append(", ");
 			}
-			result.append(' ');
 			result.append(t);
 			first = false;
 		}

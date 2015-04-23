@@ -20,7 +20,7 @@ public abstract class AbstractMpsatChecker implements Tool {
 		final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
 
 		String description = "MPSat tool chain";
-		String title = we.getModelEntry().getModel().getTitle();
+		String title = we.getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}

@@ -67,6 +67,21 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	private Circuit circuit;
 
+	public VisualCircuit(Circuit model, VisualGroup root) {
+		super(model, root);
+		circuit = model;
+	}
+
+	public VisualCircuit(Circuit model) throws VisualModelInstantiationException {
+		super(model);
+		circuit = model;
+		try {
+			createDefaultFlatStructure();
+		} catch (NodeCreationException e) {
+			throw new VisualModelInstantiationException(e);
+		}
+	}
+
 	@Override
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
 		if (first==second) {
@@ -104,21 +119,6 @@ public class VisualCircuit extends AbstractVisualModel {
 
 			if (!(toParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT))
 				throw new InvalidConnectionException ("Inputs from the environment cannot be driven.");
-		}
-	}
-
-	public VisualCircuit(Circuit model, VisualGroup root) {
-		super(model, root);
-		circuit = model;
-	}
-
-	public VisualCircuit(Circuit model) throws VisualModelInstantiationException {
-		super(model);
-		circuit = model;
-		try {
-			createDefaultFlatStructure();
-		} catch (NodeCreationException e) {
-			throw new VisualModelInstantiationException(e);
 		}
 	}
 
@@ -184,6 +184,10 @@ public class VisualCircuit extends AbstractVisualModel {
 			mParent.reparent(mConnections, mContainer);
 		}
 		return vConnection;
+	}
+
+	public String getMathName(VisualComponent component) {
+		return getMathModel().getName(component.getReferencedComponent());
 	}
 
 	public Collection<VisualFunctionContact> getVisualFunctionContacts() {
@@ -296,10 +300,6 @@ public class VisualCircuit extends AbstractVisualModel {
 			properties.add(props.getResetProperty(contact));
 		}
 		return properties;
-	}
-
-	public String getMathName(VisualComponent component) {
-		return getMathModel().getName(component.getReferencedComponent());
 	}
 
 }

@@ -20,7 +20,7 @@ import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.fsm.VisualFsm.class)
 public class Fsm extends AbstractMathModel {
-	public static String EPSILON_SERIALISATION = "epsilon";
+	public static final String EPSILON_SERIALISATION = "epsilon";
 
 	public Fsm() {
 		this(null, (References)null);

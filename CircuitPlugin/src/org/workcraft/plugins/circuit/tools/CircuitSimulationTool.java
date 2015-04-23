@@ -133,7 +133,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 				for (VisualContact vc : Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualContact.class)) {
 					Contact c = (Contact) vc.getReferencedComponent();
 					if (!vc.getReferencedTransitions().isEmpty()) {
-						c.setInitOne(vc.getReferencedOnePlace().getTokens() == 1);
+						c.setInitToOne(vc.getReferencedOnePlace().getTokens() == 1);
 					}
 				}
 			}

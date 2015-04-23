@@ -180,10 +180,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
 				this, "Init to one", Boolean.class) {
 			protected void setter(VisualContact object, Boolean value) {
-				object.getReferencedContact().setInitOne(value);
+				object.getReferencedContact().setInitToOne(value);
 			}
 			protected Boolean getter(VisualContact object) {
-				return object.getReferencedContact().getInitOne();
+				return object.getReferencedContact().getInitToOne();
 			}
 		});
 	}
@@ -451,7 +451,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (src instanceof VisualContact) {
 			VisualContact srcComponent = (VisualContact)src;
 			setDirection(srcComponent.getDirection());
-			getReferencedContact().setInitOne(srcComponent.getReferencedContact().getInitOne());
+			getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
 			// TODO: Note that IOType is currently NOT copied to allow
 			//       input/output port generation with Shift key (and
 			//       not to be copied from a template node).

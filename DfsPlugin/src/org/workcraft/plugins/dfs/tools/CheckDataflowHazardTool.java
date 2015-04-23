@@ -27,7 +27,7 @@ public class CheckDataflowHazardTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final CheckDataflowHazardTask task = new CheckDataflowHazardTask(we);
 		String description = "MPSat tool chain";
-		String title = we.getModelEntry().getModel().getTitle();
+		String title = we.getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
