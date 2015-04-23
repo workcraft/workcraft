@@ -3,59 +3,48 @@ package org.workcraft.plugins.circuit.tools;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
 import javax.swing.JButton;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.circuit.stg.StgGenerator;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
-import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.serialisation.Format;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitSimulationTool extends StgSimulationTool {
-	JButton copyInitButton;
+	private JButton copyInitButton;
+	private StgGenerator generator;
 
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
-		Framework framework = Framework.getInstance();
 		VisualCircuit visualCircuit = (VisualCircuit)model;
-		VisualSTG visualStg = StgGenerator.generate(visualCircuit);
+		generator = new StgGenerator(visualCircuit);
+		VisualSTG visualStg = generator.getStg();
+//		Framework framework = Framework.getInstance();
 //		File workingDirectory = null;
 //		try {
 //			String title = visualCircuit.getTitle();
@@ -131,10 +120,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
 		copyInitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (VisualContact vc : Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualContact.class)) {
-					Contact c = (Contact) vc.getReferencedComponent();
-					if (!vc.getReferencedTransitions().isEmpty()) {
-						c.setInitToOne(vc.getReferencedOnePlace().getTokens() == 1);
+				for (VisualContact contact : Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualContact.class)) {
+					SignalStg signalStg = generator.getSignalStg(contact);
+					if (signalStg != null) {
+						contact.getReferencedContact().setInitToOne(signalStg.P1.getReferencedPlace().getTokens() == 1);
 					}
 				}
 			}
@@ -161,20 +150,21 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	}
 
 	// return first enabled transition
-	public SignalTransition isContactExcited(VisualContact c) {
+	public SignalTransition isContactExcited(VisualContact contact) {
+		SignalTransition result = null;
 		boolean up = false;
 		boolean down = false;
-		SignalTransition st = null;
-		if (c != null) {
-			for (SignalTransition tr : c.getReferencedTransitions()) {
-				if (net.isEnabled(tr)) {
-					if (st == null) {
-						st = tr;
+		if (generator.isDriver(contact)) {
+			SignalStg signalStg = generator.getSignalStg(contact);
+			for (VisualSignalTransition transition : signalStg.getAllTransitions()) {
+				if (net.isEnabled(transition.getReferencedTransition())) {
+					if (result == null) {
+						result = transition.getReferencedTransition();
 					}
-					if (tr.getDirection() == Direction.MINUS) {
+					if (transition.getDirection() == Direction.MINUS) {
 						down = true;
 					}
-					if (tr.getDirection() == Direction.PLUS) {
+					if (transition.getDirection() == Direction.PLUS) {
 						up = true;
 					}
 					if (up && down) {
@@ -183,10 +173,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
 				}
 			}
 			if (up && down) {
-				st = null;
+				result = null;
 			}
 		}
-		return st;
+		return result;
 	}
 
 	@Override
@@ -247,93 +237,69 @@ public class CircuitSimulationTool extends StgSimulationTool {
 						transition2 = net.getNodeByReference(transitionId);
 					}
 
-					if (contact.getReferencedTransitions().contains(transition2)) {
+					SignalStg signalStg = generator.getSignalStg(contact);
+					if (signalStg != null) {
+						if (signalStg.getAllTransitions().contains(transition2)) {
+							return new Decoration() {
+								@Override
+								public Color getColorisation() {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								}
+								@Override
+								public Color getBackground() {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								}
+							};
+						}
+						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
+						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
+						final boolean isExcited = (isContactExcited(contact) != null);
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
+								if (isExcited) {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								}
+								return null;
 							}
 							@Override
 							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
+								if (isExcited) {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								} else {
+									if (isOne && !isZero) {
+										return CircuitSettings.getActiveWireColor();
+									}
+									if (!isOne && isZero) {
+										return CircuitSettings.getInactiveWireColor();
+									}
+								}
+								return null;
 							}
 						};
 					}
-					if ((contact.getReferencedOnePlace() == null) || (contact.getReferencedZeroPlace() == null)) {
-						return null;
-					}
-					final boolean isOne = contact.getReferencedOnePlace().getTokens() == 1;
-					final boolean isZero = contact.getReferencedZeroPlace().getTokens() == 1;
-					final boolean isExcited = (isContactExcited(contact) != null);
-					return new Decoration() {
-						@Override
-						public Color getColorisation() {
-							if (isExcited) {
-								return CommonSimulationSettings.getEnabledForegroundColor();
-							}
-							return null;
-						}
-						@Override
-						public Color getBackground() {
-							if (isExcited) {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
-							} else {
+				} else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
+					SignalStg signalStg = generator.getSignalStg((VisualNode)node);
+					if (signalStg != null) {
+						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
+						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
+						return new Decoration() {
+							@Override
+							public Color getColorisation() {
 								if (isOne && !isZero) {
 									return CircuitSettings.getActiveWireColor();
 								}
 								if (!isOne && isZero) {
 									return CircuitSettings.getInactiveWireColor();
 								}
+								return null;
 							}
-							return null;
-						}
-					};
-				} else if (node instanceof VisualJoint) {
-					VisualJoint vj = (VisualJoint) node;
-					if (vj.getReferencedOnePlace() == null || vj.getReferencedZeroPlace() == null) {
-						return null;
+							@Override
+							public Color getBackground() {
+								return null;
+							}
+						};
 					}
-					final boolean isOne = vj.getReferencedOnePlace().getTokens() == 1;
-					final boolean isZero = vj.getReferencedZeroPlace().getTokens() == 1;
-					return new Decoration() {
-						@Override
-						public Color getColorisation() {
-							if (isOne && !isZero) {
-								return CircuitSettings.getActiveWireColor();
-							}
-							if (!isOne && isZero) {
-								return CircuitSettings.getInactiveWireColor();
-							}
-							return null;
-						}
-						@Override
-						public Color getBackground() {
-							return null;
-						}
-					};
-				} else if (node instanceof VisualCircuitConnection) {
-					VisualCircuitConnection vc = (VisualCircuitConnection) node;
-					if (vc.getReferencedOnePlace() == null	|| vc.getReferencedZeroPlace() == null) {
-						return null;
-					}
-					final boolean isOne = vc.getReferencedOnePlace().getTokens() == 1;
-					final boolean isZero = vc.getReferencedZeroPlace().getTokens() == 1;
-					return new Decoration() {
-						@Override
-						public Color getColorisation() {
-							if (isOne && !isZero) {
-								return CircuitSettings.getActiveWireColor();
-							}
-							if (!isOne && isZero) {
-								return CircuitSettings.getInactiveWireColor();
-							}
-							return null;
-						}
-						@Override
-						public Color getBackground() {
-							return null;
-						}
-					};
 				} else if (node instanceof VisualPage || node instanceof VisualGroup) {
 					final boolean ret = isContainerExcited((Container)node);
 					return new ContainerDecoration() {
@@ -341,12 +307,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
 						public Color getColorisation() {
 							return null;
 						}
-
 						@Override
 						public Color getBackground() {
 							return null;
 						}
-
 						@Override
 						public boolean isContainerExcited() {
 							return ret;

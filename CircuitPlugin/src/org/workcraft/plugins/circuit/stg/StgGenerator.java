@@ -10,16 +10,19 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
@@ -39,6 +42,7 @@ import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.TwoWayMap;
 
 public class StgGenerator {
 	private static final double SCALE_X = 4.0;
@@ -53,31 +57,60 @@ public class StgGenerator {
 	private final VisualCircuit circuit;
 	private final VisualSTG stg;
 
-	// store created containers in a separate map
-	private static HashMap<String, Container> refToContainerMap = null;
-
-	private Map<VisualContact, VisualContact> driverMap = new HashMap<VisualContact, VisualContact>();
-	private Map<VisualContact, SignalStg> contactMap = new HashMap<VisualContact, SignalStg>();
+	private final HashMap<String, Container> refToPageMap;
+	private final Map<VisualNode, VisualContact> nodeToDriverMap;
+	private final TwoWayMap<VisualContact, SignalStg> driverToStgMap;
 
 	public StgGenerator(VisualCircuit circuit) {
 		this.circuit = circuit;
 		this.stg = new VisualSTG(new STG());
-		convertPages();
-		buildDriverMap();
-		generatePlaces();
-		generateTransitions();
-		groupContacts();
+		HashSet<VisualContact> drivers = identifyDrivers();
+		this.nodeToDriverMap = associateDrivers(drivers);
+		this.refToPageMap = convertPages();
+		this.driverToStgMap = convertDrivers(drivers);
+		connectDrivers(drivers);
+		groupStg();
 		if (CircuitSettings.getSimplifyStg()) {
 			simplifyStg(); // remove dead transitions
 		}
 	}
 
-	private void convertPages() {
-		NamespaceHelper.copyPageStructure(circuit, stg);
-		refToContainerMap = NamespaceHelper.getRefToPageMapping(stg);
+	public VisualSTG getStg() {
+		return stg;
 	}
 
-	private void buildDriverMap() {
+	public boolean isDriver(VisualContact contact) {
+		return driverToStgMap.containsKey(contact);
+
+	}
+
+	public SignalStg getSignalStg(VisualNode node) {
+		SignalStg result = null;
+		VisualContact driver = nodeToDriverMap.get(node);
+		if (driver != null) {
+			result = driverToStgMap.getValue(driver);
+		}
+		return result;
+	}
+
+	private HashMap<String, Container> convertPages() {
+		NamespaceHelper.copyPageStructure(circuit, stg);
+		return NamespaceHelper.getRefToPageMapping(stg);
+	}
+
+	private Container getContainer(VisualContact contact) {
+		String nodeReference = circuit.getMathModel().getNodeReference(contact.getReferencedComponent());
+		String parentReference = NamespaceHelper.getParentReference(nodeReference);
+		Container container = (Container)refToPageMap.get(parentReference);
+		while (container==null) {
+			parentReference = NamespaceHelper.getParentReference(parentReference);
+			container = (Container)refToPageMap.get(parentReference);
+		}
+		return container;
+	}
+
+	private HashSet<VisualContact> identifyDrivers() {
+		HashSet<VisualContact> result = new HashSet<>();
 		for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
 			VisualContact driver = null;
 			if (!contact.isDriver()) {
@@ -86,26 +119,69 @@ public class StgGenerator {
 			if (driver == null) {
 				driver = contact;
 			}
-			driverMap.put(contact, driver);
+			result.add(driver);
+		}
+		return result;
+	}
+
+	private HashMap<VisualNode, VisualContact> associateDrivers(HashSet<VisualContact> driverSet) {
+		HashMap<VisualNode, VisualContact> result = new HashMap<>();
+		for (VisualContact driver: driverSet) {
+			propagateDriver(driver, driver, result);
+		}
+		return result;
+	}
+
+	private void propagateDriver(VisualNode node, VisualContact driver, HashMap<VisualNode, VisualContact> nodeToDriverMap) {
+		if (!nodeToDriverMap.containsKey(node)) {
+			nodeToDriverMap.put(node, driver);
+
+			for (Connection connection: circuit.getConnections(node)) {
+				if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
+					nodeToDriverMap.put((VisualCircuitConnection)connection, driver);
+					Node succNode = connection.getSecond();
+					if (succNode instanceof VisualNode) {
+						propagateDriver((VisualNode)succNode, driver, nodeToDriverMap);
+					}
+				}
+			}
 		}
 	}
 
-	private void generatePlaces() {
-		HashSet<VisualContact> drivers = new HashSet<>(driverMap.values());
-		for (VisualContact contact: drivers) {
-			SignalStg signalStg = generatePlaces(circuit, stg, contact);
-			contactMap.put(contact, signalStg);
+	private TwoWayMap<VisualContact, SignalStg> convertDrivers(HashSet<VisualContact> drivers) {
+		TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
+		for (VisualContact driver: drivers) {
+			Container container = getContainer(driver);
+			String contactName = CircuitUtils.getContactName(circuit, driver);
+			Point2D center = getPosition(driver);
+
+			VisualPlace zeroPlace = stg.createPlace(contactName + "_0", container);
+			zeroPlace.setLabel(contactName + "=0");
+			setPosition(zeroPlace, Geometry.add(center, OFFSET_P0));
+			if (!driver.getReferencedContact().getInitToOne()) {
+				zeroPlace.getReferencedPlace().setTokens(1);
+			}
+
+			VisualPlace onePlace = stg.createPlace(contactName + "_1", container);
+			onePlace.setLabel(contactName + "=1");
+			setPosition(onePlace, Geometry.add(center, OFFSET_P1));
+			if (driver.getReferencedContact().getInitToOne()) {
+				onePlace.getReferencedPlace().setTokens(1);
+			}
+
+			SignalStg signalStg = new SignalStg(zeroPlace, onePlace);
+			result.put(driver, signalStg);
 		}
+		return result;
 	}
 
-	private void generateTransitions() {
-		for(VisualContact driver : contactMap.keySet()) {
+	private void connectDrivers(HashSet<VisualContact> drivers) {
+		for (VisualContact driver: drivers) {
 			BooleanFormula setFunc = null;
 			BooleanFormula resetFunc = null;
 			if (driver instanceof VisualFunctionContact) {
 				// Determine signal type
 				VisualFunctionContact contact = (VisualFunctionContact)driver;
-
 				if (contact.isOutput() && contact.isPort()) {
 					// Driver of the primary output port
 					VisualContact outputDriver = CircuitUtils.findDriver(circuit, contact);
@@ -125,111 +201,25 @@ public class StgGenerator {
 				setFunc = new DumbBooleanWorker().not(resetFunc);
 			}
 			Dnf setDnf = DnfGenerator.generate(setFunc);
-			buildTransitions(driver, setDnf, Direction.PLUS);
+			createSignalStgTransitions(driver, setDnf, Direction.PLUS);
 
 			Dnf resetDnf = DnfGenerator.generate(resetFunc);
-			buildTransitions(driver, resetDnf, Direction.MINUS);
+			createSignalStgTransitions(driver, resetDnf, Direction.MINUS);
 		}
 	}
 
-	public VisualSTG getStg() {
-		return stg;
-	}
-
-	public SignalStg getContactSTG(VisualContact contact) {
-		return contactMap.get(contact);
-	}
-
-	private void simplifyStg() {
-		for (SignalStg contactStg: contactMap.values()) {
-			HashSet<Node> deadPostset = new HashSet<Node>(stg.getPostset(contactStg.P0));
-			deadPostset.retainAll(stg.getPostset(contactStg.P1));
-			for (Node node: deadPostset) {
-				if (node instanceof VisualTransition) {
-					contactStg.Rs.remove(node);
-					contactStg.Fs.remove(node);
-					stg.remove(node);
-				}
-			}
-		}
-	}
-
-	static void setPosition(Movable node, Point2D point) {
+	private void setPosition(Movable node, Point2D point) {
 		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(point.getX(), point.getY()));
 	}
 
-	private SignalStg generatePlaces(VisualCircuit circuit, VisualSTG stg, VisualContact contact) {
-		String nodeReference = circuit.getMathModel().getNodeReference(contact.getReferencedComponent());
-		String parentReference = NamespaceHelper.getParentReference(nodeReference);
-		Container curContainer = (Container)refToContainerMap.get(parentReference);
-		while (curContainer == null) {
-			parentReference = NamespaceHelper.getParentReference(parentReference);
-			curContainer = (Container)refToContainerMap.get(parentReference);
-		}
-
-		String contactName = CircuitUtils.getContactName(circuit, contact);
-
-		VisualPlace zeroPlace = stg.createPlace(contactName + "_0", curContainer);
-		zeroPlace.setLabel(contactName + "=0");
-		if (!contact.getReferencedContact().getInitToOne()) {
-			zeroPlace.getReferencedPlace().setTokens(1);
-		}
-
-		VisualPlace onePlace = stg.createPlace(contactName + "_1", curContainer);
-		onePlace.setLabel(contactName + "=1");
-		if (contact.getReferencedContact().getInitToOne()) {
-			onePlace.getReferencedPlace().setTokens(1);
-		}
-
-
-		Point2D center = getPosition(contact);
-		setPosition(onePlace, Geometry.add(center, OFFSET_P1));
-		setPosition(zeroPlace, Geometry.add(center, OFFSET_P0));
-
-		return new SignalStg(zeroPlace, onePlace);
-	}
-
-//	public void attachConnections(VisualComponent component, SignalStg signalStg) {
-//		if (!contactMap.containsKey(component)) {
-//			if (component instanceof VisualContact) {
-//				VisualContact contact = (VisualContact)component;
-//				contactMap.put(contact,  signalStg);
-//			}
-//
-//			for (Connection connection: circuit.getConnections(component)) {
-//				if ((connection.getFirst() == component) && (connection instanceof VisualCircuitConnection)) {
-//					contactMap.put((VisualCircuitConnection)connection, signalStg);
-//
-//					if (connection.getSecond() instanceof VisualJoint) {
-//						VisualJoint joint = (VisualJoint)connection.getSecond();
-//						attachConnections(joint, signalStg);
-//					}
-//
-//					if (connection.getSecond() instanceof VisualContact) {
-//						VisualContact contact = (VisualContact)connection.getSecond();
-//						attachConnections(contact, signalStg);
-//					}
-//				}
-//			}
-//		}
-//	}
-
-	private Point2D getPosition(VisualContact contact) {
-		AffineTransform transform = TransformHelper.getTransformToRoot(contact);
-		Point2D position = new Point2D.Double(
-				SCALE_X * (transform.getTranslateX() + contact.getX()),
-				SCALE_Y * (transform.getTranslateY() + contact.getY()));
-		return position;
-	}
-
-	private void buildTransitions(VisualContact contact, Dnf dnf, Direction direction) {
-		SignalStg contactStg = contactMap.get(contact);
-		Point2D position = Geometry.add(getPosition(contact), getDirectionOffset(contact));
+	private void createSignalStgTransitions(VisualContact driver, Dnf dnf, Direction direction) {
+		SignalStg driverStg = driverToStgMap.getValue(driver);
+		Point2D position = Geometry.add(getPosition(driver), getDirectionOffset(driver));
 		Point2D initOffset = (direction == Direction.PLUS ? OFFSET_INIT_PLUS : OFFSET_INIT_MINUS);
 		Point2D incOffset = (direction == Direction.PLUS ? OFFSET_INC_PLUS : OFFSET_INC_MINUS);
-		VisualPlace predPlace = (direction == Direction.PLUS ? contactStg.P0 : contactStg.P1);
-		VisualPlace succPlace = (direction == Direction.PLUS ? contactStg.P1 : contactStg.P0);
-		HashSet<VisualSignalTransition> transitions = (direction == Direction.PLUS ? contactStg.Rs : contactStg.Fs);
+		VisualPlace predPlace = (direction == Direction.PLUS ? driverStg.P0 : driverStg.P1);
+		VisualPlace succPlace = (direction == Direction.PLUS ? driverStg.P1 : driverStg.P0);
+		HashSet<VisualSignalTransition> transitions = (direction == Direction.PLUS ? driverStg.Rs : driverStg.Fs);
 
 		TreeSet<DnfClause> clauses = new TreeSet<DnfClause>(
 				new Comparator<DnfClause>() {
@@ -243,9 +233,9 @@ public class StgGenerator {
 
 		clauses.addAll(dnf.getClauses());
 
-		Container container = getContainer(contact);
-		String signalName = CircuitUtils.getContactName(circuit, contact);
-		SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, contact);
+		Container container = getContainer(driver);
+		String signalName = CircuitUtils.getContactName(circuit, driver);
+		SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, driver);
 		position = Geometry.add(position, initOffset);
 		for(DnfClause clause : clauses) {
 			VisualSignalTransition transition = stg.createSignalTransition(signalName, signalType, direction, container);
@@ -261,26 +251,21 @@ public class StgGenerator {
 				throw new RuntimeException(e);
 			}
 
-
 			HashSet<VisualPlace> placesToRead = new HashSet<VisualPlace>();
 			for (Literal literal : clause.getLiterals()) {
-				BooleanVariable b = literal.getVariable();
-				VisualContact targetContact = CircuitUtils.getVisualContact(circuit, (Contact)b);
-				if (targetContact == null) {
-					throw new RuntimeException("No source for " + circuit.getMathModel().getName(targetContact) + " while generating " + signalName);
+				BooleanVariable variable = literal.getVariable();
+				VisualContact sourceContact = CircuitUtils.getVisualContact(circuit, (Contact)variable);
+				VisualContact sourceDriver = nodeToDriverMap.get(sourceContact);
+				SignalStg sourceDriverStg = driverToStgMap.getValue(sourceDriver);
+				if (sourceDriverStg == null) {
+					throw new RuntimeException("No source for " + circuit.getMathName(sourceContact) + " while generating " + signalName);
 				}
-
-				VisualContact driverContact = driverMap.get(targetContact);
-				SignalStg signalStg = contactMap.get(driverContact);
-				if (signalStg == null) {
-					throw new RuntimeException("No source for " + circuit.getMathName(targetContact) + " while generating " + signalName);
-				}
-				VisualPlace place = literal.getNegation() ? signalStg.P0 : signalStg.P1;
+				VisualPlace place = literal.getNegation() ? sourceDriverStg.P0 : sourceDriverStg.P1;
 				placesToRead.add(place);
 			}
 
 			if (placesToRead.remove(predPlace)) {
-				System.out.println(String.format("warning: signal %s depends on itself", signalName));
+				System.out.println("warning: signal " + signalName + " depends on itself");
 			}
 
 			for (VisualPlace place : placesToRead) {
@@ -299,15 +284,12 @@ public class StgGenerator {
 		}
 	}
 
-	private Container getContainer(VisualContact contact) {
-		String nodeReference = circuit.getMathModel().getNodeReference(contact.getReferencedComponent());
-		String path = NamespaceHelper.getParentReference(nodeReference);
-		Container curContainer = (Container)refToContainerMap.get(path);
-		while (curContainer==null) {
-			path = NamespaceHelper.getParentReference(path);
-			curContainer = (Container)refToContainerMap.get(path);
-		}
-		return curContainer;
+	private Point2D getPosition(VisualContact contact) {
+		AffineTransform transform = TransformHelper.getTransformToRoot(contact);
+		Point2D position = new Point2D.Double(
+				SCALE_X * (transform.getTranslateX() + contact.getX()),
+				SCALE_Y * (transform.getTranslateY() + contact.getY()));
+		return position;
 	}
 
 	private Point2D getDirectionOffset(VisualContact contact) {
@@ -324,13 +306,13 @@ public class StgGenerator {
 		}
 	}
 
-	private void groupContacts() {
-		for(SignalStg contactStg: new HashSet<>(contactMap.values())) {
+	private void groupStg() {
+		for (SignalStg signalStg: driverToStgMap.getValues()) {
 			Collection<Node> nodesToGroup = new LinkedList<Node>();
-			nodesToGroup.add(contactStg.P1);
-			nodesToGroup.add(contactStg.P0);
-			nodesToGroup.addAll(contactStg.Rs);
-			nodesToGroup.addAll(contactStg.Fs);
+			nodesToGroup.add(signalStg.P1);
+			nodesToGroup.add(signalStg.P0);
+			nodesToGroup.addAll(signalStg.Rs);
+			nodesToGroup.addAll(signalStg.Fs);
 
 			Container currentLevel = null;
 			Container oldLevel = stg.getCurrentLevel();
@@ -347,6 +329,20 @@ public class StgGenerator {
 			stg.select(nodesToGroup);
 			stg.groupSelection();
 			stg.setCurrentLevel(oldLevel);
+		}
+	}
+
+	private void simplifyStg() {
+		for (SignalStg contactStg: driverToStgMap.values()) {
+			HashSet<Node> deadPostset = new HashSet<Node>(stg.getPostset(contactStg.P0));
+			deadPostset.retainAll(stg.getPostset(contactStg.P1));
+			for (Node node: deadPostset) {
+				if (node instanceof VisualTransition) {
+					contactStg.Rs.remove(node);
+					contactStg.Fs.remove(node);
+					stg.remove(node);
+				}
+			}
 		}
 	}
 

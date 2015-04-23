@@ -80,7 +80,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
 			workingDirectory = FileUtils.createTempDirectory(prefix);
 
-			STG devStg = (STG)StgGenerator.generate(visualCircuit).getMathModel();
+			StgGenerator generator = new StgGenerator(visualCircuit);
+			STG devStg = (STG)generator.getStg().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 			if (devStgExporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
