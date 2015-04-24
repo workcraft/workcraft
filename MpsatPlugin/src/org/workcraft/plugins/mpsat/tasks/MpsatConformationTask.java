@@ -187,7 +187,6 @@ public class MpsatConformationTask extends MpsatChainTask {
 		}
 	}
 
-
 	private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
 		HashSet<String> result = new HashSet<String>();
 		InputStream is = new ByteArrayInputStream(bufferedInput);

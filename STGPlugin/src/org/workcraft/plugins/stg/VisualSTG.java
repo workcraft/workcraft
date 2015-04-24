@@ -309,6 +309,15 @@ public class VisualSTG extends AbstractVisualModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualDummyTransition.class);
 	}
 
+	public VisualPlace getVisualPlace(Place place) {
+		for (VisualPlace vp: getVisualPlaces()) {
+			if (vp.getReferencedPlace() == place) {
+				return vp;
+			}
+		}
+		return null;
+	}
+
 	public VisualTransition getVisualTransition(Transition transition) {
 		for (VisualTransition vt: getVisualTransitions()) {
 			if (vt.getReferencedTransition() == transition) {

@@ -12,7 +12,7 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.StgGenerator;
+import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -80,7 +80,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
 			workingDirectory = FileUtils.createTempDirectory(prefix);
 
-			StgGenerator generator = new StgGenerator(visualCircuit);
+			CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
 			STG devStg = (STG)generator.getStg().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 			if (devStgExporter == null) {
