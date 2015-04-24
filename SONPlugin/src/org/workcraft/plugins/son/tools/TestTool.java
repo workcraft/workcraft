@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
@@ -56,7 +57,11 @@ public class TestTool extends AbstractTool implements Tool{
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 
-		outputBefore(net);
+		for(Condition node : net.getConditions()){
+			node.setFillColor(new Color(1.0f, 0.5f, 0.0f));
+		}
+	//	dfsTest(net);
+		//outputBefore(net);
 		//phaseTest(net);
 		//csonCycleTest(net);
 		//abtreactConditionTest(net);
@@ -70,8 +75,16 @@ public class TestTool extends AbstractTool implements Tool{
 		//conditionOutputTest(vnet);
 	}
 
-	private void phaseDecompositionTest(SON net){
+	private void dfsTest(SON net){
+		PathAlgorithm alg = new PathAlgorithm(net);
+		RelationAlgorithm alg2 = new RelationAlgorithm(net);
+		Collection<Path> result = alg.dfs3(alg2.getInitial(net.getGroups().iterator().next().getComponents()).iterator().next(),
+				alg2.getFinal(net.getGroups().iterator().next().getComponents()).iterator().next(),
+				net.getGroups().iterator().next().getComponents());
 
+		for(Path path : result){
+			System.out.println(path.toString(net));
+		}
 	}
 
 	private void outputBefore(SON net){

@@ -167,17 +167,17 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 	@Override
 	public Collection<String> getRelationErrors() {
-		return getRelationErrorsSetReferences(relationErrors);
+		return getRelationErrorsSetRefs(relationErrors);
 	}
 
 	@Override
 	public Collection<ArrayList<String>> getCycleErrors() {
-		return getcycleErrorsSetReferences(cycleErrors);
+		return getCycleErrorsSetRefs(cycleErrors);
 	}
 
 	@Override
 	public Collection<String> getGroupErrors() {
-		return getGroupErrorsSetReferences(groupErrors);
+		return getGroupErrorsSetRefs(groupErrors);
 	}
 
 	@Override

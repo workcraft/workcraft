@@ -48,7 +48,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 		}
 
 		for(Block block : blocks){
-			infoMsg("Initialising block..." + block);
+			infoMsg("Initialising block..." + net.getNodeReference(block));
 			Collection<Node> inputs = getTSONAlg().getBlockInputs(block);
 			Collection<Node> outputs = getTSONAlg().getBlockOutputs(block);
 
@@ -76,7 +76,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 		//block connection task result
 
 
-		infoMsg("block structure tasks complete.");
+		infoMsg("Block structure checking tasks complete.");
 
 	}
 
@@ -93,17 +93,17 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
 	@Override
 	public Collection<String> getRelationErrors() {
-		return getRelationErrorsSetReferences(relationErrors);
+		return getRelationErrorsSetRefs(relationErrors);
 	}
 
 	@Override
 	public Collection<ArrayList<String>> getCycleErrors() {
-		return getcycleErrorsSetReferences(cycleErrors);
+		return getCycleErrorsSetRefs(cycleErrors);
 	}
 
 	@Override
 	public Collection<String> getGroupErrors() {
-		return getGroupErrorsSetReferences(groupErrors);
+		return getGroupErrorsSetRefs(groupErrors);
 	}
 
 	@Override

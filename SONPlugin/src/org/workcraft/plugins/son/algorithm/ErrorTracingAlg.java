@@ -154,7 +154,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 	//Backward error tracing
-	public void setReverseErrNum (Collection<TransitionNode> runList, Collection<Path> syncSet, boolean isBhv){
+	public void setRevErrNum (Collection<TransitionNode> runList, Collection<Path> syncSet, boolean isBhv){
 		while(true){
 			boolean b = false;
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
@@ -209,7 +209,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		}
 
 		if(!runList.isEmpty())
-			setReverseErrNum(runList, syncSet, isBhv);
+			setRevErrNum(runList, syncSet, isBhv);
 	}
 
 	private void setReverseAsyncErrNum(TransitionNode e, boolean isBhv){

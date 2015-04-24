@@ -67,8 +67,6 @@ import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
-import org.workcraft.plugins.son.connections.SONConnection.Semantics;
-import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
@@ -92,7 +90,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	private ErrorTracingAlg	errAlg;
 
 	private Collection<Path> sync = new ArrayList<Path>();
-	private Map<Condition, Phase> phases = new HashMap<Condition, Phase>();
+	private Map<Condition, Collection<Phase>> phases = new HashMap<Condition, Collection<Phase>>();
 	protected Map<PlaceNode, Boolean>initialMarking = new HashMap<PlaceNode, Boolean>();
 
 	protected JPanel interfacePanel;
@@ -113,7 +111,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected final Trace mainTrace = new Trace();
 	protected final Trace branchTrace = new Trace();
 
-	protected boolean reverse;
+	protected boolean isRev;
 
 	protected Timer timer = null;
 
@@ -240,8 +238,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			@Override
 			public void actionPerformed(ActionEvent e){
 				Map<PlaceNode, Boolean> currentMarking = readSONMarking();
-				setReverse(editor, !reverse);
+				setReverse(editor, !isRev);
 				applyMarking(currentMarking);
+				setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 				excitedContainers.clear();
 				updateState(editor);
 			}
@@ -346,18 +345,21 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		we.setCanModify(false);
 		visualNet.connectToBlocks(we);
 
-		reverse = false;
+		isRev = false;
 		mainTrace.clear();
 		branchTrace.clear();
 
 		sync = getSyncCycles();
 		phases = bsonAlg.getAllPhases();
+		//set initial marking
 		try {
 			initialMarking.putAll(autoInitialMarking());
 		} catch (InvalidStructureException e) {
 			errorMsg(e.getMessage(), editor);
 			return;
 		}
+		//set enabled nodes colors.
+		setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 
 		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
@@ -379,7 +381,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		super.deactivated(editor);
 		mainTrace.clear();
 		branchTrace.clear();
-		reverse = false;
+		isRev = false;
 	}
 
 	@Override
@@ -401,7 +403,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		backwardButton.setEnabled((mainTrace.getPosition() > 0) || (branchTrace.getPosition() > 0));
 		forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
 		traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
-		if(!reverse){
+		if(!isRev){
 			reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"));
 			reverseButton.setToolTipText("Switch to reverse simulation");
 		}
@@ -410,6 +412,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"));
 			reverseButton.setToolTipText("Switch to forward simulation");
 		}
+
 		editor.requestFocus();
 		editor.repaint();
 	}
@@ -445,8 +448,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			} else {
 				if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
 					return branchTrace.get(row - mainTrace.getPosition());
+					}
 				}
-			}
 			return "";
 		}
 	};
@@ -454,79 +457,44 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	//set initial marking
 	protected Map<PlaceNode, Boolean> autoInitialMarking() throws InvalidStructureException{
 		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+		Collection<ONGroup> upperGroups = bsonAlg.getAbstractGroups(net.getGroups());
+		Collection<ONGroup> lowerGroups = bsonAlg.getBhvGroups(net.getGroups());
+		Collection<Condition> upperInit = new ArrayList<Condition>();
 
-		for(PlaceNode pn : net.getPlaceNodes()){
-			pn.setMarked(false);
-			result.put(pn, false);
-		}
+		for(PlaceNode con : net.getPlaceNodes())
+			con.setMarked(false);
 
-		//initial marking for abstract groups and behavioral groups
-		Collection<ONGroup> abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
-		for(ONGroup abstractGroup : abstractGroups){
-			for(Node c : relationAlg.getInitial(abstractGroup.getComponents())){
-				if(c instanceof Condition){
-					//set initial marking for abstract groups
-					result.put((Condition)c, true);
-					((Condition) c).setMarked(true);
+		for(ONGroup group : net.getGroups()){
+			if(upperGroups.contains(group))
+				for(Condition c : relationAlg.getInitial(group.getConditions())){
+					c.setMarked(true);
+					upperInit.add(c);
 				}
-			}
-		}
-
-		//get corresponding behavioural groups
-		Collection<ONGroup> behaviouralGroups = bsonAlg.getBhvGroups(net.getGroups());
-		for(ONGroup bhvGroup : behaviouralGroups){
-			//get initial state of a behavioural group
-			Collection<Node> initial = relationAlg.getInitial(bhvGroup.getComponents());
-			//if all corresponding abstract conditions are marked, set tokens
-			if(!initial.isEmpty()){
-				//all conditions in initial state must have the same abstract conditions,
-				//otherwise there is structure error.
-				Condition bhvCondition = (Condition)initial.iterator().next();
-				boolean isMarked = true;
-				//get abstract conditions set C
-				//check if they are all initial state
-				//if it's not check if there exist other abstract condition in C which is in the same group and is the initial state
-				//if we cann't find that condition, it's invalid initial marking
-				Collection<Condition> absConditions = bsonAlg.getAbstractConditions(bhvCondition);
-				for(Condition absCondition : absConditions)
-					if(!relationAlg.isInitial(absCondition)){
-						ONGroup absGroup = bsonAlg.getAbstractGroups(absCondition).iterator().next();
-						if(!relationAlg.hasInitial(relationAlg.getCommonElements(absGroup.getComponents(), absConditions)))
-							isMarked = false;
-					}
-
-				if(isMarked){
-					for(Node c : initial){
-						if(c instanceof Condition){
-							result.put((Condition)c, true);
-							((Condition) c).setMarked(true);
+			//an initial state of a lower group is the initial state of SON
+			//if all of its upper conditions are the initial states.
+			else if(lowerGroups.contains(group)){
+				for(Condition c : relationAlg.getInitial(group.getConditions())){
+					boolean isInitial = true;
+					Collection<Condition> set = bsonAlg.getAbstractConditions(c);
+					for(Condition c2 : set){
+						if(!relationAlg.isInitial(c2)){
+							ONGroup group2 = net.getGroup(c2);
+							if(!set.containsAll(relationAlg.getInitial(group2.getConditions())))
+								isInitial = false;
 						}
 					}
+					if(isInitial)
+						c.setMarked(true);
+				}
+			}
+			else{
+				for(Condition c : relationAlg.getInitial(group.getConditions())){
+					c.setMarked(true);
 				}
 			}
 		}
 
-		//initial marking for channel places
-		for(Node c : relationAlg.getInitial(net.getComponents())){
-			if(c instanceof ChannelPlace){
-				result.put((ChannelPlace)c, true);
-				((ChannelPlace)c).setMarked(true);}
-		}
 
-		//initial marking for other groups.
-		for(ONGroup group : net.getGroups()){
-			boolean hasBhvLine = false;
-			for(Condition c : group.getConditions())
-				if(net.getSONConnectionTypes(c).contains(Semantics.BHVLINE))
-					hasBhvLine = true;
-			if(!hasBhvLine){
-				for(Node c : relationAlg.getInitial(group.getComponents())){
-					if(c instanceof Condition){
-						result.put((Condition)c, true);
-						((Condition)c).setMarked(true);}
-				}
-			}
-		}
 		return result;
 	}
 
@@ -562,33 +530,20 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			mainInc = 1;
 		}
 
+		if (fireList != null) {
+			try {
+				simuAlg.setMarking(fireList, phases, isRev);
+			} catch (InvalidStructureException e) {
+				errorMsg(e.getMessage(), editor);
+				return false;
+			}
+			setErrNum(fireList, isRev);
+			mainTrace.incPosition(mainInc);
+			branchTrace.incPosition(branchInc);
+			setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
+			result = true;
+		}
 
-		if (fireList != null && !reverse) {
-			try {
-				simuAlg.fire(fireList);
-			} catch (InvalidStructureException e) {
-				errorMsg(e.getMessage(), editor);
-				return false;
-			}
-			setErrNum(fireList, reverse);
-			mainTrace.incPosition(mainInc);
-			branchTrace.incPosition(branchInc);
-			result = true;
-		}
-		if (fireList!= null && reverse) {
-			try {
-				simuAlg.unFire(fireList);
-			} catch (InvalidStructureException e) {
-				errorMsg(e.getMessage(), editor);
-				return false;
-			}
-			setErrNum(fireList, reverse);
-			mainTrace.incPosition(mainInc);
-			branchTrace.incPosition(branchInc);
-			result = true;
-		}
-		Collection<Node> list = new ArrayList<Node>();
-		list.addAll(fireList);
 		return result;
 	}
 
@@ -622,43 +577,31 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			mainDec = 1;
 		}
 
-		if (fireList != null && !reverse) {
+		if (fireList != null) {
 			try {
-				simuAlg.unFire(fireList);
+				simuAlg.setMarking(fireList, phases, !isRev);
 			} catch (InvalidStructureException e) {
 				errorMsg(e.getMessage(), editor);
 				return false;
 			}
+
 			mainTrace.decPosition(mainDec);
 			branchTrace.decPosition(branchDec);
 			if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
 				branchTrace.clear();
 			}
+			setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 			result = true;
-			this.setErrNum(fireList, !reverse);
+			this.setErrNum(fireList, !isRev);
 		}
-		if (fireList != null && reverse) {
-			try {
-				simuAlg.fire(fireList);
-			} catch (InvalidStructureException e) {
-				errorMsg(e.getMessage(), editor);
-				return false;
-			}
-			mainTrace.decPosition(mainDec);
-			branchTrace.decPosition(branchDec);
-			if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
-				branchTrace.clear();
-			}
-			result = true;
-			this.setErrNum(fireList, !reverse);
-		}
+
 		return result;
 	}
 
 
 	private void reset(final GraphEditor editor) {
 		applyMarking(initialMarking);
-		reverse = false;
+		isRev = false;
 		mainTrace.clear();
 		branchTrace.clear();
 
@@ -754,8 +697,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				errAlg.setErrNum(fireList, sync, true);
 			}
 			else{
-				errAlg.setReverseErrNum(abstractEvents, sync, false);
-				errAlg.setReverseErrNum(fireList, sync, true);
+				errAlg.setRevErrNum(abstractEvents, sync, false);
+				errAlg.setRevErrNum(fireList, sync, true);
 			}
 		}
 	}
@@ -766,20 +709,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	protected void autoSimulator(final GraphEditor editor, Map<PlaceNode, Boolean> marking, Collection<Map<PlaceNode, Boolean>> history) throws InvalidStructureException{
-		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
+		List<TransitionNode> enabled = null;
 		history.add(marking);
-		for(TransitionNode node : net.getTransitionNodes()){
-			if(!reverse){
-				if(simuAlg.isEnabled(node, sync, phases))
-					fireList.add(node);
-			}else{
-				if(simuAlg.isUnfireEnabled(node, sync, phases))
-					fireList.add(node);
-				}
-		}
-		if(!fireList.isEmpty()){
 
-			executeEvent(editor, fireList);
+		enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+
+		if(!enabled.isEmpty()){
+
+			executeEvent(editor, enabled);
 
 			Map<PlaceNode, Boolean> currentMarking = readSONMarking();
 
@@ -803,14 +740,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	private Map<PlaceNode, Boolean> ReachabilitySimulatorTask(final GraphEditor editor, Collection<TransitionNode> causalPredecessors,  Collection<String> markingRefs){
-		ArrayList<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
-		ArrayList<TransitionNode> fireList = new ArrayList<TransitionNode>();
+		List<TransitionNode> enabled = null;
+		List<TransitionNode> fireList = new ArrayList<TransitionNode>();
 
-		for(TransitionNode node : net.getTransitionNodes()){
-			if(simuAlg.isEnabled(node, sync, phases))
-				enabledEvents.add(node);
-		}
-		for(Node node : relationAlg.getCommonElements(enabledEvents, causalPredecessors)){
+		enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+		for(Node node : relationAlg.getCommonElements(enabled, causalPredecessors)){
 			if(node instanceof TransitionNode)
 				fireList.add((TransitionNode)node);
 		}
@@ -856,7 +790,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 
 		Step newStep = new Step();
-		if(!reverse)
+		if(!isRev)
 			newStep.add(">");
 		else
 			newStep.add("<");
@@ -920,21 +854,56 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 	}
 
+	private void setDecoration(List<TransitionNode> enabled){
+		net.refreshColor();
+
+		for(TransitionNode e : enabled){
+			//e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());
+			e.setForegroundColor(CommonSimulationSettings.getEnabledForegroundColor());
+		}
+
+		Step step = null;
+		if (branchTrace.canProgress()) {
+			step = branchTrace.get(branchTrace.getPosition());
+		}else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+			step = mainTrace.get(mainTrace.getPosition());
+		}
+
+		if(step != null){
+			if(step.isReverse() == isRev){
+				for(String ref : step){
+					Node n = net.getNodeByReference(ref);
+					if(n != null){
+						if(n instanceof TransitionNode){
+							((TransitionNode) n).setFillColor(new Color(255, 228, 181));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private boolean isEnabled(Node e, List<TransitionNode> fireList){
+		if(fireList.contains(e))
+			return true;
+		return false;
+	}
+
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+
 		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
 			new Func<Node, Boolean>() {
 			@Override
 			public Boolean eval(Node node) {
 				if(node instanceof VisualTransitionNode){
 					TransitionNode node1 = ((VisualTransitionNode)node).getMathTransitionNode();
-					if (simuAlg.isEnabled(node1, sync, phases) && !reverse)
+					List<TransitionNode> enabled = null;
+
+					enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+					if(isEnabled(node1, enabled))
 						return true;
-				}
-				if(node instanceof VisualTransitionNode){
-					TransitionNode node1 = ((VisualTransitionNode)node).getMathTransitionNode();
-					if(simuAlg.isUnfireEnabled(node1, sync, phases) && reverse)
-						return true;
+
 				}
 				return false;
 
@@ -946,114 +915,65 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		if (node instanceof VisualTransitionNode) {
 
-			Collection<TransitionNode> enabledEvents = new ArrayList<TransitionNode>();
+			List<TransitionNode> enabled = null;
 			TransitionNode selected = ((VisualTransitionNode)node).getMathTransitionNode();
 
-			if(reverse){
-				for(TransitionNode enable : net.getTransitionNodes())
-					if(simuAlg.isUnfireEnabled(enable, sync, phases))
-						enabledEvents.add(enable);
-				}else{
-				for(TransitionNode enable : net.getTransitionNodes())
-					if(simuAlg.isEnabled(enable, sync, phases))
-						enabledEvents.add(enable);
-				}
+			enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
-			List<TransitionNode> minFires = simuAlg.getMinFires(selected, sync, enabledEvents);
-			List<TransitionNode> maxFires = simuAlg.getMaxFires(selected, sync, enabledEvents);
+			List<TransitionNode> minFire = simuAlg.getMinFire(selected, sync, enabled, isRev);
 
-			if(!reverse){
-				List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
-				for(TransitionNode pe : enabledEvents)
-					if(!minFires.contains(pe))
-						possibleFires.add(pe);
+			List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
+			for(TransitionNode pe : enabled)
+				if(!minFire.contains(pe))
+					possibleFires.add(pe);
 
-				minFires.remove(selected);
+			minFire.remove(selected);
 
-				List<TransitionNode> fireList = new ArrayList<TransitionNode>();
+			List<TransitionNode> fireList = new ArrayList<TransitionNode>();
 
-				if(possibleFires.isEmpty() && minFires.isEmpty()){
-					fireList.add(selected);
-					executeEvent(e.getEditor(),fireList);
-
-				}else{
-					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
-							net, possibleFires, minFires, maxFires,	selected, reverse, sync);
-					GUI.centerToParent(dialog, mainWindow);
-					dialog.setVisible(true);
-
-					fireList.addAll(minFires);
-					fireList.add(selected);
-
-					if (dialog.getRun() == 1){
-						fireList.addAll(dialog.getSelectedEvent());
-						executeEvent(e.getEditor(),fireList);
-					}
-					if(dialog.getRun()==2){
-						return;
-						}
-					}
-				//Error tracing
-			//	setErrNum(runList, reverse);
+			if(possibleFires.isEmpty() && minFire.isEmpty()){
+				fireList.add(selected);
+				executeEvent(e.getEditor(),fireList);
 
 			}else{
-				//reverse simulation
+				e.getEditor().requestFocus();
+				ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
+						net, possibleFires, minFire, selected, isRev, sync);
+				GUI.centerToParent(dialog, mainWindow);
+				dialog.setVisible(true);
 
-				List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
-				for(TransitionNode pe : enabledEvents)
-					if(!maxFires.contains(pe))
-						possibleFires.add(pe);
+				fireList.addAll(minFire);
+				fireList.add(selected);
 
-						maxFires.remove(selected);
-
-				List<TransitionNode> fireList = new ArrayList<TransitionNode>();
-
-				if(possibleFires.isEmpty() && maxFires.isEmpty()){
-					fireList.add(selected);
+				if (dialog.getRun() == 1){
+					fireList.addAll(dialog.getSelectedEvent());
 					executeEvent(e.getEditor(),fireList);
-				} else {
-					e.getEditor().requestFocus();
-					ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
-							net, possibleFires, maxFires, minFires, selected, reverse, sync);
-
-					GUI.centerToParent(dialog, mainWindow);
-					dialog.setVisible(true);
-
-					fireList.addAll(maxFires);
-					fireList.add(selected);
-
-					if (dialog.getRun() == 1){
-						fireList.addAll(dialog.getSelectedEvent());
-						executeEvent(e.getEditor(),fireList);
-					}
-					if(dialog.getRun()==2){
-						return;
+				}
+				if(dialog.getRun()==2){
+					setDecoration(enabled);
+					return;
 					}
 				}
-				//Reverse error tracing
-				//setErrNum(runList, reverse);
-			}
-		}
-	}
+			//Error tracing
+		//	setErrNum(runList, reverse);
 
-	public boolean isReverse(){
-		return reverse;
+		}
 	}
 
 	@Override
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+		List<TransitionNode> enabled = null;
+
+		enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+
 		boolean ret = false;
 
 		for (Node node: container.getChildren()) {
 			try{
 				if (node instanceof VisualTransitionNode) {
 					TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
-					if(!reverse)
-						ret=ret || simuAlg.isEnabled(event, sync, phases);
-					else
-						ret=ret || simuAlg.isUnfireEnabled(event, sync, phases);
+					ret=ret || isEnabled(event, enabled);
 				}
 			}catch(NullPointerException ex){
 
@@ -1071,7 +991,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	public void setReverse(final GraphEditor editor, boolean reverse){
-		this.reverse = reverse;
+		this.isRev = reverse;
 		updateState(editor);
 	}
 
@@ -1090,66 +1010,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 	@Override
 	public Decorator getDecorator(final GraphEditor editor) {
+
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
-				if(node instanceof VisualTransitionNode) {
-					TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
-					Node event2 = null;
-
-					if (branchTrace.canProgress()) {
-						Step step = branchTrace.get(branchTrace.getPosition());
-						if ((step.isReverse() == reverse) && (step.contains(net.getNodeReference(event))))
-							event2 = net.getNodeByReference(net.getNodeReference(event));
-					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-						Step step = mainTrace.get(mainTrace.getPosition());
-						if ((step.isReverse() == reverse) && (step.contains(net.getNodeReference(event))))
-							event2 = net.getNodeByReference(net.getNodeReference(event));
-					}
-
-					if (event==event2) {
-						return new Decoration(){
-							@Override
-							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
-							}
-							@Override
-							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
-							}
-						};
-
-					}
-					try{
-						if (simuAlg.isEnabled(event, sync, phases)&& !reverse)
-							return new Decoration(){
-								@Override
-								public Color getColorisation() {
-									return CommonSimulationSettings.getEnabledForegroundColor();
-								}
-
-								@Override
-								public Color getBackground() {
-									return CommonSimulationSettings.getEnabledBackgroundColor();
-								}
-							};
-						if (simuAlg.isUnfireEnabled(event, sync, phases)&& reverse)
-								return new Decoration(){
-									@Override
-									public Color getColorisation() {
-										return CommonSimulationSettings.getEnabledForegroundColor();
-									}
-
-									@Override
-									public Color getBackground() {
-										return CommonSimulationSettings.getEnabledBackgroundColor();
-									}
-								};
-					}catch(NullPointerException ex){
-
-					}
-				}
-
 				if ((node instanceof VisualPage && !(node instanceof VisualBlock)) || node instanceof VisualGroup) {
 					final boolean ret = isContainerExcited((Container)node);
 

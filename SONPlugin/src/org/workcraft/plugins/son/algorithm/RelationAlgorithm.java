@@ -71,45 +71,46 @@ public class RelationAlgorithm{
 	}
 
 	/**
-	 * check if a given node is initial state i.e., empty preset
+	 * check if a given node is initial state (condition)
 	 */
 	public boolean isInitial(Node n){
 		boolean conType = true;
 
-		if(net.getPreset(n).size() == 0)
+		if (!(n instanceof Condition))
+			return false;
+		else if(net.getPreset(n).size() == 0)
 			return true;
 		else{
-			if (n instanceof Condition){
-				for(SONConnection con : net.getInputSONConnections(n)){
-					if (con.getSemantics() == Semantics.PNLINE)
-						conType = false;
-				}
-				if(conType)
-					return true;
+			for(SONConnection con : net.getInputSONConnections(n)){
+				if (con.getSemantics() == Semantics.PNLINE)
+					conType = false;
 			}
+			if(conType)
+				return true;
 		}
+
 
 		return false;
 	}
 
 	/**
-	 * check if a given node is final state i.e., empty postset
+	 * check if a given node is final state (condition)
 	 */
 	public boolean isFinal(Node n){
 		boolean conType = true;
 
-		if(net.getPostset(n).size() == 0)
+		if (!(n instanceof Condition))
+			return false;
+		else if(net.getPostset(n).size() == 0)
 			return true;
 		else{
-			if (n instanceof Condition){
-				for(SONConnection con : net.getOutputSONConnections(n)){
-					if (con.getSemantics() == Semantics.PNLINE)
-						conType = false;
-				}
-				if(conType)
-					return true;
+			for(SONConnection con : net.getOutputSONConnections(n)){
+				if (con.getSemantics() == Semantics.PNLINE)
+					conType = false;
 			}
-		}
+			if(conType)
+				return true;
+			}
 
 		return false;
 	}
@@ -117,7 +118,7 @@ public class RelationAlgorithm{
 	/**
 	 * check if a given set of nodes contains initial states.
 	 */
-	public boolean hasInitial(Collection<Node> nodes){
+	public boolean hasInitial(Collection<? extends Node> nodes){
 		boolean result = false;
 
 		for(Node node : nodes)
@@ -129,7 +130,7 @@ public class RelationAlgorithm{
 	/**
 	 * check if a given set of nodes contains final states.
 	 */
-	public boolean hasFinal(Collection<Node> nodes){
+	public boolean hasFinal(Collection<? extends Node> nodes){
 		boolean result = false;
 
 		for(Node node : nodes)
@@ -141,22 +142,22 @@ public class RelationAlgorithm{
 	/**
 	 * get all initial states of a given node set
 	 */
-	public Collection<Node> getInitial(Collection<Node> nodes){
-		ArrayList<Node> result =  new ArrayList<Node>();
+	public Collection<Condition> getInitial(Collection<? extends Node> nodes){
+		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for (Node node : nodes)
 			if (isInitial(node))
-				result.add(node);
+				result.add((Condition)node);
 		return result;
 	}
 
 	/**
 	 * get all final states of a given node set
 	 */
-	public Collection<Node> getFinal(Collection<Node> nodes){
-		ArrayList<Node> result =  new ArrayList<Node>();
+	public Collection<Condition> getFinal(Collection<? extends Node> nodes){
+		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for (Node node : nodes)
 			if (isFinal(node))
-				result.add(node);
+				result.add((Condition)node);
 		return result;
 	}
 

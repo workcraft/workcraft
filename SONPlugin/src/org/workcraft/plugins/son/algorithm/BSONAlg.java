@@ -76,7 +76,7 @@ public class BSONAlg extends RelationAlgorithm{
 			}
 			if(!nodes.isEmpty()){
 				Phase phase = new Phase();
-				for(Node node : PathAlgorithm.dfs(nodes, nodes, net)){
+				for(Node node : PathAlgorithm.dfs2(nodes, nodes, net)){
 					if(node instanceof Condition)
 						phase.add((Condition)node);
 				}
@@ -143,9 +143,11 @@ public class BSONAlg extends RelationAlgorithm{
 	public Collection<Condition> getAbstractConditions(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
 
-		if(isAbstractCondition(node)){
-			result.add((Condition)node);
-			return result;
+		if(isUpperNode(node)){
+			if(node instanceof Condition)
+				result.add((Condition)node);
+			else
+				return result;
 		}
 
 		Collection<Condition> min = Min(node);
@@ -197,7 +199,7 @@ public class BSONAlg extends RelationAlgorithm{
 	/**
 	 * get all lower-level groups for a given upper-level group
 	 */
-	public Collection<ONGroup> getBhvGroup(ONGroup upperGroup){
+	public Collection<ONGroup> getLowerGroups(ONGroup upperGroup){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 
 		for(Condition c : upperGroup.getConditions()){
@@ -338,7 +340,7 @@ public class BSONAlg extends RelationAlgorithm{
 	/**
 	 * return true if a transitionNode is in upper-level group
 	 */
-	public boolean isAbstractEvent(TransitionNode n){
+	public boolean isUpperEvent(TransitionNode n){
 		if(getPrePNSet(n).size() == 1){
 			Condition c = (Condition)getPrePNSet(n).iterator().next();
 			if(net.getInputSONConnectionTypes(c).contains(Semantics.BHVLINE)

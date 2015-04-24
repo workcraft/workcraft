@@ -178,6 +178,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 	private Map<Condition , String> phaseMainTask(Collection<ONGroup> upperGroups){
 		Map<Condition, String> result = new HashMap<Condition, String>();
+
 		for(ONGroup uGroup : upperGroups){
 			result.putAll(phaseTask1(uGroup));
 			result.putAll(phaseTask2(uGroup));
@@ -189,9 +190,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				orderedPhases.putAll(getOrderedPhases(c));
 			}
 
-			Collection<ONGroup> lowerGroups = getBSONAlg().getBhvGroup(uGroup);
+			Collection<ONGroup> lowerGroups2 = getBSONAlg().getLowerGroups(uGroup);
 
-			for(ONGroup lGroup : lowerGroups){
+			for(ONGroup lGroup : lowerGroups2){
 				Map<Condition, Phase> phaseMap = new HashMap<Condition, Phase>();
 				for(Condition c : uGroup.getConditions()){
 					Collection<Phase> phases = getAllPhases().get(c);
@@ -205,6 +206,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				result.putAll(phaseTask4(paths, phaseMap));
 			}
 		}
+
 		return result;
 	}
 
@@ -220,36 +222,37 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		return result;
 	}
 
-	//check for initial/final state
+	//check for upper level initial/final state
 	private Map<Condition , String> phaseTask2(ONGroup upperGroup){
 		Map<Condition, String> result = new HashMap<Condition, String>();
 
 		for(Condition c : upperGroup.getConditions()){
 			Collection<Phase> phases = getAllPhases().get(c);
 			String ref = net.getNodeReference(c);
-
+			//the minimal phases of every initial state of upper group must also be the initial state of lower group
 			if(getRelationAlg().isInitial(c)){
 				Collection<Condition> minSet = getBSONAlg().getMinimalPhase(phases);
 
 				for(Condition min : minSet)
 					if(!getRelationAlg().isInitial(min)){
-						result.put(c, "ERROR: Phase does not reach ON initial state: " +ref);
+						result.put(c, "ERROR: The minimal phase of "+ref+ " does not reach initial state.");
 						break;
 					}
 			}
-
+			//the maximal phases of every final state of upper group must also be the final state of lower group
 			if(getRelationAlg().isFinal(c)){
 				Collection<Condition> maxSet = getBSONAlg().getMaximalPhase(getAllPhases().get(c));
 
 				for(Condition max : maxSet)
 					if(!getRelationAlg().isFinal(max)){
-						result.put(c, "ERROR: Phase does not reach ON final state: "+ ref);
+						result.put(c, "ERROR: The maximal phase of "+ref+ " does not reach final state.");
 						break;
 					}
 			}
 		}
 		return result;
 	}
+
 
 	//check for joint
 	private Map<Condition, String> phaseTask3(ONGroup upperGroup){
@@ -278,11 +281,11 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 						boolean containFinal = false;
 
 
-						if(!min.containsAll(getRelationAlg().getInitial(lowGroup.getComponents()))){
+						if(!min.containsAll(getRelationAlg().getInitial(lowGroup.getConditions()))){
 							match = false;
 						}
 						for(ONGroup group : getBSONAlg().getLowerGroups(pre)){
-							if(maxSet.containsAll(getRelationAlg().getFinal(group.getComponents()))){
+							if(maxSet.containsAll(getRelationAlg().getFinal(group.getConditions()))){
 								containFinal = true;
 								break;
 							}
@@ -354,8 +357,8 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		List<Path> result = new ArrayList<Path>();
 		PathAlgorithm alg = new PathAlgorithm(net);
 
-		for(Node start : getRelationAlg().getInitial(group.getComponents()))
-			for(Node end : getRelationAlg().getFinal(group.getComponents())){
+		for(Node start : getRelationAlg().getInitial(group.getConditions()))
+			for(Node end : getRelationAlg().getFinal(group.getConditions())){
 				result.addAll(alg.getPaths(start, end, group.getComponents()));
 			}
 
@@ -377,17 +380,17 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 	@Override
 	public Collection<String> getRelationErrors() {
-		return getRelationErrorsSetReferences(relationErrors);
+		return getRelationErrorsSetRefs(relationErrors);
 	}
 
 	@Override
 	public Collection<ArrayList<String>> getCycleErrors() {
-		return getcycleErrorsSetReferences(cycleErrors);
+		return getCycleErrorsSetRefs(cycleErrors);
 	}
 
 	@Override
 	public Collection<String> getGroupErrors() {
-		return getGroupErrorsSetReferences(groupErrors);
+		return getGroupErrorsSetRefs(groupErrors);
 	}
 
 	@Override

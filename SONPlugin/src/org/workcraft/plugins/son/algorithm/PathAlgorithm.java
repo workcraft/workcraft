@@ -18,8 +18,64 @@ public class PathAlgorithm{
 		this.net = net;
 	}
 
-    private void bfs(Collection<Node> nodes , LinkedList<Node> visited, Node v) {
+	//get path between two given nodes. (iteration)
+    public Collection<Path> dfs3(Node s, Node v, Collection<Node> nodes){
+    	Collection<Path> result =new ArrayList<Path>();
+        Stack<Node> stack = new Stack<Node>();
+        LinkedList<Node> visit = new LinkedList<Node>();
+
+        stack.push(s);
+
+        while(!stack.isEmpty()){
+        	s = stack.peek();
+            visit.add(s);
+
+            Node n = null;
+        	for(Node post : getPostset(s, nodes)){
+                if (visit.contains(post)) {
+                    continue;
+                }
+                else if (post.equals(v)) {
+                	n = post;
+                	stack.push(post);
+                	visit.add(post);
+                    Path path = new Path();
+
+                    path.addAll(visit);
+                    result.add(path);
+                    visit.removeLast();
+                    break;
+                }
+                else if(!visit.contains(post)){
+                	n = post;
+                	stack.push(n);
+                }
+        	}
+        	if(n == null){
+    			while(!stack.isEmpty()){
+    				s = stack.peek();
+    				if(!visit.isEmpty() && s==visit.peekLast()){
+    					stack.pop();
+    					visit.removeLast();
+    				}else{
+    					break;
+    				}
+    			}
+    		}
+        }
+        return result;
+    }
+
+    //get path between two given nodes. (recursion)
+    private void dfs(Collection<Node> nodes , LinkedList<Node> visited, Node v) {
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
+
+        if (visited.getLast().equals(v)) {
+            Path path = new Path();
+            path.addAll(visited);
+            pathResult.add(path);
+        }
+
         // examine post nodes
         for (Node node : post) {
             if (visited.contains(node)) {
@@ -34,14 +90,15 @@ public class PathAlgorithm{
                 break;
             }
         }
-        // in breadth-first, recursion needs to come after visiting post nodes
+        // in depth-first, recursion needs to come after visiting post nodes
         for (Node node : post) {
             if (visited.contains(node) || node.equals(v)) {
                 continue;
             }
             visited.addLast(node);
-            bfs(nodes, visited, v);
+            dfs(nodes, visited, v);
             visited.removeLast();
+
         }
     }
 
@@ -49,7 +106,7 @@ public class PathAlgorithm{
     	pathResult.clear();
     	LinkedList<Node> visited = new LinkedList<Node>();
     	visited.add(s);
-    	bfs(nodes, visited, v);
+    	dfs(nodes, visited, v);
     	return pathResult;
     }
 
@@ -60,8 +117,8 @@ public class PathAlgorithm{
     			list.add(post);
     	return list;
     }
-
-	public static Collection<Node> dfs (Collection<Node> s, Collection<Node> v, SON net){
+	//get nodes between two given nodes. (iteration)
+	public static Collection<Node> dfs2 (Collection<Node> s, Collection<Node> v, SON net){
 		Collection<Node> result = new HashSet<Node>();
 		RelationAlgorithm relation = new RelationAlgorithm(net);
         Stack<Node> stack = new Stack<Node>();
