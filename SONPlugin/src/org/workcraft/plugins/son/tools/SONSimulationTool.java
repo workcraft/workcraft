@@ -679,25 +679,26 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		updateState(editor);
 	}
 
-	private void setErrNum(List<TransitionNode> fireList, boolean reverse){
+	private void setErrNum(List<TransitionNode> fireList, boolean isRev){
 		if (ErrTracingDisable.showErrorTracing()){
-			Collection<TransitionNode> abstractEvents = new ArrayList<TransitionNode>();
+			Collection<TransitionNode> upperEvents = new ArrayList<TransitionNode>();
+
 			//get high level events
-			for(TransitionNode absEvent : fireList){
-				Collection<ONGroup> abstractGroups = bsonAlg.getAbstractGroups(net.getGroups());
-				for(ONGroup group : abstractGroups){
-					if(group.getEventNodes().contains(absEvent))
-						abstractEvents.add(absEvent);
-				}
+			for(TransitionNode node : fireList){
+				if(bsonAlg.isUpperEvent(node))
+					upperEvents.add(node);
 			}
 			//get low level events
-			fireList.removeAll(abstractEvents);
-			if(!reverse){
-				errAlg.setErrNum(abstractEvents, sync, false);
-				errAlg.setErrNum(fireList, sync, true);
+			fireList.removeAll(upperEvents);
+
+			if(!isRev){
+				//set error number for upper events
+				errAlg.setErrNum(upperEvents, sync, phases, false);
+				//set error number for lower events
+				errAlg.setErrNum(fireList, sync, phases, true);
 			}
 			else{
-				errAlg.setRevErrNum(abstractEvents, sync, false);
+				errAlg.setRevErrNum(upperEvents, sync, false);
 				errAlg.setRevErrNum(fireList, sync, true);
 			}
 		}
