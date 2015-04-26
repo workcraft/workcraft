@@ -25,22 +25,23 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 	//Forward error tracing
-	public void setErrNum (Collection<TransitionNode> fireList, Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isBhv){
+	public void setErrNum (Collection<TransitionNode> fireList, Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isLower){
 
 		while(!fireList.isEmpty()){
+			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
+
 			for(TransitionNode e : fireList){
 				if(!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE)){
 					//set number from the very first asynchronous event
 					if(getPreAsynEvents(e).isEmpty() || !hasCommonElements(fireList, getPreAsynEvents(e))){
-						setAsynErrNum(e, phases, isBhv);
+						setAsynErrNum(e, phases, isLower);
 						fireList.remove(e);
 						break;
 					}
 				}
-			}
 
-			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
-			for(TransitionNode e :fireList){
+				//set number for the synchronous events with no pre-async-events
+				boolean b = false;
 				for(Path cycle : sync){
 					if(cycle.contains(e)){
 						Collection<TransitionNode> fireList2 = new ArrayList<TransitionNode>();
@@ -58,12 +59,15 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 							}
 						}
 						if(!hasPreAsyn){
-							setSyncErrNum(eventCycle, phases, isBhv);
+							setSyncErrNum(eventCycle, phases, isLower);
 							removeList.addAll(eventCycle);
+							b = true;
 							break;
 						}
 					}
 				}
+				if(b)
+					break;
 			}
 			fireList.removeAll(removeList);
 		}
@@ -105,7 +109,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		}
 	}
 
-	private void setSyncErrNum(Collection<TransitionNode> sync, Map<Condition, Collection<Phase>> phases, boolean isLower){
+	private void setSyncErrNum(Collection<TransitionNode> sync, Map<Condition, Collection<Phase>> phases,  boolean isLower){
 		int err = 0;
 
 		for(TransitionNode e : sync){
@@ -143,81 +147,70 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 	}
 
 	//Backward error tracing
-	public void setRevErrNum (Collection<TransitionNode> runList, Collection<Path> syncSet, boolean isBhv){
-		while(true){
-			boolean b = false;
+	public void setRevErrNum (Collection<TransitionNode> fireList, Collection<Path> sync, Map<Condition, Collection<Phase>> phases,  boolean isLower){
+
+		while(!fireList.isEmpty()){
 			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
-			for(TransitionNode e : runList){
-				if(!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE))
-					if(this.getPostAsynEvents(e).isEmpty()
-							|| !this.hasCommonElements(runList, this.getPostAsynEvents(e))){
-						this.setReverseAsyncErrNum(e, isBhv);
-						removeList.add(e);
-						b = true;;
+
+			for(TransitionNode e : fireList){
+				if(!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE)){
+					//set number from the very first asynchronous event
+					if(getPostAsynEvents(e).isEmpty() || !hasCommonElements(fireList, getPostAsynEvents(e))){
+						setRevAsynErrNum(e, phases, isLower);
+						fireList.remove(e);
 						break;
 					}
-			}
-			runList.removeAll(removeList);
-			if(!b)
-				break;
-		}
+				}
 
-		while(true){
-			boolean b = false;
-			Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
-
-			for(TransitionNode e :runList){
-				for(Path cycle : syncSet){
-					if(cycle.contains(e)  && !removeList.contains(e)){
-						Collection<TransitionNode> runList2 = new ArrayList<TransitionNode>();
+				//set number for the synchronous events with no pre-async-events
+				boolean b = false;
+				for(Path cycle : sync){
+					if(cycle.contains(e)){
+						Collection<TransitionNode> fireList2 = new ArrayList<TransitionNode>();
 						Collection<TransitionNode> eventCycle = new ArrayList<TransitionNode>();
 
-						runList2.addAll(runList);
-						runList2.removeAll(cycle);
+						fireList2.addAll(fireList);
+						fireList2.removeAll(cycle);
 						boolean hasPostAsyn = false;
 						for(Node n: cycle){
 							if(n instanceof TransitionNode){
 								eventCycle.add((TransitionNode)n);
-								if(!this.getPostAsynEvents((TransitionNode)n).isEmpty()
-										&& this.hasCommonElements(runList2, this.getPostAsynEvents((TransitionNode)n)))
+								if(!getPostAsynEvents((TransitionNode)n).isEmpty()
+										&& hasCommonElements(fireList2, getPostAsynEvents((TransitionNode)n)))
 									hasPostAsyn = true;
 							}
 						}
 						if(!hasPostAsyn){
-							this.setReverseSyncErrNum(eventCycle, isBhv);
+							setRevSyncErrNum(eventCycle, phases, isLower);
 							removeList.addAll(eventCycle);
 							b = true;
 							break;
 						}
 					}
 				}
+				if(b)
+					break;
 			}
-			runList.removeAll(removeList);
-			if(!b)
-				break;
+			fireList.removeAll(removeList);
 		}
-
-		if(!runList.isEmpty())
-			setRevErrNum(runList, syncSet, isBhv);
 	}
 
-	private void setReverseAsyncErrNum(TransitionNode e, boolean isBhv){
+	private void setRevAsynErrNum(TransitionNode e, Map<Condition, Collection<Phase>> phases, boolean isLower){
 		int err = 0;
 		if(e.isFaulty())
 			err++;
-		//get err number from low level conditions and channel places
+		//get err number from lower conditions and channel places
 		for(Node pre : net.getPreset(e)){
-			if(pre instanceof Condition)
-				err = err + ((Condition)pre).getErrors();
-			if(pre instanceof ChannelPlace)
-				err = err + ((ChannelPlace)pre).getErrors();
+			if(pre instanceof PlaceNode)
+				err = err + ((PlaceNode)pre).getErrors();
 		}
 
 		for(Node post: net.getPostset(e)){
 			if(post instanceof Condition){
-				//set err number to low level states
-				if(!isBhv)
-					for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post))){
+				((Condition)post).setErrors(err);
+				//set err number for lower condition
+				if(!isLower)
+					for(Condition min : bsonAlg.getMinimalPhase(phases.get(post))){
 						((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 					}
 				((Condition)post).setErrors(((Condition)post).getErrors() - err);
@@ -228,40 +221,41 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 		}
 	}
 
-	private void setReverseSyncErrNum(Collection<TransitionNode> syncEvents, boolean isBhv){
+	private void setRevSyncErrNum(Collection<TransitionNode> sync, Map<Condition, Collection<Phase>> phases,  boolean isLower){
 		int err = 0;
-		for(TransitionNode e : syncEvents){
+
+		for(TransitionNode e : sync){
 			if(((TransitionNode)e).isFaulty())
 				err++;
 			for(Node pre : net.getPreset(e)){
-				if(pre instanceof Condition){
+				if(pre instanceof Condition)
 					err = err + ((Condition)pre).getErrors();
-				}
 				if(pre instanceof ChannelPlace){
 					for(Node n : net.getPreset(pre))
-						if(!syncEvents.contains(n))
+						if(!sync.contains(n))
 							err = err + ((ChannelPlace)pre).getErrors();
 				}
 			}
 		}
 
-		for(Node e : syncEvents)
-			if(e instanceof TransitionNode){
-				for(Node post: net.getPostset(e)){
-					if(post instanceof Condition){
-						//set err number from high level states
-						if(!isBhv)
-							for(Condition min : bsonAlg.getMinimalPhase(bsonAlg.getPhases((Condition)post))){
-								((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
-							}
-						((Condition)post).setErrors(((Condition)post).getErrors() - err);
-					}
-					if(post instanceof ChannelPlace){
-						for(Node n : net.getPostset(post))
-							if(!syncEvents.contains(n))
-								((ChannelPlace)post).setErrors(((ChannelPlace)post).getErrors() - err);
-					}
+		for(TransitionNode e : sync){
+			for(Node post: net.getPostset(e)){
+				if(post instanceof Condition){
+					((Condition)post).setErrors(err);
+					//set err number for upper conditions
+					if(!isLower)
+						for(Condition min : bsonAlg.getMinimalPhase(phases.get(post))){
+							((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
+						}
+					((Condition)post).setErrors(((Condition)post).getErrors() - err);
+				}
+
+				if(post instanceof ChannelPlace){
+					for(Node n : net.getPostset(post))
+						if(!sync.contains(n))
+							((ChannelPlace)post).setErrors(((ChannelPlace)post).getErrors() - err);
 				}
 			}
+		}
 	}
 }

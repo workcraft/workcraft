@@ -698,8 +698,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				errAlg.setErrNum(fireList, sync, phases, true);
 			}
 			else{
-				errAlg.setRevErrNum(upperEvents, sync, false);
-				errAlg.setRevErrNum(fireList, sync, true);
+				errAlg.setRevErrNum(upperEvents, sync, phases, false);
+				errAlg.setRevErrNum(fireList, sync, phases, true);
 			}
 		}
 	}

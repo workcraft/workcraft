@@ -266,7 +266,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	//reverse simulation
 
-	private boolean isONRevEnabled (TransitionNode e) {
+	private boolean isRevONEnabled (TransitionNode e) {
 		if(net.getPostset	(e).isEmpty())
 			return false;
 
@@ -279,7 +279,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private boolean isBSONRevEnabled(TransitionNode e, Map<Condition, Collection<Phase>> phases){
+	private boolean isRevBSONEnabled(TransitionNode e, Map<Condition, Collection<Phase>> phases){
 		//if e is upper event, e is BSON unfire enabled if every condition in the minimal phases of e is marked
 		for(ONGroup group : upperGroups){
 			if(group.getComponents().contains(e)){
@@ -313,7 +313,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		//ON and BSON enabled
 		for(TransitionNode e : net.getTransitionNodes()){
-			if(isONRevEnabled(e) && isBSONRevEnabled(e, phases)){
+			if(isRevONEnabled(e) && isRevBSONEnabled(e, phases)){
 				result.add(e);
 			}
 		}
@@ -387,7 +387,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 	/**
-	 * token setting after fire.
+	 * token setting after forward fire.
 	 */
 	private void fire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws InvalidStructureException{
 		//rough checking
@@ -424,7 +424,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		}
 
 		for(TransitionNode e : step){
-			//remove marking for each post node of step U
+			//remove marking for each pre node of step U
 			for(Node pre : net.getPreset(e)){
 				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
 					((PlaceNode)pre).setMarked(false);
