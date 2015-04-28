@@ -52,9 +52,7 @@ public class CircuitStgUtils {
 			}
 		} catch (Throwable e) {
 		} finally {
-			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
-				FileUtils.deleteDirectoryTree(workingDirectory);
-			}
+			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
 		}
 		return resultStg;
 	}

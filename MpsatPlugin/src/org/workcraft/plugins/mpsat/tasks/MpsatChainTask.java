@@ -16,6 +16,7 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -84,12 +85,8 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 		}
 		// Clean up
 		finally {
-			if ((netFile != null) && !MpsatUtilitySettings.getDebugTemporaryFiles() ) {
-				netFile.delete();
-			}
-			if ((unfoldingFile != null) && !MpsatUtilitySettings.getDebugTemporaryFiles() ) {
-				unfoldingFile.delete();
-			}
+			FileUtils.deleteFile(netFile, MpsatUtilitySettings.getDebugTemporaryFiles());
+			FileUtils.deleteFile(unfoldingFile, MpsatUtilitySettings.getDebugTemporaryFiles());
 		}
 	}
 
