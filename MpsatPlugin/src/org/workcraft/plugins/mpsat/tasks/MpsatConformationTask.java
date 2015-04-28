@@ -182,9 +182,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		} finally {
-			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
-				FileUtils.deleteDirectoryTree(workingDirectory);
-			}
+			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
 		}
 	}
 

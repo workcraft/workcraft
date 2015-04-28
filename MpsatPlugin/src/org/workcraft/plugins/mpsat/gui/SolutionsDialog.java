@@ -36,8 +36,8 @@ public class SolutionsDialog extends JDialog {
 		solutionsPanel = new JPanel();
 		solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
 
-		for (Solution trace : solutions)
-			solutionsPanel.add(new SolutionPanel(task, trace, new ActionListener() {
+		for (Solution solution : solutions)
+			solutionsPanel.add(new SolutionPanel(task, solution, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					SolutionsDialog.this.setVisible(false);

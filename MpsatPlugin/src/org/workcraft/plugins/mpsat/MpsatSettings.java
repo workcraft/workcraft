@@ -257,7 +257,6 @@ public class MpsatSettings {
 			try {
 				File reach = File.createTempFile("reach", null);
 				reach.deleteOnExit();
-
 				FileUtils.dumpString(reach, getFlatReach());
 				args.add("-d");
 				args.add("@"+reach.getCanonicalPath());
