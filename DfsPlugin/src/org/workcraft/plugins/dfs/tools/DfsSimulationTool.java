@@ -15,6 +15,8 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.dfs.BinaryRegister.Marking;
+import org.workcraft.plugins.dfs.VisualBinaryRegister;
 import org.workcraft.plugins.dfs.VisualControlRegister;
 import org.workcraft.plugins.dfs.VisualCounterflowLogic;
 import org.workcraft.plugins.dfs.VisualCounterflowRegister;
@@ -34,13 +36,15 @@ import org.workcraft.plugins.dfs.stg.CounterflowRegisterStg;
 import org.workcraft.plugins.dfs.stg.LogicStg;
 import org.workcraft.plugins.dfs.stg.RegisterStg;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
+import org.workcraft.util.Hierarchy;
 
-public class SimulationTool extends StgSimulationTool {
+public class DfsSimulationTool extends StgSimulationTool {
 	private StgGenerator generator;
 
 	@Override
@@ -59,6 +63,75 @@ public class SimulationTool extends StgSimulationTool {
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		generator = new StgGenerator((VisualDfs)model);
 		return generator.getStg();
+	}
+
+	@Override
+	public void applyInitState(final GraphEditor editor) {
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		VisualDfs dfs = (VisualDfs)editor.getModel();
+		for(VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
+			String refC = StgGenerator.nameC + dfs.getNodeMathReference(l) + StgGenerator.name1;
+			Node nodeC = net.getNodeByReference(refC);
+			if ((nodeC instanceof Place) && savedState.containsKey(nodeC)) {
+				boolean computed = (savedState.get(nodeC) > 0);
+				l.getReferencedLogic().setComputed(computed);
+			}
+		}
+		for(VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
+			String refM = StgGenerator.nameM + dfs.getNodeMathReference(r) + StgGenerator.name1;
+			Node nodeM = net.getNodeByReference(refM);
+			if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
+				boolean marked = (savedState.get(nodeM) > 0);
+				r.getReferencedRegister().setMarked(marked);
+			}
+		}
+		for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
+			String refFwC = StgGenerator.nameFwC + dfs.getNodeMathReference(l) + StgGenerator.name1;
+			Node nodeFwC = net.getNodeByReference(refFwC);
+			if ((nodeFwC instanceof Place) && savedState.containsKey(nodeFwC)) {
+				boolean forwardComputed = (savedState.get(nodeFwC) > 0);
+				l.getReferencedCounterflowLogic().setForwardComputed(forwardComputed);
+			}
+			String refBwC = StgGenerator.nameBwC + dfs.getNodeMathReference(l) + StgGenerator.name1;
+			Node nodeBwC = net.getNodeByReference(refBwC);
+			if ((nodeBwC instanceof Place) && savedState.containsKey(nodeBwC)) {
+				boolean backwardComputed = (savedState.get(nodeBwC) > 0);
+				l.getReferencedCounterflowLogic().setBackwardComputed(backwardComputed);
+			}
+		}
+		for(VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
+			String refOrM = StgGenerator.nameOrM + dfs.getNodeMathReference(r) + StgGenerator.name1;
+			Node nodeOrM = net.getNodeByReference(refOrM);
+			if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
+				boolean orMarked = (savedState.get(nodeOrM) > 0);
+				r.getReferencedCounterflowRegister().setOrMarked(orMarked);
+			}
+			String refAndM = StgGenerator.nameAndM + dfs.getNodeMathReference(r) + StgGenerator.name1;
+			Node nodeAndM = net.getNodeByReference(refAndM);
+			if ((nodeAndM instanceof Place) && savedState.containsKey(nodeAndM)) {
+				boolean andMarked = (savedState.get(nodeAndM) > 0);
+				r.getReferencedCounterflowRegister().setAndMarked(andMarked);
+			}
+		}
+		for(VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
+			r.getReferencedBinaryRegister().setMarking(Marking.EMPTY);
+			String refTrueM = StgGenerator.nameTrueM + dfs.getNodeMathReference(r) + StgGenerator.name1;
+			Node nodeTrueM = net.getNodeByReference(refTrueM);
+			if ((nodeTrueM instanceof Place) && savedState.containsKey(nodeTrueM)) {
+				if (savedState.get(nodeTrueM) > 0) {
+					r.getReferencedBinaryRegister().setMarking(Marking.TRUE_TOKEN);
+				}
+			}
+			String refFalseM = StgGenerator.nameFalseM + dfs.getNodeMathReference(r) + StgGenerator.name1;
+			Node nodeFalseM = net.getNodeByReference(refFalseM);
+			if ((nodeFalseM instanceof Place) && savedState.containsKey(nodeFalseM)) {
+				if (savedState.get(nodeFalseM) > 0) {
+					r.getReferencedBinaryRegister().setMarking(Marking.FALSE_TOKEN);
+				}
+			}
+		}
 	}
 
 	@Override

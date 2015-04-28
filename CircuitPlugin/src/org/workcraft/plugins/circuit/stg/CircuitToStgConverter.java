@@ -46,10 +46,10 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.TwoWayMap;
 
 public class CircuitToStgConverter {
-	private static final String NAME_SUFFIX_0 = "_0";
-	private static final String NAME_SUFFIX_1 = "_1";
-	private static final String LABEL_SUFFIX_0 = "=0";
-	private static final String LABEL_SUFFIX_1 = "=1";
+	public static final String NAME_SUFFIX_0 = "_0";
+	public static final String NAME_SUFFIX_1 = "_1";
+	public static final String LABEL_SUFFIX_0 = "=0";
+	public static final String LABEL_SUFFIX_1 = "=1";
 
 	private static final double SCALE_X = 4.0;
 	private static final double SCALE_Y = 4.0;

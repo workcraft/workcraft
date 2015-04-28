@@ -16,6 +16,7 @@ import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -39,6 +40,22 @@ public class SimulationTool extends PetriNetSimulationTool {
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		generator = new PetriNetGenerator((VisualPolicyNet)model);
 		return generator.getPetriNet();
+	}
+
+	@Override
+	public void applyInitState(final GraphEditor editor) {
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		VisualPolicyNet policy= (VisualPolicyNet)editor.getModel();
+		for (VisualPlace place: policy.getVisualPlaces()) {
+			String ref = policy.getNodeMathReference(place);
+			Node node = net.getNodeByReference(ref);
+			if (node instanceof Place) {
+				int tokens = ((Place)node).getTokens();
+				place.getReferencedPlace().setTokens(tokens);
+			}
+		}
 	}
 
 	@Override

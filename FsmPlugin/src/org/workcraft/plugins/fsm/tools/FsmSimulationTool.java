@@ -19,6 +19,7 @@ import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -58,6 +59,22 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 		final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
 		generator = new FsmToPnConverter(fsm, pn);
 		return generator.getDstModel();
+	}
+
+	@Override
+	public void applyInitState(final GraphEditor editor) {
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		VisualFsm fsm = (VisualFsm)editor.getModel();
+		for (VisualState state: fsm.getVisualStates()) {
+			String ref = fsm.getNodeMathReference(state);
+			Node node = net.getNodeByReference(ref);
+			if (node instanceof Place) {
+				boolean isInitial = ((Place)node).getTokens() > 0;
+				state.getReferencedState().setInitial(isInitial);
+			}
+		}
 	}
 
 	@Override

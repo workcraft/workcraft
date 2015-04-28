@@ -1,10 +1,6 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -22,9 +18,10 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -32,10 +29,8 @@ import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
-import org.workcraft.util.Hierarchy;
 
 public class CircuitSimulationTool extends StgSimulationTool {
-	private JButton copyInitButton;
 	private CircuitToStgConverter converter;
 
 	@Override
@@ -46,21 +41,19 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	}
 
 	@Override
-	public void createInterfacePanel(final GraphEditor editor) {
-		super.createInterfacePanel(editor);
-		copyInitButton = new JButton("Copy init");
-		copyInitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				for (VisualContact contact : Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualContact.class)) {
-					SignalStg signalStg = converter.getSignalStg(contact);
-					if (signalStg != null) {
-						contact.getReferencedContact().setInitToOne(signalStg.P1.getReferencedPlace().getTokens() == 1);
-					}
-				}
+	public void applyInitState(final GraphEditor editor) {
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		VisualCircuit circuit = (VisualCircuit)editor.getModel();
+		for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
+			String ref = circuit.getNodeMathReference(contact) + CircuitToStgConverter.NAME_SUFFIX_1;
+			Node node = net.getNodeByReference(ref);
+			if (node instanceof Place) {
+				boolean initToOne = (savedState.get(node) > 0);
+				contact.getReferencedContact().setInitToOne(initToOne);
 			}
-		});
-		controlPanel.add(copyInitButton);
+		}
 	}
 
 	@Override
