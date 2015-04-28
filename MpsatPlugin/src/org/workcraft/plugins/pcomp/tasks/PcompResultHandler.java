@@ -48,7 +48,7 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
 						FileUtils.writeAllText(pcompResult, new String(result.getReturnValue().getOutput()));
 
 						if (showInEditor) {
-							WorkspaceEntry we = framework.getWorkspace().open(pcompResult, true);
+							WorkspaceEntry we = framework.getWorkspace().open(pcompResult, false);
 							mainWindow.createEditorWindow(we);
 						} else {
 							framework.getWorkspace().add(pcompResult.getName(), pcompResult, true);

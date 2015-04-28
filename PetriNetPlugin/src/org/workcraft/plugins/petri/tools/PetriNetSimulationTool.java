@@ -105,7 +105,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	private JSlider speedSlider;
 	private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
-	private JButton copyStateButton, pasteStateButton, mergeTraceButton;
+	private JButton copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
 
 	// cache of "excited" containers (the ones containing the excited simulation elements)
 	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
@@ -119,6 +119,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	private Timer timer = null;
 	private boolean random = false;
+	public HashMap<Place, Integer> savedState = new HashMap<>();
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
@@ -136,6 +137,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
 		pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
 		mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
+		saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
 
 		int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
 		int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
@@ -164,6 +166,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		traceControl.add(copyStateButton);
 		traceControl.add(pasteStateButton);
 		traceControl.add(mergeTraceButton);
+		traceControl.add(saveInitStateButton);
 
 		controlPanel = new JPanel();
 		controlPanel.setLayout(new WrapLayout());
@@ -298,6 +301,13 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		});
 
+		saveInitStateButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveInitState(editor);
+			}
+		});
+
 		traceTable.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -363,6 +373,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		super.activated(editor);
 		setStatePaneVisibility(true);
 		resetTraces(editor);
+		editor.forceRedraw();
 	}
 
 	@Override
@@ -373,6 +384,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			timer = null;
 		}
 		editor.getWorkspaceEntry().cancelMemento();
+		applyInitState(editor);
+		savedState.clear();
 		this.visualNet = null;
 		this.net = null;
 	}
@@ -623,6 +636,25 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			branchTrace.clear();
 		}
 		updateState(editor);
+	}
+
+	private void saveInitState(final GraphEditor editor) {
+		savedState.clear();
+		for (Place place: net.getPlaces()) {
+			savedState.put(place, place.getTokens());
+		}
+		editor.requestFocus();
+	}
+
+	public void applyInitState(final GraphEditor editor) {
+		PetriNetModel pn = (PetriNetModel)editor.getModel().getMathModel();
+		for (Place place: savedState.keySet()) {
+			String ref = net.getNodeReference(place);
+			Node node = pn.getNodeByReference(ref);
+			if (node instanceof Place) {
+				((Place) node).setTokens(savedState.get(place));
+			}
+		}
 	}
 
 	private int getAnimationDelay() {

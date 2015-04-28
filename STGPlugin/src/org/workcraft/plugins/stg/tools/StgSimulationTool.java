@@ -135,7 +135,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 				Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
 
-			if (!(value instanceof String))
+			if ((net == null) || !(value instanceof String))
 				return null;
 
 			label.setText((String) value);

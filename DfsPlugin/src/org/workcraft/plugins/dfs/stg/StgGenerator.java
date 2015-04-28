@@ -39,26 +39,26 @@ import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Hierarchy;
 
 public class StgGenerator {
-	private static final String nameC 		= "C_";
-	private static final String nameFwC 		= "fwC_";
-	private static final String nameBwC 		= "bwC_";
-	private static final String nameM 		= "M_";
-	private static final String nameOrM 		= "orM_";
-	private static final String nameAndM		= "andM_";
-	private static final String nameTrueM 	= "trueM_";
-	private static final String nameFalseM	= "falseM_";
-	private static final String name0	 		= "_0";
-	private static final String name1 		= "_1";
-	private static final String labelC 		= "C(";
-	private static final String labelFwC		= "fwC(";
-	private static final String labelBwC		= "bwC(";
-	private static final String labelM 		= "M(";
-	private static final String labelOrM		= "orM(";
-	private static final String labelAndM 	= "andM(";
-	private static final String labelTrueM	= "trueM(";
-	private static final String labelFalseM	= "falseM(";
-	private static final String label0 		= ")=0";
-	private static final String label1 		= ")=1";
+	public static final String nameC 		= "C_";
+	public static final String nameFwC 		= "fwC_";
+	public static final String nameBwC 		= "bwC_";
+	public static final String nameM 		= "M_";
+	public static final String nameOrM 		= "orM_";
+	public static final String nameAndM		= "andM_";
+	public static final String nameTrueM 	= "trueM_";
+	public static final String nameFalseM	= "falseM_";
+	public static final String name0	 		= "_0";
+	public static final String name1 		= "_1";
+	public static final String labelC 		= "C(";
+	public static final String labelFwC		= "fwC(";
+	public static final String labelBwC		= "bwC(";
+	public static final String labelM 		= "M(";
+	public static final String labelOrM		= "orM(";
+	public static final String labelAndM 	= "andM(";
+	public static final String labelTrueM	= "trueM(";
+	public static final String labelFalseM	= "falseM(";
+	public static final String label0 		= ")=0";
+	public static final String label1 		= ")=1";
 	private static final double xScaling = 6;
 	private static final double yScaling = 6;
 
@@ -74,11 +74,14 @@ public class StgGenerator {
 
 	public StgGenerator(VisualDfs dfs) {
 		this.dfs = dfs;
-		try {
-			this.stg = new VisualSTG(new STG());
+		this.stg = new VisualSTG(new STG());
+		convert();
+	}
 
+	private void convert() {
+		try {
 			for(VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
-				LogicStg lstg = generateLogicSTG(l);
+				LogicStg lstg = generateLogicStg(l);
 				logicMap.put(l, lstg);
 			}
 			for(VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
@@ -87,7 +90,7 @@ public class StgGenerator {
 			}
 
 			for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
-				CounterflowLogicStg lstg = generateCounterflowLogicSTG(l);
+				CounterflowLogicStg lstg = generateCounterflowLogicStg(l);
 				counterflowLogicMap.put(l, lstg);
 			}
 			for(VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
@@ -96,15 +99,15 @@ public class StgGenerator {
 			}
 
 			for(VisualControlRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualControlRegister.class)) {
-				BinaryRegisterStg rstg = generateControlRegisterSTG(r);
+				BinaryRegisterStg rstg = generateControlRegisterStg(r);
 				controlRegisterMap.put(r, rstg);
 			}
 			for(VisualPushRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualPushRegister.class)) {
-				BinaryRegisterStg rstg = generatePushRegisterSTG(r);
+				BinaryRegisterStg rstg = generatePushRegisterStg(r);
 				pushRegisterMap.put(r, rstg);
 			}
 			for(VisualPopRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualPopRegister.class)) {
-				BinaryRegisterStg rstg = generatePopRegisterSTG(r);
+				BinaryRegisterStg rstg = generatePopRegisterStg(r);
 				popRegisterMap.put(r, rstg);
 			}
 
@@ -148,7 +151,7 @@ public class StgGenerator {
 		return result;
 	}
 
-	public VisualSTG getSTG() {
+	public VisualSTG getStg() {
 		return stg;
 	}
 
@@ -189,7 +192,7 @@ public class StgGenerator {
 		}
 	}
 
-	private LogicStg generateLogicSTG(VisualLogic l) throws InvalidConnectionException {
+	private LogicStg generateLogicStg(VisualLogic l) throws InvalidConnectionException {
 		String name = dfs.getName(l);
 		AffineTransform transform = TransformHelper.getTransformToRoot(l);
 		double x =	xScaling * (transform.getTranslateX() + l.getX());
@@ -418,7 +421,7 @@ public class StgGenerator {
 		return registerMap.get(register);
 	}
 
-	private CounterflowLogicStg generateCounterflowLogicSTG(VisualCounterflowLogic l) throws InvalidConnectionException {
+	private CounterflowLogicStg generateCounterflowLogicStg(VisualCounterflowLogic l) throws InvalidConnectionException {
 		String name = dfs.getName(l);
 		AffineTransform transform = TransformHelper.getTransformToRoot(l);
 		double x =	xScaling * (transform.getTranslateX() + l.getX());
@@ -890,7 +893,7 @@ public class StgGenerator {
 		return new BinaryRegisterStg(M0, M1, tM0, tM1, tMRs, tMF, fM0, fM1, fMRs, fMF);
 	}
 
-	private BinaryRegisterStg generateControlRegisterSTG(VisualControlRegister r) throws InvalidConnectionException {
+	private BinaryRegisterStg generateControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
 		boolean andSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND);
 		boolean orSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR);
 		return generateBinaryRegisterSTG(r, andSync, orSync);
@@ -1001,7 +1004,7 @@ public class StgGenerator {
 		return controlRegisterMap.get(register);
 	}
 
-	private BinaryRegisterStg generatePushRegisterSTG(VisualPushRegister r) throws InvalidConnectionException {
+	private BinaryRegisterStg generatePushRegisterStg(VisualPushRegister r) throws InvalidConnectionException {
 		return generateBinaryRegisterSTG(r, false, false);
 	}
 
@@ -1080,7 +1083,7 @@ public class StgGenerator {
 	}
 
 
-	private BinaryRegisterStg generatePopRegisterSTG(VisualPopRegister r) throws InvalidConnectionException {
+	private BinaryRegisterStg generatePopRegisterStg(VisualPopRegister r) throws InvalidConnectionException {
 		return generateBinaryRegisterSTG(r, false, false);
 	}
 

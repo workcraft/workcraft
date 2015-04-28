@@ -10,12 +10,9 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.util.Geometry;
 
 public class VisualCircuitConnection extends VisualConnection {
-	private Place referencedZeroPlace = null;
-	private Place referencedOnePlace = null;
 
 	public VisualCircuitConnection() {
 		this(null, null, null);
@@ -33,22 +30,6 @@ public class VisualCircuitConnection extends VisualConnection {
 	@Override
 	public double getLineWidth() {
 		return CircuitSettings.getWireWidth();
-	}
-
-	public void setReferencedZeroPlace(Place referencedPlace) {
-		this.referencedZeroPlace = referencedPlace;
-	}
-
-	public Place getReferencedZeroPlace() {
-		return referencedZeroPlace;
-	}
-
-	public void setReferencedOnePlace(Place referencedPlace) {
-		this.referencedOnePlace = referencedPlace;
-	}
-
-	public Place getReferencedOnePlace() {
-		return referencedOnePlace;
 	}
 
 	@Override

@@ -963,7 +963,7 @@ public class MainWindow extends JFrame {
 		final Framework framework = Framework.getInstance();
 		if (framework.checkFile(f)) {
 			try {
-				WorkspaceEntry we = framework.getWorkspace().open(f, true);
+				WorkspaceEntry we = framework.getWorkspace().open(f, false);
 				if (we.getModelEntry().isVisual()) {
 					createEditorWindow(we);
 				}

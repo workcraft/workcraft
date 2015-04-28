@@ -12,7 +12,7 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.tools.STGGenerator;
+import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -80,7 +80,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
 			workingDirectory = FileUtils.createTempDirectory(prefix);
 
-			STG devStg = (STG)STGGenerator.generate(visualCircuit).getMathModel();
+			CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
+			STG devStg = (STG)generator.getStg().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 			if (devStgExporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
@@ -149,6 +150,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
 				WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
 				stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+				framework.getWorkspace().close(stgWorkspaceEntry);
 			}
 			monitor.progressUpdate(0.30);
 

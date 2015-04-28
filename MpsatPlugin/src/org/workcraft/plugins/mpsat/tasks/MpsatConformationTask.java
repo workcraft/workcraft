@@ -120,6 +120,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
 			WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
 			STG stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+			framework.getWorkspace().close(stgWorkspaceEntry);
 			monitor.progressUpdate(0.50);
 
 			// Generate unfolding
@@ -186,7 +187,6 @@ public class MpsatConformationTask extends MpsatChainTask {
 			}
 		}
 	}
-
 
 	private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
 		HashSet<String> result = new HashSet<String>();
