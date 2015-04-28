@@ -35,12 +35,12 @@ public class CheckDataflowTask extends MpsatChainTask {
 		super (we, null);
 		this.we = we;
 
-		this.deadlockSettings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
-				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
+		this.deadlockSettings = new MpsatSettings("Deadlock", MpsatMode.DEADLOCK, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
 
 		this.hazardSettings = new MpsatSettings("Output persistence", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachSemimodularity);
+				MpsatSettings.reachSemimodularity, "Output persistence is violated.", "Output persistence is satisfied.");
 	}
 
 	@Override

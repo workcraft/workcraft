@@ -22,9 +22,9 @@ public class MpsatNormalcyChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("Normalcy", MpsatMode.NORMALCY, 0,
+		return new MpsatSettings("Normalcy violation", MpsatMode.NORMALCY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				null);
+				null, "Normalcy is violated.", "Normalcy is satisfied.");
 	}
 
 }

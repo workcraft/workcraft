@@ -24,34 +24,61 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 	}
 
 	private String getPropertyName() {
-		String propertyName;
+		String result;
 		MpsatSettings settings = task.getSettings();
-		if (settings != null && settings.getName() != null) {
-			propertyName = settings.getName();
+		if ((settings != null) && (settings.getName() != null)) {
+			result = settings.getName();
 		} else {
-			propertyName = "The property";
+			result = "The property";
 		}
-		return propertyName;
+		return result;
+	}
+
+	private String getSatisfiableMessage() {
+		String result;
+		MpsatSettings settings = task.getSettings();
+		if ((settings != null) && (settings.getSatisfiableMessage() != null)) {
+			result = settings.getSatisfiableMessage();
+		} else {
+			result = getPropertyName() + " predicate is satisfiable.";
+		}
+		return result;
+	}
+
+	private String getUnsatisfiableMessage() {
+		String result;
+		MpsatSettings settings = task.getSettings();
+		if ((settings != null) && (settings.getUnsatisfiableMessage() != null)) {
+			result = settings.getUnsatisfiableMessage();
+		} else {
+			result = getPropertyName() + " predicate is unsatisfiable.";
+		}
+		return result;
 	}
 
 	@Override
 	public void run() {
 		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 		List<Solution> solutions = mdp.getSolutions();
+		String title = "Verification results";
 		String message = result.getReturnValue().getMessage();
-		if (!solutions.isEmpty()) {
+		if (solutions.isEmpty()) {
 			if (message == null) {
-				message = getPropertyName() + " is violated with the following trace:\n";
+				message = getUnsatisfiableMessage();
 			}
-			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
-			final Framework framework = Framework.getInstance();
-			GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
-			solutionsDialog.setVisible(true);
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+		} else if (!Solution.hasTraces(solutions)) {
+			if (message == null) {
+				message = getSatisfiableMessage();
+			}
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 		} else {
 			if (message == null) {
-				message = getPropertyName() + " is satisfied.";
+				message = getSatisfiableMessage() + " Trace(s) leading to the problematic state:";
 			}
-			JOptionPane.showMessageDialog(null, message);
+			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, message, solutions);
+			GUI.centerAndSizeToParent(solutionsDialog, Framework.getInstance().getMainWindow());
+			solutionsDialog.setVisible(true);
 		}
 	}
 

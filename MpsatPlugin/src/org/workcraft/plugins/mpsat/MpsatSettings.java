@@ -45,6 +45,8 @@ public class MpsatSettings {
 	private final SolutionMode solutionMode;
 	private final int solutionNumberLimit;
 	private final String reach;
+	private final String satisfiableMessage;
+	private final String unsatisfiableMessage;
 
 	// Reach expression for checking signal consistency
 	public static final String reachConsistency =
@@ -201,14 +203,24 @@ public class MpsatSettings {
 		return result;
 	}
 
+	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit) {
+		this(name, mode, verbosity, solutionMode, solutionNumberLimit, null, null, null);
+	}
+
 	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit, String reach) {
-		super();
+		this(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, null, null);
+	}
+
+	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit,
+			String reach, String satisfiableMessage, String unsatisfiableMessage) {
 		this.name = name;
 		this.mode = mode;
 		this.verbosity = verbosity;
 		this.solutionMode = solutionMode;
 		this.solutionNumberLimit = solutionNumberLimit;
 		this.reach = reach;
+		this.satisfiableMessage = satisfiableMessage;
+		this.unsatisfiableMessage = unsatisfiableMessage;
 	}
 
 	public String getName() {
@@ -221,6 +233,14 @@ public class MpsatSettings {
 
 	public int getVerbosity() {
 		return verbosity;
+	}
+
+	public SolutionMode getSolutionMode() {
+		return solutionMode;
+	}
+
+	public int getSolutionNumberLimit() {
+		return solutionNumberLimit;
 	}
 
 	public String getReach() {
@@ -239,12 +259,12 @@ public class MpsatSettings {
 		return sb.toString();
 	}
 
-	public SolutionMode getSolutionMode() {
-		return solutionMode;
+	public String getSatisfiableMessage() {
+		return satisfiableMessage;
 	}
 
-	public int getSolutionNumberLimit() {
-		return solutionNumberLimit;
+	public String getUnsatisfiableMessage() {
+		return unsatisfiableMessage;
 	}
 
 	public String[] getMpsatArguments() {

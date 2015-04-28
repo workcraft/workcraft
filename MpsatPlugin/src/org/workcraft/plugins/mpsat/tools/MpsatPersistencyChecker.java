@@ -22,9 +22,9 @@ public class MpsatPersistencyChecker extends AbstractMpsatChecker implements Too
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("Output persistence", MpsatMode.STG_REACHABILITY, 0,
+		return new MpsatSettings("Output persistence violation", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachSemimodularity);
+				MpsatSettings.reachSemimodularity, "Output persistence is violated.", "Output persistence is satisfied.");
 
 	}
 

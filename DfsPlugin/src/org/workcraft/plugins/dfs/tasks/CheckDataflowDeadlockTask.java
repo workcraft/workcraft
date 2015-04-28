@@ -33,7 +33,7 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 	public CheckDataflowDeadlockTask(WorkspaceEntry we) {
 		super (we, null);
 		this.we = we;
-		this.settings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
+		this.settings = new MpsatSettings("Deadlock", MpsatMode.DEADLOCK, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
 	}
 
