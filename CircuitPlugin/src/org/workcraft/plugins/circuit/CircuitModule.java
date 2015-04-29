@@ -125,6 +125,10 @@ public class CircuitModule implements Module {
 		cm.registerContextualReplacement(VisualCircuit.class.getName(), "VisualCircuitComponent",
 				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"BUFFER\"/>",
 				"<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"GATE\"/>");
+
+		cm.registerContextualReplacement(Circuit.class.getName(), "Contact",
+				"<property class=\"boolean\" name=\"initOne\" value=\"(.*?)\"/>",
+				"<property class=\"boolean\" name=\"initToOne\" value=\"$1\"/>");
 	}
 
 }

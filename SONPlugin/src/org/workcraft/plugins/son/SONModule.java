@@ -82,7 +82,7 @@ public class SONModule implements Module{
 				"<property class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" enum-class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" name=\"semantics\" value=\"BHVLINE\"/>");
 
 		cm.registerContextualReplacement(VisualSON.class.getName(), "VisualConnection",
-				"<graphic class=\"org.workcraft.plugins.son.connections.BhvLine\" ref=\"(.*?)()\"/>",
+				"<graphic class=\"org.workcraft.plugins.son.connections.BhvLine\" ref=\"(.*?)\"/>",
 				"<graphic class=\"org.workcraft.dom.visual.connections.Polyline\" ref=\"$1\"/>");
 	}
 
