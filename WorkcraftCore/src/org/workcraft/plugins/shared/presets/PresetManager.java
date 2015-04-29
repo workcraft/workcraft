@@ -65,7 +65,6 @@ public class PresetManager <T> {
 	}
 
 	public void sort() {
-
 		Collections.sort(presets, new Comparator<Preset<T>>() {
 			@Override
 			public int compare(Preset<T> o1, Preset<T> o2) {

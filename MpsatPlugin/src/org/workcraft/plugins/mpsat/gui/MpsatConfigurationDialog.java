@@ -26,6 +26,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.mpsat.MpsatBuiltinPresets;
@@ -86,7 +87,8 @@ public class MpsatConfigurationDialog extends JDialog {
 
 			@Override
 			public MpsatSettings getSettingsFromControls() {
-				return MpsatConfigurationDialog.this.getSettingsFromControls();
+				MpsatSettings settings = MpsatConfigurationDialog.this.getSettingsFromControls();
+				return settings;
 			}
 		}, this);
 	}
@@ -179,7 +181,6 @@ public class MpsatConfigurationDialog extends JDialog {
 			}
 		});
 
-
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(firstSolutionButton); bg.add(allSolutionsButton); bg.add(cheapestSolutionButton);
 	}
@@ -197,9 +198,10 @@ public class MpsatConfigurationDialog extends JDialog {
 	private void createReachPanel() {
 		reachText = new JTextArea();
 		reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-		reachText.setText("test");
+		reachText.setText("");
 		reachPanel = new JScrollPane(reachText);
-		reachPanel.setBorder(BorderFactory.createTitledBorder("Property specification (Reach)"));
+		reachPanel.setBorder(BorderFactory.createTitledBorder("Reach predicate "
+				+ "(use '" + NamespaceHelper.flatNameSeparator + "' as a hierarchy separator):"));
 	}
 
 	private void applySettingsToControls(MpsatSettings settings) {
@@ -314,31 +316,28 @@ public class MpsatConfigurationDialog extends JDialog {
 	}
 
 	private MpsatSettings getSettingsFromControls() {
-		SolutionMode m;
-
-		if (firstSolutionButton.isSelected())
-			m = SolutionMode.FIRST;
-		else if (cheapestSolutionButton.isSelected())
-			m = SolutionMode.MINIMUM_COST;
-		else
-			m = SolutionMode.ALL;
-
-		int n;
-
+		SolutionMode solutionMode;
+		if (firstSolutionButton.isSelected()) {
+			solutionMode = SolutionMode.FIRST;
+		} else if (cheapestSolutionButton.isSelected()) {
+			solutionMode = SolutionMode.MINIMUM_COST;
+		} else {
+			solutionMode = SolutionMode.ALL;
+		}
+		int solutionLimin;
 		try {
-			n = Integer.parseInt(solutionLimitText.getText());
+			solutionLimin = Integer.parseInt(solutionLimitText.getText());
 		} catch (NumberFormatException e) {
-			n = 0;
+			solutionLimin = 0;
 		}
 
-		if (n<0)
-			n=0;
+		if (solutionLimin < 0) {
+			solutionLimin = 0;
+		}
 
-		MpsatSettings settings = new MpsatSettings(
-				propertyNameText.getText(),
-				(MpsatMode)modeCombo.getSelectedItem(),
-				verbosityCombo.getSelectedIndex(), m, n,
-				reachText.getText());
+		MpsatSettings settings = new MpsatSettings(propertyNameText.getText(),
+				(MpsatMode)modeCombo.getSelectedItem(),	verbosityCombo.getSelectedIndex(),
+				solutionMode, solutionLimin, reachText.getText());
 
 		return settings;
 	}

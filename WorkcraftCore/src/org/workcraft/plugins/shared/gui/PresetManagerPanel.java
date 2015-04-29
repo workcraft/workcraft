@@ -58,8 +58,7 @@ public class PresetManagerPanel<T> extends JPanel {
 				if (p.isBuiltIn()) {
 					updatePresetButton.setEnabled(false);
 					updatePresetButton.setToolTipText("Cannot make changes to a built-in preset");
-				}
-				else {
+				} else {
 					updatePresetButton.setEnabled(true);
 					updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
 				}

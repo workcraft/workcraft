@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -36,8 +34,6 @@ public class MpsatSettings {
 			return name;
 		}
 	}
-
-	private static final Pattern nodeNamePattern = Pattern.compile("\"(\\S+?)\"");
 
 	private final String name;
 	private final MpsatMode mode;
@@ -247,18 +243,6 @@ public class MpsatSettings {
 		return reach;
 	}
 
-	private String getFlatReach() {
-		StringBuffer sb = new StringBuffer(reach.length());
-		Matcher matcher = nodeNamePattern.matcher(reach);
-		while (matcher.find()) {
-			String reference = matcher.group(1);
-			String flatName = NamespaceHelper.hierarchicalToFlatName(reference);
-			matcher.appendReplacement(sb, "\"" + flatName + "\"");
-		}
-		matcher.appendTail(sb);
-		return sb.toString();
-	}
-
 	public String getSatisfiableMessage() {
 		return satisfiableMessage;
 	}
@@ -275,11 +259,12 @@ public class MpsatSettings {
 
 		if (getMode().hasReach()) {
 			try {
-				File reach = File.createTempFile("reach", null);
-				reach.deleteOnExit();
-				FileUtils.dumpString(reach, getFlatReach());
+				File reachFile = File.createTempFile("reach", null);
+				reachFile.deleteOnExit();
+//				FileUtils.dumpString(reach, getFlatReach());
+				FileUtils.dumpString(reachFile, getReach());
 				args.add("-d");
-				args.add("@"+reach.getCanonicalPath());
+				args.add("@"+reachFile.getCanonicalPath());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
