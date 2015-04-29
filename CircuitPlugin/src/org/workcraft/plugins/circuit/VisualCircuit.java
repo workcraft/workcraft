@@ -129,14 +129,15 @@ public class VisualCircuit extends AbstractVisualModel {
 			VisualConnection connection = (VisualConnection)first;
 			List<Point2D> locations = new LinkedList<Point2D>();
 			int splitIndex = -1;
- 			if (connection.getGraphic() instanceof Polyline) {
+ 			Point2D splitPoint = connection.getSplitPoint();
+			if (connection.getGraphic() instanceof Polyline) {
  				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
 				Polyline polyline = (Polyline)connection.getGraphic();
 				for (ControlPoint cp:  polyline.getControlPoints()) {
 					Point2D location = localToRootTransform.transform(cp.getPosition(), null);
 					locations.add(location);
 				}
-				splitIndex = polyline.getNearestSegment(connection.getSplitPoint(), null);
+				splitIndex = polyline.getNearestSegment(splitPoint, null);
 			}
 
 			Container vContainer = (Container)connection.getParent();
@@ -145,7 +146,7 @@ public class VisualCircuit extends AbstractVisualModel {
 			mParent.add(mJoint);
 			VisualJoint vJoint = new VisualJoint(mJoint);
 			vContainer.add(vJoint);
-			vJoint.setPosition(connection.getSplitPoint());
+			vJoint.setPosition(splitPoint);
 			remove(connection);
 
 			VisualConnection vc1 = connect(connection.getFirst(), vJoint);
