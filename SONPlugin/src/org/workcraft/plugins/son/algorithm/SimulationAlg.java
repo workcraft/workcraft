@@ -2,6 +2,7 @@ package org.workcraft.plugins.son.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +34,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		this.net = net;
 		bsonAlg = new BSONAlg(net);
 
-		upperGroups = bsonAlg.getAbstractGroups(net.getGroups());
-		lowerGroups = bsonAlg.getBhvGroups(net.getGroups());
+		upperGroups = bsonAlg.getUpperGroups(net.getGroups());
+		lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
 	}
 
     public List<TransitionNode> getMinFire(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> fireList, boolean isRev){
@@ -47,6 +48,46 @@ public class SimulationAlg extends RelationAlgorithm {
 
         return result;
     }
+
+	//set initial marking
+	public Map<PlaceNode, Boolean> getInitialMarking(){
+		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
+		Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
+
+		for(PlaceNode c : net.getPlaceNodes())
+			result.put(c, false);
+
+		for(ONGroup group : net.getGroups()){
+			if(upperGroups.contains(group))
+				for(Condition c : getInitial(group.getConditions())){
+					result.put(c, true);
+				}
+			//an initial state of a lower group is the initial state of SON
+			//if all of its upper conditions are the initial states.
+			else if(lowerGroups.contains(group)){
+				for(Condition c : getInitial(group.getConditions())){
+					boolean isInitial = true;
+					Collection<Condition> set = bsonAlg.getUpperConditions(c);
+					for(Condition c2 : set){
+						if(!isInitial(c2)){
+							ONGroup group2 = net.getGroup(c2);
+							if(!set.containsAll(getInitial(group2.getConditions())))
+								isInitial = false;
+						}
+					}
+					if(isInitial)
+						result.put(c, true);
+				}
+			}
+			else{
+				for(Condition c : getInitial(group.getConditions())){
+					result.put(c, true);
+				}
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * return minimal execution set for a given node.
@@ -182,7 +223,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		//if e is lower event, e is BSON enabled if every e's upper condition is marked
 		for(ONGroup group : lowerGroups){
 			if(group.getComponents().contains(e)){
-				for(Condition c : bsonAlg.getAbstractConditions(e))
+				for(Condition c : bsonAlg.getUpperConditions(e))
 					if(!c.isMarked())
 						return false;
 			}
@@ -298,7 +339,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		//if e is lower event, e is BSON enabled if every e's upper condition is marked
 		for(ONGroup group : lowerGroups){
 			if(group.getComponents().contains(e)){
-				for(Condition c : bsonAlg.getAbstractConditions(e))
+				for(Condition c : bsonAlg.getUpperConditions(e))
 					if(!c.isMarked())
 						return false;
 			}
@@ -402,7 +443,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		for(TransitionNode e : step){
 			for(Node pre : net.getPreset(e)){
 				//if e is upper event, remove marking for every maximal phase of pre{e}.
-				if(bsonAlg.isAbstractCondition(pre)){
+				if(bsonAlg.isUpperCondition(pre)){
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
 					for(Condition c2 : maxSet)
@@ -414,7 +455,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				if((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
 					((PlaceNode)post).setMarked(true);
 				//if e is upper event, set marking for every minimal phase of post{e}.
-				if(bsonAlg.isAbstractCondition(post)){
+				if(bsonAlg.isUpperCondition(post)){
 					Condition c = (Condition)post;
 					Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
 					for(Condition c2 : minSet)
@@ -449,7 +490,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		for(TransitionNode e : step){
 			for(Node post : net.getPostset(e)){
 				//if e is upper event, remove marking for every minimal phase of pre{e}.
-				if(bsonAlg.isAbstractCondition(post)){
+				if(bsonAlg.isUpperCondition(post)){
 					Condition c = (Condition)post;
 					Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
 					for(Condition c2 : minSet)
@@ -461,7 +502,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
 					((PlaceNode)pre).setMarked(true);
 				//if e is upper event, set marking for every minimal phase of post{e}.
-				if(bsonAlg.isAbstractCondition(pre)){
+				if(bsonAlg.isUpperCondition(pre)){
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
 					for(Condition c2 : maxSet)

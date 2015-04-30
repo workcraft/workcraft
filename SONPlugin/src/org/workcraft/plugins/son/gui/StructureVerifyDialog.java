@@ -271,12 +271,12 @@ public class StructureVerifyDialog extends JDialog{
 		highLight.setFont(font);
 		highLight.setSelected(true);
 
-		outputBefore = new JCheckBox("Output 'before(e)'");
+		outputBefore = new JCheckBox("Output causal dependencies in BSON");
 		outputBefore.setFont(font);
 		outputBefore.setSelected(false);
 
 		leftColumn.add(highLight);
-		//leftColumn.add(outputBefore);
+		leftColumn.add(outputBefore);
 
 		settingPanel.add(leftColumn, BorderLayout.WEST);
 	}

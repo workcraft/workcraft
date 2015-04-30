@@ -70,10 +70,10 @@ public class BSONCycleAlg extends ONCycleAlg{
 		}
 
 		//get upper-level transition nodes.
-		Collection<ONGroup> upperGroups = bsonAlg.getAbstractGroups(net.getGroups());
+		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
 		Collection<TransitionNode> upperT = new ArrayList<TransitionNode>();
 		for(ONGroup group : upperGroups)
-			upperT.addAll(group.getEventNodes());
+			upperT.addAll(group.getTransitionNodes());
 
 		for(int i = 0; i < nodes.size(); i++){
 			//add before relation

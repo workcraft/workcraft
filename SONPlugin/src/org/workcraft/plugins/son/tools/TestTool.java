@@ -93,10 +93,10 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("\nOutput before(e):");
 		Collection<TransitionNode[]> before = new ArrayList<TransitionNode[]>();
 
-		Collection<ONGroup> groups = bsonAlg.getAbstractGroups(net.getGroups());
+		Collection<ONGroup> groups = bsonAlg.getUpperGroups(net.getGroups());
 		Collection<TransitionNode> set = new HashSet<TransitionNode>();
 		for(ONGroup group : groups){
-			set.addAll(group.getEventNodes());
+			set.addAll(group.getTransitionNodes());
 		}
 
 
@@ -132,7 +132,7 @@ public class TestTool extends AbstractTool implements Tool{
 		BSONAlg alg = new BSONAlg(net);
 
 		System.out.println("phase test");
-		for(ONGroup group : alg.getAbstractGroups(net.getGroups())){
+		for(ONGroup group : alg.getUpperGroups(net.getGroups())){
 			System.out.println("group = " + net.getNodeReference(group));
 			for(Condition c : group.getConditions()){
 				System.out.println("condition = " + net.getNodeReference(c));
@@ -180,7 +180,7 @@ public class TestTool extends AbstractTool implements Tool{
 	private void abtreactConditionTest(SON net){
 		BSONAlg alg = new BSONAlg(net);
 		for(Node node : net.getComponents()){
-			for(Condition c : alg.getAbstractConditions(node)){
+			for(Condition c : alg.getUpperConditions(node)){
 				System.out.println("abstract condition of   " + net.getNodeReference(node) + "  is  "  + net.getNodeReference(c));
 			}
 		}

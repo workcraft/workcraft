@@ -30,16 +30,18 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 	private BSONCycleAlg bsonPathAlg;
 	private ONCycleAlg onPathAlg;
 	private TSONAlg tsonAlg;
+	private Map<Condition, Collection<Phase>> allPhases;
 
 	public AbstractStructuralVerification(SON net){
 		this.net = net;
+
 		relationAlg = new RelationAlgorithm(net);
 		csonPathAlg = new CSONCycleAlg(net);
 		bsonAlg = new BSONAlg(net);
-		bsonPathAlg = new BSONCycleAlg(net, getAllPhases());
+		allPhases = bsonAlg.getAllPhases();
+		bsonPathAlg = new BSONCycleAlg(net, allPhases);
 		onPathAlg = new ONCycleAlg(net);
 		tsonAlg = new TSONAlg(net);
-
 	}
 
 	public abstract void task(Collection<ONGroup> groups);
@@ -71,7 +73,7 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 	}
 
 	public Map<Condition, Collection<Phase>> getAllPhases(){
-		return bsonAlg.getAllPhases();
+		return allPhases;
 	}
 
 	public void infoMsg(String msg){

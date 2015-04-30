@@ -55,7 +55,6 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
-import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.Step;
@@ -351,13 +350,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		sync = getSyncCycles();
 		phases = bsonAlg.getAllPhases();
+		initialMarking=simuAlg.getInitialMarking();
 		//set initial marking
-		try {
-			initialMarking.putAll(autoInitialMarking());
-		} catch (InvalidStructureException e) {
-			errorMsg(e.getMessage(), editor);
-			return;
-		}
+		applyMarking(initialMarking);
 		//set enabled nodes colors.
 		setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 
@@ -454,49 +449,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 	};
 
-	//set initial marking
-	protected Map<PlaceNode, Boolean> autoInitialMarking() throws InvalidStructureException{
-		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
-		Collection<ONGroup> upperGroups = bsonAlg.getAbstractGroups(net.getGroups());
-		Collection<ONGroup> lowerGroups = bsonAlg.getBhvGroups(net.getGroups());
-		Collection<Condition> upperInit = new ArrayList<Condition>();
-
-		for(PlaceNode con : net.getPlaceNodes())
-			con.setMarked(false);
-
-		for(ONGroup group : net.getGroups()){
-			if(upperGroups.contains(group))
-				for(Condition c : relationAlg.getInitial(group.getConditions())){
-					c.setMarked(true);
-					upperInit.add(c);
-				}
-			//an initial state of a lower group is the initial state of SON
-			//if all of its upper conditions are the initial states.
-			else if(lowerGroups.contains(group)){
-				for(Condition c : relationAlg.getInitial(group.getConditions())){
-					boolean isInitial = true;
-					Collection<Condition> set = bsonAlg.getAbstractConditions(c);
-					for(Condition c2 : set){
-						if(!relationAlg.isInitial(c2)){
-							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(relationAlg.getInitial(group2.getConditions())))
-								isInitial = false;
-						}
-					}
-					if(isInitial)
-						c.setMarked(true);
-				}
-			}
-			else{
-				for(Condition c : relationAlg.getInitial(group.getConditions())){
-					c.setMarked(true);
-				}
-			}
-		}
-
-
-		return result;
-	}
 
 	private void errorMsg(String message, final GraphEditor editor){
 		JOptionPane.showMessageDialog(null,
@@ -749,7 +701,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			if(node instanceof TransitionNode)
 				fireList.add((TransitionNode)node);
 		}
-		causalPredecessors.removeAll(fireList);
+
+		//causalPredecessors.removeAll(fireList);
 
 		if(!fireList.isEmpty()){
 
@@ -964,14 +917,15 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	@Override
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-		List<TransitionNode> enabled = null;
-
-		enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
 		boolean ret = false;
 
 		for (Node node: container.getChildren()) {
 			try{
+				List<TransitionNode> enabled = null;
+
+				enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+
 				if (node instanceof VisualTransitionNode) {
 					TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
 					ret=ret || isEnabled(event, enabled);

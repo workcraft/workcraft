@@ -8,9 +8,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 
 public class ONStructureTask extends AbstractStructuralVerification{
@@ -57,8 +56,14 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 			infoMsg("Running component relation tasks...");
 
-			if(!getRelationAlg().hasFinal(groupComponents) || !getRelationAlg().hasInitial(groupComponents)){
-				errMsg("ERROR : Occurrence net must have at least one input and one output.");
+			if(!getRelationAlg().hasInitial(groupComponents)){
+				errMsg("ERROR : Invalid initial state (no initial state).");
+				errNumber ++;
+				continue;
+			}
+
+			if(!getRelationAlg().hasFinal(groupComponents)){
+				errMsg("ERROR : Invalid final state (no final state).");
 				errNumber ++;
 				continue;
 			}
@@ -72,7 +77,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 				errNumber = errNumber + task1.size();
 				for(Node node : task1){
 					relationErrors.add(node);
-					errMsg("ERROR : Invalid occurrence net input (initial state is not a condition).", node);
+					errMsg("ERROR : Invalid initial state (initial state is not a condition).", node);
 				}
 			}
 
@@ -84,7 +89,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 				errNumber = errNumber + task2.size();
 				for(Node node : task2){
 					relationErrors.add(node);
-					errMsg("ERROR : Invalid occurrence net output (final state is not a condition).", node);
+					errMsg("ERROR : Invalid final state (final state is not a condition).", node);
 				}
 			}
 
@@ -132,7 +137,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Collection<Node> iniStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event ||node instanceof Block)
+			if(node instanceof TransitionNode)
 				if(getRelationAlg().isInitial(node))
 					result.add(node);
 		return result;
@@ -141,7 +146,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Collection<Node> finalStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event || node instanceof Block)
+			if(node instanceof TransitionNode)
 				if(getRelationAlg().isFinal(node))
 					result.add(node);
 		return result;

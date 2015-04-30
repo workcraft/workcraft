@@ -120,53 +120,59 @@ public class SON extends AbstractMathModel {
 	}
 
 	public String getComponentLabel(Node n){
-		if(n instanceof Condition)
-			return ((Condition)n).getLabel();
+		if(n instanceof PlaceNode)
+			return ((PlaceNode)n).getLabel();
 
-		if(n instanceof Event)
-			return ((Event)n).getLabel();
-
-		if(n instanceof ChannelPlace)
-			return ((ChannelPlace)n).getLabel();
-
-		if(n instanceof Block)
-			return ((Block)n).getLabel();
+		if(n instanceof TransitionNode)
+			return ((TransitionNode)n).getLabel();
 
 		else
 			return null;
 	}
 
 	public void setForegroundColor(Node n, Color nodeColor){
-		if(n instanceof Condition){
-			((Condition) n).setForegroundColor(nodeColor);
+		if(n instanceof PlaceNode){
+			((PlaceNode) n).setForegroundColor(nodeColor);
 		}
-		if(n instanceof Event){
-			((Event) n).setForegroundColor(nodeColor);
-		}
-		if (n instanceof ChannelPlace){
-			((ChannelPlace) n).setForegroundColor(nodeColor);
+		if(n instanceof TransitionNode){
+			((TransitionNode) n).setForegroundColor(nodeColor);
 		}
 		if (n instanceof ONGroup)
 			((ONGroup)n).setForegroundColor(nodeColor);
 
-		if(n instanceof Block)
-			((Block)n).setForegroundColor(nodeColor);
+	}
 
+	public Color getForegroundColor(Node n){
+		if(n instanceof PlaceNode){
+			return ((PlaceNode) n).getForegroundColor();
+		}
+		if(n instanceof TransitionNode){
+			return ((TransitionNode) n).getForegroundColor();
+		}
+		if (n instanceof ONGroup)
+			return ((ONGroup) n).getForegroundColor();
+
+		return null;
 	}
 
 	public void setFillColor(Node n, Color nodeColor){
-		if(n instanceof Condition){
-			((Condition) n).setFillColor(nodeColor);
+		if(n instanceof PlaceNode){
+			((PlaceNode) n).setFillColor(nodeColor);
 		}
-		if(n instanceof Event){
-			((Event) n).setFillColor(nodeColor);
+		if(n instanceof TransitionNode){
+			((TransitionNode) n).setFillColor(nodeColor);
 		}
-		if(n instanceof ChannelPlace){
-			((ChannelPlace) n).setFillColor(nodeColor);
+	}
+
+	public Color getFillColor(Node n){
+		if(n instanceof PlaceNode){
+			return ((PlaceNode) n).getFillColor();
 		}
-		if(n instanceof Block){
-			((Block) n).setFillColor(nodeColor);
+		if(n instanceof TransitionNode){
+			return ((TransitionNode) n).getFillColor();
 		}
+
+		return null;
 	}
 
 	public void refreshColor(){

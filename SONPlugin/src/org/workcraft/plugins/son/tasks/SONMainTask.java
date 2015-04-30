@@ -3,11 +3,14 @@ package org.workcraft.plugins.son.tasks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.StructureVerifySettings;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
+import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -114,9 +117,6 @@ public class SONMainTask implements Task<VerificationResult>{
 
 			totalErrNum = totalErrNum + bsonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
-
-			//if(settings.getOuputBefore())
-				//outputBefore(net);
 		}
 
 
@@ -144,6 +144,9 @@ public class SONMainTask implements Task<VerificationResult>{
 			totalErrNum = totalErrNum + tsonSTask.getErrNumber();
 			totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
 		}
+
+		if(settings.getOuputBefore())
+			outputBefore(net);
 
 		int err = getTotalErrNum();
 		int warning = getTotalWarningNum();
@@ -178,6 +181,27 @@ public class SONMainTask implements Task<VerificationResult>{
 	    {
 	        //  Handle exception.
 	    }
+	}
+
+	private void outputBefore(SON net){
+		if(totalErrNum > 0){
+			totalWarningNum++;
+			logger.info("WARNING : Structure error exist, cannot output before(e).");
+		}else{
+			BSONAlg bsonAlg = new BSONAlg(net);
+			logger.info("\nOutput BSON causal dependencies:");
+			Map<TransitionNode, Collection<TransitionNode[]>> before = bsonAlg.getAllBefore();
+
+			for(TransitionNode e : before.keySet()){
+				logger.info("before("+ net.getNodeReference(e)+"): ");
+				Collection<String> relations = new ArrayList<String>();
+
+				for(TransitionNode[] e2 : before.get(e))
+					relations.add("("+net.getNodeReference(e2[0]) + ", " + net.getNodeReference(e2[1])+ ")");
+
+				logger.info(relations);
+			}
+		}
 	}
 
 

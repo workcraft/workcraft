@@ -17,6 +17,7 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 
+
 public class BSONStructureTask extends AbstractStructuralVerification{
 
 	private SON net;
@@ -64,7 +65,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			infoMsg("Valid upper-level ON structure.");
 		else {
 			for(ONGroup group : groupErrors)
-				errMsg("ERROR: Invalid BSON structure (Upper-level ON is not line-like).", group);
+				errMsg("ERROR: Invalid Upper-level ON structure (not line-like/has both input and output behavioural relations).", group);
 		}
 		infoMsg("Upper-level ON structure task complete.");
 
@@ -84,7 +85,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 		//phase decomposition task
 		infoMsg("Running phase structure task...");
-		Collection<ONGroup> upperGroups = getBSONAlg().getAbstractGroups(groups);
+		Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
 
 		Map<Condition , String> phaseResult = phaseMainTask(upperGroups);
 		if(!phaseResult.keySet().isEmpty()){
@@ -153,7 +154,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	//correctness for A/SYN communication between upper and lower level ONs
 	private Collection<ChannelPlace> groupTask2(Collection<ONGroup> groups){
 		Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
-		Collection<ONGroup> upperGroups = getBSONAlg().getAbstractGroups(groups);
+		Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
 
 		for(ChannelPlace cPlace : getRelationAlg().getRelatedChannelPlace(groups)){
 			int inUpperGroup = 0;
@@ -216,7 +217,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 		for(Condition c : upperGroup.getConditions()){
 			String ref = net.getNodeReference(c);
-			if(!getBSONAlg().isAbstractCondition(c))
+			if(!getBSONAlg().isUpperCondition(c))
 				result.put(c, "ERROR: Upper level condition does not has phase: " +ref);
 		}
 		return result;
