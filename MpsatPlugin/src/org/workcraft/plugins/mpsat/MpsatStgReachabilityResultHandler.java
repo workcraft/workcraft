@@ -23,37 +23,15 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		this.result = result;
 	}
 
-	private String getPropertyName() {
-		String result;
+	private String getMessage(boolean isSatisfiable, boolean inversePredicate) {
+		String propertyName = "Property";
 		MpsatSettings settings = task.getSettings();
 		if ((settings != null) && (settings.getName() != null)) {
-			result = settings.getName();
-		} else {
-			result = "The property";
+			propertyName = settings.getName();
 		}
-		return result;
-	}
-
-	private String getSatisfiableMessage() {
-		String result;
-		MpsatSettings settings = task.getSettings();
-		if ((settings != null) && (settings.getSatisfiableMessage() != null)) {
-			result = settings.getSatisfiableMessage();
-		} else {
-			result = getPropertyName() + " predicate is satisfiable.";
-		}
-		return result;
-	}
-
-	private String getUnsatisfiableMessage() {
-		String result;
-		MpsatSettings settings = task.getSettings();
-		if ((settings != null) && (settings.getUnsatisfiableMessage() != null)) {
-			result = settings.getUnsatisfiableMessage();
-		} else {
-			result = getPropertyName() + " predicate is unsatisfiable.";
-		}
-		return result;
+		String predicateText = "Predicate is " + (isSatisfiable ? "satisfiable" : "unsatisfiable") + ". ";
+		String propertyText =  propertyName + (isSatisfiable == inversePredicate ? " is violated." : " holds.");
+		return predicateText + propertyText;
 	}
 
 	@Override
@@ -61,24 +39,14 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 		List<Solution> solutions = mdp.getSolutions();
 		String title = "Verification results";
-		String message = result.getReturnValue().getMessage();
-		if (solutions.isEmpty()) {
-			if (message == null) {
-				message = getUnsatisfiableMessage();
-			}
-			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
-		} else if (!Solution.hasTraces(solutions)) {
-			if (message == null) {
-				message = getSatisfiableMessage();
-			}
-			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
-		} else {
-			if (message == null) {
-				message = getSatisfiableMessage() + " Trace(s) leading to the problematic state:";
-			}
-			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, message, solutions);
+		String message = getMessage(!solutions.isEmpty(), true);
+		if (Solution.hasTraces(solutions)) {
+			String extendedMessage = "<html>" + message +  "<br>Trace(s) leading to the problematic states:</html>";
+			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, extendedMessage, solutions);
 			GUI.centerAndSizeToParent(solutionsDialog, Framework.getInstance().getMainWindow());
 			solutionsDialog.setVisible(true);
+		} else {
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 

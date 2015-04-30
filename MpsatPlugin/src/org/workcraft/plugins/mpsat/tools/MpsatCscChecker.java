@@ -22,9 +22,9 @@ public class MpsatCscChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("CSC conflict", MpsatMode.CSC_CONFLICT_DETECTION, 0,
+		return new MpsatSettings("Complete State Coding", MpsatMode.CSC_CONFLICT_DETECTION, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				null, "CSC conflict is found.", "CSC is satisfied.");
+				null, true);
 	}
 
 }

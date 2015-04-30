@@ -1,11 +1,14 @@
 package org.workcraft.plugins.shared.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog.ModalityType;
+import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -25,7 +28,7 @@ public class PresetManagerPanel<T> extends JPanel {
 	private final PresetManager<T> presetManager;
 	private final SettingsToControlsMapper<T> guiMapper;
 	private JButton updatePresetButton;
-	private JButton saveAsNewButton;
+	private JButton saveAsButton;
 	private Window dialogOwner;
 
 	@SuppressWarnings("unchecked")
@@ -36,13 +39,10 @@ public class PresetManagerPanel<T> extends JPanel {
 		this.presetManager = presetManager_;
 		this.dialogOwner = dialogOwner;
 
-		setLayout(new SimpleFlowLayout(15, 3));
-
-		for (Preset<T> p : builtIn)
+		for (Preset<T> p : builtIn) {
 			presetManager.add(p);
-
+		}
 		presetManager.sort();
-
 		presetCombo = new JComboBox();
 		for (Preset<T> p : presetManager.list()) {
 			presetCombo.addItem(p);
@@ -68,7 +68,7 @@ public class PresetManagerPanel<T> extends JPanel {
 			}
 		});
 
-		manageButton = new JButton ("Manage presets...");
+		manageButton = new JButton ("Manage...");
 		manageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -87,7 +87,7 @@ public class PresetManagerPanel<T> extends JPanel {
 		});
 
 
-		updatePresetButton = new JButton ("Update preset");
+		updatePresetButton = new JButton ("Update");
 		updatePresetButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -96,19 +96,26 @@ public class PresetManagerPanel<T> extends JPanel {
 			}
 		});
 
-		saveAsNewButton = new JButton ("Save as new preset...");
-		saveAsNewButton.addActionListener(new ActionListener() {
+		saveAsButton = new JButton ("Save as...");
+		saveAsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				createPreset();
 			}
 		});
 
-		add(GUI.createLabeledComponent(presetCombo, "Preset:"));
-		add(new SimpleFlowLayout.LineBreak(3));
-		add(updatePresetButton);
-		add(saveAsNewButton);
-		add(manageButton);
+		JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		buttonsPanel.add(updatePresetButton);
+		buttonsPanel.add(saveAsButton);
+		buttonsPanel.add(manageButton);
+
+
+		setBorder(BorderFactory.createTitledBorder("Presets"));
+		setLayout(new BorderLayout());
+//		add(GUI.createLabeledComponent(presetCombo, "Preset:"), BorderLayout.CENTER);
+		add(presetCombo, BorderLayout.CENTER);
+//		add(new SimpleFlowLayout.LineBreak(3));
+		add(buttonsPanel, BorderLayout.SOUTH);
 	}
 
 	@SuppressWarnings("unchecked")

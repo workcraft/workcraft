@@ -14,13 +14,13 @@ public class MpsatBuiltinPresets {
 					MpsatMode.DEADLOCK, 0, SolutionMode.ALL, 0), true);
 
 	public static final Preset<MpsatSettings> CONSISTENCY_CHECKER = new Preset<MpsatSettings>(
-			"Consistency", new MpsatSettings("Consistency violation",
-					MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 0, MpsatSettings.reachConsistency,
-					"Consistency is violated.", "Consistency is satisfied."), true);
+			"Consistency", new MpsatSettings("Consistency",
+					MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 0,
+					MpsatSettings.reachConsistency, true), true);
 
-	public static final Preset<MpsatSettings> PERSISTENCE_CHECKER = new Preset<MpsatSettings>(
-			"Output persistence (without dummies)", new MpsatSettings("Output persistence violation",
-					MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 0, MpsatSettings.reachSemimodularity,
-					"Output persistence is violated.", "Output persistence is satisfied."), true);
+	public static final Preset<MpsatSettings> PERSISTENCY_CHECKER = new Preset<MpsatSettings>(
+			"Output persistency (without dummies)", new MpsatSettings("Output persistency",
+					MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 0,
+					MpsatSettings.reachSemimodularity, true), true);
 
 }

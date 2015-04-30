@@ -22,9 +22,9 @@ public class MpsatUscChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("USC conflict", MpsatMode.USC_CONFLICT_DETECTION, 0,
+		return new MpsatSettings("Unique State Coding", MpsatMode.USC_CONFLICT_DETECTION, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				null, "USC conflict is found.", "USC is satisfied.");
+				null, true);
 	}
 
 }

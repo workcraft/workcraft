@@ -33,9 +33,9 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 	public CheckDataflowHazardTask(WorkspaceEntry we) {
 		super (we, null);
 		this.we = we;
-		this.settings = new MpsatSettings("Output persistence violation", MpsatMode.STG_REACHABILITY, 0,
+		this.settings = new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachSemimodularity, "Output persistence is violated.", "Output persistence is satisfied.");
+				MpsatSettings.reachSemimodularity, true);
 	}
 
 	@Override

@@ -48,10 +48,9 @@ public class CheckCircuitTask extends MpsatChainTask {
 			MpsatMode.DEADLOCK, 0, MpsatUtilitySettings.getSolutionMode(),
 			MpsatUtilitySettings.getSolutionCount());
 
-	private final MpsatSettings hazardSettings = new MpsatSettings("Output persistence violation",
+	private final MpsatSettings hazardSettings = new MpsatSettings("Output persistency",
 			MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-			MpsatUtilitySettings.getSolutionCount(), MpsatSettings.reachSemimodularity,
-			"Output persistence is violated.", "Output persistence is satisfied.");
+			MpsatUtilitySettings.getSolutionCount(), MpsatSettings.reachSemimodularity, true);
 
 	private final WorkspaceEntry we;
 	private final boolean checkConformation;
@@ -180,9 +179,9 @@ public class CheckCircuitTask extends MpsatChainTask {
 					System.out.println("\nReach expression for the interface conformation property:");
 					System.out.println(reachConformation);
 				}
-				MpsatSettings conformationSettings = new MpsatSettings("Interface conformance violation",
+				MpsatSettings conformationSettings = new MpsatSettings("Interface conformance",
 						MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-						MpsatUtilitySettings.getSolutionCount(), reachConformation);
+						MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
 						unfoldingFile.getCanonicalPath(), workingDirectory, true);
