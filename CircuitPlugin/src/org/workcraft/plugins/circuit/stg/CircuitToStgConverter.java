@@ -442,7 +442,7 @@ public class CircuitToStgConverter {
 
 				Container currentLevel = null;
 				Container oldLevel = stg.getCurrentLevel();
-				for (Node node:nodesToGroup) {
+				for (Node node: nodesToGroup) {
 					if (currentLevel == null) {
 						currentLevel = (Container)node.getParent();
 					}

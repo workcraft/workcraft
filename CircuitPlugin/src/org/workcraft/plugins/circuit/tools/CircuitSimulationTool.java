@@ -20,7 +20,6 @@ import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.petri.Place;
@@ -37,7 +36,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		VisualCircuit circuit = (VisualCircuit)model;
-		converter = CircuitStgUtils.createCircuitToStgConverter(circuit);
+		converter = new CircuitToStgConverter(circuit);
 		return converter.getStg();
 	}
 
