@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -103,35 +104,53 @@ public class BSONAlg extends RelationAlgorithm{
 
 	private Collection<Condition> Max(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
+		Stack<Node> stack = new Stack<Node>();
+		Collection<Node> visit = new HashSet<Node>();
 
-		if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-			result.addAll(getPostBhvSet((Condition)node));
-		}
-		else{
+		stack.push(node);
 
-			Collection<Node> postPN = getPostPNSet(node);
+		while(!stack.isEmpty()){
+			node = stack.pop();
+			visit.add(node);
 
-			if(!postPN.isEmpty()){
-				for(Node post : postPN)
-					result.addAll(Max(post));
+			if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
+				result.addAll(getPostBhvSet((Condition)node));
 			}
 
+			Collection<Node> postSet = getPostPNSet(node);
+			if(!postSet.isEmpty()){
+				for(Node post : postSet){
+					if(!visit.contains(post)){
+						stack.push(post);
+					}
+				}
+			}
 		}
 		return result;
 	}
 
 	private Collection<Condition> Min(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
+		Stack<Node> stack = new Stack<Node>();
+		Collection<Node> visit = new HashSet<Node>();
 
-		if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-			result.addAll(getPostBhvSet((Condition)node));
-		}
-		else{
-			Collection<Node> prePN = getPrePNSet(node);
+		stack.push(node);
 
-			if(!prePN.isEmpty()){
-				for(Node pre : prePN)
-					result.addAll(Min(pre));
+		while(!stack.isEmpty()){
+			node = stack.pop();
+			visit.add(node);
+
+			if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
+				result.addAll(getPostBhvSet((Condition)node));
+			}
+
+			Collection<Node> preSet = getPrePNSet(node);
+			if(!preSet.isEmpty()){
+				for(Node pre : preSet){
+					if(!visit.contains(pre)){
+						stack.push(pre);
+					}
+				}
 			}
 		}
 		return result;
