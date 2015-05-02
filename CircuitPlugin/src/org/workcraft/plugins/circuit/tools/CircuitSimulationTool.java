@@ -23,7 +23,9 @@ import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -72,6 +74,38 @@ public class CircuitSimulationTool extends StgSimulationTool {
 				signalState.value = ((onePlace.getTokens() > 0) ? 1 : 0);
 			}
 		}
+	}
+
+	@Override
+	public Transition getTransitionToFire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
+			for (Transition transition: net.getTransitions()) {
+				String existingRef = net.getNodeReference(transition);
+				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
+				if (requiredId.equals(exisitingId) && net.isEnabled(transition)) {
+					result = transition;
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public Transition getTransitionToUnfire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
+			for (Transition transition: net.getTransitions()) {
+				String existingRef = net.getNodeReference(transition);
+				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
+				if (requiredId.equals(exisitingId) && net.isUnfireEnabled(transition)) {
+					result = transition;
+				}
+			}
+		}
+		return result;
 	}
 
 	// return first enabled transition

@@ -443,14 +443,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			transitionId = mainTrace.get(mainTrace.getPosition() - 1);
 			mainDec = 1;
 		}
-		Transition transition = null;
-		if (transitionId != null) {
-			final Node node = net.getNodeByReference(transitionId);
-			if (node != null && (node instanceof Transition)) {
-				transition = (Transition)node;
-			}
-		}
-		if (transition != null && net.isUnfireEnabled(transition)) {
+		Transition transition = getTransitionToUnfire(transitionId);
+		if (transition != null) {
 			net.unFire(transition);
 			mainTrace.decPosition(mainDec);
 			branchTrace.decPosition(branchDec);
@@ -458,6 +452,17 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				branchTrace.clear();
 			}
 			result = true;
+		}
+		return result;
+	}
+
+	public Transition getTransitionToUnfire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			final Node node = net.getNodeByReference(ref);
+			if ((node instanceof Transition) && net.isUnfireEnabled((Transition)node)) {
+				result = (Transition)node;
+			}
 		}
 		return result;
 	}
@@ -482,19 +487,24 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			transitionId = mainTrace.getCurrent();
 			mainInc = 1;
 		}
-		Transition transition = null;
-		if (transitionId != null) {
-			final Node node = net.getNodeByReference(transitionId);
-			if (node != null && (node instanceof Transition)) {
-				transition = (Transition)node;
-			}
-		}
-		if (transition != null && net.isEnabled(transition)) {
+		Transition transition = getTransitionToFire(transitionId);
+		if (transition != null) {
 			net.fire(transition);
 			coloriseTokens(transition);
 			mainTrace.incPosition(mainInc);
 			branchTrace.incPosition(branchInc);
 			result = true;
+		}
+		return result;
+	}
+
+	public Transition getTransitionToFire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			final Node node = net.getNodeByReference(ref);
+			if ((node instanceof Transition) && net.isEnabled((Transition)node)) {
+				result = (Transition)node;
+			}
 		}
 		return result;
 	}

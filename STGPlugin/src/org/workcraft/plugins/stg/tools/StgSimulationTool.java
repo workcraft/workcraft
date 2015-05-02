@@ -25,11 +25,13 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.util.ColorGenerator;
+import org.workcraft.util.Pair;
 
 public class StgSimulationTool extends PetriNetSimulationTool {
 	private static Color inputsColor = Color.RED.darker();
@@ -259,6 +261,15 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 		initialiseStateMap();
 	}
 
+	public String getTraceLabelByReference(String ref) {
+		String result = null;
+		if (ref != null) {
+			Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(ref);
+			result = instancedTransition.getFirst();
+		}
+		return result;
+	}
+
 	protected void initialiseStateMap() {
 		stateMap.clear();
 		for (Node node : net.getTransitions()) {
@@ -285,7 +296,6 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 		}
 		updateSignalState();
 	}
-
 
 	@Override
 	protected void coloriseTokens(Transition t) {
