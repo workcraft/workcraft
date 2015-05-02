@@ -34,11 +34,10 @@ import org.workcraft.plugins.cpog.optimisation.dnf.DnfClause;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.Geometry;
@@ -364,20 +363,23 @@ public class CircuitToStgConverter {
 	}
 
 	private void simplifyDrivers(HashSet<VisualContact> drivers) {
+		HashSet<Node> deadTransitions = new HashSet();
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
 				HashSet<Node> deadPostset = new HashSet<Node>(stg.getPostset(signalStg.P0));
 				deadPostset.retainAll(stg.getPostset(signalStg.P1));
-				for (Node node: deadPostset) {
-					if (node instanceof VisualTransition) {
-						signalStg.Rs.remove(node);
-						signalStg.Fs.remove(node);
-						stg.remove(node);
-					}
-				}
+				deadTransitions.addAll(deadPostset);
 			}
 		}
+		for (VisualContact driver: drivers) {
+			SignalStg signalStg = driverToStgMap.getValue(driver);
+			if (signalStg != null) {
+				signalStg.Rs.removeAll(deadTransitions);
+				signalStg.Fs.removeAll(deadTransitions);
+			}
+		}
+		stg.remove(deadTransitions);
 	}
 
 	private void positionDrivers(HashSet<VisualContact> drivers) {
