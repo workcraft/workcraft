@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
 
+import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -43,6 +44,55 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	}
 
 	@Override
+	public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
+		Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
+		if (circuitMainTrace != null) {
+			System.out.println("Main trace convertion:");
+			System.out.println("  original: " + mainTrace);
+			System.out.println("  circuit:  " + circuitMainTrace);
+		}
+		Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
+		if (circuitBranchTrace != null) {
+			System.out.println("Branch trace convertion:");
+			System.out.println("  original: " + branchTrace);
+			System.out.println("  circuit:  " + circuitBranchTrace);
+		}
+		super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
+	}
+
+	private Trace convertStgTraceToCircuitTrace(Trace trace) {
+		Trace circuitTrace = null;
+		if (trace != null) {
+			circuitTrace = new Trace();
+			for (String ref: trace) {
+				Transition t = getBestTransitionToFire(ref);
+				if (t != null) {
+					String circuitRef = net.getNodeReference(t);
+					circuitTrace.add(circuitRef);
+					net.fire(t);
+				}
+			}
+			resetMarking();
+		}
+		return circuitTrace;
+	}
+
+	private Transition getBestTransitionToFire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
+			for (Transition transition: net.getTransitions()) {
+				String existingRef = net.getNodeReference(transition);
+				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
+				if (requiredId.equals(exisitingId) && net.isEnabled(transition)) {
+					result = transition;
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public void applyInitState(final GraphEditor editor) {
 		if ((savedState == null) || savedState.isEmpty()) {
 			return;
@@ -75,38 +125,38 @@ public class CircuitSimulationTool extends StgSimulationTool {
 			}
 		}
 	}
-
-	@Override
-	public Transition getTransitionToFire(String ref) {
-		Transition result = null;
-		if (ref != null) {
-			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
-			for (Transition transition: net.getTransitions()) {
-				String existingRef = net.getNodeReference(transition);
-				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
-				if (requiredId.equals(exisitingId) && net.isEnabled(transition)) {
-					result = transition;
-				}
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public Transition getTransitionToUnfire(String ref) {
-		Transition result = null;
-		if (ref != null) {
-			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
-			for (Transition transition: net.getTransitions()) {
-				String existingRef = net.getNodeReference(transition);
-				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
-				if (requiredId.equals(exisitingId) && net.isUnfireEnabled(transition)) {
-					result = transition;
-				}
-			}
-		}
-		return result;
-	}
+//
+//	@Override
+//	public Transition getTransitionToFire(String ref) {
+//		Transition result = null;
+//		if (ref != null) {
+//			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
+//			for (Transition transition: net.getTransitions()) {
+//				String existingRef = net.getNodeReference(transition);
+//				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
+//				if (requiredId.equals(exisitingId) && net.isEnabled(transition)) {
+//					result = transition;
+//				}
+//			}
+//		}
+//		return result;
+//	}
+//
+//	@Override
+//	public Transition getTransitionToUnfire(String ref) {
+//		Transition result = null;
+//		if (ref != null) {
+//			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
+//			for (Transition transition: net.getTransitions()) {
+//				String existingRef = net.getNodeReference(transition);
+//				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
+//				if (requiredId.equals(exisitingId) && net.isUnfireEnabled(transition)) {
+//					result = transition;
+//				}
+//			}
+//		}
+//		return result;
+//	}
 
 	// return first enabled transition
 	public SignalTransition isContactExcited(VisualContact contact) {

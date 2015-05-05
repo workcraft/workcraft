@@ -390,8 +390,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		this.net = null;
 	}
 
+	public void resetMarking() {
+		applyMarking(initialMarking);
+	}
+
 	private void applyMarking(Map<Place, Integer> marking) {
-		for (Place p: marking.keySet()) {
+			for (Place p: marking.keySet()) {
 			if (net.getPlaces().contains(p)) {
 				p.setTokens(marking.get(p));
 			} else {
@@ -456,7 +460,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return result;
 	}
 
-	public Transition getTransitionToUnfire(String ref) {
+	private Transition getTransitionToUnfire(String ref) {
 		Transition result = null;
 		if (ref != null) {
 			final Node node = net.getNodeByReference(ref);
@@ -498,7 +502,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return result;
 	}
 
-	public Transition getTransitionToFire(String ref) {
+	private Transition getTransitionToFire(String ref) {
 		Transition result = null;
 		if (ref != null) {
 			final Node node = net.getNodeByReference(ref);
@@ -564,14 +568,14 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private void resetTraces(final GraphEditor editor) {
-		applyMarking(initialMarking);
+		resetMarking();
 		mainTrace.setPosition(0);
 		branchTrace.clear();
 		updateState(editor);
 	}
 
 	private void clearTraces(final GraphEditor editor) {
-		applyMarking(initialMarking);
+		resetMarking();
 		mainTrace.clear();
 		branchTrace.clear();
 		if (timer != null) 	{
@@ -608,7 +612,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		}
 
-		applyMarking(initialMarking);
+		resetMarking();
 		mainTrace.clear();
 		branchTrace.clear();
 		boolean first = true;
@@ -839,7 +843,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		updateState(editor);
 	}
 
-
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
 		boolean ret = false;
@@ -903,9 +906,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				}
 
 				if (node instanceof VisualPage || node instanceof VisualGroup) {
-
 					final boolean ret = isContainerExcited((Container)node);
-
 					return new ContainerDecoration() {
 
 						@Override
@@ -923,12 +924,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 							return ret;
 						}
 					};
-
 				}
 
 				return null;
 			}
-
 		};
 	}
 
