@@ -677,7 +677,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	@SuppressWarnings("serial")
 	private final class TraceTableCellRendererImplementation implements TableCellRenderer {
-		JLabel label = new JLabel() {
+		private final JLabel label = new JLabel() {
 			@Override
 			public void paint( Graphics g ) {
 				g.setColor( getBackground() );
@@ -702,14 +702,18 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value,
 				boolean isSelected, boolean hasFocus,	int row, int column) {
-			if (!(value instanceof String)) return null;
-			label.setText((String)value);
-			if (isActive(row, column)) {
-				label.setBackground(Color.YELLOW);
-			} else {
-				label.setBackground(Color.WHITE);
+			JLabel result = null;
+			if ((net != null) && (value instanceof String)) {
+				label.setText((String) value);
+				label.setForeground(Color.BLACK);
+				if (isActive(row, column)) {
+					label.setBackground(Color.YELLOW);
+				} else {
+					label.setBackground(Color.WHITE);
+				}
+				result = label;
 			}
-			return label;
+			return result;
 		}
 	}
 
@@ -860,6 +864,20 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return ret;
 	}
 
+	public Node getTraceCurrentNode() {
+		String ref = null;
+		if (branchTrace.canProgress()) {
+			ref = branchTrace.getCurrent();
+		} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+			ref = mainTrace.getCurrent();
+		}
+		Node result = null;
+		if (ref != null) {
+			result = net.getNodeByReference(ref);
+		}
+		return result;
+	}
+
 	@Override
 	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
@@ -868,17 +886,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 				if(node instanceof VisualTransition) {
 					Transition transition = ((VisualTransition)node).getReferencedTransition();
-					String transitionId = null;
-					Node transition2 = null;
-					if (branchTrace.canProgress()) {
-						transitionId = branchTrace.get(branchTrace.getPosition());
-						transition2 = net.getNodeByReference(transitionId);
-					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-						transitionId = mainTrace.get(mainTrace.getPosition());
-						transition2 = net.getNodeByReference(transitionId);
-					}
-
-					if (transition == transition2) {
+					Node currentTraceTransition = getTraceCurrentNode();
+					if (transition == currentTraceTransition) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {

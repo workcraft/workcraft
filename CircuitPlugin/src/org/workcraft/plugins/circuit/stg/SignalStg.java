@@ -27,7 +27,7 @@ public class SignalStg extends NodeStg {
 	}
 
 	@Override
-	public List<VisualSignalTransition> getAllTransitions() {
+	public List<VisualSignalTransition> getAllVisualTransitions() {
 		List<VisualSignalTransition> result = new ArrayList<VisualSignalTransition>();
 		result.addAll(Rs);
 		result.addAll(Fs);
@@ -35,7 +35,7 @@ public class SignalStg extends NodeStg {
 	}
 
 	@Override
-	public List<VisualPlace> getAllPlaces() {
+	public List<VisualPlace> getAllVisualPlaces() {
 		return Arrays.asList(P0, P1);
 	}
 

@@ -202,16 +202,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
-				String transitionId = null;
-				Node transition = null;
-				if (branchTrace.canProgress()) {
-					transitionId = branchTrace.getCurrent();
-					transition = net.getNodeByReference(transitionId);
-				} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-					transitionId = mainTrace.getCurrent();
-					transition = net.getNodeByReference(transitionId);
-				}
-
+				Node transition = getTraceCurrentNode();
 				final boolean isExcited = (getExcitedTransitionOfNode(node) != null);
 				final boolean isHighlighted = generator.isRelated(node, transition);
 

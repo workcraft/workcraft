@@ -1088,6 +1088,24 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		return interfacePanel;
 	}
 
+
+	private Node getTraceCurrentEvent(TransitionNode event) {
+		Node result = null;
+		String ref = net.getNodeReference(event);
+		if (branchTrace.canProgress()) {
+			Step step = branchTrace.get(branchTrace.getPosition());
+			if ((step.isReverse() == reverse) && (step.contains(ref))) {
+				result = net.getNodeByReference(ref);
+			}
+		} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+			Step step = mainTrace.get(mainTrace.getPosition());
+			if ((step.isReverse() == reverse) && (step.contains(ref))) {
+				result = net.getNodeByReference(ref);
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
@@ -1095,19 +1113,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			public Decoration getDecoration(Node node) {
 				if(node instanceof VisualTransitionNode) {
 					TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
-					Node event2 = null;
-
-					if (branchTrace.canProgress()) {
-						Step step = branchTrace.get(branchTrace.getPosition());
-						if ((step.isReverse() == reverse) && (step.contains(net.getNodeReference(event))))
-							event2 = net.getNodeByReference(net.getNodeReference(event));
-					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-						Step step = mainTrace.get(mainTrace.getPosition());
-						if ((step.isReverse() == reverse) && (step.contains(net.getNodeReference(event))))
-							event2 = net.getNodeByReference(net.getNodeReference(event));
-					}
-
-					if (event==event2) {
+					Node traceEvent = getTraceCurrentEvent(event);
+					if (event == traceEvent) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -1118,7 +1125,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 								return CommonSimulationSettings.getEnabledForegroundColor();
 							}
 						};
-
 					}
 					try{
 						if (simuAlg.isEnabled(event, sync, phases)&& !reverse)

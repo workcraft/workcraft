@@ -24,7 +24,6 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -76,40 +75,42 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 	private final class StateTableCellRendererImplementation implements	TableCellRenderer {
 		JLabel label = new JLabel() {
 			@Override
-			public void paint( Graphics g ) {
-				g.setColor( getBackground() );
-				g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
-				super.paint( g );
+			public void paint(Graphics g) {
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+				super.paint(g);
 			}
 		};
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			if (!(value instanceof SignalState)) return null;
-			SignalState st = (SignalState)value;
-			if (column == 0) {
-				label.setText(st.name);
-				label.setForeground(st.color);
-				label.setFont(label.getFont().deriveFont(Font.PLAIN));
-			} else {
-				if (st.value < 0) {
-					label.setText("?");
+		public Component getTableCellRendererComponent(JTable table, Object value,
+				boolean isSelected, boolean hasFocus, int row, int column) {
+			JLabel result = null;
+			if ((net != null) && (value instanceof String)) {
+				SignalState st = (SignalState)value;
+				if (column == 0) {
+					label.setText(st.name);
+					label.setForeground(st.color);
+					label.setFont(label.getFont().deriveFont(Font.PLAIN));
 				} else {
-					label.setText(Integer.toString(st.value));
+					if (st.value < 0) {
+						label.setText("?");
+					} else {
+						label.setText(Integer.toString(st.value));
+					}
+					label.setForeground(Color.BLACK);
+					if (st.excited) {
+						label.setFont(label.getFont().deriveFont(Font.BOLD));
+					}
 				}
-				label.setForeground(Color.BLACK);
-				if (st.excited) {
-					label.setFont(label.getFont().deriveFont(Font.BOLD));
-				}
+				result = label;
 			}
-			return label;
+			return result;
 		}
 	}
 
 	private final class TraceTableCellRendererImplementation implements	TableCellRenderer {
-		JLabel label = new JLabel() {
+		private final JLabel label = new JLabel() {
 			@Override
 			public void paint(Graphics g) {
 				g.setColor(getBackground());
@@ -120,8 +121,9 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
 		boolean isActive(int row, int column) {
 			if (column == 0) {
-				if (!mainTrace.isEmpty() && branchTrace.isEmpty())
+				if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
 					return row == mainTrace.getPosition();
+				}
 			} else {
 				int absoluteBranchSize = mainTrace.getPosition() + branchTrace.size();
 				int absoluteBranchPosition = mainTrace.getPosition() + branchTrace.getPosition();
@@ -133,46 +135,25 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 		}
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-
-			if ((net == null) || !(value instanceof String))
-				return null;
-
-			label.setText((String) value);
-			label.setForeground(Color.BLACK);
-
-			Color fore = CommonSimulationSettings.getEnabledForegroundColor();
-			Color back = CommonSimulationSettings.getEnabledBackgroundColor();
-
-			Node node = net.getNodeByReference((String) value);
-			if (node instanceof SignalTransition) {
-				SignalTransition st = (SignalTransition) node;
-				switch (st.getSignalType()) {
-				case INPUT:
-					label.setForeground(inputsColor);
-					break;
-				case OUTPUT:
-					label.setForeground(outputsColor);
-					break;
-				case INTERNAL:
-					label.setForeground(internalsColor);
-					break;
+		public Component getTableCellRendererComponent(JTable table, Object value,
+				boolean isSelected, boolean hasFocus,	int row, int column) {
+			JLabel result = null;
+			if ((net != null) && (value instanceof String)) {
+				label.setText((String) value);
+				Node node = net.getNodeByReference((String) value);
+				if (node instanceof SignalTransition) {
+					SignalTransition st = (SignalTransition)node;
+					Color color = getTypeColor(st.getSignalType());
+					label.setForeground(color);
 				}
-			}
-
-			if (isActive(row, column)) {
-				if (fore != null && back != null) {
-					label.setBackground(fore);
-					label.setForeground(back);
-				} else {
+				if (isActive(row, column)) {
 					label.setBackground(Color.YELLOW);
+				} else {
+					label.setBackground(Color.WHITE);
 				}
-			} else {
-				label.setBackground(Color.WHITE);
+				result = label;
 			}
-			return label;
+			return result;
 		}
 	}
 
@@ -279,22 +260,30 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 				if (!stateMap.containsKey(signalReference)) {
 					SignalState signalState = new SignalState();
 					signalState.name = signalReference;
-					switch (transition.getSignalType()) {
-					case INPUT:
-						signalState.color = inputsColor;
-						break;
-					case OUTPUT:
-						signalState.color = outputsColor;
-						break;
-					case INTERNAL:
-						signalState.color = internalsColor;
-						break;
-					}
+					signalState.color = getTypeColor(transition.getSignalType());
 					stateMap.put(signalReference, signalState);
 				}
 			}
 		}
 		updateSignalState();
+	}
+
+	private Color getTypeColor(SignalTransition.Type type) {
+		Color result = Color.BLACK;
+		switch (type) {
+		case INPUT:
+			result = inputsColor;
+			break;
+		case OUTPUT:
+			result = outputsColor;
+			break;
+		case INTERNAL:
+			result = internalsColor;
+			break;
+		default:
+			result = Color.BLACK;
+		}
+		return result;
 	}
 
 	@Override
