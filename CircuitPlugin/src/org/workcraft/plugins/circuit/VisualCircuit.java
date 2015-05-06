@@ -155,6 +155,8 @@ public class VisualCircuit extends AbstractVisualModel {
 				ConnectionHelper.addControlPoints(vc1, locations.subList(0, splitIndex));
 				ConnectionHelper.addControlPoints(vc2, locations.subList(splitIndex, locations.size()));
 			}
+			vc1.copyStyle(connection);
+			vc2.copyStyle(connection);
 			first = vJoint;
 		}
 
