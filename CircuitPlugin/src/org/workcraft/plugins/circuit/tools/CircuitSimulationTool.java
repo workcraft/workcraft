@@ -79,11 +79,11 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	private Transition getBestTransitionToFire(String ref) {
 		Transition result = null;
 		if (ref != null) {
-			String requiredId = LabelParser.parseInstancedTransition(ref).getFirst();
+			String requiredRef = LabelParser.parseInstancedTransition(ref).getFirst();
 			for (Transition transition: net.getTransitions()) {
 				String existingRef = net.getNodeReference(transition);
-				String exisitingId = LabelParser.parseInstancedTransition(existingRef).getFirst();
-				if (requiredId.equals(exisitingId) && net.isEnabled(transition)) {
+				String exisitingRef = LabelParser.parseInstancedTransition(existingRef).getFirst();
+				if (requiredRef.equals(exisitingRef) && net.isEnabled(transition)) {
 					result = transition;
 				}
 			}

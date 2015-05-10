@@ -119,6 +119,7 @@ public class Contact extends MathNode implements BooleanVariable {
 	}
 
 	public boolean isDriver() {
+//		return (isOutput() || isPort());
 		return (isOutput() != isPort());
 	}
 

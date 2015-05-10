@@ -17,6 +17,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -245,8 +246,12 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 	public String getTraceLabelByReference(String ref) {
 		String result = null;
 		if (ref != null) {
-			Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(ref);
-			result = instancedTransition.getFirst();
+			String name = NamespaceHelper.getNameFromReference(ref);
+			Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(name);
+			if (instancedTransition != null) {
+				String path = NamespaceHelper.getReferencePath(ref);
+				result = path + instancedTransition.getFirst();
+			}
 		}
 		return result;
 	}
