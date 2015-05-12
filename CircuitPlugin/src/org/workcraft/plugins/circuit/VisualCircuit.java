@@ -26,6 +26,7 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@Override
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
-		if (first==second) {
+		if (first == second) {
 			throw new InvalidConnectionException ("Connections are only valid between different objects.");
 		}
 
@@ -101,24 +102,63 @@ public class VisualCircuit extends AbstractVisualModel {
 
 		if (first instanceof VisualContact) {
 			Node fromParent = ((VisualComponent)first).getParent();
-			Contact.IOType toType = ((Contact)((VisualComponent)first).getReferencedComponent()).getIOType();
+			Contact.IOType toType = ((VisualContact)first).getReferencedContact().getIOType();
 
-			if ((fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT))
+			if ((fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT)) {
 				throw new InvalidConnectionException ("Inputs of components cannot be drivers.");
-
-			if (!(fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT))
-				throw new InvalidConnectionException ("Outputs from the environment cannot be drivers.");
+			}
+//			if (!(fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT)) {
+//				throw new InvalidConnectionException ("Outputs from the environment cannot be drivers.");
+//			}
 		}
 
 		if (second instanceof VisualContact) {
 			Node toParent = ((VisualComponent)second).getParent();
-			Contact.IOType toType = ((Contact)((VisualComponent)second).getReferencedComponent()).getIOType();
+			Contact.IOType toType = ((VisualContact)second).getReferencedContact().getIOType();
 
 			if ((toParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT))
 				throw new InvalidConnectionException ("Outputs of the components cannot be driven.");
 
 			if (!(toParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT))
 				throw new InvalidConnectionException ("Inputs from the environment cannot be driven.");
+		}
+
+		Circuit circuit = (Circuit)this.getMathModel();
+		Contact driver = null;
+		HashSet<Contact> drivenSet = new HashSet<>();
+		if (first instanceof VisualConnection) {
+			VisualConnection firstConnection = (VisualConnection)first;
+			driver = CircuitUtils.findDriver(circuit, firstConnection.getReferencedConnection());
+			if (driver != null) {
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, driver));
+			} else {
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection.getReferencedConnection()));
+			}
+		}
+		if (first instanceof VisualComponent) {
+			VisualComponent firstComponent = (VisualComponent)first;
+			driver = CircuitUtils.findDriver(circuit, firstComponent.getReferencedComponent());
+			if (driver != null) {
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, driver));
+			} else {
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, firstComponent.getReferencedComponent()));
+			}
+		}
+		if (second instanceof VisualComponent) {
+			VisualComponent secondComponent = (VisualComponent)second;
+			drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent.getReferencedComponent()));
+		}
+		int outputPortCount = 0;
+		for (Contact driven: drivenSet) {
+			if (driven.isOutput() && driven.isPort()) {
+				outputPortCount++;
+				if (outputPortCount > 1) {
+					throw new InvalidConnectionException ("Fork on the output port is not allowed.");
+				}
+				if ((driver != null) && driver.isInput() && driver.isPort()) {
+					throw new InvalidConnectionException ("Direct connection from input port to output port is not allowed.");
+				}
+			}
 		}
 	}
 
