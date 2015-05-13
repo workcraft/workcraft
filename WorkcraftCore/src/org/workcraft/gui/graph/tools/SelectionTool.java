@@ -701,6 +701,7 @@ public class SelectionTool extends AbstractTool {
 		if (selection.size() == 1) {
 			Node node = selection.iterator().next();
 			if(node instanceof Container) {
+				editor.getWorkspaceEntry().saveMemento();
 				model.setCurrentLevel((Container)node);
 				editor.repaint();
 			}
@@ -712,6 +713,7 @@ public class SelectionTool extends AbstractTool {
 		Container level = model.getCurrentLevel();
 		Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
 		if (parent != null) {
+			editor.getWorkspaceEntry().saveMemento();
 			model.setCurrentLevel(parent);
 			model.addToSelection(level);
 			editor.repaint();

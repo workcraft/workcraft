@@ -69,30 +69,30 @@ public class CircuitToStgConverter {
 	public CircuitToStgConverter(VisualCircuit circuit) {
 		this.circuit = circuit;
 		this.stg = new VisualSTG(new STG());
-		HashSet<VisualContact> drivers = identifyDrivers();
-		this.nodeToDriverMap = associateDrivers(drivers);
 		this.refToPageMap = convertPages();
-		this.driverToStgMap = convertDrivers(drivers);
-		connectDrivers(drivers);
+		HashSet<VisualContact> drivers = identifyDrivers();
+		this.nodeToDriverMap = associateNodesToDrivers(drivers);
+		this.driverToStgMap = convertDriversToStgs(drivers);
+		connectDriverStgs(drivers);
 		if (CircuitSettings.getSimplifyStg()) {
-			simplifyDrivers(drivers); // remove dead transitions
+			simplifyDriverStgs(drivers); // remove dead transitions
 		}
-		positionDrivers(drivers);
-		groupDrivers(drivers);
+		positionDriverStgs(drivers);
+		groupDriverStgs(drivers);
 	}
 
 	public CircuitToStgConverter(VisualCircuit circuit, VisualSTG stg) {
 		this.circuit = circuit;
 		this.stg = stg;
-		HashSet<VisualContact> drivers = identifyDrivers();
-		this.nodeToDriverMap = associateDrivers(drivers);
 		this.refToPageMap = convertPages();
-		this.driverToStgMap = assignDrivers(drivers);
+		HashSet<VisualContact> drivers = identifyDrivers();
+		this.nodeToDriverMap = associateNodesToDrivers(drivers);
+		this.driverToStgMap = associateDriversToStgs(drivers);  // STGs already exist, just associate them with the drivers
 		if (CircuitSettings.getSimplifyStg()) {
-			simplifyDrivers(drivers); // remove dead transitions
+			simplifyDriverStgs(drivers); // remove dead transitions
 		}
-		positionDrivers(drivers);
-		groupDrivers(drivers);
+		positionDriverStgs(drivers);
+		groupDriverStgs(drivers);
 	}
 
 
@@ -133,10 +133,7 @@ public class CircuitToStgConverter {
 	private HashSet<VisualContact> identifyDrivers() {
 		HashSet<VisualContact> result = new HashSet<>();
 		for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
-			VisualContact driver = null;
-			if (!contact.isDriver()) {
-				driver = CircuitUtils.findDriver(circuit, contact);
-			}
+			VisualContact driver = CircuitUtils.findDriver(circuit, contact);
 			if (driver == null) {
 				driver = contact;
 			}
@@ -145,45 +142,47 @@ public class CircuitToStgConverter {
 		return result;
 	}
 
-	private HashMap<VisualNode, VisualContact> associateDrivers(HashSet<VisualContact> driverSet) {
+	private HashMap<VisualNode, VisualContact> associateNodesToDrivers(HashSet<VisualContact> driverSet) {
 		HashMap<VisualNode, VisualContact> result = new HashMap<>();
 		for (VisualContact driver: driverSet) {
-			propagateDriver(driver, driver, result);
+			if (!result.containsKey(driver)) {
+				result.putAll(propagateDriver(driver, driver));
+			}
 		}
 		return result;
 	}
 
-	private void propagateDriver(VisualNode node, VisualContact driver, HashMap<VisualNode, VisualContact> nodeToDriverMap) {
-		if (!nodeToDriverMap.containsKey(node)) {
-			nodeToDriverMap.put(node, driver);
-
-			for (Connection connection: circuit.getConnections(node)) {
-				if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
-					nodeToDriverMap.put((VisualCircuitConnection)connection, driver);
-					Node succNode = connection.getSecond();
-					if (succNode instanceof VisualNode) {
-						propagateDriver((VisualNode)succNode, driver, nodeToDriverMap);
-					}
+	private HashMap<VisualNode, VisualContact> propagateDriver(VisualNode node, VisualContact driver) {
+		HashMap<VisualNode, VisualContact> result = new HashMap<>();
+		result.put(node, driver);
+		for (Connection connection: circuit.getConnections(node)) {
+			if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
+				result.put((VisualCircuitConnection)connection, driver);
+				Node succNode = connection.getSecond();
+				if (!result.containsKey(succNode) && (succNode instanceof VisualNode)) {
+					result.putAll(propagateDriver((VisualNode)succNode, driver));
 				}
 			}
 		}
+		return result;
 	}
 
-	private TwoWayMap<VisualContact, SignalStg> convertDrivers(HashSet<VisualContact> drivers) {
+	private TwoWayMap<VisualContact, SignalStg> convertDriversToStgs(HashSet<VisualContact> drivers) {
 		TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
 		for (VisualContact driver: drivers) {
-			Container container = getContainer(driver);
-			String contactName = CircuitUtils.getContactName(circuit, driver);
+			VisualContact signal = getSignalContact(driver);
+			Container container = getContainer(signal);
+			String contactName = CircuitUtils.getContactName(circuit, signal);
 
 			VisualPlace zeroPlace = stg.createPlace(contactName + NAME_SUFFIX_0, container);
 			zeroPlace.setLabel(contactName + LABEL_SUFFIX_0);
-			if (!driver.getReferencedContact().getInitToOne()) {
+			if (!signal.getReferencedContact().getInitToOne()) {
 				zeroPlace.getReferencedPlace().setTokens(1);
 			}
 
 			VisualPlace onePlace = stg.createPlace(contactName + NAME_SUFFIX_1, container);
 			onePlace.setLabel(contactName + LABEL_SUFFIX_1);
-			if (driver.getReferencedContact().getInitToOne()) {
+			if (signal.getReferencedContact().getInitToOne()) {
 				onePlace.getReferencedPlace().setTokens(1);
 			}
 
@@ -193,24 +192,13 @@ public class CircuitToStgConverter {
 		return result;
 	}
 
-	private void connectDrivers(HashSet<VisualContact> drivers) {
+	private void connectDriverStgs(HashSet<VisualContact> drivers) {
 		for (VisualContact driver: drivers) {
 			BooleanFormula setFunc = null;
 			BooleanFormula resetFunc = null;
 			if (driver instanceof VisualFunctionContact) {
-				// Determine signal type
-				VisualFunctionContact contact = (VisualFunctionContact)driver;
-				if (contact.isOutput() && contact.isPort()) {
-					// Driver of the primary output port
-					VisualContact outputDriver = CircuitUtils.findDriver(circuit, contact);
-					if (outputDriver != null) {
-						setFunc = outputDriver.getReferencedContact();
-					}
-				} else {
-					// Function based driver
-					setFunc = contact.getSetFunction();
-					resetFunc = contact.getResetFunction();
-				}
+				setFunc = ((VisualFunctionContact)driver).getSetFunction();
+				resetFunc = ((VisualFunctionContact)driver).getResetFunction();
 			}
 			// Create complementary set/reset if only one of them is defined
 			if ((setFunc != null) && (resetFunc == null)) {
@@ -244,9 +232,10 @@ public class CircuitToStgConverter {
 
 		clauses.addAll(dnf.getClauses());
 
-		Container container = getContainer(driver);
-		String signalName = CircuitUtils.getContactName(circuit, driver);
-		SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, driver);
+		VisualContact signal = getSignalContact(driver);
+		Container container = getContainer(signal);
+		String signalName = CircuitUtils.getContactName(circuit, signal);
+		SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, signal);
 		for(DnfClause clause : clauses) {
 			VisualSignalTransition transition = stg.createSignalTransition(signalName, signalType, direction, container);
 			transition.setLabel(FormulaToString.toString(clause));
@@ -293,7 +282,7 @@ public class CircuitToStgConverter {
 	}
 
 
-	private TwoWayMap<VisualContact, SignalStg> assignDrivers(HashSet<VisualContact> drivers) {
+	private TwoWayMap<VisualContact, SignalStg> associateDriversToStgs(HashSet<VisualContact> drivers) {
 		TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
 
 		for (VisualContact driver: drivers) {
@@ -362,7 +351,21 @@ public class CircuitToStgConverter {
 		return result;
 	}
 
-	private void simplifyDrivers(HashSet<VisualContact> drivers) {
+	public VisualContact getSignalContact(VisualContact driver) {
+		VisualContact result = driver;
+		for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+			if (contact.isPort() && driver.isOutput()) {
+				if (driver == CircuitUtils.findDriver(circuit, contact)) {
+					result = contact;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+
+	private void simplifyDriverStgs(HashSet<VisualContact> drivers) {
 		HashSet<Node> deadTransitions = new HashSet();
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
@@ -382,15 +385,16 @@ public class CircuitToStgConverter {
 		stg.remove(deadTransitions);
 	}
 
-	private void positionDrivers(HashSet<VisualContact> drivers) {
+	private void positionDriverStgs(HashSet<VisualContact> drivers) {
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
-				Point2D centerPosition = getPosition(driver);
+				VisualContact signal = getSignalContact(driver);
+				Point2D centerPosition = getPosition(signal);
 				setPosition(signalStg.P0, Geometry.add(centerPosition, OFFSET_P0));
 				setPosition(signalStg.P1, Geometry.add(centerPosition, OFFSET_P1));
 
-				centerPosition = Geometry.add(centerPosition, getDirectionOffset(driver));
+				centerPosition = Geometry.add(centerPosition, getDirectionOffset(signal));
 				Point2D plusPosition = Geometry.add(centerPosition, OFFSET_INIT_PLUS);
 				for (VisualSignalTransition transition: signalStg.Rs) {
 					setPosition(transition, plusPosition);
@@ -432,7 +436,7 @@ public class CircuitToStgConverter {
 		}
 	}
 
-	private void groupDrivers(HashSet<VisualContact> drivers) {
+	private void groupDriverStgs(HashSet<VisualContact> drivers) {
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {

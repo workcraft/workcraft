@@ -43,6 +43,8 @@ public class CircuitUtils {
             		Contact contact = (Contact)node;
             		if (contact.isDriver()) {
             			result = contact;
+            		} else if (node == curNode) {
+            			queue.addAll(circuit.getPreset(node));
             		}
             	} else {
             		throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)

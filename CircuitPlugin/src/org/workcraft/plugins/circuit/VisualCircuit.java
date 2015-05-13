@@ -95,32 +95,27 @@ public class VisualCircuit extends AbstractVisualModel {
 
 		if (second instanceof VisualComponent) {
 			for (Connection c: this.getConnections(second)) {
-				if (c.getSecond() == second)
+				if (c.getSecond() == second) {
 					throw new InvalidConnectionException ("Only one connection is allowed as a driver.");
+				}
 			}
 		}
 
 		if (first instanceof VisualContact) {
-			Node fromParent = ((VisualComponent)first).getParent();
-			Contact.IOType toType = ((VisualContact)first).getReferencedContact().getIOType();
-
-			if ((fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT)) {
+			Contact contact = ((VisualContact)first).getReferencedContact();
+			if (contact.isInput() && !contact.isPort()) {
 				throw new InvalidConnectionException ("Inputs of components cannot be drivers.");
 			}
-//			if (!(fromParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT)) {
-//				throw new InvalidConnectionException ("Outputs from the environment cannot be drivers.");
-//			}
 		}
 
 		if (second instanceof VisualContact) {
-			Node toParent = ((VisualComponent)second).getParent();
-			Contact.IOType toType = ((VisualContact)second).getReferencedContact().getIOType();
-
-			if ((toParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.OUTPUT))
+			Contact contact = ((VisualContact)second).getReferencedContact();
+			if (contact.isOutput() && !contact.isPort()) {
 				throw new InvalidConnectionException ("Outputs of the components cannot be driven.");
-
-			if (!(toParent instanceof VisualCircuitComponent) && (toType == Contact.IOType.INPUT))
+			}
+			if (contact.isInput() && contact.isPort()) {
 				throw new InvalidConnectionException ("Inputs from the environment cannot be driven.");
+			}
 		}
 
 		Circuit circuit = (Circuit)this.getMathModel();
@@ -134,8 +129,7 @@ public class VisualCircuit extends AbstractVisualModel {
 			} else {
 				drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection.getReferencedConnection()));
 			}
-		}
-		if (first instanceof VisualComponent) {
+		} else if (first instanceof VisualComponent) {
 			VisualComponent firstComponent = (VisualComponent)first;
 			driver = CircuitUtils.findDriver(circuit, firstComponent.getReferencedComponent());
 			if (driver != null) {

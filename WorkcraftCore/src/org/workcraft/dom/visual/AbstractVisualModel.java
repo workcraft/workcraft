@@ -370,23 +370,25 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		currentLevel = newCurrentLevel;
 
 		// manage the isInside value for all parents and children
-		Collapsible col = null;
+		Collapsible collapsabla = null;
 		if (newCurrentLevel instanceof Collapsible) {
-			col = (Collapsible)newCurrentLevel;
+			collapsabla = (Collapsible)newCurrentLevel;
 		}
 
-		if (col!=null) {
-			col.setIsCurrentLevelInside(true);
-			Node node = newCurrentLevel.getParent();
-			while (node!=null) {
-				if ((node instanceof Collapsible))
-					((Collapsible)node).setIsCurrentLevelInside(true);
-				node = node.getParent();
+		if (collapsabla != null) {
+			collapsabla.setIsCurrentLevelInside(true);
+			Node parent = newCurrentLevel.getParent();
+			while (parent != null) {
+				if (parent instanceof Collapsible) {
+					((Collapsible)parent).setIsCurrentLevelInside(true);
+				}
+				parent = parent.getParent();
 			}
 
-			for (Node n: newCurrentLevel.getChildren()) {
-				if (!(n instanceof Collapsible)) continue;
-				((Collapsible)n).setIsCurrentLevelInside(false);
+			for (Node node: newCurrentLevel.getChildren()) {
+				if (node instanceof Collapsible) {
+					((Collapsible)node).setIsCurrentLevelInside(false);
+				}
 			}
 		}
 	}
