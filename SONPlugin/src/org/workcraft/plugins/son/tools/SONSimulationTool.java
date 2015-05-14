@@ -905,18 +905,17 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value,
 				boolean isSelected, boolean hasFocus,	int row, int column) {
-
-			if (!(value instanceof Step)) return null;
-
-			label.setText(((Step)value).toString());
-
-			if (isActive(row, column)) {
-				label.setBackground(Color.YELLOW);
-			} else {
-				label.setBackground(Color.WHITE);
+			JLabel result = null;
+			if (value instanceof Step) {
+				label.setText(((Step)value).toString());
+				if (isActive(row, column)) {
+					label.setBackground(Color.YELLOW);
+				} else {
+					label.setBackground(Color.WHITE);
+				}
+				result = label;
 			}
-
-			return label;
+			return result;
 		}
 	}
 

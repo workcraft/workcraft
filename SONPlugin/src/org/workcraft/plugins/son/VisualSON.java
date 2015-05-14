@@ -2,6 +2,7 @@ package org.workcraft.plugins.son;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -272,10 +273,11 @@ public class VisualSON extends AbstractVisualModel {
 			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
 
 			Container currentMathLevel;
-			if(visualContainer==null)
+			if (visualContainer == null) {
 				currentMathLevel = getMathModel().getRoot();
-			else
+			} else {
 				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			}
 			currentMathLevel.add(mathGroup);
 
 			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
@@ -287,7 +289,7 @@ public class VisualSON extends AbstractVisualModel {
 			}
 			currentLevel.reparent(connectionsToGroup, group);
 
-			// reparenting for the math model nodes
+			// Reparenting for the math model nodes
 			ArrayList<Node> selectedMath = new ArrayList<Node>();
 			for (Node node:selected) {
 				if (node instanceof VisualComponent) {
@@ -300,23 +302,18 @@ public class VisualSON extends AbstractVisualModel {
 				}
 			}
 
-			for (Node node: selectedMath) {
-				Container parent = (Container)node.getParent();
-				ArrayList<Node> re = new ArrayList<Node>();
-				re.add(node);
-
-
-				// reparenting at the level of the reference manager
-				ReferenceManager refMan = getMathModel().getReferenceManager();
-				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
-					manager.setNamespaceProvider(node, mathGroup);
+			// Reparenting at the level of the reference manager
+			ReferenceManager refMan = getMathModel().getReferenceManager();
+			if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+				HierarchicalUniqueNameReferenceManager hierRefMan = (HierarchicalUniqueNameReferenceManager)refMan;
+				for (Node node: selectedMath) {
+					Container parent = (Container)node.getParent();
+					hierRefMan.setNamespaceProvider(Arrays.asList(node), mathGroup);
+					parent.reparent(Arrays.asList(node), mathGroup);
 				}
-				parent.reparent(re, mathGroup);
-
 			}
 
-			// final touch on visual part
+			// Final touch on visual part
 			if (group != null) {
 				Point2D groupCenter = centralizeComponents(selected);
 				group.setPosition(groupCenter);
@@ -385,10 +382,11 @@ public class VisualSON extends AbstractVisualModel {
 			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
 
 			Container currentMathLevel;
-			if(visualContainer==null)
+			if (visualContainer == null) {
 				currentMathLevel = getMathModel().getRoot();
-			else
+			} else {
 				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			}
 			currentMathLevel.add(mathBlock);
 
 			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
@@ -401,7 +399,7 @@ public class VisualSON extends AbstractVisualModel {
 			}
 			getCurrentLevel().reparent(connectionsToGroup, block);
 
-			// reparenting for the math model nodes
+			// Reparenting for the math model nodes
 			ArrayList<Node> selectedMath = new ArrayList<Node>();
 			for (Node node:selected) {
 				if (node instanceof VisualComponent) {
@@ -414,24 +412,18 @@ public class VisualSON extends AbstractVisualModel {
 				}
 			}
 
-			for (Node node: selectedMath) {
-				Container parent = (Container)node.getParent();
-				ArrayList<Node> re = new ArrayList<Node>();
-				re.add(node);
-
-
-				// reparenting at the level of the reference manager
-				ReferenceManager refMan = getMathModel().getReferenceManager();
-				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
-					manager.setNamespaceProvider(node, mathBlock);
+			// Reparenting at the level of the reference manager
+			ReferenceManager refMan = getMathModel().getReferenceManager();
+			if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+				HierarchicalUniqueNameReferenceManager hierRefMan = (HierarchicalUniqueNameReferenceManager)refMan;
+				for (Node node: selectedMath) {
+					Container parent = (Container)node.getParent();
+					hierRefMan.setNamespaceProvider(Arrays.asList(node), mathBlock);
+					parent.reparent(Arrays.asList(node), mathBlock);
 				}
-				parent.reparent(re, mathBlock);
-
 			}
 
-
-			// final touch on visual part
+			// Final touch on visual part
 			if (block != null) {
 				Point2D groupCenter = centralizeComponents(selected);
 				block.setPosition(groupCenter);

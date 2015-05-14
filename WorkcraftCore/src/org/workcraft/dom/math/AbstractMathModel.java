@@ -69,43 +69,37 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 		return (T)node;
 	}
 
-	private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager manager, Container targetContainer,
-			Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+	private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager dstRefManager, Container dstContainer,
+			Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
 
-		// need to assign the whole tree to the new providers
+		// Collect the nodes to reparent - need to assign the whole tree to new providers
 		Collection<Node> nodes = null;
-		if (sourceChildren!=null) {
-			nodes = new HashSet<Node>();
-			nodes.addAll(sourceChildren);
+		if (srcChildren != null) {
+			nodes = new HashSet<Node>(srcChildren);
 		} else {
-			nodes = Hierarchy.getChildrenOfType(sourceRoot, Node.class);
+			nodes = Hierarchy.getChildrenOfType(srcRoot, Node.class);
 		}
 
-		HierarchicalUniqueNameReferenceManager srcReferenceManager = (HierarchicalUniqueNameReferenceManager)sourceModel.getReferenceManager();
-		NamespaceProvider provider = manager.getNamespaceProvider(targetContainer);
-		if (targetContainer instanceof NamespaceProvider) {
-			provider = (NamespaceProvider) targetContainer;
+		NamespaceProvider dstProvider = dstRefManager.getNamespaceProvider(dstContainer);
+		if (dstContainer instanceof NamespaceProvider) {
+			dstProvider = (NamespaceProvider)dstContainer;
 		}
 
+		HierarchicalUniqueNameReferenceManager srcRefManager = (HierarchicalUniqueNameReferenceManager)srcModel.getReferenceManager();
+		dstRefManager.setNamespaceProvider(nodes, srcRefManager, dstProvider);
+
+		srcRoot.reparent(nodes, dstContainer);
+
+		// Propagate the name data into the nodes. This may be necessary after setDefaultNameIfUnnamed was called.
 		for (Node node: nodes) {
-			if (node != null) {
-				manager.setNamespaceProvider(node, srcReferenceManager, provider);
-			}
-		}
-
-		sourceRoot.reparent(nodes, targetContainer);
-
-		for (Node node: nodes) {
-			// after reparenting,
-			// additional call to propagate the name data into the nodes (if necessary)
-			// when setDefaultNameIfUnnamed was called
-			manager.setName(node, manager.getName(node));
+			String name = dstRefManager.getName(node);
+			dstRefManager.setName(node, name);
 		}
 
 		for (Node node: nodes) {
 			if (node instanceof Container) {
 				Container container = (Container)node;
-				setNamespaceRecursively(manager, container, sourceModel, container, null);
+				setNamespaceRecursively(dstRefManager, container, srcModel, container, null);
 			}
 		}
 	}

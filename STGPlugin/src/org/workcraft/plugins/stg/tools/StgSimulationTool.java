@@ -87,7 +87,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 		public Component getTableCellRendererComponent(JTable table, Object value,
 				boolean isSelected, boolean hasFocus, int row, int column) {
 			JLabel result = null;
-			if ((net != null) && (value instanceof String)) {
+			if ((net != null) && (value instanceof SignalState)) {
 				SignalState st = (SignalState)value;
 				if (column == 0) {
 					label.setText(st.name);
