@@ -5,6 +5,8 @@ import java.awt.Color;
 import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -31,6 +33,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
+import org.workcraft.util.Pair;
 
 public class CircuitSimulationTool extends StgSimulationTool {
 	private CircuitToStgConverter converter;
@@ -79,12 +82,22 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	private Transition getBestTransitionToFire(String ref) {
 		Transition result = null;
 		if (ref != null) {
-			String requiredRef = LabelParser.parseInstancedTransition(ref).getFirst();
-			for (Transition transition: net.getTransitions()) {
-				String existingRef = net.getNodeReference(transition);
-				String exisitingRef = LabelParser.parseInstancedTransition(existingRef).getFirst();
-				if (requiredRef.equals(exisitingRef) && net.isEnabled(transition)) {
-					result = transition;
+			String parentName = NamespaceHelper.getParentReference(ref);
+			Node parent = net.getNodeByReference(parentName);
+			if (parent != null) {
+				String transitionName = NamespaceHelper.getReferenceName(ref);
+				Pair<String,Integer> instancedTransition = LabelParser.parseInstancedTransition(transitionName);
+				if (instancedTransition != null) {
+					String requiredName = instancedTransition.getFirst();
+					for (Transition transition: net.getTransitions()) {
+						if ((transition.getParent() == parent) && net.isEnabled(transition)) {
+							String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
+							String existingName = LabelParser.parseInstancedTransition(existingRef).getFirst();
+							if (requiredName.equals(existingName)) {
+								result = transition;
+							}
+						}
+					}
 				}
 			}
 		}

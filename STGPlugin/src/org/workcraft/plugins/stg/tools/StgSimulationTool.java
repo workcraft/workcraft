@@ -246,7 +246,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 	public String getTraceLabelByReference(String ref) {
 		String result = null;
 		if (ref != null) {
-			String name = NamespaceHelper.getNameFromReference(ref);
+			String name = NamespaceHelper.getReferenceName(ref);
 			Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(name);
 			if (instancedTransition != null) {
 				String path = NamespaceHelper.getReferencePath(ref);

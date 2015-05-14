@@ -124,7 +124,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			}
 		}
 		if (reference != null) {
-			String name = NamespaceHelper.getNameFromReference(reference);
+			String name = NamespaceHelper.getReferenceName(reference);
 			setName(node, name);
 		}
 	}
