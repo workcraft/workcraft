@@ -47,7 +47,7 @@ public class SimulationTool extends PetriNetSimulationTool {
 		if ((savedState == null) || savedState.isEmpty()) {
 			return;
 		}
-		VisualPolicyNet policy= (VisualPolicyNet)editor.getModel();
+		VisualPolicyNet policy = (VisualPolicyNet)editor.getModel();
 		for (VisualPlace place: policy.getVisualPlaces()) {
 			String ref = policy.getNodeMathReference(place);
 			Node node = net.getNodeByReference(ref);

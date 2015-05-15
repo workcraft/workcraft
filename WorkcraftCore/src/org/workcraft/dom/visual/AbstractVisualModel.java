@@ -22,7 +22,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -462,10 +461,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
 				toSelect.addAll(nodesToReparent);
 				this.reparent(getCurrentLevel(), this, page, nodesToReparent);
-				AffineTransform localToParentTransform = page.getLocalToParentTransform();
-				for (Node n : nodesToReparent) {
-					TransformHelper.applyTransform(n, localToParentTransform);
-				}
 				getMathModel().remove(page.getReferencedComponent());
 				getCurrentLevel().remove(page);
 			} else {

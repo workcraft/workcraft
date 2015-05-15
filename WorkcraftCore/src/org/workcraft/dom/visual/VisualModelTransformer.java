@@ -22,14 +22,15 @@ public class VisualModelTransformer {
 		assert nodes!=null;
 		for (Node node: nodes) {
 			// do transformation group children
-			if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
-				VisualTransformableNode vt  = (VisualTransformableNode) node;
-				AffineTransform t2 = new AffineTransform();
-				t2.translate(-vt.getX(), -vt.getY());
-				t2.concatenate(t);
-				t2.translate(vt.getX(), vt.getY());
-				transformNodePosition(vt.getChildren(), t2);
-			} else if (node instanceof VisualTransformableNode) {
+//			if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
+//				VisualTransformableNode vt  = (VisualTransformableNode) node;
+//				AffineTransform t2 = new AffineTransform();
+//				t2.translate(-vt.getX(), -vt.getY());
+//				t2.concatenate(t);
+//				t2.translate(vt.getX(), vt.getY());
+//				transformNodePosition(vt.getChildren(), t2);
+//			} else
+				if (node instanceof VisualTransformableNode) {
 				VisualTransformableNode vn = (VisualTransformableNode) node;
 				Point2D np = vn.getPosition();
 				t.transform(np, np);

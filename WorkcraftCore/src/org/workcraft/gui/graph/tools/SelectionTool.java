@@ -430,10 +430,10 @@ public class SelectionTool extends AbstractTool {
 				Point2D pos = TransformHelper.transform(node, localToRootTransform).getCenter();
 				snaps = editor.getSnaps(node);
 				Point2D snapPos = editor.snap(pos, snaps);
-				offset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
+				offset = new Point2D.Double(snapPos.getX() - pos.getX(), snapPos.getY() - pos.getY());
 				// Initial move of the selection - beforeSelectionModification is needed
 				beforeSelectionModification(editor);
-				VisualModelTransformer.translateSelection(model, snapPos.getX() - pos.getX(), snapPos.getY() - pos.getY());
+				VisualModelTransformer.translateSelection(model, offset.getX(), offset.getY());
 			} else {
 				// Do nothing if pressed on a node with modifiers
 			}

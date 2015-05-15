@@ -247,10 +247,10 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 		String result = null;
 		if (ref != null) {
 			String name = NamespaceHelper.getReferenceName(ref);
-			Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(name);
-			if (instancedTransition != null) {
+			String nameWithoutInstance = LabelParser.getTransitionName(name);
+			if (nameWithoutInstance != null) {
 				String path = NamespaceHelper.getReferencePath(ref);
-				result = path + instancedTransition.getFirst();
+				result = path + nameWithoutInstance;
 			}
 		}
 		return result;

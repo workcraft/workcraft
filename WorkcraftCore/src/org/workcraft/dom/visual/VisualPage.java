@@ -125,18 +125,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		addPropertyDeclarations();
 	}
 
-	public List<Node> unGroup(ReferenceManager mathManager) {
-		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
-		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
-		groupImpl.reparent(nodesToReparent, newParent);
-		for (Node node : nodesToReparent) {
-			TransformHelper.applyTransform(node, localToParentTransform);
-		}
-		PageNode page = (PageNode)getReferencedComponent();
-		page.unGroup(mathManager);
-		return nodesToReparent;
-	}
-
 	@Override
 	public void add(Node node) {
 		groupImpl.add(node);

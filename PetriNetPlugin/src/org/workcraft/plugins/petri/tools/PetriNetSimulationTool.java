@@ -66,6 +66,7 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -661,12 +662,18 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	public void applyInitState(final GraphEditor editor) {
-		PetriNetModel pn = (PetriNetModel)editor.getModel().getMathModel();
-		for (Place place: savedState.keySet()) {
-			String ref = net.getNodeReference(place);
-			Node node = pn.getNodeByReference(ref);
-			if (node instanceof Place) {
-				((Place) node).setTokens(savedState.get(place));
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		MathModel model = editor.getModel().getMathModel();
+		if (model instanceof PetriNetModel) {
+			PetriNetModel pn = (PetriNetModel)model;
+			for (Place place: savedState.keySet()) {
+				String ref = net.getNodeReference(place);
+				Node node = pn.getNodeByReference(ref);
+				if (node instanceof Place) {
+					((Place) node).setTokens(savedState.get(place));
+				}
 			}
 		}
 	}

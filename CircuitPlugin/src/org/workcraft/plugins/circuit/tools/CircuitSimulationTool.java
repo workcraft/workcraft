@@ -33,7 +33,6 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
-import org.workcraft.util.Pair;
 
 public class CircuitSimulationTool extends StgSimulationTool {
 	private CircuitToStgConverter converter;
@@ -84,19 +83,17 @@ public class CircuitSimulationTool extends StgSimulationTool {
 		if (ref != null) {
 			String parentName = NamespaceHelper.getParentReference(ref);
 			Node parent = net.getNodeByReference(parentName);
-			if (parent != null) {
-				String transitionName = NamespaceHelper.getReferenceName(ref);
-				Pair<String,Integer> instancedTransition = LabelParser.parseInstancedTransition(transitionName);
-				if (instancedTransition != null) {
-					String requiredName = instancedTransition.getFirst();
-					for (Transition transition: net.getTransitions()) {
-						if ((transition.getParent() == parent) && net.isEnabled(transition)) {
-							String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
-							String existingName = LabelParser.parseInstancedTransition(existingRef).getFirst();
-							if (requiredName.equals(existingName)) {
-								result = transition;
-							}
-						}
+			String nameWithInstance = NamespaceHelper.getReferenceName(ref);
+			String requiredName = LabelParser.getTransitionName(nameWithInstance);
+			if ((parent instanceof NamespaceProvider) && (requiredName != null)) {
+				for (Transition transition: net.getTransitions()) {
+					if (transition.getParent() != parent) continue;
+					if (!net.isEnabled(transition)) continue;
+					String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
+					String existingName = LabelParser.getTransitionName(existingRef);
+					if (requiredName.equals(existingName)) {
+						result = transition;
+						break;
 					}
 				}
 			}
