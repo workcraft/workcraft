@@ -6,6 +6,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 public class SONConnection extends MathConnection{
 
+	private String time = "0000-9999";
+
 	public enum Semantics {
 		PNLINE("Petri net connection"),
 		SYNCLINE("Synchronous communication"),
@@ -43,4 +45,12 @@ public class SONConnection extends MathConnection{
 		sendNotification(new PropertyChangedEvent(this, "semantics"));
 	}
 
+	public String getTime(){
+		return time;
+	}
+
+	public void setTime(String time){
+		this.time = time;
+		sendNotification(new PropertyChangedEvent(this, "time interval"));
+	}
 }

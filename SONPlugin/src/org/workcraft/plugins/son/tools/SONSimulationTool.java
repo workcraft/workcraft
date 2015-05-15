@@ -451,7 +451,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 
 	private void errorMsg(String message, final GraphEditor editor){
-		JOptionPane.showMessageDialog(null,
+
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+
+		JOptionPane.showMessageDialog(mainWindow,
 				message, "Invalid structure", JOptionPane.WARNING_MESSAGE);
 		reset(editor);
 	}

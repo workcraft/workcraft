@@ -8,6 +8,7 @@ import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
@@ -24,6 +25,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -215,8 +217,11 @@ public class VisualSON extends AbstractVisualModel {
 		Collection<Node> selection = new HashSet<Node>();
 		boolean validate = false;
 
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+
 		if(getCurrentLevel() instanceof VisualONGroup){
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"Grouping inside a group is invalid",group, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
@@ -237,7 +242,7 @@ public class VisualSON extends AbstractVisualModel {
 					if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
 							result.add(node);
 					}else{
-						JOptionPane.showMessageDialog(null,
+						JOptionPane.showMessageDialog(mainWindow,
 								"Group Selection containing Channel Places or other groups is invaild",group, JOptionPane.WARNING_MESSAGE);
 						result.clear();
 						return result;
@@ -245,7 +250,7 @@ public class VisualSON extends AbstractVisualModel {
 				}
 			}
 		}else{
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"Grouping a partial occurrence net is invalid",group, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
@@ -259,7 +264,7 @@ public class VisualSON extends AbstractVisualModel {
 			}
 		}
 		if (!validate) {
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"An occurrence net must contain at least one condition",group, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;
@@ -416,6 +421,10 @@ public class VisualSON extends AbstractVisualModel {
 	private Collection<Node> getBlockSelection(){
 		Collection<Node> result = new HashSet<Node>();
 		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
+
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+
 		int errorType = 0;
 
 		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
@@ -434,7 +443,7 @@ public class VisualSON extends AbstractVisualModel {
 		}
 
 		if(errorType==1){
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"Block contianing initial or final node is invalid", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
@@ -442,7 +451,7 @@ public class VisualSON extends AbstractVisualModel {
 
 
 		if(errorType==2){
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"Only condition and event can be set as a Block", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
@@ -467,21 +476,21 @@ public class VisualSON extends AbstractVisualModel {
 		}
 
 		if(errorType==3){
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"The inputs and outputs of a block must be conditions", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 			}
 
 		if(errorType==4){
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"Block cannot cross phases", block, JOptionPane.WARNING_MESSAGE);
 			result.clear();
 			return result;
 			}
 
 		if (result.size() == 1) {
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"A single component cannot be set as a block",group, JOptionPane.WARNING_MESSAGE);
 			result.removeAll(result);
 			return result;

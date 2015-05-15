@@ -63,8 +63,12 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	@Override
 	public Result<? extends VerificationResult> run(
 			ProgressMonitor<? super VerificationResult> monitor) {
+
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+
 		if(markingRefs.isEmpty()){
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"Double click on condition/channel place or use property editor"
 					+ " to mark some nodes and check the reachability.",
 					"Marking required", JOptionPane.INFORMATION_MESSAGE);
@@ -88,7 +92,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		if(reachabilityTask()){
 			we.cancelMemento();
 			net = (SON)we.getModelEntry().getMathModel();
-			int result = JOptionPane.showConfirmDialog(null,
+			int result = JOptionPane.showConfirmDialog(mainWindow,
 					"The selected marking is REACHABLE from the initial states. \n" +
 					"Select OK to analyze the trace leading to the marking in the simulation tool.",
 					"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
@@ -104,7 +108,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		}
 		else{
 			we.cancelMemento();
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"The selected marking is UNREACHABLE from the initial states",
 					"Reachability task result", JOptionPane.INFORMATION_MESSAGE);
 		}

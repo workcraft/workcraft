@@ -16,6 +16,7 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -25,6 +26,7 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -380,4 +382,13 @@ public class SON extends AbstractMathModel {
 		return result.toString();
 	}
 
+	@Override
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
+		if (node instanceof SONConnection) {
+			properties.add(new ConnectionTimePropertyDescriptor((SONConnection)node));
+		}
+
+		return properties;
+	}
 }
