@@ -565,7 +565,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
 		Collection<VisualConnection> srcConnections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
 		Collection<VisualConnection> srcIncludedConnections = SelectionHelper.getIncludedConnections(srcChildren, srcConnections);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcConnections, ScaleMode.ADAPTIVE);
+//		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.NONE);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.ADAPTIVE);
 
 		Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
 		srcRoot.reparent(dstChildren, dstContainer);

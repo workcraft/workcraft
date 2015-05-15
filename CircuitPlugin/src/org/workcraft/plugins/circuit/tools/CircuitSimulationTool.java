@@ -138,12 +138,14 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	// return first enabled transition
 	public SignalTransition getContactExcitedTransition(VisualContact contact) {
 		SignalTransition result = null;
-		if ((converter != null) && converter.isDriver(contact)) {
+		if ((converter != null) && contact.isDriver()) {
 			SignalStg signalStg = converter.getSignalStg(contact);
-			for (VisualSignalTransition transition : signalStg.getAllVisualTransitions()) {
-				if (net.isEnabled(transition.getReferencedTransition())) {
-					result = transition.getReferencedTransition();
-					break;
+			if (signalStg != null) {
+				for (VisualSignalTransition transition : signalStg.getAllVisualTransitions()) {
+					if (net.isEnabled(transition.getReferencedTransition())) {
+						result = transition.getReferencedTransition();
+						break;
+					}
 				}
 			}
 		}
@@ -198,34 +200,31 @@ public class CircuitSimulationTool extends StgSimulationTool {
 					VisualContact contact = (VisualContact)node;
 					SignalStg signalStg = converter.getSignalStg(contact);
 					if (signalStg != null) {
-						Node transition = getTraceCurrentNode();
-						if ((transition != null) && signalStg.containsDirectlyOrByReference(transition)) {
-							return new Decoration() {
-								@Override
-								public Color getColorisation() {
-									return CommonSimulationSettings.getEnabledBackgroundColor();
-								}
-								@Override
-								public Color getBackground() {
-									return CommonSimulationSettings.getEnabledForegroundColor();
-								}
-							};
-						}
+						Node traceCurrentNode = getTraceCurrentNode();
 						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
 						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
 						final boolean isExcited = (getContactExcitedTransition(contact) != null);
+						final boolean isInTrace = (signalStg.containsDirectlyOrByReference(traceCurrentNode));
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
 								if (isExcited) {
-									return CommonSimulationSettings.getEnabledForegroundColor();
+									if (isInTrace) {
+										return CommonSimulationSettings.getEnabledBackgroundColor();
+									} else {
+										return CommonSimulationSettings.getEnabledForegroundColor();
+									}
 								}
 								return null;
 							}
 							@Override
 							public Color getBackground() {
 								if (isExcited) {
-									return CommonSimulationSettings.getEnabledBackgroundColor();
+									if (isInTrace) {
+										return CommonSimulationSettings.getEnabledForegroundColor();
+									} else {
+										return CommonSimulationSettings.getEnabledBackgroundColor();
+									}
 								} else {
 									if (isOne && !isZero) {
 										return CircuitSettings.getActiveWireColor();
