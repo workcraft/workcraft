@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.tasks;
 
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
@@ -15,6 +16,7 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
+import sun.awt.X11.Visual;
 
 import javax.swing.*;
 import java.awt.geom.Point2D;
@@ -72,7 +74,7 @@ public class ScencoTask {
 	{
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
 
-		ArrayList<VisualScenarioPage> scenarios = new ArrayList<VisualScenarioPage>();
+		ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
 
 		CpogParsingTool.getScenarios(cpog, scenarios);
 
@@ -100,9 +102,10 @@ public class ScencoTask {
 			return;
 		}
 
-		// Scan every scenarios
+		// Scan every scenario
 		for(int k = 0; k < m; k++)
 		{
+
 			// Scan every elements of each scenario
 			for(VisualComponent component : scenarios.get(k).getComponents())
 			if (component instanceof VisualVertex)	// If element is a vertex
@@ -545,10 +548,24 @@ public class ScencoTask {
 		for(int k = 0; k < m; k++)
 		{
 			for(int i = 0; i < freeVariables; i++){
-				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+				if (scenarios.get(k) instanceof VisualScenario) {
+					VisualScenario scenario = (VisualScenario) scenarios.get(k);
+					scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+				} else if (scenarios.get(k) instanceof VisualScenarioPage) {
+					VisualScenarioPage scenario = (VisualScenarioPage) scenarios.get(k);
+					scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+				}
+				//scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
 			}
 			for(int i = freeVariables; i < freeVariables + pr; i++){
-				scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+				if (scenarios.get(k) instanceof  VisualScenario) {
+					VisualScenario scenario = (VisualScenario) scenarios.get(k);
+					scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+				} else if (scenarios.get(k) instanceof VisualScenarioPage) {
+					VisualScenarioPage scenario = (VisualScenarioPage) scenarios.get(k);
+					scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
+				}
+				//scenarios.get(k).getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
 			}
 		}
 
@@ -705,7 +722,7 @@ public class ScencoTask {
 	// FUNCTION FOR PREPARING FILES NEEDED TO SCENCO TOOL TO WORK PROPERLY.
 	// IT FILLS IN FILE CONTAINING ALL THE SCENARIOS AND THE CUSTOM ENCODING
 	// FILE, IF USER WANTS TO USE A CUSTOM SOLUTION.
-	private int WriteCpogIntoFile(int m, ArrayList<VisualScenarioPage> scenarios)
+	private int WriteCpogIntoFile(int m, ArrayList<VisualTransformableNode> scenarios)
 	{
 		try{
 			scenarioFile = File.createTempFile("scenarios", "cpog");

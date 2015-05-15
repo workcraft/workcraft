@@ -4,6 +4,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
@@ -467,15 +468,14 @@ public class CpogParsingTool {
         visualCpog.select(prevSelection);
     }
 
-    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualScenarioPage> groups) {
+    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualTransformableNode> groups) {
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
 
         for(Node n : visualCpog.getSelection()) {
-            if (n instanceof VisualScenarioPage) {
+            if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
                 if (prevSelection.contains(n)) {
-                    groups.add((VisualScenarioPage) n);
-                    //prevSelection.remove(n);
+                    groups.add((VisualTransformableNode) n);
                 }
             }
         }

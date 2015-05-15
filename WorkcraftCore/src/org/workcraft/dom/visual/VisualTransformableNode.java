@@ -24,14 +24,17 @@ package org.workcraft.dom.visual;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.Hierarchy;
 
 
 public abstract class VisualTransformableNode extends VisualNode implements Movable, Rotatable, Flippable {
@@ -325,6 +328,18 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 				((Flippable)node).flipVertical();
 			}
 		}
+	}
+
+	public Collection<VisualComponent> getComponents() {
+		 return Hierarchy.getChildrenOfType(this, VisualComponent.class);
+	}
+
+	public Collection<VisualConnection> getConnections() {
+		return Hierarchy.getChildrenOfType(this, VisualConnection.class);
+	}
+
+	public String getLabel() {
+		return "no label";
 	}
 
 }
