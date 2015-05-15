@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Hierarchy;
 
@@ -18,39 +20,78 @@ public class CircuitUtils {
 		return getVisualContact(circuit, mathDriver);
 	}
 
-	public static Contact findDriver(Circuit circuit, Contact contact) {
+	public static Contact findDriver(Circuit circuit, MathNode curNode) {
 		Contact result = null;
-        Queue<Node> queue = new LinkedList<Node>(circuit.getPreset(contact));
+		HashSet<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        if (curNode instanceof MathConnection) {
+        	queue.add(((MathConnection)curNode).getFirst());
+        } else {
+        	queue.add(curNode);
+        }
         while (!queue.isEmpty()) {
 			if (queue.size() != 1) {
-				throw new RuntimeException("Found more than one potential driver for target "
-						+ getContactName(circuit, contact) + "!");
+				throw new RuntimeException("Found more than one potential driver for '"
+						+ circuit.getNodeReference(curNode) + "'!");
 			}
             Node node = queue.remove();
-			if (node instanceof Contact) {
-				Contact vc = (Contact)node;
-				if (vc.isDriver()) {
-					result = vc;
-				}
-			} else {
-				queue.addAll(circuit.getPreset(node));
+            if (!visited.contains(node)) {
+            	visited.add(node);
+            	if (node instanceof Joint) {
+            		queue.addAll(circuit.getPreset(node));
+            	} else if (node instanceof Contact) {
+            		Contact contact = (Contact)node;
+            		if (contact.isDriver()) {
+            			result = contact;
+            		} else if (node == curNode) {
+            			queue.addAll(circuit.getPreset(node));
+            		}
+            	} else {
+            		throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
+            				+ "' in the driver trace for node '" + circuit.getNodeReference(curNode) + "'!");
+            	}
+            }
+		}
+		return result;
+	}
+
+	public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
+		Collection<VisualContact> result = new HashSet<>();
+		for (Contact mathContact: findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact())) {
+			VisualContact visualContact = getVisualContact(circuit, mathContact);
+			if (visualContact != null) {
+				result.add(visualContact);
 			}
 		}
 		return result;
 	}
 
-	public static Collection<Contact> findDriven(Circuit circuit, Contact contact) {
+	public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode) {
 		Set<Contact> result = new HashSet<Contact>();
-        Queue<Node> queue = new LinkedList<Node>(circuit.getPostset(contact));
+		HashSet<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        if (curNode instanceof MathConnection) {
+        	queue.add(((MathConnection)curNode).getSecond());
+        } else {
+        	queue.add(curNode);
+        }
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-			if (node instanceof Contact) {
-				Contact vc = (Contact)node;
-				if (vc.isDriven()) {
-					result.add(vc);
-				}
-			} else {
-                queue.addAll(circuit.getPostset(node));
+            if (!visited.contains(node)) {
+            	visited.add(node);
+            	if (node instanceof Joint) {
+            		queue.addAll(circuit.getPostset(node));
+            	} else if (node instanceof Contact) {
+            		Contact contact = (Contact)node;
+            		if (contact.isDriven()) {
+            			result.add(contact);
+            		} else if (node == curNode) {
+            			queue.addAll(circuit.getPostset(node));
+            		}
+            	} else {
+            		throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
+            				+ "' in the driven trace for node '" + circuit.getNodeReference(curNode) + "'!");
+            	}
             }
         }
 		return result;

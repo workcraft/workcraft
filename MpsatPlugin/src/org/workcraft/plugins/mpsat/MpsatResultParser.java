@@ -16,9 +16,9 @@ public class MpsatResultParser {
 	private String mpsatOutput;
 	private LinkedList<Solution> solutions;
 	final static private Pattern patternReachability0 = Pattern.compile("SOLUTION .+\ntotal cost of all paths:", Pattern.UNIX_LINES);
-	final static private Pattern patternReachability1 = Pattern.compile("SOLUTION .+\n(.+)\npath cost:", Pattern.UNIX_LINES);
-	final static private Pattern patternReachability2 = Pattern.compile("SOLUTION .+\n(.+)\n(.+)\ntotal cost of all paths:", Pattern.UNIX_LINES);
-	final static private Pattern patternNormalcy1 = Pattern.compile("SOLUTION .+\n(.+)\ntriggers:", Pattern.UNIX_LINES);
+	final static private Pattern patternReachability1 = Pattern.compile("SOLUTION .+\n(.*)\npath cost:", Pattern.UNIX_LINES);
+	final static private Pattern patternReachability2 = Pattern.compile("SOLUTION .+\n(.*)\n(.*)\ntotal cost of all paths:", Pattern.UNIX_LINES);
+	final static private Pattern patternNormalcy1 = Pattern.compile("SOLUTION .+\n(.*)\ntriggers:", Pattern.UNIX_LINES);
 
 	public MpsatResultParser(ExternalProcessResult result) {
 		try {

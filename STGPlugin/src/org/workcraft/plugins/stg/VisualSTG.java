@@ -212,6 +212,9 @@ public class VisualSTG extends AbstractVisualModel {
 			ConnectionHelper.addControlPoints(con2, locations.subList(splitIndex2, locations.size()));
 		}
 
+		con1.copyStyle(connection);
+		con2.copyStyle(connection);
+
 		remove(connection);
 		return place;
 	}

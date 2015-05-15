@@ -63,7 +63,7 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 	public Collection<SignalTransition> getSignalTransitions(String signalReference) {
 		String parentReference = NamespaceHelper.getParentReference(signalReference);
 		Node parent = getNodeByReference(null, parentReference);
-		String signalName = NamespaceHelper.getNameFromReference(signalReference);
+		String signalName = NamespaceHelper.getReferenceName(signalReference);
 		return getNameManager(parent).getSignalTransitions(signalName);
 	}
 

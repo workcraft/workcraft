@@ -16,8 +16,9 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings
 
 		Element re = XmlUtil.getChildElement("reach", element);
 		String reach = re.getTextContent();
+		boolean inversePredicate = XmlUtil.readBoolAttr(element, "inversePredicate");
 
-		return new MpsatSettings(name, mode, verbosity, solutionMode, solutionNumberLimit, reach);
+		return new MpsatSettings(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
 	}
 
 	public void toXML(MpsatSettings settings, Element parent) {
@@ -28,10 +29,12 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings
 		e.setAttribute("solutionMode", settings.getSolutionMode().name());
 		e.setAttribute("solutionNumberLimit", Integer.toString(settings.getSolutionNumberLimit()));
 
-		Element re = parent.getOwnerDocument().createElement("reach");
-		re.setTextContent(settings.getReach());
+		Element reach = parent.getOwnerDocument().createElement("reach");
+		reach.setTextContent(settings.getReach());
+		e.appendChild(reach);
 
-		e.appendChild(re);
+		e.setAttribute("inversePredicate", Boolean.toString(settings.getInversePredicate()));
+
 		parent.appendChild(e);
 	}
 }

@@ -2,8 +2,11 @@ package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
 
+import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -20,13 +23,13 @@ import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
@@ -37,8 +40,65 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		VisualCircuit circuit = (VisualCircuit)model;
-		converter = CircuitStgUtils.createCircuitToStgConverter(circuit);
+		converter = new CircuitToStgConverter(circuit);
 		return converter.getStg();
+	}
+
+	@Override
+	public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
+		Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
+		if (circuitMainTrace != null) {
+			System.out.println("Main trace convertion:");
+			System.out.println("  original: " + mainTrace);
+			System.out.println("  circuit:  " + circuitMainTrace);
+		}
+		Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
+		if (circuitBranchTrace != null) {
+			System.out.println("Branch trace convertion:");
+			System.out.println("  original: " + branchTrace);
+			System.out.println("  circuit:  " + circuitBranchTrace);
+		}
+		super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
+	}
+
+	private Trace convertStgTraceToCircuitTrace(Trace trace) {
+		Trace circuitTrace = null;
+		if (trace != null) {
+			circuitTrace = new Trace();
+			for (String ref: trace) {
+				Transition t = getBestTransitionToFire(ref);
+				if (t != null) {
+					String circuitRef = net.getNodeReference(t);
+					circuitTrace.add(circuitRef);
+					net.fire(t);
+				}
+			}
+			resetMarking();
+		}
+		return circuitTrace;
+	}
+
+	private Transition getBestTransitionToFire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			String parentName = NamespaceHelper.getParentReference(ref);
+			Node parent = net.getNodeByReference(parentName);
+			String nameWithInstance = NamespaceHelper.getReferenceName(ref);
+			String requiredName = LabelParser.getTransitionName(nameWithInstance);
+			if ((parent instanceof NamespaceProvider) && (requiredName != null)) {
+				for (Transition transition: net.getTransitions()) {
+					if (transition.getParent() != parent) continue;
+					if (!net.isEnabled(transition)) continue;
+					String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
+					String existingName = LabelParser.getTransitionName(existingRef);
+					if (requiredName.equals(existingName)) {
+						result = transition;
+						break;
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -76,30 +136,17 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	}
 
 	// return first enabled transition
-	public SignalTransition isContactExcited(VisualContact contact) {
+	public SignalTransition getContactExcitedTransition(VisualContact contact) {
 		SignalTransition result = null;
-		boolean up = false;
-		boolean down = false;
-		if ((converter != null) && converter.isDriver(contact)) {
+		if ((converter != null) && contact.isDriver()) {
 			SignalStg signalStg = converter.getSignalStg(contact);
-			for (VisualSignalTransition transition : signalStg.getAllTransitions()) {
-				if (net.isEnabled(transition.getReferencedTransition())) {
-					if (result == null) {
+			if (signalStg != null) {
+				for (VisualSignalTransition transition : signalStg.getAllVisualTransitions()) {
+					if (net.isEnabled(transition.getReferencedTransition())) {
 						result = transition.getReferencedTransition();
-					}
-					if (transition.getDirection() == Direction.MINUS) {
-						down = true;
-					}
-					if (transition.getDirection() == Direction.PLUS) {
-						up = true;
-					}
-					if (up && down) {
 						break;
 					}
 				}
-			}
-			if (up && down) {
-				result = null;
 			}
 		}
 		return result;
@@ -116,7 +163,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 			});
 
 		if (node != null) {
-			SignalTransition st = isContactExcited((VisualContact) node);
+			SignalTransition st = getContactExcitedTransition((VisualContact) node);
 			if (st != null) {
 				executeTransition(e.getEditor(), st);
 			}
@@ -127,20 +174,18 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
 		boolean ret = false;
-
 		for (Node node: container.getChildren()) {
-
 			if (node instanceof VisualContact) {
-				ret=ret || isContactExcited((VisualContact)node) != null;
+				SignalTransition transition = getContactExcitedTransition((VisualContact)node);
+				ret=ret || (transition != null);
 			}
-
 			if (node instanceof Container) {
 				ret = ret || isContainerExcited((Container)node);
 			}
-
-			if (ret) break;
+			if (ret) {
+				break;
+			}
 		}
-
 		excitedContainers.put(container, ret);
 		return ret;
 	}
@@ -152,46 +197,34 @@ public class CircuitSimulationTool extends StgSimulationTool {
 			public Decoration getDecoration(Node node) {
 				if (converter == null) return null;
 				if (node instanceof VisualContact) {
-					VisualContact contact = (VisualContact) node;
-					String transitionId = null;
-					Node transition2 = null;
-					if (branchTrace.canProgress()) {
-						transitionId = branchTrace.getCurrent();
-						transition2 = net.getNodeByReference(transitionId);
-					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-						transitionId = mainTrace.getCurrent();
-						transition2 = net.getNodeByReference(transitionId);
-					}
-
+					VisualContact contact = (VisualContact)node;
 					SignalStg signalStg = converter.getSignalStg(contact);
 					if (signalStg != null) {
-						if (signalStg.getAllTransitions().contains(transition2)) {
-							return new Decoration() {
-								@Override
-								public Color getColorisation() {
-									return CommonSimulationSettings.getEnabledBackgroundColor();
-								}
-								@Override
-								public Color getBackground() {
-									return CommonSimulationSettings.getEnabledForegroundColor();
-								}
-							};
-						}
+						Node traceCurrentNode = getTraceCurrentNode();
 						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
 						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
-						final boolean isExcited = (isContactExcited(contact) != null);
+						final boolean isExcited = (getContactExcitedTransition(contact) != null);
+						final boolean isInTrace = (signalStg.containsDirectlyOrByReference(traceCurrentNode));
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
 								if (isExcited) {
-									return CommonSimulationSettings.getEnabledForegroundColor();
+									if (isInTrace) {
+										return CommonSimulationSettings.getEnabledBackgroundColor();
+									} else {
+										return CommonSimulationSettings.getEnabledForegroundColor();
+									}
 								}
 								return null;
 							}
 							@Override
 							public Color getBackground() {
 								if (isExcited) {
-									return CommonSimulationSettings.getEnabledBackgroundColor();
+									if (isInTrace) {
+										return CommonSimulationSettings.getEnabledForegroundColor();
+									} else {
+										return CommonSimulationSettings.getEnabledBackgroundColor();
+									}
 								} else {
 									if (isOne && !isZero) {
 										return CircuitSettings.getActiveWireColor();
@@ -242,9 +275,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 							return ret;
 						}
 					};
-
 				}
-
 				return null;
 			}
 		};

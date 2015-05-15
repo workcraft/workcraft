@@ -7,23 +7,23 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public abstract class NodeStg {
-	public abstract List<VisualSignalTransition> getAllTransitions();
+	public abstract List<VisualPlace> getAllVisualPlaces();
+	public abstract List<VisualSignalTransition> getAllVisualTransitions();
 
-	public abstract List<VisualPlace> getAllPlaces();
-
-	public boolean contains(Node n) {
+	public boolean containsDirectlyOrByReference(Node n) {
 		if (n != null) {
-			for (VisualPlace p: getAllPlaces()) {
-				if (n == p || (p != null && n == p.getReferencedPlace())) {
+			for (VisualPlace p: getAllVisualPlaces()) {
+				if ((n == p) || ((p != null) && (n == p.getReferencedPlace()))) {
 					return true;
 				}
 			}
-			for (VisualSignalTransition t: getAllTransitions()) {
-				if (n == t || (t != null && n == t.getReferencedTransition())) {
+			for (VisualSignalTransition t: getAllVisualTransitions()) {
+				if ((n == t) || ((t != null) && (n == t.getReferencedTransition()))) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
+
 }

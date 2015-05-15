@@ -33,10 +33,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatConformationTask extends MpsatChainTask {
 	private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
-			MpsatMode.UNDEFINED, 0, null, 0, null);
+			MpsatMode.UNDEFINED, 0, null, 0);
 
 	private final MpsatSettings toolchainCompletionSettings = new MpsatSettings("Toolchain completion",
-			MpsatMode.UNDEFINED, 0, null, 0, null);
+			MpsatMode.UNDEFINED, 0, null, 0);
 
 	private final WorkspaceEntry we;
 	private File envFile;
@@ -147,9 +147,9 @@ public class MpsatConformationTask extends MpsatChainTask {
 				System.out.println("\nReach expression for the interface conformation property:");
 				System.out.println(reachConformation);
 			}
-			MpsatSettings conformationSettings = new MpsatSettings("Interface conformation",
+			MpsatSettings conformationSettings = new MpsatSettings("Interface conformance",
 					MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-					MpsatUtilitySettings.getSolutionCount(), reachConformation);
+					MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
 					unfoldingFile.getCanonicalPath(), workingDirectory, true);
@@ -169,7 +169,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			if (!mpsatConformationParser.getSolutions().isEmpty()) {
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
-								"This model does not conform to the environment after the following trace:"));
+								"This model does not conform to the environment."));
 			}
 			monitor.progressUpdate(1.0);
 

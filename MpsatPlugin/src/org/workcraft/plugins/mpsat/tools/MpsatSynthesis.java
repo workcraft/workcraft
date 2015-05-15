@@ -25,10 +25,11 @@ abstract public class MpsatSynthesis implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final MpsatSettings settings = new MpsatSettings("synthesis", getSynthesisMode(), 0, SolutionMode.FIRST, 1, null);
+		final MpsatSettings settings = new MpsatSettings("Logic synthesis", getSynthesisMode(), 0, SolutionMode.FIRST, 1);
 		final MpsatChainTask task = new MpsatChainTask(we, settings);
+
 		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Logic synthesis with MPSat", new MpsatChainResultHandler(task));
+		framework.getTaskManager().queue(task, "MPSat logic synthesis", new MpsatChainResultHandler(task));
 	}
 
 	abstract public MpsatMode getSynthesisMode();

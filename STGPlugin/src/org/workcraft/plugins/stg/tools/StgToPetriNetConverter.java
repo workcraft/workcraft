@@ -35,7 +35,7 @@ public 	class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG, Vi
 
 	@Override
 	public String convertNodeName(String srcName, Container container) {
-		String dstCandidate = LabelParser.parseInstancedTransition(srcName).getFirst();
+		String dstCandidate = LabelParser.getTransitionName(srcName);
 		dstCandidate = dstCandidate.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
 
 		HierarchicalUniqueNameReferenceManager refManager

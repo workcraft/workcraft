@@ -22,32 +22,26 @@ public class SolutionsDialog extends JDialog {
 	private JPanel solutionsPanel;
 	private JPanel buttonsPanel;
 
-	public SolutionsDialog(MpsatChainTask task, String text, List<Solution> solutions) {
+	public SolutionsDialog(MpsatChainTask task, String title, String message, List<Solution> solutions) {
 
 		double sizes[][] = {
 				{ TableLayout.FILL },
 				{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED }
 		};
 
-		contents = new JPanel(new TableLayout(sizes));
-
-		contents.add(new JLabel(text), "0 0");
 
 		solutionsPanel = new JPanel();
 		solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
-
-		for (Solution solution : solutions)
+		for (Solution solution : solutions) {
 			solutionsPanel.add(new SolutionPanel(task, solution, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					SolutionsDialog.this.setVisible(false);
 				}
 			}));
-
-		contents.add(solutionsPanel, "0 1");
+		}
 
 		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-
 		JButton okButton = new JButton("OK");
 		okButton.addActionListener(new ActionListener() {
 			@Override
@@ -55,13 +49,16 @@ public class SolutionsDialog extends JDialog {
 				SolutionsDialog.this.setVisible(false);
 			}
 		});
-
 		buttonsPanel.add(okButton);
 
+		contents = new JPanel(new TableLayout(sizes));
+		contents.add(new JLabel(message), "0 0");
+		contents.add(solutionsPanel, "0 1");
 		contents.add(buttonsPanel, "0 2");
 
+		this.setTitle(title);
 		this.setContentPane(contents);
-
 		this.setModal(true);
 	}
+
 }

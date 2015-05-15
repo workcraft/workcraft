@@ -33,8 +33,8 @@ public class CheckDeadlockTask extends MpsatChainTask {
 	public CheckDeadlockTask(WorkspaceEntry we) {
 		super (we, null);
 		this.we = we;
-		this.settings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
-				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
+		this.settings = new MpsatSettings("Deadlock", MpsatMode.DEADLOCK, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
 	}
 
 	@Override
