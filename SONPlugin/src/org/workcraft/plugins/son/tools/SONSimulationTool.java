@@ -334,32 +334,31 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
+
 		this.editor = editor;
+		WorkspaceEntry we = editor.getWorkspaceEntry();
+
 		relationAlg = new RelationAlgorithm(net);
 		bsonAlg = new BSONAlg(net);
 		simuAlg = new SimulationAlg(net);
 		errAlg = new ErrorTracingAlg(net);
-		WorkspaceEntry we = editor.getWorkspaceEntry();
 
 		we.setCanModify(false);
 		visualNet.connectToBlocks(we);
+		initialMarking=simuAlg.getInitialMarking();
 
-		isRev = false;
-		mainTrace.clear();
-		branchTrace.clear();
+		reset(editor);
 
 		sync = getSyncCycles();
 		phases = bsonAlg.getAllPhases();
-		initialMarking=simuAlg.getInitialMarking();
-		//set initial marking
-		applyMarking(initialMarking);
-		//set enabled nodes colors.
 		setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 
 		if (ErrTracingDisable.showErrorTracing()) {
 			net.resetConditionErrStates();
 		}
 		updateState(editor);
+		editor.forceRedraw();
+		editor.getModel().setTemplateNode(null);
 	}
 
 	private Collection<Path> getSyncCycles(){

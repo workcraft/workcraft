@@ -6,7 +6,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 public class SONConnection extends MathConnection{
 
-	private String time = "0000-9999";
+	private String time = "";
 
 	public enum Semantics {
 		PNLINE("Petri net connection"),
