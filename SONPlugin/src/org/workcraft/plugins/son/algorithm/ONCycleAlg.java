@@ -37,7 +37,9 @@ public class ONCycleAlg{
 		if(nodes.size() == nodeIndex.size()){
 			for(int i = 0; i < nodes.size(); i++){
 				int index = nodeIndex.get(nodes.get(i));
-				result[index] = new ArrayList<Integer>();
+				if(result[index] == null){
+					result[index] = new ArrayList<Integer>();
+				}
 				for(Node post: net.getPostset(nodes.get(index))){
 					if(nodes.contains(post)){
 						result[index].add(nodeIndex.get(post));

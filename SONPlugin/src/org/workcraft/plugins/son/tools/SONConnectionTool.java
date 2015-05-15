@@ -30,7 +30,7 @@ public class SONConnectionTool extends ConnectionTool {
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
 
-		polyButton = new JRadioButton("Petri-Net Connection");
+		polyButton = new JRadioButton("Causal Connection");
 		polyButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
 				semantic = Semantics.PNLINE;

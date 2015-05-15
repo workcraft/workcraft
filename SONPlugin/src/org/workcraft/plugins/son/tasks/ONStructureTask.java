@@ -8,9 +8,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.TransitionNode;
 
 
 public class ONStructureTask extends AbstractStructuralVerification{
@@ -21,7 +20,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Collection<Path> cycleErrors = new HashSet<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
-	private boolean hasErr = false;
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
@@ -58,9 +56,14 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 			infoMsg("Running component relation tasks...");
 
-			if(!getRelationAlg().hasFinal(groupComponents) || !getRelationAlg().hasInitial(groupComponents)){
-				errMsg("ERROR : Occurrence net must have at least one input and one output.");
-				hasErr = true;
+			if(!getRelationAlg().hasInitial(groupComponents)){
+				errMsg("ERROR : Invalid initial state (no initial state).");
+				errNumber ++;
+				continue;
+			}
+
+			if(!getRelationAlg().hasFinal(groupComponents)){
+				errMsg("ERROR : Invalid final state (no final state).");
 				errNumber ++;
 				continue;
 			}
@@ -71,11 +74,10 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (task1.isEmpty())
 				infoMsg("Valid occurrence net input.");
 			else{
-				hasErr = true;
 				errNumber = errNumber + task1.size();
 				for(Node node : task1){
 					relationErrors.add(node);
-					errMsg("ERROR : Invalid occurrence net input (initial state is not a condition).", node);
+					errMsg("ERROR : Invalid initial state (initial state is not a condition).", node);
 				}
 			}
 
@@ -84,11 +86,10 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (task2.isEmpty())
 				infoMsg("Valid occurrence net output.");
 			else{
-				hasErr = true;
 				errNumber = errNumber + task2.size();
 				for(Node node : task2){
 					relationErrors.add(node);
-					errMsg("ERROR : Invalid occurrence net output (final state is not a condition).", node);
+					errMsg("ERROR : Invalid final state (final state is not a condition).", node);
 				}
 			}
 
@@ -99,7 +100,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (task3.isEmpty() && task4.isEmpty())
 				infoMsg("Occurrence net is conflict free.");
 			else{
-				hasErr = true;
 				errNumber = errNumber + task3.size()+ task4.size();
 				for(Node condition : task3){
 					relationErrors.add(condition);
@@ -122,7 +122,6 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			if (cycleResult.isEmpty())
 				infoMsg("Occurrence net is cycle free");
 			else{
-				hasErr = true;
 				errNumber++;
 				errMsg("ERROR : Occurrence net involves cycle paths = "+ cycleResult.size() + ".");
 				int i = 1;
@@ -138,7 +137,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Collection<Node> iniStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event ||node instanceof Block)
+			if(node instanceof TransitionNode)
 				if(getRelationAlg().isInitial(node))
 					result.add(node);
 		return result;
@@ -147,7 +146,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Collection<Node> finalStateTask(Collection<Node> groupNodes){
 		ArrayList<Node> result = new ArrayList<Node>();
 		for (Node node : groupNodes)
-			if(node instanceof Event || node instanceof Block)
+			if(node instanceof TransitionNode)
 				if(getRelationAlg().isFinal(node))
 					result.add(node);
 		return result;
@@ -173,23 +172,19 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 	@Override
 	public Collection<String> getRelationErrors() {
-		return getRelationErrorsSetReferences(relationErrors);
+		return getRelationErrorsSetRefs(relationErrors);
 	}
 
 	@Override
 	public Collection<ArrayList<String>> getCycleErrors() {
-		return getcycleErrorsSetReferences(cycleErrors);
+		return getCycleErrorsSetRefs(cycleErrors);
 	}
 
 	@Override
 	public Collection<String> getGroupErrors() {
-		return getGroupErrorsSetReferences(groupErrors);
+		return getGroupErrorsSetRefs(groupErrors);
 	}
 
-	@Override
-	public boolean hasErr(){
-		return this.hasErr;
-	}
 	@Override
 	public int getErrNumber(){
 		return this.errNumber;

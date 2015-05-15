@@ -128,7 +128,7 @@ public class CSONCycleAlg extends ONCycleAlg{
 	}
 
 	/**
-	 * 	get cycles except synchronous one
+	 * 	get all cycles without synchronous cycles
 	 */
 	@Override
 	public Collection<Path> cycleTask (Collection<? extends Node> nodes){

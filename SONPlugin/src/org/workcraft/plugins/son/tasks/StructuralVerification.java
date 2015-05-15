@@ -2,8 +2,11 @@ package org.workcraft.plugins.son.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.workcraft.plugins.son.ONGroup;
+import org.workcraft.plugins.son.Phase;
+import org.workcraft.plugins.son.elements.Condition;
 
 public interface StructuralVerification {
 
@@ -15,10 +18,10 @@ public interface StructuralVerification {
 
 	public Collection<String> getGroupErrors();
 
-	public boolean hasErr();
-
 	public int getErrNumber();
 
 	public int getWarningNumber();
+
+	public Map<Condition, Collection<Phase>> getAllPhases();
 
 }

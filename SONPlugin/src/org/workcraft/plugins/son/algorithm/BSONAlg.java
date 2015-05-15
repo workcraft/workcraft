@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -25,7 +26,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get all related behavoural connections in a given set of groups.
+	 * get all related behavoural connections for a given set of groups.
 	 */
 	public Collection<SONConnection> getRelatedBhvLine(Collection<ONGroup> groups){
 		HashSet<SONConnection> result = new HashSet<SONConnection>();
@@ -45,7 +46,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * check if a given group is line like. i.e., post/pre set of every node < 1.
+	 * check if a given group is line like. i.e., post/pre set of each node < 1.
 	 */
 	public boolean isLineLikeGroup(ONGroup group){
 		for(Node node : group.getComponents()){
@@ -58,103 +59,114 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get phase for a given (high-level) condition
+	 * get phases collection for a given upper-level condition
 	 */
-	public Phase getPhase(Condition c){
-		Phase result = new Phase();
-		Collection<Condition> connectedNodes = new ArrayList<Condition>();
-		Collection<Path> paths = new ArrayList<Path>();
-		PathAlgorithm alg = new PathAlgorithm(net);
+	public Collection<Phase> getPhases(Condition c){
+		Collection<Phase> result = new ArrayList<Phase>();
 
-		for(SONConnection con : net.getSONConnections()){
-			if(con.getSecond()==c && con.getSemantics()==Semantics.BHVLINE)
-				connectedNodes.add((Condition)con.getFirst());
-		}
-		if (connectedNodes.isEmpty())
-			return result;
-		else{
-			for(Node start : connectedNodes)
-				for(Node end : connectedNodes){
-					if(getBhvGroup(connectedNodes) == null){
-						System.out.println("adj null");
-					}
-					paths.addAll(PathAlgorithm.getPaths(start, end, alg.createAdj(getBhvGroup(connectedNodes).getComponents())));
+		for(ONGroup group : getLowerGroups(net.getGroups())){
+			//find all nodes pointing to c
+			Collection<Node> nodes = new ArrayList<Node>();
+			for(Node n : group.getConditions()){
+				SONConnection con = null;
+				if(n != c){
+					con = net.getSONConnection(n, c);
 				}
-
-			for(Path path : paths){
-				for(Node n : path)
-					if(n instanceof Condition)
-						result.add((Condition)n);
+				if(con != null && con.getSemantics()==Semantics.BHVLINE)
+					nodes.add(n);
+			}
+			if(!nodes.isEmpty()){
+				Phase phase = new Phase();
+				for(Node node : PathAlgorithm.dfs2(nodes, nodes, net)){
+					if(node instanceof Condition)
+						phase.add((Condition)node);
+				}
+				result.add(phase);
 			}
 		}
-		return result;
-	}
-
-	private Map<Condition, Phase> getPhases(ONGroup abstractGroup){
-		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
-		for(Condition c : abstractGroup.getConditions())
-			result.put(c, getPhase(c));
-
 		return result;
 	}
 
 	/**
-	 * get the phases of every abstract condition in abstract groups
+	 * get the phase collection for all upper-level conditions.
 	 */
-	public Map<Condition, Phase> getPhases(){
-		Map<Condition, Phase> result = new HashMap<Condition, Phase>();
-		Collection<ONGroup> abstractGroups =getAbstractGroups(net.getGroups());
-		for(ONGroup group : abstractGroups){
-			result.putAll(getPhases(group));
+	public Map<Condition, Collection<Phase>> getAllPhases(){
+		Map<Condition, Collection<Phase>> result = new HashMap<Condition, Collection<Phase>>();
+		Collection<ONGroup> upperGroups =getUpperGroups(net.getGroups());
+
+		for(ONGroup group : upperGroups){
+			for(Condition c : group.getConditions())
+				result.put(c, getPhases(c));
 		}
 		return result;
 	}
 
+
 	private Collection<Condition> Max(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
+		Stack<Node> stack = new Stack<Node>();
+		Collection<Node> visit = new HashSet<Node>();
 
-		if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-			result.addAll(getPostBhvSet((Condition)node));
-		}
-		else{
+		stack.push(node);
 
-			Collection<Node> postPN = getPostPNSet(node);
+		while(!stack.isEmpty()){
+			node = stack.pop();
+			visit.add(node);
 
-			if(!postPN.isEmpty()){
-				for(Node post : postPN)
-					result.addAll(Max(post));
+			if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
+				result.addAll(getPostBhvSet((Condition)node));
 			}
 
+			Collection<Node> postSet = getPostPNSet(node);
+			if(!postSet.isEmpty()){
+				for(Node post : postSet){
+					if(!visit.contains(post)){
+						stack.push(post);
+					}
+				}
+			}
 		}
 		return result;
 	}
 
 	private Collection<Condition> Min(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
+		Stack<Node> stack = new Stack<Node>();
+		Collection<Node> visit = new HashSet<Node>();
 
-		if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-			result.addAll(getPostBhvSet((Condition)node));
-		}
-		else{
-			Collection<Node> prePN = getPrePNSet(node);
+		stack.push(node);
 
-			if(!prePN.isEmpty()){
-				for(Node pre : prePN)
-					result.addAll(Min(pre));
+		while(!stack.isEmpty()){
+			node = stack.pop();
+			visit.add(node);
+
+			if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
+				result.addAll(getPostBhvSet((Condition)node));
+			}
+
+			Collection<Node> preSet = getPrePNSet(node);
+			if(!preSet.isEmpty()){
+				for(Node pre : preSet){
+					if(!visit.contains(pre)){
+						stack.push(pre);
+					}
+				}
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * get abstract conditions for a node
+	 * get the set of corresponding upper-level conditions for a given node
 	 */
-	public Collection<Condition> getAbstractConditions(Node node){
+	public Collection<Condition> getUpperConditions(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
 
-		if(isAbstractCondition(node)){
-			result.add((Condition)node);
-			return result;
+		if(isUpperNode(node)){
+			if(node instanceof Condition)
+				result.add((Condition)node);
+			else
+				return result;
 		}
 
 		Collection<Condition> min = Min(node);
@@ -166,8 +178,12 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public boolean isAbstractCondition(Node node){
-		if((node instanceof Condition) && !(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+	/**
+	 * return true if the given node is an upper-level condition.
+	 */
+	public boolean isUpperCondition(Node node){
+		if((node instanceof Condition)
+				&& !(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
 				&&(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)))
 			return true;
 
@@ -175,42 +191,52 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 	/**
-	 * get behavioral group for a set of conditions (phase inputs or outputs)
+	 * return true if the given node is in upper-level group.
 	 */
-	public ONGroup getBhvGroup(Collection<Condition> conditions){
+	public boolean isUpperNode(Node node){
+		if(isUpperCondition(node))
+			return true;
+		for(Node pre : getPrePNSet(node))
+			if(isUpperCondition(pre))
+				return true;
+
+		return false;
+	}
+
+	/**
+	 * get lower-level group for a set of phase bounds
+	 */
+	public ONGroup getLowerGroup(Collection<Condition> phaseBound){
 		Collection<ONGroup> groups = new HashSet<ONGroup>();
 		for(ONGroup group : net.getGroups())
-			if(!getCommonElements(group.getComponents(), conditions).isEmpty())
+			if(!getCommonElements(group.getComponents(), phaseBound).isEmpty())
 				groups.add(group);
 
 		return groups.iterator().next();
 	}
 
 	/**
-	 * get corresponding behavioral groups for a given abstract condition
+	 * get all lower-level groups for a given upper-level group
 	 */
-	public Collection<ONGroup> getBhvGroups(Condition c){
+	public Collection<ONGroup> getLowerGroups(ONGroup upperGroup){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
-		for(SONConnection con : net.getInputSONConnections(c))
-			if(con.getSemantics() == Semantics.BHVLINE)
-				for(ONGroup group : net.getGroups())
-					if(group.getConditions().contains(con.getFirst()))
-						result.add(group);
+
+		for(Condition c : upperGroup.getConditions()){
+			result.addAll(getLowerGroups(c));
+		}
+
 		return result;
 	}
 
 	/**
-	 * get corresponding abstract Groups for a given behavioral condition
+	 * get all lower-level groups for a given upper-level condition;
+	 *
 	 */
-	public Collection<ONGroup> getAbstractGroups(Condition node){
+	public Collection<ONGroup> getLowerGroups(Condition upperCondition){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 
-		Collection<Condition> absConditions = getAbstractConditions(node);
-
-		for(ONGroup group : net.getGroups()){
-			for(Condition c : absConditions)
-				if(group.getComponents().contains(c))
-					result.add(group);
+		for(Node pre : getPreBhvSet(upperCondition)){
+			result.add(net.getGroup(pre));
 		}
 
 		return result;
@@ -218,9 +244,9 @@ public class BSONAlg extends RelationAlgorithm{
 
 
 	/**
-	 * Flit behavioral groups in a group set .
+	 * get lower-level groups for a given group set.
 	 */
-	public Collection<ONGroup> getBhvGroups(Collection<ONGroup> groups){
+	public Collection<ONGroup> getLowerGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 		for(ONGroup group : groups){
 			boolean isInput = false;
@@ -238,10 +264,11 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+
 	/**
-	 * Flit abstract groups in a group set.
+	 * get upper-level groups for a given group set.
 	 */
-	public Collection<ONGroup> getAbstractGroups(Collection<ONGroup> groups){
+	public Collection<ONGroup> getUpperGroups(Collection<ONGroup> groups){
 		Collection<ONGroup> result = new HashSet<ONGroup>();
 		for(ONGroup group : groups){
 			boolean isInput = false;
@@ -260,6 +287,9 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	/**
+	 * get minimal phase for a given phase
+	 */
 	public ArrayList<Condition> getMinimalPhase(Phase phase){
 		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
@@ -273,6 +303,20 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	/**
+	 * get minimal phase collection for a set of phase
+	 */
+	public ArrayList<Condition> getMinimalPhase(Collection<Phase> phases){
+		ArrayList<Condition> result = new ArrayList<Condition>();
+		for(Phase phase : phases){
+			result.addAll(getMinimalPhase(phase));
+		}
+		return result;
+	}
+
+	/**
+	 * get maximal phase for a given phase
+	 */
 	public ArrayList<Condition> getMaximalPhase(Phase phase){
 		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
@@ -286,8 +330,21 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	//if a transitionNode is in abstract group
-	public boolean isAbstractEvent(TransitionNode n){
+	/**
+	 * get maximal phase collection for a set of phase
+	 */
+	public ArrayList<Condition> getMaximalPhase(Collection<Phase> phases){
+		ArrayList<Condition> result = new ArrayList<Condition>();
+		for(Phase phase : phases){
+			result.addAll(getMaximalPhase(phase));
+		}
+		return result;
+	}
+
+	/**
+	 * return true if a transitionNode is in upper-level group
+	 */
+	public boolean isUpperEvent(TransitionNode n){
 		if(getPrePNSet(n).size() == 1){
 			Condition c = (Condition)getPrePNSet(n).iterator().next();
 			if(net.getInputSONConnectionTypes(c).contains(Semantics.BHVLINE)
@@ -299,105 +356,84 @@ public class BSONAlg extends RelationAlgorithm{
 			return false;
 	}
 
-	public Collection<Condition[]> before(TransitionNode e){
-		Collection<Condition[]> result = new ArrayList<Condition[]>();
-		Condition[] pre = new Condition[1];
-		Condition[] post = new Condition[1];
+	/**
+	 * get before(e) relation for a given upper-level transition node
+	 */
+	public Collection<TransitionNode[]> before(TransitionNode e, Map<Condition, Collection<Phase>> phases){
+		Collection<TransitionNode[]> result = new ArrayList<TransitionNode[]>();
 
-		if(this.getPostPNSet(e).size()!=1 || getPrePNSet(e).size()!=1){
-			//System.out.println("size > 1");
-			return result;
-		}
-		for(Node node : this.getPrePNSet(e))
-			pre[0] = (Condition)node;
-		for(Node node : this.getPostPNSet(e))
-			post[0] = (Condition)node;
-
-		Phase phaseI = getPhase(pre[0]);
-		Phase phaseI2 = getPhase(post[0]);
-		if(phaseI.isEmpty() && phaseI2.isEmpty()){
-			//System.out.println(net.getNodeLabel(e)+"  is empty");
-			return result;
-		}
-
-		Collection<Condition> maxI = getMaximalPhase(phaseI);
-		Collection<Condition> minI2 = getMinimalPhase(phaseI2);
 		Collection<Condition> PRE = getPREset(e);
 		Collection<Condition> POST = getPOSTset(e);
-		if(!maxI.containsAll(minI2)){
-			for(Condition c0 : maxI){
-				for(Condition c1 : minI2){
-					Condition[] subResult = new Condition[2];
-					subResult[0]=c0;
-					subResult[1]=c1;
-					result.add(subResult);
-				}
+
+		//get Pre(e)
+		for(Condition c : PRE){
+			//get phase collection for each Pre(e)
+			Collection<Phase> prePhases = null;
+
+			if(phases.containsKey(c)){
+				prePhases = phases.get(c);
+			}else{
+				return result;
 			}
 
-			for(Condition c0 : PRE){
-				for(Condition c1 : minI2){
-					Condition[] subResult = new Condition[2];
-					subResult[0]=c0;
-					subResult[1]=c1;
-					result.add(subResult);
-				}
-			}
-
-			for(Condition c0 : maxI){
-				for(Condition c1 : POST){
-					Condition[] subResult = new Condition[2];
-					subResult[0]=c0;
-					subResult[1]=c1;
-					result.add(subResult);
+			//get maximal phase
+			for(Phase phase : prePhases){
+				Collection<Condition> max = getMaximalPhase(phase);
+				for(Condition c1 : max){
+					//get pre(c1)
+					Collection<Node> pre = getPrePNSet(c1);
+					for(Node e1 : pre){
+						if(e1 instanceof TransitionNode){
+							TransitionNode[] subResult = new TransitionNode[2];
+							subResult[0] = (TransitionNode)e1;
+							subResult[1] = (TransitionNode)e;
+							result.add(subResult);
+						}
+					}
 				}
 			}
 		}
-		if(maxI.containsAll(minI2)){
-			Collection<Node> preMaxI = new HashSet<Node>();
-			Collection<Node> postMinI2 = new HashSet<Node>();
-			for(Node n: maxI)
-				preMaxI.addAll(getPrePNSet(n));
-			for(Node n: minI2)
-				postMinI2.addAll(getPostPNSet(n));
 
-			Collection<Condition> PREpreMaxI = new HashSet<Condition>();
-			Collection<Condition> POSTpostMinI2 = new HashSet<Condition>();
-
-			for(Node n : preMaxI){
-				if(n instanceof TransitionNode)
-				PREpreMaxI.addAll(getPREset((TransitionNode)n));}
-			for(Node n : postMinI2){
-				if(n instanceof TransitionNode)
-				POSTpostMinI2.addAll(getPOSTset((TransitionNode)n));}
-
-			for(Condition c0 : PREpreMaxI){
-				for(Condition c1 : POSTpostMinI2){
-					Condition[] subResult = new Condition[2];
-					subResult[0]=c0;
-					subResult[1]=c1;
-					result.add(subResult);
-				}
+		//get Post(e)
+		for(Condition c : POST){
+			//get phase collection for each Pre(e)
+			Collection<Phase> postPhases =  null;
+			if(phases.containsKey(c)){
+				postPhases = phases.get(c);
+			}else{
+				return result;
 			}
 
-			for(Condition c0 : PRE){
-				for(Condition c1 : POSTpostMinI2){
-					Condition[] subResult = new Condition[2];
-					subResult[0]=c0;
-					subResult[1]=c1;
-					result.add(subResult);
+			//get minimal phase
+			for(Phase phase : postPhases){
+				Collection<Condition> min = getMinimalPhase(phase);
+				for(Condition c1 : min){
+					//get pre(c1)
+					Collection<Node> post = getPostPNSet(c1);
+					for(Node e1 : post){
+						if(e1 instanceof TransitionNode){
+							TransitionNode[] subResult = new TransitionNode[2];
+							subResult[0] = (TransitionNode)e;
+							subResult[1] = (TransitionNode)e1;
+							result.add(subResult);
+						}
+					}
 				}
 			}
-
-			for(Condition c0 : PREpreMaxI){
-				for(Condition c1 : POST){
-					Condition[] subResult = new Condition[2];
-					subResult[0]=c0;
-					subResult[1]=c1;
-					result.add(subResult);
-				}
-			}
-
 		}
+		return result;
+	}
+
+	public Map<TransitionNode, Collection<TransitionNode[]>> getAllBefore(){
+		Map<TransitionNode, Collection<TransitionNode[]>> result = new HashMap<TransitionNode, Collection<TransitionNode[]>>();
+
+		Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
+
+		for(ONGroup group : upperGroups)
+			for(TransitionNode e : group.getTransitionNodes()){
+				result.put(e, before(e, getAllPhases()));
+		}
+
 		return result;
 	}
 
