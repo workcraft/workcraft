@@ -14,6 +14,7 @@ public class Event extends Transition implements TransitionNode{
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	private String label="";
 	private Boolean faulty = false;
+	private String duration = "0000-9999";
 
 	@Override
 	public void setLabel(String label){
@@ -57,6 +58,15 @@ public class Event extends Transition implements TransitionNode{
 	@Override
 	public Color getFillColor() {
 		return fillColor;
+	}
+
+	public void setDuration(String duration){
+		this.duration = duration;
+		sendNotification( new PropertyChangedEvent(this, "duration") );
+	}
+
+	public String getDuration(){
+		return duration;
 	}
 
 }

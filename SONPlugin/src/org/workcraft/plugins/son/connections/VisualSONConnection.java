@@ -20,12 +20,13 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.util.Geometry;
 
 public class VisualSONConnection extends VisualConnection {
 
-	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 
 	private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
 	private Color labelColor = CommonVisualSettings.getLabelColor();
@@ -131,17 +132,18 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	public boolean getLabelVisibility() {
-		return CommonVisualSettings.getLabelVisibility();
+		return SONSettings.getTimeVisibility();
 	}
 
 	protected void cacheLabelRenderedText(DrawRequest r) {
-		String labelText = getTimeLabel(r);
-		if (labelRenderedText.isDifferent(labelText, labelFont, Positioning.CENTER, new Point2D.Double())) {
-			labelRenderedText = new RenderedText(labelText, labelFont, Positioning.CENTER, new Point2D.Double());
+		String time = "t: "+ this.getTime();
+
+		if (labelRenderedText.isDifferent(time, labelFont, Positioning.CENTER, new Point2D.Double())) {
+			labelRenderedText = new RenderedText(time, labelFont, Positioning.CENTER, new Point2D.Double());
 		}
 	}
 
-	public String getTimeLabel(DrawRequest r) {
+	public String getTime() {
 
 		return getReferencedSONConnection().getTime();
 	}

@@ -17,4 +17,8 @@ public interface VisualTransitionNode extends Node{
 	public void drawFault(DrawRequest r);
 
 	public boolean isFaulty();
+
+	public void setDuration(String value);
+
+	public String getDuration();
 }

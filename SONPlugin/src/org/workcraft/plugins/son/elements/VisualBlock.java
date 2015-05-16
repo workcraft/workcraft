@@ -14,12 +14,15 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.util.Hierarchy;
@@ -30,6 +33,11 @@ import org.workcraft.util.Hierarchy;
 public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	private Block mathBlock;
 	private static final float strokeWidth = 0.06f;
+
+	private Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+	private Color durationColor = SONSettings.getErrLabelColor();
+	private Positioning durationLabelPositioning = SONSettings.getDurationLabelPositioning();
+	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
 
 	public VisualBlock(Block refNode) {
 		super(refNode);
@@ -60,6 +68,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 			}
 			drawNameInLocalSpace(r);
 			drawLabelInLocalSpace(r);
+			drawDurationInLocalSpace(r);
 		}
 	}
 
@@ -82,11 +91,51 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		}
 	}
 
+	private void cahceDurationRenderedText(DrawRequest r) {
+		String duration = "d: "+ this.getDuration();
+		//double o = 0.8 * size;
+
+		Point2D offset = getOffset(durationLabelPositioning);
+		if (durationLabelPositioning.ySign<0) {
+			offset.setLocation(offset.getX(), offset.getY()-0.6);
+		} else {
+			offset.setLocation(offset.getX(), offset.getY()+0.6);
+		}
+
+		if (durationRenderedText.isDifferent(duration, font, durationLabelPositioning, offset)) {
+			durationRenderedText = new RenderedText(duration, font, durationLabelPositioning, offset);
+		}
+	}
+
+	protected void drawDurationInLocalSpace(DrawRequest r) {
+		if (SONSettings.getTimeVisibility()) {
+			cahceDurationRenderedText(r);
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			g.setColor(Coloriser.colorise(durationColor, d.getColorisation()));
+			durationRenderedText.draw(g);
+		}
+	}
+
+	@Override
+	public void cacheRenderedText(DrawRequest r) {
+		super.cacheRenderedText(r);
+		cahceDurationRenderedText(r);
+	}
+
 	@Override
 	public void setIsCollapsed(boolean isCollapsed) {
 		sendNotification(new TransformChangingEvent(this));
 		this.getReferencedComponent().setIsCollapsed(isCollapsed);
 		sendNotification(new TransformChangedEvent(this));
+	}
+
+	public String getDuration(){
+		return ((Block)getReferencedComponent()).getDuration();
+	}
+
+	public void setDuration(String time){
+		((Block)getReferencedComponent()).setDuration(time);
 	}
 
 	@Override

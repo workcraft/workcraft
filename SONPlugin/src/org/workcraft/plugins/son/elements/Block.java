@@ -18,6 +18,7 @@ public class Block extends PageNode implements TransitionNode{
 	private Color foregroundColor = SONSettings.getGroupForegroundColor();
 	private Color fillColor  = SONSettings.getBlockFillColor();
 	private boolean isCollapsed = false;
+	private String duration = "0000-9999";
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();
@@ -98,6 +99,15 @@ public class Block extends PageNode implements TransitionNode{
 
 	@Override
 	public void setFaulty(boolean fault) {
+	}
+
+	public void setDuration(String duration){
+		this.duration = duration;
+		sendNotification( new PropertyChangedEvent(this, "duration") );
+	}
+
+	public String getDuration(){
+		return duration;
 	}
 
 }

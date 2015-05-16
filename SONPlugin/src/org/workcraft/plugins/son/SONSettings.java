@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class SONSettings implements Settings {
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
@@ -24,10 +25,13 @@ public class SONSettings implements Settings {
 	private static final Color defaultRelationErrColor = new Color(255, 204, 204);
 	private static final Color defaultCyclePathColor = new Color(255, 102, 102);
 	private static final Color defaultConnectionErrColor = new  Color(255, 102, 102);
-	private static final Color defaultErrLabelColor = Color.GREEN.darker();
+	private static final Color defaultErrLabelColor = CommonVisualSettings.getLabelColor();
 	private static final Color defaultGroupForegroundColor = Color.GRAY;
 	private static final Color defaultBlockFillColor = new Color(245, 255, 230);
+
 	private static final Positioning defaultErrLabelPositioning = Positioning.BOTTOM;
+	private static final Positioning defaultDurationLabelPositioning = Positioning.TOP;
+	private static final boolean defaultTimeVisibility = false;
 
 	private static Color relationErrColor = defaultRelationErrColor;
 	private static Color cyclePathColor = defaultCyclePathColor;
@@ -36,6 +40,8 @@ public class SONSettings implements Settings {
 	private static Color groupForegroundColor = defaultGroupForegroundColor;
 	private static Color blockFillColor = defaultBlockFillColor;
 	private static Positioning errLabelPositioning = defaultErrLabelPositioning;
+	private static Positioning durationLabelPositioning = defaultDurationLabelPositioning;
+	private static boolean timeVisibility = defaultTimeVisibility;
 
 	public SONSettings(){
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
@@ -105,6 +111,16 @@ public class SONSettings implements Settings {
 			}
 			protected Color getter(SONSettings object) {
 				return SONSettings.getGroupForegroundColor();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<SONSettings, Boolean>(
+				this, "Show time values", Boolean.class) {
+			protected void setter(SONSettings object, Boolean value) {
+				SONSettings.setTimeVisibility(value);;
+			}
+			protected Boolean getter(SONSettings object) {
+				return SONSettings.getTimeVisibility();
 			}
 		});
 	}
@@ -197,5 +213,21 @@ public class SONSettings implements Settings {
 
 	public static void setBlockFillColor(Color value) {
 		blockFillColor = value;
+	}
+
+	public static Boolean getTimeVisibility() {
+		return timeVisibility;
+	}
+
+	public static void setTimeVisibility(Boolean value) {
+		timeVisibility = value;
+	}
+
+	public static Positioning getDurationLabelPositioning() {
+		return durationLabelPositioning;
+	}
+
+	public static void setDurationLabelPositioning(Positioning value) {
+		durationLabelPositioning = value;
 	}
 }

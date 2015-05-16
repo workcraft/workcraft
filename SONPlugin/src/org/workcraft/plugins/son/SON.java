@@ -27,6 +27,8 @@ import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.PlaceNodeTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.TransitionNodeTimePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -387,6 +389,12 @@ public class SON extends AbstractMathModel {
 		ModelProperties properties = super.getProperties(node);
 		if (node instanceof SONConnection) {
 			properties.add(new ConnectionTimePropertyDescriptor((SONConnection)node));
+		}
+		if (node instanceof PlaceNode) {
+			properties.add(new PlaceNodeTimePropertyDescriptor((PlaceNode)node));
+		}
+		if (node instanceof TransitionNode) {
+			properties.add(new TransitionNodeTimePropertyDescriptor((TransitionNode)node));
 		}
 
 		return properties;

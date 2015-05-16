@@ -9,18 +9,18 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
-import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.PlaceNode;
 
-public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
-	private final SONConnection con;
+public class PlaceNodeTimePropertyDescriptor implements PropertyDescriptor{
+	private final PlaceNode c;
 
-	public ConnectionTimePropertyDescriptor(SONConnection con) {
-		this.con = con;
+	public PlaceNodeTimePropertyDescriptor(PlaceNode c) {
+		this.c = c;
 	}
 
 	@Override
 	public String getName() {
-		return "Time interval";
+		return "Duration";
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return con.getTime();
+		return c.getDuration();
 	}
 
 	@Override
@@ -56,13 +56,14 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
 		MainWindow mainWindow = framework.getMainWindow();
 
 		if(!TimeAlg.isValidInput(input)){
-			input = con.getTime();
+			input = c.getDuration();
 			JOptionPane.showMessageDialog(mainWindow,
-					"Input value is not a valid time interval.\n"
+					"Input value is not a valid duration interval.\n"
 							+ "The format must be xxxx-xxxx, where x is positive integer.",
 					"Cannot change property", JOptionPane.WARNING_MESSAGE);
 		}
-		con.setTime(input);
+
+		c.setDuration((String)value);
 	}
 
 	@Override
