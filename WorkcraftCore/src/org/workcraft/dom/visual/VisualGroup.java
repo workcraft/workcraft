@@ -172,7 +172,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		return Hierarchy.getChildrenOfType(this, VisualComponent.class);
 	}
 
-	public final Collection<VisualConnection> getConnections() {
+	public final Collection<VisualConnection> getnections() {
 		return Hierarchy.getChildrenOfType(this, VisualConnection.class);
 	}
 
