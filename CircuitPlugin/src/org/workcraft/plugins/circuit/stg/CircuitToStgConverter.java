@@ -419,7 +419,8 @@ public class CircuitToStgConverter {
 	}
 
 	private void setPosition(Movable node, Point2D point) {
-		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(point.getX(), point.getY()));
+		AffineTransform t = AffineTransform.getTranslateInstance(point.getX(), point.getY());
+		TransformHelper.applyTransform(node, t);
 	}
 
 	private Point2D getDirectionOffset(VisualContact contact) {

@@ -22,7 +22,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
-import java.util.Collection;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NotAnAncestorException;
@@ -33,18 +32,8 @@ public class TransformHelper {
 
 	public static void applyTransform(Node node, AffineTransform transform) {
 		if(node instanceof Movable) {
-			((Movable) node).applyTransform(transform);
+			((Movable)node).applyTransform(transform);
 		}
-	}
-
-	public static void applyTransformToNodes(Collection<Node> nodes, AffineTransform transform) {
-		for(Node n: nodes) {
-			applyTransform(n, transform);
-		}
-	}
-
-	public static void applyTransformToChildNodes(Node parent, AffineTransform transform) {
-		applyTransformToNodes(parent.getChildren(), transform);
 	}
 
 	public static AffineTransform getTransformToAncestor(Node node, Node ancestor) {

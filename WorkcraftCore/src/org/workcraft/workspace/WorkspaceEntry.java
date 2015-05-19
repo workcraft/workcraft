@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -39,11 +38,8 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
@@ -382,12 +378,7 @@ public class WorkspaceEntry implements ObservableState {
 				setChanged(true);
 
 				VisualModel model = result.getVisualModel();
-				Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
-				Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
-				HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =
-						VisualModelTransformer.setConnectionsScaleMode(includedConnections, ScaleMode.NONE);
 				VisualModelTransformer.translateSelection(model, 1.0, 1.0);
-				VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
 						"Clipboard paste failed", JOptionPane.ERROR_MESSAGE);

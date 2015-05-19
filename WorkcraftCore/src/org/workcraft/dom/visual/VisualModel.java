@@ -66,9 +66,8 @@ public interface VisualModel extends Model, ObservableState {
 
 	public boolean isGroupable(Node node);
 	public VisualGroup groupSelection();
-	public void ungroupSelection();
 	public VisualPage groupPageSelection();
-	public void ungroupPageSelection();
+	public void ungroupSelection();
 
 	public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
 

@@ -29,14 +29,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -180,16 +178,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 		groupImpl.reparent(nodesToReparent, newParent);
-
-		// FIXME: A hack to preserve the shape of ungrouped connections (intro).
-		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(newParent, VisualConnection.class);
-		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(nodesToReparent, connections);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(includedConnections, ScaleMode.ADAPTIVE);
-
-		TransformHelper.applyTransformToNodes(nodesToReparent, localToParentTransform);
-
-		// FIXME: A hack to preserve the shape of ungrouped connections (outro).
-		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
+		double tx = localToParentTransform.getTranslateX();
+		double ty = localToParentTransform.getTranslateY();
+		VisualModelTransformer.translateNodes(nodesToReparent, -tx, -ty);
 		return nodesToReparent;
 	}
 
@@ -247,24 +238,20 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		groupImpl.setParent(parent);
 	}
 
-
 	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 	}
-
 
 	@Override
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
 
-
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
-
 
 	@Override
 	public void reparent(Collection<Node> nodes) {
@@ -273,10 +260,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	@Override
 	public Point2D getCenterInLocalSpace() {
-//		Rectangle2D bb = getBoundingBoxInLocalSpace();
-//		if (bb != null) {
-//			return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
-//		}
 		return new Point2D.Double(0, 0);
 	}
 

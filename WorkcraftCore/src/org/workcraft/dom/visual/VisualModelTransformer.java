@@ -10,32 +10,36 @@ import java.util.Map.Entry;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 
 public class VisualModelTransformer {
 
 	private static void transformNodes(Collection<Node> nodes, AffineTransform t) {
-		assert nodes!=null;
-		for (Node node: nodes) {
-			if (node instanceof VisualTransformableNode) {
-				VisualTransformableNode vn = (VisualTransformableNode) node;
-				Point2D np = vn.getPosition();
-				t.transform(np, np);
-				vn.setPosition(np);
-			} else if (node instanceof Movable) {
-				Movable mv = (Movable) node;
-				MovableHelper.translate(mv, t.getTranslateX(), t.getTranslateY());
-			}
-		}
-	}
-
-	private static void transformConnections(Collection<Node> nodes, AffineTransform t) {
-		assert nodes!=null;
+		assert (nodes != null);
+		// Control points may move while the nodes are repositioned, therefore this two-step transformation.
+		HashMap<ControlPoint, Point2D> controlPointPositions = new HashMap<>();
 		for (Node node: nodes) {
 			if (node instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)node;
 				for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
-					Point2D np = cp.getPosition();
+					controlPointPositions.put(cp, cp.getPosition());
+				}
+			}
+		}
+		// First reposition vertices.
+		for (Node node: nodes) {
+			if (node instanceof VisualTransformableNode) {
+				VisualTransformableNode vn = (VisualTransformableNode)node;
+				Point2D np = vn.getPosition();
+				t.transform(np, np);
+				vn.setPosition(np);
+			}
+		}
+		// Then reposition control points, using their stored initial positions.
+		for (Node node: nodes) {
+			if (node instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)node;
+				for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
+					Point2D np = controlPointPositions.get(cp);
 					t.transform(np, np);
 					cp.setPosition(np);
 				}
@@ -43,10 +47,13 @@ public class VisualModelTransformer {
 		}
 	}
 
-	public static void translateSelection(VisualModel vm, double tx, double ty) {
+	public static void translateNodes(Collection<Node> nodes, double tx, double ty) {
 		AffineTransform t = AffineTransform.getTranslateInstance(tx, ty);
-		transformNodes(vm.getSelection(), t);
-		transformConnections(vm.getSelection(), t);
+		transformNodes(nodes, t);
+	}
+
+	public static void translateSelection(VisualModel vm, double tx, double ty) {
+		translateNodes(vm.getSelection(), tx, ty);
 	}
 
 	public static void scaleSelection(VisualModel vm, double sx, double sy) {
@@ -60,7 +67,6 @@ public class VisualModelTransformer {
 			t.translate(-cp.getX(), -cp.getY());
 
 			transformNodes(vm.getSelection(), t);
-			transformConnections(vm.getSelection(), t);
 		}
 	}
 
@@ -75,7 +81,6 @@ public class VisualModelTransformer {
 			t.translate(-cp.getX(), -cp.getY());
 
 			transformNodes(vm.getSelection(), t);
-			transformConnections(vm.getSelection(), t);
 		}
 	}
 
@@ -110,26 +115,6 @@ public class VisualModelTransformer {
 		return selectionBB;
 	}
 
-	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components (outro).
-	public static HashMap<VisualConnection, ScaleMode> setConnectionsScaleMode(Collection<VisualConnection> connections, ScaleMode scaleMode) {
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = new HashMap<VisualConnection, ScaleMode>();
-		for (VisualConnection vc: connections) {
-			connectionToScaleModeMap.put(vc, vc.getScaleMode());
-			vc.setScaleMode(scaleMode);
-		}
-		return connectionToScaleModeMap;
-	}
-
-	public static void setConnectionsScaleMode(HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap) {
-		if (connectionToScaleModeMap != null) {
-			for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
-				VisualConnection vc = entry.getKey();
-				ScaleMode scaleMode = entry.getValue();
-				vc.setScaleMode(scaleMode);
-			}
-		}
-	}
-
 	public static HashMap<VisualTransformableNode, Point2D> getRootSpacePositions(Collection<Node> nodes) {
 		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<VisualTransformableNode, Point2D>();
 		for (Node node: nodes) {
@@ -137,6 +122,12 @@ public class VisualModelTransformer {
 				VisualTransformableNode component = (VisualTransformableNode)node;
 				Point2D position = component.getRootSpacePosition();
 				componentToPositionMap.put(component, position);
+			} else if (node instanceof VisualConnection) {
+				VisualConnection connection = (VisualConnection)node;
+				for (ControlPoint cp: connection.getGraphic().getControlPoints()) {
+					Point2D position = cp.getRootSpacePosition();
+					componentToPositionMap.put(cp, position);
+				}
 			}
 		}
 		return componentToPositionMap;
@@ -144,10 +135,21 @@ public class VisualModelTransformer {
 
 	public static void setRootSpacePositions(HashMap<VisualTransformableNode, Point2D> componentToPositionMap) {
 		if (componentToPositionMap != null) {
+			// First reposition vertices.
 			for (Entry<VisualTransformableNode, Point2D> entry: componentToPositionMap.entrySet()) {
-				VisualTransformableNode component = entry.getKey();
-				Point2D position = entry.getValue();
-				component.setRootSpacePosition(position);
+				VisualTransformableNode vn = entry.getKey();
+				if ( !(vn instanceof ControlPoint) ) {
+					Point2D position = entry.getValue();
+					vn.setRootSpacePosition(position);
+				}
+			}
+			// Then reposition control points.
+			for (Entry<VisualTransformableNode, Point2D> entry: componentToPositionMap.entrySet()) {
+				VisualTransformableNode vn = entry.getKey();
+				if (vn instanceof ControlPoint) {
+					Point2D position = entry.getValue();
+					vn.setRootSpacePosition(position);
+				}
 			}
 		}
 	}

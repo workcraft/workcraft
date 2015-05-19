@@ -44,11 +44,9 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -329,33 +327,26 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	public static Point2D centralizeComponents(Collection<Node> components) {
 		// Find weighted center
-		double deltaX = 0.0;
-		double deltaY = 0.0;
+		double tx = 0.0;
+		double ty = 0.0;
 		int num = 0;
 		for (Node node: components) {
 			if (node instanceof VisualTransformableNode) {
-				VisualTransformableNode tn = (VisualTransformableNode)node;
-				deltaX += tn.getX();
-				deltaY += tn.getY();
+				VisualTransformableNode vn = (VisualTransformableNode)node;
+				tx += vn.getX();
+				ty += vn.getY();
 				num++;
 			}
 		}
 		if (num>0) {
-			deltaX /= num;
-			deltaY /= num;
+			tx /= num;
+			ty /= num;
 		}
 		// Round numbers
-		deltaX = Math.round(deltaX*2)/2;
-		deltaY = Math.round(deltaY*2)/2;
-
-		// Move components
-		for (Node node: components) {
-			if (node instanceof VisualTransformableNode && !(node instanceof ControlPoint)) {
-				VisualTransformableNode tn = (VisualTransformableNode)node;
-				tn.setPosition(new Point2D.Double(tn.getX() - deltaX, tn.getY() - deltaY));
-			}
-		}
-		return new Point2D.Double(deltaX, deltaY);
+		tx = Math.round(tx * 2) / 2;
+		ty = Math.round(ty * 2) / 2;
+		VisualModelTransformer.translateNodes(components, -tx, -ty);
+		return new Point2D.Double(tx, ty);
 	}
 
 	@Override
@@ -452,9 +443,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
 			if (node instanceof VisualGroup) {
 				VisualGroup group = (VisualGroup)node;
-				for(Node subNode : group.unGroup()) {
-					toSelect.add(subNode);
-				}
+				ArrayList<Node> nodesToReparent = new ArrayList<Node>(group.getChildren());
+				toSelect.addAll(nodesToReparent);
+				this.reparent(getCurrentLevel(), this, group, nodesToReparent);
 				getCurrentLevel().remove(group);
 			} else if (node instanceof VisualPage) {
 				VisualPage page = (VisualPage)node;
@@ -470,11 +461,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		select(toSelect);
 	}
 
-
-	@Override
-	public void ungroupPageSelection() {
-		ungroupSelection();
-	}
 
 	@Override
 	public void deleteSelection() {
@@ -560,21 +546,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		// FIXME: A hack to preserve the root coordinates of reparented nodes and shape of included connections (intro).
 		// Save root-space position of components and set connections scale mode to follow components.
 		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
-		Collection<VisualConnection> srcConnections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
-		Collection<VisualConnection> srcIncludedConnections = SelectionHelper.getIncludedConnections(srcChildren, srcConnections);
-//		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.NONE);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.ADAPTIVE);
 
-		Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
+		Collection<Node> dstChildren = new LinkedList<>(srcChildren);
 		srcRoot.reparent(dstChildren, dstContainer);
 
-		// FIXME: A hack to preserve the root coordinates of reparented nodes and shape of included connections (outro).
-		// Restore root-space position of components and connections scale mode.
 		VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
-		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 	}
 
 	@Override
