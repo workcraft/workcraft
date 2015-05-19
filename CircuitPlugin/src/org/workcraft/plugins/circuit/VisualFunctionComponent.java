@@ -15,6 +15,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -128,8 +129,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			if (v != null) {
 				at = VisualContact.Direction.getDirectionTransform(v.getDirection());
 			}
-			double inputPositionX = snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
-			double outputPositionX = snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
+			double inputPositionX = TransformHelper.snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
+			double outputPositionX = TransformHelper.snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
 
 			for (Node n: this.getChildren()) {
 				if (n instanceof VisualFunctionContact) {

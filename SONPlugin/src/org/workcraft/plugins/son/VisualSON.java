@@ -16,9 +16,11 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -339,8 +341,9 @@ public class VisualSON extends AbstractVisualModel {
 
 			// Final touch on visual part
 			if (group != null) {
-				Point2D groupCenter = centralizeComponents(selected);
-				group.setPosition(groupCenter);
+				Point2D centre = TransformHelper.getSnappedCentre(selected);
+				VisualModelTransformer.translateNodes(selected, -centre.getX(), -centre.getY());
+				group.setPosition(centre);
 				select(group);
 			}
 		}
@@ -405,8 +408,9 @@ public class VisualSON extends AbstractVisualModel {
 
 			// Final touch on visual part
 			if (block != null) {
-				Point2D groupCenter = centralizeComponents(selected);
-				block.setPosition(groupCenter);
+				Point2D centre = TransformHelper.getSnappedCentre(selected);
+				VisualModelTransformer.translateNodes(selected, -centre.getX(), -centre.getY());
+				block.setPosition(centre);
 				select(block);
 			}
 		}

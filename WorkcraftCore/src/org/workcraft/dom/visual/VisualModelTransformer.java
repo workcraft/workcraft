@@ -29,9 +29,23 @@ public class VisualModelTransformer {
 		for (Node node: nodes) {
 			if (node instanceof VisualTransformableNode) {
 				VisualTransformableNode vn = (VisualTransformableNode)node;
-				Point2D np = vn.getPosition();
-				t.transform(np, np);
-				vn.setPosition(np);
+				Point2D pos = vn.getPosition();
+				if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
+					AffineTransform t2 = new AffineTransform();
+					t2.translate(-pos.getX(), -pos.getY());
+					t2.concatenate(t);
+					t2.translate(pos.getX(), pos.getY());
+
+					AffineTransform t3 = AffineTransform.getTranslateInstance(-t2.getTranslateX(), -t2.getTranslateY());
+					t3.concatenate(t2);
+					transformNodes(vn.getChildren(), t3);
+
+					t.transform(pos, pos);
+					vn.setPosition(pos);
+				} else {
+					t.transform(pos, pos);
+					vn.setPosition(pos);
+				}
 			}
 		}
 		// Then reposition control points, using their stored initial positions.
@@ -39,9 +53,9 @@ public class VisualModelTransformer {
 			if (node instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)node;
 				for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
-					Point2D np = controlPointPositions.get(cp);
-					t.transform(np, np);
-					cp.setPosition(np);
+					Point2D pos = controlPointPositions.get(cp);
+					t.transform(pos, pos);
+					cp.setPosition(pos);
 				}
 			}
 		}

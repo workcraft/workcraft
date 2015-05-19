@@ -159,7 +159,7 @@ public class Geometry {
 	}
 
 
-	public static double getBorderPointParameter (Touchable collisionNode, ParametricCurve curve, double tStart, double tEnd) {
+	public static double getBorderPointParameter(Touchable collisionNode, ParametricCurve curve, double tStart, double tEnd) {
 		Point2D point = new Point2D.Double();
 		while(Math.abs(tEnd-tStart) > 1e-6) {
 			double t = (tStart + tEnd)*0.5;
@@ -173,7 +173,7 @@ public class Geometry {
 		return tStart;
 	}
 
-	public static PartialCurveInfo buildConnectionCurveInfo (VisualConnectionProperties connectionInfo, ParametricCurve curve, double endCutoff) {
+	public static PartialCurveInfo buildConnectionCurveInfo(VisualConnectionProperties connectionInfo, ParametricCurve curve, double endCutoff) {
 		PartialCurveInfo info = new PartialCurveInfo();
 		info.tStart = getBorderPointParameter(connectionInfo.getFirstShape(), curve, 0, 1);
 		info.tEnd = getBorderPointParameter(connectionInfo.getSecondShape(), curve, 1, endCutoff);
@@ -197,7 +197,7 @@ public class Geometry {
 		return info;
 	}
 
-	public static Point2D changeBasis (Point2D p, Point2D vx, Point2D vy) {
+	public static Point2D changeBasis(Point2D p, Point2D vx, Point2D vy) {
 		Point2D result = (Point2D)p.clone();
 
 		if (dotProduct(vx,vy) > 0.0000001)
@@ -223,4 +223,5 @@ public class Geometry {
 
 		return x1 * y2 - y1 * x2;
 	}
+
 }

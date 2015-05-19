@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.cpog;
 
+import java.awt.geom.Point2D;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
@@ -31,7 +32,9 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -199,7 +202,9 @@ public class VisualCPOG extends AbstractVisualModel
 			}
 			getCurrentLevel().add(scenario);
 			getCurrentLevel().reparent(nodes, scenario);
-			scenario.setPosition(centralizeComponents(nodes));
+			Point2D centre = TransformHelper.getSnappedCentre(nodes);
+			VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
+			scenario.setPosition(centre);
 			select(scenario);
 		}
 		return scenario;

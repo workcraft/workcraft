@@ -325,30 +325,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		getMathModel().setName(node, name);
 	}
 
-	public static Point2D centralizeComponents(Collection<Node> components) {
-		// Find weighted center
-		double tx = 0.0;
-		double ty = 0.0;
-		int num = 0;
-		for (Node node: components) {
-			if (node instanceof VisualTransformableNode) {
-				VisualTransformableNode vn = (VisualTransformableNode)node;
-				tx += vn.getX();
-				ty += vn.getY();
-				num++;
-			}
-		}
-		if (num>0) {
-			tx /= num;
-			ty /= num;
-		}
-		// Round numbers
-		tx = Math.round(tx * 2) / 2;
-		ty = Math.round(ty * 2) / 2;
-		VisualModelTransformer.translateNodes(components, -tx, -ty);
-		return new Point2D.Double(tx, ty);
-	}
-
 	@Override
 	public Container getCurrentLevel() {
 		return currentLevel;
@@ -360,13 +336,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		currentLevel = newCurrentLevel;
 
 		// manage the isInside value for all parents and children
-		Collapsible collapsabla = null;
+		Collapsible collapsible = null;
 		if (newCurrentLevel instanceof Collapsible) {
-			collapsabla = (Collapsible)newCurrentLevel;
+			collapsible = (Collapsible)newCurrentLevel;
 		}
 
-		if (collapsabla != null) {
-			collapsabla.setIsCurrentLevelInside(true);
+		if (collapsible != null) {
+			collapsible.setIsCurrentLevelInside(true);
 			Node parent = newCurrentLevel.getParent();
 			while (parent != null) {
 				if (parent instanceof Collapsible) {
@@ -415,7 +391,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			group = new VisualGroup();
 			getCurrentLevel().add(group);
 			getCurrentLevel().reparent(nodes, group);
-			group.setPosition(centralizeComponents(nodes));
+			Point2D centre = TransformHelper.getSnappedCentre(nodes);
+			VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
+			group.setPosition(centre);
 			select(group);
 		}
 		return group;
@@ -431,7 +409,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			page = new VisualPage(pageNode);
 			getCurrentLevel().add(page);
 			reparent(page, this, getCurrentLevel(), nodes);
-			page.setPosition(centralizeComponents(nodes));
+			Point2D pos = TransformHelper.getSnappedCentre(nodes);
+			VisualModelTransformer.translateNodes(nodes, -pos.getX(), -pos.getY());
+			page.setPosition(pos);
 			select(page);
 		}
 		return page;

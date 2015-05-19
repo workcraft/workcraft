@@ -170,7 +170,8 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		transformChanging();
 		double dx = pos.getX() - getLocalToParentTransform().getTranslateX();
 		double dy = pos.getY() - getLocalToParentTransform().getTranslateY();
-		localToParentTransform.translate(dx, dy);
+		localToParentTransform.setToTranslation(pos.getX(), pos.getY());
+//		localToParentTransform.translate(dx, dy);
 		transformChanged();
 	}
 

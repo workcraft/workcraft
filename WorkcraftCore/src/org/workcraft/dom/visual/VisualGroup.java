@@ -55,43 +55,14 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 	protected double size = CommonVisualSettings.getBaseSize();
 	protected final double margin = 0.20;
 
+	private boolean isCurrentLevelInside = false;
 	private boolean isCollapsed = false;
-	@Override
-	public void setIsCollapsed(boolean isCollapsed) {
-		sendNotification(new TransformChangingEvent(this));
-
-		this.isCollapsed = isCollapsed;
-		Point2D newCentre = AbstractVisualModel.centralizeComponents(getChildren());
-		this.setPosition(new Point2D.Double(this.getPosition().getX() + newCentre.getX(), this.getPosition().getY() + newCentre.getY()));
-
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-	@Override
-	public boolean getIsCollapsed() {
-		return isCollapsed&&!isExcited;
-	}
-
 	private boolean isExcited = false;
-	public void setIsExcited(boolean isExcited) {
-		if (this.isExcited==isExcited) return;
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-		sendNotification(new TransformChangingEvent(this));
-		this.isExcited = isExcited;
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-
-	private boolean isInside = false;
-	@Override
-	public void setIsCurrentLevelInside(boolean isInside) {
-		sendNotification(new TransformChangingEvent(this));
-		this.isInside = isInside;
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-	public boolean isCurrentLevelInside() {
-		return isInside;
+	public VisualGroup() {
+		super();
+		addPropertyDeclarations();
 	}
 
 	private void addPropertyDeclarations() {
@@ -109,13 +80,43 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		});
 	}
 
-	public VisualGroup() {
-		super();
-		addPropertyDeclarations();
+	@Override
+	public void setIsCurrentLevelInside(boolean value) {
+		if (isCurrentLevelInside != value) {
+			sendNotification(new TransformChangingEvent(this));
+			this.isCurrentLevelInside = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
 	}
 
+	public boolean isCurrentLevelInside() {
+		return isCurrentLevelInside;
+	}
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	@Override
+	public void setIsCollapsed(boolean value) {
+		if (isCollapsed != value) {
+			sendNotification(new TransformChangingEvent(this));
+			isCollapsed = value;
+			Point2D centre = TransformHelper.getSnappedCentre(getChildren());
+			setPosition(new Point2D.Double(getX() + centre.getX(), getY() + centre.getY()));
+			sendNotification(new TransformChangedEvent(this));
+		}
+	}
+
+	@Override
+	public boolean getIsCollapsed() {
+		return (isCollapsed && !isExcited);
+	}
+
+	@Override
+	public void setIsExcited(boolean value) {
+		if (isExcited != value) {
+			sendNotification(new TransformChangingEvent(this));
+			isExcited = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
+	}
 
 	@Override
 	public void draw(DrawRequest r) {

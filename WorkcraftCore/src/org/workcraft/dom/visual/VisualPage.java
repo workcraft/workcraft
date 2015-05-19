@@ -30,34 +30,12 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Page")
 @SVGIcon("images/icons/svg/page.svg")
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
-	private boolean isInside = false;
-
-
+	private boolean isCurrentLevelInside = false;
 	private boolean isCollapsed = false;
-	@Override
-	public void setIsCollapsed(boolean isCollapsed) {
-		sendNotification(new TransformChangingEvent(this));
-		sendNotification(new TransformChangingEvent(this));
-		this.isCollapsed = isCollapsed;
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-	@Override
-	public boolean getIsCollapsed() {
-		return isCollapsed&&!isExcited;
-	}
-
 	private boolean isExcited = false;
-	public void setIsExcited(boolean isExcited) {
-		if (this.isExcited==isExcited) return;
-
-		sendNotification(new TransformChangingEvent(this));
-		this.isExcited = isExcited;
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-
 	private String referencedModel = "";
+	private DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+
 	public void setReferencedModel(String model) {
 		sendNotification(new TransformChangingEvent(this));
 		this.referencedModel = model;
@@ -105,17 +83,41 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	}
 
 	@Override
-	public void setIsCurrentLevelInside(boolean isInside) {
-		sendNotification(new TransformChangingEvent(this));
-		this.isInside = isInside;
-		sendNotification(new TransformChangedEvent(this));
+	public void setIsCurrentLevelInside(boolean value) {
+		if (isCurrentLevelInside != value) {
+			sendNotification(new TransformChangingEvent(this));
+			isCurrentLevelInside = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
 	}
 
+	@Override
 	public boolean isCurrentLevelInside() {
-		return isInside;
+		return isCurrentLevelInside;
 	}
 
-	private DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	@Override
+	public void setIsCollapsed(boolean value) {
+		if (isCollapsed != value) {
+			sendNotification(new TransformChangingEvent(this));
+			isCollapsed = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
+	}
+
+	@Override
+	public boolean getIsCollapsed() {
+		return (isCollapsed && !isExcited);
+	}
+
+	@Override
+	public void setIsExcited(boolean value) {
+		if (isExcited != value) {
+			sendNotification(new TransformChangingEvent(this));
+			isExcited = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
+	}
 
 	public VisualPage(MathNode refNode) {
 		super(refNode);

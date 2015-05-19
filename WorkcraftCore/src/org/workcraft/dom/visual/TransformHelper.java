@@ -22,6 +22,9 @@
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.NotAnAncestorException;
@@ -72,4 +75,27 @@ public class TransformHelper {
 	public static Touchable transform(Touchable touchable, AffineTransform transform) {
 		return new TouchableTransformer(touchable, transform);
 	}
+
+	public static double snapP5(double x) {
+		return (double) (Math.round(x * 2)) / 2;
+	}
+
+	public static Point2D getCentre(Collection<Node> nodes) {
+		Rectangle2D bb = null;
+		for(Node node : nodes) {
+			if (node instanceof Touchable) {
+				Rectangle2D nodeBoundingBox = ((Touchable)node).getBoundingBox();
+				bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
+			}
+		}
+		return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
+	}
+
+	public static Point2D getSnappedCentre(Collection<Node> nodes) {
+			Point2D centre = getCentre(nodes);
+			double snapX = snapP5(centre.getX());
+			double snapY = snapP5(centre.getY());
+			return new Point2D.Double(snapX, snapY);
+	}
+
 }

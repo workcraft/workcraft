@@ -51,6 +51,7 @@ import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.Touchable;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -290,10 +291,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		invalidateBoundingBox();
 	}
 
-	public static double snapP5(double x) {
-		return (double) (Math.round(x * 2)) / 2;
-	}
-
 	public void addContact(VisualCircuit vcircuit, VisualContact vc) {
 		if (!getChildren().contains(vc)) {
 			LinkedList<VisualContact> sameSideContacts = getOrderedContacts(vc.getDirection(), true);
@@ -304,25 +301,25 @@ public class VisualCircuitComponent extends VisualComponent implements
 			Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 			switch (vc.getDirection()) {
 			case WEST:
-				vc.setX(snapP5(bb.getMinX() - contactLength));
+				vc.setX(TransformHelper.snapP5(bb.getMinX() - contactLength));
 				if (sameSideContacts.size() > 0) {
 					vc.setY(sameSideContacts.getFirst().getY() + contactLength);
 				}
 				break;
 			case NORTH:
-				vc.setY(snapP5(bb.getMinY() - contactLength));
+				vc.setY(TransformHelper.snapP5(bb.getMinY() - contactLength));
 				if (sameSideContacts.size() > 0) {
 					vc.setX(sameSideContacts.getFirst().getX() + contactLength);
 				}
 				break;
 			case EAST:
-				vc.setX(snapP5(bb.getMaxX() + contactLength));
+				vc.setX(TransformHelper.snapP5(bb.getMaxX() + contactLength));
 				if (sameSideContacts.size() > 0) {
 					vc.setY(sameSideContacts.getFirst().getY() + contactLength);
 				}
 				break;
 			case SOUTH:
-				vc.setY(snapP5(bb.getMaxY() + contactLength));
+				vc.setY(TransformHelper.snapP5(bb.getMaxY() + contactLength));
 				if (sameSideContacts.size() > 0) {
 					vc.setX(sameSideContacts.getFirst().getX() + contactLength);
 				}
