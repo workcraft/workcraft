@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.Icon;
@@ -60,6 +61,7 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Flippable;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Rotatable;
+import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
@@ -832,9 +834,28 @@ public class SelectionTool extends AbstractTool {
 	private void beforeSelectionModification(final GraphEditor editor) {
 		// Capture model memento for use in afterSelectionModification
 		editor.getWorkspaceEntry().captureMemento();
+
+		// FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (intro).
+        VisualModel model = editor.getModel();
+        Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
+        Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
+        connectionToScaleModeMap = new HashMap<VisualConnection, ScaleMode>();
+        for (VisualConnection vc: includedConnections) {
+            connectionToScaleModeMap.put(vc, vc.getScaleMode());
+            vc.setScaleMode(ScaleMode.NONE);
+        }
 	}
 
 	private void afterSelectionModification(final GraphEditor editor) {
+       // FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (outro).
+		if (connectionToScaleModeMap != null) {
+			for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
+				VisualConnection vc = entry.getKey();
+				ScaleMode scaleMode = entry.getValue();
+				vc.setScaleMode(scaleMode);
+			}
+		}
+
 		// Save memento that was captured in beforeSelectionModification
 		editor.getWorkspaceEntry().saveMemento();
 		// Redraw the editor window to recalculate all the bounding boxes
