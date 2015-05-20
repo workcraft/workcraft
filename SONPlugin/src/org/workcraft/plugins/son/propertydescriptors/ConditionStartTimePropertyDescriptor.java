@@ -9,18 +9,18 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
-import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.elements.Condition;
 
-public class TransitionNodeTimePropertyDescriptor implements PropertyDescriptor{
-	private final TransitionNode e;
+public class ConditionStartTimePropertyDescriptor implements PropertyDescriptor{
+	private final Condition c;
 
-	public TransitionNodeTimePropertyDescriptor(TransitionNode e) {
-		this.e = e;
+	public ConditionStartTimePropertyDescriptor(Condition c) {
+		this.c = c;
 	}
 
 	@Override
 	public String getName() {
-		return "Duration";
+		return "Start time";
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class TransitionNodeTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public boolean isWritable() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class TransitionNodeTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return e.getDuration();
+		return c.getStartTime();
 	}
 
 	@Override
@@ -56,14 +56,14 @@ public class TransitionNodeTimePropertyDescriptor implements PropertyDescriptor{
 		MainWindow mainWindow = framework.getMainWindow();
 
 		if(!TimeAlg.isValidInput(input)){
-			input = e.getDuration();
+			input = c.getStartTime();
 			JOptionPane.showMessageDialog(mainWindow,
 					"Input value is not a valid duration interval.\n"
 							+ "The format must be xxxx-xxxx, where x is positive integer.",
 					"Cannot change property", JOptionPane.WARNING_MESSAGE);
 		}
 
-		e.setDuration((String)value);
+		c.setStartTime((String)value);
 	}
 
 	@Override

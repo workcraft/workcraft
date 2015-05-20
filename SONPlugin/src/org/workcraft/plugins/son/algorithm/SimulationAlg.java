@@ -49,7 +49,7 @@ public class SimulationAlg extends RelationAlgorithm {
         return result;
     }
 
-	//set initial marking
+	//get SON initial marking
 	public Map<PlaceNode, Boolean> getInitialMarking(){
 		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
 		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
@@ -82,6 +82,45 @@ public class SimulationAlg extends RelationAlgorithm {
 			}
 			else{
 				for(Condition c : getInitial(group.getConditions())){
+					result.put(c, true);
+				}
+			}
+		}
+		return result;
+	}
+
+	//get SON final marking
+	public Map<PlaceNode, Boolean> getFinalMarking(){
+		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
+		Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
+
+		for(PlaceNode c : net.getPlaceNodes())
+			result.put(c, false);
+
+		for(ONGroup group : net.getGroups()){
+			if(upperGroups.contains(group))
+				for(Condition c : getFinal(group.getConditions())){
+					result.put(c, true);
+				}
+
+			else if(lowerGroups.contains(group)){
+				for(Condition c : getFinal(group.getConditions())){
+					boolean isFinal = true;
+					Collection<Condition> set = bsonAlg.getUpperConditions(c);
+					for(Condition c2 : set){
+						if(!isInitial(c2)){
+							ONGroup group2 = net.getGroup(c2);
+							if(!set.containsAll(getFinal(group2.getConditions())))
+								isFinal = false;
+						}
+					}
+					if(isFinal)
+						result.put(c, true);
+				}
+			}
+			else{
+				for(Condition c : getFinal(group.getConditions())){
 					result.put(c, true);
 				}
 			}

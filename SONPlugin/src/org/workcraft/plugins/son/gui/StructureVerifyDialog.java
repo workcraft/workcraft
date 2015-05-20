@@ -40,7 +40,7 @@ public class StructureVerifyDialog extends JDialog{
 	private SON net;
 	private static final long serialVersionUID = 1L;
 
-	private JPanel  buttonsPanel, GroupPanel, groupPanelContent, ArcTypePanel, settingPanel;
+	private JPanel  buttonsPanel, GroupPanel, groupPanelContent, typePanel, settingPanel;
 	private JButton runButton, cancelButton;
 	private JComboBox typeCombo;
 	private JList groupList;
@@ -130,8 +130,8 @@ public class StructureVerifyDialog extends JDialog{
 
 	}
 
-	private void createArcTypesPanel(){
-		ArcTypePanel = new JPanel();
+	private void createTypePanel(){
+		typePanel = new JPanel();
 
 		typeCombo = new JComboBox();
 		typeCombo.addItem(new typeMode(0, "Structured Occurrence Nets"));
@@ -140,7 +140,7 @@ public class StructureVerifyDialog extends JDialog{
 		typeCombo.addItem(new typeMode(3, "Behavioural Structured Occurrence Nets"));
 		typeCombo.addItem(new typeMode(4, "Temporal Structured Occurrence Nets"));
 
-		ArcTypePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
+		typePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
 
 	}
 
@@ -315,16 +315,16 @@ public class StructureVerifyDialog extends JDialog{
 
 		net.refreshColor();
 
-		createArcTypesPanel();
+		createTypePanel();
 		createGroupPanel();
 		createButtonsPanel();
-		this.createSettingPanel();
+		createSettingPanel();
 
 		JPanel content = new JPanel();
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
 		content.add(Box.createRigidArea(new Dimension(0, 15)));
-		content.add(this.ArcTypePanel);
+		content.add(this.typePanel);
 		content.add(groupPanelContent);
 		content.add(this.settingPanel);
 		content.add(this.buttonsPanel);

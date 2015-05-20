@@ -26,9 +26,11 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.propertydescriptors.ConditionEndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.ConditionStartTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.PlaceNodeTimePropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.TransitionNodeTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.BlockTimePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -393,8 +395,12 @@ public class SON extends AbstractMathModel {
 		if (node instanceof PlaceNode) {
 			properties.add(new PlaceNodeTimePropertyDescriptor((PlaceNode)node));
 		}
-		if (node instanceof TransitionNode) {
-			properties.add(new TransitionNodeTimePropertyDescriptor((TransitionNode)node));
+		if (node instanceof Block) {
+			properties.add(new BlockTimePropertyDescriptor((Block)node));
+		}
+		if (node instanceof Condition) {
+			properties.add(new ConditionStartTimePropertyDescriptor((Condition)node));
+			properties.add(new ConditionEndTimePropertyDescriptor((Condition)node));
 		}
 
 		return properties;

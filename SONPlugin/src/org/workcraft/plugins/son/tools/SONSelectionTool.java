@@ -261,14 +261,6 @@ public class SONSelectionTool extends SelectionTool {
 				break;
 			}
 		}
-
-/*		if(e.isCtrlDown() && !e.isAltDown() && !e.isShiftDown()){
-			switch (e.getKeyCode()){
-			case KeyEvent.VK_V:
-				selectionSupergroup(e.getEditor());
-				break;
-			}
-		}*/
 	}
 
 	@Override
@@ -303,11 +295,6 @@ public class SONSelectionTool extends SelectionTool {
 			editor.repaint();
 		}
 	}
-
-/*	private void selectionSupergroup(final GraphEditor editor) {
-		((VisualSON)editor.getModel()).superGroupSelection();
-		editor.repaint();
-	}*/
 
 	private void selectionBlock(final GraphEditor editor) {
 		((VisualSON)editor.getModel()).groupBlockSelection();

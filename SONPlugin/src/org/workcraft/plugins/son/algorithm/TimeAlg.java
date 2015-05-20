@@ -1,6 +1,12 @@
 package org.workcraft.plugins.son.algorithm;
 
-public class TimeAlg {
+import org.workcraft.plugins.son.SON;
+
+public class TimeAlg extends SimulationAlg{
+
+	public TimeAlg(SON net) {
+		super(net);
+	}
 
 	public static Boolean isValidInput(String value){
 

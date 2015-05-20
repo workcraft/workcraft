@@ -18,7 +18,4 @@ public interface VisualTransitionNode extends Node{
 
 	public boolean isFaulty();
 
-	public void setDuration(String value);
-
-	public String getDuration();
 }

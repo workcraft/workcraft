@@ -27,22 +27,24 @@ import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 
 public class VisualPlaceNode extends VisualComponent{
 
-	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
-	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
-	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
-	private Color errLabelColor = SONSettings.getErrLabelColor();
+	protected Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+	protected Positioning errLabelPositioning = Positioning.BOTTOM;
+	protected RenderedText errorRenderedText = new RenderedText("", font, errLabelPositioning, new Point2D.Double(0.0,0.0));
+	protected Color errLabelColor = SONSettings.getErrLabelColor();
 
-	private Positioning durationLabelPositioning = SONSettings.getDurationLabelPositioning();
-	private RenderedText durationRenderedText = new RenderedText("", errorFont, durationLabelPositioning, new Point2D.Double(0.0,0.0));
+	private Positioning durationLabelPositioning = Positioning.BOTTOM;
+	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
+	protected Color durationColor = Color.BLACK;
 
 	private String inerfaceValue = "";
 
-
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
+	protected static double labelOffset = 0.5;
 
 	public VisualPlaceNode(PlaceNode refNode) {
 		super(refNode);
 		addPropertyDeclarations();
+
 	}
 
 	private void addPropertyDeclarations() {
@@ -85,12 +87,12 @@ public class VisualPlaceNode extends VisualComponent{
 				return object.getInterface();
 			}
 		});
+
 	}
 
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
 
 		Shape shape = new Ellipse2D.Double(
 				-getSize() / 2 + getStrokeWidth() / 2,
@@ -104,22 +106,27 @@ public class VisualPlaceNode extends VisualComponent{
 		g.setStroke(new BasicStroke((float)getStrokeWidth()));
 		g.draw(shape);
 
-		PlaceNode p = (PlaceNode)getReferencedComponent();
-		boolean token = p.isMarked();
-		if (d instanceof PlaceNodeDecoration) {
-			token = ((PlaceNodeDecoration)d).hasToken();
-		}
-		drawToken(r, token, getSingleTokenSize(), Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation()));
+		drawToken(r);
 		drawErrorInLocalSpace(r);
 		drawDurationInLocalSpace(r);
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
 	}
 
-	public static void drawToken (DrawRequest r, boolean b, double singleTokenSize, Color tokenColor) {
-		Graphics2D g = r.getGraphics();
+	public void drawToken (DrawRequest r) {
+
+		PlaceNode p = (PlaceNode)getReferencedComponent();
 		Decoration d = r.getDecoration();
-		if(b){
+		boolean token = p.isMarked();
+		if (d instanceof PlaceNodeDecoration) {
+			token = ((PlaceNodeDecoration)d).hasToken();
+		}
+
+		if(token){
+		Graphics2D g = r.getGraphics();
+		double singleTokenSize = getSingleTokenSize();
+		Color tokenColor = Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation());
+
 		Shape shape;
 			shape = new Ellipse2D.Double(
 					-singleTokenSize / 2,
@@ -133,17 +140,17 @@ public class VisualPlaceNode extends VisualComponent{
 
 	private void cahceErrorRenderedText(DrawRequest r) {
 		String error = "Err = "+((Integer)this.getErrors()).toString();
-		//double o = 0.8 * size;
+
 
 		Point2D offset = getOffset(errLabelPositioning);
 		if (errLabelPositioning.ySign<0) {
-			offset.setLocation(offset.getX(), offset.getY()-0.4);
+			offset.setLocation(offset.getX(), offset.getY() - labelOffset);
 		} else {
-			offset.setLocation(offset.getX(), offset.getY()+0.4);
+			offset.setLocation(offset.getX(), offset.getY() + labelOffset);
 		}
 
-		if (errorRenderedText.isDifferent(error, errorFont, errLabelPositioning, offset)) {
-			errorRenderedText = new RenderedText(error, errorFont, errLabelPositioning, offset);
+		if (errorRenderedText.isDifferent(error, font, errLabelPositioning, offset)) {
+			errorRenderedText = new RenderedText(error, font, errLabelPositioning, offset);
 		}
 	}
 
@@ -159,17 +166,16 @@ public class VisualPlaceNode extends VisualComponent{
 
 	private void cahceDurationRenderedText(DrawRequest r) {
 		String duration = "d: "+ this.getDuration();
-		//double o = 0.8 * size;
 
 		Point2D offset = getOffset(durationLabelPositioning);
 		if (durationLabelPositioning.ySign<0) {
-			offset.setLocation(offset.getX(), offset.getY()-0.6);
+			offset.setLocation(offset.getX(), offset.getY() - labelOffset);
 		} else {
-			offset.setLocation(offset.getX(), offset.getY()+0.6);
+			offset.setLocation(offset.getX(), offset.getY() + labelOffset);
 		}
 
-		if (durationRenderedText.isDifferent(duration, errorFont, durationLabelPositioning, offset)) {
-			durationRenderedText = new RenderedText(duration, errorFont, durationLabelPositioning, offset);
+		if (durationRenderedText.isDifferent(duration, font, durationLabelPositioning, offset)) {
+			durationRenderedText = new RenderedText(duration, font, durationLabelPositioning, offset);
 		}
 	}
 
@@ -178,7 +184,7 @@ public class VisualPlaceNode extends VisualComponent{
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(errLabelColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(durationColor, d.getColorisation()));
 			durationRenderedText.draw(g);
 		}
 	}
@@ -202,16 +208,6 @@ public class VisualPlaceNode extends VisualComponent{
 		}
 
 		return bb;
-	}
-
-	@Override
-    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return new Rectangle2D.Double(-getSize() / 2, -getSize() / 2, getSize(),getSize());
-    }
-
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < getSize() * getSize() / 4;
 	}
 
 	public double getSize(){
@@ -292,14 +288,6 @@ public class VisualPlaceNode extends VisualComponent{
 	public String getInterface(){
 		return inerfaceValue;
 	}
-	public Positioning getErrLabelPositioning() {
-		return errLabelPositioning;
-	}
-
-	public void setErrLabelPositioning(Positioning errorPositioning) {
-		this.errLabelPositioning = errorPositioning;
-		sendNotification(new PropertyChangedEvent(this, "Error positioning"));
-	}
 
 	public Color getErrLabelColor(){
 		return this.errLabelColor;
@@ -309,15 +297,20 @@ public class VisualPlaceNode extends VisualComponent{
 		this.errLabelColor = errLabelColor;
 	}
 
+	public Color getDurationColor(){
+		return this.durationColor;
+	}
+
+	public void setDurationColor(Color value){
+		this.durationColor = value;
+	}
+
 	@Override
 	public void copyStyle(Stylable src) {
 		super.copyStyle(src);
 		if (src instanceof VisualPlaceNode) {
 			VisualPlaceNode srcComponent = (VisualPlaceNode)src;
 			setMarked(srcComponent.isMarked());
-			setErrLabelPositioning(srcComponent.getErrLabelPositioning());
-			setErrLabelColor(srcComponent.getErrLabelColor());
-			setInterface(srcComponent.getInterface());
 		}
 	}
 }

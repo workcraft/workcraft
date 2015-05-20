@@ -12,14 +12,9 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.dom.visual.Stylable;
-import org.workcraft.gui.Coloriser;
-import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 
 
@@ -29,11 +24,6 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 
 public class VisualEvent extends VisualTransition implements VisualTransitionNode{
 	//private boolean displayName = false;
-
-	private Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
-	private Color durationColor = SONSettings.getErrLabelColor();
-	private Positioning durationLabelPositioning = SONSettings.getDurationLabelPositioning();
-	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
 
 	public VisualEvent(Event event) {
 		super(event);
@@ -56,7 +46,6 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 	public void draw(DrawRequest r){
 		super.draw(r);
 		drawFault(r);
-		drawDurationInLocalSpace(r);
 	}
 
 	public void drawFault(DrawRequest r){
@@ -76,46 +65,6 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 			Point2D bitPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
 			g.drawGlyphVector(glyphVector, -(float)bitPosition.getX(), -(float)bitPosition.getY());
 		}
-	}
-
-	private void cahceDurationRenderedText(DrawRequest r) {
-		String duration = "d: "+ this.getDuration();
-		//double o = 0.8 * size;
-
-		Point2D offset = getOffset(durationLabelPositioning);
-		if (durationLabelPositioning.ySign<0) {
-			offset.setLocation(offset.getX(), offset.getY()-0.6);
-		} else {
-			offset.setLocation(offset.getX(), offset.getY()+0.6);
-		}
-
-		if (durationRenderedText.isDifferent(duration, font, durationLabelPositioning, offset)) {
-			durationRenderedText = new RenderedText(duration, font, durationLabelPositioning, offset);
-		}
-	}
-
-	protected void drawDurationInLocalSpace(DrawRequest r) {
-		if (SONSettings.getTimeVisibility()) {
-			cahceDurationRenderedText(r);
-			Graphics2D g = r.getGraphics();
-			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(durationColor, d.getColorisation()));
-			durationRenderedText.draw(g);
-		}
-	}
-
-	@Override
-	public void cacheRenderedText(DrawRequest r) {
-		super.cacheRenderedText(r);
-		cahceDurationRenderedText(r);
-	}
-
-	public String getDuration(){
-		return ((Event)getReferencedComponent()).getDuration();
-	}
-
-	public void setDuration(String time){
-		((Event)getReferencedComponent()).setDuration(time);
 	}
 
 	@Override

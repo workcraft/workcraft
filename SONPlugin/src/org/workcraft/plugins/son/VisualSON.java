@@ -652,7 +652,8 @@ public class VisualSON extends AbstractVisualModel {
 
 		boolean err = true;
 		for(VisualBlock block : this.getVisualBlocks()){
-			if(!net.getPreset(block.getReferencedComponent()).isEmpty() || !net.getPostset(block.getReferencedComponent()).isEmpty()){
+			if(!net.getPreset(block.getReferencedComponent()).isEmpty()
+					|| !net.getPostset(block.getReferencedComponent()).isEmpty()){
 				err = false;
 				errBlocks.add(net.getNodeReference(block.getReferencedComponent())+" ");
 				block.setForegroundColor(SONSettings.getRelationErrColor());

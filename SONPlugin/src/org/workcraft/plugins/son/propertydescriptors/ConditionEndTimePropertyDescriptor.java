@@ -9,18 +9,18 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
-import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.elements.Condition;
 
-public class PlaceNodeTimePropertyDescriptor implements PropertyDescriptor{
-	private final PlaceNode c;
+public class ConditionEndTimePropertyDescriptor implements PropertyDescriptor{
+	private final Condition c;
 
-	public PlaceNodeTimePropertyDescriptor(PlaceNode c) {
+	public ConditionEndTimePropertyDescriptor(Condition c) {
 		this.c = c;
 	}
 
 	@Override
 	public String getName() {
-		return "Duration";
+		return "End time";
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class PlaceNodeTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return c.getDuration();
+		return c.getEndTime();
 	}
 
 	@Override
@@ -56,14 +56,14 @@ public class PlaceNodeTimePropertyDescriptor implements PropertyDescriptor{
 		MainWindow mainWindow = framework.getMainWindow();
 
 		if(!TimeAlg.isValidInput(input)){
-			input = c.getDuration();
+			input = c.getEndTime();
 			JOptionPane.showMessageDialog(mainWindow,
 					"Input value is not a valid duration interval.\n"
 							+ "The format must be xxxx-xxxx, where x is positive integer.",
 					"Cannot change property", JOptionPane.WARNING_MESSAGE);
 		}
 
-		c.setDuration((String)value);
+		c.setEndTime((String)value);
 	}
 
 	@Override

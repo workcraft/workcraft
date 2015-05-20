@@ -36,7 +36,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 
 	private Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 	private Color durationColor = SONSettings.getErrLabelColor();
-	private Positioning durationLabelPositioning = SONSettings.getDurationLabelPositioning();
+	private Positioning durationLabelPositioning = Positioning.BOTTOM;
 	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
 
 	public VisualBlock(Block refNode) {

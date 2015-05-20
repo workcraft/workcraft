@@ -240,7 +240,7 @@ public class ParallelSimDialog  extends JDialog{
 	}
 
 	private void createEventInfoPanel(){
-		this.eventInfoPanel = new JPanel();
+		eventInfoPanel = new JPanel();
 		eventInfoPanel.setLayout(new BoxLayout(eventInfoPanel, BoxLayout.Y_AXIS));
 
 		String colNames[] = {"Name", "Label"};

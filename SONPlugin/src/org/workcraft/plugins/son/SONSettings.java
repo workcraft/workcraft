@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.Config;
-import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -20,7 +19,6 @@ public class SONSettings implements Settings {
 	private static final String keyConnectionErrColor = prefix + ".connectionErrColor";
 	private static final String keyErrLabelColor = prefix + ".errLabelColor";
 	private static final String keyBlockColor = prefix + ".blockColor";
-	private static final String keyErrLabelPositioning = prefix + ".errLabelPositioning";
 
 	private static final Color defaultRelationErrColor = new Color(255, 204, 204);
 	private static final Color defaultCyclePathColor = new Color(255, 102, 102);
@@ -29,8 +27,6 @@ public class SONSettings implements Settings {
 	private static final Color defaultGroupForegroundColor = Color.GRAY;
 	private static final Color defaultBlockFillColor = new Color(245, 255, 230);
 
-	private static final Positioning defaultErrLabelPositioning = Positioning.BOTTOM;
-	private static final Positioning defaultDurationLabelPositioning = Positioning.TOP;
 	private static final boolean defaultTimeVisibility = false;
 
 	private static Color relationErrColor = defaultRelationErrColor;
@@ -39,8 +35,6 @@ public class SONSettings implements Settings {
 	private static Color errLabelColor = defaultErrLabelColor;
 	private static Color groupForegroundColor = defaultGroupForegroundColor;
 	private static Color blockFillColor = defaultBlockFillColor;
-	private static Positioning errLabelPositioning = defaultErrLabelPositioning;
-	private static Positioning durationLabelPositioning = defaultDurationLabelPositioning;
 	private static boolean timeVisibility = defaultTimeVisibility;
 
 	public SONSettings(){
@@ -71,16 +65,6 @@ public class SONSettings implements Settings {
 			}
 			protected Color getter(SONSettings object) {
 				return SONSettings.getConnectionErrColor();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<SONSettings, Positioning>(
-				this, "Error label positioning", Positioning.class) {
-			protected void setter(SONSettings object, Positioning value) {
-				SONSettings.setErrLabelPositioning(value);
-			}
-			protected Positioning getter(SONSettings object) {
-				return SONSettings.getErrLabelPositioning();
 			}
 		});
 
@@ -135,7 +119,6 @@ public class SONSettings implements Settings {
 		setRelationErrColor(config.getColor(keyRelationErrColor, defaultRelationErrColor));
 		setCyclePathColor(config.getColor(keyCyclePathColor, defaultCyclePathColor));
 		setConnectionErrColor(config.getColor(keyConnectionErrColor, defaultConnectionErrColor));
-		setErrLabelPositioning(config.getTextPositioning(keyErrLabelPositioning, defaultErrLabelPositioning));
 		setErrLabelColor(config.getColor(keyErrLabelColor, defaultErrLabelColor));
 	}
 
@@ -145,7 +128,6 @@ public class SONSettings implements Settings {
 		config.setColor(keyCyclePathColor, getCyclePathColor());
 		config.setColor(keyConnectionErrColor, getConnectionErrColor());
 		config.setColor(keyBlockColor, getGroupForegroundColor());
-		config.setTextPositioning(keyErrLabelPositioning, getErrLabelPositioning());
 		config.setColor(keyErrLabelColor, getErrLabelColor());
 	}
 
@@ -183,14 +165,6 @@ public class SONSettings implements Settings {
 		return connectionErrColor;
 	}
 
-	public static Positioning getErrLabelPositioning() {
-		return errLabelPositioning;
-	}
-
-	public static void setErrLabelPositioning(Positioning value) {
-		errLabelPositioning = value;
-	}
-
 	public static Color getErrLabelColor() {
 		return errLabelColor;
 	}
@@ -221,13 +195,5 @@ public class SONSettings implements Settings {
 
 	public static void setTimeVisibility(Boolean value) {
 		timeVisibility = value;
-	}
-
-	public static Positioning getDurationLabelPositioning() {
-		return durationLabelPositioning;
-	}
-
-	public static void setDurationLabelPositioning(Positioning value) {
-		durationLabelPositioning = value;
 	}
 }

@@ -21,9 +21,4 @@ public interface TransitionNode extends Node{
 	public void setForegroundColor(Color foregroundColor);
 
 	public Color getForegroundColor();
-
-	public void setDuration(String value);
-
-	public String getDuration();
-
 }
