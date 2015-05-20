@@ -99,18 +99,28 @@ public class VisualCircuitComponent extends VisualComponent implements
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
 				this, "Treat as environment", Boolean.class) {
 			protected void setter(VisualCircuitComponent object, Boolean value) {
-				object.getReferencedCircuitComponent().setIsEnvironment(value);
+				object.setIsEnvironment(value);
 			}
 
 			protected Boolean getter(VisualCircuitComponent object) {
-				return object.getReferencedCircuitComponent().getIsEnvironment();
+				return object.getIsEnvironment();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
+				this, "Zero delay", Boolean.class) {
+			protected void setter(VisualCircuitComponent object, Boolean value) {
+				object.setIsZeroDelay(value);
+			}
+
+			protected Boolean getter(VisualCircuitComponent object) {
+				return object.getIsZeroDelay();
 			}
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, RenderType>(
 				this, "Render type", RenderType.class) {
-			protected void setter(VisualCircuitComponent object,
-					RenderType value) {
+			protected void setter(VisualCircuitComponent object, RenderType value) {
 				object.setRenderType(value);
 			}
 
@@ -152,10 +162,30 @@ public class VisualCircuitComponent extends VisualComponent implements
 		return false;
 	}
 
-	public void setIsEnvironment(boolean isEnvironment) {
+	public void setIsEnvironment(boolean value) {
 		if (getReferencedCircuitComponent() != null) {
-			getReferencedCircuitComponent().setIsEnvironment(isEnvironment);
+			getReferencedCircuitComponent().setIsEnvironment(value);
 		}
+	}
+
+	public boolean getIsZeroDelay() {
+		if (getReferencedCircuitComponent() != null) {
+			return getReferencedCircuitComponent().getIsZeroDelay();
+		}
+		return false;
+	}
+
+	public void setIsZeroDelay(boolean value) {
+		if (getReferencedCircuitComponent() != null) {
+			getReferencedCircuitComponent().setIsZeroDelay(value);
+		}
+	}
+
+	public boolean isBufferOrInverter() {
+		if (getReferencedCircuitComponent() != null) {
+			return getReferencedCircuitComponent().isBufferOrInverter();
+		}
+		return false;
 	}
 
 	public RenderType getRenderType() {
@@ -595,6 +625,28 @@ public class VisualCircuitComponent extends VisualComponent implements
 		return BoundingBoxHelper.union(bb, childrenBB);
 	}
 
+	private void drawBypass(DrawRequest r) {
+		Point2D inputPos = null;
+		Point2D outputPos = null;
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			if (vc.isInput()) {
+				inputPos = vc.getPosition();
+			} else {
+				outputPos = vc.getPosition();
+			}
+		}
+		if ((inputPos != null) && (outputPos != null)) {
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			Color colorisation = d.getColorisation();
+			g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
+			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			Line2D line = new Line2D.Double(inputPos, outputPos);
+			g.draw(line);
+		}
+	}
+
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
@@ -604,20 +656,25 @@ public class VisualCircuitComponent extends VisualComponent implements
 		cacheRenderedText(r);
 
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+
 		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
 		g.fill(bb);
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		if (!getIsEnvironment()) {
-			g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
-		} else {
+		if (getIsEnvironment()) {
 			float dash[] = { 0.25f, 0.25f };
 			g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
 					BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
+		} else {
+			g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
 		}
 		g.draw(bb);
 
 		if (d.getColorisation() != null) {
 			drawPivot(r);
+		}
+
+		if (isBufferOrInverter() && getIsZeroDelay()) {
+			drawBypass(r);
 		}
 
 		drawContactLines(r);
@@ -770,6 +827,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		if (src instanceof VisualCircuitComponent) {
 			VisualCircuitComponent srcComponent = (VisualCircuitComponent)src;
 			setIsEnvironment(srcComponent.getIsEnvironment());
+			setIsZeroDelay(srcComponent.getIsZeroDelay());
 		}
 	}
 

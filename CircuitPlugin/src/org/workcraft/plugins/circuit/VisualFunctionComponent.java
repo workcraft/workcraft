@@ -226,6 +226,29 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		}
 	}
 
+
+	private void drawBypass(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
+		Point2D inputPos = null;
+		Point2D outputPos = null;
+		for (Node node: this.getChildren()) {
+			if (node instanceof VisualFunctionContact) {
+				VisualFunctionContact vc = (VisualFunctionContact)node;
+				if (vc.isInput()) {
+					inputPos = vc.getPosition();
+				} else {
+					outputPos = vc.getPosition();
+				}
+			}
+		}
+		if ((inputPos != null) && (outputPos != null)) {
+			g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+			g.setColor(GateRenderer.foreground);
+			Line2D line = new Line2D.Double(inputPos, outputPos);
+			g.draw(line);
+		}
+	}
+
+
 	@Override
 	public void draw(DrawRequest r) {
 		ComponentRenderingResult rr = getRenderingResult();
@@ -271,6 +294,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 			rr.draw(g);
 			g.transform(bt);
+
+			if (isBufferOrInverter() && getIsZeroDelay()) {
+				drawBypass(g, rr, at);
+			}
 
 			drawContactLines(g, rr, at);
 			drawCelementSymbols(g, rr, at);
