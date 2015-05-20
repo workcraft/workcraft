@@ -41,6 +41,13 @@ public class CircuitUtils {
             		queue.addAll(circuit.getPreset(node));
             	} else if (node instanceof Contact) {
             		Contact contact = (Contact)node;
+//            		Node parent = contact.getParent();
+//            		if (contact.isOutput() && (parent instanceof CircuitComponent)) {
+//            			CircuitComponent component = (CircuitComponent)parent;
+//            			if (component.isBufferOrInverter() && component.getIsZeroDelay()) {
+//            				contact = component.getInputs().iterator().next();
+//            			}
+//            		}
             		if (contact.isDriver()) {
             			result = contact;
             		} else if (node == curNode) {

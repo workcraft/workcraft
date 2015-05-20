@@ -499,31 +499,38 @@ public class VisualCircuitComponent extends VisualComponent implements
 		return BoundingBoxHelper.union(expBox, maxBox);
 	}
 
-	private void drawContactLines(DrawRequest r) {
+	private Point2D getContactLinePosition(VisualContact vc) {
+		Point2D result = null;
 		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		switch (vc.getDirection()) {
+		case NORTH:
+			result = new Point2D.Double(vc.getX(), bb.getMinY());
+			break;
+		case EAST:
+			result = new Point2D.Double(bb.getMaxX(), vc.getY());
+			break;
+		case SOUTH:
+			result = new Point2D.Double(vc.getX(), bb.getMaxY());
+			break;
+		case WEST:
+			result = new Point2D.Double(bb.getMinX(), vc.getY());
+			break;
+		}
+		return result;
+	}
+
+	private void drawContactLines(DrawRequest r) {
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			Line2D contactLine = null;
-			switch (vc.getDirection()) {
-			case NORTH:
-				contactLine = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMinY());
-				break;
-			case EAST:
-				contactLine = new Line2D.Double(vc.getX(), vc.getY(), bb.getMaxX(), vc.getY());
-				break;
-			case SOUTH:
-				contactLine = new Line2D.Double(vc.getX(), vc.getY(), vc.getX(), bb.getMaxY());
-				break;
-			case WEST:
-				contactLine = new Line2D.Double(vc.getX(), vc.getY(), bb.getMinX(), vc.getY());
-				break;
-			}
-			if (contactLine != null) {
+			Point2D p1 = vc.getPosition();
+			Point2D p2 = getContactLinePosition(vc);
+			if ((p1 != null) && (p2 != null)) {
 				Graphics2D g = r.getGraphics();
 				Decoration d = r.getDecoration();
 				Color colorisation = d.getColorisation();
 				g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
 				g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-				g.draw(contactLine);
+				Line2D line = new Line2D.Double(p1, p2);
+				g.draw(line);
 			}
 		}
 	}
@@ -605,6 +612,28 @@ public class VisualCircuitComponent extends VisualComponent implements
 		g.setTransform(oldTransform);
 	}
 
+	private void drawBypass(DrawRequest r) {
+		Point2D inputPos = null;
+		Point2D outputPos = null;
+		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+			if (vc.isInput()) {
+				inputPos = getContactLinePosition(vc);
+			} else {
+				outputPos = getContactLinePosition(vc);
+			}
+		}
+		if ((inputPos != null) && (outputPos != null)) {
+			Graphics2D g = r.getGraphics();
+			Decoration d = r.getDecoration();
+			Color colorisation = d.getColorisation();
+			g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
+			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			Line2D line = new Line2D.Double(inputPos, outputPos);
+			g.draw(line);
+		}
+	}
+
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
 		if ((groupImpl != null) && (internalBB == null)) {
@@ -623,28 +652,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		Collection<Touchable> touchableChildren = Hierarchy.getChildrenOfType(this, Touchable.class);
 		Rectangle2D childrenBB = BoundingBoxHelper.mergeBoundingBoxes(touchableChildren);
 		return BoundingBoxHelper.union(bb, childrenBB);
-	}
-
-	private void drawBypass(DrawRequest r) {
-		Point2D inputPos = null;
-		Point2D outputPos = null;
-		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			if (vc.isInput()) {
-				inputPos = vc.getPosition();
-			} else {
-				outputPos = vc.getPosition();
-			}
-		}
-		if ((inputPos != null) && (outputPos != null)) {
-			Graphics2D g = r.getGraphics();
-			Decoration d = r.getDecoration();
-			Color colorisation = d.getColorisation();
-			g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
-			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-			Line2D line = new Line2D.Double(inputPos, outputPos);
-			g.draw(line);
-		}
 	}
 
 	@Override

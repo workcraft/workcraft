@@ -18,6 +18,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
@@ -108,7 +109,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
 		}
 		VisualCircuit circuit = (VisualCircuit)editor.getModel();
 		for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
-			String ref = circuit.getNodeMathReference(contact) + CircuitToStgConverter.NAME_SUFFIX_1;
+			String contactName = CircuitUtils.getContactName(circuit, contact);
+			String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
 			Node node = net.getNodeByReference(ref);
 			if ((node instanceof Place) && savedState.containsKey(node)) {
 				boolean initToOne = (savedState.get(node) > 0);

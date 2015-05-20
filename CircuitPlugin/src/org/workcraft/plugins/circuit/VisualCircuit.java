@@ -228,7 +228,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	}
 
 	public Collection<VisualFunctionContact> getVisualFunctionContacts() {
-		return Hierarchy.getChildrenOfType(getRoot(), VisualFunctionContact.class);
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualFunctionContact.class);
 	}
 
 	public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType) {
