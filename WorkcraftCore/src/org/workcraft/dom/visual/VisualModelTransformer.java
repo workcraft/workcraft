@@ -75,7 +75,6 @@ public class VisualModelTransformer {
 		if (selectionBB != null) {
 			AffineTransform t = new AffineTransform();
 			Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
-
 			t.translate(cp.getX(), cp.getY());
 			t.scale(sx, sy);
 			t.translate(-cp.getX(), -cp.getY());
@@ -111,20 +110,13 @@ public class VisualModelTransformer {
 		return bb1;
 	}
 
-	public static Rectangle2D getNodesCoordinateBox(Collection<Node> nodes) {
+	private static Rectangle2D getNodesCoordinateBox(Collection<Node> nodes) {
 		Rectangle2D selectionBB = null;
 		for (Node vn: nodes) {
-			if (vn instanceof VisualGroup) {
-				Rectangle2D r = getNodesCoordinateBox(((VisualGroup)vn).getChildren());
-				Point2D p = ((VisualGroup)vn).getPosition();
-				r.setRect(r.getX()+p.getX(), r.getY()+p.getY(), r.getWidth(), r.getHeight());
-
-				if (selectionBB==null)
-					selectionBB = r;
-				else if (r!=null)
-					Rectangle2D.union(selectionBB, r, selectionBB);
-			} else if(vn instanceof VisualTransformableNode)
-				selectionBB = bbUnion(selectionBB, ((VisualTransformableNode)vn).getPosition());
+			if(vn instanceof VisualTransformableNode) {
+				Point2D pos = ((VisualTransformableNode)vn).getPosition();
+				selectionBB = bbUnion(selectionBB, pos);
+			}
 		}
 		return selectionBB;
 	}
