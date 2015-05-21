@@ -16,7 +16,7 @@ public class PlaceNode extends MathNode {
 	private boolean marked = false;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
 
-	public void setMarked(boolean token) {
+	public void setMarked(boolean token){
 		this.marked=token;
 		sendNotification( new PropertyChangedEvent(this, "marked") );
 	}

@@ -73,6 +73,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
+import org.workcraft.plugins.son.exception.RepeatMarkingException;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -492,9 +493,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		if (fireList != null) {
 			try {
 				simuAlg.setMarking(fireList, phases, isRev);
-			} catch (InvalidStructureException e) {
-				errorMsg(e.getMessage(), editor);
-				return false;
+			} catch (RepeatMarkingException e) {
 			}
 			setErrNum(fireList, isRev);
 			mainTrace.incPosition(mainInc);
@@ -539,11 +538,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		if (fireList != null) {
 			try {
 				simuAlg.setMarking(fireList, phases, !isRev);
-			} catch (InvalidStructureException e) {
-				errorMsg(e.getMessage(), editor);
-				return false;
+			} catch (RepeatMarkingException e) {
+				e.printStackTrace();
 			}
-
 			mainTrace.decPosition(mainDec);
 			branchTrace.decPosition(branchDec);
 			if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
