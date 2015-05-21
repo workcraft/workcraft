@@ -18,14 +18,12 @@ public class SONSettings implements Settings {
 	private static final String keyCyclePathColor = prefix + ".cyclePathColor";
 	private static final String keyConnectionErrColor = prefix + ".connectionErrColor";
 	private static final String keyErrLabelColor = prefix + ".errLabelColor";
-	private static final String keyBlockColor = prefix + ".blockColor";
 
 	private static final Color defaultRelationErrColor = new Color(255, 204, 204);
 	private static final Color defaultCyclePathColor = new Color(255, 102, 102);
 	private static final Color defaultConnectionErrColor = new  Color(255, 102, 102);
 	private static final Color defaultErrLabelColor = CommonVisualSettings.getLabelColor();
 	private static final Color defaultGroupForegroundColor = Color.GRAY;
-	private static final Color defaultBlockFillColor = new Color(245, 255, 230);
 
 	private static final boolean defaultTimeVisibility = false;
 
@@ -34,7 +32,6 @@ public class SONSettings implements Settings {
 	private static Color connectionErrColor = defaultConnectionErrColor;
 	private static Color errLabelColor = defaultErrLabelColor;
 	private static Color groupForegroundColor = defaultGroupForegroundColor;
-	private static Color blockFillColor = defaultBlockFillColor;
 	private static boolean timeVisibility = defaultTimeVisibility;
 
 	public SONSettings(){
@@ -127,7 +124,6 @@ public class SONSettings implements Settings {
 		config.setColor(keyRelationErrColor, getRelationErrColor());
 		config.setColor(keyCyclePathColor, getCyclePathColor());
 		config.setColor(keyConnectionErrColor, getConnectionErrColor());
-		config.setColor(keyBlockColor, getGroupForegroundColor());
 		config.setColor(keyErrLabelColor, getErrLabelColor());
 	}
 
@@ -179,14 +175,6 @@ public class SONSettings implements Settings {
 
 	public static void setGroupForegroundColor(Color value) {
 		groupForegroundColor = value;
-	}
-
-	public static Color getBlockFillColor() {
-		return blockFillColor;
-	}
-
-	public static void setBlockFillColor(Color value) {
-		blockFillColor = value;
 	}
 
 	public static Boolean getTimeVisibility() {

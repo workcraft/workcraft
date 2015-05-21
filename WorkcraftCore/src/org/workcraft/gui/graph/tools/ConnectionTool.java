@@ -60,7 +60,7 @@ public class ConnectionTool extends AbstractTool {
 	private Point2D firstPoint = null;
 	private VisualNode firstNode = null;
 	private Point2D currentPoint = null;
-	private VisualNode currentNode = null;
+	protected VisualNode currentNode = null;
 	private String warningMessage = null;
 	private boolean mouseLeftFirstNode = false;
 	private LinkedList<Point2D> controlPoints = null;

@@ -55,6 +55,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.Step;
@@ -334,6 +335,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
+		editor.getWorkspaceEntry().captureMemento();
 
 		this.editor = editor;
 		WorkspaceEntry we = editor.getWorkspaceEntry();
@@ -343,8 +345,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		simuAlg = new SimulationAlg(net);
 		errAlg = new ErrorTracingAlg(net);
 
+		BlockConnector.blockBoundingConnector(visualNet);
+
 		we.setCanModify(false);
-		visualNet.connectToBlocks(we);
 		initialMarking=simuAlg.getInitialMarking();
 
 		reset(editor);
@@ -373,6 +376,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	@Override
 	public void deactivated(GraphEditor editor) {
 		super.deactivated(editor);
+		BlockConnector.blockInternalConnector(visualNet);
 		mainTrace.clear();
 		branchTrace.clear();
 		isRev = false;

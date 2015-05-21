@@ -14,7 +14,6 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
@@ -75,10 +74,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			return new Result<VerificationResult>(Outcome.FINISHED);
 		}
 
-		//change connections from block inside to bounding
-		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		vnet.connectToBlocks(we);
-
 //		//cycle detection
 //		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
 //		if(!cycleAlg.cycleTask(net.getComponents()).isEmpty()){
@@ -90,7 +85,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 //		}
 
 		if(reachabilityTask()){
-			we.cancelMemento();
 			net = (SON)we.getModelEntry().getMathModel();
 			int result = JOptionPane.showConfirmDialog(mainWindow,
 					"The selected marking is REACHABLE from the initial states. \n" +
@@ -107,7 +101,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			}
 		}
 		else{
-			we.cancelMemento();
 			JOptionPane.showMessageDialog(mainWindow,
 					"The selected marking is UNREACHABLE from the initial states",
 					"Reachability task result", JOptionPane.INFORMATION_MESSAGE);

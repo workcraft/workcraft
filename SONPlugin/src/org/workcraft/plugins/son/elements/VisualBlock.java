@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Point2D;
@@ -57,15 +58,30 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		if ((bb != null) && (getParent() != null)) {
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-			g.fill(bb);
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			g.setStroke(new BasicStroke(  strokeWidth , BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND,
-					3.0f, new float[]{ strokeWidth , 2 * strokeWidth,}, 0f));
-			g.draw(bb);
+
 			if (getIsCollapsed() && !isCurrentLevelInside()) {
+				g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+				g.fill(bb);
+				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+				g.setStroke(new BasicStroke((float) strokeWidth));
+				g.draw(bb);
+
+				double s = 2.3*size/3;
+				Shape shape = new Rectangle2D.Double(-s/2, -s/2, s, s);
+				g.setStroke(new BasicStroke(strokeWidth/2));
+				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+				g.draw(shape);
+
 				drawFault(r);
+			}else{
+				g.setColor(Coloriser.colorise(Color.WHITE, d.getBackground()));
+				g.fill(bb);
+				float[] pattern = {0.2f, 0.2f};
+				g.setStroke(new BasicStroke(0.02f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+				g.draw(bb);
 			}
+
 			drawNameInLocalSpace(r);
 			drawLabelInLocalSpace(r);
 			drawDurationInLocalSpace(r);
@@ -130,17 +146,17 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		sendNotification(new TransformChangedEvent(this));
 	}
 
+	@Override
+	public boolean getIsCollapsed() {
+		return  this.getReferencedComponent().getIsCollapsed();
+	}
+
 	public String getDuration(){
 		return ((Block)getReferencedComponent()).getDuration();
 	}
 
 	public void setDuration(String time){
 		((Block)getReferencedComponent()).setDuration(time);
-	}
-
-	@Override
-	public boolean getIsCollapsed() {
-		return  this.getReferencedComponent().getIsCollapsed();
 	}
 
 	@Override
@@ -186,6 +202,10 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 
 	public Collection<VisualSONConnection> getVisualSONConnections(){
 		return Hierarchy.getDescendantsOfType(this, VisualSONConnection.class);
+	}
+
+	public Collection<VisualEvent> getVisualEvents(){
+		return Hierarchy.getDescendantsOfType(this, VisualEvent.class);
 	}
 
 	@Override

@@ -67,12 +67,6 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 		}
 	}
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
-		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
-	}
-
 	public Event getMathTransitionNode(){
 		return (Event)this.getReferencedComponent();
 	}

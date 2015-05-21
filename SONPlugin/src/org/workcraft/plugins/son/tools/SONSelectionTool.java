@@ -66,17 +66,6 @@ public class SONSelectionTool extends SelectionTool {
 		});
 		groupPanel.add(groupButton);
 
-/*		//Create superGroupButton
-		final JButton superGroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/son-super-group.svg"), "Super group selection (Gtrl+V)");
-		superGroupButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectionSupergroup(editor);
-			}
-		});
-		groupPanel.add(superGroupButton);*/
-
 		//Create blockButton
 		JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/son-block.svg"), "Group selection into a block (Alt+B)");

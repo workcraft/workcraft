@@ -67,8 +67,8 @@ public class SON extends AbstractMathModel {
 	}
 
 	public SONConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {
-		if (this.getSONConnection(first, second) != null){
-			throw new InvalidConnectionException ("Duplicate Connections");
+		if (getSONConnection(first, second) != null){
+			throw new InvalidConnectionException ("Duplicate Connections" + getNodeReference(first)+" " +getNodeReference(second));
 		}
 
 		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, semantics);
@@ -194,13 +194,8 @@ public class SON extends AbstractMathModel {
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
 
 		for (Block block : this.getBlocks()){
-			if(!block.getIsCollapsed()){
-				this.setFillColor(block, SONSettings.getBlockFillColor());
-				this.setForegroundColor(block,  SONSettings.getGroupForegroundColor());
-			}else{
-				this.setFillColor(block, CommonVisualSettings.getFillColor());
-				this.setForegroundColor(block,  CommonVisualSettings.getBorderColor());
-			}
+			setFillColor(block, CommonVisualSettings.getFillColor());
+			setForegroundColor(block,  CommonVisualSettings.getBorderColor());
 		}
 	}
 

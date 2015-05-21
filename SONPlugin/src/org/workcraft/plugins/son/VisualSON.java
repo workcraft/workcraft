@@ -37,7 +37,6 @@ import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 
 
 @DisplayName ("Structured Occurrence Nets")
@@ -47,7 +46,6 @@ public class VisualSON extends AbstractVisualModel {
 
 	private String group="Invalid Group Selection";
 	private String block="Invalid Block Selection";
-	private String blockConnection="Block Connection Error";
 	private SON net;
 	private Semantics currentConnectonSemantics;
 
@@ -66,7 +64,7 @@ public class VisualSON extends AbstractVisualModel {
 			}
 
 		this.net = model;
-		blockConnectionRecover();
+		BlockConnector.blockInternalConnector(this);
 	}
 
 	@Override
@@ -417,7 +415,6 @@ public class VisualSON extends AbstractVisualModel {
 		}
 	}
 
-
 	private Collection<Node> getBlockSelection(){
 		Collection<Node> result = new HashSet<Node>();
 		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
@@ -563,194 +560,7 @@ public class VisualSON extends AbstractVisualModel {
 		return result;
 	}
 
-	/**
-	 * reconnect block interface to its bounding.
-	 * have to use with cancelMemento().
-	 */
-	public void connectToBlocks(WorkspaceEntry we){
-		blockConnectionRecover();
-		//save current workspace
-		we.captureMemento();
-
-		for(VisualBlock vBlock : this.getVisualBlocks()){
-			if(vBlock.getIsCollapsed()){
-				 Collection<VisualComponent> components = vBlock.getComponents();
-				 for(VisualSONConnection con : this.getVisualSONConnections()){
-					 Node first = con.getFirst();
-					 Node second = con.getSecond();
-					 if(!components.contains(first) && components.contains(second)){
-						if(first instanceof VisualPlaceNode){
-							 //set input value
-							String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
-							String type = "-"+con.getReferencedSONConnection().getSemantics();
-							String value = "";
-							if(((VisualPlaceNode)first).getInterface() == ""){
-								value = "to-"+name+type;
-							}else{
-								value = ((VisualPlaceNode)first).getInterface()+";"+"to-"+name+type;
-							}
-							((VisualPlaceNode)first).setInterface(value);
-							//((VisualCondition)first).setInterfaceGraphic(graphic);
-							 //remove visual connection
-							 Container parent = (Container)con.getParent();
-							 parent.remove(con);
-							 //remove math connection
-							 SONConnection mathCon = con.getReferencedSONConnection();
-							 Container mathParent = (Container)mathCon.getParent();
-							 if(mathParent != null)
-								 mathParent.remove(mathCon);
-							 //create connection between first node and block
-							 try {
-								forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
-								this.connect(first, vBlock);
-							} catch (InvalidConnectionException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					 }
-					 if(components.contains(first) && !components.contains(second)){
-						if(second instanceof VisualPlaceNode){
-							 //set output value
-							String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
-							String type = "-"+con.getReferencedSONConnection().getSemantics();
-							String value = "";
-							if(((VisualPlaceNode)second).getInterface() == ""){
-								value = "from-"+name+type;
-							}else{
-								value = ((VisualPlaceNode)second).getInterface()+";"+"from-"+name+type;
-							}
-							((VisualPlaceNode)second).setInterface(value);
-
-							 //remove visual connection
-							 Container parent = (Container)con.getParent();
-							 parent.remove(con);
-							 //remove math connection
-							 SONConnection mathCon = con.getReferencedSONConnection();
-							 Container mathParent = (Container)mathCon.getParent();
-							 if(mathParent != null)
-								 mathParent.remove(mathCon);
-							 //create connection between first node and block
-							 try {
-								forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
-								this.connect(vBlock, second);
-							} catch (InvalidConnectionException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					 }
-				 }
-			}
-		}
-	}
-
-	private boolean blockConnectionChecker(){
-		Collection<String> errBlocks = new ArrayList<String>();
-		for(VisualPlaceNode c : this.getVisualPlaceNode())
-			c.setInterface("");
-
-		boolean err = true;
-		for(VisualBlock block : this.getVisualBlocks()){
-			if(!net.getPreset(block.getReferencedComponent()).isEmpty()
-					|| !net.getPostset(block.getReferencedComponent()).isEmpty()){
-				err = false;
-				errBlocks.add(net.getNodeReference(block.getReferencedComponent())+" ");
-				block.setForegroundColor(SONSettings.getRelationErrColor());
-				}
-		}
-		if(!err){
-			JOptionPane.showMessageDialog(null, "Connections from/to block bounding are not valid. Error may due to lost block information, " +
-					"reconnect block components again)"+ errBlocks.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
-		}
-		return err;
-	}
-
-	/**
-	 * reconnect from block bounding to its inside
-	 */
-	public void blockConnectionRecover(){
-		ArrayList<String> compatibility = new ArrayList<String>();
-		for(VisualPlaceNode p : getVisualPlaceNode()){
-			if(!p.getInterface().isEmpty()){
-				String[] infos = p.getInterface().trim().split(";");
-				//interface information checking
-				ArrayList<VisualSONConnection> connections = new ArrayList<VisualSONConnection>();
-				for(VisualSONConnection con : this.getVisualSONConnections()){
-					if(con.getFirst()==p && (con.getSecond() instanceof VisualBlock))
-						connections.add(con);
-					if(con.getSecond()==p && (con.getFirst() instanceof VisualBlock))
-						connections.add(con);
-				}
-				if(connections.size() != infos.length)
-					compatibility.add(net.getNodeReference(p.getReferencedComponent()));
-
-				for(VisualSONConnection con :connections){
-					//remove visual connection
-					Container parent = (Container)con.getParent();
-					SONConnection mathCon = con.getReferencedSONConnection();
-					parent.remove(con);
-
-					//remove math connection
-					Container mathParent = (Container)mathCon.getParent();
-					if(mathParent != null)
-						mathParent.remove(mathCon);
-				}
-
-				for(String info : infos){
-					String[] piece = info.trim().split("-");
-					VisualEvent e = null;
-					for(VisualEvent event : this.getVisualEvent()){
-						if(net.getNodeReference(event.getReferencedComponent()).equals(piece[1]))
-							e = event;
-					}
-					//c is an input
-					if(piece[0].equals("to") && e!=null){
-						try {
-							if(piece[2].equals("PNLINE")) {
-								connect(p, e, Semantics.PNLINE);
-							} else if(piece[2].equals("SYNCLINE")) {
-								connect(p, e, Semantics.SYNCLINE);
-							} else if(piece[2].equals("ASYNLINE")) {
-								connect(p, e, Semantics.ASYNLINE);
-							} else if(piece[2].equals("BHVLINE")) {
-								connect(p, e, Semantics.BHVLINE);
-							}
-
-						} catch (InvalidConnectionException ex) {
-							// TODO Auto-generated catch block
-							ex.printStackTrace();
-						}
-						//c is an output
-					}else if(piece[0].equals("from") && e!=null){
-						try {
-							if(piece[2].equals("PNLINE")) {
-								connect(e, p, Semantics.PNLINE);
-							} else if(piece[2].equals("SYNCLINE")) {
-								connect(e, p, Semantics.SYNCLINE);
-							} else if(piece[2].equals("ASYNLINE")) {
-								connect(e, p, Semantics.ASYNLINE);
-							} else if(piece[2].equals("BHVLINE")) {
-								connect(e, p, Semantics.BHVLINE);
-							}
-						} catch (InvalidConnectionException ex) {
-							// TODO Auto-generated catch block
-							ex.printStackTrace();
-						}
-					}
-				}
-				p.setInterface("");
-			}
-		}
-		if(!compatibility.isEmpty()){
-			JOptionPane.showMessageDialog(null, "Incompatible connections. Error may due to lost block information, " +
-					"reconnect block components again)"+ compatibility.toString(), blockConnection, JOptionPane.WARNING_MESSAGE);
-		}
-		blockConnectionChecker();
-	}
-
 	public void forceConnectionSemantics(Semantics currentSemantics) {
 		this.currentConnectonSemantics = currentSemantics;
 	}
-
 }

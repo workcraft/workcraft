@@ -79,7 +79,7 @@ public class VisualPlaceNode extends VisualComponent{
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, String>(
-				this, "Interface", String.class, true, true, false) {
+				this, "Block interface", String.class, false, true, false) {
 			protected void setter(VisualPlaceNode object, String value) {
 				object.setInterface(value);
 			}
@@ -282,7 +282,7 @@ public class VisualPlaceNode extends VisualComponent{
 
 	public void setInterface(String value){
 		this.inerfaceValue = value;
-		sendNotification(new PropertyChangedEvent(this, "interface"));
+		sendNotification(new PropertyChangedEvent(this, "Interface"));
 	}
 
 	public String getInterface(){

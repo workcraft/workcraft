@@ -8,15 +8,15 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
 public class Block extends PageNode implements TransitionNode{
 	private String label="";
-	private Color foregroundColor = SONSettings.getGroupForegroundColor();
-	private Color fillColor  = SONSettings.getBlockFillColor();
+	private Color foregroundColor = CommonVisualSettings.getBorderColor();
+	private Color fillColor  = CommonVisualSettings.getFillColor();
 	private boolean isCollapsed = false;
 	private String duration = "0000-9999";
 
@@ -29,7 +29,7 @@ public class Block extends PageNode implements TransitionNode{
 
 	public void setIsCollapsed(boolean isCollapsed) {
 		this.isCollapsed = isCollapsed;
-		sendNotification( new PropertyChangedEvent(this, "isCollapsed") );
+		sendNotification( new PropertyChangedEvent(this, "Is collapsed") );
 	}
 
 	public Collection<Condition> getConditions(){

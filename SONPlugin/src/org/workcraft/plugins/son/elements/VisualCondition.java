@@ -100,6 +100,11 @@ public class VisualCondition extends VisualPlaceNode{
 		drawEndTimeInLocalSpace(r);
 	}
 
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+	}
+
 	private void cahceStartTimeRenderedText(DrawRequest r) {
 		String start = "start: "+ getStartTime();
 
