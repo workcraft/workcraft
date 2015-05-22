@@ -21,7 +21,7 @@ public class CircuitSettings implements Settings {
 	private static final String keyWireWidth  = prefix + ".wireWidth";
 	private static final String keySimplifyStg = prefix + ".simplifyStg";
 
-	private static final boolean defaultShowContacts = true;
+	private static final boolean defaultShowContacts = false;
 	private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
 	private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
 	private static final Double defaultBorderWidth = 0.06;

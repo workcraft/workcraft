@@ -372,7 +372,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		net = (PetriNetModel)visualNet.getMathModel();
 		initialMarking = readMarking();
 		super.activated(editor);
-		setStatePaneVisibility(true);
+		setStatePaneVisibility(false);
 		resetTraces(editor);
 		editor.forceRedraw();
 	}

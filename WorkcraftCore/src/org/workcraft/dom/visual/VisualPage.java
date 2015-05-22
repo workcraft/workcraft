@@ -28,7 +28,7 @@ import org.workcraft.util.Hierarchy;
 
 @Hotkey(KeyEvent.VK_P)
 @DisplayName("Page")
-@SVGIcon("images/icons/svg/page.svg")
+@SVGIcon("images/icons/svg/selection-page.svg")
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
 	private boolean isCurrentLevelInside = false;
 	private boolean isCollapsed = false;

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.workcraft.dom.Connection;
@@ -366,23 +367,59 @@ public class CircuitToStgConverter {
 
 
 	private void simplifyDriverStgs(HashSet<VisualContact> drivers) {
-		HashSet<Node> deadTransitions = new HashSet();
+		HashSet<Node> redundantTransitions = getDeadTransitions(drivers);
+		redundantTransitions.addAll(getDuplicateTransitions(drivers));
+		for (VisualContact driver: drivers) {
+			SignalStg signalStg = driverToStgMap.getValue(driver);
+			if (signalStg != null) {
+				signalStg.Rs.removeAll(redundantTransitions);
+				signalStg.Fs.removeAll(redundantTransitions);
+			}
+		}
+		stg.remove(redundantTransitions);
+	}
+
+	private HashSet<Node> getDeadTransitions(HashSet<VisualContact> drivers) {
+		HashSet<Node> result = new HashSet<>();
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
 				HashSet<Node> deadPostset = new HashSet<Node>(stg.getPostset(signalStg.P0));
 				deadPostset.retainAll(stg.getPostset(signalStg.P1));
-				deadTransitions.addAll(deadPostset);
+				result.addAll(deadPostset);
 			}
 		}
+		return result;
+	}
+
+	private HashSet<Node> getDuplicateTransitions(HashSet<VisualContact> drivers) {
+		HashSet<Node> result = new HashSet<>();
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
-				signalStg.Rs.removeAll(deadTransitions);
-				signalStg.Fs.removeAll(deadTransitions);
+				result.addAll(getDuplicates(signalStg.Rs));
+				result.addAll(getDuplicates(signalStg.Fs));
 			}
 		}
-		stg.remove(deadTransitions);
+		return result;
+	}
+
+	private HashSet<Node> getDuplicates(HashSet<VisualSignalTransition> transitions) {
+		HashSet<Node> result = new HashSet<>();
+		for (VisualSignalTransition t1: transitions) {
+			if (result.contains(t1)) continue;
+			for (VisualSignalTransition t2: transitions) {
+				if (t1 == t2) continue;
+				Set<Node> preset1 = stg.getPreset(t1);
+				Set<Node> postset1 = stg.getPostset(t1);
+				Set<Node> preset2 = stg.getPreset(t2);
+				Set<Node> postset2 = stg.getPostset(t2);
+				if (preset1.equals(preset2) && postset1.equals(postset2)) {
+					result.add(t2);
+				}
+			}
+		}
+		return result;
 	}
 
 	private void positionDriverStgs(HashSet<VisualContact> drivers) {

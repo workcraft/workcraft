@@ -59,7 +59,7 @@ public class CommonVisualSettings implements Settings {
 	private static final boolean defaultLabelVisibility = true;
 	private static final Positioning defaultLabelPositioning = Positioning.TOP;
 	private static final Color defaultLabelColor = Color.BLACK;
-	private static final boolean defaultNameVisibility = false;
+	private static final boolean defaultNameVisibility = true;
 	private static final Positioning defaultNamePositioning = Positioning.BOTTOM;
 	private static final Color defaultNameColor = Color.BLUE.darker();
 	private static final Integer defaultRedrawInterval = 20;
@@ -101,7 +101,7 @@ public class CommonVisualSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-				this, "Pivot size", Double.class) {
+				this, "Pivot size (cm)", Double.class) {
 			protected void setter(CommonVisualSettings object, Double value) {
 				CommonVisualSettings.setPivotSize(value);
 			}
@@ -111,7 +111,7 @@ public class CommonVisualSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-				this, "Pivot stroke width", Double.class) {
+				this, "Pivot stroke width (cm)", Double.class) {
 			protected void setter(CommonVisualSettings object, Double value) {
 				CommonVisualSettings.setPivotWidth(value);
 			}

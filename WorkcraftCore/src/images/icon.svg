@@ -13,9 +13,9 @@
    height="48px"
    id="svg2888"
    version="1.1"
-   inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="place.svg"
-   inkscape:export-filename="/home/mech/workspace/Workcraft/images/icons/place16.png"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="/home/danil/workspace/workcraft/src/workcraft-trunk/WorkcraftCore/src/images/icon.ico.png"
    inkscape:export-xdpi="30"
    inkscape:export-ydpi="30">
   <defs
@@ -43,9 +43,9 @@
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
      inkscape:window-width="1920"
-     inkscape:window-height="1124"
+     inkscape:window-height="1176"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="24"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata2893">
@@ -55,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

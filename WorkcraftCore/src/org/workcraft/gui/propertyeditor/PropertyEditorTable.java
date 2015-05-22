@@ -85,10 +85,12 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 			return cellRenderers[row];
 	}
 
+	@Override
 	public void clearObject() {
 		model.clearObject();
 	}
 
+	@Override
 	public void setObject(Properties o) {
 		model.setObject(o);
 

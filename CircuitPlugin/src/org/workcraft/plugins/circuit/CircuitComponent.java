@@ -44,40 +44,69 @@ import org.workcraft.util.Hierarchy;
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
 public class CircuitComponent extends MathGroup implements Container, ObservableHierarchy {
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-	private String name = "";
-
-	public CircuitComponent() {
-		// Update all set/reset functions of the component when its contact is removed
-		new HierarchySupervisor() {
-			@Override
-			public void handleEvent(HierarchyEvent e) {
-				if (e instanceof NodesDeletingEvent) {
-					for (Node node: e.getAffectedNodes()) {
-						if (node instanceof Contact) {
-							final Contact contact = (Contact)node;
-							for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
-								BooleanFormula setFunction = BooleanReplacer.replace(fc.getSetFunction(), contact, Zero.instance());
-								fc.setSetFunction(setFunction);
-								BooleanFormula resetFunction = BooleanReplacer.replace(fc.getResetFunction(), contact, Zero.instance());
-								fc.setResetFunction(resetFunction);
-							}
-						}
+	private final class CircuitHierarchySupervisor extends HierarchySupervisor {
+		@Override
+		public void handleEvent(HierarchyEvent e) {
+			if (e instanceof NodesDeletingEvent) {
+				for (Node node: e.getAffectedNodes()) {
+					if (node instanceof Contact) {
+						final Contact contact = (Contact)node;
+						removeContactfromFunctions(contact);
 					}
 				}
 			}
-		}.attach(this);
+		}
+
+		private void removeContactfromFunctions(final Contact contact) {
+			for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
+				BooleanFormula setFunction = BooleanReplacer.replace(fc.getSetFunction(), contact, Zero.instance());
+				fc.setSetFunction(setFunction);
+				BooleanFormula resetFunction = BooleanReplacer.replace(fc.getResetFunction(), contact, Zero.instance());
+				fc.setResetFunction(resetFunction);
+			}
+		}
 	}
 
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private String name = "";
 	private boolean isEnvironment;
+	private boolean isZeroDelay;
+
+	public CircuitComponent() {
+		// Update all set/reset functions of the component when its contact is removed
+		new CircuitHierarchySupervisor().attach(this);
+	}
+
+	public void setIsEnvironment(boolean value) {
+		this.isEnvironment = value;
+		sendNotification(new PropertyChangedEvent(this, "is environment"));
+	}
 
 	public boolean getIsEnvironment() {
 		return isEnvironment;
 	}
 
-	public void setIsEnvironment(boolean isEnvironment) {
-		this.isEnvironment = isEnvironment;
-		sendNotification(new PropertyChangedEvent(this, "is environment"));
+	public void setIsZeroDelay(boolean value) {
+		this.isZeroDelay = value;
+		sendNotification(new PropertyChangedEvent(this, "is zero delay"));
+	}
+
+	public boolean getIsZeroDelay() {
+		return isZeroDelay;
+	}
+
+	public boolean isBufferOrInverter() {
+		int inputCount = 0;
+		int outputCount = 0;
+		for (Contact c: getContacts()) {
+			if (c.isInput()) {
+				inputCount++;
+			}
+			if (c.isOutput()) {
+				outputCount++;
+			}
+		}
+		return (inputCount == 1) && (outputCount == 1);
 	}
 
 	@Override

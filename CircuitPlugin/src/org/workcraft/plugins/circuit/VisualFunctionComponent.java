@@ -173,21 +173,26 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		}
 	}
 
+	private Point2D getContactLinePositionInLocalSpace(VisualFunctionContact vc, ComponentRenderingResult rr) {
+		Point2D pinPosition;
+		if (vc.isInput()) {
+			String cname = vc.getReferencedContact().getName();
+			pinPosition = rr.contactPositions().get(cname);
+		} else {
+			pinPosition = new Point2D.Double(rr.boundingBox().getMaxX(), 0.0);
+		}
+		return pinPosition;
+	}
+
 	private void drawContactLines(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
 		g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
 		g.setColor(GateRenderer.foreground);
 		for (Node node: this.getChildren()) {
 			if (node instanceof VisualFunctionContact) {
 				VisualFunctionContact vc = (VisualFunctionContact)node;
-				Point2D pinPosition = null;
-				if (vc.isInput()) {
-					String cname = vc.getReferencedContact().getName();
-					pinPosition = rr.contactPositions().get(cname);
-				} else {
-					pinPosition = new Point2D.Double(rr.boundingBox().getMaxX(), 0.0);
-				}
-				if (pinPosition != null) {
-					Point2D p1 = at.transform(pinPosition, null);
+				Point2D p1 = getContactLinePositionInLocalSpace(vc, rr);
+				if (p1 != null) {
+					at.transform(p1, p1);
 					Point2D p2 = vc.getPosition();
 					Line2D line = new Line2D.Double(p1, p2);
 					g.draw(line);
@@ -223,6 +228,29 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 				Line2D minusShape = new Line2D.Double(minusPosition.getX()-0.15, minusPosition.getY(), minusPosition.getX()+0.15, minusPosition.getY());
 				g.draw(minusShape);
 			}
+		}
+	}
+
+	private void drawBypass(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
+		Point2D inputPos = null;
+		Point2D outputPos = null;
+		for (Node node: this.getChildren()) {
+			if (node instanceof VisualFunctionContact) {
+				VisualFunctionContact vc = (VisualFunctionContact)node;
+				if (vc.isInput()) {
+					inputPos = getContactLinePositionInLocalSpace(vc, rr);
+				} else {
+					outputPos = getContactLinePositionInLocalSpace(vc, rr);
+				}
+			}
+		}
+		if ((inputPos != null) && (outputPos != null)) {
+			g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+			g.setColor(GateRenderer.foreground);
+			at.transform(inputPos, inputPos);
+			at.transform(outputPos, outputPos);
+			Line2D line = new Line2D.Double(inputPos, outputPos);
+			g.draw(line);
 		}
 	}
 
@@ -271,6 +299,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 			rr.draw(g);
 			g.transform(bt);
+
+			if (isBufferOrInverter() && getIsZeroDelay()) {
+				drawBypass(g, rr, at);
+			}
 
 			drawContactLines(g, rr, at);
 			drawCelementSymbols(g, rr, at);

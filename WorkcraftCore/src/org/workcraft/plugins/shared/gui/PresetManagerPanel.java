@@ -32,16 +32,20 @@ public class PresetManagerPanel<T> extends JPanel {
 	private Window dialogOwner;
 
 	@SuppressWarnings("unchecked")
-	public PresetManagerPanel(PresetManager<T> presetManager_, List<Preset<T>> builtIn, SettingsToControlsMapper<T> guiMapper_, Window dialogOwner) {
+	public PresetManagerPanel(PresetManager<T> presetManager, List<Preset<T>> builtIn, SettingsToControlsMapper<T> guiMapper, Window dialogOwner) {
 		super();
 
-		this.guiMapper = guiMapper_;
-		this.presetManager = presetManager_;
+		this.guiMapper = guiMapper;
+		this.presetManager = presetManager;
 		this.dialogOwner = dialogOwner;
 
 		for (Preset<T> p : builtIn) {
 			presetManager.add(p);
 		}
+		initialise();
+	}
+
+	private void initialise() {
 		presetManager.sort();
 		presetCombo = new JComboBox();
 		for (Preset<T> p : presetManager.list()) {
@@ -112,9 +116,7 @@ public class PresetManagerPanel<T> extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder("Presets"));
 		setLayout(new BorderLayout());
-//		add(GUI.createLabeledComponent(presetCombo, "Preset:"), BorderLayout.CENTER);
 		add(presetCombo, BorderLayout.CENTER);
-//		add(new SimpleFlowLayout.LineBreak(3));
 		add(buttonsPanel, BorderLayout.SOUTH);
 	}
 
