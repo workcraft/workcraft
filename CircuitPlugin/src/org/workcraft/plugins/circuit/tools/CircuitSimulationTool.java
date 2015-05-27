@@ -7,6 +7,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -17,12 +18,13 @@ import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.stg.SignalStg;
@@ -107,14 +109,18 @@ public class CircuitSimulationTool extends StgSimulationTool {
 		if ((savedState == null) || savedState.isEmpty()) {
 			return;
 		}
-		VisualCircuit circuit = (VisualCircuit)editor.getModel();
-		for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
-			String contactName = CircuitUtils.getContactName(circuit, contact);
-			String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
-			Node node = net.getNodeByReference(ref);
-			if ((node instanceof Place) && savedState.containsKey(node)) {
-				boolean initToOne = (savedState.get(node) > 0);
-				contact.getReferencedContact().setInitToOne(initToOne);
+		MathModel model = editor.getModel().getMathModel();
+		if (model instanceof Circuit) {
+			editor.getWorkspaceEntry().saveMemento();
+			Circuit circuit = (Circuit)model;
+			for (FunctionContact contact : circuit.getFunctionContacts()) {
+				String contactName = CircuitUtils.getContactName(circuit, contact);
+				String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
+				Node node = net.getNodeByReference(ref);
+				if ((node instanceof Place) && savedState.containsKey(node)) {
+					boolean initToOne = (savedState.get(node) > 0);
+					contact.setInitToOne(initToOne);
+				}
 			}
 		}
 	}

@@ -43,7 +43,6 @@ public class Fsm extends AbstractMathModel {
 		new SymbolConsistencySupervisor(this).attach(getRoot());
 	}
 
-
 	public State createState(String name) {
 		return createNode(name, null, State.class);
 	}

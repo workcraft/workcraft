@@ -26,9 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.gui.DesktopApi;
@@ -42,6 +39,7 @@ import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
 import org.workcraft.util.GUI;
+import org.workcraft.util.IntDocument;
 
 @SuppressWarnings("serial")
 public class MpsatConfigurationDialog extends JDialog {
@@ -70,25 +68,6 @@ public class MpsatConfigurationDialog extends JDialog {
 		@Override
 		public String toString() {
 			return description;
-		}
-	}
-
-	class IntDocument extends PlainDocument {
-		private int limit;
-
-		public IntDocument(int limit) {
-			super();
-			this.limit = limit;
-		}
-
-		@Override
-		public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-			 if (str != null) {
-				 String s =  str.replaceAll("\\D++", "");
-				 if (getLength() + s.length() <= limit) {
-					 super.insertString(offset, s, attr);
-				 }
-			 }
 		}
 	}
 
@@ -226,14 +205,12 @@ public class MpsatConfigurationDialog extends JDialog {
 		solutionModePanel.add(allSolutionsRadioButton);
 
 		solutionLimitText = new JTextField();
-		solutionLimitText.setText("WWW");
-
+		Dimension dimension = solutionLimitText.getPreferredSize();
+		dimension.width = 38;
+		solutionLimitText.setPreferredSize(dimension);
 		solutionLimitText.setToolTipText("Maximum number of solutions. Leave blank for no limit.");
-		Dimension soludioLimitDimention = solutionLimitText.getPreferredSize();
-		solutionLimitText.setText("");
-		solutionLimitText.setPreferredSize(soludioLimitDimention);
-		solutionLimitText.setEnabled(false);
 		solutionLimitText.setDocument(new IntDocument(3));
+		solutionLimitText.setEnabled(false);
 		solutionModePanel.add(solutionLimitText);
 		optionsPanel.add(solutionModePanel);
 		optionsPanel.add(new SimpleFlowLayout.LineBreak());

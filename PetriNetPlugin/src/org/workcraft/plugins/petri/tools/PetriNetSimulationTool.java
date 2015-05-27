@@ -667,6 +667,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		}
 		MathModel model = editor.getModel().getMathModel();
 		if (model instanceof PetriNetModel) {
+			editor.getWorkspaceEntry().saveMemento();
 			PetriNetModel pn = (PetriNetModel)model;
 			for (Place place: savedState.keySet()) {
 				String ref = net.getNodeReference(place);

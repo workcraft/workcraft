@@ -33,6 +33,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -81,6 +82,7 @@ public class SettingsEditorDialog extends JDialog {
 		super(owner);
 
 		propertiesTable = new PropertyEditorTable();
+		propertiesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setModal(true);
@@ -92,12 +94,15 @@ public class SettingsEditorDialog extends JDialog {
 			}
 		});
 
-		Dimension parentSize = owner.getSize();
-		this.setSize(parentSize.width / 2, parentSize.height / 2);
-		Dimension mySize = getSize();
-		owner.getLocationOnScreen();
+		Dimension minSize = new Dimension(640, 480);
+		setMinimumSize(minSize);
+		Dimension mySize = new Dimension(900, 600);
+		setSize(mySize);
 
-		this.setLocation(((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
+		Dimension parentSize = owner.getSize();
+		owner.getLocationOnScreen();
+		setLocation(((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
+
 		initComponents();
 		loadSections();
 	}
@@ -195,7 +200,7 @@ public class SettingsEditorDialog extends JDialog {
 
 		sectionScroll.setViewportView(sectionTree);
 		sectionScroll.setMinimumSize(new Dimension (200,0));
-		sectionScroll.setPreferredSize(new Dimension (200,0));
+		sectionScroll.setPreferredSize(new Dimension (250,0));
 		sectionScroll.setBorder(BorderFactory.createTitledBorder("Section"));
 
 		propertiesPane = new JPanel();

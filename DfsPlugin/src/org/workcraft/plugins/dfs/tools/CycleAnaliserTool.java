@@ -11,7 +11,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,14 +19,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.text.NumberFormatter;
+import javax.swing.table.TableColumnModel;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
@@ -39,6 +38,7 @@ import org.workcraft.plugins.dfs.VisualDelayComponent;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.IntDocument;
 import org.workcraft.util.graph.cycle.ElementaryCyclesSearch;
 
 public class CycleAnaliserTool extends AbstractTool {
@@ -61,22 +61,25 @@ public class CycleAnaliserTool extends AbstractTool {
 	protected JPanel controlPanel;
 	protected JScrollPane infoPanel;
 	protected JPanel statusPanel;
-	protected JTable cycleTable;
+	private JTable cycleTable;
+	private JLabel cycleCountLabel;
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		controlPanel = new JPanel();
 		cycleTable = new JTable(new CycleTableModel());
 		cycleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		cycleTable.getColumnModel().getColumn(COLUMN_THROUGHPUT).setPreferredWidth(50);
-		cycleTable.getColumnModel().getColumn(COLUMN_TOKEN).setPreferredWidth(30);
-		cycleTable.getColumnModel().getColumn(COLUMN_DELAY).setPreferredWidth(30);
-		cycleTable.getColumnModel().getColumn(COLUMN_CYCLE).setPreferredWidth(300);
+		TableColumnModel columnModel = cycleTable.getColumnModel();
+		columnModel.getColumn(COLUMN_THROUGHPUT).setPreferredWidth(50);
+		columnModel.getColumn(COLUMN_TOKEN).setPreferredWidth(30);
+		columnModel.getColumn(COLUMN_DELAY).setPreferredWidth(30);
+		columnModel.getColumn(COLUMN_CYCLE).setPreferredWidth(300);
 		cycleTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		cycleTable.setAutoCreateColumnsFromModel(false);
 		cycleTable.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				int selectedRow = cycleTable.getSelectedRow();
-				if (cycles != null && selectedRow >= 0 && selectedRow < cycles.size()) {
+				if ((cycles != null) && (selectedRow >= 0) && (selectedRow < cycles.size())) {
 					Cycle curCycle = cycles.get(selectedRow);
 					if (selectedCycle != curCycle) {
 						selectedCycle = curCycle;
@@ -109,21 +112,24 @@ public class CycleAnaliserTool extends AbstractTool {
 		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
 		interfacePanel.add(infoPanel, BorderLayout.CENTER);
 		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
+		interfacePanel.setPreferredSize(new Dimension(0, 0));
 
-		NumberFormat format = NumberFormat.getIntegerInstance();
-		NumberFormatter formatter = new NumberFormatter(format);
-		formatter.setAllowsInvalid(false);
-		formatter.setMinimum(1);
-		formatter.setMaximum(1000);
-		final JFormattedTextField cycleCountText = new JFormattedTextField(formatter);
-		cycleCountText.setPreferredSize(new Dimension(100, 24));
+		final JTextField cycleCountText = new JTextField();
+		Dimension dimension = cycleCountText.getPreferredSize();
+		dimension.width = 40;
+		cycleCountText.setPreferredSize(dimension);
+		cycleCountText.setDocument(new IntDocument(3));
 		cycleCountText.setText(new Integer(cycleCount).toString());
 		cycleCountText.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-					cycleCount = Integer.parseInt(cycleCountText.getText());
-					resetSelectedCycle(editor);
+					try {
+						cycleCount = Integer.parseInt(cycleCountText.getText());
+						resetSelectedCycle(editor);
+					} catch (NumberFormatException e) {
+						cycleCountText.setText(new Integer(cycleCount).toString());
+					}
 				}
 				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					cycleCountText.setText(new Integer(cycleCount).toString());
@@ -150,7 +156,7 @@ public class CycleAnaliserTool extends AbstractTool {
 			}
 		});
 
-		JLabel cycleCountLabel = new JLabel();
+		cycleCountLabel = new JLabel();
 		cycleCountLabel.setText("Cycle count:");
 		cycleCountLabel.setLabelFor(cycleCountText);
 
@@ -170,6 +176,9 @@ public class CycleAnaliserTool extends AbstractTool {
 		cycleTable.clearSelection();
 		selectedCycle = null;
 		cycles = findCycles();
+		if ((cycles != null) && (cycleCountLabel != null)) {
+			cycleCountLabel.setText("Cycle count (out of " + cycles.size() + "):");
+		}
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(false);
 	}
@@ -247,7 +256,7 @@ public class CycleAnaliserTool extends AbstractTool {
 
 	public ArrayList<Cycle> findCycles() {
 		ArrayList<Cycle> result = new ArrayList<Cycle>();
-		// update global min and max delay values
+		// Update global min and max delay values
 		Collection<VisualDelayComponent> allComponents = Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualDelayComponent.class);
 		boolean first = true;
 		for (VisualDelayComponent c: allComponents) {
@@ -260,7 +269,7 @@ public class CycleAnaliserTool extends AbstractTool {
 			}
 			first = false;
 		}
-		// prepare temporary node array and adjacency matrix
+		// Prepare temporary node array and adjacency matrix
 	    int size = allComponents.size();
 	    VisualComponent tmpComponents[] = allComponents.toArray(new VisualComponent[size]);
 		boolean adjMatrix[][] = new boolean[size][size];
@@ -272,7 +281,7 @@ public class CycleAnaliserTool extends AbstractTool {
 				adjMatrix[j][i] = preset.contains(tmpComponents[j]);
 			}
 		}
-		// calculate simple cycles and process the results
+		// Calculate simple cycles and process the results
 		ElementaryCyclesSearch ecs = new ElementaryCyclesSearch(adjMatrix, tmpComponents);
 		List tmpCycles = ecs.getElementaryCycles();
 		for (int i = 0; i < tmpCycles.size(); i++) {
