@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -22,12 +23,13 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
+import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
-public class SimulationTool extends PetriNetSimulationTool {
+public class PolicySimulationTool extends PetriNetSimulationTool {
 	private PetriNetGenerator generator;
 
 	@Override
@@ -47,13 +49,17 @@ public class SimulationTool extends PetriNetSimulationTool {
 		if ((savedState == null) || savedState.isEmpty()) {
 			return;
 		}
-		VisualPolicyNet policy = (VisualPolicyNet)editor.getModel();
-		for (VisualPlace place: policy.getVisualPlaces()) {
-			String ref = policy.getNodeMathReference(place);
-			Node node = net.getNodeByReference(ref);
-			if (node instanceof Place) {
-				int tokens = ((Place)node).getTokens();
-				place.getReferencedPlace().setTokens(tokens);
+		MathModel model = editor.getModel().getMathModel();
+		if (model instanceof PolicyNet) {
+			editor.getWorkspaceEntry().saveMemento();
+			PolicyNet policy = (PolicyNet)model;
+			for (Place place: policy.getPlaces()) {
+				String ref = policy.getNodeReference(place);
+				Node node = net.getNodeByReference(ref);
+				if (node instanceof Place) {
+					int tokens = ((Place)node).getTokens();
+					place.setTokens(tokens);
+				}
 			}
 		}
 	}

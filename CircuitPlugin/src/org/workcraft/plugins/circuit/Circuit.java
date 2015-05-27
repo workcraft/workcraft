@@ -21,6 +21,8 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.util.Collection;
+
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -75,6 +77,10 @@ public class Circuit extends AbstractMathModel {
 		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
+	}
+
+	public Collection<FunctionContact> getFunctionContacts() {
+		return Hierarchy.getDescendantsOfType(getRoot(), FunctionContact.class);
 	}
 
 	@Override
