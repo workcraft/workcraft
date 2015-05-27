@@ -41,7 +41,7 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.IntDocument;
 import org.workcraft.util.graph.cycle.ElementaryCyclesSearch;
 
-public class CycleAnaliserTool extends AbstractTool {
+public class CycleAnalyserTool extends AbstractTool {
 	// Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
 	public static final char INFINITY_SYMBOL = 0x221E;
 
@@ -193,7 +193,7 @@ public class CycleAnaliserTool extends AbstractTool {
 
 	@Override
 	public String getLabel() {
-		return "Cycle analiser";
+		return "Cycle analyser";
 	}
 
 	@Override
