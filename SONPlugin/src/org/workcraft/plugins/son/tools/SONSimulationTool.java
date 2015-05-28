@@ -671,7 +671,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		fireList = simuAlg.getEnabledNodes(sync, phases, isRev);
 
-		if(!fireList.isEmpty()){
+		if(!conflictfilter(fireList).isEmpty()){
 
 			executeEvents(editor, fireList);
 
@@ -684,6 +684,16 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			}
 			autoSimulator(editor, readSONMarking(), history);
 		}
+	}
+
+	private List<TransitionNode> conflictfilter(List<TransitionNode> fireList){
+		for(PlaceNode c : readSONMarking().keySet()){
+			Collection<TransitionNode> conflict = relationAlg.getPostConflictEvents(c);
+			if(!conflict.isEmpty()){
+				fireList.removeAll(conflict);
+			}
+		}
+		return fireList;
 	}
 
 	public Map<PlaceNode, Boolean> ReachabilitySimulator(final GraphEditor editor, Collection<String> causalPredecessorRefs, Collection<String> markingRefs){
@@ -874,34 +884,29 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		if (node instanceof VisualTransitionNode) {
 
 			List<TransitionNode> enabled = null;
-			TransitionNode selected = ((VisualTransitionNode)node).getMathTransitionNode();
+			TransitionNode select = ((VisualTransitionNode)node).getMathTransitionNode();
 
 			enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
-			List<TransitionNode> minFire = simuAlg.getMinFire(selected, sync, enabled, isRev);
-
-			List<TransitionNode> possibleFires = new ArrayList<TransitionNode>();
-			for(TransitionNode pe : enabled)
-				if(!minFire.contains(pe))
-					possibleFires.add(pe);
-
-			minFire.remove(selected);
+			List<TransitionNode> minFire = simuAlg.getMinFire(select, sync, enabled, isRev);
+			List<TransitionNode> possibleFire = simuAlg.getMinFire(select, sync, enabled, !isRev);
+			//remove select node and directed sync cycle
+			possibleFire.removeAll(minFire);
+			possibleFire.remove(select);
 
 			List<TransitionNode> fireList = new ArrayList<TransitionNode>();
+			fireList.addAll(minFire);
 
-			if(possibleFires.isEmpty() && minFire.isEmpty()){
-				fireList.add(selected);
+			minFire.remove(select);
+
+			if(possibleFire.isEmpty()){
 				executeEvents(e.getEditor(),fireList);
-
 			}else{
 				e.getEditor().requestFocus();
 				ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
-						net, possibleFires, minFire, selected, isRev, sync);
+						net, possibleFire, minFire, select, isRev, sync);
 				GUI.centerToParent(dialog, mainWindow);
 				dialog.setVisible(true);
-
-				fireList.addAll(minFire);
-				fireList.add(selected);
 
 				if (dialog.getRun() == 1){
 					fireList.addAll(dialog.getSelectedEvent());
