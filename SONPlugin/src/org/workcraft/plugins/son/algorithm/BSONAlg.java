@@ -102,7 +102,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 
-	private Collection<Condition> Max(Node node){
+	private Collection<Condition> forwardSearch(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
 		Stack<Node> stack = new Stack<Node>();
 		Collection<Node> visit = new HashSet<Node>();
@@ -129,7 +129,7 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	private Collection<Condition> Min(Node node){
+	private Collection<Condition> backWardSearch(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
 		Stack<Node> stack = new Stack<Node>();
 		Collection<Node> visit = new HashSet<Node>();
@@ -169,8 +169,8 @@ public class BSONAlg extends RelationAlgorithm{
 				return result;
 		}
 
-		Collection<Condition> min = Min(node);
-		Collection<Condition> max = Max(node);
+		Collection<Condition> min = backWardSearch(node);
+		Collection<Condition> max = forwardSearch(node);
 		for(Condition c : max){
 			if(min.contains(c))
 				result.add(c);

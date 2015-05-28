@@ -45,7 +45,7 @@ public class ParallelSimDialog  extends JDialog{
 	private SON net;
 
 	boolean isRev = false;
-	private Color color = new Color(255, 228, 181);
+	private Color selectedColor = new Color(255, 228, 181);
 	private List<TransitionNode> possibleFire, minFire;
 	private TransitionNode clickedEvent;
 
@@ -162,11 +162,11 @@ public class ParallelSimDialog  extends JDialog{
 									if(e==eventItem.getEvent()){
 										selectedEvents.add(e);
 										eventItem.setSelected(true);
-										eventItem.setFillColor(color);
+										eventItem.setFillColor(selectedColor);
 									}
 								}
 							}
-							item.setFillColor(color);
+							item.setFillColor(selectedColor);
 						}
 
 						if(!item.isSelected() ){
@@ -324,9 +324,9 @@ public class ParallelSimDialog  extends JDialog{
 	}
 
 	private void setColor(List<TransitionNode> preEvents, TransitionNode event){
-		event.setFillColor(color);
+		event.setFillColor(selectedColor);
 		for(TransitionNode e : preEvents)
-			e.setFillColor(color);
+			e.setFillColor(selectedColor);
 	}
 
 	public SON getSONModel(){

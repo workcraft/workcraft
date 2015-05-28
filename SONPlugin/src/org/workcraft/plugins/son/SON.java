@@ -143,6 +143,9 @@ public class SON extends AbstractMathModel {
 		if(n instanceof TransitionNode){
 			((TransitionNode) n).setForegroundColor(nodeColor);
 		}
+		if(n instanceof SONConnection){
+			((SONConnection) n).setColor(nodeColor);
+		}
 		if (n instanceof ONGroup)
 			((ONGroup)n).setForegroundColor(nodeColor);
 
@@ -155,8 +158,12 @@ public class SON extends AbstractMathModel {
 		if(n instanceof TransitionNode){
 			return ((TransitionNode) n).getForegroundColor();
 		}
-		if (n instanceof ONGroup)
+		if(n instanceof SONConnection){
+			((SONConnection) n).getColor();
+		}
+		if (n instanceof ONGroup){
 			return ((ONGroup) n).getForegroundColor();
+		}
 
 		return null;
 	}
@@ -385,7 +392,9 @@ public class SON extends AbstractMathModel {
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);
 		if (node instanceof SONConnection) {
-			properties.add(new ConnectionTimePropertyDescriptor((SONConnection)node));
+			SONConnection con = (SONConnection)node;
+			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE)
+				properties.add(new ConnectionTimePropertyDescriptor((SONConnection)node));
 		}
 		if (node instanceof PlaceNode) {
 			properties.add(new PlaceNodeTimePropertyDescriptor((PlaceNode)node));

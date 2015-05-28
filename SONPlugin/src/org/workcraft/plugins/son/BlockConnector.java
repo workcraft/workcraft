@@ -44,11 +44,12 @@ public class BlockConnector {
 					//set input value
 					String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
 					String type = "-"+con.getReferencedSONConnection().getSemantics();
+					String time = "-"+con.getTime();
 					String value = "";
 					if(((VisualPlaceNode)first).getInterface() == ""){
-						value = "to-"+name+type+";";
+						value = "to-"+name+type+time+";";
 					}else{
-						value = ((VisualPlaceNode)first).getInterface()+"to-"+name+type+";";
+						value = ((VisualPlaceNode)first).getInterface()+"to-"+name+type+time+";";
 					}
 					((VisualPlaceNode)first).setInterface(value);
 					//remove connection
@@ -70,11 +71,12 @@ public class BlockConnector {
 					 //set output value
 					String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
 					String type = "-"+con.getReferencedSONConnection().getSemantics();
+					String time = "-"+con.getTime();
 					String value = "";
 					if(((VisualPlaceNode)second).getInterface() == ""){
-						value = "from-"+name+type+";";
+						value = "from-"+name+type+time+";";
 					}else{
-						value = ((VisualPlaceNode)second).getInterface()+"from-"+name+type+";";
+						value = ((VisualPlaceNode)second).getInterface()+"from-"+name+type+time+";";
 					}
 					((VisualPlaceNode)second).setInterface(value);
 
@@ -154,48 +156,57 @@ public class BlockConnector {
 				for(String info : infos){
 					String[] piece = info.trim().split("-");
 					VisualEvent e = null;
-
+					//obtain event
 					for(VisualEvent event : block.getVisualEvents()){
 						if(net.getNodeReference(event.getReferencedComponent()).equals(piece[1])){
 							e = event;
 						}
 					}
 
-					//c is an input
 					if(e!=null && visualNet.getConnection(e, p) == null){
+						//create input connection
 						if(piece[0].equals("to")){
+							VisualSONConnection con = null;
 							try {
 								if(piece[2].equals(Semantics.PNLINE.toString())) {
-									visualNet.connect(p, e, Semantics.PNLINE);
+									con = (VisualSONConnection)visualNet.connect(p, e, Semantics.PNLINE);
 								} else if(piece[2].equals(Semantics.SYNCLINE.toString())) {
-									visualNet.connect(p, e, Semantics.SYNCLINE);
+									con = (VisualSONConnection)visualNet.connect(p, e, Semantics.SYNCLINE);
 								} else if(piece[2].equals(Semantics.ASYNLINE.toString())) {
-									visualNet.connect(p, e, Semantics.ASYNLINE);
+									con = (VisualSONConnection)visualNet.connect(p, e, Semantics.ASYNLINE);
 								} else if(piece[2].equals(Semantics.BHVLINE.toString())) {
-									visualNet.connect(p, e, Semantics.BHVLINE);
+									con = (VisualSONConnection)visualNet.connect(p, e, Semantics.BHVLINE);
 								}
 								//remove value
 								interfaceValue=interfaceValue.replace(info+";", "");
 							} catch (InvalidConnectionException ex) {
 								ex.printStackTrace();
 							}
-							//c is an output
+							//set time value
+							if(con != null){
+								con.setTime(piece[3] + "-" + piece[4]);
+							}
+						//create output connection
 						}else if(piece[0].equals("from")){
+							VisualSONConnection con = null;
 							try {
 								if(piece[2].equals(Semantics.PNLINE.toString())) {
-									visualNet.connect(e, p, Semantics.PNLINE);
+									con = (VisualSONConnection)visualNet.connect(e, p, Semantics.PNLINE);
 								} else if(piece[2].equals(Semantics.SYNCLINE.toString())) {
-									visualNet.connect(e, p, Semantics.SYNCLINE);
+									con = (VisualSONConnection)visualNet.connect(e, p, Semantics.SYNCLINE);
 								} else if(piece[2].equals(Semantics.ASYNLINE.toString())) {
-									visualNet.connect(e, p, Semantics.ASYNLINE);
+									con = (VisualSONConnection)visualNet.connect(e, p, Semantics.ASYNLINE);
 								} else if(piece[2].equals(Semantics.BHVLINE.toString())) {
-									visualNet.connect(e, p, Semantics.BHVLINE);
+									con = (VisualSONConnection)visualNet.connect(e, p, Semantics.BHVLINE);
 								}
 								//remove value
 								interfaceValue=interfaceValue.replace(info+";", "");
 							} catch (InvalidConnectionException ex) {
 								// TODO Auto-generated catch block
 								ex.printStackTrace();
+							}
+							if(con != null){
+								con.setTime(piece[3] + "-" + piece[4]);
 							}
 						}
 					}

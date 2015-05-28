@@ -22,6 +22,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 
 
 @DisplayName("Condition")
@@ -117,11 +118,11 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	protected void drawStartTimeInLocalSpace(DrawRequest r) {
-		if (isInitial() && SONSettings.getTimeVisibility()) {
+		if (isInitial() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getStartTime())) {
 			cahceStartTimeRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(errLabelColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(startTimeColor, d.getColorisation()));
 			startTimeRenderedText.draw(g);
 		}
 	}
@@ -139,11 +140,11 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	protected void drawEndTimeInLocalSpace(DrawRequest r) {
-		if (isFinal() && SONSettings.getTimeVisibility()) {
+		if (isFinal() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getEndTime())) {
 			cahceEndTimeRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(errLabelColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(endTimeColor, d.getColorisation()));
 			endTimeRenderedText.draw(g);
 		}
 	}
@@ -159,11 +160,11 @@ public class VisualCondition extends VisualPlaceNode{
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-		if (isInitial() && SONSettings.getTimeVisibility()) {
+		if (isInitial() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getStartTime())) {
 			bb = BoundingBoxHelper.union(bb, startTimeRenderedText.getBoundingBox());
 		}
 
-		if (isFinal() && SONSettings.getTimeVisibility()) {
+		if (isFinal() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getEndTime())) {
 			bb = BoundingBoxHelper.union(bb, endTimeRenderedText.getBoundingBox());
 		}
 		return bb;

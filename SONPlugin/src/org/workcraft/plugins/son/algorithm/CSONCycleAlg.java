@@ -90,7 +90,7 @@ public class CSONCycleAlg extends ONCycleAlg{
 	/**
 	 * 	Flit synchronous cycles
 	 */
-	public Collection<Path> syncCycleFliter(Collection<Path> paths){
+	private Collection<Path> syncCycleFliter(Collection<Path> paths){
 		List<Path> result = new ArrayList<Path>();
 		for (Path path : paths){
 			Path sub = new Path();

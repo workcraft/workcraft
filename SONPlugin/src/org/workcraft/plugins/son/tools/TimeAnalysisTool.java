@@ -1,21 +1,31 @@
 package org.workcraft.plugins.son.tools;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
@@ -31,36 +41,51 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
+import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
+import org.workcraft.plugins.son.algorithm.Path;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeAnalysisTool extends AbstractTool{
+public class TimeAnalysisTool extends SONSimulationTool{
 
 	private SON net;
 	protected VisualSON visualNet;
 
 	private TimeAlg timeAlg;
 
-	private JPanel interfacePanel, timePropertyPanel, timeInputPanel;
-
+	private JPanel interfacePanel, timePropertyPanel, timeInputPanel, scenarioPanel, buttonPanel;
+	private JButton clearButton;
+	private JTabbedPane modeTabs;
+	protected JTable branchTable;
 
 	private int labelheight = 20;
 	private int labelwidth = 35;
+	private Color selectedColor = new Color(255, 228, 181);
 	private Font font = new Font("Arial", Font.PLAIN, 12);
 	private String startLabel = "Start time interval: ";
 	private String endLabel = "End time interval: ";
 	private String durationLabel = "Duration interval: ";
 	private String timeLabel = "Time interval: ";
+
+	private Color greyoutColor = Color.LIGHT_GRAY;
+	private Collection<ArrayList<Node>> conflict = new ArrayList<ArrayList<Node>>();
 
 	protected Map<PlaceNode, Boolean> initialMarking = new HashMap<PlaceNode, Boolean>();
 	protected Map<PlaceNode, Boolean> finalMarking = new HashMap<PlaceNode, Boolean>();
@@ -117,12 +142,38 @@ public class TimeAnalysisTool extends AbstractTool{
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);
-		interfacePanel = new JPanel();
+
 		timePropertyPanel = new JPanel();
-		timePropertyPanel.setBorder(BorderFactory.createTitledBorder("Time property setting"));
+		timePropertyPanel.setBorder(BorderFactory.createTitledBorder("Time value"));
 		timePropertyPanel.setLayout(new WrapLayout());
-		timePropertyPanel.setPreferredSize(new Dimension(300, 150));
-		interfacePanel.add(timePropertyPanel);
+		timePropertyPanel.setPreferredSize(new Dimension(0, 200));
+
+		scenarioPanel = new JPanel();
+		scenarioPanel.setPreferredSize(new Dimension(0, 200));
+
+		modeTabs = new JTabbedPane();
+		modeTabs.addTab("Setting", timePropertyPanel);
+		modeTabs.addTab("Scenario", scenarioPanel);
+
+		clearButton = new JButton("Clear");
+		clearButton.setPreferredSize(new Dimension(65,25));
+
+		buttonPanel = new JPanel();
+		buttonPanel.add(clearButton);
+
+		interfacePanel = new JPanel();
+		interfacePanel.setLayout(new BorderLayout());
+		interfacePanel.add(modeTabs, BorderLayout.PAGE_START);
+		interfacePanel.add(buttonPanel, BorderLayout.PAGE_END);
+
+		clearButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+
+			}
+		});
 	}
 
 	private JPanel createTimeInputPanel(final String title, final String value, final Node node){
@@ -227,7 +278,12 @@ public class TimeAnalysisTool extends AbstractTool{
 			String value = con.getTime();
 			if(isMin){
 				String input = field.getText() + value.substring(4,9);
-				con.setTime(input);
+				if(compare(input)){
+					con.setTime(input);
+				}else{
+					con.setTime(value);
+					field.setText(value.substring(0,4));
+				}
 			}else{
 				String input = value.substring(0,5) + field.getText();
 				if(compare(input)){
@@ -243,7 +299,12 @@ public class TimeAnalysisTool extends AbstractTool{
 			String value = c.getStartTime();
 			if(isMin){
 				String input = field.getText() + value.substring(4,9);
-				c.setStartTime(input);
+				if(compare(input)){
+					c.setStartTime(input);
+				}else{
+					c.setStartTime(value);
+					field.setText(value.substring(0,4));
+				}
 			}else{
 				String input = value.substring(0,5) + field.getText();
 				if(compare(input)){
@@ -255,27 +316,63 @@ public class TimeAnalysisTool extends AbstractTool{
 			}
 		}
 		else if(title.equals(durationLabel)){
-			VisualCondition c = (VisualCondition)node;
-			String value = c.getDuration();
-			if(isMin){
-				String input = field.getText() + value.substring(4,9);
-				c.setDuration(input);
-			}else{
-				String input = value.substring(0,5) + field.getText();
-				if(compare(input)){
-					c.setDuration(input);
+			String value = "";
+			if(node instanceof VisualPlaceNode){
+				VisualPlaceNode c = (VisualPlaceNode)node;
+				value = c.getDuration();
+				if(isMin){
+					String input = field.getText() + value.substring(4,9);
+					if(compare(input)){
+						c.setDuration(input);
+					}else{
+						c.setDuration(value);
+						field.setText(value.substring(0,4));
+					}
 				}else{
-					c.setDuration(value);
-					field.setText(value.substring(5,9));
+					String input = value.substring(0,5) + field.getText();
+					if(compare(input)){
+						c.setDuration(input);
+					}else{
+						c.setDuration(value);
+						field.setText(value.substring(5,9));
+					}
+				}
+			}
+			else if(node instanceof VisualBlock){
+				VisualBlock b = (VisualBlock)node;
+				value = b.getDuration();
+
+				if(isMin){
+					String input = field.getText() + value.substring(4,9);
+					if(compare(input)){
+						b.setDuration(input);
+					}else{
+						b.setDuration(value);
+						field.setText(value.substring(0,4));
+					}
+				}else{
+					String input = value.substring(0,5) + field.getText();
+					if(compare(input)){
+						b.setDuration(input);
+					}else{
+						b.setDuration(value);
+						field.setText(value.substring(5,9));
+					}
 				}
 			}
 		}
+
 		else if(title.equals(endLabel)){
 			VisualCondition c = (VisualCondition)node;
 			String value = c.getEndTime();
 			if(isMin){
 				String input = field.getText() + value.substring(4,9);
-				c.setEndTime(input);
+				if(compare(input)){
+					c.setEndTime(input);
+				}else{
+					c.setEndTime(value);
+					field.setText(value.substring(0,4));
+				}
 			}else{
 				String input = value.substring(0,5) + field.getText();
 				if(compare(input)){
@@ -304,33 +401,29 @@ public class TimeAnalysisTool extends AbstractTool{
 	}
 
 	private boolean compare(String value){
-		String start = value.substring(0, 4);
-		String end = value.substring(5, 9);
+		int start = TimeAlg.getMinTime(value);
+		int end = TimeAlg.getMaxTime(value);
 
-		try {
-			 int s = Integer.parseInt(start);
-			 int e = Integer.parseInt(end);
-			 if (s <= e)
-				 return true;
-		} catch (NumberFormatException e) {
+		if(start <= end){
+			return true;
 		}
 		return false;
 	}
 
-	private void updatePanel(final GraphEditor editor, Node node){
+	private void updateTimePanel(final GraphEditor editor, Node node){
 		timePropertyPanel.removeAll();
 		timePropertyPanel.revalidate();
 		timePropertyPanel.repaint();
 
 		String value = "";
 		if(node instanceof VisualSONConnection){
-			value = ((VisualSONConnection)node).getTime();
-			timePropertyPanel.add(createTimeInputPanel(timeLabel, value, node));
+			VisualSONConnection con = (VisualSONConnection)node;
+			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
+				value = ((VisualSONConnection)node).getTime();
+				timePropertyPanel.add(createTimeInputPanel(timeLabel, value, node));
+			}
 		}
 		else if(node instanceof VisualPlaceNode){
-			VisualPlaceNode c = (VisualPlaceNode)node;
-			value =c.getDuration();
-			timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
 
 			if(node instanceof VisualCondition){
 				VisualCondition c2 = (VisualCondition)node;
@@ -344,6 +437,15 @@ public class TimeAnalysisTool extends AbstractTool{
 					timePropertyPanel.add(createTimeInputPanel(endLabel, value, node));
 				}
 			}
+
+			VisualPlaceNode c = (VisualPlaceNode)node;
+			value =c.getDuration();
+			timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
+		}
+		else if(node instanceof VisualBlock){
+			VisualBlock b = (VisualBlock)node;
+			value =b.getDuration();
+			timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
 		}
 
 		timePropertyPanel.revalidate();
@@ -402,28 +504,63 @@ public class TimeAnalysisTool extends AbstractTool{
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e){
-		Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
-		if( node instanceof VisualSONConnection){
-			updatePanel(e.getEditor(), node);
+		net.refreshColor();
+
+		if(modeTabs.getSelectedIndex() == 0){
+			Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
+			if( node instanceof VisualSONConnection){
+				VisualSONConnection con = (VisualSONConnection)node;
+				if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
+					((VisualSONConnection) node).setColor(selectedColor);
+					updateTimePanel(e.getEditor(), node);
+					return;
+				}
+			}
+
+			Node node2 = HitMan.hitFirstNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualBlock.class);
+			if(node2 != null){
+				if(((VisualBlock)node2).getIsCollapsed()){
+					((VisualBlock) node).setFillColor(selectedColor);
+					updateTimePanel(e.getEditor(), node2);
+					return;
+				}
+			}
+
+			Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
+					new Func<Node, Boolean>() {
+						@Override
+						public Boolean eval(Node node) {
+							return node instanceof VisualPlaceNode;
+						}
+					});
+				if (node3 instanceof VisualPlaceNode) {
+					((VisualPlaceNode) node).setFillColor(selectedColor);
+					updateTimePanel(e.getEditor(), node3);
+				}
+		}else{
+			System.out.println("Scenario");
+		}
+	}
+
+	protected Path scenarioGenerator(Map<PlaceNode, Boolean> marking, Collection<Map<PlaceNode, Boolean>> history){
+		Path result = new Path();
+
+		applyMarking(initialMarking);
+		initialise();
+		List<TransitionNode> enabled = simuAlg.getEnabledNodes(sync, phases, false);
+		for(PlaceNode c : readSONMarking().keySet()){
+
 		}
 
-		Node node2 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-				new Func<Node, Boolean>() {
-					@Override
-					public Boolean eval(Node node) {
-						return node instanceof VisualPlaceNode;
-					}
-				});
-
-			if (node2 instanceof VisualPlaceNode) {
-				updatePanel(e.getEditor(), node);
-			}
+		return result;
 	}
 
-	@Override
-	public JPanel getInterfacePanel() {
-		return interfacePanel;
-	}
+//	private Collection
+//
+//	@Override
+//	public JPanel getInterfacePanel() {
+//		return interfacePanel;
+//	}
 
 	@Override
 	public String getLabel() {

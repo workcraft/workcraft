@@ -28,7 +28,8 @@ public class SONToolProvider implements CustomToolsProvider{
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Event.class)));
 		result.add(channelPlaceTool);
 		result.add(new SONSimulationTool());
-		result.add(new TimeAnalysisTool());
+		GraphEditorTool TimeSettingTool = new TimeAnalysisTool();
+		result.add(TimeSettingTool);
 
 		return result;
 	}

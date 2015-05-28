@@ -3,7 +3,6 @@ package org.workcraft.plugins.son.tasks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -12,7 +11,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
@@ -24,6 +22,7 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.tools.SONSimulationTool;
+import org.workcraft.plugins.son.tools.ToolManager;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -44,8 +43,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 	public ReachabilityTask(WorkspaceEntry we){
 		this.we = we;
-
 		net = (SON)we.getModelEntry().getMathModel();
+
 		bsonAlg = new BSONAlg(net);
 		reachAlg = new ReachabilityAlg (net);
 
@@ -74,16 +73,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			return new Result<VerificationResult>(Outcome.FINISHED);
 		}
 
-//		//cycle detection
-//		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
-//		if(!cycleAlg.cycleTask(net.getComponents()).isEmpty()){
-//			we.cancelMemento();
-//			JOptionPane.showMessageDialog(null,
-//					"Fail to run reachability anaylsis tool, " +
-//					"error due to cyclic structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
-//			return new Result<VerificationResult>(Outcome.FINISHED);
-//		}
-
 		if(reachabilityTask()){
 			net = (SON)we.getModelEntry().getMathModel();
 			int result = JOptionPane.showConfirmDialog(mainWindow,
@@ -110,19 +99,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 	private Map<PlaceNode, Boolean> simulation(){
 		Map<PlaceNode, Boolean> result;
-		final Framework framework = Framework.getInstance();
-		final MainWindow mainWindow = framework.getMainWindow();
-		GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-		if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
-			final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
-			if(editors.size()>0) {
-				currentEditor = editors.get(0);
-				mainWindow.requestFocus(currentEditor);
-			} else {
-				currentEditor = mainWindow.createEditorWindow(we);
-			}
-		}
-		final ToolboxPanel toolbox = currentEditor.getToolBox();
+
+		final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
 		final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
 		toolbox.selectTool(tool);
 		result = tool.ReachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);

@@ -20,6 +20,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.util.Geometry;
 
@@ -142,14 +143,6 @@ public class VisualSONConnection extends VisualConnection {
 		}
 	}
 
-	public String getTime() {
-		return getReferencedSONConnection().getTime();
-	}
-
-	public void setTime(String time) {
-		getReferencedSONConnection().setTime(time);
-	}
-
 	private AffineTransform getLabelTransform() {
 		ConnectionGraphic graphic = getGraphic();
 		Point2D middlePoint = graphic.getPointOnCurve(0.5);
@@ -174,7 +167,7 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	protected void drawLabelInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility()) {
+		if (getLabelVisibility() && TimeAlg.isSpecified(getTime())) {
 			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -190,7 +183,8 @@ public class VisualSONConnection extends VisualConnection {
 
 	@Override
 	public void draw(DrawRequest r) {
-		drawLabelInLocalSpace(r);
+		if(getSemantics()==Semantics.PNLINE || getSemantics() == Semantics.ASYNLINE)
+			drawLabelInLocalSpace(r);
 	}
 
 	private Rectangle2D getLabelBoundingBox() {
@@ -208,6 +202,24 @@ public class VisualSONConnection extends VisualConnection {
 		Rectangle2D labelBB = getLabelBoundingBox();
 		if (labelBB != null && labelBB.contains(pointInParentSpace)) return true;
 		return super.hitTest(pointInParentSpace);
+	}
+
+	@Override
+	public Color getColor() {
+		return getReferencedSONConnection().getColor();
+	}
+
+	@Override
+	public void setColor(Color color) {
+		getReferencedSONConnection().setColor(color);
+	}
+
+	public String getTime() {
+		return getReferencedSONConnection().getTime();
+	}
+
+	public void setTime(String time) {
+		getReferencedSONConnection().setTime(time);
 	}
 
 	public Color getTimeLabelColor() {

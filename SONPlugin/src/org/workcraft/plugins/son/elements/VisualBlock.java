@@ -14,6 +14,7 @@ import java.util.Collection;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
@@ -24,6 +25,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.util.Hierarchy;
@@ -124,7 +126,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	}
 
 	protected void drawDurationInLocalSpace(DrawRequest r) {
-		if (SONSettings.getTimeVisibility()) {
+		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -137,6 +139,16 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	public void cacheRenderedText(DrawRequest r) {
 		super.cacheRenderedText(r);
 		cahceDurationRenderedText(r);
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+
+		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
+			bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
+		}
+		return bb;
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public class Block extends PageNode implements TransitionNode{
 
 	@Override
 	public boolean isFaulty(){
-		for(Event event : this.getEvents())
+		for(Event event : getEvents())
 			if(event.isFaulty())
 				return true;
 		return false;

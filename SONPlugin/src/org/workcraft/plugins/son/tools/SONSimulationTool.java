@@ -85,13 +85,13 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected VisualSON visualNet;
 	private GraphEditor editor;
 
-	private RelationAlgorithm relationAlg;
-	private BSONAlg bsonAlg;
-	private SimulationAlg simuAlg;
+	protected RelationAlgorithm relationAlg;
+	protected BSONAlg bsonAlg;
+	protected SimulationAlg simuAlg;
 	private ErrorTracingAlg	errAlg;
 
-	private Collection<Path> sync = new ArrayList<Path>();
-	private Map<Condition, Collection<Phase>> phases = new HashMap<Condition, Collection<Phase>>();
+	protected Collection<Path> sync = new ArrayList<Path>();
+	protected Map<Condition, Collection<Phase>> phases = new HashMap<Condition, Collection<Phase>>();
 	protected Map<PlaceNode, Boolean>initialMarking = new HashMap<PlaceNode, Boolean>();
 
 	protected JPanel interfacePanel;
@@ -334,27 +334,18 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	@Override
 	public void activated(final GraphEditor editor) {
 
+		this.editor = editor;
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
 		editor.getWorkspaceEntry().captureMemento();
-
-		this.editor = editor;
 		WorkspaceEntry we = editor.getWorkspaceEntry();
-
-		relationAlg = new RelationAlgorithm(net);
-		bsonAlg = new BSONAlg(net);
-		simuAlg = new SimulationAlg(net);
 		errAlg = new ErrorTracingAlg(net);
 
 		BlockConnector.blockBoundingConnector(visualNet);
 
 		we.setCanModify(false);
-		initialMarking=simuAlg.getInitialMarking();
-
+		initialise();
 		reset(editor);
-
-		sync = getSyncCycles();
-		phases = bsonAlg.getAllPhases();
 		setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 
 		if (ErrTracingDisable.showErrorTracing()) {
@@ -365,7 +356,16 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		editor.getModel().setTemplateNode(null);
 	}
 
-	private Collection<Path> getSyncCycles(){
+	protected void initialise(){
+		relationAlg = new RelationAlgorithm(net);
+		bsonAlg = new BSONAlg(net);
+		simuAlg = new SimulationAlg(net);
+		initialMarking=simuAlg.getInitialMarking();
+		sync = getSyncEventCycles();
+		phases = bsonAlg.getAllPhases();
+	}
+
+	protected Collection<Path> getSyncEventCycles(){
 		HashSet<Node> nodes = new HashSet<Node>();
 		nodes.addAll(net.getTransitionNodes());
 		nodes.addAll(net.getChannelPlaces());
@@ -660,20 +660,20 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 	}
 
-	private void applyMarking(Map<PlaceNode, Boolean> marking){
+	protected void applyMarking(Map<PlaceNode, Boolean> marking){
 		for (PlaceNode c: marking.keySet())
 			c.setMarked(marking.get(c));
 	}
 
 	protected void autoSimulator(final GraphEditor editor, Map<PlaceNode, Boolean> marking, Collection<Map<PlaceNode, Boolean>> history) throws InvalidStructureException{
-		List<TransitionNode> enabled = null;
+		List<TransitionNode> fireList = null;
 		history.add(marking);
 
-		enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+		fireList = simuAlg.getEnabledNodes(sync, phases, isRev);
 
-		if(!enabled.isEmpty()){
+		if(!fireList.isEmpty()){
 
-			executeEvent(editor, enabled);
+			executeEvents(editor, fireList);
 
 			Map<PlaceNode, Boolean> currentMarking = readSONMarking();
 
@@ -710,7 +710,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		if(!fireList.isEmpty()){
 
-			executeEvent(editor, fireList);
+			executeEvents(editor, fireList);
 
 			ReachabilitySimulatorTask(editor, causalPredecessors, markingRefs);
 		}
@@ -726,7 +726,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		return readSONMarking();
 	}
 
-	public void executeEvent(final GraphEditor editor, List<TransitionNode> fireList) {
+	public void executeEvents(final GraphEditor editor, List<TransitionNode> fireList) {
 		if (fireList.isEmpty()) return;
 		List<TransitionNode> traceList = new ArrayList<TransitionNode>();
 		// if clicked on the trace event, do the step forward
@@ -891,7 +891,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 			if(possibleFires.isEmpty() && minFire.isEmpty()){
 				fireList.add(selected);
-				executeEvent(e.getEditor(),fireList);
+				executeEvents(e.getEditor(),fireList);
 
 			}else{
 				e.getEditor().requestFocus();
@@ -905,7 +905,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 				if (dialog.getRun() == 1){
 					fireList.addAll(dialog.getSelectedEvent());
-					executeEvent(e.getEditor(),fireList);
+					executeEvents(e.getEditor(),fireList);
 				}
 				if(dialog.getRun()==2){
 					setDecoration(enabled);

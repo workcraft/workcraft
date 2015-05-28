@@ -21,6 +21,7 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 
@@ -58,16 +59,6 @@ public class VisualPlaceNode extends VisualComponent{
 			}
 		});
 
-//		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Positioning>(
-//				this, "Error Positioning", Positioning.class) {
-//			protected void setter(VisualPlaceNode object, Positioning value) {
-//				object.setErrLabelPositioning(value);
-//			}
-//			protected Positioning getter(VisualPlaceNode object) {
-//				return object.getErrLabelPositioning();
-//			}
-//		});
-
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Color>(
 				this, "Error color", Color.class) {
 			protected void setter(VisualPlaceNode object, Color value) {
@@ -87,7 +78,6 @@ public class VisualPlaceNode extends VisualComponent{
 				return object.getInterface();
 			}
 		});
-
 	}
 
 	@Override
@@ -180,7 +170,7 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	protected void drawDurationInLocalSpace(DrawRequest r) {
-		if (SONSettings.getTimeVisibility()) {
+		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -203,7 +193,7 @@ public class VisualPlaceNode extends VisualComponent{
 		if (ErrTracingDisable.showErrorTracing()) {
 			bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
 		}
-		if (SONSettings.getTimeVisibility()) {
+		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
 			bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
 		}
 

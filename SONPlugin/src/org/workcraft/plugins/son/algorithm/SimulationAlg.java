@@ -307,8 +307,6 @@ public class SimulationAlg extends RelationAlgorithm {
 	                                continue;
 	            				}
 	            				else if(!result.contains(pre2) || del.contains(pre2)){
-//	                            	e2 = (TransitionNode)pre2;
-//	                            	stack.push(e2);
 	                	            visit.add(e2);
 	                	            del.addAll(visit);
 	                                visit.removeLast();
