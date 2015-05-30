@@ -27,7 +27,7 @@ public class CSONCycleAlg extends ONCycleAlg{
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Integer>[] createGraph(List<Node> nodes){
+	protected List<Integer>[] createGraph(List<Node> nodes){
 		List<Integer>[] result = new List[nodes.size()];
 
 		LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
@@ -72,7 +72,20 @@ public class CSONCycleAlg extends ONCycleAlg{
 			if((node instanceof ChannelPlace) || (node instanceof TransitionNode))
 				fliter.add(node);
 		}
-		return syncCycleFliter(super.cycleTask(fliter));
+		return syncEventCycleFliter(super.cycleTask(fliter));
+	}
+
+	private Collection<Path> syncEventCycleFliter(Collection<Path> paths){
+		List<Path> result = new ArrayList<Path>();
+		for (Path path : paths){
+			Path sub = new Path();
+			for (Node node : path){
+				if(node instanceof TransitionNode)
+					sub.add(node);
+			}
+			result.add(sub);
+		}
+		return result;
 	}
 
 	/**
@@ -87,58 +100,26 @@ public class CSONCycleAlg extends ONCycleAlg{
 		return super.cycleTask(fliter);
 	}
 
-	/**
-	 * 	Flit synchronous cycles
-	 */
-	private Collection<Path> syncCycleFliter(Collection<Path> paths){
-		List<Path> result = new ArrayList<Path>();
-		for (Path path : paths){
-			Path sub = new Path();
-			for (Node node : path){
-				if(node instanceof TransitionNode)
-					sub.add(node);
-			}
-			result.add(sub);
-		}
-		return result;
-	}
 
 	/**
 	 * 	get a/synchronous cycles
-	 */
-	public Collection<Path> asynCycleTask (Collection<? extends Node> nodes){
-		 return asynCycleFliter(super.cycleTask(nodes));
-	}
-
-	/**
-	 * 	Flit a/synchronous cycles
-	 */
-	private Collection<Path> asynCycleFliter(Collection<Path> paths){
-		List<Path> delList = new ArrayList<Path>();
-		for (Path path : paths){
-			if(!net.getSONConnectionTypes(path).contains(Semantics.PNLINE))
-				delList.add(path);
-			if(!net.getSONConnectionTypes(path).contains(Semantics.SYNCLINE)
-					&& !net.getSONConnectionTypes(path).contains(Semantics.ASYNLINE))
-				delList.add(path);
-		}
-		paths.removeAll(delList);
-
-		return paths;
-	}
-
-	/**
-	 * 	get all cycles without synchronous cycles
 	 */
 	@Override
 	public Collection<Path> cycleTask (Collection<? extends Node> nodes){
 		 return cycleFliter(super.cycleTask(nodes));
 	}
 
-	public Collection<Path> cycleFliter(Collection<Path> paths){
+	/**
+	 * 	Flit a/synchronous cycles
+	 */
+	@Override
+	protected Collection<Path> cycleFliter(Collection<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
 		for (Path path : paths){
 			if(!net.getSONConnectionTypes(path).contains(Semantics.PNLINE))
+				delList.add(path);
+			if(!net.getSONConnectionTypes(path).contains(Semantics.SYNCLINE)
+					&& !net.getSONConnectionTypes(path).contains(Semantics.ASYNLINE))
 				delList.add(path);
 		}
 		paths.removeAll(delList);

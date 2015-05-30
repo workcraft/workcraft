@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -66,6 +67,7 @@ import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.ErrorTracingAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.plugins.son.algorithm.SONCycleAlg;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
@@ -73,15 +75,16 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
-import org.workcraft.plugins.son.exception.RepeatMarkingException;
+import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
+import org.workcraft.plugins.son.gui.SONGUI;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class SONSimulationTool extends PetriNetSimulationTool {
 
-	private SON net;
+	protected SON net;
 	protected VisualSON visualNet;
 	private GraphEditor editor;
 
@@ -90,9 +93,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected SimulationAlg simuAlg;
 	private ErrorTracingAlg	errAlg;
 
-	protected Collection<Path> sync = new ArrayList<Path>();
-	protected Map<Condition, Collection<Phase>> phases = new HashMap<Condition, Collection<Phase>>();
-	protected Map<PlaceNode, Boolean>initialMarking = new HashMap<PlaceNode, Boolean>();
+	protected Collection<Path> sync;;
+	protected Map<Condition, Collection<Phase>> phases;;
+	protected Map<PlaceNode, Boolean>initialMarking;;
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -101,8 +104,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected JTable traceTable;
 
 	private JSlider speedSlider;
-	private JButton playButton, stopButton, backwardButton, forwardButton, reverseButton, autoSimuButton;
+	private JButton playButton, stopButton, backwardButton, forwardButton, reverseButton;
 	private JButton copyStateButton, pasteStateButton, mergeTraceButton;
+	protected JToggleButton autoSimuButton;
 
 	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
 
@@ -125,7 +129,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
 		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
 		reverseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"), "Switch to reverse simulation");
-		autoSimuButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-auto-simulation.svg"), "Automatic simulation (maximum parallelism)");
+		autoSimuButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-auto-simulation.svg"), "Automatic simulation (maximum parallelism)");
 
 		speedSlider = new JSlider(-1000, 1000, 0);
 		speedSlider.setToolTipText("Simulation playback speed");
@@ -250,11 +254,12 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		autoSimuButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Collection<Map<PlaceNode, Boolean>> history = new ArrayList<Map<PlaceNode, Boolean>>();
-				try {
-					autoSimulator(editor, readSONMarking(), history);
-				} catch (InvalidStructureException e1) {
-					errorMsg(e1.getMessage(), editor);
+				if(autoSimuButton.isSelected()){
+					try {
+						autoSimulator(editor, readSONMarking());
+					} catch (InvalidStructureException e1) {
+						errorMsg(e1.getMessage(), editor);
+					}
 				}
 			}
 		});
@@ -333,17 +338,15 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 	@Override
 	public void activated(final GraphEditor editor) {
-
-		this.editor = editor;
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
 		editor.getWorkspaceEntry().captureMemento();
+		this.editor = editor;
 		WorkspaceEntry we = editor.getWorkspaceEntry();
-		errAlg = new ErrorTracingAlg(net);
+		we.setCanModify(false);
 
 		BlockConnector.blockBoundingConnector(visualNet);
-
-		we.setCanModify(false);
+		errAlg = new ErrorTracingAlg(net);
 		initialise();
 		reset(editor);
 		setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
@@ -377,7 +380,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	@Override
 	public void deactivated(GraphEditor editor) {
 		super.deactivated(editor);
-		BlockConnector.blockInternalConnector(visualNet);
 		mainTrace.clear();
 		branchTrace.clear();
 		isRev = false;
@@ -421,7 +423,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	@SuppressWarnings("serial")
-	private class TraceTableModel extends AbstractTableModel {
+	protected class TraceTableModel extends AbstractTableModel {
 		@Override
 		public int getColumnCount() {
 			return 2;
@@ -454,7 +456,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	};
 
 
-	private void errorMsg(String message, final GraphEditor editor){
+	protected void errorMsg(String message, final GraphEditor editor){
 
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();
@@ -472,7 +474,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		return result;
 	}
 
-	private boolean quietStep(final GraphEditor editor) {
+	protected boolean quietStep(final GraphEditor editor) {
 		excitedContainers.clear();
 		boolean result = false;
 		List<TransitionNode> fireList = null;
@@ -493,7 +495,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		if (fireList != null) {
 			try {
 				simuAlg.setMarking(fireList, phases, isRev);
-			} catch (RepeatMarkingException e) {
+			} catch (UnboundedException e) {
 			}
 			setErrNum(fireList, isRev);
 			mainTrace.incPosition(mainInc);
@@ -505,9 +507,16 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		return result;
 	}
 
-	private boolean step(final GraphEditor editor) {
+	protected boolean step(final GraphEditor editor) {
 		boolean ret = quietStep(editor);
 		updateState(editor);
+		if(autoSimuButton.isSelected()){
+			try {
+				autoSimulator(editor, readSONMarking());
+			} catch (InvalidStructureException e) {
+				errorMsg(e.getMessage(), editor);
+			}
+		}
 		return ret;
 	}
 
@@ -517,7 +526,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		return ret;
 	}
 
-	private boolean quietStepBack(final GraphEditor editor) {
+	protected boolean quietStepBack(final GraphEditor editor) {
 		excitedContainers.clear();
 		boolean result = false;
 		List<TransitionNode> fireList = null;
@@ -538,7 +547,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		if (fireList != null) {
 			try {
 				simuAlg.setMarking(fireList, phases, !isRev);
-			} catch (RepeatMarkingException e) {
+			} catch (UnboundedException e) {
 				e.printStackTrace();
 			}
 			mainTrace.decPosition(mainDec);
@@ -665,35 +674,53 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			c.setMarked(marking.get(c));
 	}
 
-	protected void autoSimulator(final GraphEditor editor, Map<PlaceNode, Boolean> marking, Collection<Map<PlaceNode, Boolean>> history) throws InvalidStructureException{
-		List<TransitionNode> fireList = null;
-		history.add(marking);
+	protected void autoSimulator(final GraphEditor editor, Map<PlaceNode, Boolean> marking) throws InvalidStructureException{
+		SONCycleAlg cycle = new SONCycleAlg(net, phases);
+		if(!cycle.cycleTask(net.getComponents()).isEmpty()){
+			autoSimuButton.setSelected(false);
+			throw new InvalidStructureException("cyclic structure error");
+		}else{
+			autoSimulation(editor, marking);
+		}
+	}
 
-		fireList = simuAlg.getEnabledNodes(sync, phases, isRev);
+	protected void autoSimulation(final GraphEditor editor, Map<PlaceNode, Boolean> marking){
+		List<TransitionNode> fireList = simuAlg.getEnabledNodes(sync, phases, isRev);
 
-		if(!conflictfilter(fireList).isEmpty()){
-
+		if(fireList.isEmpty()){
+			autoSimuButton.setSelected(false);
+			return;
+		}
+		fireList = conflictfilter(fireList);
+		if(!fireList.isEmpty()){
+			fireList = simuAlg.getMinFire(fireList.iterator().next(), sync, fireList, isRev);
 			executeEvents(editor, fireList);
-
-			Map<PlaceNode, Boolean> currentMarking = readSONMarking();
-
-			for(Map<PlaceNode, Boolean> m : history){
-				if(m.equals(currentMarking)){
-					throw new InvalidStructureException("repeat markings");
-				}
-			}
-			autoSimulator(editor, readSONMarking(), history);
+			autoSimulation(editor, readSONMarking());
 		}
 	}
 
 	private List<TransitionNode> conflictfilter(List<TransitionNode> fireList){
+		List<TransitionNode> result = new ArrayList<TransitionNode>();
+		result.addAll(fireList);
+
 		for(PlaceNode c : readSONMarking().keySet()){
-			Collection<TransitionNode> conflict = relationAlg.getPostConflictEvents(c);
+			Collection<TransitionNode> conflict = new ArrayList<TransitionNode>();
+			if(c.isMarked()){
+				if(!isRev){
+					conflict.addAll(relationAlg.getPostConflictEvents(c));
+				}else{
+					conflict.addAll(relationAlg.getPreConflictEvents(c));
+				}
+			}
+
 			if(!conflict.isEmpty()){
-				fireList.removeAll(conflict);
+				for(TransitionNode e : conflict){
+					result.removeAll(simuAlg.getMinFire(e, sync, fireList, isRev));
+					result.removeAll(simuAlg.getMinFire(e, sync, fireList, !isRev));
+				}
 			}
 		}
-		return fireList;
+		return result;
 	}
 
 	public Map<PlaceNode, Boolean> ReachabilitySimulator(final GraphEditor editor, Collection<String> causalPredecessorRefs, Collection<String> markingRefs){
@@ -770,7 +797,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		return;
 	}
 
-	private ArrayList<TransitionNode> getFireList(Step step){
+	protected ArrayList<TransitionNode> getFireList(Step step){
 		ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
 		for(int i =0; i<step.size(); i++){
 			final Node node = net.getNodeByReference(step.get(i));
@@ -781,7 +808,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	@SuppressWarnings("serial")
-	private final class TraceTableCellRendererImplementation implements TableCellRenderer {
+	protected final class TraceTableCellRendererImplementation implements TableCellRenderer {
 		JLabel label = new JLabel() {
 			@Override
 			public void paint( Graphics g ) {
@@ -822,7 +849,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 	}
 
-	private void setDecoration(List<TransitionNode> enabled){
+	protected void setDecoration(List<TransitionNode> enabled){
 		net.refreshColor();
 
 		for(TransitionNode e : enabled){

@@ -66,7 +66,6 @@ public class PathAlgorithm{
         return result;
     }
 
-    //get path between two given nodes. (recursion)
     private void dfs(Collection<Node> nodes , LinkedList<Node> visited, Node v) {
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
 
@@ -102,6 +101,7 @@ public class PathAlgorithm{
         }
     }
 
+    //get paths between two given nodes. (recursion)
     public Collection<Path> getPaths (Node s, Node v, Collection<Node> nodes){
     	pathResult.clear();
     	LinkedList<Node> visited = new LinkedList<Node>();

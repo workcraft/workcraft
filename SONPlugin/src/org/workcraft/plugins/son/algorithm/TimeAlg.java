@@ -2,7 +2,7 @@ package org.workcraft.plugins.son.algorithm;
 
 import org.workcraft.plugins.son.SON;
 
-public class TimeAlg extends SimulationAlg{
+public class TimeAlg extends RelationAlgorithm{
 
 	public TimeAlg(SON net) {
 		super(net);

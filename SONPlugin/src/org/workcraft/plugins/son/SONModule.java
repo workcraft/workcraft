@@ -14,7 +14,7 @@ import org.workcraft.plugins.son.tools.ReachabilityTool;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
 import org.workcraft.plugins.son.tools.TimeConsistencyChecker;
 import org.workcraft.plugins.son.tools.TimeValueEstimator;
-import org.workcraft.plugins.son.tools.TokenRefreshTool;
+import org.workcraft.plugins.son.tools.ClearMarkingTool;
 
 public class SONModule implements Module{
 
@@ -39,7 +39,7 @@ public class SONModule implements Module{
 		pm.registerClass(Tool.class, ReachabilityTool.class);
 		//Custom tools
 		pm.registerClass(Tool.class, ColorResetTool.class);
-		pm.registerClass(Tool.class, TokenRefreshTool.class);
+		pm.registerClass(Tool.class, ClearMarkingTool.class);
 		// Error tracing
 		pm.registerClass(Tool.class, ErrTracingReset.class);
 		pm.registerClass(Tool.class, ErrTracingDisable.class);

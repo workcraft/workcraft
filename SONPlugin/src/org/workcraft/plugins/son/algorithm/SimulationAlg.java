@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
-import org.workcraft.plugins.son.exception.RepeatMarkingException;
+import org.workcraft.plugins.son.exception.UnboundedException;
 
 public class SimulationAlg extends RelationAlgorithm {
 
@@ -453,7 +453,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
-	public void setMarking(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases, boolean isRev) throws RepeatMarkingException {
+	public void setMarking(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases, boolean isRev) throws UnboundedException {
 		if(!isRev)
 			fire(step, phases);
 		else
@@ -462,16 +462,16 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	/**
 	 * token setting after forward fire.
-	 * @throws RepeatMarkingException
+	 * @throws UnboundedException
 	 */
-	private void fire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws RepeatMarkingException{
+	private void fire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
 
 		//marking for ON and CSON
 		for(TransitionNode e : step){
 			for(Node post : net.getPostset(e)){
 				if((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
 					if(((PlaceNode)post).isMarked())
-						throw new RepeatMarkingException(net.getNodeReference(post));
+						throw new UnboundedException(net.getNodeReference(post));
 					else
 						((PlaceNode)post).setMarked(true);
 			}
@@ -519,16 +519,16 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	/**
 	 * token setting after reverse fire.
-	 * @throws RepeatMarkingException
+	 * @throws UnboundedException
 	 */
-	private void revFire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws RepeatMarkingException{
+	private void revFire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
 
 		//marking for ON and CSON
 		for(TransitionNode e : step){
 			for(Node pre : net.getPreset(e)){
 				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
 					if(((PlaceNode)pre).isMarked())
-						throw new RepeatMarkingException(net.getNodeReference(pre));
+						throw new UnboundedException(net.getNodeReference(pre));
 					else
 						((PlaceNode)pre).setMarked(true);
 			}

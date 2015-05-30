@@ -84,7 +84,7 @@ public class SON extends AbstractMathModel {
 			if(node instanceof PlaceNode || node instanceof Event)
 				result.add(node);
 
-		//remove the nodes in isolate blocks
+		//remove all nodes in collapsed blocks
 		for(Block block : this.getBlocks())
 			if(!this.getSONConnections(block).isEmpty()){
 				result.removeAll(block.getComponents());
@@ -204,6 +204,11 @@ public class SON extends AbstractMathModel {
 			setFillColor(block, CommonVisualSettings.getFillColor());
 			setForegroundColor(block,  CommonVisualSettings.getBorderColor());
 		}
+	}
+
+	public void clearMarking(){
+		for(PlaceNode p : getPlaceNodes())
+			p.setMarked(false);
 	}
 
 	public void resetErrStates(){

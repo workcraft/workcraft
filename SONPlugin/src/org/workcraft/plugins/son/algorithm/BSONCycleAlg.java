@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 public class BSONCycleAlg extends ONCycleAlg{
 
 	private SON net;
-	private BSONAlg bsonAlg;
+	protected BSONAlg bsonAlg;
 	private Map<Condition, Collection<Phase>> phases;
 
 	public BSONCycleAlg(SON net, Map<Condition, Collection<Phase>> phases){
@@ -34,7 +34,7 @@ public class BSONCycleAlg extends ONCycleAlg{
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Integer>[] createGraph(List<Node> nodes){
+	protected List<Integer>[] createGraph(List<Node> nodes){
 		List<Integer>[] result = new List[nodes.size()];
 
 		LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
@@ -90,36 +90,33 @@ public class BSONCycleAlg extends ONCycleAlg{
                 }
             }
         }
-//        System.out.println("Index");
-//        for(Node key : nodeIndex.keySet()){
-//                System.out.println(net.getComponentLabel(key) + " " + nodeIndex.get(key) + " " + result[nodeIndex.get(key)].toString());
-//        }
 		return result;
 	}
 
 	@Override
 	public Collection<Path> cycleTask (Collection<? extends Node> nodes){
 		//remove all paths which do not involve before(e) relation.
-		 return cyclePathFliter(super.cycleTask(nodes));
+		 return cycleFliter(super.cycleTask(nodes));
 	}
 
-	private Collection<Path> cyclePathFliter(Collection<Path> paths){
+	@Override
+	protected Collection<Path> cycleFliter(Collection<Path> paths){
 		List<Path> delList = new ArrayList<Path>();
 
 		for(Path cycle : paths){
-			int u = 0;
-			int l = 0;
+			int upper = 0;
+			int lower = 0;
 
 			for(Node n : cycle){
 				if(n instanceof ChannelPlace)
 					continue;
 				else if(bsonAlg.isUpperNode(n))
-					u++;
+					upper++;
 				else
-					l++;
+					lower++;
 			}
 			//all cycle nodes are in the same level
-			if(u==0 || l==0)
+			if(upper==0 || lower==0)
 				delList.add(cycle);
 		}
 		paths.removeAll(delList);
