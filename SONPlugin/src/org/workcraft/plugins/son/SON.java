@@ -94,6 +94,17 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
+	public Collection<Node> getNodes(){
+		ArrayList<Node> result =  new ArrayList<Node>();
+		result.addAll(getComponents());
+		for(SONConnection con : getSONConnections()){
+			if(con.getSemantics() != Semantics.BHVLINE)
+				result.add(con);
+		}
+
+		return result;
+	}
+
 	public Collection<Condition> getConditions(){
 		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for(Node node : getComponents())
@@ -151,23 +162,6 @@ public class SON extends AbstractMathModel {
 
 	}
 
-	public Color getForegroundColor(Node n){
-		if(n instanceof PlaceNode){
-			return ((PlaceNode) n).getForegroundColor();
-		}
-		if(n instanceof TransitionNode){
-			return ((TransitionNode) n).getForegroundColor();
-		}
-		if(n instanceof SONConnection){
-			((SONConnection) n).getColor();
-		}
-		if (n instanceof ONGroup){
-			return ((ONGroup) n).getForegroundColor();
-		}
-
-		return null;
-	}
-
 	public void setFillColor(Node n, Color nodeColor){
 		if(n instanceof PlaceNode){
 			((PlaceNode) n).setFillColor(nodeColor);
@@ -177,32 +171,39 @@ public class SON extends AbstractMathModel {
 		}
 	}
 
-	public Color getFillColor(Node n){
-		if(n instanceof PlaceNode){
-			return ((PlaceNode) n).getFillColor();
-		}
-		if(n instanceof TransitionNode){
-			return ((TransitionNode) n).getFillColor();
-		}
-
-		return null;
-	}
-
 	public void refreshColor(){
 		for(Node n:  getComponents()){
 			setFillColor(n,CommonVisualSettings.getFillColor());
 			setForegroundColor(n, CommonVisualSettings.getBorderColor());
+			setTimeColor(n, Color.BLACK);
 		}
 		for (ONGroup group : this.getGroups()){
 			setForegroundColor(group, SONSettings.getGroupForegroundColor());
 		}
 
-		for (SONConnection con : this.getSONConnections())
+		for (SONConnection con : this.getSONConnections()){
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
-
+			setTimeColor(con, Color.BLACK);
+		}
 		for (Block block : this.getBlocks()){
 			setFillColor(block, CommonVisualSettings.getFillColor());
 			setForegroundColor(block,  CommonVisualSettings.getBorderColor());
+		}
+	}
+
+	public void setTimeColor(Node n, Color color){
+		if(n instanceof PlaceNode){
+			((PlaceNode) n).setDurationColor(color);
+		}
+		if(n instanceof Condition){
+			((Condition) n).setStartTimeColor(color);
+			((Condition) n).setEndTimeColor(color);
+		}
+		if(n instanceof Block){
+			((Block) n).setDurationColor(color);
+		}
+		if(n instanceof SONConnection){
+			((SONConnection) n).setTimeLabelColor(color);
 		}
 	}
 

@@ -1,11 +1,9 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -13,6 +11,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -121,22 +120,22 @@ public class SimulationAlg extends RelationAlgorithm {
 	 * return minimal execution set for a given node.
 	 * contain other nodes which have synchronous and PRE- relation with the selected one.
 	 */
-    public List<TransitionNode> getMinFire(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> fireList, boolean isRev){
-        List<TransitionNode> result = null;
+    public Step getMinFire(TransitionNode e, Collection<Path> sync, Step step, boolean isRev){
+    	Step result = null;
         if(!isRev){
-        	result = getForwordMinFire(e, sync, fireList);
+        	result = getForwordMinFire(e, sync, step);
         }else{
-        	result = getRevMinFire(e, sync, fireList);
+        	result = getRevMinFire(e, sync, step);
         }
 
         return result;
     }
 
-    private List<TransitionNode> getForwordMinFire(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> fireList){
-        List<TransitionNode> result = new ArrayList<TransitionNode>();
-        Collection<TransitionNode> u = new ArrayList<TransitionNode>();
+    private Step getForwordMinFire(TransitionNode e, Collection<Path> sync, Step step){
+    	Step result = new Step();
+    	Step u = new Step();
         Stack<TransitionNode> stack = new Stack<TransitionNode>();
-        u.addAll(fireList);
+        u.addAll(step);
 
         if(e!= null){
             stack.push(e);
@@ -154,7 +153,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
                             }
-                            else if(!fireList.contains(e2)){
+                            else if(!step.contains(e2)){
                             	throw new RuntimeException
                             	("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
@@ -174,11 +173,11 @@ public class SimulationAlg extends RelationAlgorithm {
         return result;
     }
 
-    private List<TransitionNode> getRevMinFire(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> fireList){
-        List<TransitionNode> result = new ArrayList<TransitionNode>();
-        Collection<TransitionNode> u = new ArrayList<TransitionNode>();
+    private Step getRevMinFire(TransitionNode e, Collection<Path> sync, Step step){
+    	Step result = new Step();
+    	Step u = new Step();
         Stack<TransitionNode> stack = new Stack<TransitionNode>();
-        u.addAll(fireList);
+        u.addAll(step);
 
         if(e!= null){
             stack.push(e);
@@ -196,7 +195,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
                             }
-                            else if(!fireList.contains(e2)){
+                            else if(!step.contains(e2)){
                             	throw new RuntimeException
                             	("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
@@ -215,8 +214,8 @@ public class SimulationAlg extends RelationAlgorithm {
         return result;
     }
 
-	final public List<TransitionNode> getEnabledNodes(Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isRev){
-		List<TransitionNode> result = null;
+	final public Step getEnabledNodes(Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isRev){
+		Step result = null;
 		if(!isRev)
 			result = getEnabled(sync, phases);
 		else
@@ -267,8 +266,8 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 
-	private List<TransitionNode> getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
+	private Step getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
+		Step result = new Step();
 		Collection<Node> del = new HashSet<Node>();
 		Stack<TransitionNode> stack = new Stack<TransitionNode>();
 
@@ -380,8 +379,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private List<TransitionNode> getRevEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
+	private Step getRevEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
+		Step result = new Step();
 		Collection<Node> del = new HashSet<Node>();
 		Stack<TransitionNode> stack = new Stack<TransitionNode>();
 
@@ -453,7 +452,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
-	public void setMarking(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases, boolean isRev) throws UnboundedException {
+	public void setMarking(Step step, Map<Condition, Collection<Phase>> phases, boolean isRev) throws UnboundedException {
 		if(!isRev)
 			fire(step, phases);
 		else
@@ -464,7 +463,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	 * token setting after forward fire.
 	 * @throws UnboundedException
 	 */
-	private void fire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
+	private void fire(Step step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
 
 		//marking for ON and CSON
 		for(TransitionNode e : step){
@@ -521,7 +520,7 @@ public class SimulationAlg extends RelationAlgorithm {
 	 * token setting after reverse fire.
 	 * @throws UnboundedException
 	 */
-	private void revFire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
+	private void revFire(Step step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
 
 		//marking for ON and CSON
 		for(TransitionNode e : step){

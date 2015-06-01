@@ -13,6 +13,7 @@ public class PlaceNode extends MathNode {
 	private String label = "";
 	private int errors = 0;
 	private String duration = "0000-9999";
+	protected Color durationColor = Color.BLACK;
 	private boolean marked = false;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
 
@@ -72,6 +73,14 @@ public class PlaceNode extends MathNode {
 
 	public String getDuration(){
 		return duration;
+	}
+
+	public Color getDurationColor(){
+		return durationColor;
+	}
+
+	public void setDurationColor(Color value){
+		this.durationColor = value;
 	}
 
 	public void setTokenColor(Color tokenColor) {

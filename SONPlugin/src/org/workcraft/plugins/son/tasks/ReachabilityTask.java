@@ -103,7 +103,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
 		final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
 		toolbox.selectTool(tool);
-		result = tool.ReachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);
+		result = tool.reachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);
 		tool.mergeTrace(tool.getGraphEditor());
 
 		return result;

@@ -35,7 +35,6 @@ public class VisualPlaceNode extends VisualComponent{
 
 	private Positioning durationLabelPositioning = Positioning.BOTTOM;
 	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
-	protected Color durationColor = Color.BLACK;
 
 	private String inerfaceValue = "";
 
@@ -174,7 +173,7 @@ public class VisualPlaceNode extends VisualComponent{
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(durationColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(getDurationColor(), d.getColorisation()));
 			durationRenderedText.draw(g);
 		}
 	}
@@ -288,11 +287,11 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	public Color getDurationColor(){
-		return this.durationColor;
+		return ((PlaceNode)getReferencedComponent()).getDurationColor();
 	}
 
 	public void setDurationColor(Color value){
-		this.durationColor = value;
+		((PlaceNode)getReferencedComponent()).setDurationColor(value);
 	}
 
 	@Override

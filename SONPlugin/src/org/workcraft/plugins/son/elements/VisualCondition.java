@@ -33,11 +33,9 @@ public class VisualCondition extends VisualPlaceNode{
 	private static double size = 1.0;
 	private static float strokeWidth = 0.1f;
 
-	protected Color startTimeColor = Color.BLACK;
 	private Positioning startTimePositioning = Positioning.LEFT;
 	private RenderedText startTimeRenderedText = new RenderedText("", font, startTimePositioning, new Point2D.Double(0.0,0.0));
 
-	protected Color endTimeColor = Color.BLACK;
 	private Positioning endTimePositioning = Positioning.RIGHT;
 	private RenderedText endTimeRenderedText = new RenderedText("", font, endTimePositioning, new Point2D.Double(0.0,0.0));
 
@@ -122,7 +120,7 @@ public class VisualCondition extends VisualPlaceNode{
 			cahceStartTimeRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(startTimeColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(getStartTimeColor(), d.getColorisation()));
 			startTimeRenderedText.draw(g);
 		}
 	}
@@ -144,7 +142,7 @@ public class VisualCondition extends VisualPlaceNode{
 			cahceEndTimeRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(endTimeColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(getEndTimeColor(), d.getColorisation()));
 			endTimeRenderedText.draw(g);
 		}
 	}
@@ -205,18 +203,18 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	public Color getStartTimeColor(){
-		return startTimeColor;
+		return ((Condition)getReferencedComponent()).getStartTimeColor();
 	}
 
 	public void setStartTimeColor(Color value){
-		startTimeColor = value;
+		((Condition)getReferencedComponent()).setStartTimeColor(value);
 	}
 
 	public Color getEndTimeColor(){
-		return endTimeColor;
+		return ((Condition)getReferencedComponent()).getEndTimeColor();
 	}
 
 	public void setEndTimeColor(Color value){
-		endTimeColor = value;
+		((Condition)getReferencedComponent()).setEndTimeColor(value);
 	}
 }

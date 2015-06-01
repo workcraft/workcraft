@@ -19,6 +19,7 @@ public class Block extends PageNode implements TransitionNode{
 	private Color fillColor  = CommonVisualSettings.getFillColor();
 	private boolean isCollapsed = false;
 	private String duration = "0000-9999";
+	private Color durationColor = Color.BLACK;
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();
@@ -108,6 +109,14 @@ public class Block extends PageNode implements TransitionNode{
 
 	public String getDuration(){
 		return duration;
+	}
+
+	public Color getDurationColor(){
+		return durationColor;
+	}
+
+	public void setDurationColor(Color value){
+		this.durationColor = value;
 	}
 
 }

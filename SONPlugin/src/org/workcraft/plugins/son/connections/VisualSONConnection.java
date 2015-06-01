@@ -29,7 +29,6 @@ public class VisualSONConnection extends VisualConnection {
 	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 
 	private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
-	private Color timeColor = Color.BLACK;
 
 
 	public VisualSONConnection() {
@@ -223,10 +222,10 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	public Color getTimeLabelColor() {
-		return timeColor;
+		return getReferencedSONConnection().getTimeLabelColor();
 	}
 
 	public void setTimeLabelColor(Color value) {
-		this.timeColor = value;
+		getReferencedSONConnection().setTimeLabelColor(value);
 	}
 }

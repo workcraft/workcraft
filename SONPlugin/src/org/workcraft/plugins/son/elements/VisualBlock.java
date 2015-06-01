@@ -38,7 +38,6 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	private static final float strokeWidth = 0.06f;
 
 	private Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
-	private Color durationColor = SONSettings.getErrLabelColor();
 	private Positioning durationLabelPositioning = Positioning.BOTTOM;
 	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
 
@@ -130,7 +129,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(durationColor, d.getColorisation()));
+			g.setColor(Coloriser.colorise(getDurationColor(), d.getColorisation()));
 			durationRenderedText.draw(g);
 		}
 	}
@@ -169,6 +168,14 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 
 	public void setDuration(String time){
 		((Block)getReferencedComponent()).setDuration(time);
+	}
+
+	public Color getDurationColor(){
+		return ((Block)getReferencedComponent()).getDurationColor();
+	}
+
+	public void setDurationColor(Color value){
+		((Block)getReferencedComponent()).setDurationColor(value);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 public class SONConnection extends MathConnection{
 
 	private String time = "0000-9999";
+	private Color timeColor = Color.BLACK;
 	private Color color=CommonVisualSettings.getBorderColor();
 
 	public enum Semantics {
@@ -65,5 +66,14 @@ public class SONConnection extends MathConnection{
 	public void setTime(String time){
 		this.time = time;
 		sendNotification(new PropertyChangedEvent(this, "time interval"));
+	}
+
+
+	public Color getTimeLabelColor() {
+		return timeColor;
+	}
+
+	public void setTimeLabelColor(Color value) {
+		this.timeColor = value;
 	}
 }

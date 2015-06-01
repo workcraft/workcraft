@@ -32,8 +32,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
-import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
@@ -46,7 +46,7 @@ public class ParallelSimDialog  extends JDialog{
 
 	boolean isRev = false;
 	private Color selectedColor = new Color(255, 228, 181);
-	private List<TransitionNode> possibleFire, minFire;
+	private Step possibleFire, minFire;
 	private TransitionNode clickedEvent;
 
 	private JPanel eventPanel, interfacePanel, buttonsPanel, eventInfoPanel;
@@ -155,7 +155,7 @@ public class ParallelSimDialog  extends JDialog{
 						if(item.isSelected() ){
 							selectedEvents.add(item.getEvent());
 
-							List<TransitionNode> minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, isRev);
+							Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, isRev);
 
 							for(TransitionNode e : minFire){
 								for(EventItem eventItem : itemList){
@@ -172,7 +172,7 @@ public class ParallelSimDialog  extends JDialog{
 						if(!item.isSelected() ){
 							selectedEvents.remove(item.getEvent());
 
-							List<TransitionNode> minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
+							Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
 
 								//unselected related synchronous events.
 							for(TransitionNode e : minFire){
@@ -273,7 +273,7 @@ public class ParallelSimDialog  extends JDialog{
 	}
 
 	public  ParallelSimDialog (Window owner, SON net,
-			List<TransitionNode> possibleFire, List<TransitionNode> minFire,
+			Step possibleFire, Step minFire,
 			TransitionNode event, boolean isRev,
 			Collection<Path> sync){
 		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);

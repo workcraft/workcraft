@@ -1,5 +1,7 @@
 package org.workcraft.plugins.son.elements;
 
+import java.awt.Color;
+
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
@@ -11,6 +13,8 @@ public class Condition extends PlaceNode{
 	private String endTime = "0000-9999";
 	private boolean initialState = false;
 	private boolean finalState = false;
+	protected Color startTimeColor = Color.BLACK;
+	protected Color endTimeColor = Color.BLACK;
 
 	public void setStartTime(String duration){
 		this.statTime = duration;
@@ -46,5 +50,22 @@ public class Condition extends PlaceNode{
 	public void setFinal(boolean value) {
 		finalState = value;
 		sendNotification(new PropertyChangedEvent(this, "final"));
+	}
+
+
+	public Color getStartTimeColor(){
+		return startTimeColor;
+	}
+
+	public void setStartTimeColor(Color value){
+		startTimeColor = value;
+	}
+
+	public Color getEndTimeColor(){
+		return endTimeColor;
+	}
+
+	public void setEndTimeColor(Color value){
+		endTimeColor = value;
 	}
 }
