@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.gui;
 
 import info.clearthought.layout.TableLayout;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
@@ -193,7 +194,7 @@ public class ScencoConfigurationDialog extends JDialog {
 		setMinimumSize(new Dimension(600, 400));
 		generationPanel = new JPanel(new SimpleFlowLayout());
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
-		ArrayList<VisualScenarioPage> scenarios = new ArrayList<VisualScenarioPage>();
+		ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
 		CpogParsingTool.getScenarios(cpog, scenarios);
 		m = scenarios.size();
 

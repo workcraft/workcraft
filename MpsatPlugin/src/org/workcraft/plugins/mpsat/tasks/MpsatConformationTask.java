@@ -33,10 +33,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatConformationTask extends MpsatChainTask {
 	private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
-			MpsatMode.UNDEFINED, 0, null, 0, null);
+			MpsatMode.UNDEFINED, 0, null, 0);
 
 	private final MpsatSettings toolchainCompletionSettings = new MpsatSettings("Toolchain completion",
-			MpsatMode.UNDEFINED, 0, null, 0, null);
+			MpsatMode.UNDEFINED, 0, null, 0);
 
 	private final WorkspaceEntry we;
 	private File envFile;
@@ -55,7 +55,8 @@ public class MpsatConformationTask extends MpsatChainTask {
 			// Common variables
 			monitor.progressUpdate(0.10);
 			String title = we.getTitle();
-			workingDirectory = FileUtils.createTempDirectory(title + "-");
+			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
+			workingDirectory = FileUtils.createTempDirectory(prefix);
 
 			STG devStg = (STG)we.getModelEntry().getVisualModel().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
@@ -119,6 +120,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
 			WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
 			STG stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+			framework.getWorkspace().close(stgWorkspaceEntry);
 			monitor.progressUpdate(0.50);
 
 			// Generate unfolding
@@ -145,9 +147,9 @@ public class MpsatConformationTask extends MpsatChainTask {
 				System.out.println("\nReach expression for the interface conformation property:");
 				System.out.println(reachConformation);
 			}
-			MpsatSettings conformationSettings = new MpsatSettings("Interface conformation",
+			MpsatSettings conformationSettings = new MpsatSettings("Interface conformance",
 					MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-					MpsatUtilitySettings.getSolutionCount(), reachConformation);
+					MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
 					unfoldingFile.getCanonicalPath(), workingDirectory, true);
@@ -167,7 +169,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			if (!mpsatConformationParser.getSolutions().isEmpty()) {
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
-								"This model does not conform to the environment after the following trace:"));
+								"This model does not conform to the environment."));
 			}
 			monitor.progressUpdate(1.0);
 
@@ -180,12 +182,9 @@ public class MpsatConformationTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		} finally {
-			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
-				FileUtils.deleteDirectoryTree(workingDirectory);
-			}
+			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
 		}
 	}
-
 
 	private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
 		HashSet<String> result = new HashSet<String>();

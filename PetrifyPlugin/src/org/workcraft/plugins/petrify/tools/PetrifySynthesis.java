@@ -32,12 +32,12 @@ abstract public class PetrifySynthesis implements Tool {
 	public void run(WorkspaceEntry we) {
 		// call petrify asynchronous (w/o blocking the GUI)
 		try {
+			File instgFile = getInputSTG(WorkspaceUtils.getAs(we, STGModel.class));
+			File eqnFile = File.createTempFile("petrifyEquations", ".eqn");
+			SynthesisTask task = new SynthesisTask(getSynthesisParameter(),	instgFile, eqnFile, null);
+
 			final Framework framework = Framework.getInstance();
-			framework.getTaskManager().queue(
-				new SynthesisTask(getSynthesisParameter(),
-						getInputSTG(WorkspaceUtils.getAs(we, STGModel.class)),
-						File.createTempFile("petrifyEquations", ".eqn"), null),
-				"Petrify Logic Synthesis", new SynthesisResultHandler());
+			framework.getTaskManager().queue(task, "Petrify logic synthesis", new SynthesisResultHandler());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

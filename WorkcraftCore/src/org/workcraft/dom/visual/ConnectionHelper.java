@@ -11,14 +11,18 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 
 public class ConnectionHelper {
+	public static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
 
 	static public void addControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
 		if ((locationsInRootSpace != null) && (connection.getGraphic() instanceof Polyline)) {
 			Polyline polyline = (Polyline)connection.getGraphic();
 			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
 			for (Point2D location: locationsInRootSpace) {
-				Point2D locationInLocalSpace = rootToLocalTransform.transform(location, null);
-				polyline.addControlPoint(locationInLocalSpace);
+				if ((location.distance(connection.getFirstCenter()) > SAME_ANCHOR_POINT_THRESHOLD)
+						&& (location.distance(connection.getSecondCenter()) > SAME_ANCHOR_POINT_THRESHOLD)) {
+					Point2D locationInLocalSpace = rootToLocalTransform.transform(location, null);
+					polyline.addControlPoint(locationInLocalSpace);
+				}
 			}
 		}
 	}

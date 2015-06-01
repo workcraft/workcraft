@@ -24,7 +24,7 @@ public class MpsatConsistencyChecker extends AbstractMpsatChecker implements Too
 	public MpsatSettings getSettings() {
 		return new MpsatSettings("Consistency", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachConsistency);
+				MpsatSettings.reachConsistency, true);
 	}
 
 }

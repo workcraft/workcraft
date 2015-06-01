@@ -172,7 +172,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		return Hierarchy.getChildrenOfType(this, VisualComponent.class);
 	}
 
-	public final Collection<VisualConnection> getConnections() {
+	public final Collection<VisualConnection> getnections() {
 		return Hierarchy.getChildrenOfType(this, VisualConnection.class);
 	}
 
@@ -184,7 +184,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		// FIXME: A hack to preserve the shape of ungrouped connections (intro).
 		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(newParent, VisualConnection.class);
 		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(nodesToReparent, connections);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(connections, ScaleMode.ADAPTIVE);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(includedConnections, ScaleMode.ADAPTIVE);
 
 		TransformHelper.applyTransformToNodes(nodesToReparent, localToParentTransform);
 
@@ -273,10 +273,10 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	@Override
 	public Point2D getCenterInLocalSpace() {
-		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		if (bb != null) {
-			return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
-		}
+//		Rectangle2D bb = getBoundingBoxInLocalSpace();
+//		if (bb != null) {
+//			return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
+//		}
 		return new Point2D.Double(0, 0);
 	}
 

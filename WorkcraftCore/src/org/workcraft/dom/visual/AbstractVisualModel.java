@@ -22,7 +22,6 @@
 package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -370,23 +369,25 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		currentLevel = newCurrentLevel;
 
 		// manage the isInside value for all parents and children
-		Collapsible col = null;
+		Collapsible collapsabla = null;
 		if (newCurrentLevel instanceof Collapsible) {
-			col = (Collapsible)newCurrentLevel;
+			collapsabla = (Collapsible)newCurrentLevel;
 		}
 
-		if (col!=null) {
-			col.setIsCurrentLevelInside(true);
-			Node node = newCurrentLevel.getParent();
-			while (node!=null) {
-				if ((node instanceof Collapsible))
-					((Collapsible)node).setIsCurrentLevelInside(true);
-				node = node.getParent();
+		if (collapsabla != null) {
+			collapsabla.setIsCurrentLevelInside(true);
+			Node parent = newCurrentLevel.getParent();
+			while (parent != null) {
+				if (parent instanceof Collapsible) {
+					((Collapsible)parent).setIsCurrentLevelInside(true);
+				}
+				parent = parent.getParent();
 			}
 
-			for (Node n: newCurrentLevel.getChildren()) {
-				if (!(n instanceof Collapsible)) continue;
-				((Collapsible)n).setIsCurrentLevelInside(false);
+			for (Node node: newCurrentLevel.getChildren()) {
+				if (node instanceof Collapsible) {
+					((Collapsible)node).setIsCurrentLevelInside(false);
+				}
 			}
 		}
 	}
@@ -460,10 +461,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 				ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
 				toSelect.addAll(nodesToReparent);
 				this.reparent(getCurrentLevel(), this, page, nodesToReparent);
-				AffineTransform localToParentTransform = page.getLocalToParentTransform();
-				for (Node n : nodesToReparent) {
-					TransformHelper.applyTransform(n, localToParentTransform);
-				}
 				getMathModel().remove(page.getReferencedComponent());
 				getCurrentLevel().remove(page);
 			} else {
@@ -568,7 +565,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
 		Collection<VisualConnection> srcConnections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
 		Collection<VisualConnection> srcIncludedConnections = SelectionHelper.getIncludedConnections(srcChildren, srcConnections);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcConnections, ScaleMode.ADAPTIVE);
+//		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.NONE);
+		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.ADAPTIVE);
 
 		Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
 		srcRoot.reparent(dstChildren, dstContainer);

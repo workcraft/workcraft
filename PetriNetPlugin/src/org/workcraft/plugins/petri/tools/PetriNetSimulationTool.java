@@ -66,6 +66,7 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -105,7 +106,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	private JSlider speedSlider;
 	private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
-	private JButton copyStateButton, pasteStateButton, mergeTraceButton;
+	private JButton copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
 
 	// cache of "excited" containers (the ones containing the excited simulation elements)
 	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
@@ -119,6 +120,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 	private Timer timer = null;
 	private boolean random = false;
+	public HashMap<Place, Integer> savedState = new HashMap<>();
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
@@ -136,6 +138,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
 		pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
 		mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
+		saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
 
 		int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
 		int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
@@ -164,6 +167,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		traceControl.add(copyStateButton);
 		traceControl.add(pasteStateButton);
 		traceControl.add(mergeTraceButton);
+		traceControl.add(saveInitStateButton);
 
 		controlPanel = new JPanel();
 		controlPanel.setLayout(new WrapLayout());
@@ -298,6 +302,13 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		});
 
+		saveInitStateButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveInitState(editor);
+			}
+		});
+
 		traceTable.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -363,6 +374,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		super.activated(editor);
 		setStatePaneVisibility(true);
 		resetTraces(editor);
+		editor.forceRedraw();
 	}
 
 	@Override
@@ -373,12 +385,18 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			timer = null;
 		}
 		editor.getWorkspaceEntry().cancelMemento();
+		applyInitState(editor);
+		savedState.clear();
 		this.visualNet = null;
 		this.net = null;
 	}
 
+	public void resetMarking() {
+		applyMarking(initialMarking);
+	}
+
 	private void applyMarking(Map<Place, Integer> marking) {
-		for (Place p: marking.keySet()) {
+			for (Place p: marking.keySet()) {
 			if (net.getPlaces().contains(p)) {
 				p.setTokens(marking.get(p));
 			} else {
@@ -430,14 +448,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			transitionId = mainTrace.get(mainTrace.getPosition() - 1);
 			mainDec = 1;
 		}
-		Transition transition = null;
-		if (transitionId != null) {
-			final Node node = net.getNodeByReference(transitionId);
-			if (node != null && (node instanceof Transition)) {
-				transition = (Transition)node;
-			}
-		}
-		if (transition != null && net.isUnfireEnabled(transition)) {
+		Transition transition = getTransitionToUnfire(transitionId);
+		if (transition != null) {
 			net.unFire(transition);
 			mainTrace.decPosition(mainDec);
 			branchTrace.decPosition(branchDec);
@@ -445,6 +457,17 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				branchTrace.clear();
 			}
 			result = true;
+		}
+		return result;
+	}
+
+	private Transition getTransitionToUnfire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			final Node node = net.getNodeByReference(ref);
+			if ((node instanceof Transition) && net.isUnfireEnabled((Transition)node)) {
+				result = (Transition)node;
+			}
 		}
 		return result;
 	}
@@ -469,19 +492,24 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			transitionId = mainTrace.getCurrent();
 			mainInc = 1;
 		}
-		Transition transition = null;
-		if (transitionId != null) {
-			final Node node = net.getNodeByReference(transitionId);
-			if (node != null && (node instanceof Transition)) {
-				transition = (Transition)node;
-			}
-		}
-		if (transition != null && net.isEnabled(transition)) {
+		Transition transition = getTransitionToFire(transitionId);
+		if (transition != null) {
 			net.fire(transition);
 			coloriseTokens(transition);
 			mainTrace.incPosition(mainInc);
 			branchTrace.incPosition(branchInc);
 			result = true;
+		}
+		return result;
+	}
+
+	private Transition getTransitionToFire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			final Node node = net.getNodeByReference(ref);
+			if ((node instanceof Transition) && net.isEnabled((Transition)node)) {
+				result = (Transition)node;
+			}
 		}
 		return result;
 	}
@@ -541,14 +569,14 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	private void resetTraces(final GraphEditor editor) {
-		applyMarking(initialMarking);
+		resetMarking();
 		mainTrace.setPosition(0);
 		branchTrace.clear();
 		updateState(editor);
 	}
 
 	private void clearTraces(final GraphEditor editor) {
-		applyMarking(initialMarking);
+		resetMarking();
 		mainTrace.clear();
 		branchTrace.clear();
 		if (timer != null) 	{
@@ -585,7 +613,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			}
 		}
 
-		applyMarking(initialMarking);
+		resetMarking();
 		mainTrace.clear();
 		branchTrace.clear();
 		boolean first = true;
@@ -625,13 +653,38 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		updateState(editor);
 	}
 
+	private void saveInitState(final GraphEditor editor) {
+		savedState.clear();
+		for (Place place: net.getPlaces()) {
+			savedState.put(place, place.getTokens());
+		}
+		editor.requestFocus();
+	}
+
+	public void applyInitState(final GraphEditor editor) {
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		MathModel model = editor.getModel().getMathModel();
+		if (model instanceof PetriNetModel) {
+			PetriNetModel pn = (PetriNetModel)model;
+			for (Place place: savedState.keySet()) {
+				String ref = net.getNodeReference(place);
+				Node node = pn.getNodeByReference(ref);
+				if (node instanceof Place) {
+					((Place) node).setTokens(savedState.get(place));
+				}
+			}
+		}
+	}
+
 	private int getAnimationDelay() {
 		return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
 	}
 
 	@SuppressWarnings("serial")
 	private final class TraceTableCellRendererImplementation implements TableCellRenderer {
-		JLabel label = new JLabel() {
+		private final JLabel label = new JLabel() {
 			@Override
 			public void paint( Graphics g ) {
 				g.setColor( getBackground() );
@@ -656,14 +709,18 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value,
 				boolean isSelected, boolean hasFocus,	int row, int column) {
-			if (!(value instanceof String)) return null;
-			label.setText((String)value);
-			if (isActive(row, column)) {
-				label.setBackground(Color.YELLOW);
-			} else {
-				label.setBackground(Color.WHITE);
+			JLabel result = null;
+			if ((net != null) && (value instanceof String)) {
+				label.setText((String) value);
+				label.setForeground(Color.BLACK);
+				if (isActive(row, column)) {
+					label.setBackground(Color.YELLOW);
+				} else {
+					label.setBackground(Color.WHITE);
+				}
+				result = label;
 			}
-			return label;
+			return result;
 		}
 	}
 
@@ -797,7 +854,6 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		updateState(editor);
 	}
 
-
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
 		boolean ret = false;
@@ -815,6 +871,20 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		return ret;
 	}
 
+	public Node getTraceCurrentNode() {
+		String ref = null;
+		if (branchTrace.canProgress()) {
+			ref = branchTrace.getCurrent();
+		} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+			ref = mainTrace.getCurrent();
+		}
+		Node result = null;
+		if (ref != null) {
+			result = net.getNodeByReference(ref);
+		}
+		return result;
+	}
+
 	@Override
 	public Decorator getDecorator(final GraphEditor editor) {
 		return new Decorator() {
@@ -823,17 +893,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 				if(node instanceof VisualTransition) {
 					Transition transition = ((VisualTransition)node).getReferencedTransition();
-					String transitionId = null;
-					Node transition2 = null;
-					if (branchTrace.canProgress()) {
-						transitionId = branchTrace.get(branchTrace.getPosition());
-						transition2 = net.getNodeByReference(transitionId);
-					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-						transitionId = mainTrace.get(mainTrace.getPosition());
-						transition2 = net.getNodeByReference(transitionId);
-					}
-
-					if (transition == transition2) {
+					Node currentTraceTransition = getTraceCurrentNode();
+					if (transition == currentTraceTransition) {
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -861,9 +922,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 				}
 
 				if (node instanceof VisualPage || node instanceof VisualGroup) {
-
 					final boolean ret = isContainerExcited((Container)node);
-
 					return new ContainerDecoration() {
 
 						@Override
@@ -881,12 +940,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 							return ret;
 						}
 					};
-
 				}
 
 				return null;
 			}
-
 		};
 	}
 

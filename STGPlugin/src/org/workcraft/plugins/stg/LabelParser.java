@@ -88,4 +88,22 @@ public class LabelParser {
 		return result;
 	}
 
+	public static String getTransitionName(String s) {
+		String result = null;
+		Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(s);
+		if (instancedTransition != null) {
+			result = instancedTransition.getFirst();
+		}
+		return result;
+	}
+
+	public static Integer getTransitionInstance(String s) {
+		Integer result = null;
+		Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(s);
+		if (instancedTransition != null) {
+			result = instancedTransition.getSecond();
+		}
+		return result;
+	}
+
 }

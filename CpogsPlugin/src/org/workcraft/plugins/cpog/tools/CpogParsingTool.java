@@ -5,6 +5,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
@@ -35,23 +36,26 @@ public class CpogParsingTool {
 
 	 public BooleanFormula parseBool(String bool, final VisualCPOG visualCpog) throws ParseException
 	 {
-
 		Func<String, BooleanVariable> boolVars = new Func<String, BooleanVariable>()
 		{
 			public BooleanVariable eval(final String label)
 			{
 				if (variableMap.containsKey(label))
 				{
-					return variableMap.get(label);
-				} else
-				{
+                    if (!visualCpog.getVariables().contains(variableMap.get(label))) {
+                        if (variableMap.get(label).getParent() != null) {
+                            return variableMap.get(label);
+                        } else  variableMap.remove(label);
+                    } else {
+                        variableMap.remove(label);
+                    }
+				}
 
 					VisualVariable visVar = visualCpog.createVisualVariable();
 					visVar.setLabel(label);
 					visVar.setPosition(new Point2D.Double(xpos, -2));
 					xpos++;
 					variableMap.put(label, visVar.getMathVariable());
-				}
 
 				return variableMap.get(label);
 			}
@@ -151,7 +155,7 @@ public class CpogParsingTool {
         }
     }
 
-    public HashSet<Node> getChildren(VisualCPOG visualCpog, Node node)
+    public static HashSet<Node> getChildren(VisualCPOG visualCpog, Node node)
 	 {
          HashSet<Node> children = new HashSet<>();
          HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
@@ -167,7 +171,7 @@ public class CpogParsingTool {
 		 return children;
 	 }
 
-    public HashSet<Node> getParents(VisualCPOG visualCpog, Node node)
+    public static HashSet<Node> getParents(VisualCPOG visualCpog, Node node)
     {
         HashSet<Node> parents = new HashSet<>();
         HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
@@ -445,21 +449,20 @@ public class CpogParsingTool {
         visualCpog.select(prevSelection);
     }
 
-    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualScenarioPage> groups) {
-        ArrayList<Node> prevSelection = copySelected(visualCpog);
-        visualCpog.selectAll();
+    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualTransformableNode> groups) {
+            ArrayList<Node> prevSelection = copySelected(visualCpog);
+            visualCpog.selectAll();
 
-        for(Node n : visualCpog.getSelection()) {
-            if (n instanceof VisualScenarioPage) {
-                if (prevSelection.contains(n)) {
-                    groups.add((VisualScenarioPage) n);
-                    //prevSelection.remove(n);
+            for(Node n : visualCpog.getSelection()) {
+                if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
+                    if (prevSelection.contains(n)) {
+                        groups.add((VisualTransformableNode) n);
+                    }
                 }
             }
-        }
 
-        visualCpog.select(prevSelection);
-    }
+            visualCpog.select(prevSelection);
+        }
 
     public int findVertex(ArrayList<ArrayList<Node>> outer, Node target)
 	 {
@@ -785,7 +788,7 @@ public class CpogParsingTool {
         return result;
     }
 
-    public HashSet<VisualArc> getAllArcs(Container root, VisualCPOG visualCpog) {
+    public static HashSet<VisualArc> getAllArcs(Container root, VisualCPOG visualCpog) {
         HashSet<VisualArc> result = new HashSet<>();
         for (Node node : root.getChildren()) {
             if ((node instanceof VisualPage) || (node instanceof VisualScenarioPage)) {

@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -37,14 +35,15 @@ public class MpsatSettings {
 		}
 	}
 
-	private static final Pattern nodeNamePattern = Pattern.compile("\"(\\S+?)\"");
-
 	private final String name;
 	private final MpsatMode mode;
 	private final int verbosity;
 	private final SolutionMode solutionMode;
 	private final int solutionNumberLimit;
 	private final String reach;
+	// true - property holds when predicate is unsatisfiable
+	// flase - property holds when predicate is satisfiable
+	private final boolean inversePredicate;
 
 	// Reach expression for checking signal consistency
 	public static final String reachConsistency =
@@ -201,14 +200,19 @@ public class MpsatSettings {
 		return result;
 	}
 
-	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit, String reach) {
-		super();
+	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit) {
+		this(name, mode, verbosity, solutionMode, solutionNumberLimit, null, true);
+	}
+
+	public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit,
+			String reach, boolean inversePredicate) {
 		this.name = name;
 		this.mode = mode;
 		this.verbosity = verbosity;
 		this.solutionMode = solutionMode;
 		this.solutionNumberLimit = solutionNumberLimit;
 		this.reach = reach;
+		this.inversePredicate = inversePredicate;
 	}
 
 	public String getName() {
@@ -223,28 +227,20 @@ public class MpsatSettings {
 		return verbosity;
 	}
 
-	public String getReach() {
-		return reach;
-	}
-
-	private String getFlatReach() {
-		StringBuffer sb = new StringBuffer(reach.length());
-		Matcher matcher = nodeNamePattern.matcher(reach);
-		while (matcher.find()) {
-			String reference = matcher.group(1);
-			String flatName = NamespaceHelper.hierarchicalToFlatName(reference);
-			matcher.appendReplacement(sb, "\"" + flatName + "\"");
-		}
-		matcher.appendTail(sb);
-		return sb.toString();
-	}
-
 	public SolutionMode getSolutionMode() {
 		return solutionMode;
 	}
 
 	public int getSolutionNumberLimit() {
 		return solutionNumberLimit;
+	}
+
+	public String getReach() {
+		return reach;
+	}
+
+	public boolean getInversePredicate() {
+		return inversePredicate;
 	}
 
 	public String[] getMpsatArguments() {
@@ -255,12 +251,12 @@ public class MpsatSettings {
 
 		if (getMode().hasReach()) {
 			try {
-				File reach = File.createTempFile("reach", null);
-				reach.deleteOnExit();
-
-				FileUtils.dumpString(reach, getFlatReach());
+				File reachFile = File.createTempFile("reach", null);
+				reachFile.deleteOnExit();
+//				FileUtils.dumpString(reach, getFlatReach());
+				FileUtils.dumpString(reachFile, getReach());
 				args.add("-d");
-				args.add("@"+reach.getCanonicalPath());
+				args.add("@"+reachFile.getCanonicalPath());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

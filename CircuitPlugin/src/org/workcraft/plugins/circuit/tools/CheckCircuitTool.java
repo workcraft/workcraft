@@ -27,7 +27,7 @@ public class CheckCircuitTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation(), checkDeadlock(), checkHazard());
 		String description = "MPSat tool chain";
-		String title = we.getModelEntry().getModel().getTitle();
+		String title = we.getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}

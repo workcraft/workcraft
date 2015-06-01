@@ -12,7 +12,7 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.tools.STGGenerator;
+import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -39,18 +39,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckCircuitTask extends MpsatChainTask {
 	private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
-			MpsatMode.UNDEFINED, 0, null, 0, null);
+			MpsatMode.UNDEFINED, 0, null, 0);
 
 	private final MpsatSettings toolchainCompletionSettings = new MpsatSettings("Toolchain completion",
-			MpsatMode.UNDEFINED, 0, null, 0, null);
+			MpsatMode.UNDEFINED, 0, null, 0);
 
-	private final MpsatSettings deadlockSettings = new MpsatSettings("Deadlock freedom",
+	private final MpsatSettings deadlockSettings = new MpsatSettings("Deadlock",
 			MpsatMode.DEADLOCK, 0, MpsatUtilitySettings.getSolutionMode(),
-			MpsatUtilitySettings.getSolutionCount(), null);
+			MpsatUtilitySettings.getSolutionCount());
 
-	private final MpsatSettings hazardSettings = new MpsatSettings("Output persistence",
+	private final MpsatSettings hazardSettings = new MpsatSettings("Output persistency",
 			MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-			MpsatUtilitySettings.getSolutionCount(), MpsatSettings.reachSemimodularity);
+			MpsatUtilitySettings.getSolutionCount(), MpsatSettings.reachSemimodularity, true);
 
 	private final WorkspaceEntry we;
 	private final boolean checkConformation;
@@ -77,9 +77,11 @@ public class CheckCircuitTask extends MpsatChainTask {
 			File envFile = visualCircuit.getEnvironmentFile();
 			boolean hasEnvironment = ((envFile != null) && envFile.exists());
 
-			workingDirectory = FileUtils.createTempDirectory(title + "-");
+			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
+			workingDirectory = FileUtils.createTempDirectory(prefix);
 
-			STG devStg = (STG)STGGenerator.generate(visualCircuit).getMathModel();
+			CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
+			STG devStg = (STG)generator.getStg().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 			if (devStgExporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
@@ -148,6 +150,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
 				WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
 				stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+				framework.getWorkspace().close(stgWorkspaceEntry);
 			}
 			monitor.progressUpdate(0.30);
 
@@ -176,9 +179,9 @@ public class CheckCircuitTask extends MpsatChainTask {
 					System.out.println("\nReach expression for the interface conformation property:");
 					System.out.println(reachConformation);
 				}
-				MpsatSettings conformationSettings = new MpsatSettings("Interface conformation",
+				MpsatSettings conformationSettings = new MpsatSettings("Interface conformance",
 						MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-						MpsatUtilitySettings.getSolutionCount(), reachConformation);
+						MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
 						unfoldingFile.getCanonicalPath(), workingDirectory, true);
@@ -198,7 +201,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				if (!mpsatConformationParser.getSolutions().isEmpty()) {
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
 							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
-									"Circuit does not conform to the environment after the following trace:"));
+									"Circuit does not conform to the environment after the following trace(s):"));
 				}
 			}
 			monitor.progressUpdate(0.60);
@@ -223,7 +226,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
 							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
-									"Circuit has a deadlock after the following trace:"));
+									"Circuit has a deadlock after the following trace(s):"));
 				}
 			}
 			monitor.progressUpdate(0.80);
@@ -252,7 +255,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				if (!mpsatHazardParser.getSolutions().isEmpty()) {
 					return new Result<MpsatChainResult>(Outcome.FINISHED,
 							new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings,
-									"Circuit has a hazard  after the following trace:"));
+									"Circuit has a hazard after the following trace(s):"));
 				}
 			}
 			monitor.progressUpdate(1.0);
@@ -265,9 +268,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		} finally {
-			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
-				FileUtils.deleteDirectoryTree(workingDirectory);
-			}
+			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
 		}
 	}
 

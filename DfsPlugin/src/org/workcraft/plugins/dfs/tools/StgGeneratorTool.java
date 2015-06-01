@@ -37,7 +37,7 @@ public class StgGeneratorTool implements Tool {
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), generator.getSTG());
+		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), generator.getStg());
 		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 		workspace.add(directory, desiredName, me, false, openInEditor);
 	}

@@ -1,5 +1,12 @@
 package org.workcraft.dom.visual;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
@@ -7,8 +14,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
@@ -19,14 +24,6 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.util.Hierarchy;
-
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 
 @Hotkey(KeyEvent.VK_P)
@@ -123,18 +120,6 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 	public VisualPage(MathNode refNode) {
 		super(refNode);
 		addPropertyDeclarations();
-	}
-
-	public List<Node> unGroup(ReferenceManager mathManager) {
-		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
-		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
-		groupImpl.reparent(nodesToReparent, newParent);
-		for (Node node : nodesToReparent) {
-			TransformHelper.applyTransform(node, localToParentTransform);
-		}
-		PageNode page = (PageNode)getReferencedComponent();
-		page.unGroup(mathManager);
-		return nodesToReparent;
 	}
 
 	@Override

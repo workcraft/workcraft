@@ -113,16 +113,6 @@ public class FileUtils {
 		}
 	}
 
-	public static void deleteDirectoryTree(File dir) {
-		File [] files = dir.listFiles();
-		if (files != null) {
-			for(File file : files) {
-				deleteDirectoryTree(file);
-			}
-		}
-		dir.delete();
-	}
-
 	public static void writeAllText(File file, String source) throws IOException {
 		FileWriter writer = new FileWriter(file);
 		writer.write(source);
@@ -208,4 +198,19 @@ public class FileUtils {
 		return result;
 	}
 
+	public static void deleteFile(File file, boolean postponeTillExit) {
+		if (file != null) {
+			File [] files = file.listFiles();
+			if (files != null) {
+				for(File f: files) {
+					deleteFile(f, postponeTillExit);
+				}
+			}
+			if (postponeTillExit) {
+				file.deleteOnExit();
+			} else {
+				file.delete();
+			}
+		}
+	}
 }

@@ -69,7 +69,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 				if (dstVisualComponentClass != null) {
 					String path = NamespaceHelper.getParentReference(srcRef);
 					Container container = getRefToDstPage(path);
-					String srcName = NamespaceHelper.getNameFromReference(srcRef);
+					String srcName = NamespaceHelper.getReferenceName(srcRef);
 					String dstName = convertNodeName(srcName, container);
 					Container mathContainer = NamespaceHelper.getMathContainer(getDstModel(), container);
 					MathNode dstMathNode = getDstModel().getMathModel().createNode(dstName, mathContainer, dstMathNodeClass);

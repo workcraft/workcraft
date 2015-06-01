@@ -24,7 +24,7 @@ public class MpsatNormalcyChecker extends AbstractMpsatChecker implements Tool {
 	public MpsatSettings getSettings() {
 		return new MpsatSettings("Normalcy", MpsatMode.NORMALCY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				null);
+				null, true);
 	}
 
 }

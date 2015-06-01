@@ -88,8 +88,7 @@ public class TouchableTransformer implements Touchable {
 	}
 
 	@Override
-	public Point2D getCenter()
-	{
+	public Point2D getCenter() {
 		return transformation.transform(toTransform.getCenter(), null);
 	}
 }

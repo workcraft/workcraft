@@ -112,7 +112,7 @@ public class ConnectionTool extends AbstractTool {
 		}
 	}
 
-	protected boolean isConnectable(Node node) {
+	public boolean isConnectable(Node node) {
 		return !(node instanceof VisualConnection);
 	}
 
@@ -121,9 +121,13 @@ public class ConnectionTool extends AbstractTool {
 		super.activated(editor);
 		resetState(editor);
 		if (templateNode == null) {
-			templateNode = new VisualConnection();
+			templateNode = createDefaultTemplateNode();
 		}
 		editor.getModel().setTemplateNode(templateNode);
+	}
+
+	public VisualConnection createDefaultTemplateNode() {
+		return new VisualConnection();
 	}
 
 	@Override

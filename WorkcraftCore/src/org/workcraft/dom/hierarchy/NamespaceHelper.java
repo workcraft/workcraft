@@ -124,13 +124,13 @@ public class NamespaceHelper {
 		return null;
 	}
 
-	public static String getNameFromReference(String reference) {
+	public static String getReferenceName(String reference) {
 		String head = getReferenceHead(reference);
 		String tail = getReferenceTail(reference);
 		if (tail.equals("")) {
 			return head;
 		}
-		return getNameFromReference(tail);
+		return getReferenceName(tail);
 	}
 
 	public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {

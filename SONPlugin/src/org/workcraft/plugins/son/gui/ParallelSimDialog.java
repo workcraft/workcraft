@@ -44,8 +44,9 @@ public class ParallelSimDialog  extends JDialog{
 
 	private SON net;
 
-	boolean reverse = false;
-	private List<TransitionNode> possibleFires, minFires, maxFires;
+	boolean isRev = false;
+	private Color color = new Color(255, 228, 181);
+	private List<TransitionNode> possibleFire, minFire;
 	private TransitionNode clickedEvent;
 
 	private JPanel eventPanel, interfacePanel, buttonsPanel, eventInfoPanel;
@@ -122,8 +123,8 @@ public class ParallelSimDialog  extends JDialog{
 
 		DefaultListModel listModel = new DefaultListModel();
 
-		for(TransitionNode event : this.possibleFires){
-			EventItem item = new EventItem(net.getNodeReference(event)+"  "+event.getLabel(), event, possibleFires);
+		for(TransitionNode event : this.possibleFire){
+			EventItem item = new EventItem(net.getNodeReference(event)+"  "+event.getLabel(), event, possibleFire);
 			listModel.addElement(item);
 		}
 
@@ -154,45 +155,37 @@ public class ParallelSimDialog  extends JDialog{
 						if(item.isSelected() ){
 							selectedEvents.add(item.getEvent());
 
-							List<TransitionNode> set;
-							if(!reverse)
-								set = simuAlg.getMinFires(item.getEvent(), sync, possibleFires);
-							else
-								set = simuAlg.getMaxFires(item.getEvent(), sync, possibleFires);
+							List<TransitionNode> minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, isRev);
 
-							for(TransitionNode e : set){
+							for(TransitionNode e : minFire){
 								for(EventItem eventItem : itemList){
 									if(e==eventItem.getEvent()){
 										selectedEvents.add(e);
 										eventItem.setSelected(true);
-										eventItem.setForegroudColor(Color.BLUE);
+										eventItem.setFillColor(color);
 									}
 								}
 							}
-							item.setForegroudColor(Color.BLUE);
+							item.setFillColor(color);
 						}
 
 						if(!item.isSelected() ){
 							selectedEvents.remove(item.getEvent());
 
-							List<TransitionNode> set;
-							if(!reverse)
-								set = simuAlg.getMaxFires(item.getEvent(), sync, possibleFires);
-							else
-								set = simuAlg.getMinFires(item.getEvent(), sync, possibleFires);
+							List<TransitionNode> minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
 
 								//unselected related synchronous events.
-							for(TransitionNode e : set){
+							for(TransitionNode e : minFire){
 								for(EventItem eventItem : itemList){
 									if(e==eventItem.getEvent()){
 										selectedEvents.remove(e);
 										eventItem.setSelected(false);
-										eventItem.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
+										eventItem.setFillColor(Color.WHITE);
 									}
 								}
 							}
 
-							item.setForegroudColor(CommonSimulationSettings.getEnabledForegroundColor());
+							item.setFillColor(Color.WHITE);
 						}
 
 						for(int i=0; i<list.getModel().getSize(); i++)
@@ -263,16 +256,16 @@ public class ParallelSimDialog  extends JDialog{
 	}
 
 	private String[][] createData(){
-		String dataVal[][] = new String[this.minFires.size()+1][2];
+		String dataVal[][] = new String[this.minFire.size()+1][2];
 
 		dataVal[0][0] = net.getNodeReference(clickedEvent)+ "(clicked)";
 		dataVal[0][1] = this.clickedEvent.getLabel();
 
-		if(!minFires.isEmpty()){
-			for(int i=1 ; i < minFires.size()+1; i++)
-				dataVal[i][0]=net.getNodeReference(minFires.get(i-1));
-			for(int i=1 ; i < minFires.size()+1; i++)
-				dataVal[i][1] = minFires.get(i-1).getLabel();
+		if(!minFire.isEmpty()){
+			for(int i=1 ; i < minFire.size()+1; i++)
+				dataVal[i][0]=net.getNodeReference(minFire.get(i-1));
+			for(int i=1 ; i < minFire.size()+1; i++)
+				dataVal[i][1] = minFire.get(i-1).getLabel();
 		}
 
 		return dataVal;
@@ -280,20 +273,19 @@ public class ParallelSimDialog  extends JDialog{
 	}
 
 	public  ParallelSimDialog (Window owner, SON net,
-			List<TransitionNode> possibleFires, List<TransitionNode> minFires,
-			List<TransitionNode> maxFires, TransitionNode event, boolean reverse,
+			List<TransitionNode> possibleFire, List<TransitionNode> minFire,
+			TransitionNode event, boolean isRev,
 			Collection<Path> sync){
 		super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
 
 		this.net = net;
-		this.reverse = reverse;
-		this.possibleFires = possibleFires;
-		this.minFires = minFires;
-		this.maxFires = maxFires;
+		this.isRev = isRev;
+		this.possibleFire = possibleFire;
+		this.minFire = minFire;
 		this.clickedEvent = event;
 		this.sync = sync;
 
-		setEventsColor(minFires, event);
+		setColor(minFire, event);
 
 		//this.setSize(new Dimension(280, 260));
 		createButtonsPanel();
@@ -331,10 +323,10 @@ public class ParallelSimDialog  extends JDialog{
 
 	}
 
-	private void setEventsColor(List<TransitionNode> preEvents, TransitionNode event){
-		event.setForegroundColor(Color.BLUE);
+	private void setColor(List<TransitionNode> preEvents, TransitionNode event){
+		event.setFillColor(color);
 		for(TransitionNode e : preEvents)
-			e.setForegroundColor(Color.BLUE);
+			e.setFillColor(color);
 	}
 
 	public SON getSONModel(){

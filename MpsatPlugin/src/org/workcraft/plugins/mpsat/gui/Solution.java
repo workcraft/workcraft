@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat.gui;
 
+import java.util.List;
+
 import org.workcraft.Trace;
 
 public class Solution {
@@ -27,6 +29,17 @@ public class Solution {
 		result += "\n";
 		if (branchTrace != null) {
 			result += branchTrace.toString();
+		}
+		return result;
+	}
+
+	public static boolean hasTraces(List<Solution> solutions) {
+		boolean result = false;
+		for (Solution solution : solutions) {
+			if ((solution.getMainTrace() != null) || (solution.getBranchTrace() != null)) {
+				result = true;
+				break;
+			}
 		}
 		return result;
 	}

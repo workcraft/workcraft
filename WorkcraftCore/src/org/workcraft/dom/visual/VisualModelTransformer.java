@@ -8,28 +8,16 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
-import org.workcraft.util.Hierarchy;
 
 public class VisualModelTransformer {
-	/**
-	 * Only transforms node position (not orientation)
-	 * @author Stanislav Golubtsov
-	 *
-	 **/
-	public static void transformNodePosition(Collection<Node> nodes, AffineTransform t) {
+
+	private static void transformNodes(Collection<Node> nodes, AffineTransform t) {
 		assert nodes!=null;
 		for (Node node: nodes) {
-			// do transformation group children
-			if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
-				VisualTransformableNode vt  = (VisualTransformableNode) node;
-				AffineTransform t2 = new AffineTransform();
-				t2.translate(-vt.getX(), -vt.getY());
-				t2.concatenate(t);
-				t2.translate(vt.getX(), vt.getY());
-				transformNodePosition(vt.getChildren(), t2);
-			} else if (node instanceof VisualTransformableNode) {
+			if (node instanceof VisualTransformableNode) {
 				VisualTransformableNode vn = (VisualTransformableNode) node;
 				Point2D np = vn.getPosition();
 				t.transform(np, np);
@@ -41,25 +29,38 @@ public class VisualModelTransformer {
 		}
 	}
 
-	public static void translateNodes(Collection<Node> nodes, double tx, double ty) {
-		AffineTransform t = AffineTransform.getTranslateInstance(tx, ty);
-		transformNodePosition(nodes, t);
+	private static void transformConnections(Collection<Node> nodes, AffineTransform t) {
+		assert nodes!=null;
+		for (Node node: nodes) {
+			if (node instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)node;
+				for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
+					Point2D np = cp.getPosition();
+					t.transform(np, np);
+					cp.setPosition(np);
+				}
+			}
+		}
 	}
 
 	public static void translateSelection(VisualModel vm, double tx, double ty) {
-		translateNodes(vm.getSelection(), tx, ty);
+		AffineTransform t = AffineTransform.getTranslateInstance(tx, ty);
+		transformNodes(vm.getSelection(), t);
+		transformConnections(vm.getSelection(), t);
 	}
 
 	public static void scaleSelection(VisualModel vm, double sx, double sy) {
 		Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
 		if (selectionBB != null) {
 			AffineTransform t = new AffineTransform();
+			Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
 
-			t.translate(selectionBB.getCenterX(), selectionBB.getCenterY());
+			t.translate(cp.getX(), cp.getY());
 			t.scale(sx, sy);
-			t.translate(-selectionBB.getCenterX(), -selectionBB.getCenterY());
+			t.translate(-cp.getX(), -cp.getY());
 
-			transformNodePosition(vm.getSelection(), t);
+			transformNodes(vm.getSelection(), t);
+			transformConnections(vm.getSelection(), t);
 		}
 	}
 
@@ -73,7 +74,8 @@ public class VisualModelTransformer {
 			t.rotate(theta);
 			t.translate(-cp.getX(), -cp.getY());
 
-			transformNodePosition(vm.getSelection(), t);
+			transformNodes(vm.getSelection(), t);
+			transformConnections(vm.getSelection(), t);
 		}
 	}
 
@@ -106,15 +108,6 @@ public class VisualModelTransformer {
 				selectionBB = bbUnion(selectionBB, ((VisualTransformableNode)vn).getPosition());
 		}
 		return selectionBB;
-	}
-
-	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components (intro).
-	public static void translateSelectionAndControlPoints(VisualModel vm, double tx, double ty) {
-		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(vm.getRoot(), VisualConnection.class);
-		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(vm.getSelection(), connections);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	setConnectionsScaleMode(includedConnections, ScaleMode.LOCK_RELATIVELY);
-		translateNodes(vm.getSelection(), tx, ty);
-		setConnectionsScaleMode(connectionToScaleModeMap);
 	}
 
 	// FIXME: A hack to preserve the shape of connections on relocation of their adjacent components (outro).

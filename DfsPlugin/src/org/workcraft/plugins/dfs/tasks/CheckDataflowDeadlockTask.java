@@ -33,8 +33,9 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 	public CheckDataflowDeadlockTask(WorkspaceEntry we) {
 		super (we, null);
 		this.we = we;
-		this.settings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
-				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
+		this.settings = new MpsatSettings("Deadlock", MpsatMode.DEADLOCK, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+				null, true);
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 		final Framework framework = Framework.getInstance();
 		try {
 			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
-			STGModel model = (STGModel)generator.getSTG().getMathModel();
+			STGModel model = (STGModel)generator.getStg().getMathModel();
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 			if (exporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

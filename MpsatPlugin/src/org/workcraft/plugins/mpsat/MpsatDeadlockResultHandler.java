@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.Trace;
 import org.workcraft.plugins.mpsat.gui.Solution;
 import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
@@ -28,21 +27,19 @@ final class MpsatDeadlockResultHandler implements Runnable {
 	@Override
 	public void run() {
 		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
-
 		List<Solution> solutions = mdp.getSolutions();
-
-		if (!solutions.isEmpty()) {
-			String message = "The system has a deadlock.\n";
-			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
-			final Framework framework = Framework.getInstance();
-			GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
-			solutionsDialog.setVisible(true);
+		String title = "Verification results";
+		if (solutions.isEmpty()) {
+			String message = "The system is deadlock-free.";
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+		} else if (!Solution.hasTraces(solutions)) {
+			String message = "The system has a deadlock.";
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.WARNING_MESSAGE);
 		} else {
-			String message = result.getReturnValue().getMessage();
-			if (message == null) {
-				message = "The system is deadlock-free.";
-			}
-			JOptionPane.showMessageDialog(null, message);
+			String message = "The system has a deadlock after the following trace(s):";
+			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, message, solutions);
+			GUI.centerAndSizeToParent(solutionsDialog, Framework.getInstance().getMainWindow());
+			solutionsDialog.setVisible(true);
 		}
 	}
 }

@@ -52,6 +52,7 @@ public class TransformHelper {
 		while (ancestor != node) {
 			Node next = node.getParent();
 			if (next == null) {
+				System.out.println("ERROR: " + node);
 				throw new NotAnAncestorException();
 			}
 			if(next instanceof Movable) {

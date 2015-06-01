@@ -3,7 +3,8 @@ package org.workcraft.plugins.son.algorithm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
@@ -11,123 +12,149 @@ import org.workcraft.plugins.son.SON;
 public class PathAlgorithm{
 
 	private SON net;
+	private static Collection<Path> pathResult =new ArrayList<Path>();
 
 	public PathAlgorithm(SON net) {
 		this.net = net;
 	}
 
-	private static Collection<Node> history = new Path();
-	private static Collection<Path> pathResult =new  HashSet<Path>();
+	//get path between two given nodes. (iteration)
+    public Collection<Path> dfs3(Node s, Node v, Collection<Node> nodes){
+    	Collection<Path> result =new ArrayList<Path>();
+        Stack<Node> stack = new Stack<Node>();
+        LinkedList<Node> visit = new LinkedList<Node>();
 
-	/**
-	 * create adjacency matrix
-	 */
-	public List<Node[]> createAdj(Collection<Node> nodes){
+        stack.push(s);
 
-		List<Node[]> result = new ArrayList<Node[]>();
+        while(!stack.isEmpty()){
+        	s = stack.peek();
+            visit.add(s);
 
-		for (Node n: nodes){
-			for (Node next: net.getPostset(n))
-				if(nodes.contains(next)){
-					Node[] adjoin = new Node[2];
-					adjoin[0] = n;
-					adjoin[1] = next;
-					result.add(adjoin);
-				}
+            Node n = null;
+        	for(Node post : getPostset(s, nodes)){
+                if (visit.contains(post)) {
+                    continue;
+                }
+                else if (post.equals(v)) {
+                	n = post;
+                	stack.push(post);
+                	visit.add(post);
+                    Path path = new Path();
+
+                    path.addAll(visit);
+                    result.add(path);
+                    visit.removeLast();
+                    break;
+                }
+                else if(!visit.contains(post)){
+                	n = post;
+                	stack.push(n);
+                }
+        	}
+        	if(n == null){
+    			while(!stack.isEmpty()){
+    				s = stack.peek();
+    				if(!visit.isEmpty() && s==visit.peekLast()){
+    					stack.pop();
+    					visit.removeLast();
+    				}else{
+    					break;
+    				}
+    			}
+    		}
+        }
+        return result;
+    }
+
+    //get path between two given nodes. (recursion)
+    private void dfs(Collection<Node> nodes , LinkedList<Node> visited, Node v) {
+        LinkedList<Node> post = getPostset(visited.getLast(), nodes);
+
+        if (visited.getLast().equals(v)) {
+            Path path = new Path();
+            path.addAll(visited);
+            pathResult.add(path);
+        }
+
+        // examine post nodes
+        for (Node node : post) {
+            if (visited.contains(node)) {
+                continue;
+            }
+            if (node.equals(v)) {
+                visited.add(node);
+                Path path = new Path();
+                path.addAll(visited);
+                pathResult.add(path);
+                visited.removeLast();
+                break;
+            }
+        }
+        // in depth-first, recursion needs to come after visiting post nodes
+        for (Node node : post) {
+            if (visited.contains(node) || node.equals(v)) {
+                continue;
+            }
+            visited.addLast(node);
+            dfs(nodes, visited, v);
+            visited.removeLast();
+
+        }
+    }
+
+    public Collection<Path> getPaths (Node s, Node v, Collection<Node> nodes){
+    	pathResult.clear();
+    	LinkedList<Node> visited = new LinkedList<Node>();
+    	visited.add(s);
+    	dfs(nodes, visited, v);
+    	return pathResult;
+    }
+
+    private LinkedList<Node> getPostset(Node n, Collection<Node> nodes){
+    	LinkedList<Node> list = new LinkedList<Node>();
+    	for(Node post : net.getPostset(n))
+    		if(nodes.contains(post))
+    			list.add(post);
+    	return list;
+    }
+	//get nodes between two given nodes. (iteration)
+	public static Collection<Node> dfs2 (Collection<Node> s, Collection<Node> v, SON net){
+		Collection<Node> result = new HashSet<Node>();
+		RelationAlgorithm relation = new RelationAlgorithm(net);
+        Stack<Node> stack = new Stack<Node>();
+
+		for(Node s1 : s){
+			Collection<Node> visit = new ArrayList<Node>();
+			stack.push(s1);
+			visit.add(s1);
+
+            while(!stack.empty()){
+        		s1 = stack.peek();
+
+            	if(v.contains(s1)){
+            		result.add(s1);
+            	}
+
+            	Node post = null;
+    			for (Node n: relation.getPostPNSet(s1)){
+    				if(result.contains(n)){
+    					result.add(s1);
+    				}
+    				if(!visit.contains(n)){
+    					post = n;
+    					break;
+    				}
+    			}
+
+    			if(post != null){
+    				visit.add(post);
+    				stack.push(post);
+    			}else{
+    				stack.pop();
+    			}
+            }
 		}
 		return result;
 	}
-
-	private static void DFS(Node s, Node v, List<Node[]> adj){
-		history.add(s);
-
-		if(s == v){
-			Path path = new Path();
-			path.add(s);
-			pathResult.add(path);
-		}
-
-		for (int i=0; i< adj.size(); i++){
-			if (((Node)adj.get(i)[0]).equals(s)){
-				if(((Node)adj.get(i)[1]).equals(v)){
-					Path path= new Path();
-
-					path.addAll(history);
-					path.add(v);
-					pathResult.add(path);
-					continue;
-				}
-				else if(!history.contains((Node)adj.get(i)[1])){
-					DFS((Node)adj.get(i)[1], v, adj);
-				}
-			}
-		}
-		history.remove(s);
-	}
-
-	private static void clear(){
-		history.clear();
-		pathResult.clear();
-	}
-
-	public static Collection<Path> getPaths(Node s, Node v, List<Node[]> adj){
-		clear();
-		DFS(s, v, adj);
-		return pathResult;
-	}
-
-
-//	public static Collection<Path> getCycles(Node s, Node v, List<Node[]> adj){
-//		clear();
-//		DFS(s, v, adj);
-//		return cycleResult;
-//	}
-
-//	public static  List<Path> merging (List<Path> cycles){
-//		List<Path> result = new ArrayList<Path>();
-//
-//		while (cycles.size() > 0){
-//			Path first = cycles.get(0);
-//			List<Path> rest = cycles;
-//			rest.remove(0);
-//
-//			int i = -1;
-//			while (first.size() > i){
-//				i = first.size();
-//
-//				List<Path> rest2 = new ArrayList<Path>();
-//				for(Path path : rest){
-//					if(hasCommonElements(first, path)){
-//						first.addAll(path);
-//					}
-//					else{
-//						rest2.add(path);
-//					}
-//				}
-//				rest = rest2;
-//			}
-//
-//			HashSet<Node> filter = new HashSet<Node>();
-//			for(Node node : first){
-//				filter.add(node);
-//			}
-//
-//			Path subResult = new Path();
-//			subResult.addAll(filter);
-//			result.add(subResult);
-//			cycles = rest;
-//		}
-//		return result;
-//	}
-//
-//	private static boolean hasCommonElements(Collection<Node> cycle1, Collection<Node> cycle2){
-//		for(Node n : cycle1)
-//			if(cycle2.contains(n))
-//				return true;
-//		for(Node n : cycle2)
-//			if(cycle1.contains(n))
-//				return true;
-//		return false;
-//	}
 }
 

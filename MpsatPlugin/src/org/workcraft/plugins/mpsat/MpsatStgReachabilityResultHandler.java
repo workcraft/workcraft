@@ -23,35 +23,30 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		this.result = result;
 	}
 
-	private String getPropertyName() {
-		String propertyName;
+	private String getMessage(boolean isSatisfiable, boolean inversePredicate) {
+		String propertyName = "Property";
 		MpsatSettings settings = task.getSettings();
-		if (settings != null && settings.getName() != null) {
+		if ((settings != null) && (settings.getName() != null)) {
 			propertyName = settings.getName();
-		} else {
-			propertyName = "The property";
 		}
-		return propertyName;
+		String propertyText =  propertyName + (isSatisfiable == inversePredicate ? " is violated" : " holds ");
+		String predicateText = " (its predicate is " + (isSatisfiable ? "satisfiable" : "unsatisfiable") + ").";
+		return propertyText + predicateText;
 	}
 
 	@Override
 	public void run() {
 		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 		List<Solution> solutions = mdp.getSolutions();
-		String message = result.getReturnValue().getMessage();
-		if (!solutions.isEmpty()) {
-			if (message == null) {
-				message = getPropertyName() + " is violated with the following trace:\n";
-			}
-			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, message, solutions);
-			final Framework framework = Framework.getInstance();
-			GUI.centerAndSizeToParent(solutionsDialog, framework.getMainWindow());
+		String title = "Verification results";
+		String message = getMessage(!solutions.isEmpty(), true);
+		if (Solution.hasTraces(solutions)) {
+			String extendedMessage = "<html>" + message +  "<br>Trace(s) leading to the problematic states:</html>";
+			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, extendedMessage, solutions);
+			GUI.centerAndSizeToParent(solutionsDialog, Framework.getInstance().getMainWindow());
 			solutionsDialog.setVisible(true);
 		} else {
-			if (message == null) {
-				message = getPropertyName() + " is satisfied.";
-			}
-			JOptionPane.showMessageDialog(null, message);
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 

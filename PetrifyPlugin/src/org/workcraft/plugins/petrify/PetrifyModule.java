@@ -9,6 +9,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.tools.PetrifyCscConflictResolution;
 import org.workcraft.plugins.petrify.tools.PetrifyDummyContraction;
 import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesis;
+import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesisWithEr;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisComplexGate;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisGeneralisedCelement;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisTechnologyMapping;
@@ -31,6 +32,7 @@ public class PetrifyModule implements Module {
 		pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
 		pm.registerClass(Tool.class, PetrifyDummyContraction.class);
 		pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
+		pm.registerClass(Tool.class, PetrifyNetSynthesisWithEr.class);
 //		pm.registerClass(Tool.class, ShowSg.class);
 	}
 

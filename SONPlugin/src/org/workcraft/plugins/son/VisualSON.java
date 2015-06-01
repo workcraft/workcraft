@@ -2,6 +2,7 @@ package org.workcraft.plugins.son;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -105,10 +106,12 @@ public class VisualSON extends AbstractVisualModel {
 				throw new InvalidConnectionException ("Connections between non-conditions are not valid (Behavioural Abstraction)");
 			if (!isGrouped(first) || !isGrouped(second) )
 				throw new InvalidConnectionException ("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
-			if (this.isInSameGroup(first, second))
+			if (isInSameGroup(first, second))
 				throw new InvalidConnectionException ("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
-			if (this.isInBlock(first) || this.isInBlock(second))
+			if (isInBlock(first) || this.isInBlock(second))
 				throw new InvalidConnectionException ("Block cannot cross phases (Block)");
+			if (hasInputBhv(first) || hasOutputBhv(second))
+				throw new InvalidConnectionException ("Condition with both input and output behavioural relations is not valid  (Behavioural Abstraction)");
 			}
 		}
 
@@ -154,9 +157,31 @@ public class VisualSON extends AbstractVisualModel {
 	}
 
 	private boolean isInBlock(Node node){
-		for(VisualBlock block : this.getVisualBlocks())
+		for(VisualBlock block : getVisualBlocks())
 			if(block.getComponents().contains(node))
 				return true;
+		return false;
+	}
+
+	private boolean hasInputBhv(Node first){
+		if(first instanceof VisualCondition)
+			for(VisualSONConnection con : getVisualConnections((VisualCondition)first)){
+				if(con.getSemantics() == Semantics.BHVLINE){
+					if(con.getSecond() == ((VisualCondition)first))
+						return true;
+				}
+			}
+		return false;
+	}
+
+	private boolean hasOutputBhv(Node second){
+		if(second instanceof VisualCondition)
+			for(VisualSONConnection con : getVisualConnections((VisualCondition)second)){
+				if(con.getSemantics() == Semantics.BHVLINE){
+					if(con.getFirst() == ((VisualCondition)second))
+						return true;
+				}
+			}
 		return false;
 	}
 
@@ -272,10 +297,11 @@ public class VisualSON extends AbstractVisualModel {
 			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
 
 			Container currentMathLevel;
-			if(visualContainer==null)
+			if (visualContainer == null) {
 				currentMathLevel = getMathModel().getRoot();
-			else
+			} else {
 				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			}
 			currentMathLevel.add(mathGroup);
 
 			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
@@ -287,7 +313,7 @@ public class VisualSON extends AbstractVisualModel {
 			}
 			currentLevel.reparent(connectionsToGroup, group);
 
-			// reparenting for the math model nodes
+			// Reparenting for the math model nodes
 			ArrayList<Node> selectedMath = new ArrayList<Node>();
 			for (Node node:selected) {
 				if (node instanceof VisualComponent) {
@@ -300,23 +326,18 @@ public class VisualSON extends AbstractVisualModel {
 				}
 			}
 
-			for (Node node: selectedMath) {
-				Container parent = (Container)node.getParent();
-				ArrayList<Node> re = new ArrayList<Node>();
-				re.add(node);
-
-
-				// reparenting at the level of the reference manager
-				ReferenceManager refMan = getMathModel().getReferenceManager();
-				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
-					manager.setNamespaceProvider(node, mathGroup);
+			// Reparenting at the level of the reference manager
+			ReferenceManager refMan = getMathModel().getReferenceManager();
+			if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+				HierarchicalUniqueNameReferenceManager hierRefMan = (HierarchicalUniqueNameReferenceManager)refMan;
+				for (Node node: selectedMath) {
+					Container parent = (Container)node.getParent();
+					hierRefMan.setNamespaceProvider(Arrays.asList(node), mathGroup);
+					parent.reparent(Arrays.asList(node), mathGroup);
 				}
-				parent.reparent(re, mathGroup);
-
 			}
 
-			// final touch on visual part
+			// Final touch on visual part
 			if (group != null) {
 				Point2D groupCenter = centralizeComponents(selected);
 				group.setPosition(groupCenter);
@@ -325,50 +346,6 @@ public class VisualSON extends AbstractVisualModel {
 		}
 		return null;
 	}
-
-/*	public void superGroupSelection(){
-		ArrayList<Node> selected = new ArrayList<Node>();
-		for(Node node : getOrderedCurrentLevelSelection()) {
-			if(node instanceof VisualTransformableNode){
-				if(node instanceof VisualCondition || node instanceof VisualTransitionNode){
-					JOptionPane.showMessageDialog(null,
-							"Selection containing ungroup component is invalid",superGroup, JOptionPane.WARNING_MESSAGE);
-					selected.clear();
-					return;
-				}
-				else if(node instanceof VisualSuperGroup){
-					JOptionPane.showMessageDialog(null,
-							"Selection containing super group is invalid",superGroup, JOptionPane.WARNING_MESSAGE);
-					selected.clear();
-					return;
-				}
-				else
-					selected.add(node);
-			}
-		}
-
-		if(selected.size() > 1) {
-			VisualSuperGroup group = new VisualSuperGroup();
-			getCurrentLevel().add(group);
-			getCurrentLevel().reparent(selected, group);
-
-			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
-			for(VisualSONConnection connection : Hierarchy.getChildrenOfType(getCurrentLevel(), VisualSONConnection.class)) {
-				if(Hierarchy.isDescendant(connection.getFirst(), group) &&
-						Hierarchy.isDescendant(connection.getSecond(), group)) {
-					connectionsToGroup.add(connection);
-				}
-			}
-			getCurrentLevel().reparent(connectionsToGroup, group);
-
-			if (group != null) {
-				Point2D groupCenter = centralizeComponents(selected);
-				group.setPosition(groupCenter);
-				select(group);
-			}
-
-		}
-	}*/
 
 	//Block
 	public void groupBlockSelection() {
@@ -385,10 +362,11 @@ public class VisualSON extends AbstractVisualModel {
 			VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
 
 			Container currentMathLevel;
-			if(visualContainer==null)
+			if (visualContainer == null) {
 				currentMathLevel = getMathModel().getRoot();
-			else
+			} else {
 				currentMathLevel = (Container)visualContainer.getReferencedComponent();
+			}
 			currentMathLevel.add(mathBlock);
 
 			ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
@@ -401,7 +379,7 @@ public class VisualSON extends AbstractVisualModel {
 			}
 			getCurrentLevel().reparent(connectionsToGroup, block);
 
-			// reparenting for the math model nodes
+			// Reparenting for the math model nodes
 			ArrayList<Node> selectedMath = new ArrayList<Node>();
 			for (Node node:selected) {
 				if (node instanceof VisualComponent) {
@@ -414,24 +392,18 @@ public class VisualSON extends AbstractVisualModel {
 				}
 			}
 
-			for (Node node: selectedMath) {
-				Container parent = (Container)node.getParent();
-				ArrayList<Node> re = new ArrayList<Node>();
-				re.add(node);
-
-
-				// reparenting at the level of the reference manager
-				ReferenceManager refMan = getMathModel().getReferenceManager();
-				if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
-					HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager)refMan;
-					manager.setNamespaceProvider(node, mathBlock);
+			// Reparenting at the level of the reference manager
+			ReferenceManager refMan = getMathModel().getReferenceManager();
+			if (refMan instanceof HierarchicalUniqueNameReferenceManager) {
+				HierarchicalUniqueNameReferenceManager hierRefMan = (HierarchicalUniqueNameReferenceManager)refMan;
+				for (Node node: selectedMath) {
+					Container parent = (Container)node.getParent();
+					hierRefMan.setNamespaceProvider(Arrays.asList(node), mathBlock);
+					parent.reparent(Arrays.asList(node), mathBlock);
 				}
-				parent.reparent(re, mathBlock);
-
 			}
 
-
-			// final touch on visual part
+			// Final touch on visual part
 			if (block != null) {
 				Point2D groupCenter = centralizeComponents(selected);
 				block.setPosition(groupCenter);
@@ -770,4 +742,5 @@ public class VisualSON extends AbstractVisualModel {
 	public void forceConnectionSemantics(Semantics currentSemantics) {
 		this.currentConnectonSemantics = currentSemantics;
 	}
+
 }

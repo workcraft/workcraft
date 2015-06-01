@@ -79,7 +79,7 @@ public class ONGroup extends PageNode{
 		return result;
 	}
 
-	public Collection<TransitionNode> getEventNodes(){
+	public Collection<TransitionNode> getTransitionNodes(){
 		ArrayList<TransitionNode> result =  new ArrayList<TransitionNode>();
 		for(Node node : getComponents()){
 			if(node instanceof Event)

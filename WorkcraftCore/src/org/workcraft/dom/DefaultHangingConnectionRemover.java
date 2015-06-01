@@ -21,18 +21,22 @@
 
 package org.workcraft.dom;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import net.sf.jga.fn.UnaryFunctor;
 
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.util.Hierarchy;
 
+
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 	private NodeContext nct;
+	private String id;
 
 	public DefaultHangingConnectionRemover (NodeContext nct, String id) {
 		this.nct = nct;
@@ -42,8 +46,7 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 	@Override
 	public void handleEvent(final HierarchyEvent e) {
 		if (e instanceof NodesDeletingEvent) {
-			HashSet<Connection> hangingConnections = new HashSet<Connection>();
-
+			HashSet<Connection> hangingConnections = new HashSet<>();
 			UnaryFunctor<Connection, Boolean> hanging = new UnaryFunctor<Connection, Boolean>() {
 				@Override
 				public Boolean fn(Connection arg0) {
@@ -54,11 +57,12 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 			for (Node node : e.getAffectedNodes())
 				findHangingConnections(node, hangingConnections, hanging);
 
+
 			for (Connection con : hangingConnections)
 				if (con.getParent() instanceof Container)
-					((Container)con.getParent()).remove(con);
+					((Container) con.getParent()).remove(con);
 				else
-					throw new RuntimeException ("Cannot remove a hanging connection because its parent is not a Container.");
+					throw new RuntimeException("Cannot remove a hanging connection because its parent is not a Container.");
 
 		}
 	}

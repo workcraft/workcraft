@@ -1,6 +1,10 @@
 package org.workcraft.plugins.cpog.tools;
 
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.plugins.cpog.VisualArc;
+import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
 
 import java.awt.geom.Point2D;
@@ -13,7 +17,6 @@ public class GraphReference {
     private HashMap<String, VisualVertex> vertMap = new HashMap<String, VisualVertex>();
     private HashSet<VisualPage> refPages = new HashSet<VisualPage>();
     private Point2D.Double pageCentre = null;
-    private VisualVertex leadVert = null;
 
     public GraphReference(String label, String normalForm, HashMap<String, VisualVertex> vertMap) {
         this.label = label;

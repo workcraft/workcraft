@@ -1,144 +1,120 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 
-import javax.swing.JButton;
-
-import org.workcraft.Framework;
+import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
-import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
+import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.serialisation.Format;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.Func;
-import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitSimulationTool extends StgSimulationTool {
-	JButton copyInitButton;
+	private CircuitToStgConverter converter;
 
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
-		Framework framework = Framework.getInstance();
-		VisualCircuit visualCircuit = (VisualCircuit)model;
-		VisualSTG visualStg = STGGenerator.generate(visualCircuit);
-//		File workingDirectory = null;
-//		try {
-//			String title = visualCircuit.getTitle();
-//			File envFile = visualCircuit.getEnvironmentFile();
-//			boolean hasEnvironment = ((envFile != null) && envFile.exists());
-//
-//			workingDirectory = FileUtils.createTempDirectory(title + "-");
-//
-//			STG devStg = (STG)visualStg.getMathModel();
-//			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
-//			if (devStgExporter == null) {
-//				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
-//			}
-//
-//			// Generating .g for the circuit
-//			String devStgName = (hasEnvironment ? "dev.g" : "system.g");
-//			File devStgFile =  new File(workingDirectory, devStgName);
-//			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
-//			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
-//					devExportTask, "Exporting circuit .g", null);
-//
-//			if (devExportResult.getOutcome() == Outcome.FINISHED) {
-//				// Generating .g for the environment
-//				STG stg;
-//				File stgFile = null;
-//				Result<? extends ExternalProcessResult>  pcompResult = null;
-//				if ( !hasEnvironment ) {
-//					stgFile = devStgFile;
-//					stg = devStg;
-//				} else {
-//					File envStgFile = null;
-//					if (envFile.getName().endsWith(".g")) {
-//						envStgFile = envFile;
-//					} else {
-//						STG envStg = (STG)framework.loadFile(envFile).getMathModel();
-//						Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-//						envStgFile = new File(workingDirectory, "env.g");
-//						ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
-//						Result<? extends Object> envExportResult = framework.getTaskManager().execute(
-//								envExportTask, "Exporting environment .g", null);
-//
-//						if (envExportResult.getOutcome() == Outcome.FINISHED) {
-//
-//							// Generating .g for the whole system (circuit and environment)
-//							stgFile = new File(workingDirectory, "system.g");
-//							PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
-//							pcompResult = framework.getTaskManager().execute(
-//									pcompTask, "Running pcomp", null);
-//
-//							if (pcompResult.getOutcome() == Outcome.FINISHED) {
-//								FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
-//								WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-//								stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
-//								visualStg = new VisualSTG(stg);
-//							}
-//						}
-//					}
-//				}
-//			}
-//		} catch (Throwable e) {
-//		} finally {
-//			if ((workingDirectory != null) && !MpsatUtilitySettings.getDebugTemporaryFiles()) {
-//				FileUtils.deleteDirectoryTree(workingDirectory);
-//			}
-//		}
-		return visualStg;
+		VisualCircuit circuit = (VisualCircuit)model;
+		converter = new CircuitToStgConverter(circuit);
+		return converter.getStg();
 	}
 
 	@Override
-	public void createInterfacePanel(final GraphEditor editor) {
-		super.createInterfacePanel(editor);
-		copyInitButton = new JButton("Copy init");
-		copyInitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				for (VisualContact vc : Hierarchy.getDescendantsOfType(editor.getModel().getRoot(), VisualContact.class)) {
-					Contact c = (Contact) vc.getReferencedComponent();
-					if (!vc.getReferencedTransitions().isEmpty()) {
-						c.setInitOne(vc.getReferencedOnePlace().getTokens() == 1);
+	public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
+		Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
+		if (circuitMainTrace != null) {
+			System.out.println("Main trace convertion:");
+			System.out.println("  original: " + mainTrace);
+			System.out.println("  circuit:  " + circuitMainTrace);
+		}
+		Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
+		if (circuitBranchTrace != null) {
+			System.out.println("Branch trace convertion:");
+			System.out.println("  original: " + branchTrace);
+			System.out.println("  circuit:  " + circuitBranchTrace);
+		}
+		super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
+	}
+
+	private Trace convertStgTraceToCircuitTrace(Trace trace) {
+		Trace circuitTrace = null;
+		if (trace != null) {
+			circuitTrace = new Trace();
+			for (String ref: trace) {
+				Transition t = getBestTransitionToFire(ref);
+				if (t != null) {
+					String circuitRef = net.getNodeReference(t);
+					circuitTrace.add(circuitRef);
+					net.fire(t);
+				}
+			}
+			resetMarking();
+		}
+		return circuitTrace;
+	}
+
+	private Transition getBestTransitionToFire(String ref) {
+		Transition result = null;
+		if (ref != null) {
+			String parentName = NamespaceHelper.getParentReference(ref);
+			Node parent = net.getNodeByReference(parentName);
+			String nameWithInstance = NamespaceHelper.getReferenceName(ref);
+			String requiredName = LabelParser.getTransitionName(nameWithInstance);
+			if ((parent instanceof NamespaceProvider) && (requiredName != null)) {
+				for (Transition transition: net.getTransitions()) {
+					if (transition.getParent() != parent) continue;
+					if (!net.isEnabled(transition)) continue;
+					String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
+					String existingName = LabelParser.getTransitionName(existingRef);
+					if (requiredName.equals(existingName)) {
+						result = transition;
+						break;
 					}
 				}
 			}
-		});
-		controlPanel.add(copyInitButton);
+		}
+		return result;
+	}
+
+	@Override
+	public void applyInitState(final GraphEditor editor) {
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		VisualCircuit circuit = (VisualCircuit)editor.getModel();
+		for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
+			String ref = circuit.getNodeMathReference(contact) + CircuitToStgConverter.NAME_SUFFIX_1;
+			Node node = net.getNodeByReference(ref);
+			if ((node instanceof Place) && savedState.containsKey(node)) {
+				boolean initToOne = (savedState.get(node) > 0);
+				contact.getReferencedContact().setInitToOne(initToOne);
+			}
+		}
 	}
 
 	@Override
@@ -160,32 +136,20 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	}
 
 	// return first enabled transition
-	public SignalTransition isContactExcited(VisualContact c) {
-		boolean up = false;
-		boolean down = false;
-		SignalTransition st = null;
-		if (c != null) {
-			for (SignalTransition tr : c.getReferencedTransitions()) {
-				if (net.isEnabled(tr)) {
-					if (st == null) {
-						st = tr;
-					}
-					if (tr.getDirection() == Direction.MINUS) {
-						down = true;
-					}
-					if (tr.getDirection() == Direction.PLUS) {
-						up = true;
-					}
-					if (up && down) {
+	public SignalTransition getContactExcitedTransition(VisualContact contact) {
+		SignalTransition result = null;
+		if ((converter != null) && contact.isDriver()) {
+			SignalStg signalStg = converter.getSignalStg(contact);
+			if (signalStg != null) {
+				for (VisualSignalTransition transition : signalStg.getAllVisualTransitions()) {
+					if (net.isEnabled(transition.getReferencedTransition())) {
+						result = transition.getReferencedTransition();
 						break;
 					}
 				}
 			}
-			if (up && down) {
-				st = null;
-			}
 		}
-		return st;
+		return result;
 	}
 
 	@Override
@@ -199,7 +163,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 			});
 
 		if (node != null) {
-			SignalTransition st = isContactExcited((VisualContact) node);
+			SignalTransition st = getContactExcitedTransition((VisualContact) node);
 			if (st != null) {
 				executeTransition(e.getEditor(), st);
 			}
@@ -210,20 +174,18 @@ public class CircuitSimulationTool extends StgSimulationTool {
 	protected boolean isContainerExcited(Container container) {
 		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
 		boolean ret = false;
-
 		for (Node node: container.getChildren()) {
-
 			if (node instanceof VisualContact) {
-				ret=ret || isContactExcited((VisualContact)node) != null;
+				SignalTransition transition = getContactExcitedTransition((VisualContact)node);
+				ret=ret || (transition != null);
 			}
-
 			if (node instanceof Container) {
 				ret = ret || isContainerExcited((Container)node);
 			}
-
-			if (ret) break;
+			if (ret) {
+				break;
+			}
 		}
-
 		excitedContainers.put(container, ret);
 		return ret;
 	}
@@ -233,106 +195,70 @@ public class CircuitSimulationTool extends StgSimulationTool {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
-
+				if (converter == null) return null;
 				if (node instanceof VisualContact) {
-					VisualContact contact = (VisualContact) node;
-					String transitionId = null;
-					Node transition2 = null;
-					if (branchTrace.canProgress()) {
-						transitionId = branchTrace.getCurrent();
-						transition2 = net.getNodeByReference(transitionId);
-					} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-						transitionId = mainTrace.getCurrent();
-						transition2 = net.getNodeByReference(transitionId);
-					}
-
-					if (contact.getReferencedTransitions().contains(transition2)) {
+					VisualContact contact = (VisualContact)node;
+					SignalStg signalStg = converter.getSignalStg(contact);
+					if (signalStg != null) {
+						Node traceCurrentNode = getTraceCurrentNode();
+						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
+						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
+						final boolean isExcited = (getContactExcitedTransition(contact) != null);
+						final boolean isInTrace = (signalStg.containsDirectlyOrByReference(traceCurrentNode));
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
+								if (isExcited) {
+									if (isInTrace) {
+										return CommonSimulationSettings.getEnabledBackgroundColor();
+									} else {
+										return CommonSimulationSettings.getEnabledForegroundColor();
+									}
+								}
+								return null;
 							}
 							@Override
 							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
+								if (isExcited) {
+									if (isInTrace) {
+										return CommonSimulationSettings.getEnabledForegroundColor();
+									} else {
+										return CommonSimulationSettings.getEnabledBackgroundColor();
+									}
+								} else {
+									if (isOne && !isZero) {
+										return CircuitSettings.getActiveWireColor();
+									}
+									if (!isOne && isZero) {
+										return CircuitSettings.getInactiveWireColor();
+									}
+								}
+								return null;
 							}
 						};
 					}
-					if ((contact.getReferencedOnePlace() == null) || (contact.getReferencedZeroPlace() == null)) {
-						return null;
-					}
-					final boolean isOne = contact.getReferencedOnePlace().getTokens() == 1;
-					final boolean isZero = contact.getReferencedZeroPlace().getTokens() == 1;
-					final boolean isExcited = (isContactExcited(contact) != null);
-					return new Decoration() {
-						@Override
-						public Color getColorisation() {
-							if (isExcited) {
-								return CommonSimulationSettings.getEnabledForegroundColor();
-							}
-							return null;
-						}
-						@Override
-						public Color getBackground() {
-							if (isExcited) {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
-							} else {
+				} else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
+					SignalStg signalStg = converter.getSignalStg((VisualNode)node);
+					if (signalStg != null) {
+						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
+						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
+						return new Decoration() {
+							@Override
+							public Color getColorisation() {
 								if (isOne && !isZero) {
 									return CircuitSettings.getActiveWireColor();
 								}
 								if (!isOne && isZero) {
 									return CircuitSettings.getInactiveWireColor();
 								}
+								return null;
 							}
-							return null;
-						}
-					};
-				} else if (node instanceof VisualJoint) {
-					VisualJoint vj = (VisualJoint) node;
-					if (vj.getReferencedOnePlace() == null || vj.getReferencedZeroPlace() == null) {
-						return null;
+							@Override
+							public Color getBackground() {
+								return null;
+							}
+						};
 					}
-					final boolean isOne = vj.getReferencedOnePlace().getTokens() == 1;
-					final boolean isZero = vj.getReferencedZeroPlace().getTokens() == 1;
-					return new Decoration() {
-						@Override
-						public Color getColorisation() {
-							if (isOne && !isZero) {
-								return CircuitSettings.getActiveWireColor();
-							}
-							if (!isOne && isZero) {
-								return CircuitSettings.getInactiveWireColor();
-							}
-							return null;
-						}
-						@Override
-						public Color getBackground() {
-							return null;
-						}
-					};
-				} else if (node instanceof VisualCircuitConnection) {
-					VisualCircuitConnection vc = (VisualCircuitConnection) node;
-					if (vc.getReferencedOnePlace() == null	|| vc.getReferencedZeroPlace() == null) {
-						return null;
-					}
-					final boolean isOne = vc.getReferencedOnePlace().getTokens() == 1;
-					final boolean isZero = vc.getReferencedZeroPlace().getTokens() == 1;
-					return new Decoration() {
-						@Override
-						public Color getColorisation() {
-							if (isOne && !isZero) {
-								return CircuitSettings.getActiveWireColor();
-							}
-							if (!isOne && isZero) {
-								return CircuitSettings.getInactiveWireColor();
-							}
-							return null;
-						}
-						@Override
-						public Color getBackground() {
-							return null;
-						}
-					};
 				} else if (node instanceof VisualPage || node instanceof VisualGroup) {
 					final boolean ret = isContainerExcited((Container)node);
 					return new ContainerDecoration() {
@@ -340,20 +266,16 @@ public class CircuitSimulationTool extends StgSimulationTool {
 						public Color getColorisation() {
 							return null;
 						}
-
 						@Override
 						public Color getBackground() {
 							return null;
 						}
-
 						@Override
 						public boolean isContainerExcited() {
 							return ret;
 						}
 					};
-
 				}
-
 				return null;
 			}
 		};

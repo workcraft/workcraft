@@ -12,8 +12,8 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class LogicStg extends NodeStg {
-	public final VisualPlace C0;							// C=0
-	public final VisualPlace C1;							// C=1
+	public final VisualPlace C0;						// C=0
+	public final VisualPlace C1;						// C=1
 	public final Map<Node, VisualSignalTransition> CRs;	// C+
 	public final Map<Node, VisualSignalTransition> CFs;	// C-
 

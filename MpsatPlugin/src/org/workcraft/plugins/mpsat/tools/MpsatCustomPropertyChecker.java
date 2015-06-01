@@ -34,7 +34,7 @@ public class MpsatCustomPropertyChecker implements Tool {
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);
-		GUI.centerAndSizeToParent(dialog, mainWindow);
+		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
 		if (dialog.getModalResult() == 1) {
 			final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings());

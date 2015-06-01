@@ -18,6 +18,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.VisualFst;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -41,7 +42,7 @@ public class FstSimulationTool extends StgSimulationTool {
 		String label = null;
 		if (ref != null) {
 			label = generator.getEventLabel(ref);
-			if (label == "") label = "ε";
+			if (label == "") label = Character.toString(VisualEvent.EPSILON_SYMBOL);
 		}
 		if (label == null) {
 			label = super.getTraceLabelByReference(ref);
@@ -55,6 +56,22 @@ public class FstSimulationTool extends StgSimulationTool {
 		final VisualSTG stg = new VisualSTG(new STG());
 		generator = new FstToStgConverter(fst, stg);
 		return generator.getDstModel();
+	}
+
+	@Override
+	public void applyInitState(final GraphEditor editor) {
+		if ((savedState == null) || savedState.isEmpty()) {
+			return;
+		}
+		VisualFst fst = (VisualFst)editor.getModel();
+		for (VisualState state: fst.getVisualStates()) {
+			String ref = fst.getNodeMathReference(state);
+			Node node = net.getNodeByReference(ref);
+			if (node instanceof Place) {
+				boolean isInitial = ((Place)node).getTokens() > 0;
+				state.getReferencedState().setInitial(isInitial);
+			}
+		}
 	}
 
 	@Override
@@ -102,16 +119,7 @@ public class FstSimulationTool extends StgSimulationTool {
 		return new Decorator() {
 			@Override
 			public Decoration getDecoration(Node node) {
-				String transitionId = null;
-				Node transition = null;
-				if (branchTrace.canProgress()) {
-					transitionId = branchTrace.getCurrent();
-					transition = net.getNodeByReference(transitionId);
-				} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-					transitionId = mainTrace.getCurrent();
-					transition = net.getNodeByReference(transitionId);
-				}
-
+				Node transition = getTraceCurrentNode();
 				final boolean isExcited = (getExcitedTransitionOfNode(node) != null);
 				final boolean isHighlighted = generator.isRelated(node, transition);
 

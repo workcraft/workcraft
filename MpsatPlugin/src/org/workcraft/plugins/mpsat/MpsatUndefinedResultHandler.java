@@ -22,7 +22,7 @@ final class MpsatUndefinedResultHandler implements Runnable {
 		String message = result.getReturnValue().getMessage();
 		if (message == null) {
 			MpsatSettings settings = task.getSettings();
-			if (settings != null && settings.getName() != null) {
+			if ((settings != null) && (settings.getName() != null)) {
 				message = settings.getName();
 			}
 		}

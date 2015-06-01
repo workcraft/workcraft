@@ -21,9 +21,6 @@
 
 package org.workcraft.plugins.circuit;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -33,14 +30,8 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -76,36 +67,14 @@ public class Circuit extends AbstractMathModel {
 			}
 		});
 
-		// Update all set/reset functions when a contact is removed
-		new HierarchySupervisor() {
-			@Override
-			public void handleEvent(HierarchyEvent e) {
-				if (e instanceof NodesDeletingEvent) {
-					for (Node node: e.getAffectedNodes()) {
-						if (node instanceof Contact) {
-							final Contact contact = (Contact)node;
-							for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
-								BooleanFormula setFunction = BooleanReplacer.replace(fc.getSetFunction(), contact, Zero.instance());
-								fc.setSetFunction(setFunction);
-								BooleanFormula resetFunction = BooleanReplacer.replace(fc.getResetFunction(), contact, Zero.instance());
-								fc.setResetFunction(resetFunction);
-							}
-						}
-					}
-				}
-			}
-		}.attach(getRoot());
-
+		new FunctionConsistencySupervisor(this).attach(getRoot());
+		new InitStateConsistencySupervisor(this).attach(getRoot());
 	}
 
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
 		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
 		Hierarchy.getNearestContainer(first, second).add(con);
 		return con;
-	}
-
-	public Collection<FunctionContact> getFunctionContact() {
-		return Hierarchy.getChildrenOfType(getRoot(), FunctionContact.class);
 	}
 
 	@Override

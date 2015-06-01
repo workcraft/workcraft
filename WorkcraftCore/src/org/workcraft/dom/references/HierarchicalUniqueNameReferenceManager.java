@@ -1,5 +1,6 @@
 package org.workcraft.dom.references;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.workcraft.dom.Node;
@@ -42,32 +43,42 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		return provider;
 	}
 
-
-	public void setNamespaceProvider(Node node, NamespaceProvider provider) {
-		setNamespaceProvider(node, this, provider);
+	public void setNamespaceProvider(Collection<Node> nodes, NamespaceProvider provider) {
+		setNamespaceProvider(nodes, this, provider);
 	}
 
-	public void setNamespaceProvider(Node node, HierarchicalUniqueNameReferenceManager sourceReferenceManager, NamespaceProvider provider) {
-		if (provider == null) {
-			provider = topProvider;
+	public void setNamespaceProvider(Collection<Node> nodes,
+			HierarchicalUniqueNameReferenceManager srcRefManager,
+			NamespaceProvider dstProvider) {
+
+		if (dstProvider == null) {
+			dstProvider = topProvider;
 		}
-		NamespaceProvider oldProvider = sourceReferenceManager.getNamespaceProvider(node);
-		if (oldProvider != null) {
-			String name = sourceReferenceManager.getName(node);
+		for (Node node : nodes) {
+			NamespaceProvider srcProvider = srcRefManager.getNamespaceProvider(node);
+			if (srcProvider != null) {
+				String name = srcRefManager.getName(node);
 
-			// Clear cached data in the local and the foreign reference manager
-			node2namespace.remove(node);
-			sourceReferenceManager.node2namespace.remove(node);
+				// Clear cached data in the local and the source reference manager
+				node2namespace.remove(node);
+				srcRefManager.node2namespace.remove(node);
 
-			// Do not assign name if it wasn't assigned in the first place (eg. the implicit place)
-			if ((name != null) && ((provider != oldProvider) || (node2namespace != sourceReferenceManager.node2namespace))) {
-				NameManager oldMan = sourceReferenceManager.getNameManager(oldProvider);
-				NameManager newMan = getNameManager(provider);
-				oldMan.remove(node);
-				String newName = newMan.getDerivedName(node, name);
-				newMan.setName(node, newName);
+				// Do not assign name if it wasn't assigned in the first place (eg. the implicit place)
+				if ((name != null) && ((dstProvider != srcProvider) || (node2namespace != srcRefManager.node2namespace))) {
+					NameManager srcNameManager = srcRefManager.getNameManager(srcProvider);
+					NameManager dstNameManager = this.getNameManager(dstProvider);
+					srcNameManager.remove(node);
+					Node clashingNode = dstNameManager.getNode(name);
+					if (nodes.contains(clashingNode)) {
+						String newName = dstNameManager.getDerivedName(clashingNode, name);
+						dstNameManager.setName(clashingNode, newName);
+					}
+					String newName = dstNameManager.getDerivedName(node, name);
+					dstNameManager.setName(node, newName);
+				}
 			}
 		}
+
 	}
 
 	@Override
@@ -93,11 +104,11 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 	}
 
 	public NameManager getNameManager(NamespaceProvider provider) {
-		if (provider==null) {
+		if (provider == null) {
 			provider = topProvider;
 		}
 		NameManager man = managers.get(provider);
-		if (man==null) {
+		if (man == null) {
 			man = createNameManager();
 			managers.put(provider, man);
 		}
@@ -113,7 +124,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 			}
 		}
 		if (reference != null) {
-			String name = NamespaceHelper.getNameFromReference(reference);
+			String name = NamespaceHelper.getReferenceName(reference);
 			setName(node, name);
 		}
 	}

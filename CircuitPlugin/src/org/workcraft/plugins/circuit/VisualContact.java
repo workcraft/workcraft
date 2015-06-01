@@ -29,7 +29,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashSet;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
@@ -46,8 +45,6 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
@@ -145,10 +142,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	private double size = 0.3;
 	private Direction direction = Direction.WEST;
 
-	private HashSet<SignalTransition> referencedTransitions=new HashSet<SignalTransition>();
-	private Place referencedZeroPlace=null;
-	private Place referencedOnePlace=null;
-
 	public VisualContact(Contact contact) {
 		super(contact, true, false, false);
 		setDirection(contact.getIOType()==IOType.INPUT ? Direction.WEST : Direction.EAST);
@@ -180,10 +173,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
 				this, "Init to one", Boolean.class) {
 			protected void setter(VisualContact object, Boolean value) {
-				object.getReferencedContact().setInitOne(value);
+				object.getReferencedContact().setInitToOne(value);
 			}
 			protected Boolean getter(VisualContact object) {
-				return object.getReferencedContact().getInitOne();
+				return object.getReferencedContact().getInitToOne();
 			}
 		});
 	}
@@ -367,28 +360,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		return getReferencedContact().isDriven();
 	}
 
-	public HashSet<SignalTransition> getReferencedTransitions() {
-		return referencedTransitions;
-	}
-
 	@Override
 	public void notify(StateEvent e) {
-	}
-
-	public void setReferencedOnePlace(Place referencedOnePlace) {
-		this.referencedOnePlace = referencedOnePlace;
-	}
-
-	public Place getReferencedOnePlace() {
-		return referencedOnePlace;
-	}
-
-	public void setReferencedZeroPlace(Place referencedZeroPlace) {
-		this.referencedZeroPlace = referencedZeroPlace;
-	}
-
-	public Place getReferencedZeroPlace() {
-		return referencedZeroPlace;
 	}
 
 	@Override
@@ -450,12 +423,11 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		super.copyStyle(src);
 		if (src instanceof VisualContact) {
 			VisualContact srcComponent = (VisualContact)src;
-			setDirection(srcComponent.getDirection());
-			getReferencedContact().setInitOne(srcComponent.getReferencedContact().getInitOne());
-			// TODO: Note that IOType is currently NOT copied to allow
-			//       input/output port generation with Shift key (and
-			//       not to be copied from a template node).
+			getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
+			// TODO: Note that IOType and Direction are currently NOT copied to allow input/output
+			//       port generation with Shift key (and not to be copied from a template node).
 			// getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());
+			// setDirection(srcComponent.getDirection());
 		}
 	}
 

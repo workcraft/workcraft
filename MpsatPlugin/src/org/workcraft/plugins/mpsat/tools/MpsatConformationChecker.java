@@ -39,7 +39,7 @@ public class MpsatConformationChecker implements Tool {
 				final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, file);
 
 				String description = "MPSat tool chain";
-				String title = we.getModelEntry().getModel().getTitle();
+				String title = we.getTitle();
 				if (!title.isEmpty()) {
 					description += "(" + title +")";
 				}

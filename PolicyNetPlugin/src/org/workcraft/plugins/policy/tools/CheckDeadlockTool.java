@@ -28,7 +28,7 @@ public class CheckDeadlockTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final CheckDeadlockTask task = new CheckDeadlockTask(we);
 		String description = "MPSat tool chain";
-		String title = we.getModelEntry().getModel().getTitle();
+		String title = we.getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}

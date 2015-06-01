@@ -60,13 +60,11 @@ public class Workspace {
 
 	private final DependencyManager dependencyManager = new DependencyManager();
 
-	public WorkspaceTree getTree()
-	{
+	public WorkspaceTree getTree() {
 		return new WorkspaceTree(this);
 	}
 
-	private File baseDir()
-	{
+	private File baseDir() {
 		return workspaceFile.getParentFile();
 	}
 

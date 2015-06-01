@@ -28,7 +28,7 @@ public class CheckDataflowDeadlockTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final CheckDataflowDeadlockTask task = new CheckDataflowDeadlockTask(we);
 		String description = "MPSat tool chain";
-		String title = we.getModelEntry().getModel().getTitle();
+		String title = we.getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}

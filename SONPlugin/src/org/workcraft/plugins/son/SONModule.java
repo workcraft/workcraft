@@ -12,7 +12,6 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.ErrTracingReset;
 import org.workcraft.plugins.son.tools.ReachabilityTool;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
-import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.plugins.son.tools.TokenRefreshTool;
 
 public class SONModule implements Module{
@@ -32,7 +31,7 @@ public class SONModule implements Module{
 
 		pm.registerClass(ModelDescriptor.class, SONModelDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
-		pm.registerClass(Tool.class, TestTool.class);
+		//pm.registerClass(Tool.class, TestTool.class);
 		//verification
 		pm.registerClass(Tool.class, StructurePropertyChecker.class);
 		pm.registerClass(Tool.class, ReachabilityTool.class);
@@ -82,7 +81,7 @@ public class SONModule implements Module{
 				"<property class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" enum-class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" name=\"semantics\" value=\"BHVLINE\"/>");
 
 		cm.registerContextualReplacement(VisualSON.class.getName(), "VisualConnection",
-				"<graphic class=\"org.workcraft.plugins.son.connections.BhvLine\" ref=\"(.*?)()\"/>",
+				"<graphic class=\"org.workcraft.plugins.son.connections.BhvLine\" ref=\"(.*?)\"/>",
 				"<graphic class=\"org.workcraft.dom.visual.connections.Polyline\" ref=\"$1\"/>");
 	}
 

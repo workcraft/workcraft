@@ -13,14 +13,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
-import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.algorithm.ReachabilityAlg;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
@@ -37,10 +36,10 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	private SON net;
 	private final WorkspaceEntry we;
 	private BSONAlg bsonAlg;
+	private ReachabilityAlg reachAlg;
 
 	private Collection<String> markingRefs;
-	private Map<Condition, Phase> phases;
-	private Collection<TransitionNode> causalPredecessors;
+	private Collection<Node> causalPredecessors;
 	private Collection<String> causalPredecessorRefs;
 
 
@@ -49,16 +48,16 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 		net = (SON)we.getModelEntry().getMathModel();
 		bsonAlg = new BSONAlg(net);
+		reachAlg = new ReachabilityAlg (net);
+
 		markingRefs = new ArrayList<String>();
-		causalPredecessors = new HashSet<TransitionNode>();
+		causalPredecessors = new HashSet<Node>();
 		causalPredecessorRefs = new HashSet<String>();
 
 		for(PlaceNode node : net.getPlaceNodes()){
 			if(node.isMarked())
 				markingRefs.add(net.getNodeReference(node));
 		}
-
-		phases = bsonAlg.getPhases();
 	}
 
 	@Override
@@ -76,22 +75,22 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 		vnet.connectToBlocks(we);
 
-		//cycle detection
-		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
-		if(!cycleAlg.cycleTask(net.getComponents()).isEmpty()){
-			we.cancelMemento();
-			JOptionPane.showMessageDialog(null,
-					"Fail to run reachability anaylsis tool, " +
-					"error due to cyclic structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
-			return new Result<VerificationResult>(Outcome.FINISHED);
-		}
+//		//cycle detection
+//		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
+//		if(!cycleAlg.cycleTask(net.getComponents()).isEmpty()){
+//			we.cancelMemento();
+//			JOptionPane.showMessageDialog(null,
+//					"Fail to run reachability anaylsis tool, " +
+//					"error due to cyclic structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
+//			return new Result<VerificationResult>(Outcome.FINISHED);
+//		}
 
 		if(reachabilityTask()){
 			we.cancelMemento();
 			net = (SON)we.getModelEntry().getMathModel();
 			int result = JOptionPane.showConfirmDialog(null,
-					"The selected marking is REACHABLE from initial states. \n" +
-					"Select OK to analysis the trace leading to the marking in the simulation tool.",
+					"The selected marking is REACHABLE from the initial states. \n" +
+					"Select OK to analyze the trace leading to the marking in the simulation tool.",
 					"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
 			if(result == 0){
 				Map<PlaceNode, Boolean> finalStates = simulation();
@@ -106,7 +105,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		else{
 			we.cancelMemento();
 			JOptionPane.showMessageDialog(null,
-					"The selected marking is UNREACHABLE from initial states",
+					"The selected marking is UNREACHABLE from the initial states",
 					"Reachability task result", JOptionPane.INFORMATION_MESSAGE);
 		}
 		return new Result<VerificationResult>(Outcome.FINISHED);
@@ -137,33 +136,45 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 
 	private boolean reachabilityTask(){
-		Collection<Path> sync = getSyncCycles();
-		Collection<Node> syncCycles = new HashSet<Node>();
+		Collection<Node> initial = new HashSet<Node>();
+		Collection<Node> sync= new HashSet<Node>();
+		for(Path path : getSyncCycles())
+			sync.addAll(path);
+
 
 		//if marking contains a synchronous channel place, it's unreachable.
 		for(String ref : markingRefs){
 			Node node = net.getNodeByReference(ref);
 			if(node instanceof ChannelPlace)
-				if(syncCycles.contains(node)) {
+				if(sync.contains(node)) {
 					return false;
 				}
 		}
+		SimulationAlg simuAlg = new SimulationAlg(net);
+		Map<PlaceNode, Boolean> initialMarking = simuAlg.getInitialMarking();
 
-		causalPredecessors = new HashSet<TransitionNode>();
+		for(Node c : initialMarking.keySet()){
+			if(initialMarking.get(c)){
+				initial.add(c);
+			}
+		}
+		causalPredecessors = new HashSet<Node>();
 
 		//get CausalPredecessors for each marking
 		for(String ref : markingRefs){
 			Node node = net.getNodeByReference(ref);
-			causalPredecessors.addAll(getCausalPredecessors(node, sync));
+			causalPredecessors.addAll(reachAlg.getCausalPredecessors(node, initial));
 		}
 
 		Collection<Node> consume = new HashSet<Node>();
 
 		//get all place nodes which are the input (consumed) of causal predecessors
-		for(TransitionNode t : causalPredecessors){
-			causalPredecessorRefs.add(net.getNodeReference(t));
-			for(Node pre : net.getPreset(t)){
-				consume.add(pre);
+		for(Node t : causalPredecessors){
+			if(t instanceof TransitionNode){
+				causalPredecessorRefs.add(net.getNodeReference(t));
+				for(Node pre : net.getPreset(t)){
+					consume.add(pre);
+				}
 			}
 		}
 //		//test
@@ -186,128 +197,12 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			Node node = net.getNodeByReference(ref);
 			if(consume.contains(node))
 				return false;
-			Collection<Condition> c = bsonAlg.getAbstractConditions(node);
+			Collection<Condition> c = bsonAlg.getUpperConditions(node);
 			if(!c.isEmpty() && consume.containsAll(c))
 				return false;
 		}
 
 		return true;
-	}
-
-	private Collection<TransitionNode> getCausalPredecessors (Node node, Collection<Path> sync){
-		Collection<TransitionNode> result = new HashSet<TransitionNode>();
-
-		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
-
-		Path path = isInSync(node, sync);
-
-		if(node instanceof TransitionNode){
-			if(path.isEmpty()){
-				for(Node pre : net.getPreset(node)){
-					for(TransitionNode t : CausalRelations(pre)){
-						if(!result.contains(t)){
-							result.add(t);
-							result.addAll(getCausalPredecessors(t, sync));
-						}
-					}
-				}
-			}else{
-				for(Node n : path){
-					if(n instanceof TransitionNode && !result.contains(n))
-						result.add((TransitionNode)n);
-				}
-				for(Node pre : relationAlg.getPreset(path)){
-					for(TransitionNode t : CausalRelations(pre)){
-						if(!result.contains(t)){
-							result.add(t);
-							result.addAll(getCausalPredecessors(t, sync));
-						}
-					}
-				}
-			}
-		}
-		else{
-			for(TransitionNode t : CausalRelations(node)){
-				if(!result.contains(t)){
-					result.add(t);
-					result.addAll(getCausalPredecessors(t, sync));
-				}
-			}
-		}
-		return result;
-	}
-
-	private List<TransitionNode> CausalRelations(Node pre){
-		List<Node> causalSet = new ArrayList<Node>();
-		RelationAlgorithm relationAlg = new RelationAlgorithm(net);
-
-		//if condition is not max/min phase, add its pre-event to the set.
-		if((pre instanceof Condition) && !(net.getSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
-			causalSet.addAll(relationAlg.getPrePNSet(pre));
-		}
-		//else if pre is channel place, add its pre-event to the set
-		else if(pre instanceof ChannelPlace){
-			causalSet.addAll(net.getPreset(pre));
-		}
-		//else if marking contains pre and pre is not initial state (off-line structure), add its PN pre-event to the set
-		else if(markingRefs.contains(net.getNodeReference(pre)) && !relationAlg.isInitial(pre)){
-			causalSet.addAll(relationAlg.getPrePNSet(pre));
-		}
-		//else if 'pre' is a bhv condition,
-		else if((pre instanceof Condition)
-				&& (net.getOutputSONConnectionTypes(pre).contains(Semantics.BHVLINE))
-				&& (!net.getInputSONConnectionTypes(pre).contains(Semantics.BHVLINE))){
-			//get corresponding abstract conditions
-			Collection<Condition> absConditions = bsonAlg.getAbstractConditions(pre);
-			//for each phase of abstract conditions,
-			for(Condition c : absConditions){
-				Phase phase = phases.get(c);
-				Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
-				Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
-				//if pre is in min, add abstract pre-event to the abstract set.
-				if (min.contains(pre)){
-					causalSet.addAll(relationAlg.getPrePNSet(c));
-				}
-				//if pre is maximal but not minimal phase, add behavioural pre-event to the behavioural set.
-				else if(!min.contains(pre) && max.contains(pre))
-					causalSet.addAll(relationAlg.getPrePNSet(pre));
-			}
-		}
-		//if 'pre' is an abstract condition, get minimal and maximal phase,
-		//if min == max, add abstract pre-event to the set
-		//else add pre-behavioural event of which min!=max
-		else if(bsonAlg.isAbstractCondition(pre)){
-			Phase phase = phases.get(pre);
-			Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
-			Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
-			if(min.containsAll(max) && max.containsAll(min)){
-				causalSet.addAll(relationAlg.getPrePNSet(pre));
-			}
-			else{
-				for(Condition cMax : max){
-					if(!min.contains(cMax))
-						causalSet.addAll(relationAlg.getPrePNSet(cMax));
-				}
-			}
-		}
-
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
-		for(Node node : causalSet){
-			if(node instanceof TransitionNode)
-				result.add((TransitionNode)node);
-		}
-
-		return result;
-	}
-
-
-	private Path isInSync(Node node, Collection<Path> sync){
-		Path result = new Path();
-		for(Path path : sync)
-			if(path.contains(node)){
-				result = path;
-			}
-		return result;
 	}
 
 	private Collection<Path> getSyncCycles(){

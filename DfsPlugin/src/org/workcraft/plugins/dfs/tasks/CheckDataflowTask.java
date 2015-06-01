@@ -35,12 +35,12 @@ public class CheckDataflowTask extends MpsatChainTask {
 		super (we, null);
 		this.we = we;
 
-		this.deadlockSettings = new MpsatSettings("Deadlock freedom", MpsatMode.DEADLOCK, 0,
-				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(), null);
+		this.deadlockSettings = new MpsatSettings("Deadlock", MpsatMode.DEADLOCK, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
 
-		this.hazardSettings = new MpsatSettings("Output persistence", MpsatMode.STG_REACHABILITY, 0,
+		this.hazardSettings = new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachSemimodularity);
+				MpsatSettings.reachSemimodularity, true);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 		final Framework framework = Framework.getInstance();
 		try {
 			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
-			STGModel model = (STGModel)generator.getSTG().getMathModel();
+			STGModel model = (STGModel)generator.getStg().getMathModel();
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 			if (exporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
