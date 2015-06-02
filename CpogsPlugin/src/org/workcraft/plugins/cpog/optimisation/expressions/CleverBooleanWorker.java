@@ -87,9 +87,9 @@ public class CleverBooleanWorker implements BooleanWorker
 	public BooleanFormula or(BooleanFormula x, BooleanFormula y) {
 		if(FormulaToString.toString(x).equals(FormulaToString.toString(y)))
 			return x;
-		if (checkStrings(FormulaToString.toString(x), FormulaToString.toString(y)))
+		if (checkStrings(FormulaToString.toString(x), FormulaToString.toString(y), " + "))
 			return x;
- 		if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y))))
+ 		if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y)), " + "))
 			return ONE;
 		if(x == ONE || y == ONE)
 			return ONE;
@@ -120,13 +120,14 @@ public class CleverBooleanWorker implements BooleanWorker
 		return Zero.instance();
 	}
 
-	public boolean checkStrings(String x, String y) {
+	public boolean checkStrings(String x, String y, String op) {
+
 		if(x.contains(y)) {
-			if (x.startsWith(y + " +")) {
+			if (x.startsWith(y + op)) {
 				return true;
-			} else if (x.endsWith("+ " + y)) {
+			} else if (x.endsWith(op + y)) {
 				return true;
-			} else if (x.contains(("+ " + y + " +"))) {
+			} else if (x.contains((op + y + op))) {
 				return true;
 			}
 		}
