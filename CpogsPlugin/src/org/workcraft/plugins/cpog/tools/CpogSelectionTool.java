@@ -358,10 +358,10 @@ public class CpogSelectionTool extends SelectionTool {
             LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());//new LinkedHashSet<Node>();
 
             if (!insertTransitives.getState()) {
-                parsingTool.removeTransitives(visualCpog, roots);
+                parsingTool.removeTransitives(visualCpog, roots, text);
             }
 
-            ArrayList<Node> prevSelection = new ArrayList<Node>();
+            ArrayList<Node> prevSelection = new ArrayList<>();
             for (Node n1 : vertexMap.values()) {
                 prevSelection.add(n1);
             }
@@ -378,7 +378,7 @@ public class CpogSelectionTool extends SelectionTool {
             }
 
             editor.requestFocus();
-            Point2D.Double coordinate = (Double) parsingTool.getLowestVertex(visualCpog);
+            Point2D.Double coordinate = parsingTool.getLowestVertex(visualCpog);
 
             if (PGF.getGraphName() != null) {
                 insertAsPage(visualCpog, PGF, coordinate, editor);
@@ -386,7 +386,7 @@ public class CpogSelectionTool extends SelectionTool {
                 insertLoose(visualCpog, coordinate);
             }
 
-        } else { //If this graph is for reference only
+        }
             String normalForm = getNormalForm(arcConditionList, localVertices);
             String graphName = PGF.getGraphName();
             graphName = graphName.replace("{", "");
@@ -395,9 +395,10 @@ public class CpogSelectionTool extends SelectionTool {
             bfsLayout(visualCpog, roots);
             GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
             referenceMap.put(graphName, g);
-            visualCpog.remove(visualCpog.getSelection());
+            if (PGF.getRef()) {
+                visualCpog.remove(visualCpog.getSelection());
+            }
 
-        }
 
         editor.forceRedraw();
 
@@ -676,7 +677,6 @@ public class CpogSelectionTool extends SelectionTool {
                                     relaventPages.addAll(referenceMap.get(refKey).getRefPages());
                                     relaventPages.remove(vp);
                                     for (VisualPage p : relaventPages) {
-                                        System.out.println(p);
                                         for (Node n : p.getChildren()) {
                                             if (n instanceof VisualVertex) {
                                                 VisualVertex f = (VisualVertex) n;
@@ -701,7 +701,6 @@ public class CpogSelectionTool extends SelectionTool {
                             }
                         }
                         for (Node n : toBeRemoved) {
-                            System.out.println(n);
                             visualCpog.removeFromSelection(n);
                             visualCpog.removeWithoutNotify(n);
                         }

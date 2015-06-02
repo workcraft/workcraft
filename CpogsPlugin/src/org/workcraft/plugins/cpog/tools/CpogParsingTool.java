@@ -551,11 +551,15 @@ public class CpogParsingTool {
 		 return transitives;
 	 }
 
-	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots) {
+	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots, String text) {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
-			 visualCpog.remove(t);
-			 }
+             String arc = t.getFirst().getLabel() + " -> " + t.getSecond().getLabel();
+             if (!text.contains(arc)) {
+                 visualCpog.remove(t);
+             }
+         }
+         transitives.clear();
 	 }
 
 	 public String replaceReferences(String text)
@@ -664,18 +668,25 @@ public class CpogParsingTool {
 												dupArcs.add((VisualArc) con);
 											}
 										}
-										if (dupArcs.size() > 1)
-										{
+                                        boolean conditionFound = false;
+										if (dupArcs.size() > 1) {
 											for (VisualArc va : dupArcs) {
-												if (FormulaToString.toString(va.getCondition()).compareTo("1") != 0)
-												{
+												if (FormulaToString.toString(va.getCondition()).compareTo("1") != 0) {
 													dupArcs.remove(va);
-												} else
-												{
-													visualCpog.remove(va);
+                                                    conditionFound = true;
 												}
 											}
+                                            if (!(conditionFound) && (dupArcs.size() > 1)) {
+                                                for (int i = 1; i < dupArcs.size(); i++) {
+                                                    visualCpog.remove(dupArcs.get(i));
+                                                }
+                                            } else {
+                                                for (int i = 0; i < dupArcs.size(); i++) {
+                                                    visualCpog.remove(dupArcs.get(i));
+                                                }
+                                            }
 										}
+
 										try {
 											if (FormulaToString.toString(arc.getCondition()).compareTo("1") == 0)
 											{
@@ -800,6 +811,13 @@ public class CpogParsingTool {
 
         return result;
     }
+
+/*    public void combineConditions(String old, String newCond, final VisualCPOG visualCpog) throws ParseException {
+        if (!old.contains(newCond)) {
+            parseBool()
+        }
+
+    }*/
 
 
 }
