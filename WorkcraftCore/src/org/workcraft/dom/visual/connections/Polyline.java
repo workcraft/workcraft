@@ -49,15 +49,13 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
-public class Polyline implements ConnectionGraphic, Container, ObservableHierarchy,
-StateObserver, HierarchyObserver, SelectionObserver {
+public class Polyline implements ConnectionGraphic, Container, StateObserver,
+	HierarchyObserver, ObservableHierarchy, SelectionObserver {
+
 	private ArbitraryInsertionGroupImpl groupImpl;
 	protected VisualConnectionProperties connectionInfo;
-	protected PartialCurveInfo curveInfo;
-
-	protected Rectangle2D boundingBox = null;
-
-	protected boolean valid = false;
+	protected PartialCurveInfo curveInfo = null;
+	private Rectangle2D boundingBox = null;
 	private ControlPointScaler scaler = null;
 
 	public Polyline(VisualConnection parent) {
@@ -86,9 +84,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		if (!valid) {
-			update();
-		}
+		PartialCurveInfo curveInfo = getCurveInfo();
 
 		int start = getSegmentIndex(curveInfo.tStart);
 		Point2D startPt = getPointOnCurve(curveInfo.tStart);
@@ -122,24 +118,26 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public Rectangle2D getBoundingBox() {
-		if (!valid) {
-			update();
+		if (boundingBox == null) {
+			int segments = getSegmentCount();
+			for (int i=0; i < segments; i++) {
+				Line2D seg = getSegment(i);
+				if (i==0) {
+					boundingBox = getSegmentBoundsWithThreshold(seg);
+				} else {
+					boundingBox.add(getSegmentBoundsWithThreshold(seg));
+				}
+			}
 		}
 		return boundingBox;
 	}
 
-	public void update() {
-		int segments = getSegmentCount();
-		for (int i=0; i < segments; i++) {
-			Line2D seg = getSegment(i);
-			if (i==0) {
-				boundingBox = getSegmentBoundsWithThreshold(seg);
-			} else {
-				boundingBox.add(getSegmentBoundsWithThreshold(seg));
-			}
+	@Override
+	public PartialCurveInfo getCurveInfo() {
+		if (curveInfo == null) {
+			curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
 		}
-		curveInfo = Geometry.buildConnectionCurveInfo(connectionInfo, this, 0);
-		valid = true;
+		return curveInfo;
 	}
 
 	protected int getSegmentIndex(double t) {
@@ -238,7 +236,7 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		}
 	}
 
-	private Rectangle2D getSegmentBoundsWithThreshold (Line2D segment) {
+	private Rectangle2D getSegmentBoundsWithThreshold(Line2D segment) {
 		Point2D pt1 = segment.getP1();
 		Point2D pt2 = segment.getP2();
 
@@ -247,16 +245,14 @@ StateObserver, HierarchyObserver, SelectionObserver {
 		Point2D lineVec = new Point2D.Double(pt2.getX() - pt1.getX(), pt2.getY() - pt1.getY());
 
 		double mag = lineVec.distance(0, 0);
-
-		if (mag==0)
-			return bb;
-
-		lineVec.setLocation(lineVec.getY()*VisualConnection.HIT_THRESHOLD/mag, -lineVec.getX()*VisualConnection.HIT_THRESHOLD/mag);
-		bb.add(pt1.getX() + lineVec.getX(), pt1.getY() + lineVec.getY());
-		bb.add(pt2.getX() + lineVec.getX(), pt2.getY() + lineVec.getY());
-		bb.add(pt1.getX() - lineVec.getX(), pt1.getY() - lineVec.getY());
-		bb.add(pt2.getX() - lineVec.getX(), pt2.getY() - lineVec.getY());
-
+		if (mag != 0) {
+			lineVec.setLocation(lineVec.getY() * VisualConnection.HIT_THRESHOLD/mag,
+					-lineVec.getX() * VisualConnection.HIT_THRESHOLD/mag);
+			bb.add(pt1.getX() + lineVec.getX(), pt1.getY() + lineVec.getY());
+			bb.add(pt2.getX() + lineVec.getX(), pt2.getY() + lineVec.getY());
+			bb.add(pt1.getX() - lineVec.getX(), pt1.getY() - lineVec.getY());
+			bb.add(pt2.getX() - lineVec.getX(), pt2.getY() - lineVec.getY());
+		}
 		return bb;
 	}
 
@@ -365,11 +361,10 @@ StateObserver, HierarchyObserver, SelectionObserver {
 	public Point2D getPointOnCurve(double t) {
 		int segmentIndex = getSegmentIndex(t);
 		double t2 = getParameterOnSegment(t, segmentIndex);
-
 		Line2D segment = getSegment(segmentIndex);
-
-		return new Point2D.Double(segment.getP1().getX() * (1-t2) + segment.getP2().getX() * t2,
-				segment.getP1().getY() * (1-t2) + segment.getP2().getY() * t2);
+		double x = segment.getP1().getX() * (1-t2) + segment.getP2().getX() * t2;
+		double y = segment.getP1().getY() * (1-t2) + segment.getP2().getY() * t2;
+		return new Point2D.Double(x, y);
 	}
 
 	@Override
@@ -443,17 +438,20 @@ StateObserver, HierarchyObserver, SelectionObserver {
 
 	@Override
 	public void invalidate() {
-		valid = false;
+		boundingBox = null;
+		curveInfo = null;
 	}
 
 	@Override
 	public Point2D getDerivativeAt(double t) {
-		if (t < 0) t = 0;
-		if (t > 1) t = 1;
-
+		if (t < 0) {
+			t = 0;
+		}
+		if (t > 1) {
+			t = 1;
+		}
 		int segmentIndex = getSegmentIndex(t);
 		Line2D segment = getSegment(segmentIndex);
-
 		return Geometry.subtract(segment.getP2(), segment.getP1());
 	}
 

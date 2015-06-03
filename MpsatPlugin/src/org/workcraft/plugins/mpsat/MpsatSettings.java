@@ -41,8 +41,9 @@ public class MpsatSettings {
 	private final SolutionMode solutionMode;
 	private final int solutionNumberLimit;
 	private final String reach;
-	// true - property holds when predicate is unsatisfiable
-	// flase - property holds when predicate is satisfiable
+	// Relation between the predicate and the property:
+	//   true - property holds when predicate is unsatisfiable
+	//   false - property holds when predicate is satisfiable
 	private final boolean inversePredicate;
 
 	// Reach expression for checking signal consistency
