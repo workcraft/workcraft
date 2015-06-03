@@ -669,13 +669,16 @@ public class CpogParsingTool {
 											}
 										}
                                         boolean conditionFound = false;
+                                        ArrayList<VisualArc> toBeRemoved = new ArrayList<>();
 										if (dupArcs.size() > 1) {
 											for (VisualArc va : dupArcs) {
 												if (FormulaToString.toString(va.getCondition()).compareTo("1") != 0) {
-													dupArcs.remove(va);
+													toBeRemoved.add(va);
                                                     conditionFound = true;
 												}
 											}
+                                            for (VisualArc va : toBeRemoved) { dupArcs.remove(va); }
+
                                             if (!(conditionFound) && (dupArcs.size() > 1)) {
                                                 for (int i = 1; i < dupArcs.size(); i++) {
                                                     visualCpog.remove(dupArcs.get(i));

@@ -476,7 +476,26 @@ public class CpogSelectionTool extends SelectionTool {
         VisualScenarioPage page = new VisualScenarioPage(pageNode);
         visualCpog.getCurrentLevel().add(page);
         includeArcsInPage(visualCpog);
-        visualCpog.reparent(page, visualCpog, visualCpog.getCurrentLevel(), visualCpog.getSelection());
+
+        Container container = visualCpog.getCurrentLevel();
+        HashSet<Node> nodes = new HashSet<>();
+        for (Node n : visualCpog.getSelection()) {
+            if (!(n.getParent().equals(container))) {
+                visualCpog.reparent(page, visualCpog, container, nodes);
+                container = (Container) n.getParent();
+                nodes.clear();
+            }
+            nodes.add(n);
+        }
+
+        visualCpog.reparent(page, visualCpog, container, nodes);
+        for (VisualComponent c : page.getComponents()) {
+            if (c instanceof VisualPage) {
+                if (c.getComponents().isEmpty()) {
+                    visualCpog.remove(c);
+                }
+            }
+        }
         visualCpog.select(page);
 
         page.setLabel(PGF.getGraphName());
@@ -602,7 +621,9 @@ public class CpogSelectionTool extends SelectionTool {
                 for(String k1 : vMap.keySet()) {
                     localVertices.get(k1).setPosition(new Point2D.Double(vMap.get(k1).getX(),vMap.get(k1).getY()));
                     pageVerts.add(localVertices.get(k1));
-                    visualCpog.add(localVertices.get(k1));
+                    if (visualCpog.getVertices(visualCpog.getCurrentLevel()).contains(localVertices.get(k1))) {
+                        visualCpog.add(localVertices.get(k1));
+                    }
                     visualCpog.addToSelection(localVertices.get(k1));
                 }
                 prevSelection.removeAll(pageVerts);
