@@ -98,8 +98,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		if (isCollapsed != value) {
 			sendNotification(new TransformChangingEvent(this));
 			isCollapsed = value;
-			Point2D centre = TransformHelper.getSnappedCentre(getChildren());
-			setPosition(new Point2D.Double(getX() + centre.getX(), getY() + centre.getY()));
 			sendNotification(new TransformChangedEvent(this));
 		}
 	}
