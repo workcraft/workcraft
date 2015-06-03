@@ -36,9 +36,8 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		if (settings != null) {
 			inversePredicate = settings.getInversePredicate();
 		}
-		String propertyText =  propertyName + (isSatisfiable == inversePredicate ? " is violated" : " holds ");
-		String predicateText = " (its predicate is " + (isSatisfiable ? "satisfiable" : "unsatisfiable") + ").";
-		return propertyText + predicateText;
+		String propertyStatus = isSatisfiable == inversePredicate ? " is violated." : " holds.";
+		return (propertyName + propertyStatus);
 	}
 
 	@Override

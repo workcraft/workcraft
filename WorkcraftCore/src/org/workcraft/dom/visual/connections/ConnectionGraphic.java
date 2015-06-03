@@ -22,6 +22,7 @@
 package org.workcraft.dom.visual.connections;
 
 
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import org.workcraft.dom.Node;
@@ -31,6 +32,8 @@ import org.workcraft.dom.visual.Touchable;
 
 public interface ConnectionGraphic extends Node, Drawable, Touchable, ParametricCurve {
 	public void draw (DrawRequest r);
+	public Rectangle2D getBoundingBox();
+	public PartialCurveInfo getCurveInfo();
 
 	public void componentsTransformChanging ();
 	public void componentsTransformChanged ();

@@ -5,9 +5,7 @@ import java.util.ArrayList;
 
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
-import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.tools.CircuitConnectionTool;
 import org.workcraft.plugins.circuit.tools.CircuitSelectionTool;
 import org.workcraft.plugins.circuit.tools.CircuitSimulationTool;
@@ -23,7 +21,6 @@ public class CircuitToolsProvider implements CustomToolsProvider {
 		result.add(new CircuitSelectionTool());
 		result.add(new CommentGeneratorTool());
 		result.add(new CircuitConnectionTool());
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Joint.class)));
 		result.add(new FunctionComponentGeneratorTool());
 		result.add(new ContactGeneratorTool());
 		result.add(new CircuitSimulationTool());
