@@ -72,6 +72,7 @@ public class TransformHelper {
 	}
 
 	public static AffineTransform getTransform(Node node1, Node node2) {
+
 		Node parent = Hierarchy.getCommonParent(node1, node2);
 		AffineTransform node1ToParent = getTransformToAncestor(node1, parent);
 		AffineTransform node2ToParent = getTransformToAncestor(node2, parent);

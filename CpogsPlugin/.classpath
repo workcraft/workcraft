@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GraphPlugin"/>
+	<classpathentry kind="lib" path="/ThirdParty/jga-0.8-lgpl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,6 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.NotAnAncestorException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -349,6 +350,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
             CpogConnector cc = new CpogConnector(visualCpog);
             f.accept(cc);
+            VisualPage inserted = null;
         if (!PGF.getRef()) {//If this graph is not for reference
 
             graphMap.put(PGF.getGraphName(), f);
@@ -380,23 +382,27 @@ public class CpogSelectionTool extends SelectionTool {
             editor.requestFocus();
             Point2D.Double coordinate = parsingTool.getLowestVertex(visualCpog);
 
+
             if (PGF.getGraphName() != null) {
-                insertAsPage(visualCpog, PGF, coordinate, editor);
+                inserted = insertAsPage(visualCpog, PGF, coordinate, editor);
             } else {
                 insertLoose(visualCpog, coordinate);
             }
 
         }
-            String normalForm = getNormalForm(arcConditionList, localVertices);
-            String graphName = PGF.getGraphName();
-            graphName = graphName.replace("{", "");
-            graphName = graphName.replace("}", "");
-            LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
-            bfsLayout(visualCpog, roots);
-            GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
-            referenceMap.put(graphName, g);
-            if (PGF.getRef()) {
-                visualCpog.remove(visualCpog.getSelection());
+            if (inserted != null) {
+                String normalForm = getNormalForm(arcConditionList, localVertices);
+                String graphName = PGF.getGraphName();
+                graphName = graphName.replace("{", "");
+                graphName = graphName.replace("}", "");
+                LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
+                bfsLayout(visualCpog, roots);
+                GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
+                g.addRefPage(inserted);
+                referenceMap.put(graphName, g);
+                if (PGF.getRef()) {
+                    visualCpog.remove(visualCpog.getSelection());
+                }
             }
 
 
@@ -463,7 +469,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
     }
 
-    public void insertAsPage(VisualCPOG visualCpog, GraphFunc<String, CpogFormula> PGF, Double coordinate, GraphEditor editor) {
+    public VisualPage insertAsPage(VisualCPOG visualCpog, GraphFunc<String, CpogFormula> PGF, Double coordinate, GraphEditor editor) {
         HashSet<VisualScenarioPage> pageList = new HashSet<>();
         for (Node n0 : visualCpog.getSelection()) {
             if (n0 instanceof VisualScenarioPage) {
@@ -504,6 +510,8 @@ public class CpogSelectionTool extends SelectionTool {
         page.setPosition(coordinate);
 
         attatchRefEventHandler(visualCpog, page, editor);
+
+        return page;
 
     }
 
@@ -681,7 +689,7 @@ public class CpogSelectionTool extends SelectionTool {
                                     }
                                 }
                             }
-                            DefaultHangingConnectionRemover arcRemover = new DefaultHangingConnectionRemover(visualCpog, "CPOG");
+                            CPOGHangingConnectionRemover arcRemover = new CPOGHangingConnectionRemover(visualCpog, "CPOG");
                             for (Node n : toBeRemoved) {
                                 arcRemover.handleEvent(new NodesDeletingEvent(n.getParent(), n));
                                 visualCpog.removeWithoutNotify(n);
@@ -720,16 +728,16 @@ public class CpogSelectionTool extends SelectionTool {
                                     }
                                 }
                             }
+                            for (Node n : toBeRemoved) {
+                                visualCpog.removeFromSelection(n);
+                                visualCpog.removeWithoutNotify(n);
+                            }
                         }
-                        for (Node n : toBeRemoved) {
-                            visualCpog.removeFromSelection(n);
-                            visualCpog.removeWithoutNotify(n);
-                        }
+
                     }
                 } else if (e instanceof NodesAddedEvent) {
                     for (Node node : e.getAffectedNodes()) {
                         if (node instanceof VisualArc) {
-                            System.out.println("LOL new arc brah");
                         }
                     }
                 }
@@ -746,7 +754,7 @@ public class CpogSelectionTool extends SelectionTool {
                     PropertyChangedEvent pce = (PropertyChangedEvent) e;
                     if (((PropertyChangedEvent) e).getPropertyName().compareTo("position") == 0)
                     {
-                        if ((pce.getSender() instanceof VisualVertex) && !(pce.getSender().getParent() instanceof VisualScenarioPage)) {
+                        if ((pce.getSender() instanceof VisualVertex) && (pce.getSender().getParent() instanceof VisualPage)) {
                             VisualVertex v = (VisualVertex) pce.getSender();
                             double xDiff = 0;
                             double yDiff = 0;
@@ -762,16 +770,18 @@ public class CpogSelectionTool extends SelectionTool {
                                 String refKey = page.getLabel();
 
                                 GraphReference g = referenceMap.get(page.getLabel());
-                                g.updateVertexPosition(v.getLabel(), xDiff, yDiff);
+                                if (g != null) {
+                                    g.updateVertexPosition(v.getLabel(), xDiff, yDiff);
 
-                                ArrayList<VisualPage> refPages = getRefPages(visualCpog, refKey, v);
-                                refPages.remove(page);
+                                    ArrayList<VisualPage> refPages = getRefPages(visualCpog, refKey, v);
+                                    refPages.remove(page);
 
-                                for (VisualPage p : refPages) {
-                                    for (Node n : p.getChildren()) {
-                                        if ((n instanceof VisualVertex) && (((VisualVertex) n).getLabel().compareTo(v.getLabel()) == 0)) {
-                                            VisualVertex vert = (VisualVertex) n;
-                                            vert.setPosition(new Point2D.Double(vert.getPosition().getX() + xDiff, vert.getPosition().getY() + yDiff));
+                                    for (VisualPage p : refPages) {
+                                        for (Node n : p.getChildren()) {
+                                            if ((n instanceof VisualVertex) && (((VisualVertex) n).getLabel().compareTo(v.getLabel()) == 0)) {
+                                                VisualVertex vert = (VisualVertex) n;
+                                                vert.setPosition(new Point2D.Double(vert.getPosition().getX() + xDiff, vert.getPosition().getY() + yDiff));
+                                            }
                                         }
                                     }
                                 }
@@ -803,7 +813,6 @@ public class CpogSelectionTool extends SelectionTool {
             Container previousLevel = visualCpog.getCurrentLevel();
             Collection<Node> selection = visualCpog.getSelection();
 
-
             VisualPage page = relaventPages.get(0);
             visualCpog.setCurrentLevel((Container) page.getParent());
             visualCpog.select(page);
@@ -828,7 +837,6 @@ public class CpogSelectionTool extends SelectionTool {
             for (VisualVertex v : vertMap.values()) {
                 Point2D.Double newPosition = new Point2D.Double(g.getVertMap().get(v.getLabel()).getX(), g.getVertMap().get(v.getLabel()).getY());
                 v.setPosition(newPosition);
-
             }
 
             g.updateVertMap(vertMap);

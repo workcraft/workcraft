@@ -555,7 +555,7 @@ public class CpogParsingTool {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
              String arc = t.getFirst().getLabel() + " -> " + t.getSecond().getLabel();
-             if (!text.contains(arc)) {
+             if (!(text.contains(arc)) || (text.contains(" -> " + arc))) {
                  visualCpog.remove(t);
              }
          }

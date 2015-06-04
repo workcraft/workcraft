@@ -67,14 +67,14 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 		}
 	}
 
-	private static boolean isConnectionInside (Collection<Node> nodes, Connection con) {
+	public static boolean isConnectionInside (Collection<Node> nodes, Connection con) {
 		for (Node node : nodes)
 			if (node == con || Hierarchy.isDescendant(con, node))
 				return true;
 		return false;
 	}
 
-	private void findHangingConnections(Node node, HashSet<Connection> hangingConnections, UnaryFunctor<Connection, Boolean> hanging) {
+	public void findHangingConnections(Node node, HashSet<Connection> hangingConnections, UnaryFunctor<Connection, Boolean> hanging) {
 		// need only to remove those connections that are not already being deleted
 		for (Connection con : nct.getConnections(node))
 			if (hanging.fn(con))
