@@ -42,7 +42,7 @@ public class ScencoTool implements Tool {
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();
 		settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
-		pmgr = new PresetManager<EncoderSettings>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
+		pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
 		dialog = new ScencoConfigurationDialog(mainWindow, pmgr, settings, we);
 
 		GUI.centerToParent(dialog, mainWindow);

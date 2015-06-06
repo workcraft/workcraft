@@ -27,14 +27,19 @@ import org.workcraft.workspace.WorkspaceEntry;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -122,6 +127,66 @@ public class CpogSelectionTool extends SelectionTool {
 			}
 		});
 		buttonPanel.add(btnInsert);
+
+		final JButton btnProcessMine = new JButton("Process Mine");
+		btnProcessMine.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String allGraphs = parsingTool.getExpressionFromGraph((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel());
+				ArrayList<String> tempGraphs = new ArrayList<>();
+				ArrayList<String> graphs = new ArrayList<>();
+
+				try {
+					File inputFile = File.createTempFile("input", "tr");
+
+					PrintStream expressions = new PrintStream(inputFile);
+
+					int i = allGraphs.indexOf(" + ");
+					while (i > -1) {
+						allGraphs = allGraphs.substring(0, i) + "\n" + allGraphs.substring(i + 2);
+						i = allGraphs.indexOf(" + ");
+					}
+					allGraphs = allGraphs.replaceAll(" -> ", " ");
+
+					while (allGraphs.contains("\n")) {
+						int index = allGraphs.indexOf("\n");
+						String graph = (allGraphs.substring(0, index));
+						allGraphs = allGraphs.substring(index + 1);
+						tempGraphs.add(graph);
+					}
+
+					//tempGraphs.add(allGraphs);
+
+					for (String graph : tempGraphs) {
+						int index = graph.indexOf("= ");
+						if (index >= 0) {
+							graph = graph.substring(index + 2);
+						}
+						while (graph.endsWith(" ")) {
+							graph = graph.substring(0, graph.length() - 1);
+						}
+						graphs.add(graph);
+					}
+
+					for (String graph : graphs) {
+						expressions.println(graph);
+					}
+
+					expressions.close();
+
+					BufferedReader f = new BufferedReader(new FileReader(inputFile));
+					while(f.ready()) {
+						System.out.println(f.readLine());
+					}
+
+				} catch (IOException exception) {
+					System.out.println("Temporary file could not be created");
+				}
+			}
+
+		});
+		buttonPanel.add(btnProcessMine);
 
 		final JButton btnTextInsert = new JButton("Text File");
 		btnTextInsert.addActionListener(new ActionListener() {

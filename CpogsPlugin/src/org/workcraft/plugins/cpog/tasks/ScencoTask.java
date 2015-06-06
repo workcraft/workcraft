@@ -16,7 +16,6 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
-import sun.awt.X11.Visual;
 
 import javax.swing.*;
 import java.awt.geom.Point2D;
@@ -728,7 +727,6 @@ public class ScencoTask {
 			scenarioFile = File.createTempFile("scenarios", "cpog");
 
 		     PrintStream Output = new PrintStream(scenarioFile);
-
 
 			for(int k = 0; k < m; k++)
 			{
