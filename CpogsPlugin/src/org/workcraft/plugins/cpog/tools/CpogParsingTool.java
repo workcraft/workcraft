@@ -347,6 +347,7 @@ public class CpogParsingTool {
 
     		boolean finished = false;
     		while (!finished) {
+    			System.out.println(getChildren(visualCpog, child));
     			if (getChildren(visualCpog, child).size() == 1) {
     				ArrayList<Node> nextVertices = getChildren(visualCpog, child);
     				VisualVertex nextVertex = (VisualVertex) nextVertices.get(0);
@@ -593,13 +594,18 @@ public class CpogParsingTool {
 		 return transitives;
 	 }
 
-	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots, String text) {
+	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots, String text, boolean forceRemoval) {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
-             String arc = t.getFirst().getLabel() + " -> " + t.getSecond().getLabel();
-             if (!(text.contains(arc)) || (text.contains(" -> " + arc))) {
-                 visualCpog.remove(t);
-             }
+			 if (!forceRemoval) {
+				 String arc = t.getFirst().getLabel() + " -> " + t.getSecond().getLabel();
+             	if (!(text.contains(" " + arc + " ")) && !(text.endsWith(" " + arc)) && !(text.contains("(" + arc + " ")) && !(text.contains("(" + arc + ")")) && !(text.contains(" " + arc + ")"))) {
+            	 	visualCpog.remove(t);
+             	}
+			 } else
+			 {
+				 visualCpog.remove(t);
+			 }
          }
          transitives.clear();
 	 }
@@ -849,7 +855,9 @@ public class CpogParsingTool {
         for (Node node : root.getChildren()) {
             if ((node instanceof VisualPage) || (node instanceof VisualScenarioPage)) {
                 result.addAll(getAllArcs((VisualPage) node, visualCpog));
-            } else if (node instanceof VisualArc) {
+            } else if (node instanceof VisualScenario) {
+            	result.addAll(getAllArcs((VisualScenario) node, visualCpog));
+        	}else if (node instanceof VisualArc) {
                 result.add((VisualArc) node);
             }
         }
