@@ -74,6 +74,8 @@ import org.workcraft.util.Hierarchy;
 @SVGIcon("images/icons/svg/circuit-component.svg")
 public class VisualCircuitComponent extends VisualComponent implements
 		Container, CustomTouchable, StateObserver, ObservableHierarchy {
+	public static final String PROPERTY_RENDER_TYPE = "Render type";
+
 	private Color inputColor = VisualContact.inputColor;
 	private Color outputColor = VisualContact.outputColor;
 
@@ -97,7 +99,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-				this, "Treat as environment", Boolean.class) {
+				this, CircuitComponent.PROPERTY_IS_ENVIRONMENT, Boolean.class) {
 			protected void setter(VisualCircuitComponent object, Boolean value) {
 				object.setIsEnvironment(value);
 			}
@@ -108,7 +110,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		});
 //TODO: Complete support for zero-delay buffers and inverters.
 //		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-//				this, "Zero delay", Boolean.class) {
+//				this, CircuitComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class) {
 //			protected void setter(VisualCircuitComponent object, Boolean value) {
 //				object.setIsZeroDelay(value);
 //			}
@@ -119,7 +121,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 //		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, RenderType>(
-				this, "Render type", RenderType.class) {
+				this, PROPERTY_RENDER_TYPE, RenderType.class) {
 			protected void setter(VisualCircuitComponent object, RenderType value) {
 				object.setRenderType(value);
 			}
@@ -197,7 +199,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 			this.renderType = renderType;
 			setContactsDefaultPosition();
 			invalidateBoundingBox();
-			sendNotification(new PropertyChangedEvent(this, "render type"));
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
 		}
 	}
 
@@ -795,11 +797,11 @@ public class VisualCircuitComponent extends VisualComponent implements
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent) e;
 			String propertyName = pc.getPropertyName();
-			if (propertyName.equals("name")
-				|| propertyName.equals("IOtype")
-				|| propertyName.equals("direction")
-				|| propertyName.equals("setFunction")
-				|| propertyName.equals("resetFunction")) {
+			if (propertyName.equals(Contact.PROPERTY_NAME)
+				|| propertyName.equals(Contact.PROPERTY_IO_TYPE)
+				|| propertyName.equals(VisualContact.PROPERTY_DIRECTION)
+				|| propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
+				|| propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
 
 				for (Node node : getChildren()) {
 					if (node instanceof VisualFunctionContact) {

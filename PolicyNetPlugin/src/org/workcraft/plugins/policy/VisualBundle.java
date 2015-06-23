@@ -48,6 +48,8 @@ import org.workcraft.util.Pair;
 
 @DisplayName ("Bundle")
 public class VisualBundle extends VisualNode implements Drawable, DependentNode {
+	public static final String PROPERTY_COLOR = "color";
+
 	private Bundle bundle;
 	protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
 	private Color color = CieColorUtils.getLabColor(0.7f, (float)Math.random(), (float)Math.random());
@@ -142,7 +144,7 @@ public class VisualBundle extends VisualNode implements Drawable, DependentNode 
 
 	public void setColor(Color value) {
 		this.color = value;
-		sendNotification(new PropertyChangedEvent(this, "color"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
 	}
 
 	public Color getColor() {

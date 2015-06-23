@@ -33,9 +33,9 @@ public class Fst extends Fsm {
 			if (e instanceof PropertyChangedEvent) {
 				PropertyChangedEvent pce = (PropertyChangedEvent)e;
 				Object sender = e.getSender();
-				if ((sender instanceof Signal) && pce.getPropertyName().equals("type")) {
+				if ((sender instanceof Signal) && pce.getPropertyName().equals(Signal.PROPERTY_TYPE)) {
 					for (Event event: getEvents((Signal)sender)) {
-						event.sendNotification(new PropertyChangedEvent(event, "type"));
+						event.sendNotification(new PropertyChangedEvent(event, Signal.PROPERTY_TYPE));
 					}
 				}
 			}
@@ -135,7 +135,7 @@ public class Fst extends Fsm {
 			if (signal.hasDirection()) {
 				properties.add(new DirectionPropertyDescriptor(signalEvent));
 			}
-			properties.removeByName("Symbol");
+			properties.removeByName(Event.PROPERTY_SYMBOL);
 		}
 		return properties;
 	}

@@ -9,6 +9,7 @@ import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 
 public class TypePropertyDescriptor implements PropertyDescriptor  {
+
 	private final Signal signal;
 
 	public TypePropertyDescriptor(Signal signal) {
@@ -17,7 +18,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public String getName() {
-		return "Signal type";
+		return Signal.PROPERTY_TYPE;
 	}
 
 	@Override

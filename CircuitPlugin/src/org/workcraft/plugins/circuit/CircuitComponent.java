@@ -44,6 +44,10 @@ import org.workcraft.util.Hierarchy;
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
 public class CircuitComponent extends MathGroup implements Container, ObservableHierarchy {
 
+	public static final String PROPERTY_NAME = "Name";
+	public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
+	public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";
+
 	private final class CircuitHierarchySupervisor extends HierarchySupervisor {
 		@Override
 		public void handleEvent(HierarchyEvent e) {
@@ -79,7 +83,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public void setIsEnvironment(boolean value) {
 		this.isEnvironment = value;
-		sendNotification(new PropertyChangedEvent(this, "is environment"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));
 	}
 
 	public boolean getIsEnvironment() {
@@ -88,7 +92,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public void setIsZeroDelay(boolean value) {
 		this.isZeroDelay = value;
-		sendNotification(new PropertyChangedEvent(this, "is zero delay"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ZERO_DELAY));
 	}
 
 	public boolean getIsZeroDelay() {
@@ -194,7 +198,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public void setName(String name) {
 		this.name = name;
-		sendNotification(new PropertyChangedEvent(this, "name"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
 	}
 
 	public String getName() {

@@ -507,15 +507,16 @@ public class ScencoConfigurationDialog extends JDialog {
 		Object[][] data = new Object[m][3];
 		for(int i=0; i<m; i++){
 			String name;
-			if(scenarios.get(i).getLabel().equals("")){
+			if(scenarios.get(i).getLabel().isEmpty()) {
 				name = "CPOG " + i;
-			}
-			else{
+			} else{
 				name = scenarios.get(i).getLabel();
 			}
 			data[i][0] = name;
 			data[i][1] = "";
-			for(int j=0; j < Integer.valueOf(bitsText.getText()); j++) data[i][1] = data[i][1] + "X";
+			for (int j = 0; j < Integer.valueOf(bitsText.getText()); j++) {
+				data[i][1] = data[i][1] + "X";
+			}
 		}
 		encodingTable = new JTable(data, columnNames);
 		MyTableCellRenderer renderer = new MyTableCellRenderer();

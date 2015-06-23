@@ -45,7 +45,7 @@ public class NamespaceHelper {
 
 		String head = getReferenceHead(reference);
 		String tail = getReferenceTail(reference);
-		if (tail.equals("")) {
+		if (tail.isEmpty()) {
 			return ret+head;
 		}
 		return ret + head + hierarchicalToFlatName(tail, flatSeparator, false);
@@ -63,7 +63,7 @@ public class NamespaceHelper {
 	}
 
 	public static void splitReference(String reference, LinkedList<String> path) {
-		if (reference.equals("")) return;
+		if (reference.isEmpty()) return;
 
 		Matcher matcher = hPattern.matcher(reference);
 		if (matcher.find()) {
@@ -127,7 +127,7 @@ public class NamespaceHelper {
 	public static String getReferenceName(String reference) {
 		String head = getReferenceHead(reference);
 		String tail = getReferenceTail(reference);
-		if (tail.equals("")) {
+		if (tail.isEmpty()) {
 			return head;
 		}
 		return getReferenceName(tail);

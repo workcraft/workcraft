@@ -27,6 +27,9 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
 public class FunctionContact extends Contact {
+	public static final String PROPERTY_SET_FUNCTION = "Set function";
+	public static final String PROPERTY_RESET_FUNCTION = "Reset function";
+
 	private BooleanFormula setFunction = null;
 	private BooleanFormula resetFunction = null;
 
@@ -44,7 +47,7 @@ public class FunctionContact extends Contact {
 
 	public void setSetFunction(BooleanFormula setFunction) {
 		this.setFunction = setFunction;
-		sendNotification(new PropertyChangedEvent(this, "setFunction"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
 	}
 
 	public BooleanFormula getResetFunction() {
@@ -53,7 +56,7 @@ public class FunctionContact extends Contact {
 
 	public void setResetFunction(BooleanFormula resetFunction) {
 		this.resetFunction = resetFunction;
-		sendNotification(new PropertyChangedEvent(this, "resetFunction"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));
 	}
 
 }

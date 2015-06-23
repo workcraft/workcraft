@@ -35,8 +35,7 @@ public class FunctionSerialiser implements CustomXMLSerialiser
 	public static final String SET_FUNCTION_ATTRIBUTE_NAME = "setFunction";
 
 	@Override
-	public String getClassName()
-	{
+	public String getClassName() {
 		return org.workcraft.plugins.circuit.FunctionContact.class.getName();
 	}
 
@@ -47,7 +46,11 @@ public class FunctionSerialiser implements CustomXMLSerialiser
 			throws SerialisationException {
 		FunctionContact function = (FunctionContact) object;
 
-		BooleanFormulaSerialiser.writeFormulaAttribute(element, internalReferences, function.getSetFunction(), SET_FUNCTION_ATTRIBUTE_NAME);
-		BooleanFormulaSerialiser.writeFormulaAttribute(element, internalReferences, function.getResetFunction(), RESET_FUNCTION_ATTRIBUTE_NAME);
+		BooleanFormulaSerialiser.writeFormulaAttribute(element, internalReferences,
+				function.getSetFunction(), SET_FUNCTION_ATTRIBUTE_NAME);
+
+		BooleanFormulaSerialiser.writeFormulaAttribute(element, internalReferences,
+				function.getResetFunction(), RESET_FUNCTION_ATTRIBUTE_NAME);
 	}
+
 }

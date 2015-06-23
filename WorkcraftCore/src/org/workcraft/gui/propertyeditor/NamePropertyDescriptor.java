@@ -9,6 +9,8 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 
 public class NamePropertyDescriptor implements PropertyDescriptor {
+	public static final String PROPERTY_NAME = "Name";
+
 	private final AbstractModel model;
 	private final Node node;
 
@@ -26,7 +28,7 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 	public void setValue(Object value) throws InvocationTargetException {
 		model.setName(node, (String)value);
 		if (node instanceof ObservableState) {
-			((ObservableState)node).sendNotification(new PropertyChangedEvent(node, "name"));
+			((ObservableState)node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
 		}
 	}
 
@@ -37,7 +39,7 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Name";
+		return PROPERTY_NAME;
 	}
 
 	@Override

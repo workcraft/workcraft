@@ -7,6 +7,7 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 
 public class DirectionPropertyDescriptor implements PropertyDescriptor {
@@ -20,7 +21,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Direction";
+		return SignalTransition.PROPERTY_DIRECTION;
 	}
 
 	@Override

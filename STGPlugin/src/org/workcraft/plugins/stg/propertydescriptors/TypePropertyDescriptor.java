@@ -10,6 +10,8 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 
 public class TypePropertyDescriptor implements PropertyDescriptor  {
+	public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
+
 	private final STG stg;
 	private final SignalTransition transition;
 
@@ -20,7 +22,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
 	@Override
 	public String getName() {
-		return "Signal type";
+		return PROPERTY_SIGNAL_TYPE;
 	}
 
 	@Override
