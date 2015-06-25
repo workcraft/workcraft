@@ -240,6 +240,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
 		initialiseStateMap();
+		setStatePaneVisibility(true);
 	}
 
 	public String getTraceLabelByReference(String ref) {

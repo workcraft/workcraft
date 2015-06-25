@@ -52,12 +52,12 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 	static JColorChooser chooser = null;
 	static JDialog dialog = null;
 
-	protected static final String EDIT = "edit";
+	protected static final String TAG_EDIT = "edit";
 
 	public  ColorCellEditor() {
 
 		button = new JButton();
-		button.setActionCommand(EDIT);
+		button.setActionCommand(TAG_EDIT);
 		button.addActionListener(this);
 		button.setBorderPainted(false);
 		button.setFocusable(false);
@@ -78,7 +78,7 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (EDIT.equals(e.getActionCommand())) {
+		if (TAG_EDIT.equals(e.getActionCommand())) {
 			// The user has clicked the cell, so bring up the dialog.
 			approx.target = this;
 			button.setBackground(color);
@@ -86,7 +86,7 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
 			dialog.setVisible(true);
 			fireEditingStopped(); //Make the renderer reappear.
 		} else {
-			//User pressed dialog's "OK" button.
+			// User pressed dialog's "OK" button.
 			color = chooser.getColor();
 		}
 	}

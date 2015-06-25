@@ -26,6 +26,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
@@ -41,6 +42,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
 		comboBox.setEditable(false);
 		comboBox.setFocusable(false);
 		comboBox.addItemListener(this);
+		comboBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
 		int declCount = decl.getChoice().size();
 		wrappers = new ChoiceWrapper[declCount];
@@ -76,6 +78,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
 			}
 		}
 		comboBox.setOpaque(value == null);
+		comboBox.setFont(table.getFont());
 		return comboBox;
 	}
 

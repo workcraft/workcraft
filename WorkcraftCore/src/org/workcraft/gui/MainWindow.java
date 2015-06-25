@@ -182,14 +182,13 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	public void setLAF(String laf) throws OperationCancelledException {
-		if (JOptionPane.showConfirmDialog(this,
+	public void setLookAndFeel(String laf) throws OperationCancelledException {
+		int dialogResult = JOptionPane.showConfirmDialog(this,
 				"Changing Look and Feel requires GUI restart.\n\n"
 				+ "This will cause the visual editor windows to be closed.\n\nProceed?",
-				"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-			if (laf == null)
-				laf = UIManager.getSystemLookAndFeelClassName();
+				"Confirm", JOptionPane.YES_NO_OPTION);
 
+		if (dialogResult == JOptionPane.YES_OPTION) {
 			final Framework framework = Framework.getInstance();
 			framework.setConfigVar("gui.lookandfeel", laf);
 			framework.restartGUI();
@@ -374,10 +373,8 @@ public class MainWindow extends JFrame {
 
 		final Framework framework = Framework.getInstance();
 		String laf = framework.getConfigVar("gui.lookandfeel");
-		if (laf == null) {
-			laf = UIManager.getCrossPlatformLookAndFeelClassName();
-		}
-		LAF.setLAF(laf);
+		SilverOceanTheme.enable();
+		LookAndFeelHelper.setLookAndFeel(laf);
 		SwingUtilities.updateComponentTreeUI(this);
 
 		content = new JPanel(new BorderLayout(0, 0));

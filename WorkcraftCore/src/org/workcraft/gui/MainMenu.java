@@ -122,25 +122,6 @@ public class MainMenu extends JMenuBar {
 	final private JMenu mnTools = new JMenu("Tools");
 	final private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
 
-	private String[] lafCaptions = new String[] {
-			"Java default",
-			"Windows",
-			"Substance: Moderate",
-			"Substance: Mist Silver",
-			"Substance: Raven",
-			"Substance: Business",
-			"Substance: Creme"
-	};
-	private String[] lafClasses = new String[] {
-			"javax.swing.plaf.metal.MetalLookAndFeel",
-			"com.sun.java.swing.plaf.windows.WindowsLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceModerateLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceRavenLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel"
-	};
-
 	MainMenu(final MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
 		addFileMenu(mainWindow);
@@ -225,7 +206,7 @@ public class MainMenu extends JMenuBar {
 		mnFile.add(miImport);
 		mnFile.add(mnExport);
 
-		// FIXME: Workspace functionality is not working yet.
+// FIXME: Workspace functionality is not working yet.
 //		mnFile.addSeparator();
 //		mnFile.add(miNewWorkspace);
 //		mnFile.add(miOpenWorkspace);
@@ -362,29 +343,28 @@ public class MainMenu extends JMenuBar {
 		miPanCenter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 		miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		JMenu mnLAF = new JMenu("Look and Feel");
-		for (int i = 0; i < lafClasses.length; i++) {
-			JMenuItem miLAFItem = new JMenuItem();
-			miLAFItem.setText(lafCaptions[i]);
-			final String lafClass = lafClasses[i];
-			miLAFItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					try {
-						mainWindow.setLAF(lafClass);
-					} catch (OperationCancelledException e1) {
-					}
-				}
-			});
-			mnLAF.add(miLAFItem);
-		}
+// FIXME: Only the default Look and Feel works good, the others cause some problems.
+//		JMenu mnLookAndFeel = new JMenu("Look and Feel");
+//		for (final Entry<String, String> laf: LookAndFeelHelper.getLafMap().entrySet()) {
+//			JMenuItem miLAFItem = new JMenuItem();
+//			miLAFItem.setText(laf.getKey());
+//			miLAFItem.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					try {
+//						mainWindow.setLookAndFeel(laf.getValue());
+//					} catch (OperationCancelledException e1) {
+//					}
+//				}
+//			});
+//			mnLookAndFeel.add(miLAFItem);
+//		}
 
-		/*	ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
-		miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-		mnView.add(miSaveLayout);
-
-		ScriptedActionMenuItem miLoadLayout = new ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
-		miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-		mnView.add(miLoadLayout);*/
+// FIXME: Save-load of the layout is not functional yet.
+//  	ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
+//		miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+//
+//		ScriptedActionMenuItem miLoadLayout = new ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
+//		miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
 		miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -401,9 +381,11 @@ public class MainMenu extends JMenuBar {
 		mnView.add(miPanDown);
 		mnView.addSeparator();
 		mnView.add(mnWindows);
-		mnView.add(mnLAF);
+//		mnView.add(mnLookAndFeel);
+//		mnView.addSeparator();
 		mnView.add(miResetLayout);
-
+//		mnView.add(miSaveLayout);
+//		mnView.add(miLoadLayout);
 
 		add(mnView);
 	}
