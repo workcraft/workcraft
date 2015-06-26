@@ -30,10 +30,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 @VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
 public class Contact extends MathNode implements BooleanVariable {
 
-	public static final String PROPERTY_INIT_TO_ONE = "init to one";
-	public static final String PROPERTY_IO_TYPE = "IO type";
+	public static final String PROPERTY_INIT_TO_ONE = "Init to one";
+	public static final String PROPERTY_IO_TYPE = "I/O type";
+	public static final String PROPERTY_NAME = "Name";
 
-	public static final String PROPERTY_NAME = "name";
 	public enum IOType {
 		INPUT("Input"),
 		OUTPUT("Output");

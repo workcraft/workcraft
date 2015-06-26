@@ -66,25 +66,28 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	}
 
 	public int getColumnCount() {
-		if (object == null)
+		if (object == null) {
 			return 0;
-		else
+		} else {
 			return 2;
+		}
 	}
 
 	public int getRowCount() {
-		if (object == null)
+		if (object == null) {
 			return 0;
-		else
+		} else {
 			return declarations.length;
+		}
 	}
 
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		if (col == 0)
+		if (col == 0) {
 			return false;
-		else
+		} else {
 			return (declarations[row].isWritable());
+		}
 	}
 
 	public PropertyDescriptor getRowDeclaration(int i) {
@@ -92,23 +95,24 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	}
 
 	public Object getValueAt(int row, int col) {
-		if (col ==0 )
+		if (col == 0) {
 			return declarations[row].getName();
-		else try {
-			Object value = declarations[row].getValue();
-			if (rowClasses[row] != null)
-				return rowClasses[row].toCellRendererValue(value);
-			else
-			{
-				Map<? extends Object, String> choice = declarations[row].getChoice();
-				if(choice != null)
-					return choice.get(value);
-				else
-					return value.toString();
+		} else {
+			try {
+				Object value = declarations[row].getValue();
+				if (rowClasses[row] != null) {
+					return rowClasses[row].toCellRendererValue(value);
+				} else {
+					Map<? extends Object, String> choice = declarations[row].getChoice();
+					if(choice != null) {
+						return choice.get(value);
+					} else {
+						return value.toString();
+					}
+				}
+			} catch (Throwable e) {
+				return "#EXCEPTION";
 			}
-		} catch (Throwable e) {
-			e.printStackTrace();
-			return "#EXCEPTION";
 		}
 	}
 
@@ -128,4 +132,5 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 	public Properties getObject() {
 		return object;
 	}
+
 }

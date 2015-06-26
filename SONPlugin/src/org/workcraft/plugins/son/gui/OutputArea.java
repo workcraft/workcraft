@@ -80,7 +80,7 @@ public class OutputArea extends JFrame {
 	        	myfile=new File(myfile.getAbsolutePath().concat(".txt"));
 	        }
         }
-        if(myfile==null || myfile.getName().equals(""))
+        if(myfile==null || myfile.getName().isEmpty())
         {
             JOptionPane.showMessageDialog(this,"Please enter a file name!","Error",JOptionPane.ERROR_MESSAGE);
             return;

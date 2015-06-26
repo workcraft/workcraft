@@ -5,6 +5,10 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.dfs.VisualCounterflowLogic.class)
 public class CounterflowLogic extends MathDelayNode {
+	public static final String PROPERTY_FORWARD_COMPUTED = "Forward computed";
+	public static final String PROPERTY_BACKWARD_COMPUTED = "Backward computed";
+	public static final String PROPERTY_FORWARD_EARLY_EVALUATION = "Forward early evaluation";
+	public static final String PROPERTY_BACKWARD_EARLY_EVALUATION = "Backward early evaluation";
 	private boolean forwardComputed = false;
 	private boolean backwardComputed = false;
 	private boolean forwardEarlyEvaluation = false;
@@ -16,7 +20,7 @@ public class CounterflowLogic extends MathDelayNode {
 
 	public void setForwardComputed(boolean value) {
 		this.forwardComputed = value;
-		sendNotification(new PropertyChangedEvent(this, "forward computed"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_FORWARD_COMPUTED));
 	}
 
 	public boolean isBackwardComputed() {
@@ -25,7 +29,7 @@ public class CounterflowLogic extends MathDelayNode {
 
 	public void setBackwardComputed(boolean value) {
 		this.backwardComputed = value;
-		sendNotification(new PropertyChangedEvent(this, "backward computed"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_BACKWARD_COMPUTED));
 	}
 
 	public boolean isForwardEarlyEvaluation() {
@@ -34,7 +38,7 @@ public class CounterflowLogic extends MathDelayNode {
 
 	public void setForwardEarlyEvaluation(boolean value) {
 		this.forwardEarlyEvaluation = value;
-		sendNotification(new PropertyChangedEvent(this, "forward early evaluation"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_FORWARD_EARLY_EVALUATION));
 	}
 
 	public boolean isBackwardEarlyEvaluation() {
@@ -43,6 +47,6 @@ public class CounterflowLogic extends MathDelayNode {
 
 	public void setBackwardEarlyEvaluation(boolean value) {
 		this.backwardEarlyEvaluation = value;
-		sendNotification(new PropertyChangedEvent(this, "backward early evaluation"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_BACKWARD_EARLY_EVALUATION));
 	}
 }

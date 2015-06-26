@@ -18,8 +18,8 @@ import javax.swing.table.TableCellEditor;
 @SuppressWarnings("serial")
 public class FileCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
-	protected static final String EDIT = "edit";
-	protected static final String CLEAR = "clear";
+	protected static final String TAG_EDIT = "edit";
+	protected static final String TAG_CLEAR = "clear";
 
 	final private JPanel panel;
 	final private JButton chooseButton;
@@ -28,7 +28,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 
 	public FileCellEditor() {
 		chooseButton = new JButton();
-		chooseButton.setActionCommand(EDIT);
+		chooseButton.setActionCommand(TAG_EDIT);
 		chooseButton.addActionListener(this);
 		chooseButton.setOpaque(true);
 		chooseButton.setBorderPainted(false);
@@ -37,7 +37,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 		chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
 		clearButton = new JButton("x");
-		clearButton.setActionCommand(CLEAR);
+		clearButton.setActionCommand(TAG_CLEAR);
 		clearButton.addActionListener(this);
 		clearButton.setFocusable(false);
 		clearButton.setMargin(new Insets(1, 1, 1, 1));
@@ -50,7 +50,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (EDIT.equals(e.getActionCommand())) {
+		if (TAG_EDIT.equals(e.getActionCommand())) {
 			JFileChooser fc = new JFileChooser();
 			fc.setDialogType(JFileChooser.OPEN_DIALOG);
 			fc.setMultiSelectionEnabled(false);
@@ -59,7 +59,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 			if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
 				file = fc.getSelectedFile();
 			}
-		} else if (CLEAR.equals(e.getActionCommand())) {
+		} else if (TAG_CLEAR.equals(e.getActionCommand())) {
 			file = null;
 		}
 		fireEditingStopped();
@@ -74,6 +74,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 	public Component getTableCellEditorComponent(
 			JTable table, Object value, boolean isSelected, int row, int column) {
     	file = (File)value;
+    	panel.setFont(table.getFont());
 		return panel;
 	}
 

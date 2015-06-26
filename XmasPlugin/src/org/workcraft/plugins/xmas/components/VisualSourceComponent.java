@@ -37,6 +37,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 @Hotkey(KeyEvent.VK_I)
 @SVGIcon("images/icons/svg/xmas-source.svg")
 public class VisualSourceComponent extends VisualXmasComponent {
+	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+
 	public Color color = new Color(0, 255, 0, 255);
 
 	public VisualSourceComponent(SourceComponent component) {
@@ -49,7 +51,7 @@ public class VisualSourceComponent extends VisualXmasComponent {
 	public void setColorRed() {
 		this.color = new Color(255, 0, 0, 255);
 		this.setForegroundColor(new Color(255, 0, 0, 255));
-		sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
 	}
 
 	@Override

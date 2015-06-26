@@ -31,6 +31,10 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @VisualClass(org.workcraft.plugins.stg.VisualSignalTransition.class)
 public class SignalTransition extends NamedTransition
 {
+	public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
+	public static final String PROPERTY_SIGNAL_NAME = "Signal name";
+	public static final String PROPERTY_DIRECTION = "Direction";
+
 	public enum Type {
 		INPUT("input"),
 		OUTPUT("output"),
@@ -85,7 +89,7 @@ public class SignalTransition extends NamedTransition
 	public void setSignalType(Type type) {
 		if (this.type != type) {
 			this.type = type;
-			sendNotification(new PropertyChangedEvent(this, "signalType"));
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_TYPE));
 		}
 	}
 
@@ -96,7 +100,7 @@ public class SignalTransition extends NamedTransition
 	public void setDirection(Direction direction) {
 		if (this.direction != direction) {
 			this.direction = direction;
-			sendNotification(new PropertyChangedEvent(this, "direction"));
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
 		}
 	}
 
@@ -108,7 +112,7 @@ public class SignalTransition extends NamedTransition
 	@NoAutoSerialisation
 	public void setSignalName(String signalName) {
 		this.signalName = signalName;
-		sendNotification(new PropertyChangedEvent(this, "signalName"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_NAME));
 	}
 
 	@NoAutoSerialisation

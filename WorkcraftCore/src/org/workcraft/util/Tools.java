@@ -41,13 +41,13 @@ public class Tools {
 		}
 	}
 
-	public static List<String> getSections (ListMap<String, Pair<String, Tool>> tools) {
+	public static List<String> getSections(ListMap<String, Pair<String, Tool>> tools) {
 		LinkedList<String> list = new LinkedList<String>(tools.keySet());
 		Collections.sort(list);
 		return list;
 	}
 
-	public static List<Pair<String,Tool>> getSectionTools (String section, ListMap<String, Pair<String, Tool>> tools) {
+	public static List<Pair<String,Tool>> getSectionTools(String section, ListMap<String, Pair<String, Tool>> tools) {
 		List<Pair<String,Tool>> sectionTools = new ArrayList<Pair<String, Tool>>(tools.get(section));
 
 		Collections.sort(sectionTools, new Comparator<Pair<String,Tool>>() {

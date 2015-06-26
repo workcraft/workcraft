@@ -25,6 +25,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.dfs.VisualRegister.class)
 public class Register extends MathDelayNode {
+	public static final String PROPERTY_MARKED = "Marked";
+
 	private boolean marked = false;
 
 	public boolean isMarked() {
@@ -33,7 +35,7 @@ public class Register extends MathDelayNode {
 
 	public void setMarked(boolean marked) {
 		this.marked = marked;
-		sendNotification(new PropertyChangedEvent(this, "marked"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_MARKED));
 	}
 
 }

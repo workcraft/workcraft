@@ -1,6 +1,7 @@
 package org.workcraft.plugins.fsm;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -12,6 +13,7 @@ import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.fsm.propertydescriptors.EventSymbolPropertyDescriptor;
 import org.workcraft.plugins.fsm.propertydescriptors.SymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
@@ -152,9 +154,11 @@ public class Fsm extends AbstractMathModel {
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
+			LinkedList<PropertyDescriptor> symbolDescriptors = new LinkedList<>();
 			for (final Symbol symbol: getSymbols()) {
-				properties.add(new SymbolPropertyDescriptor(this, symbol));
+				symbolDescriptors.add(new SymbolPropertyDescriptor(this, symbol));
 			}
+			properties.addSorted(symbolDescriptors);
 		} else if (node instanceof Event) {
 			Event event = (Event) node;
 			properties.add(new EventSymbolPropertyDescriptor(this, event));

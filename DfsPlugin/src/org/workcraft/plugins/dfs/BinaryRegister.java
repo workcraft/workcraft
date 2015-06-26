@@ -4,6 +4,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 public class BinaryRegister extends MathDelayNode {
 
+	public static final String PROPERTY_MARKING = "Marking";
+
 	public enum Marking {
 		EMPTY("empty"),
 		FALSE_TOKEN("false"),
@@ -29,7 +31,7 @@ public class BinaryRegister extends MathDelayNode {
 
 	public void setMarking(Marking value) {
 		this.marking = value;
-		sendNotification(new PropertyChangedEvent(this, "marking"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_MARKING));
 	}
 
 	public boolean isFalseMarked() {

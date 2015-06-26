@@ -33,6 +33,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.NotSupportedException;
@@ -83,6 +84,7 @@ public class DockableWindowContentPanel extends JPanel {
 	}
 
 	class DockableViewHeader extends JPanel {
+		private final Border BORDER_TITLE = BorderFactory.createEmptyBorder(1, 3, 1, 1);
 		private ActionButton btnMin, btnMax, btnClose;
 		private JLabel titleLabel = null;
 		private JPanel buttonPanel = null;
@@ -148,10 +150,11 @@ public class DockableWindowContentPanel extends JPanel {
 				buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth()+4) * icons,UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
 			}
 
-			titleLabel = new JLabel(" "+ title);
+			titleLabel = new JLabel(title);
 			titleLabel.setOpaque(false);
 			titleLabel.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
 			titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+			titleLabel.setBorder(BORDER_TITLE);
 			add(titleLabel, BorderLayout.WEST);
 
 			setMaximized(false);
@@ -177,6 +180,7 @@ public class DockableWindowContentPanel extends JPanel {
 
 		public void setTitle(String title) {
 			titleLabel.setText(title);
+			titleLabel.repaint();
 		}
 	}
 

@@ -15,7 +15,7 @@ public class CheckCircuitTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Verification";
+		return "!Verification";
 	}
 
 	@Override

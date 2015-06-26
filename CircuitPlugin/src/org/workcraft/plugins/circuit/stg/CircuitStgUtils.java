@@ -17,11 +17,16 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitStgUtils {
+	public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
+	public static final String DEVICE_FILE_NAME = "device";
+	public static final String ENVIRONMENT_FILE_NAME = "environment";
+	public static final String SYSTEM_FILE_NAME = "system";
+	public static final String ASTG_FILE_EXT = ".g";
 
 	public static CircuitToStgConverter createCircuitToStgConverter(VisualCircuit circuit) {
 		CircuitToStgConverter generator = new CircuitToStgConverter(circuit);
@@ -39,7 +44,7 @@ public class CircuitStgUtils {
 	public static VisualSTG composeDevStgWithEvnFile(VisualSTG devStg, File envFile) {
 		VisualSTG resultStg = null;
 		Framework framework = Framework.getInstance();
-		File workingDirectory = FileUtils.createTempDirectory("workcraft-");
+		File workingDirectory = FileUtils.createTempDirectory(TEMP_DIRECTORY_PREFIX);
 		try {
 			File devStgFile = exportDevStg(devStg, workingDirectory);
 			File envStgFile = exportEnvStg(envFile, workingDirectory);
@@ -62,7 +67,7 @@ public class CircuitStgUtils {
 		Framework framework = Framework.getInstance();
 		if ((devStgFile != null) && (envStgFile != null)) {
 			// Generating .g for the whole system (circuit and environment)
-			stgFile = new File(workingDirectory, "system.g");
+			stgFile = new File(workingDirectory, SYSTEM_FILE_NAME + ASTG_FILE_EXT);
 			PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile},
 					ConversionMode.OUTPUT, true, false, workingDirectory);
 
@@ -81,12 +86,12 @@ public class CircuitStgUtils {
 	private static File exportEnvStg(File envFile, File workingDirectory) throws DeserialisationException, IOException {
 		Framework framework = Framework.getInstance();
 		File envStgFile = null;
-		if (envFile.getName().endsWith(".g")) {
+		if (envFile.getName().endsWith(ASTG_FILE_EXT)) {
 			envStgFile = envFile;
 		} else {
 			STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 			Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-			envStgFile = new File(workingDirectory, "env.g");
+			envStgFile = new File(workingDirectory, ENVIRONMENT_FILE_NAME + ASTG_FILE_EXT);
 			ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
 			Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 					envExportTask, "Exporting environment .g", null);
@@ -103,14 +108,13 @@ public class CircuitStgUtils {
 		STG devStg = (STG)visualStg.getMathModel();
 		Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 		if (devStgExporter == null) {
-			throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
+			throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to .g format.");
 		}
 
-		String devStgName = "dev.g";
-		File devStgFile =  new File(workingDirectory, devStgName);
+		File devStgFile =  new File(workingDirectory, DEVICE_FILE_NAME + ASTG_FILE_EXT);
 		ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
 		Result<? extends Object> devExportResult = framework.getTaskManager().execute(
-				devExportTask, "Exporting circuit .g", null);
+				devExportTask, "Exporting device .g", null);
 		if (devExportResult.getOutcome() != Outcome.FINISHED) {
 			devStgFile = null;
 		}

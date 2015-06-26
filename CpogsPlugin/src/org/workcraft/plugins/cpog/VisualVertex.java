@@ -55,6 +55,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 @DisplayName("Vertex")
 @SVGIcon("images/icons/svg/vertex.svg")
 public class VisualVertex extends VisualComponent implements CpogFormulaVariable {
+	public static final String PROPERTY_CONDITION = "Condition";
 	public static Font conditionFont;
 	private RenderedFormula conditionRenderedFormula = new RenderedFormula("", One.instance(), conditionFont, getLabelPositioning(), getLabelOffset());
 
@@ -132,7 +133,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	public void setCondition(BooleanFormula condition) {
 		getMathVertex().setCondition(condition);
-		sendNotification(new PropertyChangedEvent(this, "condition"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
 	}
 
 	public BooleanFormula evaluate() {

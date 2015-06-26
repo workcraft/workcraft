@@ -48,6 +48,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/place.svg")
 public class VisualPlace extends VisualComponent {
+	public static final String PROPERTY_TOKEN_COLOR = "Token color";
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
 	protected Color tokenColor = CommonVisualSettings.getBorderColor();
@@ -59,7 +60,7 @@ public class VisualPlace extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-				this, "Tokens", Integer.class) {
+				this, Place.PROPERTY_TOKENS, Integer.class) {
 			public void setter(VisualPlace object, Integer value) {
 				object.getReferencedPlace().setTokens(value);
 			}
@@ -69,7 +70,7 @@ public class VisualPlace extends VisualComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Color>(
-				this, "Token color", Color.class) {
+				this, PROPERTY_TOKEN_COLOR, Color.class) {
 			public void setter(VisualPlace object, Color value) {
 				object.setTokenColor(value);
 			}
@@ -79,7 +80,7 @@ public class VisualPlace extends VisualComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-				this, "Capacity", Integer.class) {
+				this, Place.PROPERTY_CAPACITY, Integer.class) {
 			public void setter(VisualPlace object, Integer value) {
 				object.getReferencedPlace().setCapacity(value);
 			}
@@ -185,7 +186,7 @@ public class VisualPlace extends VisualComponent {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
-		sendNotification(new PropertyChangedEvent(this, "token color"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
 	}
 
 	@Override

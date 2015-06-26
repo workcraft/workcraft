@@ -34,7 +34,7 @@ public class PropertyEditorWindow extends JPanel {
 	private PropertyEditorTable propertyTable;
 	private JScrollPane scrollProperties;
 
-	public PropertyEditorWindow () {
+	public PropertyEditorWindow() {
 		propertyTable = new PropertyEditorTable();
 
 		scrollProperties = new JScrollPane();
@@ -45,11 +45,11 @@ public class PropertyEditorWindow extends JPanel {
 		validate();
 	}
 
-	public Properties getObject () {
+	public Properties getObject() {
 		return propertyTable.getObject();
 	}
 
-	public void setObject (Properties o) {
+	public void setObject(Properties o) {
 		removeAll();
 		propertyTable.setObject(o);
 		add(scrollProperties, BorderLayout.CENTER);
@@ -57,7 +57,7 @@ public class PropertyEditorWindow extends JPanel {
 		repaint();
 	}
 
-	public void clearObject () {
+	public void clearObject() {
 		if (propertyTable.getObject() != null) {
 			removeAll();
 			propertyTable.clearObject();

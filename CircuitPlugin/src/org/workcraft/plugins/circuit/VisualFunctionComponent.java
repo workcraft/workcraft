@@ -165,7 +165,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		super.notify(e);
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
-			if (pc.getPropertyName().equals("direction")) {
+			if (pc.getPropertyName().equals(VisualContact.PROPERTY_DIRECTION)) {
 				if ((getMainContact() == pc.getSender()) && (getRenderingResult() != null)) {
 					setContactsDefaultPosition();
 				}

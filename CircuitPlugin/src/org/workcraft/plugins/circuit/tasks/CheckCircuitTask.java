@@ -12,6 +12,7 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
@@ -77,20 +78,20 @@ public class CheckCircuitTask extends MpsatChainTask {
 			File envFile = visualCircuit.getEnvironmentFile();
 			boolean hasEnvironment = ((envFile != null) && envFile.exists());
 
-			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
+			String prefix = CircuitStgUtils.TEMP_DIRECTORY_PREFIX + title + "-"; // Prefix must be at least 3 symbols long.
 			workingDirectory = FileUtils.createTempDirectory(prefix);
 
 			CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
 			STG devStg = (STG)generator.getStg().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 			if (devStgExporter == null) {
-				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
+				throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to .g format.");
 			}
 			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
 			monitor.progressUpdate(0.10);
 
 			// Generating .g for the circuit
-			String devStgName = (hasEnvironment ? "dev.g" : "system.g");
+			String devStgName = (hasEnvironment ? CircuitStgUtils.DEVICE_FILE_NAME : CircuitStgUtils.SYSTEM_FILE_NAME) + CircuitStgUtils.ASTG_FILE_EXT;
 			File devStgFile =  new File(workingDirectory, devStgName);
 			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
 			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
@@ -114,12 +115,12 @@ public class CheckCircuitTask extends MpsatChainTask {
 				 stg = devStg;
 			} else {
 				File envStgFile = null;
-				if (envFile.getName().endsWith(".g")) {
+				if (envFile.getName().endsWith(CircuitStgUtils.ASTG_FILE_EXT)) {
 					envStgFile = envFile;
 				} else {
 					STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 					Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-					envStgFile = new File(workingDirectory, "env.g");
+					envStgFile = new File(workingDirectory, CircuitStgUtils.ENVIRONMENT_FILE_NAME + CircuitStgUtils.ASTG_FILE_EXT);
 					ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
 					Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 							envExportTask, "Exporting environment .g", subtaskMonitor);
@@ -135,7 +136,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				monitor.progressUpdate(0.25);
 
 				// Generating .g for the whole system (circuit and environment)
-				stgFile = new File(workingDirectory, "system.g");
+				stgFile = new File(workingDirectory, CircuitStgUtils.SYSTEM_FILE_NAME + CircuitStgUtils.ASTG_FILE_EXT);
 				PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
 				pcompResult = framework.getTaskManager().execute(
 						pcompTask, "Running pcomp", subtaskMonitor);
@@ -155,7 +156,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(workingDirectory, CircuitStgUtils.SYSTEM_FILE_NAME + MpsatUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);

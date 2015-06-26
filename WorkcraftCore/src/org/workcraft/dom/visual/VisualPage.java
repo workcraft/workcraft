@@ -30,6 +30,9 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Page")
 @SVGIcon("images/icons/svg/selection-page.svg")
 public class VisualPage extends VisualComponent implements Drawable, Collapsible, Container, ObservableHierarchy {
+	public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
+	public static final String PROPERTY_REFERENCED_MODEL = "Referenced model";
+
 	private boolean isCurrentLevelInside = false;
 	private boolean isCollapsed = false;
 	private boolean isExcited = false;
@@ -56,7 +59,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPage, Boolean>(
-				this, "Is collapsed", Boolean.class) {
+				this, PROPERTY_IS_COLLAPSED, Boolean.class) {
 
 			@Override
 			protected void setter(VisualPage object, Boolean value) {
@@ -69,7 +72,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPage, String>(
-				this, "Referenced model", String.class) {
+				this, PROPERTY_REFERENCED_MODEL, String.class) {
 
 			@Override
 			protected void setter(VisualPage object, String value) {

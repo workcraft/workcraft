@@ -50,7 +50,7 @@ public class VisualContactFormulaProperties {
 			@Override
 			public void setValue(Object value) throws InvocationTargetException {
 				String setFunction = (String)value;
-				if (!setFunction.equals("")) {
+				if (!setFunction.isEmpty()) {
 					contact.setSetFunction(parseFormula(contact, setFunction));
 				} else {
 					contact.setSetFunction(null);
@@ -100,7 +100,7 @@ public class VisualContactFormulaProperties {
 			@Override
 			public void setValue(Object value) throws InvocationTargetException {
 				String setFunction = (String)value;
-				if (!setFunction.equals("")) {
+				if (!setFunction.isEmpty()) {
 					contact.setResetFunction(parseFormula(contact, setFunction));
 				} else {
 					contact.setResetFunction(null);

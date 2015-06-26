@@ -445,7 +445,7 @@ public class ScencoTask {
 				System.out.println("Op-code selected for graphs:");
 				for(int i=0; i<m; i++){
 					String name;
-					if (scenarios.get(i).getLabel().equals("")) {
+					if (scenarios.get(i).getLabel().isEmpty()) {
 						name = "CPOG " + i;
 					} else {
 						name = scenarios.get(i).getLabel();
@@ -832,11 +832,10 @@ public class ScencoTask {
 
 							}
 							String empty = "";
-							for(int i=0; i<settings.getBits(); i++) empty += 'X';
-							if(enc[k].equals("") || enc[k].equals(empty)){
+							for (int i=0; i<settings.getBits(); i++) empty += 'X';
+							if (enc[k].isEmpty() || enc[k].equals(empty)){
 								Output1.println("/");
-							}
-							else{
+							} else {
 								Output1.println(enc[k]);
 							}
 						}

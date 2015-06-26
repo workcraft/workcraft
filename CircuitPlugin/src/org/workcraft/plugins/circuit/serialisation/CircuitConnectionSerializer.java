@@ -14,11 +14,6 @@ public class CircuitConnectionSerializer implements CustomXMLSerialiser{
 			ReferenceProducer internalReferences,
 			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
 			throws SerialisationException {
-
-/*		VisualCircuitConnection vc = (VisualCircuitConnection) object;
-		element.setAttribute("first", internalReferences.getReference(vc.getFirst()));
-		element.setAttribute("second", internalReferences.getReference(vc.getSecond()));
-		*/
 	}
 
 	@Override

@@ -28,6 +28,9 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
 public class Place extends MathNode {
+	public static final String PROPERTY_CAPACITY = "Capacity";
+	public static final String PROPERTY_TOKENS = "Tokens";
+
 	protected int tokens = 0;
 	protected int capacity = 1;
 
@@ -43,7 +46,7 @@ public class Place extends MathNode {
 			capacity = tokens;
 		}
 		this.tokens = tokens;
-		sendNotification( new PropertyChangedEvent(this, "tokens") );
+		sendNotification( new PropertyChangedEvent(this, PROPERTY_TOKENS) );
 	}
 
 	public int getCapacity() {
@@ -58,6 +61,6 @@ public class Place extends MathNode {
 			throw new ArgumentException("The place capacity "+ capacity + " is too small for the current number of tokens " + tokens + " .");
 		}
 		this.capacity = capacity;
-		sendNotification ( new PropertyChangedEvent (this, "capacity"));
+		sendNotification ( new PropertyChangedEvent (this, PROPERTY_CAPACITY));
 	}
 }

@@ -61,6 +61,13 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, DependentNode,
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
+	public static final String PROPERTY_CONNECTION_TYPE = "Connection type";
+	public static final String PROPERTY_COLOR = "Color";
+	public static final String PROPERTY_LINE_WIDTH = "Line width";
+	public static final String PROPERTY_ARROW_LENGTH = "Arrow length";
+	public static final String PROPERTY_ARROW_WIDTH = "Arrow width";
+	public static final String PROPERTY_SCALE_MODE = "Scale mode";
+
 	public enum ConnectionType {
 		POLYLINE("Polyline"),
 		BEZIER("Bezier");
@@ -151,7 +158,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-				this, "Line width", Double.class, true, true, true) {
+				this, PROPERTY_LINE_WIDTH, Double.class, true, true, true) {
 			@Override
 			public void setter(VisualConnection object, Double value) {
 				object.setLineWidth(value);
@@ -163,7 +170,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-				this, "Arrow width", Double.class, true, true, true) {
+				this, PROPERTY_ARROW_WIDTH, Double.class, true, true, true) {
 			@Override
 			public void setter(VisualConnection object, Double value) {
 				object.setArrowWidth(value);
@@ -175,7 +182,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Double>(
-				this, "Arrow length", Double.class, true, true, true) {
+				this, PROPERTY_ARROW_LENGTH, Double.class, true, true, true) {
 			@Override
 			public void setter(VisualConnection object, Double value) {
 				object.setArrowLength(value);
@@ -196,7 +203,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ConnectionType>(
-				this, "Connection type", ConnectionType.class, true, true, false) {
+				this, PROPERTY_CONNECTION_TYPE, ConnectionType.class, true, true, false) {
 			protected void setter(VisualConnection object, ConnectionType value) {
 				object.setConnectionType(value);
 				for (ControlPoint cp: object.getGraphic().getControlPoints()) {
@@ -211,7 +218,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, ScaleMode>(
-				this, "Scale mode", ScaleMode.class, true, true, true) {
+				this, PROPERTY_SCALE_MODE, ScaleMode.class, true, true, true) {
 			protected void setter(VisualConnection object, ScaleMode value) {
 				object.setScaleMode(value);
 			}
@@ -221,7 +228,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualConnection, Color>(
-				this, "Color", Color.class, true, true, true) {
+				this, PROPERTY_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualConnection object, Color value) {
 				object.setColor(value);
 			}
@@ -296,9 +303,9 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 			children.add(graphic);
 			observableHierarchyImpl.sendNotification(new NodesAddedEvent(this,	getGraphic()));
 			graphic.invalidate();
-			observableStateImpl.sendNotification(new PropertyChangedEvent(this, "connectionType"));
+			observableStateImpl.sendNotification(new PropertyChangedEvent(this, PROPERTY_CONNECTION_TYPE));
 		}
-		sendNotification(new PropertyChangedEvent(this, "connection type"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_CONNECTION_TYPE));
 	}
 
 	public Color getColor() {
@@ -307,7 +314,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
 	public void setColor(Color color) {
 		this.color = color;
-		sendNotification(new PropertyChangedEvent(this, "color"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
 	}
 
 	@Override
@@ -327,7 +334,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		this.lineWidth = lineWidth;
 
 		invalidate();
-		sendNotification(new PropertyChangedEvent(this, "line width"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_LINE_WIDTH));
 	}
 
 	@Override
@@ -354,7 +361,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		if (value < 0.0) value = 0.0;
 		this.arrowWidth = value;
 		invalidate();
-		sendNotification(new PropertyChangedEvent(this, "arrow width"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_ARROW_WIDTH));
 
 	}
 
@@ -369,7 +376,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		if (value < 0.0) value = 0.0;
 		this.arrowLength = value;
 		invalidate();
-		sendNotification(new PropertyChangedEvent(this, "arrow length"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_ARROW_LENGTH));
 	}
 
 	public void invalidate() {
@@ -518,7 +525,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
 	public void setScaleMode(ScaleMode scaleMode) {
 		this.scaleMode = scaleMode;
-		sendNotification(new PropertyChangedEvent(this, "scale mode"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_SCALE_MODE));
 	}
 
 	@Override

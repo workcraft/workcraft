@@ -28,13 +28,14 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 @VisualClass(org.workcraft.plugins.cpog.VisualVertex.class)
-public class Vertex extends MathNode
-{
+public class Vertex extends MathNode {
+	public static final String PROPERTY_CONDITION = "Condition";
+
 	private BooleanFormula condition = One.instance();
 
 	public void setCondition(BooleanFormula condition) {
 		this.condition = condition;
-		sendNotification(new PropertyChangedEvent(this, "condition"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
 	}
 
 	public BooleanFormula getCondition() {

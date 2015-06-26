@@ -21,23 +21,40 @@
 
 package org.workcraft.gui;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 
+public class LookAndFeelHelper {
 
-public class LAF {
-	public static String currentLAF = UIManager.getLookAndFeel().getClass().getName();
+	private static Map<String, String> lafMap;
 
-	public static String getCurrentLAF() {
-		return currentLAF;
+	public static Map<String, String> getLafMap() {
+		if (lafMap == null) {
+			lafMap = new LinkedHashMap<>();
+			lafMap.put("Metal (default)", "javax.swing.plaf.metal.MetalLookAndFeel");
+			lafMap.put("Windows", "com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			lafMap.put("Substance: Moderate", "org.jvnet.substance.skin.SubstanceModerateLookAndFeel");
+			lafMap.put("Substance: Mist Silver", "org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel");
+			lafMap.put("Substance: Raven", "org.jvnet.substance.skin.SubstanceRavenLookAndFeel");
+			lafMap.put("Substance: Business", "org.jvnet.substance.skin.SubstanceBusinessLookAndFeel");
+			lafMap.put("Substance: Creme", "org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel");
+		}
+		return Collections.unmodifiableMap(lafMap);
 	}
 
-	public static void setLAF(String LAF) {
+	public static void setLookAndFeel(String laf) {
+		if (laf == null) {
+			laf = UIManager.getSystemLookAndFeelClassName();
+		}
 		try {
-			UIManager.setLookAndFeel(LAF);
+			UIManager.setLookAndFeel(laf);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -47,16 +64,10 @@ public class LAF {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-
-		currentLAF = LAF;
 	}
 
-	public static void setDefaultLAF() {
-		setLAF(UIManager.getCrossPlatformLookAndFeelClassName());
-	}
-
-	public static void setSubstanceLAF(String LAF) {
-		setLAF(LAF);
+	public static void setSubstance(String laf) {
+		setLookAndFeel(laf);
 		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 	}
 }

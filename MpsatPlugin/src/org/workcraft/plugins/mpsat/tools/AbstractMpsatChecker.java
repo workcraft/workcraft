@@ -11,7 +11,7 @@ public abstract class AbstractMpsatChecker implements Tool {
 
 	@Override
 	public final String getSection() {
-		return "Verification";
+		return "!Verification";
 	}
 
 	@Override

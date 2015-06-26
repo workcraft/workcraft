@@ -49,8 +49,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Geometry;
 
-public class VisualArc extends VisualConnection
-{
+public class VisualArc extends VisualConnection {
+	public static final String PROPERTY_CONDITION = "condition";
 	private static Font labelFont;
 	private Rectangle2D labelBB = null;
 
@@ -68,14 +68,12 @@ public class VisualArc extends VisualConnection
 		}
 	}
 
-	public VisualArc(Arc mathConnection)
-	{
+	public VisualArc(Arc mathConnection) {
 		super();
 		this.mathConnection = mathConnection;
 	}
 
-	public VisualArc(Arc mathConnection, VisualVertex first, VisualVertex second)
-	{
+	public VisualArc(Arc mathConnection, VisualVertex first, VisualVertex second) {
 		super(mathConnection, first, second);
 		this.mathConnection = mathConnection;
 	}
@@ -86,8 +84,7 @@ public class VisualArc extends VisualConnection
 	}
 
 	@Override
-	public Stroke getStroke()
-	{
+	public Stroke getStroke() {
 		BooleanFormula value = evaluate();
 
 		if (value == Zero.instance())
@@ -98,8 +95,7 @@ public class VisualArc extends VisualConnection
 	}
 
 	@Override
-	public Color getDrawColor()
-	{
+	public Color getDrawColor() {
 		BooleanFormula value = evaluate();
 
 		if (value == Zero.instance() || value == One.instance()) return super.getDrawColor();
@@ -107,20 +103,17 @@ public class VisualArc extends VisualConnection
 		return Color.LIGHT_GRAY;
 	}
 
-	private BooleanFormula evaluate()
-	{
+	private BooleanFormula evaluate() {
 		BooleanFormula condition = getCondition();
 
 		condition = BooleanOperations.and(condition, ((VisualVertex) getFirst()).evaluate());
 		condition = BooleanOperations.and(condition, ((VisualVertex) getSecond()).evaluate());
 
 		return condition.accept(
-				new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>())
-				{
+				new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>()) {
 					@Override
 					public BooleanFormula visit(BooleanVariable node) {
-						switch(((Variable)node).getState())
-						{
+						switch(((Variable)node).getState()) {
 						case TRUE:
 							return One.instance();
 						case FALSE:
@@ -133,15 +126,13 @@ public class VisualArc extends VisualConnection
 			);
 	}
 
-	public void setCondition(BooleanFormula condition)
-	{
+	public void setCondition(BooleanFormula condition) {
 		mathConnection.setCondition(condition);
-		sendNotification(new PropertyChangedEvent(this, "condition"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
 	}
 
 	@Override
-	public void draw(DrawRequest r)
-	{
+	public void draw(DrawRequest r) {
 		labelBB = null;
 
 		if (getCondition() == One.instance()) return;
@@ -158,8 +149,7 @@ public class VisualArc extends VisualConnection
 		Point2D d = graphic.getDerivativeAt(0.5);
 		Point2D dd = graphic.getSecondDerivativeAt(0.5);
 
-		if (d.getX() < 0)
-		{
+		if (d.getX() < 0) {
 			d = Geometry.multiply(d, -1);
 			//dd = Geometry.multiply(dd, -1);
 		}
@@ -180,21 +170,19 @@ public class VisualArc extends VisualConnection
 	}
 
 	@Override
-	public Rectangle2D getBoundingBox()
-	{
+	public Rectangle2D getBoundingBox() {
 		return BoundingBoxHelper.union(super.getBoundingBox(), labelBB);
 	}
 
-	public Rectangle2D getLabelBoundingBox()
-	{
+	public Rectangle2D getLabelBoundingBox() {
 		return labelBB;
 	}
 
 	@Override
-	public boolean hitTest(Point2D pointInParentSpace)
-	{
+	public boolean hitTest(Point2D pointInParentSpace) {
 		if (labelBB != null && labelBB.contains(pointInParentSpace)) return true;
 
 		return super.hitTest(pointInParentSpace);
 	}
+
 }

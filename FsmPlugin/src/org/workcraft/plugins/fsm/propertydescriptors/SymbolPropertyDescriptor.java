@@ -62,7 +62,7 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
     	if (node == null) {
     		fsm.setName(symbol, name);
     		for (Event event: fsm.getEvents(symbol)) {
-    			event.sendNotification(new PropertyChangedEvent(event, "symbol"));
+    			event.sendNotification(new PropertyChangedEvent(event, Event.PROPERTY_SYMBOL));
     		}
     	} else if (node instanceof Symbol) {
     	} else {

@@ -20,7 +20,7 @@ public class MpsatCustomPropertyChecker implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Verification";
+		return "!Verification";
 	}
 
 	@Override

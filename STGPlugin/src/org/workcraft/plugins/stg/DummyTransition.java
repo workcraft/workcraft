@@ -29,12 +29,13 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @DisplayName("Dummy transition")
 @VisualClass(org.workcraft.plugins.stg.VisualDummyTransition.class)
 public class DummyTransition extends NamedTransition {
+	public static final String PROPERTY_NAME = "Name";
 	private String name;
 
 	@NoAutoSerialisation
 	public void setName(String name) {
 		this.name = name;
-		sendNotification(new PropertyChangedEvent(this, "name"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
 	}
 
 	@NoAutoSerialisation

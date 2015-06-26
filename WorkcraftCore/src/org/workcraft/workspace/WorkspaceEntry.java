@@ -75,7 +75,7 @@ public class WorkspaceEntry implements ObservableState {
 			}
 			workspace.fireEntryChanged(this);
 			final Framework framework = Framework.getInstance();
-			framework.getMainWindow().refreshTitle(this);
+			framework.getMainWindow().refreshWorkspaceEntryTitle(this, true);
 		}
 	}
 
@@ -199,7 +199,7 @@ public class WorkspaceEntry implements ObservableState {
 		MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
 		MainWindow mainWindow = Framework.getInstance().getMainWindow();
 		if (mainWindow != null) {
-			mainWindow.getMainMenu().getToolsMenu().setEnabled(canModify);
+			mainWindow.getMainMenu().updateToolsMenuState(canModify);
 		}
 	}
 

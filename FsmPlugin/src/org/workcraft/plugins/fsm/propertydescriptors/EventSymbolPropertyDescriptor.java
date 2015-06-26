@@ -25,7 +25,7 @@ public class EventSymbolPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Symbol";
+		return Event.PROPERTY_SYMBOL;
 	}
 
 	@Override
