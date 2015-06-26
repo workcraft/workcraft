@@ -39,7 +39,10 @@ public class MainWindowActions {
 	public static final Action SAVE_WORK_ACTION = new Action() {
 		@Override public void run() {
 			final Framework f = Framework.getInstance();
-			try { f.getMainWindow().saveWork(); } catch (OperationCancelledException e) { }
+			try {
+				f.getMainWindow().saveWork();
+			} catch (OperationCancelledException e) {
+			}
 		}
 		@Override public String getText() {
 			return "Save work";
@@ -48,7 +51,10 @@ public class MainWindowActions {
 	public static final Action SAVE_WORK_AS_ACTION = new Action() {
 		@Override public void run() {
 			final Framework f = Framework.getInstance();
-			try { f.getMainWindow().saveWorkAs(); } catch (OperationCancelledException e) { }
+			try {
+				f.getMainWindow().saveWorkAs();
+			} catch (OperationCancelledException e) {
+			}
 		}
 		public String getText() {
 			return "Save work as...";
@@ -57,7 +63,10 @@ public class MainWindowActions {
 	public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action() {
 		@Override public void run() {
 			final Framework f = Framework.getInstance();
-			try { f.getMainWindow().closeActiveEditor(); } catch (OperationCancelledException e) { }
+			try {
+				f.getMainWindow().closeActiveEditor();
+			} catch (OperationCancelledException e) {
+			}
 		}
 		public String getText() {
 			return "Close active work";
@@ -67,7 +76,10 @@ public class MainWindowActions {
 	public static final Action CLOSE_ALL_EDITORS_ACTION = new Action() {
 		@Override public void run() {
 			final Framework f = Framework.getInstance();
-			try { f.getMainWindow().closeEditorWindows(); } catch (OperationCancelledException e) { }
+			try {
+				f.getMainWindow().closeEditorWindows();
+			} catch (OperationCancelledException e) {
+			}
 		}
 		public String getText() {
 			return "Close all works";

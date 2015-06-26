@@ -114,6 +114,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
+	public static final String TITLE_OUTPUT = "Output";
+	public static final String TITLE_PROBLEMS = "Problems";
+	public static final String TITLE_JAVASCRIPT = "Javascript";
+	public static final String TITLE_TASKS = "Tasks";
+	public static final String TITLE_WORKSPACE = "Workspace";
+	public static final String TITLE_PROPERTY_EDITOR = "Property editor";
+	public static final String TITLE_TOOL_CONTROLS = "Tool controls";
+	public static final String TITLE_EDITOR_TOOLS = "Editor tools";
+	public static final String TITLE_PLACEHOLDER = "";
+
 	private static final String UILAYOUT_PATH = "./config/uilayout.xml";
 	private static final int VIEWPORT_MARGIN = 30;
 
@@ -200,9 +210,9 @@ public class MainWindow extends JFrame {
 	}
 
 	private DockableWindow createDockableWindow(JComponent component,
-			String name, Dockable neighbour, int options) {
-		return createDockableWindow(component, name, neighbour, options,
-				DockingConstants.CENTER_REGION, name);
+			String title, Dockable neighbour, int options) {
+		return createDockableWindow(component, title, neighbour, options,
+				DockingConstants.CENTER_REGION, title);
 	}
 
 	private DockableWindow createDockableWindow(JComponent component,
@@ -423,48 +433,48 @@ public class MainWindow extends JFrame {
 		float xSplit = 0.88f;
 		float ySplit = 0.82f;
 		outputDockable = createDockableWindow(
-				outputWindow, "Output",
+				outputWindow, TITLE_OUTPUT,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, ySplit);
 
 		erroDockable = createDockableWindow(
-				errorWindow, "Problems", outputDockable,
+				errorWindow, TITLE_PROBLEMS, outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		javaScriptDockable = createDockableWindow(
-				javaScriptWindow, "Javascript",	outputDockable,
+				javaScriptWindow, TITLE_JAVASCRIPT,	outputDockable,
+				DockableWindowContentPanel.CLOSE_BUTTON);
+
+		tasksDockable = createDockableWindow(
+				new TaskManagerWindow(), TITLE_TASKS, outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		workspaceDockable = createDockableWindow(
-				workspaceWindow, "Workspace",
+				workspaceWindow, TITLE_WORKSPACE,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.EAST_REGION, xSplit);
 
 		propertyEditorDockable = createDockableWindow(
-				propertyEditorWindow, "Property editor", workspaceDockable,
+				propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.NORTH_REGION, ySplit);
 
 		toolControlsDockable = createDockableWindow(
-				editorToolsWindow, "Tool controls", propertyEditorDockable,
+				editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.4f);
 
 		editorToolsDockable = createDockableWindow(
-				toolControlsWindow, "Editor tools", toolControlsDockable,
+				toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
 				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.82f);
 
 		documentPlaceholder = createDockableWindow(
-				new DocumentPlaceholder(), "", null, outputDockable,
+				new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
 				0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
 
 		DockingManager.display(outputDockable);
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,	0.5f));
-
-		tasksDockable = createDockableWindow(
-				new TaskManagerWindow(), "Tasks", outputDockable,
-				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		setVisible(true);
 		loadDockingLayout();
@@ -489,7 +499,7 @@ public class MainWindow extends JFrame {
 				// createGlyphVector is called for the first time
 				Font font = new Font("Sans-serif", Font.PLAIN, 1);
 				font.createGlyphVector(new FontRenderContext(
-						new AffineTransform(), true, true), "");
+						new AffineTransform(), true, true), TITLE_PLACEHOLDER);
 
 				// force svg rendering classes to load
 				GUI.createIconFromSVG("images/icons/svg/place.svg");
@@ -587,6 +597,7 @@ public class MainWindow extends JFrame {
 				toolControlsWindow.setContent(null);
 				mainMenu.reset();
 				editorInFocus = null;
+				setDockableTitle(getPropertyEditor(), TITLE_PROPERTY_EDITOR);
 			}
 
 			editorWindows.remove(we, dockableWindow);
@@ -1042,7 +1053,7 @@ public class MainWindow extends JFrame {
 				JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
 			}
 			we.setChanged(false);
-			refreshTitle(we);
+			refreshWorkspaceEntryTitle(we, true);
 			lastSavePath = we.getFile().getParent();
 			pushRecentFile(we.getFile().getPath(), true);
 		}
@@ -1055,7 +1066,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private String getFileNameForCurrentWork() {
-		String fileName = "";
+		String fileName = TITLE_PLACEHOLDER;
 		if (editorInFocus != null) {
 			WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
 			if (we != null) {
@@ -1095,7 +1106,7 @@ public class MainWindow extends JFrame {
 				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
 			}
 			we.setChanged(false);
-			refreshTitle(we);
+			refreshWorkspaceEntryTitle(we, true);
 			lastSavePath = we.getFile().getParent();
 			pushRecentFile(we.getFile().getPath(), true);
 		} catch (SerialisationException e) {
@@ -1165,7 +1176,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private String getTitle(WorkspaceEntry we, VisualModel model) {
-		String prefix = (we.isChanged() ? "*" : "");
+		String prefix = (we.isChanged() ? "*" : TITLE_PLACEHOLDER);
 		String suffix = null;
 		switch (CommonEditorSettings.getTitleStyle()) {
 		case LONG:
@@ -1175,25 +1186,34 @@ public class MainWindow extends JFrame {
 			suffix = " [" + model.getShortName() + "]";
 			break;
 		default:
-			suffix = "";
+			suffix = TITLE_PLACEHOLDER;
 			break;
 		}
 		return (prefix + we.getTitle() + suffix);
 	}
 
-	public void refreshTitle(WorkspaceEntry we) {
+	public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
 		for (DockableWindow w : editorWindows.get(we)) {
 			final GraphEditorPanel editor = getCurrentEditor();
 			String title = getTitle(we, editor.getModel());
-			w.getContentPanel().setTitle(title);
-			w.setTabText(title);
+			w.setTitle(title);
 		}
-		DockableWindow.updateHeaders(rootDockingPort,getDefaultActionListener());
+		if (updateHeaders) {
+			DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
+		}
 	}
 
-	public void refreshAllTitles() {
+	public void refreshWorkspaceEntryTitles() {
 		for (WorkspaceEntry we : editorWindows.keySet()) {
-			refreshTitle(we);
+			refreshWorkspaceEntryTitle(we, false);
+		}
+		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
+	}
+
+	public void setDockableTitle(DockableWindow dockable, String title) {
+		if (dockable != null) {
+			dockable.setTitle(title);
+			DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 		}
 	}
 
@@ -1218,7 +1238,8 @@ public class MainWindow extends JFrame {
 	public void closeActiveEditor() throws OperationCancelledException {
 		for (WorkspaceEntry k : editorWindows.keySet()) {
 			for (DockableWindow w : editorWindows.get(k)) {
-				if (w.getContentPanel().getContent() == editorInFocus) {
+				DockableWindowContentPanel contentPanel = w.getContentPanel();
+				if ((contentPanel != null) && (contentPanel.getContent() == editorInFocus)) {
 					closeDockableWindow(w);
 					return;
 				}
@@ -1320,7 +1341,7 @@ public class MainWindow extends JFrame {
 		dlg.setModal(true);
 		dlg.setResizable(true);
 		dlg.setVisible(true);
-		refreshAllTitles();
+		refreshWorkspaceEntryTitles();
 	}
 
 	public void resetLayout() {

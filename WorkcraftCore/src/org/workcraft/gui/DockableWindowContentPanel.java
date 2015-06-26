@@ -148,7 +148,7 @@ public class DockableWindowContentPanel extends JPanel {
 				buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth()+4) * icons,UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
 			}
 
-			titleLabel = new JLabel(" "+ title);
+			titleLabel = new JLabel(title);
 			titleLabel.setOpaque(false);
 			titleLabel.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
 			titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
@@ -177,6 +177,7 @@ public class DockableWindowContentPanel extends JPanel {
 
 		public void setTitle(String title) {
 			titleLabel.setText(title);
+			titleLabel.repaint();
 		}
 	}
 

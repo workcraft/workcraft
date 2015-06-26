@@ -75,7 +75,7 @@ public class WorkspaceEntry implements ObservableState {
 			}
 			workspace.fireEntryChanged(this);
 			final Framework framework = Framework.getInstance();
-			framework.getMainWindow().refreshTitle(this);
+			framework.getMainWindow().refreshWorkspaceEntryTitle(this, true);
 		}
 	}
 

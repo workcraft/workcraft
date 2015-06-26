@@ -134,8 +134,9 @@ public class DockableWindow extends AbstractDockable {
 		for (Object d : port.getDockables()) {
 			DockableWindow dockable = (DockableWindow)d;
 			boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
+			DockableWindowContentPanel contentPanel = dockable.getContentPanel();
 			if (inTab && !dockable.isMaximized()) {
-				dockable.getContentPanel().setHeaderVisible(false);
+				contentPanel.setHeaderVisible(false);
 				JTabbedPane tabbedPane = (JTabbedPane)dockable.getComponent().getParent();
 				for (int i=0; i<tabbedPane.getComponentCount(); i++) {
 					if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
@@ -144,17 +145,24 @@ public class DockableWindow extends AbstractDockable {
 					}
 				}
 			} else {
-				dockable.getContentPanel().setHeaderVisible(true);
+				contentPanel.setHeaderVisible(true);
 			}
 		}
 	}
 
+	public void setTitle(String title) {
+		if ( !getTitle().equals(title) ) {
+			getContentPanel().setTitle(title);
+			setTabText(title);
+		}
+	}
+
 	public String getTitle() {
-		return panel.getTitle();
+		return getContentPanel().getTitle();
 	}
 
 	public int getID() {
-		return panel.getID();
+		return getContentPanel().getID();
 	}
 
 	private static void processTabEvents(DockingPort port) {
