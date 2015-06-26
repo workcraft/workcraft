@@ -111,7 +111,6 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 					}
 				}
 			} catch (Throwable e) {
-				e.printStackTrace();
 				return "#EXCEPTION";
 			}
 		}

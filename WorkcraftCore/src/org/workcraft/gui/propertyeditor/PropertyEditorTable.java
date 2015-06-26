@@ -23,7 +23,9 @@ package org.workcraft.gui.propertyeditor;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Toolkit;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -39,6 +41,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
+import org.workcraft.dom.visual.FontHelper;
 import org.workcraft.plugins.PluginInfo;
 
 @SuppressWarnings("serial")
@@ -59,10 +62,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 		setTableHeader(null);
 		setFocusable(false);
-
-		int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
-		int fontSizeInPixels = (int)Math.round(getFont().getSize2D() * screenDpi / 72.0);
-		setRowHeight(fontSizeInPixels);
+		setRowHeight(FontHelper.getFontSizeInPixels(getFont()));
 
 		propertyClasses = new HashMap<Class<?>, PropertyClass>();
 		propertyClasses.put(int.class, new IntegerProperty());
@@ -94,30 +94,36 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
 	@Override
 	public TableCellRenderer getCellRenderer(int row, int col) {
-		if (col == 0) {
+		if (col > 0) {
+			return cellRenderers[row];
+		} else {
 			return new TableCellRenderer() {
-//				private final JLabel label = new JLabel() {
-//					@Override
-//					public void paint(Graphics g) {
-//						g.setColor(getBackground());
-//						g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-//						super.paint(g);
-//					}
-//				};
+				private final JLabel label = new JLabel() {
+					@Override
+					public void paint( Graphics g ) {
+						g.setColor(getBackground());
+						g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+						super.paint(g);
+					}
+				};
+
 				@Override
 				public Component getTableCellRendererComponent(JTable table, Object value,
 						boolean isSelected, boolean hasFocus, int row, int column) {
-					JLabel label = new JLabel();
 					label.setText(value.toString());
 					label.setBorder(BORDER_RENDER);
-					//label.setFont(label.getFont().deriveFont(Font.BOLD));
+					PropertyDescriptor descriptor = model.getRowDeclaration(row);
+					try {
+						if (descriptor.getValue() == null) {
+							Font boldFont = label.getFont().deriveFont(Font.BOLD);
+							label.setFont(boldFont);
+						}
+					} catch (InvocationTargetException e) {
+					}
 					//label.setEnabled(false);
 					return label;
 				}
 			};
-//super.getCellRenderer(row, col);
-		} else {
-			return cellRenderers[row];
 		}
 	}
 

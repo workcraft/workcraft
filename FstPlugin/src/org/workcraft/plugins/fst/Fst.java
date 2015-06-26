@@ -1,6 +1,7 @@
 package org.workcraft.plugins.fst;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -8,6 +9,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
@@ -123,18 +125,21 @@ public class Fst extends Fsm {
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
+			LinkedList<PropertyDescriptor> signalDescriptors= new LinkedList<>();
 			for (final Signal signal: getSignals()) {
-				properties.add(new SignalTypePropertyDescriptor(this, signal));
+				signalDescriptors.add(new SignalTypePropertyDescriptor(this, signal));
 			}
-			properties.sortByPropertyName();
+			properties.addSorted(signalDescriptors);
 		} else if (node instanceof SignalEvent) {
+			LinkedList<PropertyDescriptor> eventDescriptors= new LinkedList<>();
 			SignalEvent signalEvent = (SignalEvent) node;
-			properties.add(new EventSignalPropertyDescriptor(this, signalEvent));
+			eventDescriptors.add(new EventSignalPropertyDescriptor(this, signalEvent));
 			Signal signal = signalEvent.getSignal();
-			properties.add(new TypePropertyDescriptor(signal));
+			eventDescriptors.add(new TypePropertyDescriptor(signal));
 			if (signal.hasDirection()) {
-				properties.add(new DirectionPropertyDescriptor(signalEvent));
+				eventDescriptors.add(new DirectionPropertyDescriptor(signalEvent));
 			}
+			properties.addSorted(eventDescriptors);
 			properties.removeByName(Event.PROPERTY_SYMBOL);
 		}
 		return properties;

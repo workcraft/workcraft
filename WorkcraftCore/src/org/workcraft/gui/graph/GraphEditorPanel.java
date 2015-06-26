@@ -38,7 +38,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,8 +80,6 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
-
-	public OutputStream backup;
 
 	class Resizer implements ComponentListener {
 
