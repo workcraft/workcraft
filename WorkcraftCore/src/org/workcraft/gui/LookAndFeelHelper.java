@@ -51,7 +51,8 @@ public class LookAndFeelHelper {
 
 	public static void setLookAndFeel(String laf) {
 		if (laf == null) {
-			laf = UIManager.getSystemLookAndFeelClassName();
+			laf = UIManager.getCrossPlatformLookAndFeelClassName();
+			//laf = UIManager.getSystemLookAndFeelClassName();
 		}
 		try {
 			UIManager.setLookAndFeel(laf);
