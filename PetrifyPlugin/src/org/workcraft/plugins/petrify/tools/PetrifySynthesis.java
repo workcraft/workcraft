@@ -20,7 +20,7 @@ abstract public class PetrifySynthesis implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Synthesis";
+		return "!Synthesis";
 	}
 
 	@Override
@@ -30,7 +30,7 @@ abstract public class PetrifySynthesis implements Tool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		// call petrify asynchronous (w/o blocking the GUI)
+		// Call Petrify asynchronously (without blocking the GUI)
 		try {
 			File instgFile = getInputSTG(WorkspaceUtils.getAs(we, STGModel.class));
 			File eqnFile = File.createTempFile("petrifyEquations", ".eqn");

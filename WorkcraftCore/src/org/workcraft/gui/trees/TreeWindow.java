@@ -220,8 +220,9 @@ public class TreeWindow<Node> extends JPanel
 
 				String name = decorator.getName(node);
 				boolean tricky = name.startsWith("!");
-				if (tricky)
+				if (tricky) {
 					name = name.substring(1);
+				}
 				Component res = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
 
 

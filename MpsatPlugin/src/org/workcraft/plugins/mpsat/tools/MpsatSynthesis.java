@@ -20,7 +20,7 @@ abstract public class MpsatSynthesis implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Synthesis";
+		return "!Synthesis";
 	}
 
 	@Override

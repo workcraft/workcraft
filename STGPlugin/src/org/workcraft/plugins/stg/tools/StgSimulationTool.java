@@ -89,21 +89,24 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 				boolean isSelected, boolean hasFocus, int row, int column) {
 			JLabel result = null;
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
+			label.setBackground(table.getBackground());
 			if ((net != null) && (value instanceof SignalState)) {
 				SignalState st = (SignalState)value;
 				if (column == 0) {
 					label.setText(st.name);
 					label.setForeground(st.color);
-					label.setFont(label.getFont().deriveFont(Font.PLAIN));
+					Font plainFont = table.getFont().deriveFont(Font.PLAIN);
+					label.setFont(plainFont);
 				} else {
 					if (st.value < 0) {
 						label.setText("?");
 					} else {
 						label.setText(Integer.toString(st.value));
 					}
-					label.setForeground(Color.BLACK);
+					label.setForeground(table.getForeground());
 					if (st.excited) {
-						label.setFont(label.getFont().deriveFont(Font.BOLD));
+						Font boldFont = table.getFont().deriveFont(Font.BOLD);
+						label.setFont(boldFont);
 					}
 				}
 				result = label;
@@ -143,17 +146,17 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 			JLabel result = null;
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
 			if ((net != null) && (value instanceof String)) {
-				label.setText((String) value);
-				Node node = net.getNodeByReference((String) value);
+				label.setText(value.toString());
+				Node node = net.getNodeByReference(value.toString());
 				if (node instanceof SignalTransition) {
 					SignalTransition st = (SignalTransition)node;
 					Color color = getTypeColor(st.getSignalType());
 					label.setForeground(color);
 				}
 				if (isActive(row, column)) {
-					label.setBackground(Color.YELLOW);
+					label.setBackground(table.getSelectionBackground());
 				} else {
-					label.setBackground(Color.WHITE);
+					label.setBackground(table.getBackground());
 				}
 				result = label;
 			}

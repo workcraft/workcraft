@@ -510,7 +510,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void setWorkActionsEnableness(boolean enable) {
-		getMainMenu().getExportMenu().setEnabled(enable);
+		getMainMenu().setExportMenuState(enable);
 		MainWindowActions.MERGE_WORK_ACTION.setEnabled(enable);
 		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(enable);
 		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(enable);
@@ -595,7 +595,7 @@ public class MainWindow extends JFrame {
 
 			if (editorInFocus == editor) {
 				toolControlsWindow.setContent(null);
-				mainMenu.reset();
+				mainMenu.removeToolsMenu();
 				editorInFocus = null;
 				setDockableTitle(getPropertyEditor(), TITLE_PROPERTY_EDITOR);
 			}
@@ -849,11 +849,7 @@ public class MainWindow extends JFrame {
 
 			toolControlsWindow.setContent(sender.getToolBox());
 			editorToolsWindow.setContent(sender.getToolBox().getControlPanel());
-
 			mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
-
-			mainMenu.revalidate();
-			mainMenu.repaint();
 			sender.updatePropertyView();
 
 			framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());

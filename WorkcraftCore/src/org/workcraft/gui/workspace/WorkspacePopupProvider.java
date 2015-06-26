@@ -197,34 +197,29 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 				ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(openFile);
 				List<String> sections = Tools.getSections(applicableTools);
 
-				if (!sections.isEmpty())
+				if (!sections.isEmpty()) {
 					popup.addSeparator();
-
+				}
 				for (String section : sections) {
-					JMenu m = new JMenu(section);
-
+					String menuName = (section.startsWith("!") ? section.substring(1) : section);
+					JMenu menu = new JMenu(menuName);
 					for (Pair<String, Tool> tool : Tools.getSectionTools(section, applicableTools)) {
-						JMenuItem mi = new JMenuItem(tool.getFirst());
-						tools.put(mi, tool.getSecond());
-
-						mi.addActionListener(new ActionListener() {
+						JMenuItem item = new JMenuItem(tool.getFirst());
+						tools.put(item, tool.getSecond());
+						item.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								Tools.run(openFile, tools.get(e.getSource()));
 							}
 						});
-
-						m.add(mi);
+						menu.add(item);
 					}
-
-					popup.add(m);
+					popup.add(menu);
 				}
 			}
-
 			popup.addSeparator();
 
 			JMenuItem miRemove = new JMenuItem("Delete");
-			miRemove.addActionListener(new ActionListener()
-			{
+			miRemove.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						workspace.delete(path);
@@ -235,9 +230,11 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 		}
 
 		popup.addSeparator();
-		if(path.isEmpty())
-			for (Component c : wsWindow.createMenu().getMenuComponents())
+		if (path.isEmpty()) {
+			for (Component c : wsWindow.createMenu().getMenuComponents()) {
 				popup.add(c);
+			}
+		}
 		return popup;
 	}
 }

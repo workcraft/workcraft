@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -119,15 +120,15 @@ public class MainMenu extends JMenuBar {
 	final private JMenu mnExport = new JMenu("Export");
 	final private JMenu mnRecent = new JMenu("Open recent");
 	final private JMenu mnWindows = new JMenu("Windows");
-	final private JMenu mnTools = new JMenu("Tools");
 	final private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
+	final private LinkedList<JMenu> mnToolsList = new LinkedList<>();
+	final private JMenu mnHelp = new JMenu("Help");
 
 	MainMenu(final MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
 		addFileMenu(mainWindow);
 		addEditMenu(mainWindow);
 		addViewMenu(mainWindow);
-		add(mnTools);
 		addHelpMenu(mainWindow);
 	}
 
@@ -391,7 +392,7 @@ public class MainMenu extends JMenuBar {
 	}
 
 	private void addHelpMenu(final MainWindow mainWindow) {
-		JMenu mnHelp = new JMenu();
+		//JMenu mnHelp = new JMenu();
 		mnHelp.setText("Help");
 
 		ActionMenuItem miOverview = new ActionMenuItem(MainWindowActions.HELP_OVERVIEW_ACTION);
@@ -422,13 +423,8 @@ public class MainMenu extends JMenuBar {
 		mnHelp.addSeparator();
 		mnHelp.add(miAbout);
 
+		//add(Box.createHorizontalGlue());
 		add(mnHelp);
-	}
-
-	final public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
-		we.updateActionState();
-		setToolsMenu(we);
-		setExportMenu(we);
 	}
 
 	private void setExportMenu(final WorkspaceEntry we) {
@@ -463,35 +459,18 @@ public class MainMenu extends JMenuBar {
 				haveNonVisual = true;
 			}
 		}
+		revalidate();
 	}
 
-	private void setToolsMenu(final WorkspaceEntry we) {
-		mnTools.setVisible(true);
-		mnTools.removeAll();
-
-		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we);
-		List<String> sections = Tools.getSections(tools);
-
-		for (String section : sections) {
-			JMenu target = mnTools;
-			if (!section.isEmpty()) {
-				JMenu sectionMenu = new JMenu (section);
-				mnTools.add(sectionMenu);
-				target = sectionMenu;
-			}
-			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
-				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
-				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
-				target.add(miTool);
-			}
-		}
+	public void setExportMenuState(boolean enable) {
+		mnExport.setEnabled(enable);
 	}
 
 	final public void registerUtilityWindow(DockableWindow window) {
 		ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(new ToggleWindowAction(window));
 		miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		miWindowItem.setSelected(!window.isClosed());
-		windowItems.put (window.getID(), miWindowItem);
+		windowItems.put(window.getID(), miWindowItem);
 		mnWindows.add(miWindowItem);
 	}
 
@@ -543,21 +522,62 @@ public class MainMenu extends JMenuBar {
 			mi.setSelected(true);
 	}
 
-	public void reset() {
-		mnTools.setVisible(false);
-		mnTools.removeAll();
+	private void createToolsMenu(final WorkspaceEntry we) {
+		removeToolsMenu();
+
+		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we);
+		List<String> sections = Tools.getSections(tools);
+
+		JMenu mnTools = new JMenu("Tools");
+		mnToolsList.clear();
+		for (String section : sections) {
+			JMenu mnSection = mnTools;
+			if (!section.isEmpty()) {
+				mnSection = new JMenu(section);
+				boolean promote = section.startsWith("!");
+				if (promote) {
+					mnSection.setText(section.substring(1));
+					mnToolsList.add(mnSection);
+				} else {
+					mnTools.add(mnSection);
+					mnToolsList.addFirst(mnTools);
+				}
+			}
+			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
+				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
+				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
+				mnSection.add(miTool);
+			}
+		}
+		addToolsMenu();
 	}
 
-	public JMenu getRecentMenu() {
-		return mnRecent;
+	private void addToolsMenu() {
+		for (JMenu mnTools: mnToolsList) {
+			add(mnTools);
+		}
+		remove(mnHelp);
+		add(mnHelp);
+		revalidate();
 	}
 
-	public JMenu getExportMenu() {
-		return mnExport;
+	public void removeToolsMenu() {
+		for (JMenu mnTools: mnToolsList) {
+			remove(mnTools);
+		}
+		revalidate();
 	}
 
-	public JMenu getToolsMenu() {
-		return mnTools;
+	public void updateToolsMenuState(boolean enable) {
+		for (JMenu mnTool: mnToolsList) {
+			mnTool.setEnabled(enable);
+		}
+	}
+
+	public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
+		we.updateActionState();
+		createToolsMenu(we);
+		setExportMenu(we);
 	}
 
 }

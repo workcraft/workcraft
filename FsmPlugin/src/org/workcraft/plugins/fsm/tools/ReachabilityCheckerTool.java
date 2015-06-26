@@ -22,7 +22,7 @@ public class ReachabilityCheckerTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Verification";
+		return "!Verification";
 	}
 
 	@Override
