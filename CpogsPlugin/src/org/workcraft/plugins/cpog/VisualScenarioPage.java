@@ -7,12 +7,14 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 public class VisualScenarioPage extends VisualPage {
 
+	public static final String PROPERTY_ENCODING = "Encoding";
+
 	public VisualScenarioPage(MathNode refNode) {
 		super(refNode);
 		// TODO Auto-generated constructor stub
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualScenarioPage, Encoding>(
-				this, "Encoding", Encoding.class) {
+				this, PROPERTY_ENCODING, Encoding.class) {
 			public void setter(VisualScenarioPage object, Encoding value) {
 				object.setEncoding(value);
 			}
@@ -26,7 +28,7 @@ public class VisualScenarioPage extends VisualPage {
 
 	public void setEncoding(Encoding encoding) {
 		this.encoding = encoding;
-		sendNotification(new PropertyChangedEvent(this, "encoding"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
 	}
 
 	public Encoding getEncoding() {

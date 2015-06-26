@@ -4,9 +4,11 @@ import java.awt.Color;
 
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public abstract class VisualAbstractRegister extends VisualDelayComponent {
+	public static final String PROPERTY_TOKEN_COLOR = "Token color";
 	protected Color tokenColor = CommonVisualSettings.getBorderColor();
 
 	public VisualAbstractRegister(MathDelayNode ref) {
@@ -16,7 +18,7 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualAbstractRegister, Color>(
-				this, "Token color", Color.class) {
+				this, PROPERTY_TOKEN_COLOR, Color.class) {
 			public void setter(VisualAbstractRegister object, Color value) {
 				object.setTokenColor(value);
 			}
@@ -32,6 +34,7 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
 	}
 
 	@Override

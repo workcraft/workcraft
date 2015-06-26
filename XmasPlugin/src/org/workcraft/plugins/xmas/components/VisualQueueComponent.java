@@ -41,6 +41,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 @Hotkey(KeyEvent.VK_Q)
 @SVGIcon("images/icons/svg/xmas-queue.svg")
 public class VisualQueueComponent extends VisualXmasComponent {
+	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+
 	public Color color = new Color(0, 0, 0, 255);
 
 	public VisualQueueComponent(QueueComponent component) {
@@ -55,7 +57,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualQueueComponent, Integer>(
-				this, "Capacity", Integer.class) {
+				this, QueueComponent.PROPERTY_CAPACITY, Integer.class) {
 			public void setter(VisualQueueComponent object, Integer value) {
 				object.getReferencedQueueComponent().setCapacity(value);
 			}
@@ -98,7 +100,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
 	public void setColorRed() {
 		this.color = new Color(255, 0, 0, 255);
 		this.setForegroundColor(new Color(255, 0, 0, 255));
-		sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
 	}
 
 	@Override

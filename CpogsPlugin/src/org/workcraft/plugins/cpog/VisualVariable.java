@@ -50,6 +50,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @DisplayName("Variable")
 @SVGIcon("images/icons/svg/variable.svg")
 public class VisualVariable extends VisualComponent {
+	public static final String PROPERTY_LABEL = "Label";
 	private static Font variableFont;
 	private static Font valueFont;
 
@@ -82,7 +83,7 @@ public class VisualVariable extends VisualComponent {
 	public VisualVariable(Variable variable) {
 		super(variable);
 		addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
-				this, "State", VariableState.class) {
+				this, Variable.PROPERTY_STATE, VariableState.class) {
 			public void setter(VisualVariable object, VariableState value) {
 				object.setState(value);
 			}
@@ -155,7 +156,7 @@ public class VisualVariable extends VisualComponent {
 	@Override
 	public void setLabel(String label)	{
 		getMathVariable().setLabel(label);
-		sendNotification(new PropertyChangedEvent(this, "label"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
 	}
 
 	@Override

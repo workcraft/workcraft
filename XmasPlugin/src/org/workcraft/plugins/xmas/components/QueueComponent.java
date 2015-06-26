@@ -26,12 +26,13 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.xmas.components.VisualQueueComponent.class)
 public class QueueComponent extends XmasComponent {
+	public static final String PROPERTY_CAPACITY = "Capacity";
 
 	public int capacity = 0;
 
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
-		sendNotification(new PropertyChangedEvent(this, "capacity"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_CAPACITY));
 	}
 
 	public int getCapacity() {

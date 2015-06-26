@@ -48,6 +48,7 @@ import org.workcraft.util.Hierarchy;
 
 
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
+	public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 	public static final int HIT_COMPONENT = 1;
 	public static final int HIT_CONNECTION = 2;
 	public static final int HIT_GROUP = 3;
@@ -67,7 +68,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
-				this, "Is collapsed", Boolean.class) {
+				this, PROPERTY_IS_COLLAPSED, Boolean.class) {
 
 			@Override
 			protected void setter(VisualGroup object, Boolean value) {
