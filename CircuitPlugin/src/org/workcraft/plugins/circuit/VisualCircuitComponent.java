@@ -130,6 +130,17 @@ public class VisualCircuitComponent extends VisualComponent implements
 				return object.getRenderType();
 			}
 		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, String>(
+				this, CircuitComponent.PROPERTY_MODULE, String.class) {
+			protected void setter(VisualCircuitComponent object, String value) {
+				getReferencedCircuitComponent().setModule(value);
+			}
+
+			protected String getter(VisualCircuitComponent object) {
+				return getReferencedCircuitComponent().getModule();
+			}
+		});
 	}
 
 	public void setMainContact(VisualContact contact) {

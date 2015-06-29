@@ -813,10 +813,9 @@ public class MainWindow extends JFrame {
 			ModelDescriptor info = dialog.getSelectedModel();
 			try {
 				MathModel mathModel = info.createMathModel();
-				String name = dialog.getModelTitle();
-
-				if (!dialog.getModelTitle().isEmpty()) {
-					mathModel.setTitle(dialog.getModelTitle());
+				String title = dialog.getModelTitle();
+				if (!title.isEmpty()) {
+					mathModel.setTitle(title);
 				}
 				if (dialog.createVisualSelected()) {
 					VisualModelDescriptor v = info.getVisualModelDescriptor();
@@ -825,10 +824,10 @@ public class MainWindow extends JFrame {
 					}
 					VisualModel visualModel = v.create(mathModel);
 					ModelEntry me = new ModelEntry(info, visualModel);
-					framework.getWorkspace().add(path, name, me, false, dialog.openInEditorSelected());
+					framework.getWorkspace().add(path, title, me, false, dialog.openInEditorSelected());
 				} else {
 					ModelEntry me = new ModelEntry(info, mathModel);
-					framework.getWorkspace().add(path, name, me, false, false);
+					framework.getWorkspace().add(path, title, me, false, false);
 				}
 			} catch (VisualModelInstantiationException e) {
 				e.printStackTrace();
@@ -1137,7 +1136,8 @@ public class MainWindow extends JFrame {
 				if (importer.accept(f)) {
 					try {
 						ModelEntry me = Import.importFromFile(importer, f);
-						me.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
+						String title = FileUtils.getFileNameWithoutExtension(f);
+						me.getModel().setTitle(title);
 						boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 						framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, openInEditor);
 						lastOpenPath = f.getParent();

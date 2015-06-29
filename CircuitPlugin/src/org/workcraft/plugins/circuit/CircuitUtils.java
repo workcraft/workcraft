@@ -105,6 +105,28 @@ public class CircuitUtils {
 		return result;
 	}
 
+	public static String getWireName(Circuit circuit, Contact contact) {
+		String result = null;
+		Contact driver = findDriver(circuit, contact);
+		if (driver.isPort()) {
+			result = circuit.getName(contact);
+		} else {
+			Node parent = driver.getParent();
+			if (parent instanceof FunctionComponent) {
+				FunctionComponent component = (FunctionComponent)parent;
+				String componentName = circuit.getName(component);
+				String componentFlatName = NamespaceHelper.hierarchicalToFlatName(componentName);
+				String driverName = circuit.getName(driver);
+				result = componentFlatName + "_" + driverName;
+			}
+		}
+		return result;
+	}
+
+	public static String getWireName(VisualCircuit circuit, VisualContact contact) {
+		return getContactName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+	}
+
 	public static String getContactName(Circuit circuit, Contact contact) {
 		String result = null;
 		if (contact.isPort()) {

@@ -45,6 +45,7 @@ import org.workcraft.util.Hierarchy;
 public class CircuitComponent extends MathGroup implements Container, ObservableHierarchy {
 
 	public static final String PROPERTY_NAME = "Name";
+	public static final String PROPERTY_MODULE = "Module";
 	public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
 	public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";
 
@@ -73,12 +74,31 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 	private String name = "";
+	private String module = "";
 	private boolean isEnvironment;
 	private boolean isZeroDelay;
 
 	public CircuitComponent() {
 		// Update all set/reset functions of the component when its contact is removed
 		new CircuitHierarchySupervisor().attach(this);
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_MODULE));
+	}
+
+	public String getModule() {
+		return module;
 	}
 
 	public void setIsEnvironment(boolean value) {
@@ -194,15 +214,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 			}
 		}
 		return result;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
-	}
-
-	public String getName() {
-		return name;
 	}
 
 }
