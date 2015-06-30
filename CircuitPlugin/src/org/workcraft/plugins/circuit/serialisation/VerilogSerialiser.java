@@ -121,6 +121,10 @@ public class VerilogSerialiser implements ModelSerialiser {
 		for (CircuitComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), CircuitComponent.class)) {
 			String moduleName = component.getModule();
 			String instanceName = component.getName();
+			if ((moduleName == null) || moduleName.isEmpty()) {
+				System.out.println("  Warning: component '" + instanceName + "' is not associated to a module.");
+				moduleName = "";
+			}
 			out.print("    " + moduleName + " " + instanceName + " (");
 			boolean first = true;
 			for (Contact contact: component.getContacts()) {
@@ -131,6 +135,10 @@ public class VerilogSerialiser implements ModelSerialiser {
 				}
 				String contactName = contact.getName();
 				String wireName = CircuitUtils.getWireName(circuit, contact);
+				if ((wireName == null) || wireName.isEmpty()) {
+					System.out.println("  Warning: contact '" + contactName + "' of component '"+ instanceName + "' is disconnected.");
+					wireName = "";
+				}
 				out.print("." + contactName + "(" + wireName + ")");
 			}
 			out.print(");\n");

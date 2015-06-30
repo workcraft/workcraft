@@ -105,55 +105,70 @@ public class CircuitUtils {
 		return result;
 	}
 
+	public static Contact findSignal(Circuit circuit, Contact contact) {
+		Contact result = contact;
+		Contact driver = findDriver(circuit, contact);
+		if (driver != null) {
+			result = driver;
+			for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
+				if (signal.isPort() && signal.isOutput()) {
+					if (driver == CircuitUtils.findDriver(circuit, signal)) {
+						result = signal;
+						break;
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact) {
+		Contact mathSignal = findSignal((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+		return getVisualContact(circuit, mathSignal);
+	}
+
 	public static String getWireName(Circuit circuit, Contact contact) {
 		String result = null;
-		Contact driver = findDriver(circuit, contact);
-		if (driver.isPort()) {
-			result = circuit.getName(contact);
-		} else {
-			Node parent = driver.getParent();
-			if (parent instanceof FunctionComponent) {
-				FunctionComponent component = (FunctionComponent)parent;
-				String componentName = circuit.getName(component);
-				String componentFlatName = NamespaceHelper.hierarchicalToFlatName(componentName);
-				String driverName = circuit.getName(driver);
-				result = componentFlatName + "_" + driverName;
-			}
+		if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
+			Contact signal = findSignal(circuit, contact);
+			result = getContactName(circuit, signal);
 		}
 		return result;
 	}
 
 	public static String getWireName(VisualCircuit circuit, VisualContact contact) {
-		return getContactName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+		return getWireName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
 	}
 
-	public static String getContactName(Circuit circuit, Contact contact) {
+	public static String getSignalName(Circuit circuit, Contact contact) {
 		String result = null;
-		if (contact.isPort()) {
-			result = circuit.getName(contact);
+		if (contact.isPort() || contact.isInput()) {
+			result = getContactName(circuit, contact);
 		} else {
-			if (contact.isInput()) {
-				result = getInputContactName(circuit, contact);
-			} else if (contact.isOutput()) {
-				result = getOutputContactName(circuit, contact);
-			}
+			result = getOutputContactName(circuit, contact);
 		}
 		return result;
 	}
 
-	public static String getContactName(VisualCircuit circuit, VisualContact contact) {
-		return getContactName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+	public static String getSignalName(VisualCircuit circuit, VisualContact contact) {
+		return getSignalName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
 	}
 
-	private static String getInputContactName(Circuit circuit, Contact contact) {
+	private static String getContactName(Circuit circuit, Contact contact) {
 		String result = null;
-		Node parent = contact.getParent();
-		if (parent instanceof FunctionComponent) {
-			FunctionComponent component = (FunctionComponent)parent;
-			String componentName = circuit.getName(component);
-			String componentFlatName = NamespaceHelper.hierarchicalToFlatName(componentName);
-			String contactName = circuit.getName(contact);
-			result = componentFlatName + "_" + contactName;
+		if (contact != null) {
+			if (contact.isPort()) {
+				result = circuit.getName(contact);
+			} else {
+				Node parent = contact.getParent();
+				if (parent instanceof FunctionComponent) {
+					FunctionComponent component = (FunctionComponent)parent;
+					String componentName = circuit.getName(component);
+					String componentFlatName = NamespaceHelper.hierarchicalToFlatName(componentName);
+					String contactName = circuit.getName(contact);
+					result = componentFlatName + "_" + contactName;
+				}
+			}
 		}
 		return result;
 	}
