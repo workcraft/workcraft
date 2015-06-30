@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.workcraft.dom.Model;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitComponent;
@@ -92,6 +93,10 @@ public class VerilogSerialiser implements ModelSerialiser {
 
 	private void writeHeader(PrintWriter out, Circuit circuit) {
 		String topName = circuit.getTitle();
+		if ((topName == null) || topName.isEmpty()) {
+			System.out.println("  Warning: the top module does not have a name.");
+			topName = "";
+		}
 		out.print(KEYWORD_MODULE + " " + topName + " (");
 		boolean isFirstPort = true;
 		boolean hasPorts = false;
@@ -108,8 +113,9 @@ public class VerilogSerialiser implements ModelSerialiser {
 				hasPorts = true;
 			}
 			String contactType = contact.isInput() ? KEYWORD_INPUT : KEYWORD_OUTPUT;
-			String contactName = contact.getName();
-			out.print("\n    " + contactType + " " + contactName);
+			String contactRef = circuit.getNodeReference(contact);
+			String contactFlatName = NamespaceHelper.hierarchicalToFlatName(contactRef);
+			out.print("\n    " + contactType + " " + contactFlatName);
 		}
 		if (hasPorts) {
 			out.print("\n");
@@ -120,12 +126,13 @@ public class VerilogSerialiser implements ModelSerialiser {
 	private void writeInstances(PrintWriter out, Circuit circuit) {
 		for (CircuitComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), CircuitComponent.class)) {
 			String moduleName = component.getModule();
-			String instanceName = component.getName();
+			String instanceRef = circuit.getNodeReference(component);
+			String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
 			if ((moduleName == null) || moduleName.isEmpty()) {
-				System.out.println("  Warning: component '" + instanceName + "' is not associated to a module.");
+				System.out.println("  Warning: component '" + instanceFlatName + "' is not associated to a module.");
 				moduleName = "";
 			}
-			out.print("    " + moduleName + " " + instanceName + " (");
+			out.print("    " + moduleName + " " + instanceFlatName + " (");
 			boolean first = true;
 			for (Contact contact: component.getContacts()) {
 				if (first) {
@@ -136,7 +143,7 @@ public class VerilogSerialiser implements ModelSerialiser {
 				String contactName = contact.getName();
 				String wireName = CircuitUtils.getWireName(circuit, contact);
 				if ((wireName == null) || wireName.isEmpty()) {
-					System.out.println("  Warning: contact '" + contactName + "' of component '"+ instanceName + "' is disconnected.");
+					System.out.println("  Warning: contact '" + contactName + "' of component '"+ instanceFlatName + "' is disconnected.");
 					wireName = "";
 				}
 				out.print("." + contactName + "(" + wireName + ")");

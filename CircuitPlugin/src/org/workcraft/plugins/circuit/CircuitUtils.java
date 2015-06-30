@@ -157,18 +157,8 @@ public class CircuitUtils {
 	private static String getContactName(Circuit circuit, Contact contact) {
 		String result = null;
 		if (contact != null) {
-			if (contact.isPort()) {
-				result = circuit.getName(contact);
-			} else {
-				Node parent = contact.getParent();
-				if (parent instanceof FunctionComponent) {
-					FunctionComponent component = (FunctionComponent)parent;
-					String componentName = circuit.getName(component);
-					String componentFlatName = NamespaceHelper.hierarchicalToFlatName(componentName);
-					String contactName = circuit.getName(contact);
-					result = componentFlatName + "_" + contactName;
-				}
-			}
+			String contactRef = circuit.getNodeReference(contact);
+			result = NamespaceHelper.hierarchicalToFlatName(contactRef);
 		}
 		return result;
 	}
@@ -182,11 +172,10 @@ public class CircuitUtils {
 			Contact outputPort = getDrivenOutputPort(circuit, contact);
 			if (outputPort != null) {
 				// If a single output port is driven, then take its name.
-				result = circuit.getName(outputPort);
+				String outputPortRef = circuit.getNodeReference(outputPort);
+				result = NamespaceHelper.hierarchicalToFlatName(outputPortRef);
 			} else {
 				// If the component has a single output, use the component name. Otherwise append the contact.
-				String componentName = circuit.getName(component);
-				result = NamespaceHelper.hierarchicalToFlatName(componentName);
 				int output_cnt = 0;
 				for (Node node: component.getChildren()) {
 					if (node instanceof Contact) {
@@ -196,9 +185,12 @@ public class CircuitUtils {
 						}
 					}
 				}
-				if (output_cnt > 1) {
-					String suffix = "_" + circuit.getName(contact);
-					result += suffix;
+				if (output_cnt == 1) {
+					String componentRef = circuit.getNodeReference(component);
+					result = NamespaceHelper.hierarchicalToFlatName(componentRef);
+				} else {
+					String contactRef = circuit.getNodeReference(contact);
+					result = NamespaceHelper.hierarchicalToFlatName(contactRef);
 				}
 			}
 		}
