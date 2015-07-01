@@ -1,0 +1,223 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.7";
+  LOOKAHEAD = 1;
+  STATIC = false;
+}
+
+PARSER_BEGIN(VerilogParser)
+package org.workcraft.plugins.circuit.javacc;
+
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+
+import org.workcraft.dom.Node;
+import org.workcraft.util.Pair;
+import org.workcraft.util.Triple;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.NotFoundException;
+
+public class VerilogParser {
+        
+    public class Module {        public final String name;
+        public final List<Port> ports;
+        public final List<Instance> instances;
+        public Module(String name, List<Port> ports, List<Instance> instances) {            this.name = name;
+            this.ports = ports;
+            this.instances = instances;
+        }
+    }
+
+    public class Port {
+        public final String name;
+        public final String type;
+        public Port(String name, String type) {
+            this.name = name;
+            this.type = type;
+        }
+    }
+
+    
+    
+    public class Instance {
+        public final String name;
+        public final String moduleName;
+        public final List<Connection> connections;
+        public Instance(String name, String moduleName, List<Connection> connections) {
+            this.name = name;
+            this.moduleName = moduleName;
+            this.connections = connections;
+        }
+    }
+
+    public class Connection {
+        public final String name;
+        public final String netName;
+        public Connection(String name, String netName) {
+            this.name = name;
+            this.netName = netName;
+        }
+    }
+}
+PARSER_END(VerilogParser)
+
+SKIP:
+{
+    " "
+|   "\t"
+|   "\r"
+|   "\n"
+|   <"//" (~["\r","\n"])* (["\r", "\n"])*>
+}
+
+TOKEN :
+{
+    <MODULE : "module">
+|   <ENDMODULE : "endmodule">
+|   <INPUT : "input">
+|   <OUTPUT : "output">
+|   <WIRE : "wire">
+|   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])*>
+|   <INTEGER : ([ "0"-"9" ])+>
+|   "("
+|   ")"
+|   "["
+|   "]"
+|   ","
+|   ";"
+|   "."
+}    
+    
+List<Module> parseCircuit() :
+{
+    List<Module> modules = new LinkedList<Module>(); 
+}
+{
+    modules = parseModules()
+    {
+        return modules;
+    }
+}
+
+
+List<Module> parseModules():
+{
+    Module module;
+    List<Module> modules = new LinkedList<Module>();}
+{
+    (        module = parseModule()
+        {            modules.add(module);
+        }
+    )*
+    {        return modules;
+    }
+}
+    
+Module parseModule():
+{
+    Token name;
+    List<Port> ports = new LinkedList<Port>(); 
+    List<Instance> instances = new LinkedList<Instance>(); 
+}
+{
+    <MODULE> name = <NAME>
+    ports = parsePorts()
+    instances = parseInstances()
+    <ENDMODULE>
+    {        return new Module(name.image, ports, instances);
+    }
+}
+
+List<Port> parsePorts():
+{
+    Port port;
+    List<Port> ports = new LinkedList<Port>();}
+{
+    "("
+    (
+        port = parsePort() [","]
+        {
+            ports.add(port);        }
+    )*
+    ")" ";"
+    {        return ports;
+    }
+}
+
+Port parsePort():
+{    Token name;
+    Token type;
+}
+{
+    (type = <INPUT> | type = <OUTPUT>) name = <NAME>
+    {        return new Port(name.image, type.image);
+    }
+    
+}
+
+List<Instance> parseInstances():
+{
+    Instance instance;
+    List<Instance> instances = new LinkedList<Instance>();
+}
+{
+    (
+        instance = parseInstance()
+        {
+            instances.add(instance);
+        }
+    )*
+    {
+        return instances;
+    }
+}
+
+Instance parseInstance():
+{
+    Token moduleName;
+    Token name;
+    List<Connection> connections = new LinkedList<Connection>();
+}
+{
+    moduleName = <NAME> name = <NAME> "(" connections = parseConnections() ")" ";"
+    {
+        return new Instance(name.image, moduleName.image, connections);
+    }
+}
+
+
+List<Connection> parseConnections():
+{
+    Connection connection;
+    List<Connection> connections = new LinkedList<Connection>();
+}
+{
+    (
+        connection = parseConnection()
+        {
+            connections.add(connection);
+        }
+    )*
+    {
+        return connections;
+    }
+}
+
+Connection parseConnection():
+{
+    Token portName;
+    Token netName;
+}
+{
+    "." portName = <NAME> "(" netName = <NAME> ")" [","]
+    {
+        return new Connection(portName.image, netName.image);
+    }
+}
+
