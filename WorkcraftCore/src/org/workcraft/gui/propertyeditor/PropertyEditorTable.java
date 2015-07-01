@@ -114,7 +114,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 					label.setBorder(BORDER_RENDER);
 					PropertyDescriptor descriptor = model.getRowDeclaration(row);
 					try {
-						if (descriptor.getValue() == null) {
+						if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
 							Font boldFont = label.getFont().deriveFont(Font.BOLD);
 							label.setFont(boldFont);
 						}

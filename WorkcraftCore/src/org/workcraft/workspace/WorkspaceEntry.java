@@ -200,6 +200,7 @@ public class WorkspaceEntry implements ObservableState {
 		MainWindow mainWindow = Framework.getInstance().getMainWindow();
 		if (mainWindow != null) {
 			mainWindow.getMainMenu().updateToolsMenuState(canModify);
+			mainWindow.getPropertyView().setVisible(canModify);
 		}
 	}
 
