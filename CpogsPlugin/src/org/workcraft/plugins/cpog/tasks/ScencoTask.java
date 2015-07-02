@@ -386,9 +386,10 @@ public class ScencoTask {
 		int freeVariables;
 		if(settings.getGenMode() != GenerationMode.SCENCO)
 			freeVariables = opt_enc[0].length();
-		else
+		else{
 			freeVariables = settings.getBits();
-		int derivedVariables = CpogSettings.getCircuitSize();
+		}
+		int derivedVariables = settings.getCircuitSize();
 
 		Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
 		DefaultCpogSolver<BooleanFormula> solverCnf = new DefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());

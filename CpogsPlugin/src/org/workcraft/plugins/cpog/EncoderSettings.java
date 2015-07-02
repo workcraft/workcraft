@@ -23,7 +23,7 @@ public class EncoderSettings {
 		}
 	}
 
-	private int solutionNumber = 10, numPO,bits;
+	private int solutionNumber = 10, numPO,bits, circuitSize;
 	private GenerationMode genMode = GenerationMode.OPTIMAL_ENCODING;
 	private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc, abcFlag;
 	private String[] customEnc;
@@ -33,6 +33,14 @@ public class EncoderSettings {
 		this.espressoPath = espressoPath;
 		this.abcPath = abcPath;
 		this.libPath = libPath;
+	}
+
+	public int getCircuitSize() {
+		return circuitSize;
+	}
+
+	public void setCircuitSize(int circuitSize) {
+		this.circuitSize = circuitSize;
 	}
 
 	public boolean isCpogSize() {
