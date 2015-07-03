@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.UIDefaults;
+import javax.swing.border.CompoundBorder;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
@@ -90,7 +91,11 @@ public class SilverOceanTheme extends OceanTheme {
 		super.addCustomEntriesToTable(table);
 
 		List<Serializable> buttonGradient = Arrays.asList(1.0, 0.0, getSecondary3(), getSecondary2(), getSecondary2());
-		BorderUIResource menuItemBorder = new BorderUIResource(BorderFactory.createEmptyBorder(3, 6, 3, 6));
+		BorderUIResource menuBarBorder = new BorderUIResource(BorderFactory.createEmptyBorder(-1, 0, -1, 0));
+		BorderUIResource menuItemBorder = new BorderUIResource(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+		CompoundBorder textFieldBorder = BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(getPrimary1()),
+				BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 		Object[] uiDefaults = {
 				"Button.gradient", buttonGradient,
@@ -112,19 +117,21 @@ public class SilverOceanTheme extends OceanTheme {
 //				"OptionPane.questionIcon", new IconUIResource(ImageLoader.loadIcon("iq")),
 //				"OptionPane.warningIcon", new IconUIResource(ImageLoader.loadIcon("iw")),
 
-				"Menu.border", new BorderUIResource(BorderFactory.createEmptyBorder(3, 2, 3, 2)),
+				"MenuBar.border", menuBarBorder,
+				"Menu.border", menuItemBorder,
+				"PopupMenu.border", menuItemBorder,
 				"MenuItem.border", menuItemBorder,
 				"CheckBoxMenuItem.border", menuItemBorder,
 				"RadioButtonMenuItem.border", menuItemBorder,
 
 				"ComboBox.background", getWhite(),
-//				"CheckBox.background", white,
+				"CheckBox.background", getWhite(),
 //				"OptionPane.background", white,
 //				"Panel.background", white,
 //				"Slider.background", white,
 
 //				"TextField.background", new ColorUIResource(0xf4f4f4),
-				"TextField.border", BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(getPrimary1()), BorderFactory.createEmptyBorder(4, 4, 4, 4)),
+				"TextField.border", textFieldBorder,
 		};
 		table.putDefaults(uiDefaults);
 	}
