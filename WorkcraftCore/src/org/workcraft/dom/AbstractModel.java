@@ -41,7 +41,7 @@ import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 public abstract class AbstractModel implements Model {
 	private Container root;
 	private ReferenceManager mgr;
-	private String title = "Untitled";
+	private String title = "";
 	final private NodeContextTracker nodeContextTracker = new NodeContextTracker();
 
 	public AbstractModel(Container root) {
@@ -120,12 +120,12 @@ public abstract class AbstractModel implements Model {
 	}
 
 	@Override
-	final public String getTitle() {
+	public String getTitle() {
 		return title;
 	}
 
 	@Override
-	final public void setTitle(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 

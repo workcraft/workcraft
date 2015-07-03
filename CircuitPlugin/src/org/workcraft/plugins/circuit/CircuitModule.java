@@ -8,6 +8,10 @@ import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.interop.Exporter;
+import org.workcraft.interop.Importer;
+import org.workcraft.plugins.circuit.interop.VerilogExporter;
+import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
@@ -111,6 +115,8 @@ public class CircuitModule implements Module {
 		pm.registerClass(XMLSerialiser.class, FunctionSerialiser.class);
 		pm.registerClass(XMLDeserialiser.class, FunctionDeserialiser.class);
 		pm.registerClass(Settings.class, CircuitSettings.class);
+		pm.registerClass(Exporter.class, VerilogExporter.class);
+		pm.registerClass(Importer.class, VerilogImporter.class);
 	}
 
 

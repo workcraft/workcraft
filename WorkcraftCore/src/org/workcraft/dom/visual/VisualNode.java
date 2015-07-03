@@ -64,6 +64,10 @@ public abstract class VisualNode implements Properties, Node, Touchable, Stylabl
 		properties.removeByName(propertyName);
 	}
 
+	public void renamePropertyDeclarationByName(String propertyName, String newPropertyName) {
+		properties.renameByName(propertyName, newPropertyName);
+	}
+
 	@Override
 	public Collection<PropertyDescriptor> getDescriptors() {
 		return properties.getDescriptors();

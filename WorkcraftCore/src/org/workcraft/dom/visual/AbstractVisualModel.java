@@ -50,12 +50,14 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.TitlePropertyDescriptor;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
@@ -494,7 +496,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@Override
 	public ModelProperties getProperties(Node node) {
-		return new ModelProperties();
+		ModelProperties properties = new ModelProperties();
+		if (node == null) {
+			properties.add(new TitlePropertyDescriptor(this));
+		}
+		return properties;
 	}
 
 	public Collection<Node> getMathChildren(Collection<Node> nodes) {
@@ -544,6 +550,27 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public VisualNode getTemplateNode() {
 		return templateNode;
+	}
+
+	@Override
+	@NoAutoSerialisation
+	public String getTitle() {
+		if (mathModel != null) {
+			return mathModel.getTitle();
+		} else {
+			return super.getTitle();
+		}
+	}
+
+	@Override
+	@NoAutoSerialisation
+	public void setTitle(String title) {
+		if (mathModel != null) {
+			mathModel.setTitle(title);
+		} else {
+			super.setTitle(title);
+		}
+		sendNotification(new ModelModifiedEvent(this));
 	}
 
 }

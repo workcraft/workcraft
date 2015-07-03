@@ -114,7 +114,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 			editor.getWorkspaceEntry().saveMemento();
 			Circuit circuit = (Circuit)model;
 			for (FunctionContact contact : circuit.getFunctionContacts()) {
-				String contactName = CircuitUtils.getContactName(circuit, contact);
+				String contactName = CircuitUtils.getSignalName(circuit, contact);
 				String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
 				Node node = net.getNodeByReference(ref);
 				if ((node instanceof Place) && savedState.containsKey(node)) {

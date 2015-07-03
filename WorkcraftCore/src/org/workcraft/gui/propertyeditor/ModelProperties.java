@@ -84,6 +84,29 @@ public class ModelProperties implements Properties {
 		}
 	}
 
+	public void rename(final PropertyDescriptor descriptor, final String newPropertyName) {
+		if (descriptor != null) {
+			PropertyDerivative newDescriptor = new PropertyDerivative(descriptor) {
+				@Override
+				public String getName() {
+					return newPropertyName;
+				}
+			};
+			remove(descriptor);
+			add(newDescriptor);
+		}
+	}
+
+	public void renameByName(final String propertyName, final String newPropertyName) {
+		if (propertyName != null) {
+			for (PropertyDescriptor descriptor: new LinkedList<PropertyDescriptor>(propertyDescriptors)) {
+				if ((descriptor != null) && propertyName.equals(descriptor.getName())) {
+					rename(descriptor, newPropertyName);
+				}
+			}
+		}
+	}
+
 	@Override
 	public Collection<PropertyDescriptor> getDescriptors() {
 		return Collections.unmodifiableList(propertyDescriptors);

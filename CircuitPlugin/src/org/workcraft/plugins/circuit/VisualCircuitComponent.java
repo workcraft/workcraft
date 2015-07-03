@@ -130,6 +130,8 @@ public class VisualCircuitComponent extends VisualComponent implements
 				return object.getRenderType();
 			}
 		});
+// TODO: Rename label to module name (?)
+//		renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
 	}
 
 	public void setMainContact(VisualContact contact) {
@@ -839,5 +841,17 @@ public class VisualCircuitComponent extends VisualComponent implements
 			setIsZeroDelay(srcComponent.getIsZeroDelay());
 		}
 	}
+
+	@Override
+	public String getLabel() {
+		return getReferencedCircuitComponent().getModule();
+	}
+
+	@Override
+	public void setLabel(String label) {
+		getReferencedCircuitComponent().setModule(label);
+		super.setLabel(label);
+	}
+
 
 }
