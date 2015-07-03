@@ -23,6 +23,8 @@ package org.workcraft.plugins.circuit.interop;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.workcraft.exceptions.DeserialisationException;
@@ -32,6 +34,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitModelDescriptor;
 import org.workcraft.plugins.circuit.javacc.ParseException;
 import org.workcraft.plugins.circuit.javacc.VerilogParser;
+import org.workcraft.plugins.circuit.javacc.VerilogParser.Module;
 import org.workcraft.workspace.ModelEntry;
 
 public class VerilogImporter implements Importer {
@@ -51,27 +54,64 @@ public class VerilogImporter implements Importer {
 		return new ModelEntry(new CircuitModelDescriptor(), importCircuit(in));
 	}
 
+
+
 	public Circuit importCircuit(InputStream in) throws DeserialisationException {
 		try {
 			VerilogParser parser = new VerilogParser(in);
 			List<VerilogParser.Module> modules = parser.parseCircuit();
-			for (VerilogParser.Module module: modules) {
-				System.out.println("  Module: '" + module.name + "'");
-				for (VerilogParser.Port port: module.ports) {
-					System.out.println("  Port: '" + port.name + "' (" + port.type +")");
-				}
-				for (VerilogParser.Instance instance: module.instances) {
-					System.out.println("  Instance: '" + instance.name + "' (" + instance.moduleName +")");
-					for (VerilogParser.Connection connection: instance.connections) {
-						System.out.println("    Connection: '" + connection.name + "' (" + connection.netName +")");
-					}
-				}
-			}
+//			printDebugInfo(modules);
+			HashSet<VerilogParser.Module> topModules = getTopModule(modules);
+			printDebugInfo(topModules);
 			return new Circuit();
 		} catch (FormatException e) {
 			throw new DeserialisationException(e);
 		} catch (ParseException e) {
 			throw new DeserialisationException(e);
+		}
+	}
+
+	private HashSet<VerilogParser.Module> getTopModule(List<Module> modules) {
+		HashSet<VerilogParser.Module> result = new HashSet<>();
+
+		HashSet<String> availableModules = new HashSet<>();
+		HashSet<String> instantiatedModules = new HashSet<>();
+		HashSet<String> emptyModules = new HashSet<>();
+		for (VerilogParser.Module module: modules) {
+			if (module.name == null) continue;
+			availableModules.add(module.name);
+			if (module.instances.isEmpty()) {
+				emptyModules.add(module.name);
+			}
+			for (VerilogParser.Instance instance: module.instances) {
+				if (instance.moduleName == null) continue;
+				instantiatedModules.add(instance.moduleName);
+			}
+		}
+		availableModules.removeAll(emptyModules);
+		availableModules.removeAll(instantiatedModules);
+		for (String topName: availableModules) {
+			for (VerilogParser.Module module: modules) {
+				if (topName.equals(module.name)) {
+					result.add(module);
+				}
+			}
+		}
+		return result;
+	}
+
+	private void printDebugInfo(Collection<VerilogParser.Module> modules) {
+		for (VerilogParser.Module module: modules) {
+			System.out.println("Module: '" + module.name + "'");
+			for (VerilogParser.Port port: module.ports) {
+				System.out.println("  Port: '" + port.name + "' (" + port.type +")");
+			}
+			for (VerilogParser.Instance instance: module.instances) {
+				System.out.println("  Instance: '" + instance.name + "' (" + instance.moduleName +")");
+				for (VerilogParser.Connection connection: instance.connections) {
+					System.out.println("    Connection: '" + connection.name + "' (" + connection.netName +")");
+				}
+			}
 		}
 	}
 }

@@ -11,22 +11,34 @@ public interface VerilogParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int MODULE = 6;
+  int MODULE = 13;
   /** RegularExpression Id. */
-  int ENDMODULE = 7;
+  int ENDMODULE = 14;
   /** RegularExpression Id. */
-  int INPUT = 8;
+  int INPUT = 15;
   /** RegularExpression Id. */
-  int OUTPUT = 9;
+  int OUTPUT = 16;
   /** RegularExpression Id. */
-  int WIRE = 10;
+  int INOUT = 17;
   /** RegularExpression Id. */
-  int NAME = 11;
+  int REG = 18;
   /** RegularExpression Id. */
-  int INTEGER = 12;
+  int WIRE = 19;
+  /** RegularExpression Id. */
+  int NAME = 20;
+  /** RegularExpression Id. */
+  int LOGIC0 = 21;
+  /** RegularExpression Id. */
+  int LOGIC1 = 22;
+  /** RegularExpression Id. */
+  int INTEGER = 23;
 
   /** Lexical state. */
   int DEFAULT = 0;
+  /** Lexical state. */
+  int WITHIN_SPECIFY = 1;
+  /** Lexical state. */
+  int WITHIN_PRIMITIVE = 2;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -36,12 +48,23 @@ public interface VerilogParserConstants {
     "\"\\r\"",
     "\"\\n\"",
     "<token of kind 5>",
+    "<token of kind 6>",
+    "\"specify\"",
+    "\"primitive\"",
+    "\"endspecify\"",
+    "<token of kind 10>",
+    "\"endprimitive\"",
+    "<token of kind 12>",
     "\"module\"",
     "\"endmodule\"",
     "\"input\"",
     "\"output\"",
+    "\"inout\"",
+    "\"reg\"",
     "\"wire\"",
     "<NAME>",
+    "\"1\\\'b0\"",
+    "\"1\\\'b1\"",
     "<INTEGER>",
     "\"(\"",
     "\")\"",
