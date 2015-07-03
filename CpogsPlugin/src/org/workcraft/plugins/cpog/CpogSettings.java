@@ -70,16 +70,6 @@ public class CpogSettings implements Settings {
 			}
 		});
 
-		properties.add(new PropertyDeclaration<CpogSettings, Integer>(
-				this, "Circuit size in 2-input gates", Integer.class) {
-			protected void setter(CpogSettings object, Integer value) {
-				CpogSettings.setCircuitSize(value);
-			}
-			protected Integer getter(CpogSettings object) {
-				return CpogSettings.getCircuitSize();
-			}
-		});
-
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
 				this, "Clasp solver command", String.class) {
 			protected void setter(CpogSettings object, String value) {

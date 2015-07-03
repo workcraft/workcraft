@@ -24,13 +24,13 @@ public class ScencoConfigurationDialog extends JDialog {
 	private JLabel numberOfSolutionsLabel, contLabel,
 					verboseModeLabel,exampleLabel,exampleLabel2,exampleLabel3,exampleLabel4,
 					customEncLabel,bitsLabel,genLabel, guidLabel,
-					optimiseLabel, abcLabel;
+					optimiseLabel, abcLabel,circuitSizeLabel;
 	private JCheckBox verboseModeCheck, customEncodings,
 					 contCheck, abcCheck;
 	private JComboBox generationModeBox,OptimiseBox, guidedModeBox;
 	private JPanel generationPanel, buttonsPanel, content;
 	private JButton saveButton, closeButton;
-	private JTextField numberOfSolutionsText, bitsText;
+	private JTextField numberOfSolutionsText, bitsText,circuitSizeText;
 	private PresetManager<EncoderSettings> presetManager;
 	private JTable encodingTable;
 	JScrollPane scrollPane;
@@ -46,10 +46,10 @@ public class ScencoConfigurationDialog extends JDialog {
 
 	// sizes
 	Dimension dimensionLabel = new Dimension(270, 22);
-	Dimension dimensionLongLabel = new Dimension(800,15);
+	Dimension dimensionLongLabel = new Dimension(800,22);
 	Dimension dimensionBox = new Dimension(270, 22);
 	Dimension dimensionText = new Dimension(585,22);
-	Dimension dimensionTable = new Dimension(800,200);
+	Dimension dimensionTable = new Dimension(800,180);
 	Dimension dimensionWindow = new Dimension(100,400);
 
 	//generationPanel.getPreferredSize().height
@@ -121,6 +121,9 @@ public class ScencoConfigurationDialog extends JDialog {
 				// number of bits selection
 				settings.setBits(Integer.valueOf(bitsText.getText()));
 
+				// circuit size selection
+				settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
+
 				// optimise for option
 				settings.setCpogSize(OptimiseBox.getSelectedIndex() == 0 ? false : true);
 
@@ -164,7 +167,10 @@ public class ScencoConfigurationDialog extends JDialog {
 					for(int i = 0; i<m; i++)
 						encodings[i] = Integer.toBinaryString(i);
 					settings.setCustomEnc(encodings);
-				}else{
+				}else if(generationModeBox.getSelectedIndex() == 1){
+					settings.setCustomEncMode(false);
+				}
+				else{
 					settings.setBits(bits+1);
 					settings.setCustomEncMode(false);
 				}
@@ -217,11 +223,13 @@ public class ScencoConfigurationDialog extends JDialog {
             			slow.setVisible(true);
             			normal.setSelected(true);
             		}
+            		/* CONTINUOUS MODE DISABLED BY NOW
+            		 *
             		if (generationModeBox.getSelectedIndex() == 0 && (guidedModeBox.getSelectedIndex() == 0 ||
             				guidedModeBox.getSelectedIndex() == 2)){
             			contCheck.setVisible(true);
                 		contLabel.setVisible(true);
-            		}
+            		}*/
             	}
             }
         });
@@ -260,7 +268,7 @@ public class ScencoConfigurationDialog extends JDialog {
         				guidedModeBox.setVisible(true);
         				guidedModeBox.setSelectedIndex(0);
 	            		break;
-                	// OLD SCENCO
+                	// SAT-Based search
             		case 1:
             			// strategy box
             			guidLabel.setVisible(false);
@@ -278,10 +286,17 @@ public class ScencoConfigurationDialog extends JDialog {
                 		// custom encodings
                 		customPanelVisibility(false);
 
+                		// SAT-Based approach parameters
+                		bitsText.setBackground(Color.WHITE);
+                		bitsText.setEnabled(true);
+                		bitsLabel.setVisible(true);
+                		bitsText.setVisible(true);
+                		modifyCircuitSize(true);
+
                 		// set size of window
-                		sizeWindow(815,210,130,100);
+                		sizeWindow(815,305,220,100);
                 		break;
-                	// OLD SYNTHESISE
+                	// SINGLE LITERAL search
             		case 2:
             			// strategy box
             			guidLabel.setVisible(false);
@@ -299,10 +314,13 @@ public class ScencoConfigurationDialog extends JDialog {
                 		// custom encodings
                 		customPanelVisibility(false);
 
+                		// disabling circuit size
+                		modifyCircuitSize(false);
+
                 		// set size of window
                 		sizeWindow(815,210,130,100);
                 		break;
-                		// SEQUENTIAL SYNTHESISE
+                	// SEQUENTIAL SYNTHESISE
             		case 3:
             			// strategy box
             			guidLabel.setVisible(false);
@@ -320,12 +338,16 @@ public class ScencoConfigurationDialog extends JDialog {
                 		// custom encodings
                 		customPanelVisibility(false);
 
+                		// disabling circuit size
+                		modifyCircuitSize(false);
+
                 		// set size of window
                 		sizeWindow(815,210,130,100);
                 		break;
                 	default:
             	}
             }
+
         });
 
 		guidedModeBox.addActionListener(new ActionListener() {
@@ -347,10 +369,10 @@ public class ScencoConfigurationDialog extends JDialog {
 
             		// custom encodings
             		customPanelVisibility(true);
-
+            		modifyCircuitSize(false);
 
             		// set size of window
-            		sizeWindow(815,685,610,100);
+            		sizeWindow(815,682,607,100);
 					break;
 				// FULL COVERAGE
 				case 1:
@@ -365,9 +387,10 @@ public class ScencoConfigurationDialog extends JDialog {
 
             		// custom encodings
             		customPanelVisibility(false);
+            		modifyCircuitSize(false);
 
             		// set size of window
-            		sizeWindow(815,245,175,100);
+            		sizeWindow(815,260,175,100);
 					break;
 				// RANDOM SEARCH
 				case 2:
@@ -383,6 +406,7 @@ public class ScencoConfigurationDialog extends JDialog {
 
             		// custom encodings
             		customPanelVisibility(false);
+            		modifyCircuitSize(false);
 
             		// set size of window
             		sizeWindow(815,300,220,100);
@@ -418,13 +442,13 @@ public class ScencoConfigurationDialog extends JDialog {
 		numberOfSolutionsLabel.setPreferredSize(dimensionLabel);
 		numberOfSolutionsText = new JTextField();
 		numberOfSolutionsText.setText(String.valueOf(settings.getSolutionNumber()));
-		numberOfSolutionsText.setPreferredSize(new Dimension(70, 15));
+		numberOfSolutionsText.setPreferredSize(new Dimension(70, 22));
 		numberOfSolutionsText.setBackground(Color.WHITE);
 
 		// CONTINUOUS MODE
 		contCheck = new JCheckBox("",settings.isContMode());
 		contLabel = new JLabel("Continuous mode");
-		contLabel.setPreferredSize(new Dimension(150, 15));
+		contLabel.setPreferredSize(new Dimension(150, 22));
 		contCheck.addActionListener(new ActionListener() {
 
             @Override
@@ -470,8 +494,10 @@ public class ScencoConfigurationDialog extends JDialog {
             }
         });
 
-		bitsLabel = new JLabel("Number of bits to use");
+		bitsLabel = new JLabel("Encoding bit-width");
 		bitsLabel.setPreferredSize(dimensionLabel);
+		circuitSizeLabel = new JLabel("Circuit size in 2-input gates");
+		circuitSizeLabel.setPreferredSize(dimensionLabel);
 		int value = 2;
 		while(value < m){
 			value *=2;
@@ -480,7 +506,7 @@ public class ScencoConfigurationDialog extends JDialog {
 
 		bitsText = new JTextField();
 		bitsText.setText(String.valueOf(bits + 1));
-		bitsText.setPreferredSize(new Dimension(70, 15));
+		bitsText.setPreferredSize(new Dimension(70, 22));
 		bitsText.setBackground(Color.LIGHT_GRAY);
 		bitsText.setEnabled(false);
 		bitsText.addActionListener(new ActionListener() {
@@ -502,6 +528,10 @@ public class ScencoConfigurationDialog extends JDialog {
             	}
             }
         });
+		circuitSizeText = new JTextField();
+		circuitSizeText.setText(String.valueOf(bits + 2));
+		circuitSizeText.setPreferredSize(new Dimension(70, 22));
+		modifyCircuitSize(false);
 
 		String[] columnNames = {"Graph Name","Encoding"};
 		Object[][] data = new Object[m][3];
@@ -549,9 +579,10 @@ public class ScencoConfigurationDialog extends JDialog {
 		generationPanel.add(normal);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
 		generationPanel.add(fast);
-		generationPanel.add(new SimpleFlowLayout.LineBreak());
-		generationPanel.add(contCheck);
-		generationPanel.add(contLabel);
+		// CONTINUOUS MODE DISABLED BY NOW
+		//generationPanel.add(new SimpleFlowLayout.LineBreak());
+		//generationPanel.add(contCheck);
+		//generationPanel.add(contLabel);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
 		generationPanel.add(numberOfSolutionsText);
 		generationPanel.add(numberOfSolutionsLabel);
@@ -572,6 +603,9 @@ public class ScencoConfigurationDialog extends JDialog {
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
 		generationPanel.add(bitsText);
 		generationPanel.add(bitsLabel);
+		generationPanel.add(new SimpleFlowLayout.LineBreak());
+		generationPanel.add(circuitSizeText);
+		generationPanel.add(circuitSizeLabel);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
 		generationPanel.add(scrollPane);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
@@ -597,6 +631,19 @@ public class ScencoConfigurationDialog extends JDialog {
 		scrollPane.setVisible(condition);
 		bitsLabel.setVisible(condition);
 		bitsText.setVisible(condition);
+
+		if(customEncodings.isSelected()){
+    		encodingTable.setEnabled(true);
+    		encodingTable.setBackground(Color.WHITE);
+    		bitsText.setBackground(Color.WHITE);
+    		bitsText.setEnabled(true);
+    	}
+    	else{
+    		encodingTable.setEnabled(false);
+    		encodingTable.setBackground(Color.LIGHT_GRAY);
+    		bitsText.setBackground(Color.LIGHT_GRAY);
+    		bitsText.setEnabled(false);
+    	}
 	}
 
 	private void numbSolutPanelVisibility(boolean condition){
@@ -607,5 +654,11 @@ public class ScencoConfigurationDialog extends JDialog {
 			contCheck.setVisible(condition);
 			contCheck.setSelected(false);
 		}
+	}
+
+	private void modifyCircuitSize(boolean b) {
+		circuitSizeText.setEnabled(b);
+		circuitSizeLabel.setVisible(b);
+		circuitSizeText.setVisible(b);
 	}
 }
