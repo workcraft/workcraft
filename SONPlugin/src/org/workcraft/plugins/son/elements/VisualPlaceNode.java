@@ -27,7 +27,7 @@ import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 
 public class VisualPlaceNode extends VisualComponent{
 
-	private Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+	private Font errorFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.45f);
 	private Positioning errLabelPositioning = SONSettings.getErrLabelPositioning();
 	private RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	private Color errLabelColor = SONSettings.getErrLabelColor();
