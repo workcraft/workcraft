@@ -676,8 +676,8 @@ public class SelectionTool extends AbstractTool {
 				scrollPane.getParent().remove(scrollPane);
 				if (!cancelInPlaceEdit) {
 					try {
-						component.setLabel(newText);
 						editor.getWorkspaceEntry().saveMemento();
+						component.setLabel(newText);
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
 						editLabelInPlace(editor, component, newText);
