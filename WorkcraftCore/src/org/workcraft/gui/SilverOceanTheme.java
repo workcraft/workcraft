@@ -6,10 +6,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.UIDefaults;
-import javax.swing.border.CompoundBorder;
-import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -17,8 +14,8 @@ import javax.swing.plaf.metal.OceanTheme;
 
 public class SilverOceanTheme extends OceanTheme {
 
-	private static final double FONT_SIZE = 11.0;
-	private static final String FONT_NAME = "Verdana";
+	private static final double FONT_SIZE = 10.0;
+	private static final String FONT_NAME = Font.SANS_SERIF;
 
 	public static void enable() {
 		MetalLookAndFeel.setCurrentTheme(new SilverOceanTheme());
@@ -89,13 +86,7 @@ public class SilverOceanTheme extends OceanTheme {
 	@Override
 	public void addCustomEntriesToTable(UIDefaults table) {
 		super.addCustomEntriesToTable(table);
-
 		List<Serializable> buttonGradient = Arrays.asList(1.0, 0.0, getSecondary3(), getSecondary2(), getSecondary2());
-		BorderUIResource menuBarBorder = new BorderUIResource(BorderFactory.createEmptyBorder(-1, 0, -1, 0));
-		BorderUIResource menuItemBorder = new BorderUIResource(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-		CompoundBorder textFieldBorder = BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(getPrimary1()),
-				BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 		Object[] uiDefaults = {
 				"Button.gradient", buttonGradient,
@@ -111,27 +102,6 @@ public class SilverOceanTheme extends OceanTheme {
 
 				"TabbedPane.selected", getPrimary2(),
 				"TabbedPane.contentAreaColor", getPrimary2(),
-
-//				"OptionPane.errorIcon", new IconUIResource(ImageLoader.loadIcon("ix")),
-//				"OptionPane.informationIcon", new IconUIResource(ImageLoader.loadIcon("ii")),
-//				"OptionPane.questionIcon", new IconUIResource(ImageLoader.loadIcon("iq")),
-//				"OptionPane.warningIcon", new IconUIResource(ImageLoader.loadIcon("iw")),
-
-				"MenuBar.border", menuBarBorder,
-				"Menu.border", menuItemBorder,
-				"PopupMenu.border", menuItemBorder,
-				"MenuItem.border", menuItemBorder,
-				"CheckBoxMenuItem.border", menuItemBorder,
-				"RadioButtonMenuItem.border", menuItemBorder,
-
-				"ComboBox.background", getWhite(),
-				"CheckBox.background", getWhite(),
-//				"OptionPane.background", white,
-//				"Panel.background", white,
-//				"Slider.background", white,
-
-//				"TextField.background", new ColorUIResource(0xf4f4f4),
-				"TextField.border", textFieldBorder,
 		};
 		table.putDefaults(uiDefaults);
 	}

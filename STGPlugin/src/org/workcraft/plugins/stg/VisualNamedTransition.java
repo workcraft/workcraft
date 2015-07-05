@@ -39,7 +39,7 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
-	public static Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.75f);
+	public static Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.75f);
 	private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, getRenderedTextOffset());
 
 	public VisualNamedTransition(NamedTransition namedTransition) {

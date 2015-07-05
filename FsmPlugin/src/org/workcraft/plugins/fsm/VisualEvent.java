@@ -26,7 +26,7 @@ public class VisualEvent extends VisualConnection {
 	// Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
 	public static final char EPSILON_SYMBOL = 0x03B5;
 
-	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	public static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 
 	private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
 	private Color labelColor = CommonVisualSettings.getLabelColor();

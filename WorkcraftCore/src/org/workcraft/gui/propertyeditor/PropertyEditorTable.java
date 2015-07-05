@@ -47,7 +47,7 @@ import org.workcraft.plugins.PluginInfo;
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable implements PropertyEditor {
 	public static final Border BORDER_RENDER = BorderFactory.createEmptyBorder(1, 3, 1, 1);
-	public static final Border BORDER_EDIT = BorderFactory.createEmptyBorder(0, 3, 1, 1);
+	public static final Border BORDER_EDIT = BorderFactory.createEmptyBorder(1, 3, 1, 1);
 
 	HashMap<Class<?>, PropertyClass> propertyClasses;
 	TableCellRenderer cellRenderers[];

@@ -497,7 +497,7 @@ public class MainWindow extends JFrame {
 			public void run() {
 				// hack to fix the annoying delay occurring when
 				// createGlyphVector is called for the first time
-				Font font = new Font("Sans-serif", Font.PLAIN, 1);
+				Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 				font.createGlyphVector(new FontRenderContext(
 						new AffineTransform(), true, true), TITLE_PLACEHOLDER);
 

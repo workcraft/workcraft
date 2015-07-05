@@ -1,7 +1,5 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -40,6 +38,8 @@ import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class MpsatConfigurationDialog extends JDialog {

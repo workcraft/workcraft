@@ -30,7 +30,7 @@ public class VisualSuperGroup extends VisualGroup{
 	private Rectangle2D labelBB = null;
 	private String label="";
 
-	private static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	private static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 
 	public VisualSuperGroup(){
 		addPropertyDeclaration(new PropertyDeclaration<VisualSuperGroup, String>(

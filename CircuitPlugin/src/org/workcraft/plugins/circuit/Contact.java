@@ -84,7 +84,7 @@ public class Contact extends MathNode implements BooleanVariable {
 		return ioType;
 	}
 
-	// this is only for information, use Circuit to set component's names
+	// FIXME: This setName method is only to enable accessing contact name via getName. Use setName of Circuit class to set all node names!
 	public void setName(String value) {
 		if (!this.name.equals(value)) {
 			this.name = value;

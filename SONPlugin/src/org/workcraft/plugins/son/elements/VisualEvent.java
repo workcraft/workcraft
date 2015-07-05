@@ -54,7 +54,7 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 			GlyphVector glyphVector=null;
 			Rectangle2D labelBB=null;
 
-			Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+			Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 
 			if (isFaulty())
 				glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "1");

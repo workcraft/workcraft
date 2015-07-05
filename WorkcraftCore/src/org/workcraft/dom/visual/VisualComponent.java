@@ -51,8 +51,8 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
 	public static final String PROPERTY_FILL_COLOR = "Fill color";
 
-	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-	public static final Font nameFont = new Font("Sans-serif", Font.ITALIC, 1).deriveFont(0.5f);
+	public static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
+	public static final Font nameFont = new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
 
 	private MathNode refNode = null;
 	protected double size = CommonVisualSettings.getBaseSize();
