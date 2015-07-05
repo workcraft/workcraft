@@ -99,38 +99,43 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		HashMap <MathNode, VisualComponent> createdNodes = new HashMap <MathNode, VisualComponent>();
 		HashMap <VisualConnection, MathConnection> createdConnections = new	HashMap <VisualConnection, MathConnection>();
 
-		for (Node n : mathModel.getRoot().getChildren()) {
-			if (n instanceof MathConnection) {
-				MathConnection connection = (MathConnection)n;
-
-				VisualConnection visualConnection = NodeFactory.createVisualConnection(connection);
+		Container mathRoot = getMathModel().getRoot();
+		Container visualRoot = getRoot();
+		for (Node node : mathRoot.getChildren()) {
+			if (node instanceof MathConnection) {
+				MathConnection mathConnection = (MathConnection)node;
+				VisualConnection visualConnection = NodeFactory.createVisualConnection(mathConnection);
 				if (visualConnection != null) {
 					// Will create incomplete instance, setConnection() needs to be called later to finalise.
 					// This is to avoid cross-reference problems.
-					createdConnections.put(visualConnection, connection);
+					createdConnections.put(visualConnection, mathConnection);
 				}
 			} else {
-				MathNode node = (MathNode)n;
-				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(node);
-
+				MathNode mathNode = (MathNode)node;
+				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(mathNode);
 				if (visualComponent != null) {
-					getRoot().add(visualComponent);
-					createdNodes.put(node, visualComponent);
+					visualRoot.add(visualComponent);
+					createdNodes.put(mathNode, visualComponent);
+					if (visualComponent instanceof Container) {
+						Container visualContainer = (Container)visualComponent;
+						for (Node childNode: mathNode.getChildren()) {
+							MathNode mathChildNode = (MathNode)childNode;
+							VisualComponent visualChildComponent = (VisualComponent)NodeFactory.createVisualComponent(mathChildNode);
+							visualContainer.add(visualChildComponent);
+							createdNodes.put(mathChildNode, visualChildComponent);
+						}
+					}
 				}
 			}
 		}
 
-		for (VisualConnection vc : createdConnections.keySet()) {
-			MathConnection mc = createdConnections.get(vc);
-			vc.setVisualConnectionDependencies(
-					createdNodes.get(mc.getFirst()),
-					createdNodes.get(mc.getSecond()),
-					new Polyline(vc), mc);
-
-			getRoot().add(vc);
-//			if (mc.getFirst() == mc.getSecond()) {
-//				vc.setConnectionType(ConnectionType.BEZIER);
-//			}
+		for (VisualConnection visualConnection : createdConnections.keySet()) {
+			MathConnection mathConnection = createdConnections.get(visualConnection);
+			VisualComponent visualComponent = createdNodes.get(mathConnection.getFirst());
+			VisualComponent secondComponent = createdNodes.get(mathConnection.getSecond());
+			Polyline graphic = new Polyline(visualConnection);
+			visualConnection.setVisualConnectionDependencies(visualComponent, secondComponent, graphic, mathConnection);
+			visualRoot.add(visualConnection);
 		}
 	}
 
