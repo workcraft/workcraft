@@ -120,6 +120,7 @@ public class CpogSelectionTool extends SelectionTool {
 		});
 		buttonPanel.add(btnInsert);
 
+		/*
 		final JButton btnProcessMine = new JButton("Process Mine");
 		btnProcessMine.addActionListener(new ActionListener() {
 
@@ -168,7 +169,8 @@ public class CpogSelectionTool extends SelectionTool {
 
 					expressions.close();
 					//J.R.Beaumont OS X file path for pgminer-algebra tool.  Has not yet fully been integrated into Workcraft, this is currently for a demo
-                    Process process = new ProcessBuilder("/Users/Jonny/Documents/workspace/trunk-cpog-update/tools/pgminer/pgminer-algebra", inputFile.getAbsolutePath()).start();
+                    //Process process = new ProcessBuilder("/Users/Jonny/Documents/workspace/trunk-cpog-update/tools/pgminer/pgminer-algebra", inputFile.getAbsolutePath()).start();
+					Process process = new ProcessBuilder("/home/jonny/Documents/Workspace/trunk-cpog-update/tools/pgminer/pgminer-algebra" , inputFile.getAbsolutePath()).start();
 
 					String filePath = inputFile.getAbsolutePath();
 
@@ -201,7 +203,7 @@ public class CpogSelectionTool extends SelectionTool {
 			}
 
 		});
-		buttonPanel.add(btnProcessMine);
+		buttonPanel.add(btnProcessMine);*/
 
 		final JButton btnTextInsert = new JButton("Text File");
 		btnTextInsert.addActionListener(new ActionListener() {
