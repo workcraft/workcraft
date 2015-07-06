@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -35,6 +36,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.CircuitModelDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.javacc.ParseException;
 import org.workcraft.plugins.circuit.javacc.VerilogParser;
@@ -61,12 +63,7 @@ public class VerilogImporter implements Importer {
 	public Circuit importCircuit(InputStream in) throws DeserialisationException {
 		try {
 			VerilogParser parser = new VerilogParser(in);
-			HashMap<String, Module> modules = new HashMap<>();
-			for (VerilogParser.Module module: parser.parseCircuit()) {
-				if ((module == null) || (module.name == null)) continue;
-				modules.put(module.name, module);
-			}
-//			printDebugInfo(modules);
+			HashMap<String, Module> modules = getModuleMap(parser.parseCircuit());
 			HashSet<VerilogParser.Module> topModules = getTopModule(modules);
 			if (topModules.size() == 0) {
 				throw new RuntimeException("No top module found.");
@@ -138,20 +135,15 @@ public class VerilogImporter implements Importer {
 			circuit.add(contact);
 		}
 		for (VerilogParser.Instance verilogInstance: topModule.instances) {
-			CircuitComponent component = new CircuitComponent();
+			FunctionComponent component = new FunctionComponent();
 			component.setModule(verilogInstance.moduleName);
 			circuit.setName(component, verilogInstance.name);
 			circuit.add(component);
 			VerilogParser.Module module = modules.get(verilogInstance.moduleName);
-			HashMap<String, VerilogParser.Port> ports = new HashMap<>();
-			if (module != null) {
-				for (VerilogParser.Port port: module.ports) {
-					ports.put(port.name, port);
-				}
-			}
+			HashMap<String, VerilogParser.Port> instancePorts = getModulePortMap(module);
 			for (VerilogParser.Connection verilogConnection: verilogInstance.connections) {
 				FunctionContact contact = new FunctionContact();
-				VerilogParser.Port verilogPort = ports.get(verilogConnection.name);
+				VerilogParser.Port verilogPort = instancePorts.get(verilogConnection.name);
 				Wire wire = wires.get(verilogConnection.netName);
 				if (wire == null) {
 					wire = new Wire();
@@ -178,6 +170,25 @@ public class VerilogImporter implements Importer {
 			}
 		}
 		return circuit;
+	}
+
+	private HashMap<String, VerilogParser.Module> getModuleMap(List<VerilogParser.Module> modules) throws ParseException {
+		HashMap<String, VerilogParser.Module> result = new HashMap<>();
+		for (VerilogParser.Module module: modules) {
+			if ((module == null) || (module.name == null)) continue;
+			result.put(module.name, module);
+		}
+		return result;
+	}
+
+	private HashMap<String, VerilogParser.Port> getModulePortMap(VerilogParser.Module module) {
+		HashMap<String, VerilogParser.Port> result = new HashMap<>();
+		if (module != null) {
+			for (VerilogParser.Port port: module.ports) {
+				result.put(port.name, port);
+			}
+		}
+		return result;
 	}
 
 }
