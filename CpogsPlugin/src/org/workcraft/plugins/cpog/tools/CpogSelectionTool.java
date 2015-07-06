@@ -58,6 +58,8 @@ public class CpogSelectionTool extends SelectionTool {
 
 	private ArrayList<VisualPage> refPages = new ArrayList<>();
 
+	private GraphEditor editor;
+
 	public CpogSelectionTool() {
 		super();
 	}
@@ -68,6 +70,8 @@ public class CpogSelectionTool extends SelectionTool {
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
+		this.editor = editor;
+		((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel()).setSelectionTool(this);
 		super.createInterfacePanel(editor);
 		expressionText = new JTextArea();
 		expressionText.setLineWrap(false);
@@ -102,14 +106,14 @@ public class CpogSelectionTool extends SelectionTool {
 							exp = exp + " " + s;
 						} else {
 							if (exp.compareTo("") != 0) {
-								insertExpression(editor, exp, false, false, false);
+								insertExpression(exp, false, false, false);
 								exp = "";
 							}
 							exp = s;
 						}
 					}
 					if (exp.compareTo("") != 0) {
-						insertExpression(editor, exp, false, false, false);
+						insertExpression(exp, false, false, false);
 					}
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
@@ -229,7 +233,7 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                 while (fileIn.hasNextLine()) {
                     equation = fileIn.nextLine();
-                    insertExpression(editor, equation, true, false, false);
+                    insertExpression(equation, true, false, false);
                 }
             }
 
@@ -241,7 +245,8 @@ public class CpogSelectionTool extends SelectionTool {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				expressionText.setText(parsingTool.getExpressionFromGraph((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel()));
+				VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+				expressionText.setText(parsingTool.getExpressionFromGraph(visualCpog));
 			}
 
 		});
@@ -254,7 +259,7 @@ public class CpogSelectionTool extends SelectionTool {
 		interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
-	private HashMap<String, VisualVertex> insertExpression(final GraphEditor editor, String text,
+	public HashMap<String, VisualVertex> insertExpression(String text,
 			final boolean createDuplicates, boolean getVertList, boolean forceTransitiveRemoval) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
@@ -813,6 +818,14 @@ public class CpogSelectionTool extends SelectionTool {
                             for (Node n : toBeRemoved) {
                                 visualCpog.removeFromSelection(n);
                                 visualCpog.removeWithoutNotify(n);
+                                while (n.getParent() != null) {
+                                	try {
+										this.wait(5);
+									} catch (InterruptedException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+                                }
                             }
                         }
 
@@ -823,8 +836,9 @@ public class CpogSelectionTool extends SelectionTool {
                         }
                     }
                 }
+
                 toBeRemoved.clear();
-                updateReferenceNormalForm(relaventPages, visualCpog, editor);
+                //updateReferenceNormalForm(relaventPages, visualCpog, editor);
             }
 
         }.attach(page);
@@ -914,15 +928,13 @@ public class CpogSelectionTool extends SelectionTool {
             eqLocation = newExpression.indexOf('=');
             g.updateNormalForm(newExpression.substring(eqLocation + 1));
 
-            //newExpression = page.getLabel() + " = " + newExpression;
-            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(editor, newExpression, true, true, false).clone();
+            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, false).clone();
             for (VisualVertex v : vertMap.values()) {
                 Point2D.Double newPosition = new Point2D.Double(g.getVertMap().get(v.getLabel()).getX(), g.getVertMap().get(v.getLabel()).getY());
                 v.setPosition(newPosition);
             }
 
             g.updateVertMap(vertMap);
-
 
             visualCpog.setCurrentLevel(previousLevel);
             visualCpog.select(selection);

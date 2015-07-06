@@ -187,7 +187,7 @@ public class CpogParsingTool {
         return parents;
     }
 
-	 public String getExpressionFromGraph(VisualCPOG visualCpog)
+	 public static String getExpressionFromGraph(VisualCPOG visualCpog)
 	 {
 		 Collection<Node> originalSelection;
 		 ArrayList<VisualTransformableNode> groups = new ArrayList<>();
@@ -314,7 +314,7 @@ public class CpogParsingTool {
 	 }
 
 
-    public void describeArcs(ArrayList<String> expression, Set<Connection> totalConnections, HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections,
+    public static void describeArcs(ArrayList<String> expression, Set<Connection> totalConnections, HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections,
     			VisualVertex current, ArrayList<Node> vertices, VisualCPOG visualCpog, ConcurrentLinkedQueue<Node> q) {
     	ArrayList<Connection> connections = new ArrayList<>();
     	for (Connection c : totalConnections) {
@@ -347,7 +347,7 @@ public class CpogParsingTool {
 
     		boolean finished = false;
     		while (!finished) {
-    			System.out.println(getChildren(visualCpog, child));
+    			//System.out.println(getChildren(visualCpog, child));
     			if (getChildren(visualCpog, child).size() == 1) {
     				ArrayList<Node> nextVertices = getChildren(visualCpog, child);
     				VisualVertex nextVertex = (VisualVertex) nextVertices.get(0);
@@ -432,11 +432,11 @@ public class CpogParsingTool {
     	}
     }
 
-    private String FormulaToString(BooleanFormula condition) {
+    private static String FormulaToString(BooleanFormula condition) {
 		return FormulaToString.toString(condition);
 	}
 
-	public HashSet<Node> getRoots(VisualCPOG visualCpog, ArrayList<Node> vertices) {
+	public static HashSet<Node> getRoots(VisualCPOG visualCpog, ArrayList<Node> vertices) {
         HashSet<Node> roots = new HashSet<Node>();
         Set<Connection> arcs;
         Iterator<Connection> it;
@@ -467,7 +467,7 @@ public class CpogParsingTool {
         return roots;
     }
 
-    public void getAllGroupVertices(ArrayList<Node> vertices, VisualTransformableNode group) {
+    public static void getAllGroupVertices(ArrayList<Node> vertices, VisualTransformableNode group) {
         vertices.clear();
         for (VisualComponent v : group.getComponents()) {
             if (v instanceof VisualPage) {
@@ -827,7 +827,7 @@ public class CpogParsingTool {
 		 return usedReferences;
 	 }
 
-     public ArrayList<VisualComponent> getPageVertices(VisualPage p) {
+     public static ArrayList<VisualComponent> getPageVertices(VisualPage p) {
          ArrayList<VisualComponent> result = new ArrayList<VisualComponent>();
 
          for (VisualComponent c : p.getComponents()) {
