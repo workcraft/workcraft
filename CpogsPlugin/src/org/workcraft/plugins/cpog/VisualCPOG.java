@@ -39,11 +39,13 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
@@ -112,6 +114,7 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	private CPOG mathModel;
+	private CpogSelectionTool selectionTool;
 
 	public VisualCPOG(CPOG model) {
 		this(model, null);
@@ -283,6 +286,14 @@ public class VisualCPOG extends AbstractVisualModel
 		} else if (node.getParent() instanceof VisualGroup) {
 			((VisualGroup) node.getParent()).removeWithoutNotify(node);
 		}
+	}
+
+	public void setSelectionTool(CpogSelectionTool tool) {
+		selectionTool = tool;
+	}
+
+	public CpogSelectionTool getSelectionTool() {
+		return selectionTool;
 	}
 
 }

@@ -19,6 +19,7 @@ import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
 import org.workcraft.plugins.cpog.tools.CpogToGraphConverterTool;
 import org.workcraft.plugins.cpog.tools.GraphStatisticsTool;
 import org.workcraft.plugins.cpog.tools.GraphToCpogConverterTool;
+import org.workcraft.plugins.cpog.tools.PGMinerTool;
 import org.workcraft.plugins.cpog.tools.ScencoTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -28,6 +29,7 @@ public class CpogModule implements Module {
 	public void init() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
+
 
 		pm.registerClass(ModelDescriptor.class, CpogModelDescriptor.class);
 
@@ -68,6 +70,8 @@ public class CpogModule implements Module {
 				return new GraphToCpogConverterTool();
 			}
 		});
+
+		pm.registerClass(Tool.class, PGMinerTool.class);
 
 	}
 

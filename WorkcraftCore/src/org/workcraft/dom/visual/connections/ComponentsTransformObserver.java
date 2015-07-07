@@ -94,38 +94,40 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 		//This check is for connections which are not correctly deleted, and causes errors when they are updated.
 
 		VisualNode firstComponent = connection.getFirst();
+		if (connection.getParent() != null) {
 
-		VisualNode cur = firstComponent;
-		while (cur.getParent()!=null) {
-			boolean isCollapsed = cur instanceof Collapsible&&((Collapsible)cur).getIsCollapsed()&&!((Collapsible)cur).isCurrentLevelInside();
+			VisualNode cur = firstComponent;
+			while (cur.getParent() != null) {
+				boolean isCollapsed = cur instanceof Collapsible && ((Collapsible) cur).getIsCollapsed() && !((Collapsible) cur).isCurrentLevelInside();
 
-			if (isCollapsed) {
-				firstComponent = cur;
+				if (isCollapsed) {
+					firstComponent = cur;
+				}
+
+				cur = (VisualNode) cur.getParent();
 			}
 
-			cur = (VisualNode)cur.getParent();
-		}
 
+			VisualNode secondComponent = connection.getSecond();
+			cur = secondComponent;
+			while (cur.getParent() != null) {
+				boolean isCollapsed = cur instanceof Collapsible && ((Collapsible) cur).getIsCollapsed() && !((Collapsible) cur).isCurrentLevelInside();
 
-		VisualNode secondComponent = connection.getSecond();
-		cur = secondComponent;
-		while (cur.getParent()!=null) {
-			boolean isCollapsed = cur instanceof Collapsible&&((Collapsible)cur).getIsCollapsed()&&!((Collapsible)cur).isCurrentLevelInside();
-
-			if (isCollapsed) {
-				secondComponent = cur;
+				if (isCollapsed) {
+					secondComponent = cur;
+				}
+				cur = (VisualNode) cur.getParent();
 			}
-			cur = (VisualNode)cur.getParent();
+
+
+			firstShape = TransformHelper.transform(firstComponent, TransformHelper.getTransform(firstComponent, connection));
+			secondShape = TransformHelper.transform(secondComponent, TransformHelper.getTransform(secondComponent, connection));
+
+			firstCenter = firstShape.getCenter();
+			secondCenter = secondShape.getCenter();
+
+			valid = true;
 		}
-
-
-		firstShape = TransformHelper.transform(firstComponent, TransformHelper.getTransform(firstComponent, connection));
-		secondShape = TransformHelper.transform(secondComponent, TransformHelper.getTransform(secondComponent, connection));
-
-		firstCenter = firstShape.getCenter();
-		secondCenter = secondShape.getCenter();
-
-		valid = true;
 	}
 
 	@Override

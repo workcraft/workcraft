@@ -1,9 +1,11 @@
 package org.workcraft.plugins.cpog.tools;
 
 import org.workcraft.dom.Connection;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.cpog.*;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
@@ -21,43 +23,40 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CpogParsingTool {
 
-	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, double maxX, double maxY, HashMap<String, String> refMap, HashMap<String, HashMap<String, VisualVertex>> refVertMap)
+	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, HashMap<String, GraphReference> refMap)
 	 {
 		 this.variableMap = variableMap;
 		 this.xpos = xpos;
-		 this.maxX = maxX;
-		 this.maxY = maxY;
 		 this.refMap = refMap;
-		 this.refVertMap = refVertMap;
 	 }
 
 	private HashMap<String, Variable> variableMap;
 	private int xpos;
-	private double maxX;
-	private double maxY;
-	private HashMap<String, String> refMap;
-	private HashMap<String, HashMap<String, VisualVertex>> refVertMap;
+	private HashMap<String, GraphReference> refMap;
 	private ArrayList<String> usedReferences;
 
 	 public BooleanFormula parseBool(String bool, final VisualCPOG visualCpog) throws ParseException
 	 {
-
 		Func<String, BooleanVariable> boolVars = new Func<String, BooleanVariable>()
 		{
 			public BooleanVariable eval(final String label)
 			{
 				if (variableMap.containsKey(label))
 				{
-					return variableMap.get(label);
-				} else
-				{
+                    if (!visualCpog.getVariables().contains(variableMap.get(label))) {
+                        if (variableMap.get(label).getParent() != null) {
+                            return variableMap.get(label);
+                        } else  variableMap.remove(label);
+                    } else {
+                        variableMap.remove(label);
+                    }
+				}
 
 					VisualVariable visVar = visualCpog.createVisualVariable();
 					visVar.setLabel(label);
 					visVar.setPosition(new Point2D.Double(xpos, -2));
 					xpos++;
 					variableMap.put(label, visVar.getMathVariable());
-				}
 
 				return variableMap.get(label);
 			}
@@ -77,8 +76,8 @@ public class CpogParsingTool {
 
 	 public void bfsLayout(Queue<Node> q, VisualCPOG visualCpog, double originalX, double originalY) {
 
-         ArrayList<ArrayList<Node>> outer = new ArrayList<ArrayList<Node>>();
-         HashSet<VisualScenarioPage> pages = new HashSet<VisualScenarioPage>();
+         ArrayList<ArrayList<Node>> outer = new ArrayList<>();
+         HashSet<VisualPage> pages = new HashSet<>();
          Node current = q.remove();
          ArrayList<Node> children = getChildren(visualCpog, current);
 
@@ -96,40 +95,8 @@ public class CpogParsingTool {
          double x = positionNodes(originalX, originalY, outer);
 
 
-         positionPages(pages, x);
-
      }
 
-    public void positionPages(HashSet<VisualScenarioPage> pages, double x) {
-        for (VisualScenarioPage page : pages) {
-            Double pagePos = new Double();
-            double pageLeft = x;
-            double pageRight = -x;
-            //Leftmost vertex
-            for (VisualComponent c : page.getComponents()) {
-                if (c.getPosition().getX() < pageLeft) {
-                    pageLeft = c.getPosition().getX();
-                }
-            }
-            //Rightmost vertex
-            for (VisualComponent c : page.getComponents()) {
-                if (c.getPosition().getX() > pageRight) {
-                    pageRight = c.getPosition().getX();
-                }
-            }
-
-            double pageCentre = ((pageLeft + pageRight) / 2);
-
-            pagePos.setLocation(pageCentre, page.getPosition().getY());
-
-            //page.setPosition(pagePos);
-            for (VisualComponent c : page.getComponents()) {
-                c.setX(c.getPosition().getX() - pageCentre);
-            }
-            page.setX(pageCentre);
-
-        }
-    }
 
     public double positionNodes(double originalX, double originalY, ArrayList<ArrayList<Node>> outer) {
         Double centre = new Double(0, originalY);
@@ -149,10 +116,16 @@ public class CpogParsingTool {
             for (Node n : inner) {
                 if (n instanceof VisualVertex){
                     VisualVertex v = (VisualVertex) n;
-                    v.setPosition(new Double(x, y));
-                } else if (n instanceof VisualScenarioPage) {
-                    VisualScenarioPage p = (VisualScenarioPage) n;
-                    p.setPosition(new Double(x, y));
+                    if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
+                        VisualPage p = (VisualPage) v.getParent();
+                        p.setPosition(new Double(x, y));
+                        Point2D.Double newPosition = new
+                                Point2D.Double (refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
+                                                refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());
+                        v.setPosition(newPosition);
+                    } else {
+                        v.setPosition(new Double(x, y));
+                    }
                 }
                 y += 1.5;
             }
@@ -164,15 +137,15 @@ public class CpogParsingTool {
         return x;
     }
 
-    public void findAllChildren(Queue<Node> q, VisualCPOG visualCpog, ArrayList<ArrayList<Node>> outer, HashSet<VisualScenarioPage> pages) {
+    public void findAllChildren(Queue<Node> q, VisualCPOG visualCpog, ArrayList<ArrayList<Node>> outer, HashSet<VisualPage> pages) {
         Node current;
         ArrayList<Node> children;
         int index = 0;
         while (!q.isEmpty()) {
-            current = (Node) q.remove();
+            current = q.remove();
             index = findVertex(outer, current);
-            if (current.getParent() instanceof VisualScenarioPage) {
-                VisualScenarioPage vp = (VisualScenarioPage) current.getParent();
+            if ((current.getParent() instanceof VisualScenarioPage) | (current.getParent() instanceof VisualPage)) {
+                VisualPage vp = (VisualPage) current.getParent();
                 pages.add(vp);
             }
             children = getChildren(visualCpog, current);
@@ -183,36 +156,49 @@ public class CpogParsingTool {
         }
     }
 
-    public ArrayList<Node> getChildren(VisualCPOG visualCpog, Node node)
+    public static ArrayList<Node> getChildren(VisualCPOG visualCpog, Node node)
 	 {
-		 ArrayList<Node> children = new ArrayList<Node>();
-		 Connection connection;
+         ArrayList<Node> children = new ArrayList<>();
+         HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
 
-		 Iterator<Connection> i = visualCpog.getConnections(node).iterator();
-		 while (i.hasNext())
+
+		 for (VisualArc arc : arcs)
 		 {
-			 connection = i.next();
-			 if (!(connection.getSecond().equals(node)))
-			 {
-                 children.add(connection.getSecond());
+			 if ((arc.getFirst().equals(node))) {
+                 children.add(arc.getSecond());
 			 }
 		 }
 
 		 return children;
 	 }
 
-	 public String getExpressionFromGraph(VisualCPOG visualCpog)
+    public static HashSet<Node> getParents(VisualCPOG visualCpog, Node node)
+    {
+        HashSet<Node> parents = new HashSet<>();
+        HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
+
+        for (VisualArc arc : arcs)
+        {
+            if ((arc.getSecond().equals(node))) {
+                parents.add(arc.getFirst());
+            }
+        }
+
+        return parents;
+    }
+
+	 public static String getExpressionFromGraph(VisualCPOG visualCpog)
 	 {
 		 Collection<Node> originalSelection;
-		 ArrayList<VisualPage> groups = new ArrayList<VisualPage>();
+		 ArrayList<VisualTransformableNode> groups = new ArrayList<>();
 		 ArrayList<Node> vertices = new ArrayList<Node>();
 		 ArrayList<String> expression = new ArrayList<String>();
 
-         getPages(visualCpog, groups);
+         getGroups(visualCpog, groups);
          originalSelection = copySelected(visualCpog);
 		 //Add vertices from group
 		 if (!groups.isEmpty()) {
-			 for (VisualPage group : groups) {
+			 for (VisualTransformableNode group : groups) {
 				 expression.add(group.getLabel() + " =");
                  originalSelection.remove(group);
 
@@ -236,19 +222,7 @@ public class CpogParsingTool {
 
 					   totalConnections = visualCpog.getConnections(current);
 
-                       getExpressionConditions(expression, current, totalConnections, connections, visitedVertices, visitedConnections, vertices);
-
-					   if (connections.size() > 1)
-					   {
-						   expression.add("(");
-					   }
-
-                       getConnectionExpressions(expression, connections, visitedVertices, visitedConnections, q);
-
-					   if (connections.size() > 1)
-					   {
-						   expression.add(")");
-					   }
+					   describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog, q);
 
 					   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
 					   {
@@ -285,10 +259,6 @@ public class CpogParsingTool {
                  }
              }
 
-             /*if ((exclude != null) && (vertices.contains(exclude))) {
-                 vertices.remove(exclude);
-             }*/
-
 			 HashSet<Node> roots = getRoots(visualCpog, vertices);
 
 			 Iterator<Node> i = roots.iterator();
@@ -309,19 +279,7 @@ public class CpogParsingTool {
 
 				   totalConnections = visualCpog.getConnections(current);
 
-                   getExpressionConditions(expression, current, totalConnections, connections, visitedVertices, visitedConnections, vertices);
-
-				   if (connections.size() > 1)
-				   {
-					   expression.add("(");
-				   }
-
-                   getConnectionExpressions(expression, connections, visitedVertices, visitedConnections, q);
-
-				   if (connections.size() > 1)
-				   {
-					   expression.add(")");
-				   }
+                   describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog, q);
 
 				   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
 				   {
@@ -345,73 +303,140 @@ public class CpogParsingTool {
 
 		 for (String ex : expression)
 		 {
-				 total = total + " " + ex;
+			 	 if ((total.endsWith("\n")) || (total.equals(""))) {
+			 		 total = total + ex;
+			 	 } else
+			 		 total = total + " " + ex;
 		 }
+
          return total;
 
 	 }
 
-    public void getConnectionExpressions(ArrayList<String> expression, ArrayList<Connection> connections, HashSet<VisualVertex> visitedVertices,
-                                         HashSet<Connection> visitedConnections, ConcurrentLinkedQueue<Node> q) {
-        Connection connection;Iterator<Connection> conIt = connections.iterator();
-        VisualVertex child;
-        while(conIt.hasNext())
-        {
-            connection = conIt.next();
-            child = (VisualVertex) connection.getSecond();
-            if (FormulaToString.toString(child.getCondition()).compareTo("1") == 0)
-            {
-                expression.add(child.getLabel());
-            } else
-            {
-                expression.add("[" + FormulaToString.toString(child.getCondition()) + "]" + child.getLabel());
-            }
 
-
-            visitedConnections.add(connection);
-            visitedVertices.add(child);
-            q.add(child);
-
-            if (conIt.hasNext())
-            {
-                expression.add("+");
-            }
-
-        }
-    }
-
-    public void getExpressionConditions(ArrayList<String> expression, VisualVertex current, Set<Connection> totalConnections, ArrayList<Connection> connections,
-                                        HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections, ArrayList<Node> vertices) {
-        for (Connection c : totalConnections)
-        {
-            if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)) && (vertices.contains(c.getSecond())))
-            {
+    public static void describeArcs(ArrayList<String> expression, Set<Connection> totalConnections, HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections,
+    			VisualVertex current, ArrayList<Node> vertices, VisualCPOG visualCpog, ConcurrentLinkedQueue<Node> q) {
+    	ArrayList<Connection> connections = new ArrayList<>();
+    	for (Connection c : totalConnections) {
+    		if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)) && (vertices.contains(c.getSecond()))) {
                 connections.add(c);
             }
-        }
-        if (connections.size() > 0)
-        {
-            if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
-            {
-                expression.add(current.getLabel() + " ->");
-            } else
-            {
-                expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel() + " ->");
-            }
-        } else if (!visitedVertices.contains(current))
-        {
-            if (FormulaToString.toString(current.getCondition()).compareTo("1") == 0)
-            {
-                expression.add(current.getLabel());
-            } else
-            {
-                expression.add("[" + FormulaToString.toString(current.getCondition()) + "]" + current.getLabel());
-            }
+    	}
+    	if (connections.size() == 1) {
+    		VisualArc arc = (VisualArc) connections.get(0);
+    		String insert = "";
 
-        }
+    		if (!(FormulaToString(arc.getCondition()).equals("1"))) {
+    			insert = "[" + FormulaToString(arc.getCondition()) + "](";
+    		}
+
+    		if (!(FormulaToString(current.getCondition()).equals("1")) || !(FormulaToString(current.getCondition()).compareTo(FormulaToString(arc.getCondition())) == 0)) {
+    			insert = insert + "[" + FormulaToString(current.getCondition()) + "]";
+    		}
+
+    		insert = insert + current.getLabel() + " -> ";
+    		VisualVertex child = (VisualVertex) arc.getSecond();
+
+    		if (!(FormulaToString(child.getCondition()).equals("1")) || !(FormulaToString(child.getCondition()).equals(FormulaToString(arc.getCondition())))) {
+    			insert = insert + "[" + FormulaToString(child.getCondition()) + "]";
+    		}
+
+
+    		insert = insert + child.getLabel();
+    		visitedConnections.add(arc);
+
+    		boolean finished = false;
+    		while (!finished) {
+    			//System.out.println(getChildren(visualCpog, child));
+    			if (getChildren(visualCpog, child).size() == 1) {
+    				ArrayList<Node> nextVertices = getChildren(visualCpog, child);
+    				VisualVertex nextVertex = (VisualVertex) nextVertices.get(0);
+    				VisualArc nextArc = (VisualArc) visualCpog.getConnection(child, nextVertex);
+
+    				if (FormulaToString(nextArc.getCondition()).equals(FormulaToString(arc.getCondition()))) {
+    					insert = insert + " -> ";
+    					if (!(FormulaToString(nextVertex.getCondition()).equals("1")) || !(FormulaToString(child.getCondition()).equals(FormulaToString(arc.getCondition())))) {
+    		    			insert = insert + "[" + FormulaToString(child.getCondition()) + "]";
+    		    		}
+    					insert = insert + nextVertex.getLabel();
+    					visitedConnections.add(nextArc);
+    					child = nextVertex;
+
+    				}
+    			} else {
+    				finished = true;
+    		}
+    		}
+
+    		if (!(FormulaToString(arc.getCondition()).equals("1"))) {
+    			insert = insert + ")";
+    		}
+    		expression.add(insert);
+    	} else if (connections.size() > 1) {
+
+    		while(!connections.isEmpty()) {
+    			VisualArc arc  = (VisualArc) connections.get(0);
+    			connections.remove(0);
+    			String insert = "";
+
+    			if (!FormulaToString(arc.getCondition()).equals("1")) {
+    				insert = "[" + FormulaToString(arc.getCondition()) + "](";
+    			}
+
+
+    			if (!(FormulaToString(current.getCondition()).equals("1")) || (FormulaToString(current.getCondition()).equals(FormulaToString(arc.getCondition())))) {
+        			insert = insert + "[" + FormulaToString(current.getCondition()) + "]";
+        		}
+
+        		insert = insert + current.getLabel() + " -> ";
+
+    			ArrayList<VisualArc> toBeRemoved = new ArrayList<>();
+
+    			for (Connection c : connections) {
+    				VisualArc a = (VisualArc) c;
+
+    				if (a.getCondition().equals(arc.getCondition())) {
+    					toBeRemoved.add(a);
+    				}
+    			}
+
+    			if (toBeRemoved.size() > 1) {
+					insert = insert + "(" + arc.getSecond().getLabel() + " + ";
+				}
+
+    			for (VisualArc a : toBeRemoved) {
+    				insert = insert + a.getSecond().getLabel() + " + ";
+    			}
+
+    			while ((insert.endsWith(" ")) || (insert.endsWith("+"))) {
+    				insert = insert.substring(0, insert.length() - 1);
+    			}
+
+    			if (toBeRemoved.size() > 1) {
+    				insert = insert + ")";
+    			}
+
+    			visitedConnections.addAll(toBeRemoved);
+    			connections.removeAll(toBeRemoved);
+
+    			expression.add(insert);
+    		}
+
+    	} else {
+    		String insert = "";
+    		if (!(FormulaToString(current.getCondition()).equals("1"))) {
+    			insert = "[" + FormulaToString(current.getCondition()) + "]";
+    		}
+    		insert = insert + current.getLabel();
+    		expression.add(insert);
+    	}
     }
 
-    public HashSet<Node> getRoots(VisualCPOG visualCpog, ArrayList<Node> vertices) {
+    private static String FormulaToString(BooleanFormula condition) {
+		return FormulaToString.toString(condition);
+	}
+
+	public static HashSet<Node> getRoots(VisualCPOG visualCpog, ArrayList<Node> vertices) {
         HashSet<Node> roots = new HashSet<Node>();
         Set<Connection> arcs;
         Iterator<Connection> it;
@@ -442,7 +467,7 @@ public class CpogParsingTool {
         return roots;
     }
 
-    public void getAllGroupVertices(ArrayList<Node> vertices, VisualPage group) {
+    public static void getAllGroupVertices(ArrayList<Node> vertices, VisualTransformableNode group) {
         vertices.clear();
         for (VisualComponent v : group.getComponents()) {
             if (v instanceof VisualPage) {
@@ -452,28 +477,12 @@ public class CpogParsingTool {
     }
 
 
-    public static void getPages(VisualCPOG visualCpog, ArrayList<VisualPage> groups) {
+    public static void getGroups(VisualCPOG visualCpog, ArrayList<VisualTransformableNode> groups) {
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
 
         for(Node n : visualCpog.getSelection()) {
-            if (n instanceof VisualPage) {
-                if (prevSelection.contains(n)) {
-                    groups.add((VisualPage) n);
-                    //prevSelection.remove(n);
-                }
-            }
-        }
-
-        visualCpog.select(prevSelection);
-    }
-
-    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualTransformableNode> groups) {
-        ArrayList<Node> prevSelection = copySelected(visualCpog);
-        visualCpog.selectAll();
-
-        for(Node n : visualCpog.getSelection()) {
-            if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
+            if ((n instanceof VisualPage) || (n instanceof VisualGroup)) {
                 if (prevSelection.contains(n)) {
                     groups.add((VisualTransformableNode) n);
                 }
@@ -482,6 +491,21 @@ public class CpogParsingTool {
 
         visualCpog.select(prevSelection);
     }
+
+    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualTransformableNode> groups) {
+            ArrayList<Node> prevSelection = copySelected(visualCpog);
+            visualCpog.selectAll();
+
+            for(Node n : visualCpog.getSelection()) {
+                if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
+                    if (prevSelection.contains(n)) {
+                        groups.add((VisualTransformableNode) n);
+                    }
+                }
+            }
+
+            visualCpog.select(prevSelection);
+        }
 
     public int findVertex(ArrayList<ArrayList<Node>> outer, Node target)
 	 {
@@ -519,7 +543,8 @@ public class CpogParsingTool {
 	 {
 		 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 		 HashSet<VisualArc> transitives = new HashSet<VisualArc>();
-		 ArrayList<Node> children, allChildren = new ArrayList<Node>();
+		 ArrayList<Node>  allChildren = new ArrayList<Node>();
+         ArrayList<Node> children = new ArrayList<>();
 		 Node current = null;
 		 boolean transitiveFound = false;
 
@@ -569,48 +594,57 @@ public class CpogParsingTool {
 		 return transitives;
 	 }
 
-	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots) {
+	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots, String text, boolean forceRemoval) {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
-			 visualCpog.remove(t);
+			 if (!forceRemoval) {
+				 String arc = t.getFirst().getLabel() + " -> " + t.getSecond().getLabel();
+             	if (!(text.contains(" " + arc + " ")) && !(text.endsWith(" " + arc)) && !(text.contains("(" + arc + " ")) && !(text.contains("(" + arc + ")")) && !(text.contains(" " + arc + ")"))) {
+            	 	visualCpog.remove(t);
+             	}
+			 } else
+			 {
+				 visualCpog.remove(t);
 			 }
+         }
+         transitives.clear();
 	 }
 
 	 public String replaceReferences(String text)
 	 {
-		 usedReferences = new ArrayList<String>();
+		 usedReferences = new ArrayList<>();
 		 boolean added;
 		 for (String k : refMap.keySet())
 			{
 			 added = false;
 				if (text.contains(" " + k + " ")){
 					if (k.startsWith("[")) {
-						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k) + ") ");
+						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
 						added = true;
 					} else {
-						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k) + ") ");
+						text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
 						added = true;
 					}
 				} if (text.contains("]" + k + " ")) {
-						text = text.replaceAll("]" + k + " ", "](" + refMap.get(k) + ") ");
+						text = text.replaceAll("]" + k + " ", "](" + refMap.get(k).getNormalForm() + ") ");
 						added = true;
 				} if (text.contains("(" + k + ")")) {
-						text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k) + "\\)");
+						text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k).getNormalForm() + "\\)");
 						added = true;
 				} if (text.contains("(" + k + " ")) {
-						text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k) + "\\) ");
+						text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k).getNormalForm() + "\\) ");
 						added = true;
 				} if (text.contains(" " + k + ")")) {
-						text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k) + "\\)\\)");
+						text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k).getNormalForm() + "\\)\\)");
 						added = true;
 				} if (text.endsWith(" " + k)) {
-						text = text.replace(" " + k, " (" + refMap.get(k) + ")");
+						text = text.replace(" " + k, " (" + refMap.get(k).getNormalForm() + ")");
 						added = true;
 				} if (text.endsWith("]" + k)) {
-						text = text.replace("]" + k, "](" + refMap.get(k) + ")");
+						text = text.replace("]" + k, "](" + refMap.get(k).getNormalForm() + ")");
 						added = true;
 				} if (text.endsWith(" " + k + ")")) {
-						text = text.replace(" " + k + "\\)", " (" + refMap.get(k) + "\\)\\)");
+						text = text.replace(" " + k + "\\)", " (" + refMap.get(k).getNormalForm() + "\\)\\)");
 						added = true;
 				}
 
@@ -682,18 +716,28 @@ public class CpogParsingTool {
 												dupArcs.add((VisualArc) con);
 											}
 										}
-										if (dupArcs.size() > 1)
-										{
+                                        boolean conditionFound = false;
+                                        ArrayList<VisualArc> toBeRemoved = new ArrayList<>();
+										if (dupArcs.size() > 1) {
 											for (VisualArc va : dupArcs) {
-												if (FormulaToString.toString(va.getCondition()).compareTo("1") != 0)
-												{
-													dupArcs.remove(va);
-												} else
-												{
-													visualCpog.remove(va);
+												if (FormulaToString.toString(va.getCondition()).compareTo("1") != 0) {
+													toBeRemoved.add(va);
+                                                    conditionFound = true;
 												}
 											}
+                                            for (VisualArc va : toBeRemoved) { dupArcs.remove(va); }
+
+                                            if (!(conditionFound) && (dupArcs.size() > 1)) {
+                                                for (int i = 1; i < dupArcs.size(); i++) {
+                                                    visualCpog.remove(dupArcs.get(i));
+                                                }
+                                            } else {
+                                                for (int i = 0; i < dupArcs.size(); i++) {
+                                                    visualCpog.remove(dupArcs.get(i));
+                                                }
+                                            }
 										}
+
 										try {
 											if (FormulaToString.toString(arc.getCondition()).compareTo("1") == 0)
 											{
@@ -715,14 +759,6 @@ public class CpogParsingTool {
 					}
 			 }
 				}
-	 }
-
-	 public void addToReferenceList(String gn, VisualCPOG visualCpog, String text)
-	 {
-			gn = gn.replace("{", "");
-			gn = gn.replace("}", "");
-
-			refMap.put(gn, text);
 	 }
 
 	 public Point2D.Double getLowestVertex(VisualCPOG visualCpog)
@@ -791,7 +827,7 @@ public class CpogParsingTool {
 		 return usedReferences;
 	 }
 
-     public ArrayList<VisualComponent> getPageVertices(VisualPage p) {
+     public static ArrayList<VisualComponent> getPageVertices(VisualPage p) {
          ArrayList<VisualComponent> result = new ArrayList<VisualComponent>();
 
          for (VisualComponent c : p.getComponents()) {
@@ -813,4 +849,28 @@ public class CpogParsingTool {
 
         return result;
     }
+
+    public static HashSet<VisualArc> getAllArcs(Container root, VisualCPOG visualCpog) {
+        HashSet<VisualArc> result = new HashSet<>();
+        for (Node node : root.getChildren()) {
+            if ((node instanceof VisualPage) || (node instanceof VisualScenarioPage)) {
+                result.addAll(getAllArcs((VisualPage) node, visualCpog));
+            } else if (node instanceof VisualScenario) {
+            	result.addAll(getAllArcs((VisualScenario) node, visualCpog));
+        	}else if (node instanceof VisualArc) {
+                result.add((VisualArc) node);
+            }
+        }
+
+        return result;
+    }
+
+/*    public void combineConditions(String old, String newCond, final VisualCPOG visualCpog) throws ParseException {
+        if (!old.contains(newCond)) {
+            parseBool()
+        }
+
+    }*/
+
+
 }

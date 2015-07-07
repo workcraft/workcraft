@@ -132,6 +132,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 			for (TransformObserver to : list)
 				to.notify(e);
 
+
 		for (Node n : node.getChildren())
 			propagate(n,e);
 	}

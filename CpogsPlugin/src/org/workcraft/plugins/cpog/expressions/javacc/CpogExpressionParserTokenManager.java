@@ -61,16 +61,16 @@ private int jjMoveStringLiteralDfa0_0()
    }
 }
 static final long[] jjbitVec0 = {
-   0x0L, 0x0L, 0xa000000000000000L, 0x800000000000L
-};
-static final long[] jjbitVec1 = {
    0x400000000L, 0x0L, 0x0L, 0x0L
 };
-static final long[] jjbitVec2 = {
+static final long[] jjbitVec1 = {
    0x0L, 0x0L, 0x0L, 0x40000L
 };
-static final long[] jjbitVec3 = {
+static final long[] jjbitVec2 = {
    0x18000000000L, 0x0L, 0x200000L, 0x0L
+};
+static final long[] jjbitVec3 = {
+   0x0L, 0x0L, 0x0L, 0x2000000000000000L
 };
 private int jjMoveNfa_0(int startState, int curPos)
 {
@@ -91,19 +91,32 @@ private int jjMoveNfa_0(int startState, int curPos)
             switch(jjstateSet[--i])
             {
                case 1:
-                  if (curChar == 45)
+                  if (curChar == 33)
+                  {
+                     if (kind > 12)
+                        kind = 12;
+                     jjCheckNAddStates(0, 2);
+                  }
+                  else if (curChar == 45)
                      jjstateSet[jjnewStateCnt++] = 0;
                   break;
                case 0:
                   if (curChar == 62)
                      kind = 6;
                   break;
+               case 4:
+                  if (curChar != 33)
+                     break;
+                  if (kind > 12)
+                     kind = 12;
+                  jjCheckNAddStates(0, 2);
+                  break;
                case 5:
                   if ((0x23ff8cc200000000L & l) == 0L)
                      break;
                   if (kind > 12)
                      kind = 12;
-                  jjAddStates(0, 2);
+                  jjCheckNAddStates(0, 2);
                   break;
                case 7:
                   if ((0x280000000000L & l) != 0L && kind > 12)
@@ -213,13 +226,13 @@ private static final boolean jjCanMove_0(int hiByte, int i1, int i2, long l1, lo
 {
    switch(hiByte)
    {
-      case 0:
-         return ((jjbitVec0[i2] & l2) != 0L);
       case 32:
-         return ((jjbitVec1[i2] & l2) != 0L);
+         return ((jjbitVec0[i2] & l2) != 0L);
       case 33:
-         return ((jjbitVec2[i2] & l2) != 0L);
+         return ((jjbitVec1[i2] & l2) != 0L);
       case 34:
+         return ((jjbitVec2[i2] & l2) != 0L);
+      case 255:
          return ((jjbitVec3[i2] & l2) != 0L);
       default :
          return false;
