@@ -57,6 +57,8 @@ import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
+import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 
@@ -576,6 +578,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			super.setTitle(title);
 		}
 		sendNotification(new ModelModifiedEvent(this));
+	}
+
+	@Override
+	public AbstractLayoutTool getBestLayoutTool() {
+		return new DotLayoutTool();
 	}
 
 }

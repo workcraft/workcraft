@@ -1,0 +1,311 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.7";
+  LOOKAHEAD = 1;
+  STATIC = false;
+  DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN(GenlibParser)
+package org.workcraft.plugins.circuit.javacc;
+
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+
+import org.workcraft.dom.Node;
+import org.workcraft.util.Pair;
+import org.workcraft.util.Triple;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.NotFoundException;
+
+public class GenlibParser {
+        
+    public class Gate {        public final String name;
+        public final Function function;
+        public Gate(String name, Function function) {            this.name = name;
+            this.function = function;
+        }
+    }
+    
+    public class Function {
+        public final String name;
+        public final Expression expression;
+        public Function(String name, Expression expression) {
+            this.name = name;
+            this.expression = expression;
+        }
+    }
+    
+    public interface Expression {
+    	public String toString();
+    }
+
+    public class ExpressionExpression implements Expression {
+        public final List<Expression> expressions;
+        public ExpressionExpression(List<Expression> expressions) {
+            this.expressions = expressions;
+        }
+        public String toString() {
+        	String result = "";
+        	boolean first = true;
+        	for (Expression expression: expressions) {
+        		if (!first) {
+        			result += "+";
+        		}
+        		result += expression.toString();
+        		first = false;
+        	}
+        	return result;
+        }
+    }
+
+    public class TermExpression implements Expression {
+        public final List<Expression> expressions;
+        public TermExpression(List<Expression> expressions) {
+            this.expressions = expressions;
+        }
+        public String toString() {
+        	String result = "";
+        	boolean first = true;
+        	for (Expression expression: expressions) {
+        		if (!first) {
+        			result += "*";
+        		}
+        		result += expression.toString();
+        		first = false;
+        	}
+        	return result;
+        }
+    }
+    
+    public class FactorExpression implements Expression {
+        public final Expression expression;
+        public FactorExpression(Expression expression) {
+            this.expression = expression;
+        }
+        public String toString() {
+        	return "(" + expression.toString() + ")";
+        }
+    }
+
+    public class NotExpression implements Expression {
+        public final Expression expression;
+        public NotExpression(Expression expression) {
+            this.expression = expression;
+        }
+        public String toString() {
+        	return expression.toString() + "'";
+        }
+    }
+
+    public class LiteralExpression implements Expression {
+        public final String name;
+        public LiteralExpression(String name) {
+            this.name = name;
+        }
+        public String toString() {
+        	return name;
+        }
+    }
+
+    public class ConstantExpression implements Expression {
+        public final boolean value;
+        public ConstantExpression(boolean value) {
+            this.value = value;
+        }
+        public String toString() {
+        	return (value ? "1" : "0");
+        }
+    }
+    
+}
+PARSER_END(GenlibParser)
+
+SKIP:
+{
+    " "
+|   "\t"
+|   "\r"
+|   "\n"
+|   <"#" (~["\r", "\n"])*>
+}
+
+TOKEN :
+{
+    <GATE : "GATE">
+|   <PIN : "PIN">
+|   <INV : "INV">
+|   <NONINV : "NONINV">
+|   <UNKNOWN : "UNKNOWN">
+|   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
+|	<NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
+|   <INTEGER : ([ "0"-"9" ])+>
+|   <CONST0 : "CONST0">
+|   <CONST1 : "CONST1">
+|   <AND  : ("*" | " ")>
+|   <OR : "+">
+|   <NOT_PREFIX : "!">
+|   <NOT_POSTFIX : "'">
+|   "("
+|   ")"
+|   "["
+|   "]"
+|   "="
+|   ";"
+|   "."
+}    
+    
+List<Gate> parseGenlib() :
+{
+    List<Gate> gates; 
+}
+{
+    gates = parseGates()
+    {
+        return gates;
+    }
+}
+
+List<Gate> parseGates():
+{
+    Gate gate;
+    List<Gate> gates = new LinkedList<Gate>();}
+{
+    (        gate = parseGate()
+        {            gates.add(gate);
+        }
+    )*
+    {        return gates;
+    }
+}
+    
+Gate parseGate():
+{
+    Token nameToken;
+    Function function;
+}
+{
+    <GATE> nameToken = <NAME> <NUMERAL> function = parseFunction() ";"
+    (
+    	parsePin()
+    )*
+    {
+    	String name = nameToken.image;
+        return new Gate(name, function);
+    }
+}
+
+void parsePin():
+{
+}
+{
+	<PIN> <NAME> [<INV>|<NONINV>|<UNKNOWN>] <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
+}
+
+Function parseFunction():
+{
+	Token nameToken;
+	Expression expression;
+}
+{
+	nameToken = <NAME> "=" expression = parseExpression()
+	{
+		String name = nameToken.image;
+		return new Function(name, expression);
+	}
+}
+
+Expression parseExpression():
+{
+	Expression term;
+	List<Expression> terms = new LinkedList<Expression>();
+}
+{
+	(
+		term = parseTerm()
+		{
+			terms.add(term);
+		}
+		(<OR> term = parseTerm())*
+		{
+			terms.add(term); 
+		}
+	)
+	{
+		return new ExpressionExpression(terms);
+	}
+}
+
+Expression parseTerm():
+{
+	Expression factor;
+	List<Expression> factors = new LinkedList<Expression>();
+}
+{
+	(
+		factor = parseFactor()
+		{
+			factors.add(factor);
+		} 
+		( <AND> factor = parseFactor() )*
+		{
+			factors.add(factor);
+		} 
+	)
+	{
+		return new TermExpression(factors);
+	}
+}
+
+Expression parseFactor():
+{
+	Expression factor;
+}
+{
+	(
+		factor = parseLiteral()
+	|	factor = parseConstant()
+	|	<NOT_PREFIX> factor = parseFactor()
+		{
+			return new NotExpression(factor);
+		}
+	| 	"(" factor = parseExpression() ")"
+	)
+	{
+		return factor;
+	}
+}
+
+Expression parseLiteral():
+{
+	Token nameToken;
+}
+{
+	nameToken = <NAME>
+	{
+		String name = nameToken.image;
+		return new LiteralExpression(name);
+	}
+}
+
+Expression parseConstant():
+{
+}
+{
+	( 
+		<CONST0>
+		{
+			return new ConstantExpression(false);
+		}
+	|	<CONST1>
+		{
+			return new ConstantExpression(true);
+		}
+	)
+}

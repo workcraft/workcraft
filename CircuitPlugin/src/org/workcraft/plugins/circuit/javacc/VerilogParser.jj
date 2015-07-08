@@ -6,7 +6,7 @@ options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
   STATIC = false;
-  DEBUG_PARSER = true;
+  DEBUG_PARSER = false;
 }
 
 PARSER_BEGIN(VerilogParser)

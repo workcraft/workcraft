@@ -58,167 +58,135 @@ public class VerilogParser implements VerilogParserConstants {
     }
 
   final public List<Module> parseCircuit() throws ParseException {
-    trace_call("parseCircuit");
-    try {
     List<Module> modules;
-      modules = parseModules();
+    modules = parseModules();
         {if (true) return modules;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseCircuit");
-    }
   }
 
   final public List<Module> parseModules() throws ParseException {
-    trace_call("parseModules");
-    try {
     Module module;
     List<Module> modules = new LinkedList<Module>();
-      label_1:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case MODULE:
-          ;
-          break;
-        default:
-          jj_la1[0] = jj_gen;
-          break label_1;
-        }
-        module = parseModule();
-            modules.add(module);
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case MODULE:
+        ;
+        break;
+      default:
+        jj_la1[0] = jj_gen;
+        break label_1;
       }
+      module = parseModule();
+            modules.add(module);
+    }
         {if (true) return modules;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseModules");
-    }
   }
 
   final public Module parseModule() throws ParseException {
-    trace_call("parseModule");
-    try {
     Token name;
     List<Port> ports;
     List<Instance> instances;
-      jj_consume_token(MODULE);
-      name = jj_consume_token(NAME);
-      ports = parsePorts();
-      instances = parseInstances();
-      jj_consume_token(ENDMODULE);
+    jj_consume_token(MODULE);
+    name = jj_consume_token(NAME);
+    ports = parsePorts();
+    instances = parseInstances();
+    jj_consume_token(ENDMODULE);
         {if (true) return new Module(name.image, ports, instances);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseModule");
-    }
   }
 
   final public List<Port> parsePorts() throws ParseException {
-    trace_call("parsePorts");
-    try {
     List<Port> ports;
-      if (jj_2_1(2147483647)) {
-        ports = parseCompactPorts();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 24:
-        case 29:
-          ports = parseComplexPorts();
-          break;
-        default:
-          jj_la1[1] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
-      }
-        {if (true) return ports;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parsePorts");
-    }
-  }
-
-  final public List<Port> parseCompactPorts() throws ParseException {
-    trace_call("parseCompactPorts");
-    try {
-    Port port;
-    List<Port> ports = new LinkedList<Port>();
+    if (jj_2_1(2147483647)) {
+      ports = parseCompactPorts();
+    } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 24:
-        jj_consume_token(24);
-        label_2:
-        while (true) {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case INPUT:
-          case OUTPUT:
-          case INOUT:
-            ;
-            break;
-          default:
-            jj_la1[2] = jj_gen;
-            break label_2;
-          }
-          port = parseCompactPort();
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case 28:
-            jj_consume_token(28);
-            break;
-          default:
-            jj_la1[3] = jj_gen;
-            ;
-          }
-                        ports.add(port);
-        }
-        jj_consume_token(25);
+      case 29:
+        ports = parseComplexPorts();
         break;
       default:
-        jj_la1[4] = jj_gen;
-        ;
-      }
-      jj_consume_token(29);
-        {if (true) return ports;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseCompactPorts");
-    }
-  }
-
-  final public Port parseCompactPort() throws ParseException {
-    trace_call("parseCompactPort");
-    try {
-    Token nameToken;
-    Token typeToken;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INPUT:
-        typeToken = jj_consume_token(INPUT);
-        break;
-      case OUTPUT:
-        typeToken = jj_consume_token(OUTPUT);
-        break;
-      case INOUT:
-        typeToken = jj_consume_token(INOUT);
-        break;
-      default:
-        jj_la1[5] = jj_gen;
+        jj_la1[1] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      nameToken = jj_consume_token(NAME);
+    }
+        {if (true) return ports;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public List<Port> parseCompactPorts() throws ParseException {
+    Port port;
+    List<Port> ports = new LinkedList<Port>();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 24:
+      jj_consume_token(24);
+      label_2:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case INPUT:
+        case OUTPUT:
+        case INOUT:
+          ;
+          break;
+        default:
+          jj_la1[2] = jj_gen;
+          break label_2;
+        }
+        port = parseCompactPort();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 28:
+          jj_consume_token(28);
+          break;
+        default:
+          jj_la1[3] = jj_gen;
+          ;
+        }
+                        ports.add(port);
+      }
+      jj_consume_token(25);
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      ;
+    }
+    jj_consume_token(29);
+        {if (true) return ports;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Port parseCompactPort() throws ParseException {
+    Token nameToken;
+    Token typeToken;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INPUT:
+      typeToken = jj_consume_token(INPUT);
+      break;
+    case OUTPUT:
+      typeToken = jj_consume_token(OUTPUT);
+      break;
+    case INOUT:
+      typeToken = jj_consume_token(INOUT);
+      break;
+    default:
+      jj_la1[5] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    nameToken = jj_consume_token(NAME);
         String name = nameToken.image;
         String type = typeToken.image;
         {if (true) return new Port(name, type);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseCompactPort");
-    }
   }
 
   final public List<Port> parseComplexPorts() throws ParseException {
-    trace_call("parseComplexPorts");
-    try {
     List<String> declarations;
     List<Port> definitions;
-      declarations = parsePortsDeclaration();
-      definitions = parsePortsDefinitions();
+    declarations = parsePortsDeclaration();
+    definitions = parsePortsDefinitions();
         HashMap<String, String> nameToType = new HashMap<String, String>();
         for (Port port: definitions) {
                 nameToType.put(port.name, port.type);
@@ -230,94 +198,79 @@ public class VerilogParser implements VerilogParserConstants {
         }
         {if (true) return ports;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseComplexPorts");
-    }
   }
 
   final public List<String> parsePortsDeclaration() throws ParseException {
-    trace_call("parsePortsDeclaration");
-    try {
     List<String> names = null;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 24:
-        jj_consume_token(24);
-        names = parseNames();
-        jj_consume_token(25);
-        break;
-      default:
-        jj_la1[6] = jj_gen;
-        ;
-      }
-      jj_consume_token(29);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 24:
+      jj_consume_token(24);
+      names = parseNames();
+      jj_consume_token(25);
+      break;
+    default:
+      jj_la1[6] = jj_gen;
+      ;
+    }
+    jj_consume_token(29);
                 List<String> ports = new LinkedList<String>();
                 if (names != null) {
                         ports.addAll(names);
                 }
                 {if (true) return ports;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parsePortsDeclaration");
-    }
   }
 
   final public List<Port> parsePortsDefinitions() throws ParseException {
-    trace_call("parsePortsDefinitions");
-    try {
     List<Port> ports;
     List<Port> allPorts = new LinkedList<Port>();
-      label_3:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case INPUT:
-        case OUTPUT:
-        case INOUT:
-        case REG:
-        case WIRE:
-          ;
-          break;
-        default:
-          jj_la1[7] = jj_gen;
-          break label_3;
-        }
-        ports = parsePortsDefinition();
-                allPorts.addAll(ports);
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case INPUT:
+      case OUTPUT:
+      case INOUT:
+      case REG:
+      case WIRE:
+        ;
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        break label_3;
       }
+      ports = parsePortsDefinition();
+                allPorts.addAll(ports);
+    }
         {if (true) return allPorts;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parsePortsDefinitions");
-    }
   }
 
   final public List<Port> parsePortsDefinition() throws ParseException {
-    trace_call("parsePortsDefinition");
-    try {
     List<String> names = new LinkedList<String>();
     Token typeToken;
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INPUT:
-        typeToken = jj_consume_token(INPUT);
-        break;
-      case OUTPUT:
-        typeToken = jj_consume_token(OUTPUT);
-        break;
-      case INOUT:
-        typeToken = jj_consume_token(INOUT);
-        break;
-      case REG:
-        typeToken = jj_consume_token(REG);
-        break;
-      case WIRE:
-        typeToken = jj_consume_token(WIRE);
-        break;
-      default:
-        jj_la1[8] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      names = parseNames();
-      jj_consume_token(29);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INPUT:
+      typeToken = jj_consume_token(INPUT);
+      break;
+    case OUTPUT:
+      typeToken = jj_consume_token(OUTPUT);
+      break;
+    case INOUT:
+      typeToken = jj_consume_token(INOUT);
+      break;
+    case REG:
+      typeToken = jj_consume_token(REG);
+      break;
+    case WIRE:
+      typeToken = jj_consume_token(WIRE);
+      break;
+    default:
+      jj_la1[8] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    names = parseNames();
+    jj_consume_token(29);
         String type = typeToken.image;
         List<Port> ports = new LinkedList<Port>();
         for (String name: names) {
@@ -326,191 +279,153 @@ public class VerilogParser implements VerilogParserConstants {
         }
         {if (true) return ports;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parsePortsDefinition");
-    }
   }
 
   final public List<String> parseNames() throws ParseException {
-    trace_call("parseNames");
-    try {
     Token nameToken;
     List<String> names = new LinkedList<String>();
-      label_4:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case NAME:
-          ;
-          break;
-        default:
-          jj_la1[9] = jj_gen;
-          break label_4;
-        }
-        nameToken = jj_consume_token(NAME);
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 28:
-          jj_consume_token(28);
-          break;
-        default:
-          jj_la1[10] = jj_gen;
-          ;
-        }
-                String name = nameToken.image;
-            names.add(name);
-      }
-        {if (true) return names;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseNames");
-    }
-  }
-
-  final public List<Instance> parseInstances() throws ParseException {
-    trace_call("parseInstances");
-    try {
-    Instance instance;
-    List<Instance> instances = new LinkedList<Instance>();
-      label_5:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case NAME:
-          ;
-          break;
-        default:
-          jj_la1[11] = jj_gen;
-          break label_5;
-        }
-        instance = parseInstance();
-            instances.add(instance);
-      }
-        {if (true) return instances;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseInstances");
-    }
-  }
-
-  final public Instance parseInstance() throws ParseException {
-    trace_call("parseInstance");
-    try {
-    Token moduleNameToken;
-    Token nameToken = null;
-    List<String> parameters;
-    List<Connection> connections;
-      moduleNameToken = jj_consume_token(NAME);
+    label_4:
+    while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
-        nameToken = jj_consume_token(NAME);
+        ;
         break;
       default:
-        jj_la1[12] = jj_gen;
-        ;
+        jj_la1[9] = jj_gen;
+        break label_4;
       }
-      label_6:
-      while (true) {
-        jj_consume_token(24);
-        connections = parseConnections();
-        jj_consume_token(25);
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 24:
-          ;
-          break;
-        default:
-          jj_la1[13] = jj_gen;
-          break label_6;
-        }
-      }
-      jj_consume_token(29);
-        String moduleName = moduleNameToken.image;
-        String name = (nameToken == null ? null : nameToken.image);
-        {if (true) return new Instance(name, moduleName, connections);}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseInstance");
-    }
-  }
-
-  final public List<Connection> parseConnections() throws ParseException {
-    trace_call("parseConnections");
-    try {
-    List<Connection> connections;
-      if (jj_2_2(2147483647)) {
-        connections = parseNamedConnections();
-      } else {
-        connections = parseOrderedConnections();
-      }
-        {if (true) return connections;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseConnections");
-    }
-  }
-
-  final public List<Connection> parseNamedConnections() throws ParseException {
-    trace_call("parseNamedConnections");
-    try {
-    Connection connection;
-    List<Connection> connections = new LinkedList<Connection>();
-      label_7:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 30:
-          ;
-          break;
-        default:
-          jj_la1[14] = jj_gen;
-          break label_7;
-        }
-        connection = parseNamedConnection();
-            connections.add(connection);
-      }
-        {if (true) return connections;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseNamedConnections");
-    }
-  }
-
-  final public Connection parseNamedConnection() throws ParseException {
-    trace_call("parseNamedConnection");
-    try {
-    Token portName;
-    Token netName;
-      jj_consume_token(30);
-      portName = jj_consume_token(NAME);
-      jj_consume_token(24);
-      netName = jj_consume_token(NAME);
-      jj_consume_token(25);
+      nameToken = jj_consume_token(NAME);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 28:
         jj_consume_token(28);
         break;
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[10] = jj_gen;
         ;
       }
+                String name = nameToken.image;
+            names.add(name);
+    }
+        {if (true) return names;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public List<Instance> parseInstances() throws ParseException {
+    Instance instance;
+    List<Instance> instances = new LinkedList<Instance>();
+    label_5:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NAME:
+        ;
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        break label_5;
+      }
+      instance = parseInstance();
+            instances.add(instance);
+    }
+        {if (true) return instances;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Instance parseInstance() throws ParseException {
+    Token moduleNameToken;
+    Token nameToken = null;
+    List<String> parameters;
+    List<Connection> connections;
+    moduleNameToken = jj_consume_token(NAME);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case NAME:
+      nameToken = jj_consume_token(NAME);
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+      ;
+    }
+    label_6:
+    while (true) {
+      jj_consume_token(24);
+      connections = parseConnections();
+      jj_consume_token(25);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case 24:
+        ;
+        break;
+      default:
+        jj_la1[13] = jj_gen;
+        break label_6;
+      }
+    }
+    jj_consume_token(29);
+        String moduleName = moduleNameToken.image;
+        String name = (nameToken == null ? null : nameToken.image);
+        {if (true) return new Instance(name, moduleName, connections);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public List<Connection> parseConnections() throws ParseException {
+    List<Connection> connections;
+    if (jj_2_2(2147483647)) {
+      connections = parseNamedConnections();
+    } else {
+      connections = parseOrderedConnections();
+    }
+        {if (true) return connections;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public List<Connection> parseNamedConnections() throws ParseException {
+    Connection connection;
+    List<Connection> connections = new LinkedList<Connection>();
+    label_7:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case 30:
+        ;
+        break;
+      default:
+        jj_la1[14] = jj_gen;
+        break label_7;
+      }
+      connection = parseNamedConnection();
+            connections.add(connection);
+    }
+        {if (true) return connections;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Connection parseNamedConnection() throws ParseException {
+    Token portName;
+    Token netName;
+    jj_consume_token(30);
+    portName = jj_consume_token(NAME);
+    jj_consume_token(24);
+    netName = jj_consume_token(NAME);
+    jj_consume_token(25);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 28:
+      jj_consume_token(28);
+      break;
+    default:
+      jj_la1[15] = jj_gen;
+      ;
+    }
         {if (true) return new Connection(portName.image, netName.image);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseNamedConnection");
-    }
   }
 
   final public List<Connection> parseOrderedConnections() throws ParseException {
-    trace_call("parseOrderedConnections");
-    try {
     List<String> wires;
     List<Connection> connections = new LinkedList<Connection>();
-      wires = parseNames();
+    wires = parseNames();
         for (String wire: wires) {
                 Connection connection = new Connection(null, wire);
                 connections.add(connection);
         }
         {if (true) return connections;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parseOrderedConnections");
-    }
   }
 
   private boolean jj_2_1(int xla) {
@@ -702,7 +617,6 @@ public class VerilogParser implements VerilogParserConstants {
           }
         }
       }
-      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -740,7 +654,6 @@ public class VerilogParser implements VerilogParserConstants {
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
-      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -826,55 +739,12 @@ public class VerilogParser implements VerilogParserConstants {
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  private int trace_indent = 0;
-  private boolean trace_enabled = true;
-
-/** Enable tracing. */
+  /** Enable tracing. */
   final public void enable_tracing() {
-    trace_enabled = true;
   }
 
-/** Disable tracing. */
+  /** Disable tracing. */
   final public void disable_tracing() {
-    trace_enabled = false;
-  }
-
-  private void trace_call(String s) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Call:   " + s);
-    }
-    trace_indent = trace_indent + 2;
-  }
-
-  private void trace_return(String s) {
-    trace_indent = trace_indent - 2;
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Return: " + s);
-    }
-  }
-
-  private void trace_token(Token t, String where) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Consumed token: <" + tokenImage[t.kind]);
-      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
-        System.out.print(": \"" + t.image + "\"");
-      }
-      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
-    }
-  }
-
-  private void trace_scan(Token t1, int t2) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Visited token: <" + tokenImage[t1.kind]);
-      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
-        System.out.print(": \"" + t1.image + "\"");
-      }
-      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
-    }
   }
 
   private void jj_rescan_token() {

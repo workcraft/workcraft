@@ -56,6 +56,9 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
+import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
+import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -323,6 +326,11 @@ public class VisualCircuit extends AbstractVisualModel {
 			getWorkspaceEntry().setChanged(true);
 			getWorkspaceEntry().saveMemento();
 		}
+	}
+
+	@Override
+	public AbstractLayoutTool getBestLayoutTool() {
+		return new CircuitLayoutTool();
 	}
 
 	@Override

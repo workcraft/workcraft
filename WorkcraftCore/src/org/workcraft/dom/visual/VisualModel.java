@@ -34,6 +34,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
 
 public interface VisualModel extends Model, ObservableState {
 	public void draw(Graphics2D g, Decorator decorator);
@@ -73,5 +74,6 @@ public interface VisualModel extends Model, ObservableState {
 
 	public void setTemplateNode(VisualNode node);
 	public VisualNode getTemplateNode();
+	public AbstractLayoutTool getBestLayoutTool();
 
 }

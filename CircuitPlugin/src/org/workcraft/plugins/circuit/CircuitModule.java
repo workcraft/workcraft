@@ -15,6 +15,7 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
+import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -36,6 +37,13 @@ public class CircuitModule implements Module {
 	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		PluginManager pm = framework.getPluginManager();
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new CircuitLayoutTool();
+			}
+		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
