@@ -33,7 +33,6 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.CircuitModelDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;

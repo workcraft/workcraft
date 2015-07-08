@@ -35,95 +35,12 @@ public class GenlibParser {
     
     public class Function {
         public final String name;
-        public final Expression expression;
-        public Function(String name, Expression expression) {
+        public final String expression;
+        public Function(String name, String expression) {
             this.name = name;
             this.expression = expression;
         }
     }
-    
-    public interface Expression {
-    	public String toString();
-    }
-
-    public class ExpressionExpression implements Expression {
-        public final List<Expression> expressions;
-        public ExpressionExpression(List<Expression> expressions) {
-            this.expressions = expressions;
-        }
-        public String toString() {
-        	String result = "";
-        	boolean first = true;
-        	for (Expression expression: expressions) {
-        		if (!first) {
-        			result += "+";
-        		}
-        		result += expression.toString();
-        		first = false;
-        	}
-        	return result;
-        }
-    }
-
-    public class TermExpression implements Expression {
-        public final List<Expression> expressions;
-        public TermExpression(List<Expression> expressions) {
-            this.expressions = expressions;
-        }
-        public String toString() {
-        	String result = "";
-        	boolean first = true;
-        	for (Expression expression: expressions) {
-        		if (!first) {
-        			result += "*";
-        		}
-        		result += expression.toString();
-        		first = false;
-        	}
-        	return result;
-        }
-    }
-    
-    public class FactorExpression implements Expression {
-        public final Expression expression;
-        public FactorExpression(Expression expression) {
-            this.expression = expression;
-        }
-        public String toString() {
-        	return "(" + expression.toString() + ")";
-        }
-    }
-
-    public class NotExpression implements Expression {
-        public final Expression expression;
-        public NotExpression(Expression expression) {
-            this.expression = expression;
-        }
-        public String toString() {
-        	return expression.toString() + "'";
-        }
-    }
-
-    public class LiteralExpression implements Expression {
-        public final String name;
-        public LiteralExpression(String name) {
-            this.name = name;
-        }
-        public String toString() {
-        	return name;
-        }
-    }
-
-    public class ConstantExpression implements Expression {
-        public final boolean value;
-        public ConstantExpression(boolean value) {
-            this.value = value;
-        }
-        public String toString() {
-        	return (value ? "1" : "0");
-        }
-    }
-    
 }
 PARSER_END(GenlibParser)
 
@@ -144,23 +61,14 @@ TOKEN :
 |   <NONINV : "NONINV">
 |   <UNKNOWN : "UNKNOWN">
 |   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
+|   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"" >
+|   <#CHAR: [" ","!","#"-"[","]"-"~"] > // Printable ASCII characters excluding \ and "
+|   <#ESCAPESEQ: "\\" ["\"","\\","n"] > // 2-character sequences \\, \", and \n
+|   <ANY_NAME : "*">
 |	<NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
-|   <INTEGER : ([ "0"-"9" ])+>
-|   <CONST0 : "CONST0">
-|   <CONST1 : "CONST1">
-|   <AND  : ("*" | " ")>
-|   <OR : "+">
-|   <NOT_PREFIX : "!">
-|   <NOT_POSTFIX : "'">
-|   "("
-|   ")"
-|   "["
-|   "]"
-|   "="
-|   ";"
-|   "."
-}    
-    
+|   <EXPRESSION: "=" (~[";"])* ";">
+}
+
 List<Gate> parseGenlib() :
 {
     List<Gate> gates; 
@@ -187,17 +95,46 @@ List<Gate> parseGates():
     
 Gate parseGate():
 {
-    Token nameToken;
+    String name;
     Function function;
 }
 {
-    <GATE> nameToken = <NAME> <NUMERAL> function = parseFunction() ";"
     (
-    	parsePin()
-    )*
+        <GATE> 
+        name = parseName() <NUMERAL> function = parseFunction()
+        (
+    	   parsePin()
+        )*
+    )
     {
-    	String name = nameToken.image;
         return new Gate(name, function);
+    }
+}
+
+String parseName():
+{
+    Token nameToken;
+}
+{
+    (
+        nameToken = <NAME> 
+    |   nameToken = <STRING>
+    )
+    {
+        return nameToken.image;
+    }
+}
+
+Function parseFunction():
+{
+    Token nameToken;
+    Token expressionToken;
+}
+{
+    nameToken = <NAME> expressionToken = <EXPRESSION>
+    {
+        String expression = expressionToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        return new Function(nameToken.image, expression);
     }
 }
 
@@ -205,107 +142,6 @@ void parsePin():
 {
 }
 {
-	<PIN> <NAME> [<INV>|<NONINV>|<UNKNOWN>] <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
+	<PIN> (<NAME> | "*") [<INV>|<NONINV>|<UNKNOWN>] <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
 }
 
-Function parseFunction():
-{
-	Token nameToken;
-	Expression expression;
-}
-{
-	nameToken = <NAME> "=" expression = parseExpression()
-	{
-		String name = nameToken.image;
-		return new Function(name, expression);
-	}
-}
-
-Expression parseExpression():
-{
-	Expression term;
-	List<Expression> terms = new LinkedList<Expression>();
-}
-{
-	(
-		term = parseTerm()
-		{
-			terms.add(term);
-		}
-		(<OR> term = parseTerm())*
-		{
-			terms.add(term); 
-		}
-	)
-	{
-		return new ExpressionExpression(terms);
-	}
-}
-
-Expression parseTerm():
-{
-	Expression factor;
-	List<Expression> factors = new LinkedList<Expression>();
-}
-{
-	(
-		factor = parseFactor()
-		{
-			factors.add(factor);
-		} 
-		( <AND> factor = parseFactor() )*
-		{
-			factors.add(factor);
-		} 
-	)
-	{
-		return new TermExpression(factors);
-	}
-}
-
-Expression parseFactor():
-{
-	Expression factor;
-}
-{
-	(
-		factor = parseLiteral()
-	|	factor = parseConstant()
-	|	<NOT_PREFIX> factor = parseFactor()
-		{
-			return new NotExpression(factor);
-		}
-	| 	"(" factor = parseExpression() ")"
-	)
-	{
-		return factor;
-	}
-}
-
-Expression parseLiteral():
-{
-	Token nameToken;
-}
-{
-	nameToken = <NAME>
-	{
-		String name = nameToken.image;
-		return new LiteralExpression(name);
-	}
-}
-
-Expression parseConstant():
-{
-}
-{
-	( 
-		<CONST0>
-		{
-			return new ConstantExpression(false);
-		}
-	|	<CONST1>
-		{
-			return new ConstantExpression(true);
-		}
-	)
-}

@@ -19,9 +19,9 @@ public class VisualContactFormulaProperties {
 		this.vcircuit = circuit;
 	}
 
-	private BooleanFormula parseFormula(final VisualFunctionContact contact, String resetFunction) {
+	private BooleanFormula parseFormula(final VisualFunctionContact contact, String function) {
 		try {
-			return BooleanParser.parse(resetFunction,
+			return BooleanParser.parse(function,
 					new Func<String, BooleanFormula>() {
 						@Override
 						public BooleanFormula eval(String name) {
@@ -49,9 +49,9 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public void setValue(Object value) throws InvocationTargetException {
-				String setFunction = (String)value;
-				if (!setFunction.isEmpty()) {
-					contact.setSetFunction(parseFormula(contact, setFunction));
+				String function = (String)value;
+				if (!function.isEmpty()) {
+					contact.setSetFunction(parseFormula(contact, function));
 				} else {
 					contact.setSetFunction(null);
 				}
@@ -99,9 +99,9 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public void setValue(Object value) throws InvocationTargetException {
-				String setFunction = (String)value;
-				if (!setFunction.isEmpty()) {
-					contact.setResetFunction(parseFormula(contact, setFunction));
+				String function = (String)value;
+				if (!function.isEmpty()) {
+					contact.setResetFunction(parseFormula(contact, function));
 				} else {
 					contact.setResetFunction(null);
 				}

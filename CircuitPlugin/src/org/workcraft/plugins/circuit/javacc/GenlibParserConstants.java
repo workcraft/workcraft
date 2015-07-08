@@ -23,21 +23,17 @@ public interface GenlibParserConstants {
   /** RegularExpression Id. */
   int NAME = 11;
   /** RegularExpression Id. */
-  int NUMERAL = 12;
+  int STRING = 12;
   /** RegularExpression Id. */
-  int INTEGER = 13;
+  int CHAR = 13;
   /** RegularExpression Id. */
-  int CONST0 = 14;
+  int ESCAPESEQ = 14;
   /** RegularExpression Id. */
-  int CONST1 = 15;
+  int ANY_NAME = 15;
   /** RegularExpression Id. */
-  int AND = 16;
+  int NUMERAL = 16;
   /** RegularExpression Id. */
-  int OR = 17;
-  /** RegularExpression Id. */
-  int NOT_PREFIX = 18;
-  /** RegularExpression Id. */
-  int NOT_POSTFIX = 19;
+  int EXPRESSION = 17;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -56,21 +52,12 @@ public interface GenlibParserConstants {
     "\"NONINV\"",
     "\"UNKNOWN\"",
     "<NAME>",
+    "<STRING>",
+    "<CHAR>",
+    "<ESCAPESEQ>",
+    "\"*\"",
     "<NUMERAL>",
-    "<INTEGER>",
-    "\"CONST0\"",
-    "\"CONST1\"",
-    "<AND>",
-    "\"+\"",
-    "\"!\"",
-    "\"\\\'\"",
-    "\"(\"",
-    "\")\"",
-    "\"[\"",
-    "\"]\"",
-    "\"=\"",
-    "\";\"",
-    "\".\"",
+    "<EXPRESSION>",
   };
 
 }

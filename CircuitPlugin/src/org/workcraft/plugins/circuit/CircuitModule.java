@@ -10,6 +10,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.circuit.interop.GenlibImporter;
 import org.workcraft.plugins.circuit.interop.VerilogExporter;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
@@ -125,6 +126,7 @@ public class CircuitModule implements Module {
 		pm.registerClass(Settings.class, CircuitSettings.class);
 		pm.registerClass(Exporter.class, VerilogExporter.class);
 		pm.registerClass(Importer.class, VerilogImporter.class);
+		pm.registerClass(Importer.class, GenlibImporter.class);
 	}
 
 
