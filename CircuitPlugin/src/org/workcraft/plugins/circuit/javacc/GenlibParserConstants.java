@@ -13,27 +13,47 @@ public interface GenlibParserConstants {
   /** RegularExpression Id. */
   int GATE = 6;
   /** RegularExpression Id. */
-  int PIN = 7;
+  int LATCH = 7;
   /** RegularExpression Id. */
-  int INV = 8;
+  int PIN = 8;
   /** RegularExpression Id. */
-  int NONINV = 9;
+  int INV = 9;
   /** RegularExpression Id. */
-  int UNKNOWN = 10;
+  int NONINV = 10;
   /** RegularExpression Id. */
-  int NAME = 11;
+  int UNKNOWN = 11;
   /** RegularExpression Id. */
-  int STRING = 12;
+  int SEQ = 12;
   /** RegularExpression Id. */
-  int CHAR = 13;
+  int ANY = 13;
   /** RegularExpression Id. */
-  int ESCAPESEQ = 14;
+  int ACTIVE_LOW = 14;
   /** RegularExpression Id. */
-  int ANY_NAME = 15;
+  int ACTIVE_HIGH = 15;
   /** RegularExpression Id. */
-  int NUMERAL = 16;
+  int RISING_EDGE = 16;
   /** RegularExpression Id. */
-  int EXPRESSION = 17;
+  int FALLING_EDGE = 17;
+  /** RegularExpression Id. */
+  int CONTROL = 18;
+  /** RegularExpression Id. */
+  int CONSTRAINT = 19;
+  /** RegularExpression Id. */
+  int ASYNCH = 20;
+  /** RegularExpression Id. */
+  int NAME = 21;
+  /** RegularExpression Id. */
+  int STRING = 22;
+  /** RegularExpression Id. */
+  int CHAR = 23;
+  /** RegularExpression Id. */
+  int ESCAPESEQ = 24;
+  /** RegularExpression Id. */
+  int ANY_NAME = 25;
+  /** RegularExpression Id. */
+  int NUMERAL = 26;
+  /** RegularExpression Id. */
+  int EXPRESSION = 27;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -47,10 +67,20 @@ public interface GenlibParserConstants {
     "\"\\n\"",
     "<token of kind 5>",
     "\"GATE\"",
+    "\"LATCH\"",
     "\"PIN\"",
     "\"INV\"",
     "\"NONINV\"",
     "\"UNKNOWN\"",
+    "\"SEQ\"",
+    "\"ANY\"",
+    "\"ACTIVE_LOW\"",
+    "\"ACTIVE_HIGH\"",
+    "\"RISING_EDGE\"",
+    "\"FALLING_EDGE\"",
+    "\"CONTROL\"",
+    "\"CONSTRAINT\"",
+    "\"ASYNCH\"",
     "<NAME>",
     "<STRING>",
     "<CHAR>",

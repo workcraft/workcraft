@@ -18,9 +18,19 @@ public class GenlibParser implements GenlibParserConstants {
     public class Gate {
         public final String name;
         public final Function function;
+        public final String seq;
         public Gate(String name, Function function) {
             this.name = name;
             this.function = function;
+            this.seq = null;
+        }
+        public Gate(String name, Function function, String seq) {
+            this.name = name;
+            this.function = function;
+            this.seq = seq;
+        }
+        public boolean isSequential() {
+            return (seq != null);
         }
     }
 
@@ -54,13 +64,25 @@ public class GenlibParser implements GenlibParserConstants {
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case GATE:
+        case LATCH:
           ;
           break;
         default:
           jj_la1[0] = jj_gen;
           break label_1;
         }
-        gate = parseGate();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case GATE:
+          gate = parseGate();
+          break;
+        case LATCH:
+          gate = parseLatch();
+          break;
+        default:
+          jj_la1[1] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
             gates.add(gate);
       }
         {if (true) return gates;}
@@ -86,7 +108,7 @@ public class GenlibParser implements GenlibParserConstants {
           ;
           break;
         default:
-          jj_la1[1] = jj_gen;
+          jj_la1[2] = jj_gen;
           break label_2;
         }
         parsePin();
@@ -95,6 +117,52 @@ public class GenlibParser implements GenlibParserConstants {
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("parseGate");
+    }
+  }
+
+  final public Gate parseLatch() throws ParseException {
+    trace_call("parseLatch");
+    try {
+    String name;
+    Function function;
+    String next;
+      jj_consume_token(LATCH);
+      name = parseName();
+      jj_consume_token(NUMERAL);
+      function = parseFunction();
+      label_3:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case PIN:
+          ;
+          break;
+        default:
+          jj_la1[3] = jj_gen;
+          break label_3;
+        }
+        parsePin();
+      }
+      next = parseSeq();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CONTROL:
+        parseControl();
+        break;
+      default:
+        jj_la1[4] = jj_gen;
+        ;
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CONSTRAINT:
+        parseConstraint();
+        break;
+      default:
+        jj_la1[5] = jj_gen;
+        ;
+      }
+        {if (true) return new Gate(name, function, next);}
+    throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseLatch");
     }
   }
 
@@ -110,7 +178,7 @@ public class GenlibParser implements GenlibParserConstants {
         nameToken = jj_consume_token(STRING);
         break;
       default:
-        jj_la1[2] = jj_gen;
+        jj_la1[6] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -148,7 +216,7 @@ public class GenlibParser implements GenlibParserConstants {
         jj_consume_token(ANY_NAME);
         break;
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[7] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -167,13 +235,13 @@ public class GenlibParser implements GenlibParserConstants {
           jj_consume_token(UNKNOWN);
           break;
         default:
-          jj_la1[4] = jj_gen;
+          jj_la1[8] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[9] = jj_gen;
         ;
       }
       jj_consume_token(NUMERAL);
@@ -187,6 +255,80 @@ public class GenlibParser implements GenlibParserConstants {
     }
   }
 
+  final public String parseSeq() throws ParseException {
+    trace_call("parseSeq");
+    try {
+    Token nextToken = null;
+      jj_consume_token(SEQ);
+      jj_consume_token(NAME);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NAME:
+        nextToken = jj_consume_token(NAME);
+        break;
+      case ANY:
+        jj_consume_token(ANY);
+        break;
+      default:
+        jj_la1[10] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ACTIVE_LOW:
+        jj_consume_token(ACTIVE_LOW);
+        break;
+      case ACTIVE_HIGH:
+        jj_consume_token(ACTIVE_HIGH);
+        break;
+      case RISING_EDGE:
+        jj_consume_token(RISING_EDGE);
+        break;
+      case FALLING_EDGE:
+        jj_consume_token(FALLING_EDGE);
+        break;
+      case ASYNCH:
+        jj_consume_token(ASYNCH);
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+        {if (true) return ((nextToken == null) ? null : nextToken.image);}
+    throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseSeq");
+    }
+  }
+
+  final public void parseControl() throws ParseException {
+    trace_call("parseControl");
+    try {
+      jj_consume_token(CONTROL);
+      jj_consume_token(NAME);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+    } finally {
+      trace_return("parseControl");
+    }
+  }
+
+  final public void parseConstraint() throws ParseException {
+    trace_call("parseConstraint");
+    try {
+      jj_consume_token(CONSTRAINT);
+      jj_consume_token(NAME);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+    } finally {
+      trace_return("parseConstraint");
+    }
+  }
+
   /** Generated Token Manager. */
   public GenlibParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
@@ -196,13 +338,13 @@ public class GenlibParser implements GenlibParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[6];
+  final private int[] jj_la1 = new int[12];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x40,0x80,0x1800,0x8800,0x700,0x700,};
+      jj_la1_0 = new int[] {0xc0,0xc0,0x100,0x100,0x40000,0x80000,0x600000,0x2200000,0xe00,0xe00,0x202000,0x13c000,};
    }
 
   /** Constructor with InputStream. */
@@ -216,7 +358,7 @@ public class GenlibParser implements GenlibParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -230,7 +372,7 @@ public class GenlibParser implements GenlibParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -240,7 +382,7 @@ public class GenlibParser implements GenlibParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -250,7 +392,7 @@ public class GenlibParser implements GenlibParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -259,7 +401,7 @@ public class GenlibParser implements GenlibParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -268,7 +410,7 @@ public class GenlibParser implements GenlibParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 12; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -321,12 +463,12 @@ public class GenlibParser implements GenlibParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[18];
+    boolean[] la1tokens = new boolean[28];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 12; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -335,7 +477,7 @@ public class GenlibParser implements GenlibParserConstants {
         }
       }
     }
-    for (int i = 0; i < 18; i++) {
+    for (int i = 0; i < 28; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

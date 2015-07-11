@@ -124,15 +124,13 @@ public class CElementRenderer extends GateRenderer {
 
 	};
 
-	public static ComponentRenderingResult renderGate(
-			BooleanFormula set, BooleanFormula reset) {
+	public static ComponentRenderingResult renderGate(BooleanFormula set, BooleanFormula reset) {
 
 		doNegate = false; isNegated = false; isFirstNode = true; isGlobalNegation = false;
 		final LinkedList<Pair<String,Boolean>> setVars = set.accept(defaultVisitor);
 		doNegate = true; isNegated = false;
 		final LinkedList<Pair<String,Boolean>> resetVars = reset.accept(defaultVisitor);
 		final LinkedList<Pair<String,Boolean>> bothVars = new LinkedList<Pair<String,Boolean>>();
-
 		for (Pair<String,Boolean> p: setVars) {
 			int i = resetVars.indexOf(p);
 			if (i!=-1) {
@@ -146,6 +144,10 @@ public class CElementRenderer extends GateRenderer {
 
 			i = resetVars.indexOf(p);
 			resetVars.remove(i);
+		}
+
+		if (bothVars.isEmpty()) {
+			return null;
 		}
 
 		return new CElementRenderingResult() {
@@ -255,7 +257,6 @@ public class CElementRenderer extends GateRenderer {
 				g.fill(path);
 				g.setColor(GateRenderer.foreground);
 				g.draw(path);
-
 				if (!setVars.isEmpty()) {
 					Line2D line = new Line2D.Double(x, y1, x, y1-0.5*setVars.size());
 					g.draw(line);

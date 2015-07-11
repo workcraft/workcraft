@@ -10,7 +10,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
+import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class CircuitUtils {
@@ -258,6 +263,80 @@ public class CircuitUtils {
 			}
 		  }
 		  return result;
+	}
+
+	public static BooleanFormula parseContactFuncton(final Circuit circuit,
+			final FunctionComponent component, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				FunctionContact contact = (FunctionContact)circuit.getNodeByReference(component, name);
+				if (contact == null) {
+					contact = new FunctionContact();
+					contact.setIOType(IOType.INPUT);
+					component.add(contact);
+					circuit.setName(contact, name);
+				}
+				return contact;
+			}
+		});
+	}
+
+	public static BooleanFormula parsePortFuncton(final Circuit circuit, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				FunctionContact port = (FunctionContact)circuit.getNodeByReference(null, name);
+				if (port == null) {
+					port = new FunctionContact();
+					port.setIOType(IOType.OUTPUT);
+					circuit.add(port);
+					circuit.setName(port, name);
+				}
+				return port;
+			}
+		});
+	}
+
+	public static BooleanFormula parseContactFuncton(final VisualCircuit circuit,
+			final VisualFunctionComponent component, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				BooleanFormula result = null;
+				VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
+				if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
+					result = (BooleanFormula)contact.getReferencedContact();
+				}
+				return result;
+			}
+		});
+	}
+
+	public static BooleanFormula parsePortFuncton(final VisualCircuit circuit, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				BooleanFormula result = null;
+				VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
+				if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
+					result = (BooleanFormula)port.getReferencedContact();
+				}
+				return result;
+			}
+		});
 	}
 
 }

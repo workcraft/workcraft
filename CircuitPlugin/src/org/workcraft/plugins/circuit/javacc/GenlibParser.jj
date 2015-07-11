@@ -28,8 +28,18 @@ public class GenlibParser {
         
     public class Gate {        public final String name;
         public final Function function;
-        public Gate(String name, Function function) {            this.name = name;
+        public final String seq;        public Gate(String name, Function function) {
+            this.name = name;
             this.function = function;
+            this.seq = null;
+        }
+        public Gate(String name, Function function, String seq) {
+            this.name = name;
+            this.function = function;
+            this.seq = seq;
+        }
+        public boolean isSequential() {
+            return (seq != null);
         }
     }
     
@@ -56,10 +66,20 @@ SKIP:
 TOKEN :
 {
     <GATE : "GATE">
+|   <LATCH : "LATCH">
 |   <PIN : "PIN">
 |   <INV : "INV">
 |   <NONINV : "NONINV">
 |   <UNKNOWN : "UNKNOWN">
+|   <SEQ : "SEQ">
+|   <ANY : "ANY">
+|   <ACTIVE_LOW : "ACTIVE_LOW">
+|   <ACTIVE_HIGH : "ACTIVE_HIGH">
+|   <RISING_EDGE : "RISING_EDGE">
+|   <FALLING_EDGE : "FALLING_EDGE">
+|   <CONTROL : "CONTROL">
+|   <CONSTRAINT : "CONSTRAINT">
+|   <ASYNCH : "ASYNCH">
 |   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
 |   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"" >
 |   <#CHAR: [" ","!","#"-"[","]"-"~"] > // Printable ASCII characters excluding \ and "
@@ -85,7 +105,7 @@ List<Gate> parseGates():
     Gate gate;
     List<Gate> gates = new LinkedList<Gate>();}
 {
-    (        gate = parseGate()
+    (        ( gate = parseGate() | gate = parseLatch() )
         {            gates.add(gate);
         }
     )*
@@ -108,6 +128,28 @@ Gate parseGate():
     )
     {
         return new Gate(name, function);
+    }
+}
+
+Gate parseLatch():
+{
+    String name;
+    Function function;
+    String next;
+}
+{
+    (
+        <LATCH> 
+        name = parseName() <NUMERAL> function = parseFunction()
+        (
+           parsePin()
+        )*
+        next = parseSeq()
+        [ parseControl() ]
+        [ parseConstraint() ]
+    )
+    {
+        return new Gate(name, function, next);
     }
 }
 
@@ -142,6 +184,32 @@ void parsePin():
 {
 }
 {
-	<PIN> (<NAME> | "*") [<INV>|<NONINV>|<UNKNOWN>] <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
+    <PIN> (<NAME> | "*") [<INV>|<NONINV>|<UNKNOWN>] <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
+}
+
+String parseSeq():
+{
+    Token nextToken = null;
+}
+{
+    <SEQ> <NAME> (nextToken = <NAME> | <ANY>) (<ACTIVE_LOW> | <ACTIVE_HIGH> | <RISING_EDGE> | <FALLING_EDGE> | <ASYNCH>)
+    {
+        return ((nextToken == null) ? null : nextToken.image);
+    } 
+}
+
+void parseControl():
+{
+}
+{
+    <CONTROL> <NAME> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
+}
+
+
+void parseConstraint():
+{
+}
+{
+    <CONSTRAINT> <NAME> <NUMERAL> <NUMERAL> 
 }
 

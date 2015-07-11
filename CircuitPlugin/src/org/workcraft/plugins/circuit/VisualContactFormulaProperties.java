@@ -3,45 +3,35 @@ package org.workcraft.plugins.circuit;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
-import org.workcraft.util.Func;
 
 public class VisualContactFormulaProperties {
-	VisualCircuit vcircuit;
+	VisualCircuit circuit;
 
 	public VisualContactFormulaProperties(VisualCircuit circuit) {
-		this.vcircuit = circuit;
+		this.circuit = circuit;
 	}
 
-	private BooleanFormula parseFormula(final VisualFunctionContact contact, String function) {
-		try {
-			return BooleanParser.parse(function,
-					new Func<String, BooleanFormula>() {
-						@Override
-						public BooleanFormula eval(String name) {
-							BooleanFormula result = null;
-							Container container = (Container)contact.getParent();
-							VisualFunctionContact vc = null;
-							if (container instanceof VisualFunctionComponent) {
-								vc = vcircuit.getOrCreateContact(container, name, IOType.INPUT);
-							} else {
-								vc = vcircuit.getOrCreateContact(container, name, IOType.OUTPUT);
-							}
-							if ((vc != null) && (vc.getReferencedContact() instanceof BooleanFormula)) {
-								result = (BooleanFormula)vc.getReferencedContact();
-							}
-							return result;
-						}
-					});
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
+	private BooleanFormula parseContactFunction(final VisualFunctionContact contact, String function) {
+		BooleanFormula formula = null;
+		if (!function.isEmpty()) {
+			Node parent = contact.getParent();
+			try {
+				if (parent instanceof VisualFunctionComponent) {
+					VisualFunctionComponent component = (VisualFunctionComponent)parent;
+					formula = CircuitUtils.parseContactFuncton(circuit, component, function);
+				} else {
+					formula = CircuitUtils.parsePortFuncton(circuit, function);
+				}
+			} catch (ParseException e) {
+				throw new RuntimeException(e);
+			}
 		}
+		return formula;
 	}
 
 	public PropertyDescriptor getSetProperty(final VisualFunctionContact contact) {
@@ -49,12 +39,8 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public void setValue(Object value) throws InvocationTargetException {
-				String function = (String)value;
-				if (!function.isEmpty()) {
-					contact.setSetFunction(parseFormula(contact, function));
-				} else {
-					contact.setSetFunction(null);
-				}
+				BooleanFormula formula = parseContactFunction(contact, (String)value);
+				contact.setSetFunction(formula);
 			}
 
 			@Override
@@ -99,12 +85,8 @@ public class VisualContactFormulaProperties {
 
 			@Override
 			public void setValue(Object value) throws InvocationTargetException {
-				String function = (String)value;
-				if (!function.isEmpty()) {
-					contact.setResetFunction(parseFormula(contact, function));
-				} else {
-					contact.setResetFunction(null);
-				}
+				BooleanFormula formula = parseContactFunction(contact, (String)value);
+				contact.setResetFunction(formula);
 			}
 
 			@Override
