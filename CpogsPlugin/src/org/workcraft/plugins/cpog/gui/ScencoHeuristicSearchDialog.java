@@ -520,7 +520,6 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 	private void customPanelVisibility(boolean condition) {
 		customPanel.setVisible(condition);
 		exampleLabel.setVisible(condition);
-		exampleLabel2.setVisible(condition);
 		customEncLabel.setVisible(condition);
 		customEncodings.setVisible(condition);
 		customEncodings.setSelected(false);
