@@ -64,7 +64,7 @@ public class ScencoSatBasedDialog extends JDialog {
 	// sizes
 	Dimension dimensionLabel = new Dimension(120, 22);
 	Dimension dimensionLongLabel = new Dimension(290, 22);
-	Dimension dimensionBox = new Dimension(170, 22);
+	Dimension dimensionBox = new Dimension(170, 26);
 	Dimension dimensionText = new Dimension(585, 22);
 	Dimension dimensionTable = new Dimension(400, 180);
 	Dimension dimensionWindow = new Dimension(100, 400);
@@ -88,7 +88,7 @@ public class ScencoSatBasedDialog extends JDialog {
 		createButtonPanel();
 
 		double size[][] = new double[][] { { TableLayout.FILL },
-				{ 60, TableLayout.FILL, 35 } };
+				{ 60, TableLayout.FILL, 39 } };
 
 		layout = new TableLayout(size);
 		layout.setHGap(3);
@@ -111,7 +111,7 @@ public class ScencoSatBasedDialog extends JDialog {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(325, 220, 200, 100);
+		sizeWindow(325, 245, 200, 100);
 	}
 
 	private void createStandardPanel() {
@@ -205,13 +205,13 @@ public class ScencoSatBasedDialog extends JDialog {
 		numberOfSolutionsText.setDocument(new IntDocument(3));
 		numberOfSolutionsText.setText(String.valueOf(settings
 				.getSolutionNumber()));
-		numberOfSolutionsText.setPreferredSize(new Dimension(35, 22));
+		numberOfSolutionsText.setPreferredSize(new Dimension(35, 20));
 		numberOfSolutionsText.setBackground(Color.WHITE);
 
 		bitsLabel = new JLabel("Encoding bit-width:");
-		bitsLabel.setPreferredSize(new Dimension(200, 22));
+		bitsLabel.setPreferredSize(new Dimension(220, 22));
 		circuitSizeLabel = new JLabel("Circuit size in 2-input gates: ");
-		circuitSizeLabel.setPreferredSize(new Dimension(200, 22));
+		circuitSizeLabel.setPreferredSize(new Dimension(220, 22));
 		int value = 2;
 		while (value < m) {
 			value *= 2;
@@ -221,7 +221,7 @@ public class ScencoSatBasedDialog extends JDialog {
 		bitsText = new JTextField();
 		bitsText.setDocument(new IntDocument(2));
 		bitsText.setText(String.valueOf(bits + 1));
-		bitsText.setPreferredSize(new Dimension(35, 22));
+		bitsText.setPreferredSize(new Dimension(35, 20));
 		bitsText.setBackground(Color.WHITE);
 		bitsText.setEnabled(true);
 		bitsText.addActionListener(new ActionListener() {

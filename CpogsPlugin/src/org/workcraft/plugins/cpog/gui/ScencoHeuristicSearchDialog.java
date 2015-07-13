@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog.gui;
 
 import info.clearthought.layout.TableLayout;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -65,9 +66,9 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 	private WorkspaceEntry we;
 
 	// sizes
-	Dimension dimensionLabel = new Dimension(120, 22);
+	Dimension dimensionLabel = new Dimension(140, 22);
 	Dimension dimensionLongLabel = new Dimension(290, 22);
-	Dimension dimensionBox = new Dimension(170, 22);
+	Dimension dimensionBox = new Dimension(180, 26);
 	Dimension dimensionText = new Dimension(585, 22);
 	Dimension dimensionTable = new Dimension(400, 180);
 	Dimension dimensionWindow = new Dimension(100, 400);
@@ -91,7 +92,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		createButtonPanel();
 
 		double size[][] = new double[][] { { TableLayout.FILL },
-				{ 85, 110, TableLayout.FILL, 35 } };
+				{ 89, 135, TableLayout.FILL, 39 } };
 
 		layout = new TableLayout(size);
 		layout.setHGap(3);
@@ -115,7 +116,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(425, 550, 200, 100);
+		sizeWindow(480, 570, 200, 100);
 	}
 
 	private void createCustomPanel() {
@@ -127,7 +128,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		// TABLE OF ENCODINGS
 		exampleLabel = new JLabel(
 				"0/1: assign 0 or 1;  X: find best assignment;  -: Don't Care bit");
-		exampleLabel.setPreferredSize(new Dimension(400, 22));
+		exampleLabel.setPreferredSize(new Dimension(455, 22));
 		customEncLabel = new JLabel("Customise");
 		customEncLabel.setPreferredSize(dimensionLabel);
 		customEncodings = new JCheckBox("", false);
@@ -179,7 +180,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		bitsText = new JTextField();
 		bitsText.setDocument(new IntDocument(2));
 		bitsText.setText(String.valueOf(bits + 1));
-		bitsText.setPreferredSize(new Dimension(35, 22));
+		bitsText.setPreferredSize(new Dimension(35, 20));
 		bitsText.setBackground(Color.LIGHT_GRAY);
 		bitsText.setEnabled(false);
 		bitsText.addActionListener(new ActionListener() {
@@ -237,22 +238,20 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		encodingTable.getColumnModel().getColumn(0)
 				.setCellRenderer(leftRenderer);
 		scrollPane = new JScrollPane(encodingTable);
-		scrollPane.setMinimumSize(dimensionTable);
-		scrollPane.setPreferredSize(dimensionTable);
 
-		customPanel = new JPanel(new SimpleFlowLayout());
+		customPanel = new JPanel(new BorderLayout());
 		customPanel.setBorder(BorderFactory
 				.createTitledBorder("Custom encoding"));
 
-		customPanel.add(customEncodings);
-		customPanel.add(customEncLabel);
-		customPanel.add(bitsLabel);
-		customPanel.add(bitsText);
-		customPanel.add(new SimpleFlowLayout.LineBreak());
-		customPanel.add(scrollPane);
-		customPanel.add(new SimpleFlowLayout.LineBreak());
-		customPanel.add(exampleLabel);
-		// customPanel.add(exampleLabel2);
+		JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+		propertyPanel.add(customEncodings);
+		propertyPanel.add(customEncLabel);
+		propertyPanel.add(bitsLabel);
+		propertyPanel.add(bitsText);
+
+		customPanel.add(propertyPanel, BorderLayout.NORTH);
+		customPanel.add(scrollPane, BorderLayout.CENTER);
+		customPanel.add(exampleLabel, BorderLayout.SOUTH);
 
 	}
 
@@ -343,7 +342,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 					modifyCircuitSize(false);
 
 					// set size of window
-					sizeWindow(425, 570, 200, 100);
+					sizeWindow(480, 570, 200, 100);
 					break;
 				// FULL COVERAGE
 				case 1:
@@ -361,7 +360,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 					modifyCircuitSize(false);
 
 					// set size of window
-					sizeWindow(425, 280, 200, 100);
+					sizeWindow(425, 317, 200, 100);
 					break;
 				// RANDOM SEARCH
 				case 2:
@@ -379,7 +378,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 					modifyCircuitSize(false);
 
 					// set size of window
-					sizeWindow(425, 280, 200, 100);
+					sizeWindow(425, 317, 200, 100);
 					break;
 				default:
 
@@ -414,7 +413,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 
 		// NUMBER OF SOLUTIONS TO GENERATE
 		numberOfSolutionsLabel = new JLabel(" Number of solutions to explore");
-		numberOfSolutionsLabel.setPreferredSize(new Dimension(215, 22));
+		numberOfSolutionsLabel.setPreferredSize(new Dimension(225, 20));
 		numberOfSolutionsText = new JTextField();
 		numberOfSolutionsText.setDocument(new IntDocument(3));
 		numberOfSolutionsText.setText(String.valueOf(settings

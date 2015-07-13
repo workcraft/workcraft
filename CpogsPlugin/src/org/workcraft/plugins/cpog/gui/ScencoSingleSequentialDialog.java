@@ -55,7 +55,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 	// sizes
 	Dimension dimensionLabel = new Dimension(120, 22);
 	Dimension dimensionLongLabel = new Dimension(290,22);
-	Dimension dimensionBox = new Dimension(170, 22);
+	Dimension dimensionBox = new Dimension(170, 26);
 	Dimension dimensionText = new Dimension(585,22);
 	Dimension dimensionTable = new Dimension(400,180);
 	Dimension dimensionWindow = new Dimension(100,400);
@@ -76,7 +76,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
 		double size[][] = new double[][] {
 				{TableLayout.FILL},
-				{60, 35}
+				{60, TableLayout.FILL}
 		};
 
 		layout = new TableLayout(size);
@@ -100,7 +100,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(325,140,200,100);
+		sizeWindow(325,147,200,100);
 	}
 
 	private void createStandardPanel() {
