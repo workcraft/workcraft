@@ -136,19 +136,6 @@ public class ScencoSingleSequentialDialog extends JDialog {
 		            	}
 				    }
 				});
-				abcCheck.addActionListener(new ActionListener() {
-
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-		            	if(abcCheck.isSelected()){
-		            		normal.setSelected(true);
-		            	}else{
-		            		if (guidedModeBox.getSelectedIndex() == 0){
-		            			normal.setSelected(true);
-		            		}
-		            	}
-		            }
-		        });
 
 				// VERBOSE MODE INSTANTIATION
 				verboseModeLabel = new JLabel("Verbose mode");
