@@ -10,6 +10,9 @@ import org.workcraft.util.Triple;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
+import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.genlib.Gate;
+import org.workcraft.plugins.circuit.genlib.Function;
 
 /** Token Manager. */
 public class GenlibParserTokenManager implements GenlibParserConstants

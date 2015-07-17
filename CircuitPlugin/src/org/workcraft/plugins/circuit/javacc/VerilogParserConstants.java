@@ -27,11 +27,19 @@ public interface VerilogParserConstants {
   /** RegularExpression Id. */
   int NAME = 20;
   /** RegularExpression Id. */
-  int LOGIC0 = 21;
+  int HIERARCHICAL_NAME = 21;
   /** RegularExpression Id. */
-  int LOGIC1 = 22;
+  int STRING = 22;
   /** RegularExpression Id. */
-  int INTEGER = 23;
+  int CHAR = 23;
+  /** RegularExpression Id. */
+  int ESCAPESEQ = 24;
+  /** RegularExpression Id. */
+  int LOGIC0 = 25;
+  /** RegularExpression Id. */
+  int LOGIC1 = 26;
+  /** RegularExpression Id. */
+  int INTEGER = 27;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -63,6 +71,10 @@ public interface VerilogParserConstants {
     "\"reg\"",
     "\"wire\"",
     "<NAME>",
+    "<HIERARCHICAL_NAME>",
+    "<STRING>",
+    "<CHAR>",
+    "<ESCAPESEQ>",
     "\"1\\\'b0\"",
     "\"1\\\'b1\"",
     "<INTEGER>",

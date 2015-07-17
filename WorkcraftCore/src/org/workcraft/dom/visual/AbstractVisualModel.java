@@ -121,10 +121,20 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 					if (visualComponent instanceof Container) {
 						Container visualContainer = (Container)visualComponent;
 						for (Node childNode: mathNode.getChildren()) {
-							MathNode mathChildNode = (MathNode)childNode;
-							VisualComponent visualChildComponent = (VisualComponent)NodeFactory.createVisualComponent(mathChildNode);
-							visualContainer.add(visualChildComponent);
-							createdNodes.put(mathChildNode, visualChildComponent);
+							if (childNode instanceof MathConnection) {
+								MathConnection mathChildConnection = (MathConnection)childNode;
+								VisualConnection visualChildConnection = NodeFactory.createVisualConnection(mathChildConnection);
+								if (visualChildConnection != null) {
+									// Will create incomplete instance, setConnection() needs to be called later to finalise.
+									// This is to avoid cross-reference problems.
+									createdConnections.put(visualChildConnection, mathChildConnection);
+								}
+							} else {
+								MathNode mathChildNode = (MathNode)childNode;
+								VisualComponent visualChildComponent = (VisualComponent)NodeFactory.createVisualComponent(mathChildNode);
+								visualContainer.add(visualChildComponent);
+								createdNodes.put(mathChildNode, visualChildComponent);
+							}
 						}
 					}
 				}

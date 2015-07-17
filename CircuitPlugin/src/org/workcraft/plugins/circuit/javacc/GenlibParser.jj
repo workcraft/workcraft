@@ -6,7 +6,7 @@ options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
   STATIC = false;
-  DEBUG_PARSER = true;
+  DEBUG_PARSER = false;
 }
 
 PARSER_BEGIN(GenlibParser)
@@ -24,33 +24,11 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
+import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.genlib.Gate;
+import org.workcraft.plugins.circuit.genlib.Function;
+
 public class GenlibParser {
-        
-    public class Gate {        public final String name;
-        public final Function function;
-        public final String seq;        public Gate(String name, Function function) {
-            this.name = name;
-            this.function = function;
-            this.seq = null;
-        }
-        public Gate(String name, Function function, String seq) {
-            this.name = name;
-            this.function = function;
-            this.seq = seq;
-        }
-        public boolean isSequential() {
-            return (seq != null);
-        }
-    }
-    
-    public class Function {
-        public final String name;
-        public final String expression;
-        public Function(String name, String expression) {
-            this.name = name;
-            this.expression = expression;
-        }
-    }
 }
 PARSER_END(GenlibParser)
 
@@ -80,23 +58,23 @@ TOKEN :
 |   <CONTROL : "CONTROL">
 |   <CONSTRAINT : "CONSTRAINT">
 |   <ASYNCH : "ASYNCH">
-|   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
+|   <NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*>
 |   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"" >
-|   <#CHAR: [" ","!","#"-"[","]"-"~"] > // Printable ASCII characters excluding \ and "
-|   <#ESCAPESEQ: "\\" ["\"","\\","n"] > // 2-character sequences \\, \", and \n
+|   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
+|   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
 |   <ANY_NAME : "*">
 |	<NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
 |   <EXPRESSION: "=" (~[";"])* ";">
 }
 
-List<Gate> parseGenlib() :
+Library parseGenlib() :
 {
     List<Gate> gates; 
 }
 {
     gates = parseGates()
     {
-        return gates;
+        return new Library(gates);
     }
 }
 

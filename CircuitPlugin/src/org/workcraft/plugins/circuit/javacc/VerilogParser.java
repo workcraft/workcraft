@@ -13,49 +13,12 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
+import org.workcraft.plugins.circuit.verilog.Module;
+import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.circuit.verilog.Instance;
+import org.workcraft.plugins.circuit.verilog.Pin;
+
 public class VerilogParser implements VerilogParserConstants {
-
-    public class Module {
-        public final String name;
-        public final List<Port> ports;
-        public final List<Instance> instances;
-        public Module(String name, List<Port> ports, List<Instance> instances) {
-            this.name = name;
-            this.ports = ports;
-            this.instances = instances;
-        }
-    }
-
-    public class Port {
-        public final String name;
-        public final String type;
-        public Port(String name, String type) {
-            this.name = name;
-            this.type = type;
-        }
-    }
-
-
-
-    public class Instance {
-        public final String name;
-        public final String moduleName;
-        public final List<Connection> connections;
-        public Instance(String name, String moduleName, List<Connection> connections) {
-            this.name = name;
-            this.moduleName = moduleName;
-            this.connections = connections;
-        }
-    }
-
-    public class Connection {
-        public final String name;
-        public final String netName;
-        public Connection(String name, String netName) {
-            this.name = name;
-            this.netName = netName;
-        }
-    }
 
   final public List<Module> parseCircuit() throws ParseException {
     List<Module> modules;
@@ -85,15 +48,36 @@ public class VerilogParser implements VerilogParserConstants {
   }
 
   final public Module parseModule() throws ParseException {
-    Token name;
+    String name;
     List<Port> ports;
     List<Instance> instances;
     jj_consume_token(MODULE);
-    name = jj_consume_token(NAME);
+    name = parseModuleName();
     ports = parsePorts();
     instances = parseInstances();
     jj_consume_token(ENDMODULE);
-        {if (true) return new Module(name.image, ports, instances);}
+        {if (true) return new Module(name, ports, instances);}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public String parseModuleName() throws ParseException {
+    Token nameToken;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case NAME:
+      nameToken = jj_consume_token(NAME);
+      break;
+    case STRING:
+      nameToken = jj_consume_token(STRING);
+      break;
+    case HIERARCHICAL_NAME:
+      nameToken = jj_consume_token(HIERARCHICAL_NAME);
+      break;
+    default:
+      jj_la1[1] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+        {if (true) return nameToken.image;}
     throw new Error("Missing return statement in function");
   }
 
@@ -103,12 +87,12 @@ public class VerilogParser implements VerilogParserConstants {
       ports = parseCompactPorts();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 24:
-      case 29:
+      case 28:
+      case 33:
         ports = parseComplexPorts();
         break;
       default:
-        jj_la1[1] = jj_gen;
+        jj_la1[2] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -121,8 +105,8 @@ public class VerilogParser implements VerilogParserConstants {
     Port port;
     List<Port> ports = new LinkedList<Port>();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 24:
-      jj_consume_token(24);
+    case 28:
+      jj_consume_token(28);
       label_2:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -132,27 +116,27 @@ public class VerilogParser implements VerilogParserConstants {
           ;
           break;
         default:
-          jj_la1[2] = jj_gen;
+          jj_la1[3] = jj_gen;
           break label_2;
         }
         port = parseCompactPort();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 28:
-          jj_consume_token(28);
+        case 32:
+          jj_consume_token(32);
           break;
         default:
-          jj_la1[3] = jj_gen;
+          jj_la1[4] = jj_gen;
           ;
         }
                         ports.add(port);
       }
-      jj_consume_token(25);
+      jj_consume_token(29);
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[5] = jj_gen;
       ;
     }
-    jj_consume_token(29);
+    jj_consume_token(33);
         {if (true) return ports;}
     throw new Error("Missing return statement in function");
   }
@@ -171,7 +155,7 @@ public class VerilogParser implements VerilogParserConstants {
       typeToken = jj_consume_token(INOUT);
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[6] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -203,16 +187,16 @@ public class VerilogParser implements VerilogParserConstants {
   final public List<String> parsePortsDeclaration() throws ParseException {
     List<String> names = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 24:
-      jj_consume_token(24);
+    case 28:
+      jj_consume_token(28);
       names = parseNames();
-      jj_consume_token(25);
+      jj_consume_token(29);
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[7] = jj_gen;
       ;
     }
-    jj_consume_token(29);
+    jj_consume_token(33);
                 List<String> ports = new LinkedList<String>();
                 if (names != null) {
                         ports.addAll(names);
@@ -235,7 +219,7 @@ public class VerilogParser implements VerilogParserConstants {
         ;
         break;
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[8] = jj_gen;
         break label_3;
       }
       ports = parsePortsDefinition();
@@ -265,12 +249,12 @@ public class VerilogParser implements VerilogParserConstants {
       typeToken = jj_consume_token(WIRE);
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[9] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     names = parseNames();
-    jj_consume_token(29);
+    jj_consume_token(33);
         String type = typeToken.image;
         List<Port> ports = new LinkedList<Port>();
         for (String name: names) {
@@ -291,16 +275,16 @@ public class VerilogParser implements VerilogParserConstants {
         ;
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         break label_4;
       }
       nameToken = jj_consume_token(NAME);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 28:
-        jj_consume_token(28);
+      case 32:
+        jj_consume_token(32);
         break;
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[11] = jj_gen;
         ;
       }
                 String name = nameToken.image;
@@ -317,10 +301,12 @@ public class VerilogParser implements VerilogParserConstants {
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NAME:
+      case HIERARCHICAL_NAME:
+      case STRING:
         ;
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[12] = jj_gen;
         break label_5;
       }
       instance = parseInstance();
@@ -331,42 +317,41 @@ public class VerilogParser implements VerilogParserConstants {
   }
 
   final public Instance parseInstance() throws ParseException {
-    Token moduleNameToken;
+    String moduleName;
     Token nameToken = null;
     List<String> parameters;
-    List<Connection> connections;
-    moduleNameToken = jj_consume_token(NAME);
+    List<Pin> connections;
+    moduleName = parseModuleName();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NAME:
       nameToken = jj_consume_token(NAME);
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[13] = jj_gen;
       ;
     }
     label_6:
     while (true) {
-      jj_consume_token(24);
+      jj_consume_token(28);
       connections = parseConnections();
-      jj_consume_token(25);
+      jj_consume_token(29);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 24:
+      case 28:
         ;
         break;
       default:
-        jj_la1[13] = jj_gen;
+        jj_la1[14] = jj_gen;
         break label_6;
       }
     }
-    jj_consume_token(29);
-        String moduleName = moduleNameToken.image;
+    jj_consume_token(33);
         String name = (nameToken == null ? null : nameToken.image);
         {if (true) return new Instance(name, moduleName, connections);}
     throw new Error("Missing return statement in function");
   }
 
-  final public List<Connection> parseConnections() throws ParseException {
-    List<Connection> connections;
+  final public List<Pin> parseConnections() throws ParseException {
+    List<Pin> connections;
     if (jj_2_2(2147483647)) {
       connections = parseNamedConnections();
     } else {
@@ -376,17 +361,17 @@ public class VerilogParser implements VerilogParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public List<Connection> parseNamedConnections() throws ParseException {
-    Connection connection;
-    List<Connection> connections = new LinkedList<Connection>();
+  final public List<Pin> parseNamedConnections() throws ParseException {
+    Pin connection;
+    List<Pin> connections = new LinkedList<Pin>();
     label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 30:
+      case 34:
         ;
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[15] = jj_gen;
         break label_7;
       }
       connection = parseNamedConnection();
@@ -396,32 +381,32 @@ public class VerilogParser implements VerilogParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public Connection parseNamedConnection() throws ParseException {
+  final public Pin parseNamedConnection() throws ParseException {
     Token portName;
     Token netName;
-    jj_consume_token(30);
+    jj_consume_token(34);
     portName = jj_consume_token(NAME);
-    jj_consume_token(24);
+    jj_consume_token(28);
     netName = jj_consume_token(NAME);
-    jj_consume_token(25);
+    jj_consume_token(29);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 28:
-      jj_consume_token(28);
+    case 32:
+      jj_consume_token(32);
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
-        {if (true) return new Connection(portName.image, netName.image);}
+        {if (true) return new Pin(portName.image, netName.image);}
     throw new Error("Missing return statement in function");
   }
 
-  final public List<Connection> parseOrderedConnections() throws ParseException {
+  final public List<Pin> parseOrderedConnections() throws ParseException {
     List<String> wires;
-    List<Connection> connections = new LinkedList<Connection>();
+    List<Pin> connections = new LinkedList<Pin>();
     wires = parseNames();
         for (String wire: wires) {
-                Connection connection = new Connection(null, wire);
+                Pin connection = new Pin(null, wire);
                 connections.add(connection);
         }
         {if (true) return connections;}
@@ -443,14 +428,14 @@ public class VerilogParser implements VerilogParserConstants {
   }
 
   private boolean jj_3R_9() {
-    if (jj_scan_token(30)) return true;
+    if (jj_scan_token(34)) return true;
     if (jj_scan_token(NAME)) return true;
-    if (jj_scan_token(24)) return true;
+    if (jj_scan_token(28)) return true;
     if (jj_scan_token(NAME)) return true;
-    if (jj_scan_token(25)) return true;
+    if (jj_scan_token(29)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(28)) jj_scanpos = xsp;
+    if (jj_scan_token(32)) jj_scanpos = xsp;
     return false;
   }
 
@@ -458,7 +443,7 @@ public class VerilogParser implements VerilogParserConstants {
     if (jj_3R_12()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(28)) jj_scanpos = xsp;
+    if (jj_scan_token(32)) jj_scanpos = xsp;
     return false;
   }
 
@@ -466,18 +451,18 @@ public class VerilogParser implements VerilogParserConstants {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_10()) jj_scanpos = xsp;
-    if (jj_scan_token(29)) return true;
+    if (jj_scan_token(33)) return true;
     return false;
   }
 
   private boolean jj_3R_10() {
-    if (jj_scan_token(24)) return true;
+    if (jj_scan_token(28)) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_11()) { jj_scanpos = xsp; break; }
     }
-    if (jj_scan_token(25)) return true;
+    if (jj_scan_token(29)) return true;
     return false;
   }
 
@@ -516,13 +501,18 @@ public class VerilogParser implements VerilogParserConstants {
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[16];
+  final private int[] jj_la1 = new int[17];
   static private int[] jj_la1_0;
+  static private int[] jj_la1_1;
   static {
       jj_la1_init_0();
+      jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x2000,0x21000000,0x38000,0x10000000,0x1000000,0x38000,0x1000000,0xf8000,0xf8000,0x100000,0x10000000,0x100000,0x100000,0x1000000,0x40000000,0x10000000,};
+      jj_la1_0 = new int[] {0x2000,0x700000,0x10000000,0x38000,0x0,0x10000000,0x38000,0x10000000,0xf8000,0xf8000,0x100000,0x0,0x700000,0x100000,0x10000000,0x0,0x0,};
+   }
+   private static void jj_la1_init_1() {
+      jj_la1_1 = new int[] {0x0,0x0,0x2,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x4,0x1,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;
@@ -539,7 +529,7 @@ public class VerilogParser implements VerilogParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 16; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -554,7 +544,7 @@ public class VerilogParser implements VerilogParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 16; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -565,7 +555,7 @@ public class VerilogParser implements VerilogParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 16; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -576,7 +566,7 @@ public class VerilogParser implements VerilogParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 16; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -586,7 +576,7 @@ public class VerilogParser implements VerilogParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 16; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -596,7 +586,7 @@ public class VerilogParser implements VerilogParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 16; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -708,21 +698,24 @@ public class VerilogParser implements VerilogParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[31];
+    boolean[] la1tokens = new boolean[35];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 17; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
             la1tokens[j] = true;
           }
+          if ((jj_la1_1[i] & (1<<j)) != 0) {
+            la1tokens[32+j] = true;
+          }
         }
       }
     }
-    for (int i = 0; i < 31; i++) {
+    for (int i = 0; i < 35; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

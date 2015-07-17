@@ -24,47 +24,12 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
+import org.workcraft.plugins.circuit.verilog.Module;
+import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.circuit.verilog.Instance;
+import org.workcraft.plugins.circuit.verilog.Connection;
+
 public class VerilogParser {
-        
-    public class Module {        public final String name;
-        public final List<Port> ports;
-        public final List<Instance> instances;
-        public Module(String name, List<Port> ports, List<Instance> instances) {            this.name = name;
-            this.ports = ports;
-            this.instances = instances;
-        }
-    }
-
-    public class Port {
-        public final String name;
-        public final String type;
-        public Port(String name, String type) {
-            this.name = name;
-            this.type = type;
-        }
-    }
-
-    
-    
-    public class Instance {
-        public final String name;
-        public final String moduleName;
-        public final List<Connection> connections;
-        public Instance(String name, String moduleName, List<Connection> connections) {
-            this.name = name;
-            this.moduleName = moduleName;
-            this.connections = connections;
-        }
-    }
-
-    public class Connection {
-        public final String name;
-        public final String netName;
-        public Connection(String name, String netName) {
-            this.name = name;
-            this.netName = netName;
-        }
-    }
 }
 PARSER_END(VerilogParser)
 
@@ -101,7 +66,11 @@ TOKEN :
 |   <INOUT : "inout">
 |   <REG : "reg">
 |   <WIRE : "wire">
-|   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
+|   <NAME : ["A"-"Z", "a"-"z", "_" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9"])*>
+|   <HIERARCHICAL_NAME : ["A"-"Z", "a"-"z", "_", "/", "\\"] (["A"-"Z", "a"-"z", "_", "0"-"9", "/", "\\"])*>
+|   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
+|   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
+|   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
 |   <LOGIC0 : "1'b0">
 |   <LOGIC1 : "1'b1">
 |   <INTEGER : ([ "0"-"9" ])+>
@@ -140,16 +109,27 @@ List<Module> parseModules():
     
 Module parseModule():
 {
-    Token name;
+    String name;
     List<Port> ports; 
     List<Instance> instances; 
 }
 {
-    <MODULE> name = <NAME>
+    <MODULE> name = parseModuleName() 
     ports = parsePorts()
     instances = parseInstances()
     <ENDMODULE>
-    {        return new Module(name.image, ports, instances);
+    {        return new Module(name, ports, instances);
+    }
+}
+
+String parseModuleName():
+{
+    Token nameToken;
+}
+{
+    (nameToken = <NAME> | nameToken = <STRING> | nameToken = <HIERARCHICAL_NAME>)
+    {
+        return nameToken.image;
     }
 }
 
@@ -310,19 +290,19 @@ List<Instance> parseInstances():
 
 Instance parseInstance():
 {
-    Token moduleNameToken;
+    String moduleName;
     Token nameToken = null;
     List<String> parameters;
     List<Connection> connections;
 }
 {
-    moduleNameToken = <NAME>  [nameToken = <NAME>]
+    moduleName = parseModuleName()
+    [nameToken = <NAME>]
     (
     "(" connections = parseConnections() ")"
     )+ 
     ";"
     {
-    	String moduleName = moduleNameToken.image;
     	String name = (nameToken == null ? null : nameToken.image);
         return new Instance(name, moduleName, connections);
     }
