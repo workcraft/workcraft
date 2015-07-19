@@ -99,14 +99,16 @@ public class VisualXmas extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 		VisualXmasConnection connection = null;
 		if (first instanceof VisualComponent && second instanceof VisualComponent) {
-			VisualComponent c1 = (VisualComponent) first;
-			VisualComponent c2 = (VisualComponent) second;
-			MathConnection con = (MathConnection) circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-			connection = new VisualXmasConnection(con, c1, c2);
+			VisualComponent c1 = (VisualComponent)first;
+			VisualComponent c2 = (VisualComponent)second;
+			if (mConnection == null) {
+				mConnection = circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
+			}
+			connection = new VisualXmasConnection(mConnection, c1, c2);
 			Node parent = Hierarchy.getCommonParent(c1, c2);
 			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
 			nearestAncestor.add(connection);

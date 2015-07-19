@@ -256,14 +256,14 @@ public class CircuitToStgConverter {
 				VisualContact sourceDriver = nodeToDriverMap.get(sourceContact);
 				SignalStg sourceDriverStg = driverToStgMap.getValue(sourceDriver);
 				if (sourceDriverStg == null) {
-					throw new RuntimeException("No source for " + circuit.getMathName(sourceContact) + " while generating " + signalName);
+					throw new RuntimeException("No source for '" + circuit.getMathName(sourceContact) + "' while generating '" + signalName + "'.");
 				}
 				VisualPlace place = literal.getNegation() ? sourceDriverStg.P0 : sourceDriverStg.P1;
 				placesToRead.add(place);
 			}
 
 			if (placesToRead.remove(predPlace)) {
-				System.out.println("warning: signal " + signalName + " depends on itself");
+				System.out.println("Warning: signal '" + signalName + "' depends on itself.");
 			}
 
 			for (VisualPlace place : placesToRead) {

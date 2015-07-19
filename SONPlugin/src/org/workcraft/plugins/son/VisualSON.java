@@ -12,6 +12,7 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -188,7 +189,7 @@ public class VisualSON extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect (Node first, Node second) throws InvalidConnectionException{
+	public VisualConnection connect (Node first, Node second, MathConnection mConnection) throws InvalidConnectionException{
 		validateConnection(first, second);
 		VisualComponent c1= (VisualComponent)first;
 		VisualComponent c2= (VisualComponent)second;
@@ -199,9 +200,10 @@ public class VisualSON extends AbstractVisualModel {
 				semantics = Semantics.ASYNLINE;
 			}
 		}
-
-		SONConnection con = (SONConnection)net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
-		VisualSONConnection ret = new VisualSONConnection(con, c1, c2);
+		if (mConnection == null) {
+			mConnection = net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
+		}
+		VisualSONConnection ret = new VisualSONConnection((SONConnection)mConnection, c1, c2);
 		Hierarchy.getNearestContainer(c1,c2).add(ret);
 
 		return ret;

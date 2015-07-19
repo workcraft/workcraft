@@ -30,6 +30,7 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
@@ -39,7 +40,6 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
@@ -154,7 +154,7 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 		VisualConnection ret = null;
 		if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) {
@@ -171,8 +171,10 @@ public class VisualCPOG extends AbstractVisualModel
 				v = (VisualVertex) second;
 				u = (VisualVariable) first;
 			}
-			DynamicVariableConnection con = mathModel.connect(v.getMathVertex(), u.getMathVariable());
-			ret = new VisualDynamicVariableConnection(con, v, u);
+			if (mConnection == null) {
+				mConnection = mathModel.connect(v.getMathVertex(), u.getMathVariable());
+			}
+			ret = new VisualDynamicVariableConnection((DynamicVariableConnection)mConnection, v, u);
 			Hierarchy.getNearestContainer(v, u).add(ret);
 		}
 		return ret;

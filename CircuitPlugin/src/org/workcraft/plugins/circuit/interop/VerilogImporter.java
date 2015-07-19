@@ -167,7 +167,6 @@ public class VerilogImporter implements Importer {
 					Node node = circuit.getNodeByReference(component, verilogPin.name);
 					if (node instanceof FunctionContact) {
 						FunctionContact contact = (FunctionContact)node;
-						System.out.println("contact = " + contact.getName());
 						if (contact.isInput()) {
 							wire.sinks.add(contact);
 						} else {
@@ -198,6 +197,7 @@ public class VerilogImporter implements Importer {
 						wire.source = contact;
 					}
 					component.add(contact);
+					//contact.setName(verilogPin.name);
 					circuit.setName(contact, verilogPin.name);
 				}
 			}
@@ -206,7 +206,6 @@ public class VerilogImporter implements Importer {
 			if (wire.source == null) continue;
 			for (FunctionContact sink: wire.sinks) {
 				try {
-					System.out.println(circuit.getNodeReference(wire.source) + " -> " + circuit.getNodeReference(sink));
 					circuit.connect(wire.source, sink);
 				} catch (InvalidConnectionException e) {
 				}

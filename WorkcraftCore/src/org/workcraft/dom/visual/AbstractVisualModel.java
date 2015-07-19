@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 import org.workcraft.NodeFactory;
@@ -45,8 +46,8 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
-import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -61,6 +62,7 @@ import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
@@ -98,57 +100,57 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	protected final void createDefaultFlatStructure() throws NodeCreationException {
-		HashMap <MathNode, VisualComponent> createdNodes = new HashMap <MathNode, VisualComponent>();
-		HashMap <VisualConnection, MathConnection> createdConnections = new	HashMap <VisualConnection, MathConnection>();
-
-		Container mathRoot = getMathModel().getRoot();
-		Container visualRoot = getRoot();
-		for (Node node : mathRoot.getChildren()) {
-			if (node instanceof MathConnection) {
-				MathConnection mathConnection = (MathConnection)node;
-				VisualConnection visualConnection = NodeFactory.createVisualConnection(mathConnection);
-				if (visualConnection != null) {
-					// Will create incomplete instance, setConnection() needs to be called later to finalise.
-					// This is to avoid cross-reference problems.
-					createdConnections.put(visualConnection, mathConnection);
-				}
-			} else {
-				MathNode mathNode = (MathNode)node;
-				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(mathNode);
-				if (visualComponent != null) {
-					visualRoot.add(visualComponent);
-					createdNodes.put(mathNode, visualComponent);
-					if (visualComponent instanceof Container) {
-						Container visualContainer = (Container)visualComponent;
-						for (Node childNode: mathNode.getChildren()) {
-							if (childNode instanceof MathConnection) {
-								MathConnection mathChildConnection = (MathConnection)childNode;
-								VisualConnection visualChildConnection = NodeFactory.createVisualConnection(mathChildConnection);
-								if (visualChildConnection != null) {
-									// Will create incomplete instance, setConnection() needs to be called later to finalise.
-									// This is to avoid cross-reference problems.
-									createdConnections.put(visualChildConnection, mathChildConnection);
-								}
-							} else {
-								MathNode mathChildNode = (MathNode)childNode;
-								VisualComponent visualChildComponent = (VisualComponent)NodeFactory.createVisualComponent(mathChildNode);
-								visualContainer.add(visualChildComponent);
-								createdNodes.put(mathChildNode, visualChildComponent);
-							}
-						}
+		HashMap <MathNode, VisualComponent> createdNodes = new HashMap<>();
+		// Create components
+		Queue<Pair<Container, Container>> containerQueue = new LinkedList<>();
+		containerQueue.add(new Pair<Container, Container>(getMathModel().getRoot(), getRoot()));
+        while (!containerQueue.isEmpty()) {
+        	Pair<Container, Container> container = containerQueue.remove();
+        	Container mathContainer = container.getFirst();
+        	Container visualContainer = container.getSecond();
+    		for (Node node : mathContainer.getChildren()) {
+    			if (node instanceof MathConnection) continue;
+    			if (node instanceof MathNode) {
+    				MathNode mathNode = (MathNode)node;
+    				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(mathNode);
+    				if (visualComponent != null) {
+    					visualContainer.add(visualComponent);
+    					createdNodes.put(mathNode, visualComponent);
+    				}
+    				if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
+    					containerQueue.add(new Pair<Container, Container>((Container)mathNode, (Container)visualComponent));
+    				}
+    			}
+        	}
+        }
+        // Create connections
+		containerQueue.add(new Pair<Container, Container>(getMathModel().getRoot(), getRoot()));
+        while (!containerQueue.isEmpty()) {
+        	Pair<Container, Container> container = containerQueue.remove();
+        	Container mathContainer = container.getFirst();
+    		for (Node node : mathContainer.getChildren()) {
+    			if (node instanceof MathConnection) {
+    				MathConnection mathConnection = (MathConnection)node;
+    				VisualComponent firstComponent = createdNodes.get(mathConnection.getFirst());
+    				VisualComponent secondComponent = createdNodes.get(mathConnection.getSecond());
+    				try {
+						connect(firstComponent, secondComponent, mathConnection);
+					} catch (InvalidConnectionException e) {
 					}
-				}
-			}
-		}
+    			} else if (node instanceof MathNode) {
+    				MathNode mathNode = (MathNode)node;
+    				VisualComponent visualComponent = createdNodes.get(mathNode);
+    				if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
+    					containerQueue.add(new Pair<Container, Container>((Container)mathNode, (Container)visualComponent));
+    				}
+    			}
+    		}
+        }
+	}
 
-		for (VisualConnection visualConnection : createdConnections.keySet()) {
-			MathConnection mathConnection = createdConnections.get(visualConnection);
-			VisualComponent visualComponent = createdNodes.get(mathConnection.getFirst());
-			VisualComponent secondComponent = createdNodes.get(mathConnection.getSecond());
-			Polyline graphic = new Polyline(visualConnection);
-			visualConnection.setVisualConnectionDependencies(visualComponent, secondComponent, graphic, mathConnection);
-			visualRoot.add(visualConnection);
-		}
+	@Override
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+		return connect(first, second, null);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -19,10 +19,10 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 	@Override
 	public String getName(Node node) {
 		NameManager mgr = getNameManager(getNamespaceProvider(node));
-		if (node instanceof Contact && !mgr.isNamed(node)) {
+		if ((node instanceof Contact) && !mgr.isNamed(node)) {
 			return ((Contact)node).getName();
 		}
-		if (node instanceof FunctionComponent && (!mgr.isNamed(node))) {
+		if ((node instanceof FunctionComponent) && !mgr.isNamed(node)) {
 			return ((FunctionComponent)node).getName();
 		}
 		if (!mgr.isNamed(node)) {
@@ -34,12 +34,12 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 	@Override
 	public void setName(Node node, String name) {
 		// support for the older models
-		if (Identifier.isNumber(name) && node instanceof Contact) {
+		if (Identifier.isNumber(name) && (node instanceof Contact)) {
 			String nodeName = ((Contact)node).getName();
 			if ((nodeName != null) && !nodeName.isEmpty()) {
 				name = nodeName;
 			}
-		} else if (Identifier.isNumber(name) && node instanceof CircuitComponent) {
+		} else if (Identifier.isNumber(name) && (node instanceof CircuitComponent)) {
 			String nodeName = ((CircuitComponent)node).getName();
 			if ((nodeName != null) && !nodeName.isEmpty()) {
 				name = nodeName;

@@ -112,19 +112,19 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualConnection connection = null;
 		if (first instanceof VisualTransition) {
 			if (second instanceof VisualTransition) {
-				connection = createImplicitPlaceConnection((VisualTransition) first, (VisualTransition) second);
+				connection = createImplicitPlaceConnection((VisualTransition)first, (VisualTransition)second);
 			} else if (second instanceof VisualImplicitPlaceArc) {
 				VisualImplicitPlaceArc con = (VisualImplicitPlaceArc)second;
 				VisualPlace place = makeExplicit(con);
 				connection = connect(first, place);
 			} else if (second instanceof VisualPlace) {
-				connection = createSimpleConnection((VisualComponent) first, (VisualComponent) second);
+				connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second, mConnection);
 			}
 		} else if (first instanceof VisualImplicitPlaceArc) {
 			if (second instanceof VisualTransition) {
@@ -133,13 +133,12 @@ public class VisualSTG extends AbstractVisualModel {
 				connection = connect(place, second);
 			}
 		} else {
-			connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second);
+			connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second, mConnection);
 		}
 		return connection;
 	}
 
-	private VisualImplicitPlaceArc createImplicitPlaceConnection(VisualTransition t1,
-			VisualTransition t2) throws InvalidConnectionException {
+	private VisualImplicitPlaceArc createImplicitPlaceConnection(VisualTransition t1, VisualTransition t2) throws InvalidConnectionException {
 		final ConnectionResult connectResult = stg.connect(t1.getReferencedTransition(), t2.getReferencedTransition());
 
 		STGPlace implicitPlace = connectResult.getImplicitPlace();
@@ -154,19 +153,16 @@ public class VisualSTG extends AbstractVisualModel {
 		return connection;
 	}
 
-	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent)
-			throws InvalidConnectionException {
+	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent,
+			MathConnection mConnection) throws InvalidConnectionException {
 
-		MathNode firstRef = firstComponent.getReferencedComponent();
-		MathNode secondRef = secondComponent.getReferencedComponent();
-		ConnectionResult result = stg.connect(firstRef, secondRef);
-
-		MathConnection refConnection = result.getSimpleResult();
-		if (refConnection == null) {
-			throw new NullPointerException();
+		if (mConnection == null) {
+			MathNode firstRef = firstComponent.getReferencedComponent();
+			MathNode secondRef = secondComponent.getReferencedComponent();
+			ConnectionResult result = stg.connect(firstRef, secondRef);
+			mConnection = result.getSimpleResult();
 		}
-
-		VisualConnection connection = new VisualConnection(refConnection, firstComponent, secondComponent);
+		VisualConnection connection = new VisualConnection(mConnection, firstComponent, secondComponent);
 		Hierarchy.getNearestContainer(firstComponent, secondComponent).add(connection);
 		return connection;
 	}

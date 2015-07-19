@@ -28,6 +28,7 @@ import java.util.Collection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -47,8 +48,9 @@ public interface VisualModel extends Model, ObservableState {
 	public String getMathName(Node node);
 	public void setMathName(Node node, String name);
 
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException;
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
+	public VisualConnection connect(Node first, Node second, MathConnection connection) throws InvalidConnectionException;
 
 	public  <T extends VisualComponent> T createComponent(MathNode refNode, Container container, Class<T> type);
 
