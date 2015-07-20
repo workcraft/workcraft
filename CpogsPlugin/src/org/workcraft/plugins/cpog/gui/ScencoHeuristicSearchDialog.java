@@ -45,7 +45,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class ScencoHeuristicSearchDialog extends JDialog {
 
 	private JLabel numberOfSolutionsLabel, verboseModeLabel, exampleLabel,
-			exampleLabel2, customEncLabel, bitsLabel, guidLabel, optimiseLabel,
+			customEncLabel, bitsLabel, optimiseLabel,
 			abcLabel, circuitSizeLabel;
 	private JCheckBox verboseModeCheck, customEncodings, abcCheck;
 	private JComboBox<String> OptimiseBox, guidedModeBox;
@@ -66,7 +66,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 	private WorkspaceEntry we;
 
 	// sizes
-	Dimension dimensionLabel = new Dimension(140, 22);
+	Dimension dimensionLabel = new Dimension(175, 22);
 	Dimension dimensionLongLabel = new Dimension(290, 22);
 	Dimension dimensionBox = new Dimension(180, 26);
 	Dimension dimensionText = new Dimension(585, 22);
@@ -92,7 +92,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		createButtonPanel();
 
 		double size[][] = new double[][] { { TableLayout.FILL },
-				{ 89, 135, TableLayout.FILL, 39 } };
+				{ 60, 120, TableLayout.FILL, 39 } };
 
 		layout = new TableLayout(size);
 		layout.setHGap(3);
@@ -116,7 +116,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(480, 570, 200, 100);
+		sizeWindow(480, 560, 200, 100);
 	}
 
 	private void createCustomPanel() {
@@ -127,7 +127,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 
 		// TABLE OF ENCODINGS
 		exampleLabel = new JLabel(
-				"0/1: assign 0 or 1;  X: find best assignment;  -: Don't Care bit");
+				"0/1: assign 0 or 1;  ?: find best assignment;  X: don't use (reserved bit)");
 		exampleLabel.setPreferredSize(new Dimension(455, 22));
 		customEncLabel = new JLabel("Customise");
 		customEncLabel.setPreferredSize(dimensionLabel);
@@ -168,7 +168,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		});
 
 		bitsLabel = new JLabel("Encoding bit-width:");
-		bitsLabel.setPreferredSize(dimensionLabel);
+		bitsLabel.setPreferredSize(new Dimension(140, 22));
 		circuitSizeLabel = new JLabel("Circuit size in 2-input gates");
 		circuitSizeLabel.setPreferredSize(dimensionLabel);
 		int value = 2;
@@ -200,7 +200,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				for (int i = 0; i < m; i++) {
 					String data = "";
 					for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++)
-						data = data + "X";
+						data = data + "?";
 					encodingTable.getModel().setValueAt(data, i, 1);
 				}
 			}
@@ -222,7 +222,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 			data[i][0] = name;
 			data[i][1] = "";
 			for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-				data[i][1] = data[i][1] + "X";
+				data[i][1] = data[i][1] + "?";
 			}
 		}
 		encodingTable = new JTable(data, columnNames);
@@ -272,7 +272,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 
 		// ABC TOOL DISABLE FLAG
 		abcCheck = new JCheckBox("", settings.isAbcFlag());
-		abcLabel = new JLabel("Use Abc");
+		abcLabel = new JLabel("Use ABC for logic synthesis");
 		abcLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				abcCheck.setSelected(abcCheck.isSelected() ? false : true);
@@ -311,81 +311,6 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 			}
 		});
 
-		guidLabel = new JLabel("Strategy:");
-		guidLabel.setPreferredSize(dimensionLabel);
-		guidedModeBox = new JComboBox<String>();
-		guidedModeBox.setEditable(false);
-		guidedModeBox.setPreferredSize(dimensionBox);
-		guidedModeBox.addItem("Simulated annealing");
-		guidedModeBox.addItem("Full coverage");
-		guidedModeBox.addItem("Random search");
-
-		guidedModeBox.setBackground(Color.WHITE);
-
-		guidedModeBox.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				switch (guidedModeBox.getSelectedIndex()) {
-				// SIMULATED ANNEALING
-				case 0:
-					// number of solutions
-					numbSolutPanelVisibility(true);
-
-					// speed-up
-					normal.setVisible(true);
-					fast.setVisible(true);
-					normal.setSelected(true);
-
-					// custom encodings
-					customPanelVisibility(true);
-					modifyCircuitSize(false);
-
-					// set size of window
-					sizeWindow(480, 570, 200, 100);
-					break;
-				// FULL COVERAGE
-				case 1:
-					// number of solutions
-					numbSolutPanelVisibility(false);
-
-					// speed-up
-					// slow.setVisible(false);
-					normal.setVisible(true);
-					fast.setVisible(true);
-					normal.setSelected(true);
-
-					// custom encodings
-					customPanelVisibility(false);
-					modifyCircuitSize(false);
-
-					// set size of window
-					sizeWindow(425, 317, 200, 100);
-					break;
-				// RANDOM SEARCH
-				case 2:
-
-					// number of solutions
-					numbSolutPanelVisibility(true);
-
-					// speed-up
-					normal.setVisible(true);
-					fast.setVisible(true);
-					normal.setSelected(true);
-
-					// custom encodings
-					customPanelVisibility(false);
-					modifyCircuitSize(false);
-
-					// set size of window
-					sizeWindow(425, 317, 200, 100);
-					break;
-				default:
-
-				}
-			}
-		});
-
 		// ADD EVERYTHING INTO THE PANEL
 		standardPanel.add(optimiseLabel);
 		standardPanel.add(OptimiseBox);
@@ -394,9 +319,6 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		standardPanel.add(abcLabel);
 		standardPanel.add(verboseModeCheck);
 		standardPanel.add(verboseModeLabel);
-		standardPanel.add(new SimpleFlowLayout.LineBreak());
-		standardPanel.add(guidLabel);
-		standardPanel.add(guidedModeBox);
 	}
 
 	private void createGenerationPanel() {
@@ -405,14 +327,14 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				.createTitledBorder("Search range"));
 
 		// SPEED UP MODE
-		normal = new JRadioButton("Around optimal solution (slow)", true);
-		fast = new JRadioButton("Only the optimal solution (fast)");
+		normal = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)", true);
+		fast = new JRadioButton("Synthesise all generated solutions (slow)");
 		group = new ButtonGroup();
 		group.add(normal);
 		group.add(fast);
 
 		// NUMBER OF SOLUTIONS TO GENERATE
-		numberOfSolutionsLabel = new JLabel(" Number of solutions to explore");
+		numberOfSolutionsLabel = new JLabel(" Number of solutions to generate");
 		numberOfSolutionsLabel.setPreferredSize(new Dimension(225, 20));
 		numberOfSolutionsText = new JTextField();
 		numberOfSolutionsText.setDocument(new IntDocument(3));
@@ -421,13 +343,12 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		numberOfSolutionsText.setPreferredSize(new Dimension(35, 22));
 		numberOfSolutionsText.setBackground(Color.WHITE);
 
-		generationPanel.add(normal);
-		generationPanel.add(new SimpleFlowLayout.LineBreak());
-		generationPanel.add(fast);
-		generationPanel.add(new SimpleFlowLayout.LineBreak());
 		generationPanel.add(numberOfSolutionsLabel);
 		generationPanel.add(numberOfSolutionsText);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
+		generationPanel.add(normal);
+		generationPanel.add(new SimpleFlowLayout.LineBreak());
+		generationPanel.add(fast);
 
 	}
 
@@ -466,8 +387,8 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				settings.setSolutionNumber(Integer
 						.parseInt(numberOfSolutionsText.getText()));
 
-				// generation mode selection
-				settings.setGenerationModeInt(guidedModeBox.getSelectedIndex());
+				// generation mode selection (Simulated annealing)
+				settings.setGenerationModeInt(0);
 
 				// custom encodings
 				settings.setNumPO(m);
@@ -477,6 +398,11 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 					for (int i = 0; i < m; i++) {
 						encodings[i] = (String) encodingTable.getModel()
 								.getValueAt(i, 1);
+					}
+					// conversion from ? to X and from X to -
+					for (int i = 0; i < m; i++) {
+						encodings[i] = encodings[i].replace('X', '-');
+						encodings[i] = encodings[i].replace('?', 'X');
 					}
 					settings.setCustomEnc(encodings);
 				} else if (guidedModeBox.getSelectedIndex() == 1) {

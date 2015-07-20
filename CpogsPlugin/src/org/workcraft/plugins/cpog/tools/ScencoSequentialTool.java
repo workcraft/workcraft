@@ -29,12 +29,12 @@ public class ScencoSequentialTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Encoding";
+		return "Encoding [SCENCO]";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Sequential encoding [SCENCO]";
+		return "Sequential encoding (trivial)";
 	}
 
 	@Override

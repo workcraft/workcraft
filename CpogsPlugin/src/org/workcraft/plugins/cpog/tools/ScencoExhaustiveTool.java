@@ -9,15 +9,15 @@ import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.gui.ScencoSingleSequentialDialog;
+import org.workcraft.plugins.cpog.gui.ScencoExhaustiveSearchDialog;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScencoSingleLiteralTool implements Tool {
+public class ScencoExhaustiveTool implements Tool {
 
 	private EncoderSettings settings;
-	private ScencoSingleSequentialDialog dialog;
+	private ScencoExhaustiveSearchDialog dialog;
 	PresetManager<EncoderSettings> pmgr;
 
 	@Override
@@ -34,16 +34,16 @@ public class ScencoSingleLiteralTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Single-literal encoding";
+		return "Exhaustive search";
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();
-		settings = new EncoderSettings(10, GenerationMode.OLD_SYNT, false, false);
+		settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
 		pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-		dialog = new ScencoSingleSequentialDialog(mainWindow, pmgr, settings, we, "Single-literal Search");
+		dialog = new ScencoExhaustiveSearchDialog(mainWindow, pmgr, settings, we);
 
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);

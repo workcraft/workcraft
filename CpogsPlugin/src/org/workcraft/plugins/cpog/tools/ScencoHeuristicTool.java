@@ -29,12 +29,12 @@ public class ScencoHeuristicTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Encoding";
+		return "Encoding [SCENCO]";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Heuristic-guided search [SCENCO]";
+		return "Heuristic encoding with constraints";
 	}
 
 	@Override

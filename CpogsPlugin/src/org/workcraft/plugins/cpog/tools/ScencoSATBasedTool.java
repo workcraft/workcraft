@@ -29,12 +29,12 @@ public class ScencoSATBasedTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Encoding";
+		return "Encoding [SCENCO]";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "SAT-Based optimal encoding [SCENCO]";
+		return "SAT-based optimal encoding";
 	}
 
 	@Override

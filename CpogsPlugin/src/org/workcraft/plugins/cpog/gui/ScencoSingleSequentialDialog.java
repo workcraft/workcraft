@@ -100,7 +100,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(325,147,200,100);
+		sizeWindow(365,140,200,100);
 	}
 
 	private void createStandardPanel() {
@@ -120,8 +120,8 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
 				// ABC TOOL DISABLE FLAG
 				abcCheck = new JCheckBox("", settings.isAbcFlag());
-				abcLabel = new JLabel("Use Abc");
-				abcLabel.setPreferredSize(dimensionLabel);
+				abcLabel = new JLabel("Use ABC for logic synthesis");
+				abcLabel.setPreferredSize(new Dimension(175, 22));
 				abcLabel.addMouseListener(new MouseAdapter()
 				{
 				    public void mouseClicked(MouseEvent e)
@@ -139,7 +139,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
 				// VERBOSE MODE INSTANTIATION
 				verboseModeLabel = new JLabel("Verbose mode");
-				verboseModeLabel.setPreferredSize(dimensionLabel);
+				verboseModeLabel.setPreferredSize(new Dimension(100, 22));
 				verboseModeCheck = new JCheckBox("",false);
 				verboseModeLabel.addMouseListener(new MouseAdapter()
 				{

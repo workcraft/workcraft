@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -21,7 +20,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -29,24 +27,24 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
-import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.tasks.ScencoTask;
-import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.IntDocument;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
-public class ScencoSatBasedDialog extends JDialog {
+public class ScencoRandomSearchDialog extends JDialog {
 
-	private JLabel numberOfSolutionsLabel, verboseModeLabel, bitsLabel,
-			optimiseLabel, abcLabel, circuitSizeLabel;
-	private JCheckBox verboseModeCheck, abcCheck;
+	private JLabel numberOfSolutionsLabel, verboseModeLabel, exampleLabel,
+			customEncLabel, bitsLabel, optimiseLabel,
+			abcLabel, circuitSizeLabel;
+	private JCheckBox verboseModeCheck, customEncodings, abcCheck;
 	private JComboBox<String> OptimiseBox, guidedModeBox;
-	private JPanel generationPanel, buttonsPanel, content, standardPanel;
+	private JPanel generationPanel, buttonsPanel, content, customPanel,
+			standardPanel;
 	private JButton saveButton, closeButton;
 	private JTextField numberOfSolutionsText, bitsText, circuitSizeText;
 	private JTable encodingTable;
@@ -64,7 +62,7 @@ public class ScencoSatBasedDialog extends JDialog {
 	// sizes
 	Dimension dimensionLabel = new Dimension(175, 22);
 	Dimension dimensionLongLabel = new Dimension(290, 22);
-	Dimension dimensionBox = new Dimension(170, 26);
+	Dimension dimensionBox = new Dimension(180, 26);
 	Dimension dimensionText = new Dimension(585, 22);
 	Dimension dimensionTable = new Dimension(400, 180);
 	Dimension dimensionWindow = new Dimension(100, 400);
@@ -75,11 +73,10 @@ public class ScencoSatBasedDialog extends JDialog {
 		return settings;
 	}
 
-	public ScencoSatBasedDialog(Window owner,
+	public ScencoRandomSearchDialog(Window owner,
 			PresetManager<EncoderSettings> presetManager,
 			EncoderSettings settings, WorkspaceEntry we) {
-		super(owner, "SAT-based optimal encoding",
-				ModalityType.APPLICATION_MODAL);
+		super(owner, "Random search", ModalityType.APPLICATION_MODAL);
 		this.settings = settings;
 		this.we = we;
 
@@ -111,7 +108,7 @@ public class ScencoSatBasedDialog extends JDialog {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(365, 240, 200, 100);
+		sizeWindow(480, 265, 200, 100);
 	}
 
 	private void createStandardPanel() {
@@ -120,7 +117,7 @@ public class ScencoSatBasedDialog extends JDialog {
 
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
 		optimiseLabel = new JLabel("Target:");
-		optimiseLabel.setPreferredSize(new Dimension(120, 22));
+		optimiseLabel.setPreferredSize(dimensionLabel);
 		OptimiseBox = new JComboBox<String>();
 		OptimiseBox.setEditable(false);
 		OptimiseBox.setPreferredSize(dimensionBox);
@@ -132,7 +129,6 @@ public class ScencoSatBasedDialog extends JDialog {
 		// ABC TOOL DISABLE FLAG
 		abcCheck = new JCheckBox("", settings.isAbcFlag());
 		abcLabel = new JLabel("Use ABC for logic synthesis");
-		abcLabel.setPreferredSize(dimensionLabel);
 		abcLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				abcCheck.setSelected(abcCheck.isSelected() ? false : true);
@@ -145,10 +141,24 @@ public class ScencoSatBasedDialog extends JDialog {
 				}
 			}
 		});
+		abcLabel.setPreferredSize(dimensionLabel);
+		abcCheck.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (abcCheck.isSelected()) {
+					normal.setSelected(true);
+				} else {
+					if (guidedModeBox.getSelectedIndex() == 0) {
+						normal.setSelected(true);
+					}
+				}
+			}
+		});
 
 		// VERBOSE MODE INSTANTIATION
 		verboseModeLabel = new JLabel("Verbose mode");
-		verboseModeLabel.setPreferredSize(new Dimension(100, 22));
+		verboseModeLabel.setPreferredSize(dimensionLabel);
 		verboseModeCheck = new JCheckBox("", false);
 		verboseModeLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -165,84 +175,36 @@ public class ScencoSatBasedDialog extends JDialog {
 		standardPanel.add(abcLabel);
 		standardPanel.add(verboseModeCheck);
 		standardPanel.add(verboseModeLabel);
-		standardPanel.add(new SimpleFlowLayout.LineBreak());
 	}
 
 	private void createGenerationPanel() {
-		VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
-		ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
-		CpogParsingTool.getScenarios(cpog, scenarios);
-		m = scenarios.size();
-
 		generationPanel = new JPanel(new SimpleFlowLayout());
 		generationPanel.setBorder(BorderFactory
-				.createTitledBorder("Encoding parameters"));
+				.createTitledBorder("Search range"));
 
 		// SPEED UP MODE
-		normal = new JRadioButton("Around optimal solution (slow)", true);
-		fast = new JRadioButton("Only the optimal solution (fast)");
+		normal = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)", true);
+		fast = new JRadioButton("Synthesise all generated solutions (slow)");
 		group = new ButtonGroup();
 		group.add(normal);
 		group.add(fast);
 
 		// NUMBER OF SOLUTIONS TO GENERATE
-		numberOfSolutionsLabel = new JLabel(" Number of solutions to explore");
-		numberOfSolutionsLabel.setPreferredSize(new Dimension(230, 22));
+		numberOfSolutionsLabel = new JLabel(" Number of solutions to generate");
+		numberOfSolutionsLabel.setPreferredSize(new Dimension(225, 20));
 		numberOfSolutionsText = new JTextField();
 		numberOfSolutionsText.setDocument(new IntDocument(3));
 		numberOfSolutionsText.setText(String.valueOf(settings
 				.getSolutionNumber()));
-		numberOfSolutionsText.setPreferredSize(new Dimension(35, 20));
+		numberOfSolutionsText.setPreferredSize(new Dimension(35, 22));
 		numberOfSolutionsText.setBackground(Color.WHITE);
 
-		bitsLabel = new JLabel("Encoding bit-width:");
-		bitsLabel.setPreferredSize(new Dimension(220, 22));
-		circuitSizeLabel = new JLabel("Circuit size in 2-input gates: ");
-		circuitSizeLabel.setPreferredSize(new Dimension(220, 22));
-		int value = 2;
-		while (value < m) {
-			value *= 2;
-			bits++;
-		}
-
-		bitsText = new JTextField();
-		bitsText.setDocument(new IntDocument(2));
-		bitsText.setText(String.valueOf(bits + 1));
-		bitsText.setPreferredSize(new Dimension(35, 20));
-		bitsText.setBackground(Color.WHITE);
-		bitsText.setEnabled(true);
-		bitsText.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-					JOptionPane
-							.showMessageDialog(
-									null,
-									"Bits selected are not enough to encode all scenarios.",
-									"Not enough bits",
-									JOptionPane.ERROR_MESSAGE);
-
-					bitsText.setText(String.valueOf(bits + 1));
-				}
-				for (int i = 0; i < m; i++) {
-					String data = "";
-					for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++)
-						data = data + "X";
-					encodingTable.getModel().setValueAt(data, i, 1);
-				}
-			}
-		});
-		circuitSizeText = new JTextField();
-		circuitSizeText.setText(String.valueOf(bits + 2));
-		circuitSizeText.setPreferredSize(new Dimension(35, 22));
-
-		generationPanel.add(bitsLabel);
-		generationPanel.add(bitsText);
+		generationPanel.add(numberOfSolutionsLabel);
+		generationPanel.add(numberOfSolutionsText);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
-		generationPanel.add(circuitSizeLabel);
-		generationPanel.add(circuitSizeText);
+		generationPanel.add(normal);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
+		generationPanel.add(fast);
 
 	}
 
@@ -262,14 +224,13 @@ public class ScencoSatBasedDialog extends JDialog {
 
 				// speed-up mode selection
 				settings.setEffort(normal.isSelected() ? true : false);
-				settings.setCostFunc(/* slow.isSelected() */false);
+				settings.setCostFunc(false/* slow.isSelected() */);
 
 				// number of bits selection
-				settings.setBits(Integer.parseInt(bitsText.getText()));
+				settings.setBits(bits + 1);
 
 				// circuit size selection
-				settings.setCircuitSize(Integer.valueOf(circuitSizeText
-						.getText()));
+				// settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
 
 				// optimise for option
 				settings.setCpogSize(OptimiseBox.getSelectedIndex() == 0 ? false
@@ -278,15 +239,14 @@ public class ScencoSatBasedDialog extends JDialog {
 				// verbose mode
 				settings.setVerboseMode(verboseModeCheck.isSelected());
 
-				// continuous mode or number of solutions
+				// dummy value
 				settings.setSolutionNumber(Integer
 						.parseInt(numberOfSolutionsText.getText()));
 
-				// generation mode selection
-				settings.setGenerationModeInt(3);
+				// select exhaustive search mode
+				settings.setGenerationModeInt(2);
 
-				// custom encodings
-				settings.setNumPO(m);
+				// disabling encoding customisation
 				settings.setCustomEncMode(false);
 
 				// Set them on encoder
@@ -317,5 +277,39 @@ public class ScencoSatBasedDialog extends JDialog {
 		// layout.setRow(new double[] {row1, row2});
 		pack();
 
+	}
+
+	private void customPanelVisibility(boolean condition) {
+		customPanel.setVisible(condition);
+		exampleLabel.setVisible(condition);
+		customEncLabel.setVisible(condition);
+		customEncodings.setVisible(condition);
+		customEncodings.setSelected(false);
+		scrollPane.setVisible(condition);
+		bitsLabel.setVisible(condition);
+		bitsText.setVisible(condition);
+
+		if (customEncodings.isSelected()) {
+			encodingTable.setEnabled(true);
+			encodingTable.setBackground(Color.WHITE);
+			bitsText.setBackground(Color.WHITE);
+			bitsText.setEnabled(true);
+		} else {
+			encodingTable.setEnabled(false);
+			encodingTable.setBackground(Color.LIGHT_GRAY);
+			bitsText.setBackground(Color.LIGHT_GRAY);
+			bitsText.setEnabled(false);
+		}
+	}
+
+	private void numbSolutPanelVisibility(boolean condition) {
+		numberOfSolutionsText.setVisible(condition);
+		numberOfSolutionsLabel.setVisible(condition);
+	}
+
+	private void modifyCircuitSize(boolean b) {
+		circuitSizeText.setEnabled(b);
+		circuitSizeLabel.setVisible(b);
+		circuitSizeText.setVisible(b);
 	}
 }

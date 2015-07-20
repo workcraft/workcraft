@@ -20,7 +20,9 @@ import org.workcraft.plugins.cpog.tools.CpogToGraphConverterTool;
 import org.workcraft.plugins.cpog.tools.GraphStatisticsTool;
 import org.workcraft.plugins.cpog.tools.GraphToCpogConverterTool;
 import org.workcraft.plugins.cpog.tools.PGMinerTool;
+import org.workcraft.plugins.cpog.tools.ScencoExhaustiveTool;
 import org.workcraft.plugins.cpog.tools.ScencoHeuristicTool;
+import org.workcraft.plugins.cpog.tools.ScencoRandomTool;
 import org.workcraft.plugins.cpog.tools.ScencoSATBasedTool;
 import org.workcraft.plugins.cpog.tools.ScencoSequentialTool;
 import org.workcraft.plugins.cpog.tools.ScencoSingleLiteralTool;
@@ -56,6 +58,8 @@ public class CpogModule implements Module {
 		pm.registerClass(Tool.class, ScencoSATBasedTool.class);
 		pm.registerClass(Tool.class, ScencoSingleLiteralTool.class);
 		pm.registerClass(Tool.class, ScencoSequentialTool.class);
+		pm.registerClass(Tool.class, ScencoExhaustiveTool.class);
+		pm.registerClass(Tool.class, ScencoRandomTool.class);
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
