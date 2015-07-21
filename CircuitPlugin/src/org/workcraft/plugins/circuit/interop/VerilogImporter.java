@@ -197,8 +197,9 @@ public class VerilogImporter implements Importer {
 						wire.source = contact;
 					}
 					component.add(contact);
-					//contact.setName(verilogPin.name);
-					circuit.setName(contact, verilogPin.name);
+					if (verilogPin.name != null) {
+						circuit.setName(contact, verilogPin.name);
+					}
 				}
 			}
 		}

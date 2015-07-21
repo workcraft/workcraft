@@ -4,12 +4,6 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import org.workcraft.dom.Node;
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.circuit.verilog.Instance;
@@ -615,7 +609,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                      jjstateSet[jjnewStateCnt++] = 0;
                   break;
                case 15:
-                  if ((0x3ff800000000000L & l) != 0L)
+                  if ((0x7ff800000000000L & l) != 0L)
                   {
                      if (kind > 21)
                         kind = 21;
@@ -664,7 +658,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                   jjCheckNAdd(8);
                   break;
                case 8:
-                  if ((0x3ff800000000000L & l) == 0L)
+                  if ((0x7ff800000000000L & l) == 0L)
                      break;
                   if (kind > 21)
                      kind = 21;

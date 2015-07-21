@@ -127,16 +127,18 @@ public class GenlibParser implements GenlibParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NAME:
       nameToken = jj_consume_token(NAME);
+                {if (true) return nameToken.image;}
       break;
     case STRING:
       nameToken = jj_consume_token(STRING);
+                String s = nameToken.image;
+            {if (true) return s.substring(1, s.length()-1);}
       break;
     default:
       jj_la1[6] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-        {if (true) return nameToken.image;}
     throw new Error("Missing return statement in function");
   }
 

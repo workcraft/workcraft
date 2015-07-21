@@ -17,17 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.workcraft.dom.Node;
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.NotFoundException;
-
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.circuit.verilog.Instance;
-import org.workcraft.plugins.circuit.verilog.Connection;
+import org.workcraft.plugins.circuit.verilog.Pin;
 
 public class VerilogParser {
 }
@@ -67,7 +60,7 @@ TOKEN :
 |   <REG : "reg">
 |   <WIRE : "wire">
 |   <NAME : ["A"-"Z", "a"-"z", "_" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9"])*>
-|   <HIERARCHICAL_NAME : ["A"-"Z", "a"-"z", "_", "/", "\\"] (["A"-"Z", "a"-"z", "_", "0"-"9", "/", "\\"])*>
+|   <HIERARCHICAL_NAME : ["A"-"Z", "a"-"z", "_", "/", "\\"] (["A"-"Z", "a"-"z", "_", "0"-"9", "/", "\\", ":"])*>
 |   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
 |   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
 |   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
@@ -293,54 +286,54 @@ Instance parseInstance():
     String moduleName;
     Token nameToken = null;
     List<String> parameters;
-    List<Connection> connections;
+    List<Pin> pins;
 }
 {
     moduleName = parseModuleName()
     [nameToken = <NAME>]
     (
-    "(" connections = parseConnections() ")"
+    "(" pins = parsePins() ")"
     )+ 
     ";"
     {
     	String name = (nameToken == null ? null : nameToken.image);
-        return new Instance(name, moduleName, connections);
+        return new Instance(name, moduleName, pins);
     }
 }
 
-List<Connection> parseConnections():
+List<Pin> parsePins():
 {
-    List<Connection> connections;
+    List<Pin> pins;
 }
 {
     (
-    	LOOKAHEAD(parseNamedConnection())
-        connections = parseNamedConnections()
-    |   connections = parseOrderedConnections()
+    	LOOKAHEAD(parseNamedPins())
+        pins = parseNamedPins()
+    |   pins = parseOrderedPins()
     )
     {
-        return connections;
+        return pins;
     }
 }
 
-List<Connection> parseNamedConnections():
+List<Pin> parseNamedPins():
 {
-    Connection connection;
-    List<Connection> connections = new LinkedList<Connection>();
+    Pin pin;
+    List<Pin> pins = new LinkedList<Pin>();
 }
 {
     (
-        connection = parseNamedConnection()
+        pin = parseNamedPin()
         {
-            connections.add(connection);
+            pins.add(pin);
         }
     )*
     {
-        return connections;
+        return pins;
     }
 }
 
-Connection parseNamedConnection():
+Pin parseNamedPin():
 {
     Token portName;
     Token netName;
@@ -348,23 +341,23 @@ Connection parseNamedConnection():
 {
     "." portName = <NAME> "(" netName = <NAME> ")" [","]
     {
-        return new Connection(portName.image, netName.image);
+        return new Pin(portName.image, netName.image);
     }
 }
 
-List<Connection> parseOrderedConnections():
+List<Pin> parseOrderedPins():
 {
     List<String> wires;
-    List<Connection> connections = new LinkedList<Connection>();
+    List<Pin> pins = new LinkedList<Pin>();
 }
 {
 	wires = parseNames()
     {
     	for (String wire: wires) {
-    		Connection connection = new Connection(null, wire);
-    		connections.add(connection);
+    		Pin pin = new Pin(null, wire);
+    		pins.add(pin);
     	}
-        return connections;
+        return pins;
     }
 }
 
