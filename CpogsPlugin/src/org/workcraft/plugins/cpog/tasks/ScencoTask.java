@@ -971,6 +971,7 @@ public class ScencoTask {
 											"scenco error",
 											JOptionPane.ERROR_MESSAGE);
 									line = br.readLine();
+
 								}
 								return -1;
 

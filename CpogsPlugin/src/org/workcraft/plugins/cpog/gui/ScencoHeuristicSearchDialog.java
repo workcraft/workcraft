@@ -405,8 +405,6 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 						encodings[i] = encodings[i].replace('?', 'X');
 					}
 					settings.setCustomEnc(encodings);
-				} else if (guidedModeBox.getSelectedIndex() == 1) {
-					settings.setCustomEncMode(false);
 				} else {
 					settings.setBits(bits + 1);
 					settings.setCustomEncMode(false);
