@@ -105,7 +105,7 @@ Gate parseGate():
         )*
     )
     {
-        return new Gate(name, function);
+        return new Gate(name, function, null, false);
     }
 }
 
@@ -127,7 +127,7 @@ Gate parseLatch():
         [ parseConstraint() ]
     )
     {
-        return new Gate(name, function, next);
+        return new Gate(name, function, next, false);
     }
 }
 

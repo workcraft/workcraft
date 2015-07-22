@@ -947,7 +947,7 @@ public class MainWindow extends JFrame {
 
 	public void openWork(File f) {
 		final Framework framework = Framework.getInstance();
-		if (framework.checkFile(f)) {
+		if (framework.checkFile(f, null)) {
 			try {
 				WorkspaceEntry we = framework.getWorkspace().open(f, false);
 				if (we.getModelEntry().isVisual()) {
@@ -1114,7 +1114,7 @@ public class MainWindow extends JFrame {
 
 	public void importFrom(File f, Importer[] importers) {
 		final Framework framework = Framework.getInstance();
-		if (framework.checkFile(f)) {
+		if (framework.checkFile(f, null)) {
 			for (Importer importer : importers) {
 				if (importer.accept(f)) {
 					try {

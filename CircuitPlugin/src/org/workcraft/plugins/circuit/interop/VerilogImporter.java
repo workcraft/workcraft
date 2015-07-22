@@ -25,11 +25,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -41,6 +41,7 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.genlib.Function;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
@@ -51,10 +52,14 @@ import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
 
 
 public class VerilogImporter implements Importer {
+
+	private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
+	private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
 
 	private class Wire {
 		public FunctionContact source = null;
@@ -87,7 +92,15 @@ public class VerilogImporter implements Importer {
 			if (topModules.size() > 1) {
 				throw new RuntimeException("Too many top modules found.");
 			}
-			//printDebugInfo(topModules);
+			if (CommonDebugSettings.getVerboseImport()) {
+				System.out.print("Info: parsed Verilog modules\n");
+				for (Module module: modules.values()) {
+					if (topModules.contains(module)) {
+						System.out.print("// Top module\n");
+					}
+					printModule(module);
+				}
+			}
 			Module topModule = topModules.iterator().next();
 			Circuit circuit = createCircuit(topModule, modules);
 			return circuit;
@@ -112,55 +125,128 @@ public class VerilogImporter implements Importer {
 		return result;
 	}
 
-	private void printDebugInfo(Collection<Module> modules) {
-		for (Module module: modules) {
-			System.out.println("Module: '" + module.name + "'");
-			for (Port port: module.ports) {
-				System.out.println("  Port: '" + port.name + "' (" + port.type +")");
+	private void printModule(Module module) {
+		System.out.print("module " + module.name + " ");
+		boolean firstPort = true;
+		for (Port port: module.ports) {
+			if (firstPort) {
+				System.out.print("(");
+			} else {
+				System.out.print(",");
 			}
-			for (Instance instance: module.instances) {
-				System.out.println("  Instance: '" + instance.name + "' (" + instance.moduleName +")");
-				for (Pin connection: instance.connections) {
-					System.out.println("    Connection: '" + connection.name + "' (" + connection.netName +")");
-				}
-			}
+			System.out.print("\n    " + port.type + " " + port.name);
+			firstPort = false;
 		}
+		System.out.println(");");
+
+		for (Instance instance: module.instances) {
+			System.out.print("    " + instance.moduleName);
+			if (instance.name != null) {
+				System.out.print(" " + instance.name);
+			}
+			boolean firstPin = true;
+			for (Pin connection: instance.connections) {
+				if (firstPin) {
+					System.out.print(" (");
+				} else {
+					System.out.print(", ");
+				}
+				if (connection.name != null) {
+					System.out.print("." + connection.name + "(" + connection.netName +")");
+				} else {
+					System.out.print(connection.netName);
+				}
+				firstPin = false;
+			}
+			System.out.println(");");
+		}
+		System.out.print("endmodule\n\n");
 	}
 
 	private Circuit createCircuit(Module topModule, HashMap<String, Module> modules) {
 		Circuit circuit = new Circuit();
-		Library library = null;
-		try {
-			InputStream genlibInputStream = new FileInputStream(CircuitSettings.getGateLibrary());
-			library = new GenlibParser(genlibInputStream).parseGenlib();
-		} catch (FileNotFoundException e) {
-		} catch (ParseException e) {
-		}
-
+		Library library = readGenlib();
 		HashMap<String, Wire> wires = createPorts(circuit, topModule);
-
 		for (Instance verilogInstance: topModule.instances) {
-			Gate gate = (library == null ? null : library.get(verilogInstance.moduleName));
+			Gate gate = createPrimitiveGate(verilogInstance);
+			if (gate == null) {
+				gate = library.get(verilogInstance.moduleName);
+			}
 			if (gate != null) {
-				createGateInstance(circuit, verilogInstance, wires, gate);
+				createLibraryGate(circuit, verilogInstance, wires, gate);
 			} else {
-				createBoxInstance(circuit, verilogInstance, wires, modules);
+				createBlackBox(circuit, verilogInstance, wires, modules);
 			}
 		}
 		createConnections(circuit, wires);
 		return circuit;
 	}
 
-	private void createGateInstance(Circuit circuit, Instance verilogInstance,
+	private Library readGenlib() {
+		Library library = new Library();
+		String libraryFileName = CircuitSettings.getGateLibrary();
+		if ((libraryFileName == null) || libraryFileName.isEmpty()) {
+			System.out.println("Warning: gate library file is not specified.");
+		} else {
+			File libraryFile = new File(libraryFileName);
+			final Framework framework = Framework.getInstance();
+			if (framework.checkFile(libraryFile, "Gate library access error")) {
+				try {
+					InputStream genlibInputStream = new FileInputStream(CircuitSettings.getGateLibrary());
+					library = new GenlibParser(genlibInputStream).parseGenlib();
+				} catch (FileNotFoundException e) {
+				} catch (ParseException e) {
+					System.out.println("Warning: could not parse the gate library '" + libraryFileName + "'.");
+				}
+			}
+		}
+		return library;
+	}
+
+	private Gate createPrimitiveGate(Instance verilogInstance) {
+		String operator = null;
+		switch (verilogInstance.moduleName) {
+		case "not":	operator = "!"; break;
+		case "and":	operator = "*"; break;
+		case "or":	operator = "+"; break;
+		case "xor":	operator = "^"; break;
+		default: return null;
+		}
+		String expression = "";
+		int index = 0;
+		for (Pin verilogPin: verilogInstance.connections) {
+			if (index > 0) {
+				String pinName = getPrimitiveGatePinName(index);
+				if ((index > 1) || (verilogInstance.connections.size() < 3)) {
+					expression += operator;
+				}
+				expression += pinName;
+			}
+			index++;
+		}
+		return new Gate(verilogInstance.moduleName, new Function(PRIMITIVE_GATE_OUTPUT_NAME, expression), null, true);
+	}
+
+	private String getPrimitiveGatePinName(int index) {
+		if (index == 0) {
+			return PRIMITIVE_GATE_OUTPUT_NAME;
+		} else {
+			return PRIMITIVE_GATE_INPUT_PREFIX + index;
+		}
+	}
+
+	private void createLibraryGate(Circuit circuit, Instance verilogInstance,
 			HashMap<String, Wire> wires, Gate gate) {
 		FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
+		int index = 0;
 		for (Pin verilogPin: verilogInstance.connections) {
 			Wire wire = wires.get(verilogPin.netName);
 			if (wire == null) {
 				wire = new Wire();
 				wires.put(verilogPin.netName, wire);
 			}
-			Node node = circuit.getNodeByReference(component, verilogPin.name);
+			String pinName = (gate.isPrimititve() ? getPrimitiveGatePinName(index++) : verilogPin.name);
+			Node node = circuit.getNodeByReference(component, pinName);
 			if (node instanceof FunctionContact) {
 				FunctionContact contact = (FunctionContact)node;
 				if (contact.isInput()) {
@@ -172,7 +258,7 @@ public class VerilogImporter implements Importer {
 		}
 	}
 
-	private void createBoxInstance(Circuit circuit, Instance verilogInstance,
+	private void createBlackBox(Circuit circuit, Instance verilogInstance,
 			HashMap<String, Wire> wires, HashMap<String, Module> modules) {
 		final FunctionComponent component = new FunctionComponent();
 		component.setModule(verilogInstance.moduleName);

@@ -10,6 +10,7 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 
 public class GenlibUtils {
 	static private final String TERM_DELIMITER = Pattern.quote("+");
@@ -29,9 +30,11 @@ public class GenlibUtils {
 		circuit.setName(contact, gate.function.name);
 		String setFunction = getSetFunction(gate);
 		String resetFunction = getResetFunction(gate);
-		System.out.println("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.expression);
-		System.out.println("  Set function: " + setFunction);
-		System.out.println("  Reset function: " + resetFunction);
+		if (CommonDebugSettings.getVerboseImport()) {
+			System.out.println("Info: instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.expression);
+			System.out.println("  Set function: " + setFunction);
+			System.out.println("  Reset function: " + resetFunction);
+		}
 		try {
 			BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setFunction);
 			contact.setSetFunction(setFormula);

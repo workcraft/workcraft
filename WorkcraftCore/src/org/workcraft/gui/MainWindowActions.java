@@ -380,7 +380,7 @@ public class MainWindowActions {
 		@Override
 		public void run() {
 			final Framework f = Framework.getInstance();
-			f.openExternally("overview/start.html");
+			f.openExternally("overview/start.html", "Overview access error");
 		}
 
 		public String getText() {
@@ -392,7 +392,7 @@ public class MainWindowActions {
 		@Override
 		public void run() {
 			final Framework f = Framework.getInstance();
-			f.openExternally("help/start.html");
+			f.openExternally("help/start.html", "Help access error");
 		}
 
 		public String getText() {
@@ -404,7 +404,7 @@ public class MainWindowActions {
 		@Override
 		public void run() {
 			final Framework f = Framework.getInstance();
-			f.openExternally("tutorial/start.html");
+			f.openExternally("tutorial/start.html", "Tutorials access error");
 		}
 
 		public String getText() {

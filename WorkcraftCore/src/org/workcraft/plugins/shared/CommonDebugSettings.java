@@ -34,12 +34,15 @@ public class CommonDebugSettings implements Settings {
 
 	private static final String keyCopyModelOnChange = prefix + ".copyModelOnChange";
 	private static final String keyKeepTemporaryFiles = prefix + ".keepTemporaryFiles";
+	private static final String keyVerboseImport = prefix + ".verboseImport";
 
 	private static final boolean defaultCopyModelOnChange = false;
 	private static final Boolean defaultKeepTemporaryFiles = false;
+	private static final Boolean defaultVerboseImport = false;
 
 	private static boolean copyModelOnChange = defaultCopyModelOnChange;
 	private static Boolean keepTemporaryFiles = defaultKeepTemporaryFiles;
+	private static Boolean verboseImport = defaultVerboseImport;
 
 	public CommonDebugSettings() {
 		properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
@@ -61,6 +64,16 @@ public class CommonDebugSettings implements Settings {
 				return getKeepTemporaryFiles();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
+				this, "Verbose log on file import", Boolean.class, true, false, false) {
+			protected void setter(CommonDebugSettings object, Boolean value) {
+				setVerboseImport(value);
+			}
+			protected Boolean getter(CommonDebugSettings object) {
+				return getVerboseImport();
+			}
+		});
 	}
 
 	@Override
@@ -72,12 +85,14 @@ public class CommonDebugSettings implements Settings {
 	public void load(Config config) {
 		setCopyModelOnChange(config.getBoolean(keyCopyModelOnChange, defaultCopyModelOnChange));
 		setKeepTemporaryFiles(config.getBoolean(keyKeepTemporaryFiles, defaultKeepTemporaryFiles));
+		setVerboseImport(config.getBoolean(keyVerboseImport, defaultVerboseImport));
 	}
 
 	@Override
 	public void save(Config config) {
 		config.setBoolean(keyCopyModelOnChange, getCopyModelOnChange());
 		config.setBoolean(keyKeepTemporaryFiles, getKeepTemporaryFiles());
+		config.setBoolean(keyVerboseImport, getVerboseImport());
 	}
 
 	@Override
@@ -104,6 +119,14 @@ public class CommonDebugSettings implements Settings {
 
 	public static void setKeepTemporaryFiles(Boolean value) {
 		keepTemporaryFiles = value;
+	}
+
+	public static Boolean getVerboseImport() {
+		return verboseImport;
+	}
+
+	public static void setVerboseImport(Boolean value) {
+		verboseImport = value;
 	}
 
 }

@@ -77,7 +77,7 @@ public class GenlibParser implements GenlibParserConstants {
       }
       parsePin();
     }
-        {if (true) return new Gate(name, function);}
+        {if (true) return new Gate(name, function, null, false);}
     throw new Error("Missing return statement in function");
   }
 
@@ -118,7 +118,7 @@ public class GenlibParser implements GenlibParserConstants {
       jj_la1[5] = jj_gen;
       ;
     }
-        {if (true) return new Gate(name, function, next);}
+        {if (true) return new Gate(name, function, next, false);}
     throw new Error("Missing return statement in function");
   }
 

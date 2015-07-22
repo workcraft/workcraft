@@ -7,6 +7,9 @@ import java.util.Set;
 public class Library {
 	private LinkedHashMap<String, Gate> gates = new LinkedHashMap<>();
 
+	public Library() {
+	}
+
 	public Library(Collection<Gate> gates) {
 		addAll(gates);
 	}
