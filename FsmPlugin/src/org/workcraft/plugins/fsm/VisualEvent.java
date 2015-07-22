@@ -46,7 +46,7 @@ public class VisualEvent extends VisualConnection {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Color>(
-				this, PROPERTY_LABEL_COLOR, Color.class) {
+				this, PROPERTY_LABEL_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualEvent object, Color value) {
 				object.setLabelColor(value);
 			}

@@ -10,6 +10,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
@@ -22,7 +23,7 @@ public class CircuitUtils {
 
 	public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact) {
 		Contact mathDriver = findDriver((Circuit)circuit.getMathModel(), contact.getReferencedContact());
-		return getVisualContact(circuit, mathDriver);
+		return circuit.getComponent(mathDriver, VisualContact.class);
 	}
 
 	public static Contact findDriver(Circuit circuit, MathNode curNode) {
@@ -69,14 +70,8 @@ public class CircuitUtils {
 	}
 
 	public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
-		Collection<VisualContact> result = new HashSet<>();
-		for (Contact mathContact: findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact())) {
-			VisualContact visualContact = getVisualContact(circuit, mathContact);
-			if (visualContact != null) {
-				result.add(visualContact);
-			}
-		}
-		return result;
+		Collection<Contact> drivenContacts = findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+		return getVisualContacts(circuit, drivenContacts);
 	}
 
 	public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode) {
@@ -129,7 +124,7 @@ public class CircuitUtils {
 
 	public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact) {
 		Contact mathSignal = findSignal((Circuit)circuit.getMathModel(), contact.getReferencedContact());
-		return getVisualContact(circuit, mathSignal);
+		return circuit.getComponent(mathSignal, VisualContact.class);
 	}
 
 	public static String getWireName(Circuit circuit, Contact contact) {
@@ -215,20 +210,6 @@ public class CircuitUtils {
 		}
 		if (multipleOutputPorts) {
 			result = null;
-		}
-		return result;
-	}
-
-	public static VisualContact getVisualContact(VisualCircuit visualCircuit, Contact contact) {
-		VisualContact result = null;
-		if (contact != null) {
-			Collection<VisualContact> visualContacts = Hierarchy.getDescendantsOfType(visualCircuit.getRoot(), VisualContact.class);
-			for (VisualContact visualContact: visualContacts) {
-				if (visualContact.getReferencedContact() == contact) {
-					result = visualContact;
-					break;
-				}
-			}
 		}
 		return result;
 	}
@@ -337,6 +318,47 @@ public class CircuitUtils {
 				return result;
 			}
 		});
+	}
+
+
+	public static HashSet<VisualComponent> getComponentPostset(final VisualCircuit circuit, Node node) {
+		HashSet<VisualComponent> result = new HashSet<>();
+		Set<Node> postset = new HashSet<>();
+		if (node instanceof VisualContact) {
+			postset.addAll(circuit.getPostset(node));
+		} else if (node instanceof VisualCircuitComponent) {
+			VisualCircuitComponent component = (VisualCircuitComponent)node;
+			for (VisualContact contact: component.getContacts()) {
+				if (contact.isOutput()) {
+					postset.addAll(circuit.getPostset(contact));
+				}
+			}
+		}
+		for (Node nextNode: postset) {
+			VisualComponent nextComponent = null;
+			if (nextNode instanceof VisualContact) {
+				if (nextNode.getParent() instanceof VisualComponent) {
+					nextComponent = (VisualComponent)nextNode.getParent();
+				}
+			} else if (nextNode instanceof VisualCircuitComponent) {
+				nextComponent = (VisualComponent)nextNode;
+			}
+			if (nextComponent != null) {
+				result.add(nextComponent);
+			}
+		}
+		return result;
+	}
+
+	private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
+		HashSet<VisualContact> result = new HashSet<>();
+		for (Contact mathContact: mathContacts) {
+			VisualContact visualContact = visualCircuit.getComponent(mathContact, VisualContact.class);
+			if (visualContact != null) {
+				result.add(visualContact);
+			}
+		}
+		return result;
 	}
 
 }

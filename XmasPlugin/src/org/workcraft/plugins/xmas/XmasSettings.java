@@ -27,7 +27,7 @@ public class XmasSettings implements Settings {
 
 	public XmasSettings() {
 		properties.add(new PropertyDeclaration<XmasSettings, Double>(
-				this, "Border width", Double.class) {
+				this, "Border width", Double.class, true, false, false) {
 			protected void setter(XmasSettings object, Double value) {
 				XmasSettings.setBorderWidth(value);
 			}
@@ -37,7 +37,7 @@ public class XmasSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<XmasSettings, Double>(
-				this, "Wire width", Double.class) {
+				this, "Wire width", Double.class, true, false, false) {
 			protected void setter(XmasSettings object, Double value) {
 				XmasSettings.setWireWidth(value);
 			}
@@ -47,7 +47,7 @@ public class XmasSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<XmasSettings, String>(
-				this, "JSON conversion file", String.class) {
+				this, "JSON conversion file", String.class, true, false, false) {
 			protected void setter(XmasSettings object, String value) {
 				XmasSettings.setJasonFileName(value);
 			}

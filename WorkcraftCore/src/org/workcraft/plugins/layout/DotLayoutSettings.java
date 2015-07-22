@@ -44,22 +44,22 @@ public class DotLayoutSettings implements Settings {
 
 	public DotLayoutSettings() {
 		properties.add(new PropertyDeclaration<DotLayoutSettings, String>(
-				this, "Dot command", String.class) {
+				this, "Dot command", String.class, true, false, false) {
 			protected void setter(DotLayoutSettings object, String value) {
-				DotLayoutSettings.setCommand(value);
+				setCommand(value);
 			}
 			protected String getter(DotLayoutSettings object) {
-				return DotLayoutSettings.getCommand();
+				return getCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<DotLayoutSettings, Boolean>(
-				this, "Import connections shape from Dot graph (experimental)", Boolean.class) {
+				this, "Import connections shape from Dot graph (experimental)", Boolean.class, true, false, false) {
 			protected void setter(DotLayoutSettings object, Boolean value) {
-				DotLayoutSettings.setImportConnectionsShape(value);
+				setImportConnectionsShape(value);
 			}
 			protected Boolean getter(DotLayoutSettings object) {
-				return DotLayoutSettings.getImportConnectionsShape();
+				return getImportConnectionsShape();
 			}
 		});
 	}

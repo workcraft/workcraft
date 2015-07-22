@@ -17,7 +17,7 @@ public abstract class VisualDelayComponent extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualDelayComponent, Double>(
-				this, MathDelayNode.PROPERTY_DELAY, Double.class) {
+				this, MathDelayNode.PROPERTY_DELAY, Double.class, true, true, true) {
 			public void setter(VisualDelayComponent object, Double value) {
 				object.getReferencedDelayComponent().setDelay(value);
 			}

@@ -60,7 +60,7 @@ TOKEN :
 |   <REG : "reg">
 |   <WIRE : "wire">
 |   <NAME : ["A"-"Z", "a"-"z", "_" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9"])*>
-|   <HIERARCHICAL_NAME : ["A"-"Z", "a"-"z", "_", "/", "\\"] (["A"-"Z", "a"-"z", "_", "0"-"9", "/", "\\", ":"])*>
+|   <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "-"])*>
 |   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
 |   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
 |   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
@@ -120,7 +120,7 @@ String parseModuleName():
     Token nameToken;
 }
 {
-    (nameToken = <NAME> | nameToken = <STRING> | nameToken = <HIERARCHICAL_NAME>)
+    (nameToken = <NAME> | nameToken = <PETRIFY_NAME>)
     {
         return nameToken.image;
     }
@@ -291,10 +291,7 @@ Instance parseInstance():
 {
     moduleName = parseModuleName()
     [nameToken = <NAME>]
-    (
-    "(" pins = parsePins() ")"
-    )+ 
-    ";"
+    "(" pins = parsePins() ")" ";"
     {
     	String name = (nameToken == null ? null : nameToken.image);
         return new Instance(name, moduleName, pins);
@@ -307,7 +304,7 @@ List<Pin> parsePins():
 }
 {
     (
-    	LOOKAHEAD(parseNamedPins())
+   		LOOKAHEAD(parseNamedPins())
         pins = parseNamedPins()
     |   pins = parseOrderedPins()
     )
@@ -327,7 +324,7 @@ List<Pin> parseNamedPins():
         {
             pins.add(pin);
         }
-    )*
+    )+
     {
         return pins;
     }

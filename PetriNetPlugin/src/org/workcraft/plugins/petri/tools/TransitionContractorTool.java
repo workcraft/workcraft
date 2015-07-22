@@ -31,7 +31,7 @@ public class TransitionContractorTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformations";
+		return "! Transformations";
 	}
 
 	@Override

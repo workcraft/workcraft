@@ -609,7 +609,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                      jjstateSet[jjnewStateCnt++] = 0;
                   break;
                case 15:
-                  if ((0x7ff800000000000L & l) != 0L)
+                  if ((0x7ffa00000000000L & l) != 0L)
                   {
                      if (kind > 21)
                         kind = 21;
@@ -658,7 +658,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                   jjCheckNAdd(8);
                   break;
                case 8:
-                  if ((0x7ff800000000000L & l) == 0L)
+                  if ((0x7ffa00000000000L & l) == 0L)
                      break;
                   if (kind > 21)
                      kind = 21;
@@ -696,7 +696,7 @@ private int jjMoveNfa_0(int startState, int curPos)
             switch(jjstateSet[--i])
             {
                case 2:
-                  if ((0x7fffffe97fffffeL & l) != 0L)
+                  if ((0x7fffffe87fffffeL & l) != 0L)
                   {
                      if (kind > 21)
                         kind = 21;
@@ -716,7 +716,7 @@ private int jjMoveNfa_0(int startState, int curPos)
                   }
                   break;
                case 15:
-                  if ((0x7fffffe97fffffeL & l) != 0L)
+                  if ((0x7fffffe87fffffeL & l) != 0L)
                   {
                      if (kind > 21)
                         kind = 21;
@@ -761,14 +761,14 @@ private int jjMoveNfa_0(int startState, int curPos)
                   jjCheckNAdd(6);
                   break;
                case 7:
-                  if ((0x7fffffe97fffffeL & l) == 0L)
+                  if ((0x7fffffe87fffffeL & l) == 0L)
                      break;
                   if (kind > 21)
                      kind = 21;
                   jjCheckNAdd(8);
                   break;
                case 8:
-                  if ((0x7fffffe97fffffeL & l) == 0L)
+                  if ((0x7fffffe87fffffeL & l) == 0L)
                      break;
                   if (kind > 21)
                      kind = 21;

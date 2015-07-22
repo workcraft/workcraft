@@ -53,52 +53,52 @@ public class CommonCommentSettings implements Settings {
 
 	public CommonCommentSettings() {
 		properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
-				this, "Base size (cm)", Double.class) {
+				this, "Base size (cm)", Double.class, true, false, false) {
 			protected void setter(CommonCommentSettings object, Double value) {
-				CommonCommentSettings.setBaseSize(value);
+				setBaseSize(value);
 			}
 			protected Double getter(CommonCommentSettings object) {
-				return CommonCommentSettings.getBaseSize();
+				return getBaseSize();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonCommentSettings, Double>(
-				this, "Stroke width (cm)", Double.class) {
+				this, "Stroke width (cm)", Double.class, true, false, false) {
 			protected void setter(CommonCommentSettings object, Double value) {
-				CommonCommentSettings.setStrokeWidth(value);
+				setStrokeWidth(value);
 			}
 			protected Double getter(CommonCommentSettings object) {
-				return CommonCommentSettings.getStrokeWidth();
+				return getStrokeWidth();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-				this, "Text color", Color.class) {
+				this, "Text color", Color.class, true, false, false) {
 			protected void setter(CommonCommentSettings object, Color value) {
-				CommonCommentSettings.setTextColor(value);
+				setTextColor(value);
 			}
 			protected Color getter(CommonCommentSettings object) {
-				return CommonCommentSettings.getTextColor();
+				return getTextColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-				this, "Border color", Color.class) {
+				this, "Border color", Color.class, true, false, false) {
 			protected void setter(CommonCommentSettings object, Color value) {
-				CommonCommentSettings.setBorderColor(value);
+				setBorderColor(value);
 			}
 			protected Color getter(CommonCommentSettings object) {
-				return CommonCommentSettings.getBorderColor();
+				return getBorderColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonCommentSettings, Color>(
-				this, "Fill color", Color.class) {
+				this, "Fill color", Color.class, true, false, false) {
 			protected void setter(CommonCommentSettings object, Color value) {
-				CommonCommentSettings.setFillColor(value);
+				setFillColor(value);
 			}
 			protected Color getter(CommonCommentSettings object) {
-				return CommonCommentSettings.getFillColor();
+				return getFillColor();
 			}
 		});
 	}

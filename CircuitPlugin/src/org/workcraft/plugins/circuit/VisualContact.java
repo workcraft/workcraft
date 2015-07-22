@@ -153,7 +153,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
-				this, PROPERTY_DIRECTION, Direction.class) {
+				this, PROPERTY_DIRECTION, Direction.class, true, true, true) {
 			protected void setter(VisualContact object, Direction value) {
 				object.setDirection(value);
 			}
@@ -173,7 +173,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-				this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class) {
+				this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true, true) {
 			protected void setter(VisualContact object, Boolean value) {
 				object.getReferencedContact().setInitToOne(value);
 			}

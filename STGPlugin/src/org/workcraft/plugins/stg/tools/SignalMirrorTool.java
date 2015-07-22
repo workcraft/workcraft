@@ -16,7 +16,7 @@ public class SignalMirrorTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformations";
+		return "! Transformations";
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public interface VerilogParserConstants {
   /** RegularExpression Id. */
   int NAME = 20;
   /** RegularExpression Id. */
-  int HIERARCHICAL_NAME = 21;
+  int PETRIFY_NAME = 21;
   /** RegularExpression Id. */
   int STRING = 22;
   /** RegularExpression Id. */
@@ -71,7 +71,7 @@ public interface VerilogParserConstants {
     "\"reg\"",
     "\"wire\"",
     "<NAME>",
-    "<HIERARCHICAL_NAME>",
+    "<PETRIFY_NAME>",
     "<STRING>",
     "<CHAR>",
     "<ESCAPESEQ>",

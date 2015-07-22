@@ -38,6 +38,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Scanner;
 
 public class FileUtils {
+	public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
 	public static void copyFile(File in, File out)  throws IOException {
 		if (out.getParentFile().mkdirs()) {
@@ -67,7 +68,8 @@ public class FileUtils {
 	}
 
 	public static void copyFileToStream(File in, OutputStream out)  throws IOException {
-	    FileChannel inChannel = new FileInputStream(in).getChannel();
+	    FileInputStream is = new FileInputStream(in);
+		FileChannel inChannel = is.getChannel();
 	    WritableByteChannel outChannel = Channels.newChannel(out);
 	    try {
 	        inChannel.transferTo(0, inChannel.size(), outChannel);
@@ -76,9 +78,19 @@ public class FileUtils {
 	        throw e;
 	    }
 	    finally {
+	    	if (is != null) is.close();
 	        if (inChannel != null) inChannel.close();
 	        if (outChannel != null) outChannel.close();
 	    }
+	}
+
+	public static String getTempPrefix(String title) {
+		// Prefix must be at least 3 symbols long.
+		if ((title != null) && title.isEmpty()) {
+			return TEMP_DIRECTORY_PREFIX;
+		} else {
+			return TEMP_DIRECTORY_PREFIX + title + "-";
+		}
 	}
 
 	public static File createTempDirectory(String prefix) {
@@ -200,17 +212,21 @@ public class FileUtils {
 
 	public static void deleteFile(File file, boolean postponeTillExit) {
 		if (file != null) {
+			// Note that deleteOnExit() for a directory needs to be called BEFORE the deletion of its content.
+			if (postponeTillExit) {
+				file.deleteOnExit();
+			}
 			File [] files = file.listFiles();
 			if (files != null) {
 				for(File f: files) {
 					deleteFile(f, postponeTillExit);
 				}
 			}
-			if (postponeTillExit) {
-				file.deleteOnExit();
-			} else {
+			// Note that delete() for a directory should be called AFTER the deletion of its content.
+			if (!postponeTillExit) {
 				file.delete();
 			}
 		}
 	}
+
 }

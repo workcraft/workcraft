@@ -12,7 +12,6 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
@@ -24,9 +23,11 @@ import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat.tasks.PunfTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -73,12 +74,11 @@ public class CheckCircuitTask extends MpsatChainTask {
 		try {
 			// Common variables
 			monitor.progressUpdate(0.05);
-			String title = we.getTitle();
 			VisualCircuit visualCircuit = (VisualCircuit)we.getModelEntry().getVisualModel();
 			File envFile = visualCircuit.getEnvironmentFile();
 			boolean hasEnvironment = ((envFile != null) && envFile.exists());
 
-			String prefix = CircuitStgUtils.TEMP_DIRECTORY_PREFIX + title + "-"; // Prefix must be at least 3 symbols long.
+			String prefix = FileUtils.getTempPrefix(we.getTitle());
 			workingDirectory = FileUtils.createTempDirectory(prefix);
 
 			CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
@@ -91,7 +91,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.10);
 
 			// Generating .g for the circuit
-			String devStgName = (hasEnvironment ? CircuitStgUtils.DEVICE_FILE_NAME : CircuitStgUtils.SYSTEM_FILE_NAME) + CircuitStgUtils.ASTG_FILE_EXT;
+			String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
 			File devStgFile =  new File(workingDirectory, devStgName);
 			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
 			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
@@ -115,12 +115,12 @@ public class CheckCircuitTask extends MpsatChainTask {
 				 stg = devStg;
 			} else {
 				File envStgFile = null;
-				if (envFile.getName().endsWith(CircuitStgUtils.ASTG_FILE_EXT)) {
+				if (envFile.getName().endsWith(StgUtils.ASTG_FILE_EXT)) {
 					envStgFile = envFile;
 				} else {
 					STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 					Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-					envStgFile = new File(workingDirectory, CircuitStgUtils.ENVIRONMENT_FILE_NAME + CircuitStgUtils.ASTG_FILE_EXT);
+					envStgFile = new File(workingDirectory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 					ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
 					Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 							envExportTask, "Exporting environment .g", subtaskMonitor);
@@ -136,7 +136,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 				monitor.progressUpdate(0.25);
 
 				// Generating .g for the whole system (circuit and environment)
-				stgFile = new File(workingDirectory, CircuitStgUtils.SYSTEM_FILE_NAME + CircuitStgUtils.ASTG_FILE_EXT);
+				stgFile = new File(workingDirectory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 				PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
 				pcompResult = framework.getTaskManager().execute(
 						pcompTask, "Running pcomp", subtaskMonitor);
@@ -156,7 +156,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			File unfoldingFile = new File(workingDirectory, CircuitStgUtils.SYSTEM_FILE_NAME + MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(workingDirectory, StgUtils.SYSTEM_FILE_NAME + MpsatUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
@@ -269,7 +269,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		} finally {
-			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
+			FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

@@ -99,7 +99,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-				this, CircuitComponent.PROPERTY_IS_ENVIRONMENT, Boolean.class) {
+				this, CircuitComponent.PROPERTY_IS_ENVIRONMENT, Boolean.class, true, true, true) {
 			protected void setter(VisualCircuitComponent object, Boolean value) {
 				object.setIsEnvironment(value);
 			}
@@ -110,7 +110,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		});
 //TODO: Complete support for zero-delay buffers and inverters.
 //		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-//				this, CircuitComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class) {
+//				this, CircuitComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class, true, true, true) {
 //			protected void setter(VisualCircuitComponent object, Boolean value) {
 //				object.setIsZeroDelay(value);
 //			}
@@ -121,7 +121,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 //		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, RenderType>(
-				this, PROPERTY_RENDER_TYPE, RenderType.class) {
+				this, PROPERTY_RENDER_TYPE, RenderType.class, true, true, true) {
 			protected void setter(VisualCircuitComponent object, RenderType value) {
 				object.setRenderType(value);
 			}

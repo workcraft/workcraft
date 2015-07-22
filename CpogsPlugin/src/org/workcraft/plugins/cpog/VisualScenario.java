@@ -68,7 +68,7 @@ public class VisualScenario extends VisualGroup
 
 	public VisualScenario() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualScenario, String>(
-				this, PROPERTY_LABEL, String.class) {
+				this, PROPERTY_LABEL, String.class, true, true, true) {
 			public void setter(VisualScenario object, String value) {
 				object.setLabel(value);
 			}
@@ -78,7 +78,7 @@ public class VisualScenario extends VisualGroup
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualScenario, Encoding>(
-				this, PROPERTY_ENCODING, Encoding.class) {
+				this, PROPERTY_ENCODING, Encoding.class, true, true, true) {
 			public void setter(VisualScenario object, Encoding value) {
 				object.setEncoding(value);
 			}

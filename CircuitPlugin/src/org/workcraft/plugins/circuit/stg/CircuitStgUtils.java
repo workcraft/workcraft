@@ -7,11 +7,12 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
@@ -22,18 +23,13 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitStgUtils {
-	public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
-	public static final String DEVICE_FILE_NAME = "device";
-	public static final String ENVIRONMENT_FILE_NAME = "environment";
-	public static final String SYSTEM_FILE_NAME = "system";
-	public static final String ASTG_FILE_EXT = ".g";
 
 	public static CircuitToStgConverter createCircuitToStgConverter(VisualCircuit circuit) {
 		CircuitToStgConverter generator = new CircuitToStgConverter(circuit);
 		File envFile = circuit.getEnvironmentFile();
 		if ((envFile != null) && envFile.exists()) {
 			VisualSTG devStg = generator.getStg();
-			VisualSTG systemStg = composeDevStgWithEvnFile(devStg, envFile);
+			VisualSTG systemStg = composeDevStgWithEvnFile(devStg, envFile, circuit.getTitle());
 			if (systemStg != null) {
 				generator = new CircuitToStgConverter(circuit, systemStg);
 			}
@@ -41,10 +37,11 @@ public class CircuitStgUtils {
 		return generator;
 	}
 
-	public static VisualSTG composeDevStgWithEvnFile(VisualSTG devStg, File envFile) {
+	public static VisualSTG composeDevStgWithEvnFile(VisualSTG devStg, File envFile, String title) {
 		VisualSTG resultStg = null;
 		Framework framework = Framework.getInstance();
-		File workingDirectory = FileUtils.createTempDirectory(TEMP_DIRECTORY_PREFIX);
+		String prefix = FileUtils.getTempPrefix(title);
+		File workingDirectory = FileUtils.createTempDirectory(prefix);
 		try {
 			File devStgFile = exportDevStg(devStg, workingDirectory);
 			File envStgFile = exportEnvStg(envFile, workingDirectory);
@@ -57,7 +54,7 @@ public class CircuitStgUtils {
 			}
 		} catch (Throwable e) {
 		} finally {
-			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
+			FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 		return resultStg;
 	}
@@ -67,7 +64,7 @@ public class CircuitStgUtils {
 		Framework framework = Framework.getInstance();
 		if ((devStgFile != null) && (envStgFile != null)) {
 			// Generating .g for the whole system (circuit and environment)
-			stgFile = new File(workingDirectory, SYSTEM_FILE_NAME + ASTG_FILE_EXT);
+			stgFile = new File(workingDirectory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 			PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile},
 					ConversionMode.OUTPUT, true, false, workingDirectory);
 
@@ -86,12 +83,12 @@ public class CircuitStgUtils {
 	private static File exportEnvStg(File envFile, File workingDirectory) throws DeserialisationException, IOException {
 		Framework framework = Framework.getInstance();
 		File envStgFile = null;
-		if (envFile.getName().endsWith(ASTG_FILE_EXT)) {
+		if (envFile.getName().endsWith(StgUtils.ASTG_FILE_EXT)) {
 			envStgFile = envFile;
 		} else {
 			STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 			Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-			envStgFile = new File(workingDirectory, ENVIRONMENT_FILE_NAME + ASTG_FILE_EXT);
+			envStgFile = new File(workingDirectory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 			ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
 			Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 					envExportTask, "Exporting environment .g", null);
@@ -111,7 +108,7 @@ public class CircuitStgUtils {
 			throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to .g format.");
 		}
 
-		File devStgFile =  new File(workingDirectory, DEVICE_FILE_NAME + ASTG_FILE_EXT);
+		File devStgFile =  new File(workingDirectory, StgUtils.DEVICE_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 		ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
 		Result<? extends Object> devExportResult = framework.getTaskManager().execute(
 				devExportTask, "Exporting device .g", null);

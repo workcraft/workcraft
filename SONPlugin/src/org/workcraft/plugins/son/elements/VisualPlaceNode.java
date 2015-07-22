@@ -42,7 +42,7 @@ public class VisualPlaceNode extends VisualComponent{
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Boolean>(
-				this, "marked", Boolean.class) {
+				this, "marked", Boolean.class, true, true, true) {
 			public void setter(VisualPlaceNode object, Boolean value) {
 				setMarked(value);
 			}
@@ -52,7 +52,7 @@ public class VisualPlaceNode extends VisualComponent{
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Positioning>(
-				this, "Error Positioning", Positioning.class) {
+				this, "Error Positioning", Positioning.class, true, true, true) {
 			protected void setter(VisualPlaceNode object, Positioning value) {
 				object.setErrLabelPositioning(value);
 			}
@@ -62,7 +62,7 @@ public class VisualPlaceNode extends VisualComponent{
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Color>(
-				this, "Error color", Color.class) {
+				this, "Error color", Color.class, true, true, true) {
 			protected void setter(VisualPlaceNode object, Color value) {
 				object.setErrLabelColor(value);
 			}

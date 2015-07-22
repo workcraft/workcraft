@@ -34,7 +34,7 @@ public class VisualSuperGroup extends VisualGroup{
 
 	public VisualSuperGroup(){
 		addPropertyDeclaration(new PropertyDeclaration<VisualSuperGroup, String>(
-				this, "Label", String.class) {
+				this, "Label", String.class, true, true, true) {
 			public void setter(VisualSuperGroup object, String value) {
 				object.setLabel(value);
 			}

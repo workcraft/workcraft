@@ -72,7 +72,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 		addPropertyDeclarations();
 	}
 
-	public VisualTransformableNode (Element visualNodeElement) {
+	public VisualTransformableNode(Element visualNodeElement) {
 		super();
 		addPropertyDeclarations();
 		VisualTransformableNodeDeserialiser.initTransformableNode(visualNodeElement, this);

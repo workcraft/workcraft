@@ -37,6 +37,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitModelDescriptor;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
@@ -50,11 +51,15 @@ import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
-import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.workspace.ModelEntry;
 
 
 public class VerilogImporter implements Importer {
+
+	private class Wire {
+		public FunctionContact source = null;
+		public HashSet<FunctionContact> sinks = new HashSet<>();
+	}
 
 	@Override
 	public boolean accept(File file) {
@@ -73,7 +78,6 @@ public class VerilogImporter implements Importer {
 
 	public Circuit importCircuit(InputStream in) throws DeserialisationException {
 		try {
-
 			VerilogParser parser = new VerilogParser(in);
 			HashMap<String, Module> modules = getModuleMap(parser.parseCircuit());
 			HashSet<Module> topModules = getTopModule(modules);
@@ -85,7 +89,7 @@ public class VerilogImporter implements Importer {
 			}
 			//printDebugInfo(topModules);
 			Module topModule = topModules.iterator().next();
-			Circuit circuit = generateCircuit(topModule, modules);
+			Circuit circuit = createCircuit(topModule, modules);
 			return circuit;
 		} catch (FormatException e) {
 			throw new DeserialisationException(e);
@@ -123,23 +127,84 @@ public class VerilogImporter implements Importer {
 		}
 	}
 
-	class Wire {
-		public FunctionContact source = null;
-		public HashSet<FunctionContact> sinks = new HashSet<>();
-	}
-
-	private Circuit generateCircuit(Module topModule, HashMap<String, Module> modules) {
+	private Circuit createCircuit(Module topModule, HashMap<String, Module> modules) {
 		Circuit circuit = new Circuit();
 		Library library = null;
 		try {
-			InputStream genlibInputStream = new FileInputStream(PetrifyUtilitySettings.getGateLibrary());
+			InputStream genlibInputStream = new FileInputStream(CircuitSettings.getGateLibrary());
 			library = new GenlibParser(genlibInputStream).parseGenlib();
-		} catch (FileNotFoundException e1) {
+		} catch (FileNotFoundException e) {
 		} catch (ParseException e) {
 		}
 
+		HashMap<String, Wire> wires = createPorts(circuit, topModule);
+
+		for (Instance verilogInstance: topModule.instances) {
+			Gate gate = (library == null ? null : library.get(verilogInstance.moduleName));
+			if (gate != null) {
+				createGateInstance(circuit, verilogInstance, wires, gate);
+			} else {
+				createBoxInstance(circuit, verilogInstance, wires, modules);
+			}
+		}
+		createConnections(circuit, wires);
+		return circuit;
+	}
+
+	private void createGateInstance(Circuit circuit, Instance verilogInstance,
+			HashMap<String, Wire> wires, Gate gate) {
+		FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
+		for (Pin verilogPin: verilogInstance.connections) {
+			Wire wire = wires.get(verilogPin.netName);
+			if (wire == null) {
+				wire = new Wire();
+				wires.put(verilogPin.netName, wire);
+			}
+			Node node = circuit.getNodeByReference(component, verilogPin.name);
+			if (node instanceof FunctionContact) {
+				FunctionContact contact = (FunctionContact)node;
+				if (contact.isInput()) {
+					wire.sinks.add(contact);
+				} else {
+					wire.source = contact;
+				}
+			}
+		}
+	}
+
+	private void createBoxInstance(Circuit circuit, Instance verilogInstance,
+			HashMap<String, Wire> wires, HashMap<String, Module> modules) {
+		final FunctionComponent component = new FunctionComponent();
+		component.setModule(verilogInstance.moduleName);
+		circuit.add(component);
+		circuit.setName(component, verilogInstance.name);
+		Module module = modules.get(verilogInstance.moduleName);
+		HashMap<String, Port> instancePorts = getModulePortMap(module);
+		for (Pin verilogPin: verilogInstance.connections) {
+			Port verilogPort = instancePorts.get(verilogPin.name);
+			Wire wire = wires.get(verilogPin.netName);
+			if (wire == null) {
+				wire = new Wire();
+				wires.put(verilogPin.netName, wire);
+			}
+			FunctionContact contact = new FunctionContact();
+			if ((verilogPort != null) && ("input".equals(verilogPort.type))) {
+				contact.setIOType(IOType.INPUT);
+				wire.sinks.add(contact);
+			} else {
+				contact.setIOType(IOType.OUTPUT);
+				wire.source = contact;
+			}
+			component.add(contact);
+			if (verilogPin.name != null) {
+				circuit.setName(contact, verilogPin.name);
+			}
+		}
+	}
+
+	private HashMap<String, Wire> createPorts(Circuit circuit, Module module) {
 		HashMap<String, Wire> wires = new HashMap<>();
-		for (Port verilogPort: topModule.ports) {
+		for (Port verilogPort: module.ports) {
 			FunctionContact contact = new FunctionContact();
 			Wire wire = new Wire();
 			if ("input".equals(verilogPort.type)) {
@@ -154,55 +219,10 @@ public class VerilogImporter implements Importer {
 			circuit.setName(contact, verilogPort.name);
 			circuit.add(contact);
 		}
-		for (Instance verilogInstance: topModule.instances) {
-			Gate gate = (library == null ? null : library.get(verilogInstance.moduleName));
-			if (gate != null) {
-				FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
-				for (Pin verilogPin: verilogInstance.connections) {
-					Wire wire = wires.get(verilogPin.netName);
-					if (wire == null) {
-						wire = new Wire();
-						wires.put(verilogPin.netName, wire);
-					}
-					Node node = circuit.getNodeByReference(component, verilogPin.name);
-					if (node instanceof FunctionContact) {
-						FunctionContact contact = (FunctionContact)node;
-						if (contact.isInput()) {
-							wire.sinks.add(contact);
-						} else {
-							wire.source = contact;
-						}
-					}
-				}
-			} else {
-				final FunctionComponent component = new FunctionComponent();
-				component.setModule(verilogInstance.moduleName);
-				circuit.add(component);
-				circuit.setName(component, verilogInstance.name);
-				Module module = modules.get(verilogInstance.moduleName);
-				HashMap<String, Port> instancePorts = getModulePortMap(module);
-				for (Pin verilogPin: verilogInstance.connections) {
-					Port verilogPort = instancePorts.get(verilogPin.name);
-					Wire wire = wires.get(verilogPin.netName);
-					if (wire == null) {
-						wire = new Wire();
-						wires.put(verilogPin.netName, wire);
-					}
-					FunctionContact contact = new FunctionContact();
-					if ((verilogPort != null) && ("input".equals(verilogPort.type))) {
-						contact.setIOType(IOType.INPUT);
-						wire.sinks.add(contact);
-					} else {
-						contact.setIOType(IOType.OUTPUT);
-						wire.source = contact;
-					}
-					component.add(contact);
-					if (verilogPin.name != null) {
-						circuit.setName(contact, verilogPin.name);
-					}
-				}
-			}
-		}
+		return wires;
+	}
+
+	private void createConnections(Circuit circuit, HashMap<String, Wire> wires) {
 		for (Wire wire: wires.values()) {
 			if (wire.source == null) continue;
 			for (FunctionContact sink: wire.sinks) {
@@ -212,7 +232,6 @@ public class VerilogImporter implements Importer {
 				}
 			}
 		}
-		return circuit;
 	}
 
 	private HashMap<String, Module> getModuleMap(List<Module> modules) throws ParseException {

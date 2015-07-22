@@ -25,13 +25,12 @@ import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Set;
 
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
@@ -57,28 +56,24 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
 
 	@Override
 	public void layout(VisualModel model) {
-		setComponentPosition(model);
-		setPolylineConnections(model);
+		if (model instanceof VisualCircuit) {
+			VisualCircuit circuit = (VisualCircuit)model;
+			setComponentPosition(circuit);
+			setPolylineConnections(circuit);
+		}
 	}
 
-	private void setComponentPosition(VisualModel model) {
+	private void setComponentPosition(VisualCircuit model) {
 		LinkedList<HashSet<VisualComponent>> layers = rankComponents(model);
-		double x = -layers.size() * DX / 2.0;
+		double x = (1.0 - layers.size()) * DX / 2.0;
 		for (HashSet<VisualComponent> layer: layers) {
-			double y = -layer.size() * DY / 2.0;
+			double y = (1.0 - layer.size()) * DY / 2.0;
 			for (VisualComponent component: layer) {
 				Point2D pos = new Point2D.Double(x, y);
 				component.setPosition(pos);
 				if (component instanceof VisualCircuitComponent) {
 					VisualCircuitComponent circuitComponent = (VisualCircuitComponent)component;
-					for (VisualContact contact: circuitComponent.getContacts()) {
-						if (contact.isInput()) {
-							contact.setPosition(new Point2D.Double(-1.0, 0.0));
-						} else {
-							contact.setPosition(new Point2D.Double(1.0, 0.0));
-						}
-					}
-					circuitComponent.setContactsDefaultPosition();
+					setContactPositions(circuitComponent);
 				}
 				y += DY;
 			}
@@ -86,7 +81,18 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
 		}
 	}
 
-	private LinkedList<HashSet<VisualComponent>> rankComponents(VisualModel model) {
+	private void setContactPositions(VisualCircuitComponent circuitComponent) {
+		for (VisualContact contact: circuitComponent.getContacts()) {
+			if (contact.isInput()) {
+				contact.setPosition(new Point2D.Double(-1.0, 0.0));
+			} else {
+				contact.setPosition(new Point2D.Double(1.0, 0.0));
+			}
+		}
+		circuitComponent.setContactsDefaultPosition();
+	}
+
+	private LinkedList<HashSet<VisualComponent>> rankComponents(VisualCircuit model) {
 		LinkedList<HashSet<VisualComponent>> result = new LinkedList<>();
 
 		HashSet<VisualComponent> inputPorts = new HashSet<>();
@@ -128,38 +134,15 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
 		return result;
 	}
 
-	private HashSet<VisualComponent> getNextLayer(VisualModel model, HashSet<VisualComponent>layer) {
+	private HashSet<VisualComponent> getNextLayer(final VisualCircuit model, HashSet<VisualComponent>layer) {
 		HashSet<VisualComponent> result = new HashSet<>();
-		for (VisualComponent current: layer) {
-			Set<Node> postset = new HashSet<>();
-			if (current instanceof VisualContact) {
-				postset.addAll(model.getPostset(current));
-			} else if (current instanceof VisualCircuitComponent) {
-				VisualCircuitComponent component = (VisualCircuitComponent)current;
-				for (VisualContact contact: component.getContacts()) {
-					if (contact.isOutput()) {
-						postset.addAll(model.getPostset(contact));
-					}
-				}
-			}
-			for (Node node: postset) {
-				VisualComponent component = null;
-				if (node instanceof VisualContact) {
-					if (node.getParent() instanceof VisualComponent) {
-						component = (VisualComponent)node.getParent();
-					}
-				} else if (node instanceof VisualCircuitComponent) {
-					component = (VisualComponent)node;
-				}
-				if (component != null) {
-					result.add(component);
-				}
-			}
+		for (VisualComponent component: layer) {
+			result.addAll(CircuitUtils.getComponentPostset(model, component));
 		}
 		return result;
 	}
 
-	private void setPolylineConnections(VisualModel model) {
+	private void setPolylineConnections(VisualCircuit model) {
 		for (VisualConnection connection: Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class)) {
 			connection.setConnectionType(ConnectionType.POLYLINE);
 			connection.getGraphic().setDefaultControlPoints();

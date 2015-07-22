@@ -170,7 +170,22 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return (T)component;
 	}
 
+	@Override
+	public <T extends VisualComponent> T getComponent(MathNode mathNode, Class<T> type) {
+		T result = null;
+		if (mathNode != null) {
+			Collection<T> visualComponents = Hierarchy.getDescendantsOfType(getRoot(), type);
+			for (T visualComponent: visualComponents) {
+				if (visualComponent.getReferencedComponent() == mathNode) {
+					result = visualComponent;
+					break;
+				}
+			}
+		}
+		return result;
+	}
 
+	@Override
 	public void draw (Graphics2D g, Decorator decorator) {
 		DrawMan.draw(this, g, decorator, getRoot());
 	}

@@ -252,7 +252,7 @@ public class CircuitToStgConverter {
 			HashSet<VisualPlace> placesToRead = new HashSet<VisualPlace>();
 			for (Literal literal : clause.getLiterals()) {
 				BooleanVariable variable = literal.getVariable();
-				VisualContact sourceContact = CircuitUtils.getVisualContact(circuit, (Contact)variable);
+				VisualContact sourceContact = circuit.getComponent((Contact)variable, VisualContact.class);
 				VisualContact sourceDriver = nodeToDriverMap.get(sourceContact);
 				SignalStg sourceDriverStg = driverToStgMap.getValue(sourceDriver);
 				if (sourceDriverStg == null) {

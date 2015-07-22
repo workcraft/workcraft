@@ -98,7 +98,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void addColorPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, PROPERTY_FOREGROUND_COLOR, Color.class) {
+				this, PROPERTY_FOREGROUND_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setForegroundColor(value);
 			}
@@ -108,7 +108,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, PROPERTY_FILL_COLOR, Color.class) {
+				this, PROPERTY_FILL_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setFillColor(value);
 			}
@@ -120,7 +120,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void addLabelPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, String>(
-				this, PROPERTY_LABEL, String.class) {
+				this, PROPERTY_LABEL, String.class, true, true, true) {
 			protected void setter(VisualComponent object, String value) {
 				object.setLabel(value);
 			}
@@ -130,7 +130,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-				this, PROPERTY_LABEL_POSITIONING, Positioning.class) {
+				this, PROPERTY_LABEL_POSITIONING, Positioning.class, true, true, true) {
 			protected void setter(VisualComponent object, Positioning value) {
 				object.setLabelPositioning(value);
 			}
@@ -140,7 +140,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, PROPERTY_LABEL_COLOR, Color.class) {
+				this, PROPERTY_LABEL_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setLabelColor(value);
 			}
@@ -152,7 +152,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void addNamePropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-				this, PROPERTY_NAME_POSITIONING, Positioning.class) {
+				this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true, true) {
 			protected void setter(VisualComponent object, Positioning value) {
 				object.setNamePositioning(value);
 			}
@@ -162,7 +162,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, PROPERTY_NAME_COLOR, Color.class) {
+				this, PROPERTY_NAME_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setNameColor(value);
 			}

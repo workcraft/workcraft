@@ -52,7 +52,8 @@ public interface VisualModel extends Model, ObservableState {
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public VisualConnection connect(Node first, Node second, MathConnection connection) throws InvalidConnectionException;
 
-	public  <T extends VisualComponent> T createComponent(MathNode refNode, Container container, Class<T> type);
+	public <T extends VisualComponent> T createComponent(MathNode refNode, Container container, Class<T> type);
+	public <T extends VisualComponent> T getComponent(MathNode refNode, Class<T> type);
 
 	public void selectAll();
 	public void selectNone();
@@ -77,5 +78,6 @@ public interface VisualModel extends Model, ObservableState {
 	public void setTemplateNode(VisualNode node);
 	public VisualNode getTemplateNode();
 	public AbstractLayoutTool getBestLayoutTool();
+
 
 }

@@ -83,7 +83,7 @@ public class VisualVariable extends VisualComponent {
 	public VisualVariable(Variable variable) {
 		super(variable);
 		addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
-				this, Variable.PROPERTY_STATE, VariableState.class) {
+				this, Variable.PROPERTY_STATE, VariableState.class, true, true, true) {
 			public void setter(VisualVariable object, VariableState value) {
 				object.setState(value);
 			}
