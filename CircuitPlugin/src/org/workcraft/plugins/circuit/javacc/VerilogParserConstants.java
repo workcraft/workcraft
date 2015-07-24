@@ -40,6 +40,12 @@ public interface VerilogParserConstants {
   int LOGIC1 = 26;
   /** RegularExpression Id. */
   int INTEGER = 27;
+  /** RegularExpression Id. */
+  int PETRIFY_UNMAPPED = 28;
+  /** RegularExpression Id. */
+  int PETRIFY_EQUATION = 29;
+  /** RegularExpression Id. */
+  int PETRIFY_INIT_STATE = 30;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -78,11 +84,15 @@ public interface VerilogParserConstants {
     "\"1\\\'b0\"",
     "\"1\\\'b1\"",
     "<INTEGER>",
+    "<PETRIFY_UNMAPPED>",
+    "<PETRIFY_EQUATION>",
+    "<PETRIFY_INIT_STATE>",
     "\"(\"",
     "\")\"",
     "\"[\"",
     "\"]\"",
     "\",\"",
+    "\"!\"",
     "\";\"",
     "\".\"",
   };

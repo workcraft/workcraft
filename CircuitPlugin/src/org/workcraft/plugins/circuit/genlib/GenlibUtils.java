@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -21,7 +22,11 @@ public class GenlibUtils {
 		component.setModule(gate.name);
 		circuit.add(component);
 		if (instanceName != null) {
-			circuit.setName(component, instanceName);
+			try {
+				circuit.setName(component, instanceName);
+			} catch (ArgumentException e) {
+				System.out.println("Warning: cannot set name '" + instanceName +"' for component '" + circuit.getName(component) + "'.");
+			}
 		}
 
 		FunctionContact contact = new FunctionContact();

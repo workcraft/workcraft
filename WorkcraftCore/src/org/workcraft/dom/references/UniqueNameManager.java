@@ -44,7 +44,7 @@ public class UniqueNameManager implements NameManager {
 							+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
 				}
 			} else {
-				throw new ArgumentException("The name \"" + name + "\" is already taken. Please choose another name.");
+				throw new ArgumentException("The name \"" + name + "\" is already taken.");
 			}
 		}
 	}

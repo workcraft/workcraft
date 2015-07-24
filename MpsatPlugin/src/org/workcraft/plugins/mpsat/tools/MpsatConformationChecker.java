@@ -35,7 +35,7 @@ public class MpsatConformationChecker implements Tool {
 		JFileChooser fc = framework.getMainWindow().createOpenDialog("Open environment file", false, null);
 		if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			if (framework.checkFile(file)) {
+			if (framework.checkFile(file, null)) {
 				final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, file);
 
 				String description = "MPSat tool chain";

@@ -6,18 +6,19 @@ options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
   STATIC = false;
-  DEBUG_PARSER = false;
+  DEBUG_PARSER = true;
   DEBUG_LOOKAHEAD = false;
-  DEBUG_TOKEN_MANAGER = false;
+  DEBUG_TOKEN_MANAGER = true;
 }
 
 PARSER_BEGIN(VerilogParser)
 package org.workcraft.plugins.circuit.javacc;
 
-import java.util.HashSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
 
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Port;
@@ -69,11 +70,15 @@ TOKEN :
 |   <LOGIC0 : "1'b0">
 |   <LOGIC1 : "1'b1">
 |   <INTEGER : ([ "0"-"9" ])+>
+|   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:" ["\r", "\n"] "// ----------------------------------------" ["\r", "\n"] >
+|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])*>
+|   <PETRIFY_INIT_STATE : "// signal values at the initial state:" ["\r", "\n"] "//">
 |   "("
 |   ")"
 |   "["
 |   "]"
 |   ","
+|   "!"
 |   ";"
 |   "."
 }    
@@ -106,14 +111,27 @@ Module parseModule():
 {
     String name;
     List<Port> ports; 
-    List<Instance> instances; 
+    Set<Instance> instances;
+    Set<Instance> group;
+    Set<Set<Instance>> groups = new HashSet<Set<Instance>>();
+    Set<String> highSignals = null; 
 }
 {
     <MODULE> name = parseModuleName() 
     ports = parsePorts()
     instances = parseInstances()
+    [<PETRIFY_UNMAPPED>
+    	(<PETRIFY_EQUATION> 
+    		group = parseInstances()
+    		{
+    			instances.addAll(group);
+    			groups.add(group);
+    		}
+    	)*
+    ]
+    [<PETRIFY_INIT_STATE> highSignals = parseInitialState()]
     <ENDMODULE>
-    {        return new Module(name, ports, instances);
+    {        return new Module(name, ports, instances, highSignals, groups);
     }
 }
 
@@ -166,16 +184,30 @@ List<Port> parseCompactPorts():
 
 Port parseCompactPort():
 {
+    Port.Type type;
     Token nameToken;
-    Token typeToken;
 }
 {
-    (typeToken = <INPUT> | typeToken = <OUTPUT> | typeToken = <INOUT>) nameToken = <NAME>
+    type = parsePortType() nameToken = <NAME>
     {
-    	String name = nameToken.image;
-    	String type = typeToken.image;
-    	return new Port(name, type);
+    	return new Port(nameToken.image, type);
     }
+}
+
+Port.Type parsePortType():
+{
+}
+{
+    (
+    	<INPUT>
+    	{
+    		return Port.Type.INPUT;
+    	} 
+    |	<OUTPUT>
+    	{
+    		return Port.Type.OUTPUT;
+    	} 
+    )
 }
 
 List<Port> parseComplexPorts():
@@ -187,13 +219,13 @@ List<Port> parseComplexPorts():
 	declarations = parsePortsDeclaration()
 	definitions = parsePortsDefinitions()
     {
-    	HashMap<String, String> nameToType = new HashMap<String, String>();
+    	HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
     	for (Port port: definitions) {
     		nameToType.put(port.name, port.type);
     	}
     	List<Port> ports = new LinkedList<Port>();
    		for (String name: declarations) {
-   			String type = nameToType.get(name);
+   			Port.Type type = nameToType.get(name);
     		ports.add(new Port(name, type));
     	}
         return ports;
@@ -224,7 +256,9 @@ List<Port> parsePortsDefinitions():
     (
     	ports = parsePortsDefinition()
     	{
-    		allPorts.addAll(ports);
+    		if (ports != null) {
+    			allPorts.addAll(ports);
+    		}
     	}
     )*
     {
@@ -233,19 +267,24 @@ List<Port> parsePortsDefinitions():
 }
 
 List<Port> parsePortsDefinition():
-{    List<String> names = new LinkedList<String>();
-    Token typeToken;
+{    List<String> names;
+    Port.Type type;
 }
 {
-    (typeToken = <INPUT> | typeToken = <OUTPUT> | typeToken = <INOUT> | typeToken = <REG> | typeToken = <WIRE>) names = parseNames() ";"
-    {
-    	String type = typeToken.image;
-    	List<Port> ports = new LinkedList<Port>();
-    	for (String name: names) {
-    		Port port = new Port(name, type);
-    		ports.add(port);        }
-     	return ports;
-    }
+   	(
+   		( type = parsePortType() names = parseNames() ";") 
+	    {
+    		List<Port> ports = new LinkedList<Port>();
+    		for (String name: names) {
+    			Port port = new Port(name, type);
+    			ports.add(port);        	}
+     		return ports;
+    	}
+   	| 	( (<WIRE> | <INOUT> | <REG>) parseNames() ";")
+   		{
+   			return null;
+   		}
+   	) 
 }
 
 List<String> parseNames():
@@ -266,10 +305,31 @@ List<String> parseNames():
     }
 }
 
-List<Instance> parseInstances():
+Set<String> parseInitialState():
+{
+    Token nameToken;
+    Set<String> highSignals = new HashSet<String>();
+}
+{
+    (
+        (
+        	("!" <NAME>) 
+        |	(nameToken = <NAME>)
+	        {
+    	    	String name = nameToken.image;
+        	    highSignals.add(name);
+        	}
+        ) [","]
+    )*
+    {
+    	return highSignals;
+    }
+}
+
+Set<Instance> parseInstances():
 {
     Instance instance;
-    List<Instance> instances = new LinkedList<Instance>();
+    Set<Instance> instances = new HashSet<Instance>();
 }
 {
     (
