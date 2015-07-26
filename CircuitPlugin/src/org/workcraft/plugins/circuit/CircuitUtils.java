@@ -23,7 +23,7 @@ public class CircuitUtils {
 
 	public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact) {
 		Contact mathDriver = findDriver((Circuit)circuit.getMathModel(), contact.getReferencedContact());
-		return circuit.getComponent(mathDriver, VisualContact.class);
+		return circuit.getVisualComponent(mathDriver, VisualContact.class);
 	}
 
 	public static Contact findDriver(Circuit circuit, MathNode curNode) {
@@ -124,7 +124,7 @@ public class CircuitUtils {
 
 	public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact) {
 		Contact mathSignal = findSignal((Circuit)circuit.getMathModel(), contact.getReferencedContact());
-		return circuit.getComponent(mathSignal, VisualContact.class);
+		return circuit.getVisualComponent(mathSignal, VisualContact.class);
 	}
 
 	public static String getWireName(Circuit circuit, Contact contact) {
@@ -320,28 +320,27 @@ public class CircuitUtils {
 		});
 	}
 
-
-	public static HashSet<VisualComponent> getComponentPostset(final VisualCircuit circuit, Node node) {
-		HashSet<VisualComponent> result = new HashSet<>();
+	public static HashSet<MathNode> getComponentPostset(final Circuit circuit, MathNode mathNode) {
+		HashSet<MathNode> result = new HashSet<>();
 		Set<Node> postset = new HashSet<>();
-		if (node instanceof VisualContact) {
-			postset.addAll(circuit.getPostset(node));
-		} else if (node instanceof VisualCircuitComponent) {
-			VisualCircuitComponent component = (VisualCircuitComponent)node;
-			for (VisualContact contact: component.getContacts()) {
+		if (mathNode instanceof Contact) {
+			postset.addAll(circuit.getPostset(mathNode));
+		} else if (mathNode instanceof CircuitComponent) {
+			CircuitComponent component = (CircuitComponent)mathNode;
+			for (Contact contact: component.getContacts()) {
 				if (contact.isOutput()) {
 					postset.addAll(circuit.getPostset(contact));
 				}
 			}
 		}
 		for (Node nextNode: postset) {
-			VisualComponent nextComponent = null;
-			if (nextNode instanceof VisualContact) {
-				if (nextNode.getParent() instanceof VisualComponent) {
-					nextComponent = (VisualComponent)nextNode.getParent();
+			CircuitComponent nextComponent = null;
+			if (nextNode instanceof Contact) {
+				if (nextNode.getParent() instanceof CircuitComponent) {
+					nextComponent = (CircuitComponent)nextNode.getParent();
 				}
-			} else if (nextNode instanceof VisualCircuitComponent) {
-				nextComponent = (VisualComponent)nextNode;
+			} else if (nextNode instanceof CircuitComponent) {
+				nextComponent = (CircuitComponent)nextNode;
 			}
 			if (nextComponent != null) {
 				result.add(nextComponent);
@@ -350,10 +349,20 @@ public class CircuitUtils {
 		return result;
 	}
 
+	public static HashSet<VisualComponent> getComponentPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
+		HashSet<VisualComponent> result = new HashSet<>();
+		Circuit circuit = (Circuit)visualCircuit.getMathModel();
+		MathNode mathComponent = visualComponent.getReferencedComponent();
+		for (MathNode node: getComponentPostset(circuit, mathComponent)) {
+			result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
+		}
+		return result;
+	}
+
 	private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
 		HashSet<VisualContact> result = new HashSet<>();
 		for (Contact mathContact: mathContacts) {
-			VisualContact visualContact = visualCircuit.getComponent(mathContact, VisualContact.class);
+			VisualContact visualContact = visualCircuit.getVisualComponent(mathContact, VisualContact.class);
 			if (visualContact != null) {
 				result.add(visualContact);
 			}

@@ -25,14 +25,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -41,6 +46,8 @@ import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitModelDescriptor;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.CircuitUtils;
+import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
@@ -55,8 +62,15 @@ import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
+
+import com.sun.corba.se.pept.transport.Connection;
 
 
 public class VerilogImporter implements Importer {
@@ -188,18 +202,49 @@ public class VerilogImporter implements Importer {
 		}
 		createConnections(circuit, wires);
 		setInitialState(circuit, wires, topModule.highSignals);
-		groupRelatedGates(circuit, topModule.groups, instanceComponentMap);
+		mergeGroups(circuit, topModule.groups, instanceComponentMap);
 		return circuit;
 	}
 
-	private void groupRelatedGates(Circuit circuit, Set<Set<Instance>> groups, HashMap<Instance, FunctionComponent> instanceComponentMap) {
-		for (Set<Instance> group: groups) {
+	private void mergeGroups(Circuit circuit, Set<List<Instance>> groups, HashMap<Instance, FunctionComponent> instanceComponentMap) {
+		for (List<Instance> group: groups) {
+			List<FunctionComponent> orderedComponents = new LinkedList<>();
 			for (Instance instance: group) {
 				FunctionComponent component = instanceComponentMap.get(instance);
 				if (component != null) {
-					component.setModule(group.toString());
+					orderedComponents.add(component);
 				}
 			}
+			mergeComponents(circuit, orderedComponents);
+		}
+	}
+
+	private void mergeComponents(Circuit circuit, List<FunctionComponent> components) {
+		for (FunctionComponent firstComponent: components) {
+			for (MathNode node: CircuitUtils.getComponentPostset(circuit, firstComponent)) {
+				if (node instanceof FunctionComponent) {
+					FunctionComponent secondComponent = (FunctionComponent)node;
+					mergeComponents(circuit, firstComponent, secondComponent);
+				}
+			}
+		}
+	}
+
+	private void mergeComponents(Circuit circuit, FunctionComponent firstComponent, FunctionComponent secondComponent) {
+		Collection<Contact> firstOutputContacts = firstComponent.getOutputs();
+		Collection<Contact> secondOutputContacts = secondComponent.getOutputs();
+		if ((firstOutputContacts.size() == 1) && (secondOutputContacts.size() == 1)) {
+			FunctionContact firstOutputContact = (FunctionContact)firstOutputContacts.iterator().next();
+			FunctionContact secondOutputContact = (FunctionContact)secondOutputContacts.iterator().next();
+			List<Contact> inputContacts = new LinkedList<>(secondComponent.getInputs());
+			inputContacts.retainAll(circuit.getPostset(firstOutputContact));
+			BooleanFormula firstSetFunction = firstOutputContact.getSetFunction();
+			BooleanFormula secondSetFunction = secondOutputContact.getSetFunction();
+			List<BooleanFormula> values = Collections.nCopies(inputContacts.size(), firstSetFunction);
+			final BooleanFormula setFunction = BooleanReplacer.replace(secondSetFunction, inputContacts, values);
+			System.out.println("1: " + FormulaToString.toString(firstSetFunction));
+			System.out.println("2: " + FormulaToString.toString(secondSetFunction));
+			System.out.println("=: " + FormulaToString.toString(setFunction));
 		}
 	}
 

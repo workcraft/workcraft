@@ -155,7 +155,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends VisualComponent> T createComponent(MathNode mathNode, Container container, Class<T> type) {
+	public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Container container, Class<T> type) {
 		if (container == null) {
 			container = getRoot();
 		}
@@ -171,7 +171,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	@Override
-	public <T extends VisualComponent> T getComponent(MathNode mathNode, Class<T> type) {
+	public <T extends VisualComponent> T getVisualComponent(MathNode mathNode, Class<T> type) {
 		T result = null;
 		if (mathNode != null) {
 			Collection<T> visualComponents = Hierarchy.getDescendantsOfType(getRoot(), type);

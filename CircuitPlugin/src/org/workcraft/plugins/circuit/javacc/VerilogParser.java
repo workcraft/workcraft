@@ -56,9 +56,9 @@ public class VerilogParser implements VerilogParserConstants {
     try {
     String name;
     List<Port> ports;
-    Set<Instance> instances;
-    Set<Instance> group;
-    Set<Set<Instance>> groups = new HashSet<Set<Instance>>();
+    List<Instance> instances;
+    List<Instance> group;
+    Set<List<Instance>> groups = new HashSet<List<Instance>>();
     Set<String> highSignals = null;
       jj_consume_token(MODULE);
       name = parseModuleName();
@@ -445,11 +445,11 @@ public class VerilogParser implements VerilogParserConstants {
     }
   }
 
-  final public Set<Instance> parseInstances() throws ParseException {
+  final public List<Instance> parseInstances() throws ParseException {
     trace_call("parseInstances");
     try {
     Instance instance;
-    Set<Instance> instances = new HashSet<Instance>();
+    List<Instance> instances = new LinkedList<Instance>();
       label_7:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {

@@ -269,13 +269,13 @@ public class VisualSTG extends AbstractVisualModel {
 	public VisualPlace createPlace(String mathName, Container container) {
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		STGPlace mathPlace = stg.createPlace(mathName, mathContainer);
-		return createComponent(mathPlace, container, VisualPlace.class);
+		return createVisualComponent(mathPlace, container, VisualPlace.class);
 	}
 
 	public VisualDummyTransition createDummyTransition(String mathName, Container container) {
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		DummyTransition mathTransition = stg.createDummyTransition(mathName, mathContainer);
-		return createComponent(mathTransition, container, VisualDummyTransition.class);
+		return createVisualComponent(mathTransition, container, VisualDummyTransition.class);
 	}
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
@@ -286,7 +286,7 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 		SignalTransition mathTransition = stg.createSignalTransition(mathName, mathContainer);
 		mathTransition.setSignalType(type);
-		return createComponent(mathTransition, container, VisualSignalTransition.class);
+		return createVisualComponent(mathTransition, container, VisualSignalTransition.class);
 	}
 
 	public Collection<VisualPlace> getVisualPlaces() {

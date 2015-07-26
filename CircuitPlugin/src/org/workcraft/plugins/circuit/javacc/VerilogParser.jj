@@ -8,7 +8,7 @@ options {
   STATIC = false;
   DEBUG_PARSER = true;
   DEBUG_LOOKAHEAD = false;
-  DEBUG_TOKEN_MANAGER = true;
+  DEBUG_TOKEN_MANAGER = false;
 }
 
 PARSER_BEGIN(VerilogParser)
@@ -70,8 +70,8 @@ TOKEN :
 |   <LOGIC0 : "1'b0">
 |   <LOGIC1 : "1'b1">
 |   <INTEGER : ([ "0"-"9" ])+>
-|   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:" ["\r", "\n"] "// ----------------------------------------" ["\r", "\n"] >
-|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])*>
+|   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:" ["\r", "\n"]>
+|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* ["\r", "\n"]>
 |   <PETRIFY_INIT_STATE : "// signal values at the initial state:" ["\r", "\n"] "//">
 |   "("
 |   ")"
@@ -111,9 +111,9 @@ Module parseModule():
 {
     String name;
     List<Port> ports; 
-    Set<Instance> instances;
-    Set<Instance> group;
-    Set<Set<Instance>> groups = new HashSet<Set<Instance>>();
+    List<Instance> instances;
+    List<Instance> group;
+    Set<List<Instance>> groups = new HashSet<List<Instance>>();
     Set<String> highSignals = null; 
 }
 {
@@ -326,10 +326,10 @@ Set<String> parseInitialState():
     }
 }
 
-Set<Instance> parseInstances():
+List<Instance> parseInstances():
 {
     Instance instance;
-    Set<Instance> instances = new HashSet<Instance>();
+    List<Instance> instances = new LinkedList<Instance>();
 }
 {
     (
