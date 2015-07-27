@@ -29,8 +29,7 @@ public class GenlibUtils {
 			}
 		}
 
-		FunctionContact contact = new FunctionContact();
-		contact.setIOType(IOType.OUTPUT);
+		FunctionContact contact = new FunctionContact(IOType.OUTPUT);
 		component.add(contact);
 		circuit.setName(contact, gate.function.name);
 		String setFunction = getSetFunction(gate);

@@ -25,9 +25,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
@@ -63,14 +64,10 @@ import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
-
-import com.sun.corba.se.pept.transport.Connection;
 
 
 public class VerilogImporter implements Importer {
@@ -202,9 +199,127 @@ public class VerilogImporter implements Importer {
 		}
 		createConnections(circuit, wires);
 		setInitialState(circuit, wires, topModule.highSignals);
-		mergeGroups(circuit, topModule.groups, instanceComponentMap);
+		mergeGroups1(circuit, topModule.groups, instanceComponentMap);
 		return circuit;
 	}
+
+	private void mergeGroups1(Circuit circuit, Set<List<Instance>> groups, HashMap<Instance, FunctionComponent> instanceComponentMap) {
+		for (List<Instance> group: groups) {
+			HashSet<FunctionComponent> components = new HashSet<>();
+			FunctionComponent rootComponent = null;
+			for (Instance instance: group) {
+				FunctionComponent component = instanceComponentMap.get(instance);
+				if (component != null) {
+					components.add(component);
+					rootComponent = component;
+				}
+			}
+			components.remove(rootComponent);
+			mergeComponents1(circuit, rootComponent, components);
+			circuit.remove(rootComponent);
+			for (FunctionComponent component: components) {
+				circuit.remove(component);
+			}
+		}
+	}
+
+	private FunctionComponent mergeComponents1(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> components) {
+		HashSet<FunctionComponent> leafComponents = new HashSet<>();
+		for (FunctionComponent component: components) {
+			for (MathNode node: CircuitUtils.getComponentPostset(circuit, component)) {
+				if (node == rootComponent) {
+					leafComponents.add(component);
+				}
+			}
+		}
+		return mergeComponents(circuit, rootComponent, leafComponents);
+	}
+
+	private FunctionComponent mergeComponents(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> leafComponents) {
+		FunctionComponent component = null;
+		Collection<Contact> rootOutputContacts = rootComponent.getOutputs();
+		if (rootOutputContacts.size() != 1) {
+			throw new RuntimeException("Cannot determin the output of component '" + circuit.getName(rootComponent) + "'.");
+		}
+		FunctionContact rootOutputContact = (FunctionContact)rootOutputContacts.iterator().next();
+		List<Contact> rootInputContacts = new LinkedList<>(rootComponent.getInputs());
+
+		HashMap<Contact, Contact> newToOldContactMap = new HashMap<>();
+		component = new FunctionComponent();
+		circuit.add(component);
+		FunctionContact outputContact = new FunctionContact(IOType.OUTPUT);
+		component.add(outputContact);
+		circuit.setName(outputContact, PRIMITIVE_GATE_OUTPUT_NAME);
+		newToOldContactMap.put(outputContact, rootOutputContact);
+
+		List<BooleanFormula> leafSetFunctions = new LinkedList<>();
+		for (Contact rootInputContact: rootInputContacts) {
+			BooleanFormula leafSetFunction = null;
+			for (FunctionComponent leafComponent: leafComponents) {
+				Collection<Contact> leafOutputContacts = leafComponent.getOutputs();
+				if (leafOutputContacts.size() != 1) {
+					throw new RuntimeException("Cannot determin the output of component '" + circuit.getName(leafComponent) + "'.");
+				}
+				FunctionContact leafOutputContact = (FunctionContact)leafOutputContacts.iterator().next();
+				List<Contact> leafInputContacts = new LinkedList<>(leafComponent.getInputs());
+
+				Set<Node> oldContacts = circuit.getPostset(leafOutputContact);
+				if (oldContacts.contains(rootInputContact)) {
+					List<BooleanFormula> replacementContacts = new LinkedList<>();
+					for (Contact leafInputContact: leafInputContacts) {
+						FunctionContact inputContact = new FunctionContact(IOType.INPUT);
+						component.add(inputContact);
+						circuit.setName(inputContact, rootInputContact.getName() + leafInputContact.getName());
+						replacementContacts.add(inputContact);
+						newToOldContactMap.put(inputContact, leafInputContact);
+					}
+					leafSetFunction = BooleanUtils.dumbReplace(
+							leafOutputContact.getSetFunction(), leafInputContacts, replacementContacts);
+				}
+
+			}
+			if (leafSetFunction == null) {
+				FunctionContact inputContact = new FunctionContact(IOType.INPUT);
+				component.add(inputContact);
+				circuit.setName(inputContact, rootInputContact.getName());
+				newToOldContactMap.put(inputContact, rootInputContact);
+				leafSetFunction = inputContact;
+			}
+			leafSetFunctions.add(leafSetFunction);
+		}
+		BooleanFormula rootSetFunction = rootOutputContact.getSetFunction();
+		final BooleanFormula setFunction = BooleanUtils.dumbReplace(rootSetFunction, rootInputContacts, leafSetFunctions);
+		outputContact.setSetFunction(setFunction);
+
+		System.out.println("> : " + FormulaToString.toString(rootSetFunction));
+		for (BooleanFormula leafSetFunction: leafSetFunctions) {
+			System.out.println("+ : " + FormulaToString.toString(leafSetFunction));
+		}
+		System.out.println("= : " + FormulaToString.toString(setFunction));
+
+		for (Connection outputConnection: circuit.getConnections(rootOutputContact)) {
+			if (outputConnection.getFirst() != rootOutputContact) continue;
+			Node toNode = outputConnection.getSecond();
+			circuit.remove(outputConnection);
+			try {
+				circuit.connect(outputContact, toNode);
+			} catch (InvalidConnectionException e) {
+			}
+		}
+		for (Contact newContact: newToOldContactMap.keySet()) {
+			if (newContact.isOutput()) continue;
+			Contact oldContact = newToOldContactMap.get(newContact);
+			if (oldContact == null) continue;
+			for (Node fromNode: circuit.getPreset(oldContact)) {
+				try {
+					circuit.connect(fromNode, newContact);
+				} catch (InvalidConnectionException e) {
+				}
+			}
+		}
+		return component;
+	}
+
 
 	private void mergeGroups(Circuit circuit, Set<List<Instance>> groups, HashMap<Instance, FunctionComponent> instanceComponentMap) {
 		for (List<Instance> group: groups) {
@@ -220,32 +335,95 @@ public class VerilogImporter implements Importer {
 	}
 
 	private void mergeComponents(Circuit circuit, List<FunctionComponent> components) {
-		for (FunctionComponent firstComponent: components) {
+//		for (FunctionComponent firstComponent: components) {
+		FunctionComponent firstComponent = components.iterator().next();
+		{
+			//Deque<FunctionComponent> stack = new ArrayDeque<>();
 			for (MathNode node: CircuitUtils.getComponentPostset(circuit, firstComponent)) {
 				if (node instanceof FunctionComponent) {
 					FunctionComponent secondComponent = (FunctionComponent)node;
-					mergeComponents(circuit, firstComponent, secondComponent);
+					FunctionComponent component = mergeComponents(circuit, firstComponent, secondComponent);
+					circuit.remove(secondComponent);
+
 				}
 			}
+			circuit.remove(firstComponent);
 		}
 	}
 
-	private void mergeComponents(Circuit circuit, FunctionComponent firstComponent, FunctionComponent secondComponent) {
+	private FunctionComponent mergeComponents(Circuit circuit, FunctionComponent firstComponent, FunctionComponent secondComponent) {
+		FunctionComponent component = null;
 		Collection<Contact> firstOutputContacts = firstComponent.getOutputs();
 		Collection<Contact> secondOutputContacts = secondComponent.getOutputs();
 		if ((firstOutputContacts.size() == 1) && (secondOutputContacts.size() == 1)) {
 			FunctionContact firstOutputContact = (FunctionContact)firstOutputContacts.iterator().next();
+			List<Contact> firstInputContacts = new LinkedList<>(firstComponent.getInputs());
 			FunctionContact secondOutputContact = (FunctionContact)secondOutputContacts.iterator().next();
-			List<Contact> inputContacts = new LinkedList<>(secondComponent.getInputs());
-			inputContacts.retainAll(circuit.getPostset(firstOutputContact));
-			BooleanFormula firstSetFunction = firstOutputContact.getSetFunction();
+			List<Contact> secondInputContacts = new LinkedList<>(secondComponent.getInputs());
+
+			HashMap<Contact, Contact> newToOldContactMap = new HashMap<>();
+			component = new FunctionComponent();
+			circuit.add(component);
+			FunctionContact outputContact = new FunctionContact(IOType.OUTPUT);
+			component.add(outputContact);
+			circuit.setName(outputContact, PRIMITIVE_GATE_OUTPUT_NAME);
+			newToOldContactMap.put(outputContact, secondOutputContact);
+
+			Set<Node> oldContacts = circuit.getPostset(firstOutputContact);
+			List<BooleanFormula> firstSetFunctions = new LinkedList<>();
+			for (Contact secondInputContact: secondInputContacts) {
+				if ( !oldContacts.contains(secondInputContact) ) {
+					FunctionContact inputContact = new FunctionContact(IOType.INPUT);
+					component.add(inputContact);
+					circuit.setName(inputContact, secondInputContact.getName());
+					newToOldContactMap.put(inputContact, secondInputContact);
+					firstSetFunctions.add(inputContact);
+				} else {
+					List<BooleanFormula> replacementContacts = new LinkedList<>();
+					for (Contact firstInputContact: firstInputContacts) {
+						FunctionContact inputContact = new FunctionContact(IOType.INPUT);
+						component.add(inputContact);
+						circuit.setName(inputContact, secondInputContact.getName() + firstInputContact.getName());
+						replacementContacts.add(inputContact);
+						newToOldContactMap.put(inputContact, firstInputContact);
+					}
+					BooleanFormula firstSetFunction = BooleanUtils.dumbReplace(
+							firstOutputContact.getSetFunction(), firstInputContacts, replacementContacts);
+					firstSetFunctions.add(firstSetFunction);
+				}
+			}
 			BooleanFormula secondSetFunction = secondOutputContact.getSetFunction();
-			List<BooleanFormula> values = Collections.nCopies(inputContacts.size(), firstSetFunction);
-			final BooleanFormula setFunction = BooleanReplacer.replace(secondSetFunction, inputContacts, values);
-			System.out.println("1: " + FormulaToString.toString(firstSetFunction));
-			System.out.println("2: " + FormulaToString.toString(secondSetFunction));
-			System.out.println("=: " + FormulaToString.toString(setFunction));
+			final BooleanFormula setFunction = BooleanUtils.dumbReplace(secondSetFunction, secondInputContacts, firstSetFunctions);
+			outputContact.setSetFunction(setFunction);
+
+			System.out.println("> : " + FormulaToString.toString(secondSetFunction));
+			for (BooleanFormula firstSetFunction: firstSetFunctions) {
+				System.out.println("+ : " + FormulaToString.toString(firstSetFunction));
+			}
+			System.out.println("= : " + FormulaToString.toString(setFunction));
+
+			for (Connection outputConnection: circuit.getConnections(secondOutputContact)) {
+				if (outputConnection.getFirst() != secondOutputContact) continue;
+				Node toNode = outputConnection.getSecond();
+				circuit.remove(outputConnection);
+				try {
+					circuit.connect(outputContact, toNode);
+				} catch (InvalidConnectionException e) {
+				}
+			}
+			for (Contact newContact: newToOldContactMap.keySet()) {
+				if (newContact.isOutput()) continue;
+				Contact oldContact = newToOldContactMap.get(newContact);
+				if (oldContact == null) continue;
+				for (Node fromNode: circuit.getPreset(oldContact)) {
+					try {
+						circuit.connect(fromNode, newContact);
+					} catch (InvalidConnectionException e) {
+					}
+				}
+			}
 		}
+		return component;
 	}
 
 	private Library readGenlib() {
@@ -431,7 +609,7 @@ public class VerilogImporter implements Importer {
 	private void setInitialState(Circuit circuit, Map<String, Wire> wires, Set<String> highSignals) {
 		for (String signalName: wires.keySet()) {
 			Wire wire = wires.get(signalName);
-			if (wire.source != null) {
+			if ((highSignals != null) && (wire.source != null)) {
 				wire.source.setInitToOne(highSignals.contains(signalName));
 			}
 		}

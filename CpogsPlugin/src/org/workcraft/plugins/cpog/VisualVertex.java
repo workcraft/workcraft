@@ -32,7 +32,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -46,8 +45,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.expressions.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.expressions.CpogVisitor;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.PrettifyBooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
@@ -137,22 +135,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	}
 
 	public BooleanFormula evaluate() {
-		return getCondition().accept(
-			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>()) {
-				@Override
-				public BooleanFormula visit(BooleanVariable node) {
-					switch(((Variable)node).getState())
-					{
-					case TRUE:
-						return One.instance();
-					case FALSE:
-						return Zero.instance();
-					default:
-						return node;
-					}
-				}
-			}
-		);
+		return getCondition().accept(new PrettifyBooleanReplacer());
 	}
 
 	@Override

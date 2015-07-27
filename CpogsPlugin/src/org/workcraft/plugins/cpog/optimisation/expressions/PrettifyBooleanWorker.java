@@ -22,17 +22,14 @@ package org.workcraft.plugins.cpog.optimisation.expressions;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-public class BooleanWorkerPrettifier implements BooleanWorker
-{
+public class PrettifyBooleanWorker implements BooleanWorker {
 	private final ReducedBooleanWorker worker;
+	private static Zero ZERO = Zero.instance();
+	private static One ONE = One.instance();
 
-	public BooleanWorkerPrettifier(ReducedBooleanWorker worker)
-	{
+	public PrettifyBooleanWorker(ReducedBooleanWorker worker) {
 		this.worker = worker;
 	}
-
-	public static Zero ZERO = Zero.instance();
-	public static One ONE = One.instance();
 
 	public BooleanFormula not(BooleanFormula x) {
 		if(x == ZERO)

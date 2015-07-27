@@ -26,20 +26,26 @@ import java.util.Map;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanSolution;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.expressions.BooleanWorker;
+import org.workcraft.plugins.cpog.optimisation.expressions.MemoryConservingBooleanWorker;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
-
 
 public class SolutionSubstitutor extends BooleanReplacer {
 
+	private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
+
 	public SolutionSubstitutor(BooleanSolution solution) {
-		super(buildMap(solution));
+		super(buildMap(solution), WORKER);
 	}
 
 	private static Map<BooleanVariable, BooleanFormula> buildMap(BooleanSolution solution) {
 		Map<BooleanVariable, BooleanFormula> result = new HashMap<BooleanVariable, BooleanFormula>();
-		for(BooleanVariable var : solution.getVariables())
-			result.put(var, solution.getSolution(var)?One.instance():Zero.instance());
+		for(BooleanVariable var : solution.getVariables()) {
+			BooleanFormula value = solution.getSolution(var) ? One.instance() : Zero.instance();
+			result.put(var, value);
+		}
 		return result;
 	}
 

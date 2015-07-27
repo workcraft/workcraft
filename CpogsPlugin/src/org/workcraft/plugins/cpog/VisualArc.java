@@ -31,7 +31,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
@@ -40,16 +39,16 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.PrettifyBooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Geometry;
 
 public class VisualArc extends VisualConnection {
+
 	public static final String PROPERTY_CONDITION = "condition";
 	private static Font labelFont;
 	private Rectangle2D labelBB = null;
@@ -109,21 +108,7 @@ public class VisualArc extends VisualConnection {
 		condition = BooleanOperations.and(condition, ((VisualVertex) getFirst()).evaluate());
 		condition = BooleanOperations.and(condition, ((VisualVertex) getSecond()).evaluate());
 
-		return condition.accept(
-				new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>()) {
-					@Override
-					public BooleanFormula visit(BooleanVariable node) {
-						switch(((Variable)node).getState()) {
-						case TRUE:
-							return One.instance();
-						case FALSE:
-							return Zero.instance();
-						default:
-							return node;
-						}
-					}
-				}
-			);
+		return condition.accept(new PrettifyBooleanReplacer());
 	}
 
 	public void setCondition(BooleanFormula condition) {

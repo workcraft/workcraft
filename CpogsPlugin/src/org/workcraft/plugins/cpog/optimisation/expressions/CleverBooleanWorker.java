@@ -23,8 +23,7 @@ package org.workcraft.plugins.cpog.optimisation.expressions;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
-public class CleverBooleanWorker implements BooleanWorker
-{
+public class CleverBooleanWorker implements BooleanWorker {
 	private static final BooleanFormula ZERO = Zero.instance();
 	private static final BooleanFormula ONE = One.instance();
 
@@ -167,4 +166,5 @@ public class CleverBooleanWorker implements BooleanWorker
 
 
 	}
+
 }
