@@ -199,11 +199,11 @@ public class VerilogImporter implements Importer {
 		}
 		createConnections(circuit, wires);
 		setInitialState(circuit, wires, topModule.highSignals);
-		mergeGroups1(circuit, topModule.groups, instanceComponentMap);
+		mergeGroups(circuit, topModule.groups, instanceComponentMap);
 		return circuit;
 	}
 
-	private void mergeGroups1(Circuit circuit, Set<List<Instance>> groups, HashMap<Instance, FunctionComponent> instanceComponentMap) {
+	private void mergeGroups(Circuit circuit, Set<List<Instance>> groups, HashMap<Instance, FunctionComponent> instanceComponentMap) {
 		for (List<Instance> group: groups) {
 			HashSet<FunctionComponent> components = new HashSet<>();
 			FunctionComponent rootComponent = null;
@@ -214,25 +214,35 @@ public class VerilogImporter implements Importer {
 					rootComponent = component;
 				}
 			}
-			components.remove(rootComponent);
-			mergeComponents1(circuit, rootComponent, components);
-			circuit.remove(rootComponent);
+			FunctionComponent complexComponent = mergeComponents1(circuit, rootComponent, components);
 			for (FunctionComponent component: components) {
+				if (component == complexComponent) continue;
 				circuit.remove(component);
 			}
 		}
 	}
 
 	private FunctionComponent mergeComponents1(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> components) {
-		HashSet<FunctionComponent> leafComponents = new HashSet<>();
-		for (FunctionComponent component: components) {
-			for (MathNode node: CircuitUtils.getComponentPostset(circuit, component)) {
-				if (node == rootComponent) {
+		boolean done = false;
+		do {
+			HashSet<FunctionComponent> leafComponents = new HashSet<>();
+			for (FunctionComponent component: components) {
+				if (component == rootComponent) continue;
+				for (MathNode node: CircuitUtils.getComponentPostset(circuit, component)) {
+					if (node != rootComponent) continue;
 					leafComponents.add(component);
 				}
 			}
-		}
-		return mergeComponents(circuit, rootComponent, leafComponents);
+			if ( leafComponents.isEmpty() ) {
+				done = true;
+			} else {
+				FunctionComponent newComponent = mergeComponents(circuit, rootComponent, leafComponents);
+				components.remove(rootComponent);
+				circuit.remove(rootComponent);
+				rootComponent = newComponent;
+			}
+		} while (!done);
+		return rootComponent;
 	}
 
 	private FunctionComponent mergeComponents(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> leafComponents) {
@@ -297,12 +307,22 @@ public class VerilogImporter implements Importer {
 		}
 		System.out.println("= : " + FormulaToString.toString(setFunction));
 
-		for (Connection outputConnection: circuit.getConnections(rootOutputContact)) {
+		for (Connection outputConnection: new HashSet<>(circuit.getConnections(rootOutputContact))) {
 			if (outputConnection.getFirst() != rootOutputContact) continue;
 			Node toNode = outputConnection.getSecond();
 			circuit.remove(outputConnection);
 			try {
-				circuit.connect(outputContact, toNode);
+				boolean hasNewContact = false;
+				for (Contact newContact: newToOldContactMap.keySet()) {
+					Contact oldContact = newToOldContactMap.get(newContact);
+					if (toNode == oldContact) {
+						circuit.connect(outputContact, newContact);
+						hasNewContact = true;
+					}
+				}
+				if ( !hasNewContact ) {
+					circuit.connect(outputContact, toNode);
+				}
 			} catch (InvalidConnectionException e) {
 			}
 		}
@@ -314,112 +334,6 @@ public class VerilogImporter implements Importer {
 				try {
 					circuit.connect(fromNode, newContact);
 				} catch (InvalidConnectionException e) {
-				}
-			}
-		}
-		return component;
-	}
-
-
-	private void mergeGroups(Circuit circuit, Set<List<Instance>> groups, HashMap<Instance, FunctionComponent> instanceComponentMap) {
-		for (List<Instance> group: groups) {
-			List<FunctionComponent> orderedComponents = new LinkedList<>();
-			for (Instance instance: group) {
-				FunctionComponent component = instanceComponentMap.get(instance);
-				if (component != null) {
-					orderedComponents.add(component);
-				}
-			}
-			mergeComponents(circuit, orderedComponents);
-		}
-	}
-
-	private void mergeComponents(Circuit circuit, List<FunctionComponent> components) {
-//		for (FunctionComponent firstComponent: components) {
-		FunctionComponent firstComponent = components.iterator().next();
-		{
-			//Deque<FunctionComponent> stack = new ArrayDeque<>();
-			for (MathNode node: CircuitUtils.getComponentPostset(circuit, firstComponent)) {
-				if (node instanceof FunctionComponent) {
-					FunctionComponent secondComponent = (FunctionComponent)node;
-					FunctionComponent component = mergeComponents(circuit, firstComponent, secondComponent);
-					circuit.remove(secondComponent);
-
-				}
-			}
-			circuit.remove(firstComponent);
-		}
-	}
-
-	private FunctionComponent mergeComponents(Circuit circuit, FunctionComponent firstComponent, FunctionComponent secondComponent) {
-		FunctionComponent component = null;
-		Collection<Contact> firstOutputContacts = firstComponent.getOutputs();
-		Collection<Contact> secondOutputContacts = secondComponent.getOutputs();
-		if ((firstOutputContacts.size() == 1) && (secondOutputContacts.size() == 1)) {
-			FunctionContact firstOutputContact = (FunctionContact)firstOutputContacts.iterator().next();
-			List<Contact> firstInputContacts = new LinkedList<>(firstComponent.getInputs());
-			FunctionContact secondOutputContact = (FunctionContact)secondOutputContacts.iterator().next();
-			List<Contact> secondInputContacts = new LinkedList<>(secondComponent.getInputs());
-
-			HashMap<Contact, Contact> newToOldContactMap = new HashMap<>();
-			component = new FunctionComponent();
-			circuit.add(component);
-			FunctionContact outputContact = new FunctionContact(IOType.OUTPUT);
-			component.add(outputContact);
-			circuit.setName(outputContact, PRIMITIVE_GATE_OUTPUT_NAME);
-			newToOldContactMap.put(outputContact, secondOutputContact);
-
-			Set<Node> oldContacts = circuit.getPostset(firstOutputContact);
-			List<BooleanFormula> firstSetFunctions = new LinkedList<>();
-			for (Contact secondInputContact: secondInputContacts) {
-				if ( !oldContacts.contains(secondInputContact) ) {
-					FunctionContact inputContact = new FunctionContact(IOType.INPUT);
-					component.add(inputContact);
-					circuit.setName(inputContact, secondInputContact.getName());
-					newToOldContactMap.put(inputContact, secondInputContact);
-					firstSetFunctions.add(inputContact);
-				} else {
-					List<BooleanFormula> replacementContacts = new LinkedList<>();
-					for (Contact firstInputContact: firstInputContacts) {
-						FunctionContact inputContact = new FunctionContact(IOType.INPUT);
-						component.add(inputContact);
-						circuit.setName(inputContact, secondInputContact.getName() + firstInputContact.getName());
-						replacementContacts.add(inputContact);
-						newToOldContactMap.put(inputContact, firstInputContact);
-					}
-					BooleanFormula firstSetFunction = BooleanUtils.dumbReplace(
-							firstOutputContact.getSetFunction(), firstInputContacts, replacementContacts);
-					firstSetFunctions.add(firstSetFunction);
-				}
-			}
-			BooleanFormula secondSetFunction = secondOutputContact.getSetFunction();
-			final BooleanFormula setFunction = BooleanUtils.dumbReplace(secondSetFunction, secondInputContacts, firstSetFunctions);
-			outputContact.setSetFunction(setFunction);
-
-			System.out.println("> : " + FormulaToString.toString(secondSetFunction));
-			for (BooleanFormula firstSetFunction: firstSetFunctions) {
-				System.out.println("+ : " + FormulaToString.toString(firstSetFunction));
-			}
-			System.out.println("= : " + FormulaToString.toString(setFunction));
-
-			for (Connection outputConnection: circuit.getConnections(secondOutputContact)) {
-				if (outputConnection.getFirst() != secondOutputContact) continue;
-				Node toNode = outputConnection.getSecond();
-				circuit.remove(outputConnection);
-				try {
-					circuit.connect(outputContact, toNode);
-				} catch (InvalidConnectionException e) {
-				}
-			}
-			for (Contact newContact: newToOldContactMap.keySet()) {
-				if (newContact.isOutput()) continue;
-				Contact oldContact = newToOldContactMap.get(newContact);
-				if (oldContact == null) continue;
-				for (Node fromNode: circuit.getPreset(oldContact)) {
-					try {
-						circuit.connect(fromNode, newContact);
-					} catch (InvalidConnectionException e) {
-					}
 				}
 			}
 		}
