@@ -10,6 +10,9 @@ import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.gui.ScencoSingleSequentialDialog;
+import org.workcraft.plugins.cpog.tasks.ScencoExternalToolTask;
+import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
+import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -29,7 +32,7 @@ public class ScencoSequentialTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Encoding [SCENCO]";
+		return "!Encoding";
 	}
 
 	@Override
@@ -48,9 +51,15 @@ public class ScencoSequentialTool implements Tool {
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
 		// TASK INSERTION
-		/*final ScencoChainTask scencoTask = new ScencoChainTask(we, dialog.getSettings(), framework);
-		framework.getTaskManager().queue(scencoTask, "Scenco tool chain",
-				new ScencoChainResultHandler(scencoTask));*/
+		if (dialog.getModalResult() == 1) {
+			// Instantiate Solver
+			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(dialog.getSettings(),we,
+					new ScencoSolver(dialog.getSettings(), we));
+			// Instantiate object for handling solution
+			ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
+			//Run both
+			framework.getTaskManager().queue(scencoTask, "Sequential Encoding execution", resultScenco);
+		}
 	}
 
 }

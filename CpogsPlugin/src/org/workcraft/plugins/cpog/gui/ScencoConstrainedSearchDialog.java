@@ -35,14 +35,15 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.tasks.ScencoTask;
+import org.workcraft.plugins.cpog.gui.ScencoDialogSupport;
+import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.IntDocument;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
-public class ScencoHeuristicSearchDialog extends JDialog {
+public class ScencoConstrainedSearchDialog extends JDialog {
 
 	private JLabel numberOfSolutionsLabel, verboseModeLabel, exampleLabel,
 			customEncLabel, bitsLabel, optimiseLabel,
@@ -61,17 +62,10 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 	private ButtonGroup group;
 
 	// Core variables
-	private ScencoTask encoder;
+	private SatBasedSolver encoder;
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
-
-	// sizes
-	Dimension dimensionLabel = new Dimension(175, 22);
-	Dimension dimensionLongLabel = new Dimension(290, 22);
-	Dimension dimensionBox = new Dimension(180, 26);
-	Dimension dimensionText = new Dimension(585, 22);
-	Dimension dimensionTable = new Dimension(400, 180);
-	Dimension dimensionWindow = new Dimension(100, 400);
+	private int modalResult;
 
 	// generationPanel.getPreferredSize().height
 
@@ -79,20 +73,34 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		return settings;
 	}
 
-	public ScencoHeuristicSearchDialog(Window owner,
+	public ScencoConstrainedSearchDialog(Window owner,
 			PresetManager<EncoderSettings> presetManager,
-			EncoderSettings settings, WorkspaceEntry we) {
-		super(owner, "Heuristic-Guided Search", ModalityType.APPLICATION_MODAL);
+			EncoderSettings settings, WorkspaceEntry we, String approach, int mode) {
+		super(owner, approach, ModalityType.APPLICATION_MODAL);
 		this.settings = settings;
 		this.we = we;
+		int height;
+		modalResult = 0;
+
+		/*MODE:
+		 * 0 - HEURISTICH APPROACH
+		 * 1 - EXHAUSTIVE APPROACH
+		 * 2 - RANDOM APPROACH
+		 */
 
 		createStandardPanel();
-		createGenerationPanel();
+		createGenerationPanel(mode);
 		createCustomPanel();
-		createButtonPanel();
+		createButtonPanel(mode);
+
+		if(mode != 1){
+			height = 120;
+		}else{
+			height = 95;
+		}
 
 		double size[][] = new double[][] { { TableLayout.FILL },
-				{ 60, 120, TableLayout.FILL, 39 } };
+				{ 60, height,  TableLayout.FILL, 39 } };
 
 		layout = new TableLayout(size);
 		layout.setHGap(3);
@@ -116,7 +124,11 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(480, 560, 200, 100);
+		if (mode != 1){
+			sizeWindow(495, 560, 200, 100);
+		}else{
+			sizeWindow(495, 520, 200, 100);
+		}
 	}
 
 	private void createCustomPanel() {
@@ -127,10 +139,13 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 
 		// TABLE OF ENCODINGS
 		exampleLabel = new JLabel(
-				"0/1: assign 0 or 1;  ?: find best assignment;  X: don't use (reserved bit)");
-		exampleLabel.setPreferredSize(new Dimension(455, 22));
-		customEncLabel = new JLabel("Customise");
-		customEncLabel.setPreferredSize(dimensionLabel);
+				ScencoDialogSupport.normalBitText +
+				ScencoDialogSupport.dontCareBit + ScencoDialogSupport.dontCareBitText +
+				ScencoDialogSupport.reservedBit + ScencoDialogSupport.reservedBitText);
+		exampleLabel.setPreferredSize(ScencoDialogSupport.dimensionCustomExampleLabel);
+
+		customEncLabel = new JLabel(ScencoDialogSupport.textCustomiseLabel);
+		customEncLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		customEncodings = new JCheckBox("", false);
 		customEncLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -167,10 +182,10 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 			}
 		});
 
-		bitsLabel = new JLabel("Encoding bit-width:");
-		bitsLabel.setPreferredSize(new Dimension(140, 22));
-		circuitSizeLabel = new JLabel("Circuit size in 2-input gates");
-		circuitSizeLabel.setPreferredSize(dimensionLabel);
+		bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
+		bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabelCustom);
+		circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
+		circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		int value = 2;
 		while (value < m) {
 			value *= 2;
@@ -180,7 +195,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		bitsText = new JTextField();
 		bitsText.setDocument(new IntDocument(2));
 		bitsText.setText(String.valueOf(bits + 1));
-		bitsText.setPreferredSize(new Dimension(35, 20));
+		bitsText.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthText);
 		bitsText.setBackground(Color.LIGHT_GRAY);
 		bitsText.setEnabled(false);
 		bitsText.addActionListener(new ActionListener() {
@@ -200,17 +215,17 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				for (int i = 0; i < m; i++) {
 					String data = "";
 					for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++)
-						data = data + "?";
+						data = data + ScencoDialogSupport.dontCareBit;
 					encodingTable.getModel().setValueAt(data, i, 1);
 				}
 			}
 		});
 		circuitSizeText = new JTextField();
 		circuitSizeText.setText(String.valueOf(bits + 2));
-		circuitSizeText.setPreferredSize(new Dimension(70, 22));
+		circuitSizeText.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeText);
 		modifyCircuitSize(false);
 
-		String[] columnNames = { "Name", "Opcode" };
+		String[] columnNames = { ScencoDialogSupport.textFirstColumnTable, ScencoDialogSupport.textSecondColumnTable };
 		Object[][] data = new Object[m][3];
 		for (int i = 0; i < m; i++) {
 			String name;
@@ -222,7 +237,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 			data[i][0] = name;
 			data[i][1] = "";
 			for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-				data[i][1] = data[i][1] + "?";
+				data[i][1] = data[i][1] + ScencoDialogSupport.dontCareBit;
 			}
 		}
 		encodingTable = new JTable(data, columnNames);
@@ -260,19 +275,19 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		standardPanel = new JPanel(new SimpleFlowLayout());
 
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
-		optimiseLabel = new JLabel("Target:");
-		optimiseLabel.setPreferredSize(dimensionLabel);
+		optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+		optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
 		OptimiseBox = new JComboBox<String>();
 		OptimiseBox.setEditable(false);
-		OptimiseBox.setPreferredSize(dimensionBox);
-		OptimiseBox.addItem("Microcontroller");
-		OptimiseBox.addItem("CPOG");
+		OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
+		OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
+		OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
 		OptimiseBox.setSelectedIndex(settings.isCpogSize() ? 1 : 0);
 		OptimiseBox.setBackground(Color.WHITE);
 
 		// ABC TOOL DISABLE FLAG
 		abcCheck = new JCheckBox("", settings.isAbcFlag());
-		abcLabel = new JLabel("Use ABC for logic synthesis");
+		abcLabel = new JLabel(ScencoDialogSupport.textAbcLabel);
 		abcLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				abcCheck.setSelected(abcCheck.isSelected() ? false : true);
@@ -285,7 +300,7 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				}
 			}
 		});
-		abcLabel.setPreferredSize(dimensionLabel);
+		abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		abcCheck.addActionListener(new ActionListener() {
 
 			@Override
@@ -301,8 +316,8 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		});
 
 		// VERBOSE MODE INSTANTIATION
-		verboseModeLabel = new JLabel("Verbose mode");
-		verboseModeLabel.setPreferredSize(dimensionLabel);
+		verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
+		verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		verboseModeCheck = new JCheckBox("", false);
 		verboseModeLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -321,38 +336,41 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 		standardPanel.add(verboseModeLabel);
 	}
 
-	private void createGenerationPanel() {
+	private void createGenerationPanel(final int mode) {
 		generationPanel = new JPanel(new SimpleFlowLayout());
 		generationPanel.setBorder(BorderFactory
 				.createTitledBorder("Search range"));
 
 		// SPEED UP MODE
-		normal = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)", true);
-		fast = new JRadioButton("Synthesise all generated solutions (slow)");
+		normal = new JRadioButton("Synthesise all generated solutions (slow)", true);
+		fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");
 		group = new ButtonGroup();
 		group.add(normal);
 		group.add(fast);
 
-		// NUMBER OF SOLUTIONS TO GENERATE
-		numberOfSolutionsLabel = new JLabel(" Number of solutions to generate");
-		numberOfSolutionsLabel.setPreferredSize(new Dimension(225, 20));
-		numberOfSolutionsText = new JTextField();
-		numberOfSolutionsText.setDocument(new IntDocument(3));
-		numberOfSolutionsText.setText(String.valueOf(settings
-				.getSolutionNumber()));
-		numberOfSolutionsText.setPreferredSize(new Dimension(35, 22));
-		numberOfSolutionsText.setBackground(Color.WHITE);
+		if (mode != 1){
+			// NUMBER OF SOLUTIONS TO GENERATE
+			numberOfSolutionsLabel = new JLabel(ScencoDialogSupport.textNumberSolutionLabel);
+			numberOfSolutionsLabel.setPreferredSize(ScencoDialogSupport.dimensionNumberSolutionLabel);
+			numberOfSolutionsText = new JTextField();
+			numberOfSolutionsText.setDocument(new IntDocument(3));
+			numberOfSolutionsText.setText(String.valueOf(settings
+					.getSolutionNumber()));
+			numberOfSolutionsText.setPreferredSize(ScencoDialogSupport.dimensionNumberSolutionText);
+			numberOfSolutionsText.setBackground(Color.WHITE);
 
-		generationPanel.add(numberOfSolutionsLabel);
-		generationPanel.add(numberOfSolutionsText);
-		generationPanel.add(new SimpleFlowLayout.LineBreak());
+
+			generationPanel.add(numberOfSolutionsLabel);
+			generationPanel.add(numberOfSolutionsText);
+			generationPanel.add(new SimpleFlowLayout.LineBreak());
+		}
 		generationPanel.add(normal);
 		generationPanel.add(new SimpleFlowLayout.LineBreak());
 		generationPanel.add(fast);
 
 	}
 
-	private void createButtonPanel() {
+	private void createButtonPanel(final int mode) {
 		buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
 		saveButton = new JButton("Run");
@@ -370,12 +388,6 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				settings.setEffort(normal.isSelected() ? true : false);
 				settings.setCostFunc(false/* slow.isSelected() */);
 
-				// number of bits selection
-				settings.setBits(Integer.parseInt(bitsText.getText()));
-
-				// circuit size selection
-				// settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
-
 				// optimise for option
 				settings.setCpogSize(OptimiseBox.getSelectedIndex() == 0 ? false
 						: true);
@@ -384,25 +396,32 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				settings.setVerboseMode(verboseModeCheck.isSelected());
 
 				// continuous mode or number of solutions
-				settings.setSolutionNumber(Integer
-						.parseInt(numberOfSolutionsText.getText()));
+				if (mode != 1){
+					settings.setSolutionNumber(Integer
+							.parseInt(numberOfSolutionsText.getText()));
+				}else{
+					// dummy value
+					settings.setSolutionNumber(10);
+				}
 
 				// generation mode selection (Simulated annealing)
-				settings.setGenerationModeInt(0);
+				settings.setGenerationModeInt(mode);
 
 				// custom encodings
 				settings.setNumPO(m);
 				if (customEncodings.isSelected()) {
+					// number of bits selection
+					settings.setBits(Integer.parseInt(bitsText.getText()));
+
 					settings.setCustomEncMode(true);
 					String encodings[] = new String[m];
 					for (int i = 0; i < m; i++) {
 						encodings[i] = (String) encodingTable.getModel()
 								.getValueAt(i, 1);
 					}
-					// conversion from ? to X and from X to -
 					for (int i = 0; i < m; i++) {
-						encodings[i] = encodings[i].replace('X', '-');
-						encodings[i] = encodings[i].replace('?', 'X');
+						encodings[i] = encodings[i].replace(ScencoDialogSupport.reservedBit, "-");
+						encodings[i] = encodings[i].replace(ScencoDialogSupport.dontCareBit, "X");
 					}
 					settings.setCustomEnc(encodings);
 				} else {
@@ -411,10 +430,11 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 				}
 
 				// Set them on encoder
-				encoder = new ScencoTask(settings);
+				encoder = new SatBasedSolver(settings);
 
+				modalResult = 1;
 				// Execute scenco
-				encoder.run(we);
+				//encoder.run(we);
 			}
 		});
 
@@ -432,45 +452,23 @@ public class ScencoHeuristicSearchDialog extends JDialog {
 	}
 
 	private void sizeWindow(int width, int height, int row1, int row2) {
-		// setMaximumSize(new Dimension(width,height));
 		setMinimumSize(new Dimension(width, height));
 		setPreferredSize(new Dimension(width, height));
-		// layout.setRow(new double[] {row1, row2});
 		pack();
 
-	}
-
-	private void customPanelVisibility(boolean condition) {
-		customPanel.setVisible(condition);
-		exampleLabel.setVisible(condition);
-		customEncLabel.setVisible(condition);
-		customEncodings.setVisible(condition);
-		customEncodings.setSelected(false);
-		scrollPane.setVisible(condition);
-		bitsLabel.setVisible(condition);
-		bitsText.setVisible(condition);
-
-		if (customEncodings.isSelected()) {
-			encodingTable.setEnabled(true);
-			encodingTable.setBackground(Color.WHITE);
-			bitsText.setBackground(Color.WHITE);
-			bitsText.setEnabled(true);
-		} else {
-			encodingTable.setEnabled(false);
-			encodingTable.setBackground(Color.LIGHT_GRAY);
-			bitsText.setBackground(Color.LIGHT_GRAY);
-			bitsText.setEnabled(false);
-		}
-	}
-
-	private void numbSolutPanelVisibility(boolean condition) {
-		numberOfSolutionsText.setVisible(condition);
-		numberOfSolutionsLabel.setVisible(condition);
 	}
 
 	private void modifyCircuitSize(boolean b) {
 		circuitSizeText.setEnabled(b);
 		circuitSizeLabel.setVisible(b);
 		circuitSizeText.setVisible(b);
+	}
+
+	public int getModalResult() {
+		return modalResult;
+	}
+
+	public SatBasedSolver getEncoder() {
+		return encoder;
 	}
 }

@@ -33,7 +33,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.tasks.ScencoTask;
+import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.IntDocument;
@@ -57,17 +57,9 @@ public class ScencoSatBasedDialog extends JDialog {
 	private ButtonGroup group;
 
 	// Core variables
-	private ScencoTask encoder;
+	private SatBasedSolver encoder;
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
-
-	// sizes
-	Dimension dimensionLabel = new Dimension(175, 22);
-	Dimension dimensionLongLabel = new Dimension(290, 22);
-	Dimension dimensionBox = new Dimension(170, 26);
-	Dimension dimensionText = new Dimension(585, 22);
-	Dimension dimensionTable = new Dimension(400, 180);
-	Dimension dimensionWindow = new Dimension(100, 400);
 
 	// generationPanel.getPreferredSize().height
 
@@ -119,20 +111,20 @@ public class ScencoSatBasedDialog extends JDialog {
 		standardPanel = new JPanel(new SimpleFlowLayout());
 
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
-		optimiseLabel = new JLabel("Target:");
-		optimiseLabel.setPreferredSize(new Dimension(120, 22));
+		optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+		optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
 		OptimiseBox = new JComboBox<String>();
 		OptimiseBox.setEditable(false);
-		OptimiseBox.setPreferredSize(dimensionBox);
-		OptimiseBox.addItem("Microcontroller");
-		OptimiseBox.addItem("CPOG");
+		OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
+		OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
+		OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
 		OptimiseBox.setSelectedIndex(settings.isCpogSize() ? 1 : 0);
 		OptimiseBox.setBackground(Color.WHITE);
 
 		// ABC TOOL DISABLE FLAG
 		abcCheck = new JCheckBox("", settings.isAbcFlag());
 		abcLabel = new JLabel("Use ABC for logic synthesis");
-		abcLabel.setPreferredSize(dimensionLabel);
+		abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		abcLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				abcCheck.setSelected(abcCheck.isSelected() ? false : true);
@@ -147,8 +139,8 @@ public class ScencoSatBasedDialog extends JDialog {
 		});
 
 		// VERBOSE MODE INSTANTIATION
-		verboseModeLabel = new JLabel("Verbose mode");
-		verboseModeLabel.setPreferredSize(new Dimension(100, 22));
+		verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
+		verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
 		verboseModeCheck = new JCheckBox("", false);
 		verboseModeLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -178,27 +170,10 @@ public class ScencoSatBasedDialog extends JDialog {
 		generationPanel.setBorder(BorderFactory
 				.createTitledBorder("Encoding parameters"));
 
-		// SPEED UP MODE
-		normal = new JRadioButton("Around optimal solution (slow)", true);
-		fast = new JRadioButton("Only the optimal solution (fast)");
-		group = new ButtonGroup();
-		group.add(normal);
-		group.add(fast);
-
-		// NUMBER OF SOLUTIONS TO GENERATE
-		numberOfSolutionsLabel = new JLabel(" Number of solutions to explore");
-		numberOfSolutionsLabel.setPreferredSize(new Dimension(230, 22));
-		numberOfSolutionsText = new JTextField();
-		numberOfSolutionsText.setDocument(new IntDocument(3));
-		numberOfSolutionsText.setText(String.valueOf(settings
-				.getSolutionNumber()));
-		numberOfSolutionsText.setPreferredSize(new Dimension(35, 20));
-		numberOfSolutionsText.setBackground(Color.WHITE);
-
-		bitsLabel = new JLabel("Encoding bit-width:");
-		bitsLabel.setPreferredSize(new Dimension(220, 22));
-		circuitSizeLabel = new JLabel("Circuit size in 2-input gates: ");
-		circuitSizeLabel.setPreferredSize(new Dimension(220, 22));
+		bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
+		bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);
+		circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
+		circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeLabel);
 		int value = 2;
 		while (value < m) {
 			value *= 2;
@@ -211,31 +186,10 @@ public class ScencoSatBasedDialog extends JDialog {
 		bitsText.setPreferredSize(new Dimension(35, 20));
 		bitsText.setBackground(Color.WHITE);
 		bitsText.setEnabled(true);
-		bitsText.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-					JOptionPane
-							.showMessageDialog(
-									null,
-									"Bits selected are not enough to encode all scenarios.",
-									"Not enough bits",
-									JOptionPane.ERROR_MESSAGE);
-
-					bitsText.setText(String.valueOf(bits + 1));
-				}
-				for (int i = 0; i < m; i++) {
-					String data = "";
-					for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++)
-						data = data + "X";
-					encodingTable.getModel().setValueAt(data, i, 1);
-				}
-			}
-		});
 		circuitSizeText = new JTextField();
 		circuitSizeText.setText(String.valueOf(bits + 2));
-		circuitSizeText.setPreferredSize(new Dimension(35, 22));
+		circuitSizeText.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeText);
 
 		generationPanel.add(bitsLabel);
 		generationPanel.add(bitsText);
@@ -261,8 +215,8 @@ public class ScencoSatBasedDialog extends JDialog {
 				settings.setAbcFlag(abcCheck.isSelected() ? true : false);
 
 				// speed-up mode selection
-				settings.setEffort(normal.isSelected() ? true : false);
-				settings.setCostFunc(/* slow.isSelected() */false);
+				settings.setEffort(true);
+				settings.setCostFunc(false);
 
 				// number of bits selection
 				settings.setBits(Integer.parseInt(bitsText.getText()));
@@ -279,8 +233,7 @@ public class ScencoSatBasedDialog extends JDialog {
 				settings.setVerboseMode(verboseModeCheck.isSelected());
 
 				// continuous mode or number of solutions
-				settings.setSolutionNumber(Integer
-						.parseInt(numberOfSolutionsText.getText()));
+				settings.setSolutionNumber(10);
 
 				// generation mode selection
 				settings.setGenerationModeInt(3);
@@ -290,7 +243,7 @@ public class ScencoSatBasedDialog extends JDialog {
 				settings.setCustomEncMode(false);
 
 				// Set them on encoder
-				encoder = new ScencoTask(settings);
+				encoder = new SatBasedSolver(settings);
 
 				// Execute scenco
 				encoder.run(we);

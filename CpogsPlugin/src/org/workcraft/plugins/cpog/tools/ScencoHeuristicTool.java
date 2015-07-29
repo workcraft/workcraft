@@ -9,7 +9,11 @@ import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.gui.ScencoHeuristicSearchDialog;
+import org.workcraft.plugins.cpog.gui.ScencoConstrainedSearchDialog;
+import org.workcraft.plugins.cpog.tasks.ScencoExternalToolTask;
+import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
+import org.workcraft.plugins.cpog.tasks.ScencoSolver;
+import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -17,9 +21,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class ScencoHeuristicTool implements Tool {
 
 	private EncoderSettings settings;
-	private ScencoHeuristicSearchDialog dialog;
+	private ScencoConstrainedSearchDialog dialog;
 	PresetManager<EncoderSettings> pmgr;
-
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		if (we.getModelEntry() == null) return false;
@@ -29,12 +32,12 @@ public class ScencoHeuristicTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Encoding [SCENCO]";
+		return "!Encoding";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Heuristic encoding with constraints";
+		return "Heuristic encoding (supports constraints)";
 	}
 
 	@Override
@@ -43,14 +46,22 @@ public class ScencoHeuristicTool implements Tool {
 		MainWindow mainWindow = framework.getMainWindow();
 		settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
 		pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-		dialog = new ScencoHeuristicSearchDialog(mainWindow, pmgr, settings, we);
+		dialog = new ScencoConstrainedSearchDialog(mainWindow, pmgr, settings, we, "Heuristic encoding", 0);
 
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
 		// TASK INSERTION
-		/*final ScencoChainTask scencoTask = new ScencoChainTask(we, dialog.getSettings(), framework);
-		framework.getTaskManager().queue(scencoTask, "Scenco tool chain",
-				new ScencoChainResultHandler(scencoTask));*/
+		if (dialog.getModalResult() == 1) {
+			//dialog.getEncoder();
+
+			// Instantiate Solver
+			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(dialog.getSettings(),we,
+					new ScencoSolver(dialog.getSettings(), we));
+			// Instantiate object for handling solution
+			ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
+			//Run both
+			framework.getTaskManager().queue(scencoTask, "Heuristic encoding execution", resultScenco);
+		}
 	}
 
 }

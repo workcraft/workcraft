@@ -29,7 +29,7 @@ public class ScencoSATBasedTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Encoding [SCENCO]";
+		return "!Encoding";
 	}
 
 	@Override

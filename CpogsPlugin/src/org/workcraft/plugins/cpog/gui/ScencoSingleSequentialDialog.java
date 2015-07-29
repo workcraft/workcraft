@@ -30,7 +30,7 @@ import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.tasks.ScencoTask;
+import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -48,28 +48,16 @@ public class ScencoSingleSequentialDialog extends JDialog {
 	private JRadioButton normal;
 	private int m,bits;
 	// Core variables
-	private ScencoTask encoder;
+	private SatBasedSolver encoder;
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
-
-	// sizes
-	Dimension dimensionLabel = new Dimension(120, 22);
-	Dimension dimensionLongLabel = new Dimension(290,22);
-	Dimension dimensionBox = new Dimension(170, 26);
-	Dimension dimensionText = new Dimension(585,22);
-	Dimension dimensionTable = new Dimension(400,180);
-	Dimension dimensionWindow = new Dimension(100,400);
-
-	//generationPanel.getPreferredSize().height
-
-	public EncoderSettings getSettings() {
-		return settings;
-	}
+	private int modalResult;
 
 	public ScencoSingleSequentialDialog(Window owner, PresetManager<EncoderSettings> presetManager, EncoderSettings settings,WorkspaceEntry we, String string) {
 		super(owner, string, ModalityType.APPLICATION_MODAL);
 		this.settings = settings;
 		this.we = we;
+		modalResult = 0;
 
 		createStandardPanel();
 		createButtonPanel(string);
@@ -108,20 +96,20 @@ public class ScencoSingleSequentialDialog extends JDialog {
 				standardPanel = new JPanel(new SimpleFlowLayout());
 
 				// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
-				optimiseLabel = new JLabel("Target:");
-				optimiseLabel.setPreferredSize(dimensionLabel);
+				optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+				optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
 				OptimiseBox = new JComboBox<String>();
 				OptimiseBox.setEditable(false);
-				OptimiseBox.setPreferredSize(dimensionBox);
-				OptimiseBox.addItem("Microcontroller");
-				OptimiseBox.addItem("CPOG");
+				OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
+				OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
+				OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
 				OptimiseBox.setSelectedIndex(settings.isCpogSize() ? 1 : 0);
 				OptimiseBox.setBackground(Color.WHITE);
 
 				// ABC TOOL DISABLE FLAG
 				abcCheck = new JCheckBox("", settings.isAbcFlag());
-				abcLabel = new JLabel("Use ABC for logic synthesis");
-				abcLabel.setPreferredSize(new Dimension(175, 22));
+				abcLabel = new JLabel(ScencoDialogSupport.textAbcLabel);
+				abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 				abcLabel.addMouseListener(new MouseAdapter()
 				{
 				    public void mouseClicked(MouseEvent e)
@@ -138,8 +126,8 @@ public class ScencoSingleSequentialDialog extends JDialog {
 				});
 
 				// VERBOSE MODE INSTANTIATION
-				verboseModeLabel = new JLabel("Verbose mode");
-				verboseModeLabel.setPreferredSize(new Dimension(100, 22));
+				verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
+				verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
 				verboseModeCheck = new JCheckBox("",false);
 				verboseModeLabel.addMouseListener(new MouseAdapter()
 				{
@@ -225,10 +213,11 @@ public class ScencoSingleSequentialDialog extends JDialog {
 				}
 
 				// Set them on encoder
-				encoder = new ScencoTask(settings);
+				encoder = new SatBasedSolver(settings);
 
 				// Execute scenco
-				encoder.run(we);
+				//encoder.run(we);
+				modalResult = 1;
 			}
 		});
 
@@ -246,11 +235,21 @@ public class ScencoSingleSequentialDialog extends JDialog {
 	}
 
 	private void sizeWindow(int width, int height, int row1, int row2){
-		//setMaximumSize(new Dimension(width,height));
 		setMinimumSize(new Dimension(width,height));
 		setPreferredSize(new Dimension(width,height));
-		//layout.setRow(new double[] {row1, row2});
 		pack();
 
+	}
+
+	public int getModalResult() {
+		return modalResult;
+	}
+
+	public void setModalResult(int modalResult) {
+		this.modalResult = modalResult;
+	}
+
+	public EncoderSettings getSettings() {
+		return settings;
 	}
 }
