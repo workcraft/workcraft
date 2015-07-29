@@ -376,7 +376,6 @@ public class CpogParsingTool {
 
     		while(!connections.isEmpty()) {
     			VisualArc arc  = (VisualArc) connections.get(0);
-    			connections.remove(0);
     			String insert = "";
 
     			if (!FormulaToString(arc.getCondition()).equals("1")) {
@@ -384,7 +383,7 @@ public class CpogParsingTool {
     			}
 
 
-    			if (!(FormulaToString(current.getCondition()).equals("1")) || (FormulaToString(current.getCondition()).equals(FormulaToString(arc.getCondition())))) {
+    			if (!(FormulaToString(current.getCondition()).equals("1")) || !(FormulaToString(current.getCondition()).equals(FormulaToString(arc.getCondition())))) {
         			insert = insert + "[" + FormulaToString(current.getCondition()) + "]";
         		}
 
@@ -396,12 +395,13 @@ public class CpogParsingTool {
     				VisualArc a = (VisualArc) c;
 
     				if (a.getCondition().equals(arc.getCondition())) {
+    					System.out.println(a.getFirst().getLabel() + " " + a.getSecond().getLabel());
     					toBeRemoved.add(a);
     				}
     			}
 
     			if (toBeRemoved.size() > 1) {
-					insert = insert + "(" + arc.getSecond().getLabel() + " + ";
+					insert = insert + "(";// + arc.getSecond().getLabel() + " + ";
 				}
 
     			for (VisualArc a : toBeRemoved) {
