@@ -11,7 +11,7 @@ import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.FsmModelDescriptor;
+import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.tools.FstToFsmConverter;
@@ -51,7 +51,7 @@ public class PnToFsmConversionResultHandler extends DummyProgressMonitor<WriteSg
 					final Workspace workspace = framework.getWorkspace();
 					final Path<String> directory = path.getParent();
 					final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));;
-					final ModelEntry me = new ModelEntry(new FsmModelDescriptor() , model);
+					final ModelEntry me = new ModelEntry(new FsmDescriptor() , model);
 					boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 					workspace.add(directory, name, me, true, openInEditor);
 				} else if (result.getOutcome() != Outcome.CANCELLED) {

@@ -1,5 +1,6 @@
 package org.workcraft.plugins.fst;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -21,11 +22,21 @@ import org.workcraft.serialisation.ModelSerialiser;
 public class FstModule  implements Module {
 
 	@Override
+	public String getDescription() {
+		return "Finite State Transducer";
+	}
+
+	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(ModelDescriptor.class, FstModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, FstDescriptor.class);
 
 		pm.registerClass(Exporter.class, DotGExporter.class);
 		pm.registerClass(Importer.class, DotGImporter.class);
@@ -62,9 +73,13 @@ public class FstModule  implements Module {
 		});
 	}
 
-	@Override
-	public String getDescription() {
-		return "Finite State Transducer";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.circuit.FstModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.circuit.FstDescriptor\"/>");
 	}
 
 }

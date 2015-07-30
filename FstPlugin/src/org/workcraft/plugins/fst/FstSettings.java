@@ -54,52 +54,52 @@ public class FstSettings implements Settings {
 
 	public FstSettings() {
 		properties.add(new PropertyDeclaration<FstSettings, Color>(
-				this, "Input transition color", Color.class) {
+				this, "Input transition color", Color.class, true, false, false) {
 			protected void setter(FstSettings object, Color value) {
-				FstSettings.setInputColor(value);
+				setInputColor(value);
 			}
 			protected Color getter(FstSettings object) {
-				return FstSettings.getInputColor();
+				return getInputColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<FstSettings, Color>(
-				this, "Output transition color", Color.class) {
+				this, "Output transition color", Color.class, true, false, false) {
 			protected void setter(FstSettings object, Color value) {
-				FstSettings.setOutputColor(value);
+				setOutputColor(value);
 			}
 			protected Color getter(FstSettings object) {
-				return FstSettings.getOutputColor();
+				return getOutputColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<FstSettings, Color>(
-				this, "Internal transition color", Color.class) {
+				this, "Internal transition color", Color.class, true, false, false) {
 			protected void setter(FstSettings object, Color value) {
-				FstSettings.setInternalColor(value);
+				setInternalColor(value);
 			}
 			protected Color getter(FstSettings object) {
-				return FstSettings.getInternalColor();
+				return getInternalColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<FstSettings, Color>(
-				this, "Dummy transition color", Color.class) {
+				this, "Dummy transition color", Color.class, true, false, false) {
 			protected void setter(FstSettings object, Color value) {
-				FstSettings.setDummyColor(value);
+				setDummyColor(value);
 			}
 			protected Color getter(FstSettings object) {
-				return FstSettings.getDummyColor();
+				return getDummyColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<FstSettings, Boolean>(
-				this, "Show signal toggle (~)", Boolean.class) {
+				this, "Show signal toggle (~)", Boolean.class, true, false, false) {
 			protected void setter(FstSettings object, Boolean value) {
-				FstSettings.setShowToggle(value);
+				setShowToggle(value);
 			}
 			protected Boolean getter(FstSettings object) {
-				return FstSettings.getShowToggle();
+				return getShowToggle();
 			}
 		});
 	}

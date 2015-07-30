@@ -59,7 +59,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPage, Boolean>(
-				this, PROPERTY_IS_COLLAPSED, Boolean.class) {
+				this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true, true) {
 
 			@Override
 			protected void setter(VisualPage object, Boolean value) {
@@ -72,7 +72,7 @@ public class VisualPage extends VisualComponent implements Drawable, Collapsible
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPage, String>(
-				this, PROPERTY_REFERENCED_MODEL, String.class) {
+				this, PROPERTY_REFERENCED_MODEL, String.class, true, true, true) {
 
 			@Override
 			protected void setter(VisualPage object, String value) {

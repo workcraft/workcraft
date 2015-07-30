@@ -9,7 +9,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.stg.interop.DotGImporter;
@@ -91,7 +91,7 @@ public class TransformationTask implements Task<TransformationResult>{
 		} catch (Throwable e) {
 			return Result.exception(e);
 		} finally {
-			if ((modelFile != null) && !PetrifyUtilitySettings.getDebugTemporaryFiles() ) {
+			if ((modelFile != null) && !CommonDebugSettings.getKeepTemporaryFiles() ) {
 				modelFile.delete();
 			}
 		}

@@ -57,7 +57,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualQueueComponent, Integer>(
-				this, QueueComponent.PROPERTY_CAPACITY, Integer.class) {
+				this, QueueComponent.PROPERTY_CAPACITY, Integer.class, true, true, true) {
 			public void setter(VisualQueueComponent object, Integer value) {
 				object.getReferencedQueueComponent().setCapacity(value);
 			}

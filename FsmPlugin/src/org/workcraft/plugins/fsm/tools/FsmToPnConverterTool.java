@@ -7,7 +7,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.PetriNetModelDescriptor;
+import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.workspace.ModelEntry;
@@ -41,7 +41,7 @@ public class FsmToPnConverterTool implements Tool {
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new PetriNetModelDescriptor(), converter.getDstModel());
+		final ModelEntry me = new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
 		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 		workspace.add(directory, desiredName, me, false, openInEditor);
 	}

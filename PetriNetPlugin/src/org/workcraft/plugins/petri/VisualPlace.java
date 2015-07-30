@@ -60,7 +60,7 @@ public class VisualPlace extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-				this, Place.PROPERTY_TOKENS, Integer.class) {
+				this, Place.PROPERTY_TOKENS, Integer.class, true, true, true) {
 			public void setter(VisualPlace object, Integer value) {
 				object.getReferencedPlace().setTokens(value);
 			}
@@ -70,7 +70,7 @@ public class VisualPlace extends VisualComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Color>(
-				this, PROPERTY_TOKEN_COLOR, Color.class) {
+				this, PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
 			public void setter(VisualPlace object, Color value) {
 				object.setTokenColor(value);
 			}
@@ -80,7 +80,7 @@ public class VisualPlace extends VisualComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-				this, Place.PROPERTY_CAPACITY, Integer.class) {
+				this, Place.PROPERTY_CAPACITY, Integer.class, true, true, true) {
 			public void setter(VisualPlace object, Integer value) {
 				object.getReferencedPlace().setCapacity(value);
 			}

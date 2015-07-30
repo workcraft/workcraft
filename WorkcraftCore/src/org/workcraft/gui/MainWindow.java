@@ -53,7 +53,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -97,6 +96,7 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -278,13 +278,7 @@ public class MainWindow extends JFrame {
 				}
 				visualModel = vmd.create((MathModel) modelEntry.getModel());
 				modelEntry.setModel(visualModel);
-				try {
-					DotLayoutTool dotLayout = new DotLayoutTool();
-					dotLayout.layout(visualModel);
-				} catch (LayoutException e) {
-					RandomLayoutTool randomLayout = new RandomLayoutTool();
-					randomLayout.layout(visualModel);
-				}
+				applyDefaultLayout(visualModel);
 				we.setModelEntry(modelEntry);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
@@ -315,35 +309,24 @@ public class MainWindow extends JFrame {
 					DockableWindowContentPanel.CLOSE_BUTTON	| DockableWindowContentPanel.MAXIMIZE_BUTTON,
 					DockingConstants.CENTER_REGION,	"Document" + we.getWorkspacePath());
 		}
-
-		editorWindow.addTabListener(new DockableWindowTabListener() {
-			@Override
-			public void tabSelected(JTabbedPane tabbedPane, int tabIndex) {
-				requestFocus(editor);
-			}
-
-			@Override
-			public void tabDeselected(JTabbedPane tabbedPane, int tabIndex) {
-			}
-
-			@Override
-			public void dockedStandalone() {
-			}
-
-			@Override
-			public void dockedInTab(JTabbedPane tabbedPane, int tabIndex) {
-			}
-
-			@Override
-			public void headerClicked() {
-				requestFocus(editor);
-			}
-		});
-
+		editorWindow.addTabListener(new EditorWindowTabListener(editor));
 		editorWindows.put(we, editorWindow);
 		requestFocus(editor);
 		setWorkActionsEnableness(true);
 		return editor;
+	}
+
+	private void applyDefaultLayout(VisualModel visualModel) {
+		AbstractLayoutTool layoutTool = visualModel.getBestLayoutTool();
+		if (layoutTool == null) {
+			layoutTool = new DotLayoutTool();
+		}
+		try {
+			layoutTool.layout(visualModel);
+		} catch (LayoutException e) {
+			layoutTool = new RandomLayoutTool();
+			layoutTool.layout(visualModel);
+		}
 	}
 
 	private void registerUtilityWindow(DockableWindow dockableWindow) {
@@ -964,7 +947,7 @@ public class MainWindow extends JFrame {
 
 	public void openWork(File f) {
 		final Framework framework = Framework.getInstance();
-		if (framework.checkFile(f)) {
+		if (framework.checkFile(f, null)) {
 			try {
 				WorkspaceEntry we = framework.getWorkspace().open(f, false);
 				if (we.getModelEntry().isVisual()) {
@@ -1131,7 +1114,7 @@ public class MainWindow extends JFrame {
 
 	public void importFrom(File f, Importer[] importers) {
 		final Framework framework = Framework.getInstance();
-		if (framework.checkFile(f)) {
+		if (framework.checkFile(f, null)) {
 			for (Importer importer : importers) {
 				if (importer.accept(f)) {
 					try {

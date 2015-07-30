@@ -1,5 +1,6 @@
 package org.workcraft.plugins.dfs;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -18,7 +19,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class DfsModule implements Module {
 
 	@Override
+	public String getDescription() {
+		return "Dataflow Structure";
+	}
+
+	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
@@ -118,12 +129,16 @@ public class DfsModule implements Module {
 			}
 		});
 
-		pm.registerClass(ModelDescriptor.class, DfsModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, DfsDescriptor.class);
 		pm.registerClass(Settings.class, DfsSettings.class);
 	}
 
-	@Override
-	public String getDescription() {
-		return "Dataflow Structure";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.circuit.DfsModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.circuit.DfsDescriptor\"/>");
 	}
 }

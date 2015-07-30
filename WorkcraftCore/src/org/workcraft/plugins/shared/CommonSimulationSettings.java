@@ -50,42 +50,42 @@ public class CommonSimulationSettings implements Settings {
 
 	public CommonSimulationSettings() {
 		properties.add(new PropertyDeclaration<CommonSimulationSettings, Boolean>(
-				this, "Use enabled component foreground", Boolean.class) {
+				this, "Use enabled component foreground", Boolean.class, true, false, false) {
 			protected void setter(CommonSimulationSettings object, Boolean value) {
-				CommonSimulationSettings.setUseEnabledForeground(value);
+				setUseEnabledForeground(value);
 			}
 			protected Boolean getter(CommonSimulationSettings object) {
-				return CommonSimulationSettings.getUseEnabledForeground();
+				return getUseEnabledForeground();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonSimulationSettings, Color>(
-				this, "Enabled component foreground", Color.class) {
+				this, "Enabled component foreground", Color.class, true, false, false) {
 			protected void setter(CommonSimulationSettings object, Color value) {
-				CommonSimulationSettings.setEnabledForegroundColor(value);
+				setEnabledForegroundColor(value);
 			}
 			protected Color getter(CommonSimulationSettings object) {
-				return CommonSimulationSettings.getEnabledForegroundColor();
+				return getEnabledForegroundColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonSimulationSettings, Boolean>(
-				this, "Use enabled component background", Boolean.class) {
+				this, "Use enabled component background", Boolean.class, true, false, false) {
 			protected void setter(CommonSimulationSettings object, Boolean value) {
-				CommonSimulationSettings.setUseEnabledBackground(value);
+				setUseEnabledBackground(value);
 			}
 			protected Boolean getter(CommonSimulationSettings object) {
-				return CommonSimulationSettings.getUseEnabledBackground();
+				return getUseEnabledBackground();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonSimulationSettings, Color>(
-				this, "Enabled component background", Color.class) {
+				this, "Enabled component background", Color.class, true, false, false) {
 			protected void setter(CommonSimulationSettings object, Color value) {
-				CommonSimulationSettings.setEnabledBackgroundColor(value);
+				setEnabledBackgroundColor(value);
 			}
 			protected Color getter(CommonSimulationSettings object) {
-				return CommonSimulationSettings.getEnabledBackgroundColor();
+				return getEnabledBackgroundColor();
 			}
 		});
 	}

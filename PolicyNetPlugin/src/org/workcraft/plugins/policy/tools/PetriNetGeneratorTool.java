@@ -3,7 +3,7 @@ package org.workcraft.plugins.policy.tools;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.petri.PetriNetModelDescriptor;
+import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -36,7 +36,7 @@ public class PetriNetGeneratorTool implements Tool {
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new PetriNetModelDescriptor(), generator.getPetriNet());
+		final ModelEntry me = new ModelEntry(new PetriNetDescriptor(), generator.getPetriNet());
 		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 		workspace.add(directory, desiredName, me, false, openInEditor);
 	}

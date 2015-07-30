@@ -1,26 +1,30 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.File;
-
 public class SynthesisResult {
-	private File equationsFile;
-	private File logFile;
+	private String equations;
+	private String verilog;
+	private String log;
 	private String stdout;
 	private String stderr;
 
-	public SynthesisResult(File equationsFile, File logFile, String stdout, String stderr) {
-		this.equationsFile = equationsFile;
-		this.logFile = logFile;
+	public SynthesisResult(String equations, String verilog, String log, String stdout, String stderr) {
+		this.equations= equations;
+		this.verilog= verilog;
+		this.log= log;
 		this.stdout = stdout;
 		this.stderr = stderr;
 	}
 
-	public File getEquationFile() {
-		return this.equationsFile;
+	public String getEquation() {
+		return this.equations;
 	}
 
-	public File getLogFile() {
-		return this.logFile;
+	public String getVerilog() {
+		return this.verilog;
+	}
+
+	public String getLog() {
+		return this.log;
 	}
 
 	public String getStdout() {

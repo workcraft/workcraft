@@ -18,7 +18,7 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualAbstractRegister, Color>(
-				this, PROPERTY_TOKEN_COLOR, Color.class) {
+				this, PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
 			public void setter(VisualAbstractRegister object, Color value) {
 				object.setTokenColor(value);
 			}

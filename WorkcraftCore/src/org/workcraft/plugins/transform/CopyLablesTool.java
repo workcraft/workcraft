@@ -34,7 +34,7 @@ public class CopyLablesTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformations";
+		return "! Transformations";
 	}
 
 	@Override

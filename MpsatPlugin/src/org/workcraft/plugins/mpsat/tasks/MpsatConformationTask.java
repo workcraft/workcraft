@@ -17,6 +17,7 @@ import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -182,7 +183,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		} finally {
-			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
+			FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

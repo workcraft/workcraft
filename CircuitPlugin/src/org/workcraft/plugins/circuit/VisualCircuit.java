@@ -56,6 +56,8 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
+import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -157,7 +159,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 		if (first instanceof VisualConnection) {
 			VisualConnection connection = (VisualConnection)first;
@@ -197,10 +199,8 @@ public class VisualCircuit extends AbstractVisualModel {
 		VisualCircuitConnection vConnection = null;
 		if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
 			VisualComponent vComponent1 = (VisualComponent)first;
-			MathNode mComponent1 = vComponent1.getReferencedComponent();
 
 			VisualComponent vComponent2 = (VisualComponent)second;
-			MathNode mComponent2 = vComponent2.getReferencedComponent();
 
 			Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
 			Container vContainer = (Container)Hierarchy.getNearestAncestor(vParent, new Func<Node, Boolean>() {
@@ -211,14 +211,18 @@ public class VisualCircuit extends AbstractVisualModel {
 			});
 			Container mContainer = NamespaceHelper.getMathContainer(this, vContainer);
 
-			MathConnection mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
+			if (mConnection == null) {
+				MathNode mComponent1 = vComponent1.getReferencedComponent();
+				MathNode mComponent2 = vComponent2.getReferencedComponent();
+				mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
+				Container mParent = (Container)(mConnection.getParent());
+				LinkedList<Node> mConnections = new LinkedList<Node>();
+				mConnections.add(mConnection);
+				mParent.reparent(mConnections, mContainer);
+			}
 			vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
+			vConnection.setArrowLength(0.0);
 			vContainer.add(vConnection);
-
-			Container mParent = (Container)(mConnection.getParent());
-			LinkedList<Node> mConnections = new LinkedList<Node>();
-			mConnections.add(mConnection);
-			mParent.reparent(mConnections, mContainer);
 		}
 		return vConnection;
 	}
@@ -323,6 +327,11 @@ public class VisualCircuit extends AbstractVisualModel {
 			getWorkspaceEntry().setChanged(true);
 			getWorkspaceEntry().saveMemento();
 		}
+	}
+
+	@Override
+	public AbstractLayoutTool getBestLayoutTool() {
+		return new CircuitLayoutTool();
 	}
 
 	@Override

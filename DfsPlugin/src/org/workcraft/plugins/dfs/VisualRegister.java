@@ -55,7 +55,7 @@ public class VisualRegister extends VisualAbstractRegister {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualRegister, Boolean>(
-				this, Register.PROPERTY_MARKED, Boolean.class) {
+				this, Register.PROPERTY_MARKED, Boolean.class, true, true, true) {
 			public void setter(VisualRegister object, Boolean value) {
 				object.getReferencedRegister().setMarked(value);
 			}

@@ -74,7 +74,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 					Container mathContainer = NamespaceHelper.getMathContainer(getDstModel(), container);
 					MathNode dstMathNode = getDstModel().getMathModel().createNode(dstName, mathContainer, dstMathNodeClass);
 
-					dstComponent = getDstModel().createComponent(dstMathNode, container, dstVisualComponentClass);
+					dstComponent = getDstModel().createVisualComponent(dstMathNode, container, dstVisualComponentClass);
 					dstComponent.copyPosition(srcComponent);
 					dstComponent.copyStyle(srcComponent);
 				}

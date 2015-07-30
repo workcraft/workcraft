@@ -6,65 +6,26 @@ options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
   STATIC = false;
-  DEBUG_PARSER = true;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
 }
 
 PARSER_BEGIN(VerilogParser)
 package org.workcraft.plugins.circuit.javacc;
 
-import java.util.HashSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
 
-import org.workcraft.dom.Node;
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.NotFoundException;
+import org.workcraft.plugins.circuit.verilog.Module;
+import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.circuit.verilog.Instance;
+import org.workcraft.plugins.circuit.verilog.Pin;
 
 public class VerilogParser {
-        
-    public class Module {        public final String name;
-        public final List<Port> ports;
-        public final List<Instance> instances;
-        public Module(String name, List<Port> ports, List<Instance> instances) {            this.name = name;
-            this.ports = ports;
-            this.instances = instances;
-        }
-    }
-
-    public class Port {
-        public final String name;
-        public final String type;
-        public Port(String name, String type) {
-            this.name = name;
-            this.type = type;
-        }
-    }
-
-    
-    
-    public class Instance {
-        public final String name;
-        public final String moduleName;
-        public final List<Connection> connections;
-        public Instance(String name, String moduleName, List<Connection> connections) {
-            this.name = name;
-            this.moduleName = moduleName;
-            this.connections = connections;
-        }
-    }
-
-    public class Connection {
-        public final String name;
-        public final String netName;
-        public Connection(String name, String netName) {
-            this.name = name;
-            this.netName = netName;
-        }
-    }
 }
 PARSER_END(VerilogParser)
 
@@ -101,15 +62,23 @@ TOKEN :
 |   <INOUT : "inout">
 |   <REG : "reg">
 |   <WIRE : "wire">
-|   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
+|   <NAME : ["A"-"Z", "a"-"z", "_" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9"])*>
+|   <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "-"])*>
+|   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
+|   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
+|   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
 |   <LOGIC0 : "1'b0">
 |   <LOGIC1 : "1'b1">
 |   <INTEGER : ([ "0"-"9" ])+>
+|   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:" ["\r", "\n"]>
+|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* ["\r", "\n"]>
+|   <PETRIFY_INIT_STATE : "// signal values at the initial state:" ["\r", "\n"] "//">
 |   "("
 |   ")"
 |   "["
 |   "]"
 |   ","
+|   "!"
 |   ";"
 |   "."
 }    
@@ -140,16 +109,40 @@ List<Module> parseModules():
     
 Module parseModule():
 {
-    Token name;
+    String name;
     List<Port> ports; 
-    List<Instance> instances; 
+    List<Instance> instances;
+    List<Instance> group;
+    Set<List<Instance>> groups = new HashSet<List<Instance>>();
+    Set<String> highSignals = null; 
 }
 {
-    <MODULE> name = <NAME>
+    <MODULE> name = parseModuleName() 
     ports = parsePorts()
     instances = parseInstances()
+    [<PETRIFY_UNMAPPED>
+    	(<PETRIFY_EQUATION> 
+    		group = parseInstances()
+    		{
+    			instances.addAll(group);
+    			groups.add(group);
+    		}
+    	)*
+    ]
+    [<PETRIFY_INIT_STATE> highSignals = parseInitialState()]
     <ENDMODULE>
-    {        return new Module(name.image, ports, instances);
+    {        return new Module(name, ports, instances, highSignals, groups);
+    }
+}
+
+String parseModuleName():
+{
+    Token nameToken;
+}
+{
+    (nameToken = <NAME> | nameToken = <PETRIFY_NAME>)
+    {
+        return nameToken.image;
     }
 }
 
@@ -191,16 +184,30 @@ List<Port> parseCompactPorts():
 
 Port parseCompactPort():
 {
+    Port.Type type;
     Token nameToken;
-    Token typeToken;
 }
 {
-    (typeToken = <INPUT> | typeToken = <OUTPUT> | typeToken = <INOUT>) nameToken = <NAME>
+    type = parsePortType() nameToken = <NAME>
     {
-    	String name = nameToken.image;
-    	String type = typeToken.image;
-    	return new Port(name, type);
+    	return new Port(nameToken.image, type);
     }
+}
+
+Port.Type parsePortType():
+{
+}
+{
+    (
+    	<INPUT>
+    	{
+    		return Port.Type.INPUT;
+    	} 
+    |	<OUTPUT>
+    	{
+    		return Port.Type.OUTPUT;
+    	} 
+    )
 }
 
 List<Port> parseComplexPorts():
@@ -212,13 +219,13 @@ List<Port> parseComplexPorts():
 	declarations = parsePortsDeclaration()
 	definitions = parsePortsDefinitions()
     {
-    	HashMap<String, String> nameToType = new HashMap<String, String>();
+    	HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
     	for (Port port: definitions) {
     		nameToType.put(port.name, port.type);
     	}
     	List<Port> ports = new LinkedList<Port>();
    		for (String name: declarations) {
-   			String type = nameToType.get(name);
+   			Port.Type type = nameToType.get(name);
     		ports.add(new Port(name, type));
     	}
         return ports;
@@ -249,7 +256,9 @@ List<Port> parsePortsDefinitions():
     (
     	ports = parsePortsDefinition()
     	{
-    		allPorts.addAll(ports);
+    		if (ports != null) {
+    			allPorts.addAll(ports);
+    		}
     	}
     )*
     {
@@ -258,19 +267,24 @@ List<Port> parsePortsDefinitions():
 }
 
 List<Port> parsePortsDefinition():
-{    List<String> names = new LinkedList<String>();
-    Token typeToken;
+{    List<String> names;
+    Port.Type type;
 }
 {
-    (typeToken = <INPUT> | typeToken = <OUTPUT> | typeToken = <INOUT> | typeToken = <REG> | typeToken = <WIRE>) names = parseNames() ";"
-    {
-    	String type = typeToken.image;
-    	List<Port> ports = new LinkedList<Port>();
-    	for (String name: names) {
-    		Port port = new Port(name, type);
-    		ports.add(port);        }
-     	return ports;
-    }
+   	(
+   		( type = parsePortType() names = parseNames() ";") 
+	    {
+    		List<Port> ports = new LinkedList<Port>();
+    		for (String name: names) {
+    			Port port = new Port(name, type);
+    			ports.add(port);        	}
+     		return ports;
+    	}
+   	| 	( (<WIRE> | <INOUT> | <REG>) parseNames() ";")
+   		{
+   			return null;
+   		}
+   	) 
 }
 
 List<String> parseNames():
@@ -288,6 +302,27 @@ List<String> parseNames():
     )*
     {
     	return names;
+    }
+}
+
+Set<String> parseInitialState():
+{
+    Token nameToken;
+    Set<String> highSignals = new HashSet<String>();
+}
+{
+    (
+        (
+        	("!" <NAME>) 
+        |	(nameToken = <NAME>)
+	        {
+    	    	String name = nameToken.image;
+        	    highSignals.add(name);
+        	}
+        ) [","]
+    )*
+    {
+    	return highSignals;
     }
 }
 
@@ -310,57 +345,54 @@ List<Instance> parseInstances():
 
 Instance parseInstance():
 {
-    Token moduleNameToken;
+    String moduleName;
     Token nameToken = null;
     List<String> parameters;
-    List<Connection> connections;
+    List<Pin> pins;
 }
 {
-    moduleNameToken = <NAME>  [nameToken = <NAME>]
-    (
-    "(" connections = parseConnections() ")"
-    )+ 
-    ";"
+    moduleName = parseModuleName()
+    [nameToken = <NAME>]
+    "(" pins = parsePins() ")" ";"
     {
-    	String moduleName = moduleNameToken.image;
     	String name = (nameToken == null ? null : nameToken.image);
-        return new Instance(name, moduleName, connections);
+        return new Instance(name, moduleName, pins);
     }
 }
 
-List<Connection> parseConnections():
+List<Pin> parsePins():
 {
-    List<Connection> connections;
+    List<Pin> pins;
 }
 {
     (
-    	LOOKAHEAD(parseNamedConnection())
-        connections = parseNamedConnections()
-    |   connections = parseOrderedConnections()
+   		LOOKAHEAD(parseNamedPins())
+        pins = parseNamedPins()
+    |   pins = parseOrderedPins()
     )
     {
-        return connections;
+        return pins;
     }
 }
 
-List<Connection> parseNamedConnections():
+List<Pin> parseNamedPins():
 {
-    Connection connection;
-    List<Connection> connections = new LinkedList<Connection>();
+    Pin pin;
+    List<Pin> pins = new LinkedList<Pin>();
 }
 {
     (
-        connection = parseNamedConnection()
+        pin = parseNamedPin()
         {
-            connections.add(connection);
+            pins.add(pin);
         }
-    )*
+    )+
     {
-        return connections;
+        return pins;
     }
 }
 
-Connection parseNamedConnection():
+Pin parseNamedPin():
 {
     Token portName;
     Token netName;
@@ -368,23 +400,23 @@ Connection parseNamedConnection():
 {
     "." portName = <NAME> "(" netName = <NAME> ")" [","]
     {
-        return new Connection(portName.image, netName.image);
+        return new Pin(portName.image, netName.image);
     }
 }
 
-List<Connection> parseOrderedConnections():
+List<Pin> parseOrderedPins():
 {
     List<String> wires;
-    List<Connection> connections = new LinkedList<Connection>();
+    List<Pin> pins = new LinkedList<Pin>();
 }
 {
 	wires = parseNames()
     {
     	for (String wire: wires) {
-    		Connection connection = new Connection(null, wire);
-    		connections.add(connection);
+    		Pin pin = new Pin(null, wire);
+    		pins.add(pin);
     	}
-        return connections;
+        return pins;
     }
 }
 

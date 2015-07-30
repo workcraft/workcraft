@@ -24,11 +24,11 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class Zero implements BooleanFormula {
 
-	private Zero()
-	{
+	private static final Zero instance = new Zero();
+
+	private Zero() {
 	}
 
-	private static Zero instance = new Zero();
 
 	public static Zero instance() {
 		return instance;
@@ -38,4 +38,5 @@ public class Zero implements BooleanFormula {
 	public <T> T accept(BooleanVisitor<T> visitor) {
 		return visitor.visit(this);
 	}
+
 }

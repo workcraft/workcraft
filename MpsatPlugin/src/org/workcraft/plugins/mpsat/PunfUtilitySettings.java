@@ -43,22 +43,22 @@ public class PunfUtilitySettings implements Settings {
 
 	public PunfUtilitySettings() {
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
-				this, "Punf command", String.class) {
+				this, "Punf command", String.class, true, false, false) {
 			protected void setter(PunfUtilitySettings object, String value) {
-				PunfUtilitySettings.setCommand(value);
+				setCommand(value);
 			}
 			protected String getter(PunfUtilitySettings object) {
-				return PunfUtilitySettings.getCommand();
+				return getCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
-				this, "Additional arguments", String.class) {
+				this, "Additional arguments", String.class, true, false, false) {
 			protected void setter(PunfUtilitySettings object, String value) {
-				PunfUtilitySettings.setExtraArgs(value);
+				setExtraArgs(value);
 			}
 			protected String getter(PunfUtilitySettings object) {
-				return PunfUtilitySettings.getExtraArgs();
+				return getExtraArgs();
 			}
 		});
 	}

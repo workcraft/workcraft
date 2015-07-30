@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -19,26 +20,39 @@ import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.serialisation.Format;
+import org.workcraft.util.Hierarchy;
 
 public class DotExporter implements Exporter {
 
-	public static void export(DotExportable model, OutputStream outStream) throws IOException
-	{
+	private class ExportNode {
+		public final String id;
+		public final double width;
+		public final double height;
+		public final Collection<String> destinations;
+		public final String comment;
+
+		public ExportNode(String id, double width, double height, Collection<String> destinations, String comment) {
+			this.id = id;
+			this.width = width;
+			this.height = height;
+			this.destinations = destinations;
+			this.comment = comment;
+		}
+
+	}
+
+	public static void export(Collection<ExportNode> nodes, OutputStream outStream) throws IOException {
 		PrintStream out = new PrintStream(outStream);
 
 		out.println("digraph work {");
+//		out.println("graph [nodesep=\"0.5\", overlap=\"false\", splines=\"ortho\"];");
 		out.println("graph [nodesep=\"0.5\", overlap=\"false\", splines=\"true\"];");
 		out.println("node [shape=box];");
 
-		for (DotExportNode node : model.getNodes()) {
-			String id = node.getName();
-			Dimension2D dimensions = node.getDimensions();
-			double width = dimensions.getWidth();
-			double height = dimensions.getHeight();
-			out.println("\""+id+"\" [width=\""+width+"\", height=\""+height+"\", fixedsize=\"true\"];");
-
-			for(String target : node.getOutgoingArcs()) {
-				out.println("\""+id+"\" -> \""+target+"\";");
+		for (ExportNode node : nodes) {
+			out.println("\"" + node.id + "\" [width=\"" + node.width + "\", height=\"" + node.height + "\", fixedsize=\"true\"];  // " + node.comment);
+			for(String target : node.destinations) {
+				out.println("\"" + node.id + "\" -> \"" + target +"\";");
 			}
 		}
 		out.println("}");
@@ -48,78 +62,37 @@ public class DotExporter implements Exporter {
 	public void export(Model model, OutputStream outStream) throws IOException,
 			ModelValidationException, SerialisationException {
 
-		final List<DotExportNode> export = new ArrayList<DotExportNode>();
-		for (Node n : model.getRoot().getChildren()) {
-			if (n instanceof VisualComponent) {
-				VisualComponent comp = (VisualComponent) n;
-				final String id = model.getNodeReference(comp);
-
-				if(id!=null) {
-					final Rectangle2D bb = comp.getBoundingBoxInLocalSpace();
-
-					if(bb!=null)
-					{
-						final List<String> destinations = new ArrayList<String>();
-
-
-						Set<Node> postset = model.getPostset(comp);
-
-						for(Node target : postset) {
-							String targetId = model.getNodeReference(target);
-							if(targetId!=null)
-								destinations.add(targetId);
-						}
-
-						export.add(new DotExportNode()
-						{
-							@Override
-							public String getName() {
-								return id;
-							}
-
-							@Override
-							public Dimension2D getDimensions() {
-								return new Dimension2D()
-								{
-									@Override
-									public double getHeight() {
-										return bb.getHeight();
-									}
-									@Override
-									public double getWidth() {
-										return bb.getWidth();
-									}
-									@Override
-									public void setSize(double width, double height) {
-										throw new NotSupportedException();
-									}
-								};
-							}
-
-							@Override
-							public String[] getOutgoingArcs() {
-								return destinations.toArray(new String[0]);
-							}
-						});
+		final List<ExportNode> dotExportNodes = new ArrayList<ExportNode>();
+		VisualModel visualModel = null;
+		if (model instanceof VisualModel) {
+			visualModel = (VisualModel)model;
+		}
+		for (VisualComponent component : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
+			String id = visualModel.getNodeReference(component);
+			Rectangle2D bb = component.getBoundingBoxInLocalSpace();
+			if ((id != null) && (bb != null)) {
+				List<String> destinations = new ArrayList<String>();
+				Set<Node> postset = visualModel.getPostset(component);
+				for(Node target : postset) {
+					String targetId = visualModel.getNodeReference(target);
+					if (targetId != null) {
+						destinations.add(targetId);
 					}
 				}
+				String comment = visualModel.getNodeMathReference(component);
+				dotExportNodes.add(new ExportNode(id, bb.getWidth(), bb.getHeight(), destinations, comment));
 			}
 		}
-
-		export(new DotExportable() {
-			@Override
-			public DotExportNode[] getNodes() {
-				return export.toArray(new DotExportNode[0]);
-			}
-		}, outStream);
+		export(dotExportNodes, outStream);
 	}
 
 	@Override
 	public int getCompatibility(Model model) {
-		if (model instanceof VisualModel)
+		if (model instanceof VisualModel) {
 			return Exporter.GENERAL_COMPATIBILITY;
-		else
+		} else {
 			return Exporter.NOT_COMPATIBLE;
+		}
 	}
 
 	@Override

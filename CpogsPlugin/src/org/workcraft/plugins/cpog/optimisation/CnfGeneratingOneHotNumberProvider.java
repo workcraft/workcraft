@@ -1,14 +1,15 @@
 package org.workcraft.plugins.cpog.optimisation;
 
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.not;
+import static org.workcraft.plugins.cpog.optimisation.CnfOperations.or;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
-
-import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula>
 {
@@ -107,7 +108,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 		List<CnfClause> result = select(literals, number, false);
 
 		Cnf cnf = new Cnf(result);
-		BooleanFormula res = BooleanReplacer.replace(cnf, params, Arrays.asList(vars));
+		BooleanFormula res = BooleanUtils.prettifyReplace(cnf, params, Arrays.asList(vars));
 		return res;
 	}
 

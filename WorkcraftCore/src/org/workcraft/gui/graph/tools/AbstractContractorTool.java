@@ -16,7 +16,7 @@ abstract public class AbstractContractorTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformations";
+		return "! Transformations";
 	}
 
 	@Override

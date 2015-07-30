@@ -46,7 +46,7 @@ import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.PetriNetModelDescriptor;
+import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -120,7 +120,7 @@ public class SaveLoadTests {
 		Framework framework = Framework.getInstance();
 		framework.getPluginManager().loadManifest();
 		StringWriter writer = new StringWriter();
-		framework.save(new ModelEntry(new PetriNetModelDescriptor(), model), new Base16Writer(writer));
+		framework.save(new ModelEntry(new PetriNetDescriptor(), model), new Base16Writer(writer));
 		String generatedValue = writer.toString();
 		if(currentValue.equals(generatedValue))
 			return;

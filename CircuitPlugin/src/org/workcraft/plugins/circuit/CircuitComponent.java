@@ -39,6 +39,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Hierarchy;
 
@@ -64,9 +65,9 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 		private void removeContactfromFunctions(final Contact contact) {
 			for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
-				BooleanFormula setFunction = BooleanReplacer.replace(fc.getSetFunction(), contact, Zero.instance());
+				BooleanFormula setFunction = BooleanUtils.cleverReplace(fc.getSetFunction(), contact, Zero.instance());
 				fc.setSetFunction(setFunction);
-				BooleanFormula resetFunction = BooleanReplacer.replace(fc.getResetFunction(), contact, Zero.instance());
+				BooleanFormula resetFunction = BooleanUtils.cleverReplace(fc.getResetFunction(), contact, Zero.instance());
 				fc.setResetFunction(resetFunction);
 			}
 		}

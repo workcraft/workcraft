@@ -163,7 +163,7 @@ public class MpsatConfigurationDialog extends JDialog {
 				} else {
 					predicatePanel.setVisible(false);
 					layout.setRow(2, 0);
-					Dimension dimension = new Dimension(465, 240);
+					Dimension dimension = new Dimension(465, 260);
 					MpsatConfigurationDialog.this.setMinimumSize(dimension);
 					MpsatConfigurationDialog.this.setSize(dimension);
 				}

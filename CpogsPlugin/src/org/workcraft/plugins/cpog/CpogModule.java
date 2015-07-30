@@ -1,5 +1,6 @@
 package org.workcraft.plugins.cpog;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -25,13 +26,24 @@ import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class CpogModule implements Module {
+
+	@Override
+	public String getDescription() {
+		return "Conditional Partial Order Graphs";
+	}
+
 	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
 
-		pm.registerClass(ModelDescriptor.class, CpogModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, CpogDescriptor.class);
 
 		pm.registerClass(PropertyClassProvider.class, EncodingPropertyProvider.class);
 
@@ -75,8 +87,13 @@ public class CpogModule implements Module {
 
 	}
 
-	@Override
-	public String getDescription() {
-		return "Conditional Partial Order Graphs";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.cpog.CpogDescriptor\"/>");
 	}
+
 }

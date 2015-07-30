@@ -14,7 +14,7 @@ public class VisualScenarioPage extends VisualPage {
 		// TODO Auto-generated constructor stub
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualScenarioPage, Encoding>(
-				this, PROPERTY_ENCODING, Encoding.class) {
+				this, PROPERTY_ENCODING, Encoding.class, true, true, true) {
 			public void setter(VisualScenarioPage object, Encoding value) {
 				object.setEncoding(value);
 			}

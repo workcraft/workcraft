@@ -50,42 +50,42 @@ public class RandomLayoutSettings implements Settings {
 
 	public RandomLayoutSettings() {
 		properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-				this, "Start X", Double.class) {
+				this, "Start X", Double.class, true, false, false) {
 			protected void setter(RandomLayoutSettings object, Double value) {
-				RandomLayoutSettings.setStartX(value);
+				setStartX(value);
 			}
 			protected Double getter(RandomLayoutSettings object) {
-				return RandomLayoutSettings.getStartX();
+				return getStartX();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-				this, "Start Y", Double.class) {
+				this, "Start Y", Double.class, true, false, false) {
 			protected void setter(RandomLayoutSettings object, Double value) {
-				RandomLayoutSettings.setStartY(value);
+				setStartY(value);
 			}
 			protected Double getter(RandomLayoutSettings object) {
-				return RandomLayoutSettings.getStartY();
+				return getStartY();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-				this, "Range X", Double.class) {
+				this, "Range X", Double.class, true, false, false) {
 			protected void setter(RandomLayoutSettings object, Double value) {
-				RandomLayoutSettings.setRangeX(value);
+				setRangeX(value);
 			}
 			protected Double getter(RandomLayoutSettings object) {
-				return RandomLayoutSettings.getRangeX();
+				return getRangeX();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<RandomLayoutSettings, Double>(
-				this, "Range Y", Double.class) {
+				this, "Range Y", Double.class, true, false, false) {
 			protected void setter(RandomLayoutSettings object, Double value) {
-				RandomLayoutSettings.setRangeY(value);
+				setRangeY(value);
 			}
 			protected Double getter(RandomLayoutSettings object) {
-				return RandomLayoutSettings.getRangeY();
+				return getRangeY();
 			}
 		});
 	}

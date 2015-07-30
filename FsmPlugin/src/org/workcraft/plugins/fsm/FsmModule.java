@@ -1,5 +1,6 @@
 package org.workcraft.plugins.fsm;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -21,13 +22,22 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class FsmModule  implements Module {
+	@Override
+	public String getDescription() {
+		return "Finite State Machine";
+	}
 
 	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(ModelDescriptor.class, FsmModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, FsmDescriptor.class);
 
 		pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
 		pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
@@ -94,9 +104,13 @@ public class FsmModule  implements Module {
 		});
 	}
 
-	@Override
-	public String getDescription() {
-		return "Finite State Machine";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.circuit.FsmModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.circuit.FsmDescriptor\"/>");
 	}
 
 }

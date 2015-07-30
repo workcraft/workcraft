@@ -28,12 +28,14 @@ import java.util.Collection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
 
 public interface VisualModel extends Model, ObservableState {
 	public void draw(Graphics2D g, Decorator decorator);
@@ -46,10 +48,12 @@ public interface VisualModel extends Model, ObservableState {
 	public String getMathName(Node node);
 	public void setMathName(Node node, String name);
 
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public void validateConnection(Node first, Node second) throws InvalidConnectionException;
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
+	public VisualConnection connect(Node first, Node second, MathConnection connection) throws InvalidConnectionException;
 
-	public  <T extends VisualComponent> T createComponent(MathNode refNode, Container container, Class<T> type);
+	public <T extends VisualComponent> T createVisualComponent(MathNode refNode, Container container, Class<T> type);
+	public <T extends VisualComponent> T getVisualComponent(MathNode refNode, Class<T> type);
 
 	public void selectAll();
 	public void selectNone();
@@ -73,5 +77,7 @@ public interface VisualModel extends Model, ObservableState {
 
 	public void setTemplateNode(VisualNode node);
 	public VisualNode getTemplateNode();
+	public AbstractLayoutTool getBestLayoutTool();
+
 
 }

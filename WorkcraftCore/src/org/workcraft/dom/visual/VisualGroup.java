@@ -65,7 +65,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
-				this, PROPERTY_IS_COLLAPSED, Boolean.class) {
+				this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true, true) {
 
 			@Override
 			protected void setter(VisualGroup object, Boolean value) {

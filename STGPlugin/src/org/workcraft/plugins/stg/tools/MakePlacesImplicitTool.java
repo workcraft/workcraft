@@ -17,7 +17,7 @@ public class MakePlacesImplicitTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Transformations";
+		return "! Transformations";
 	}
 
 	@Override

@@ -26,7 +26,7 @@ import org.workcraft.PluginProvider;
 import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
-import org.workcraft.plugins.stg.STGModelDescriptor;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -44,7 +44,7 @@ public class STGSerialisationTests {
 
 		RandomLayoutTool layout = new RandomLayoutTool();
 		WorkspaceEntry we = new WorkspaceEntry(null);
-		we.setModelEntry(new ModelEntry(new STGModelDescriptor(), stg));
+		we.setModelEntry(new ModelEntry(new StgDescriptor(), stg));
 		layout.run(we);
 
 		// serialise

@@ -31,7 +31,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -40,10 +39,9 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.PrettifyBooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
@@ -120,23 +118,7 @@ public class VisualRhoClause extends VisualComponent
 	}
 
 	private BooleanFormula evaluate() {
-		return getFormula().accept(
-			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>())
-			{
-				@Override
-				public BooleanFormula visit(BooleanVariable node) {
-					switch(((Variable)node).getState())
-					{
-					case TRUE:
-						return One.instance();
-					case FALSE:
-						return Zero.instance();
-					default:
-						return node;
-					}
-				}
-			}
-		);
+		return getFormula().accept(new PrettifyBooleanReplacer());
 	}
 
 	public Rectangle2D getBoundingBoxInLocalSpace()

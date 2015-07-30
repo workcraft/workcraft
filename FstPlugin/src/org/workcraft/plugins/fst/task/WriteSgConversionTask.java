@@ -16,8 +16,8 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.DotGImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.petrify.tasks.WriteSgTask;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -139,7 +139,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 		} catch (Throwable e) {
 			return new Result<WriteSgConversionResult>(e);
 		} finally {
-			if ((pnFile != null) && !PetrifyUtilitySettings.getDebugTemporaryFiles() ) {
+			if ((pnFile != null) && !CommonDebugSettings.getKeepTemporaryFiles() ) {
 				pnFile.delete();
 			}
 		}

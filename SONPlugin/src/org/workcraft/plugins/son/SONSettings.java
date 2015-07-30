@@ -39,72 +39,72 @@ public class SONSettings implements Settings {
 
 	public SONSettings(){
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
-				this, "Erroneous node color(relation)", Color.class) {
+				this, "Erroneous node color(relation)", Color.class, true, false, false) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setRelationErrColor(value);
+				setRelationErrColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getRelationErrColor();
+				return getRelationErrColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
-				this, "Erroneous node color(cycle)", Color.class) {
+				this, "Erroneous node color(cycle)", Color.class, true, false, false) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setCyclePathColor(value);
+				setCyclePathColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getCyclePathColor();
+				return getCyclePathColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
-				this, "Erroneous connection color", Color.class) {
+				this, "Erroneous connection color", Color.class, true, false, false) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setConnectionErrColor(value);
+				setConnectionErrColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getConnectionErrColor();
+				return getConnectionErrColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Positioning>(
-				this, "Error label positioning", Positioning.class) {
+				this, "Error label positioning", Positioning.class, true, false, false) {
 			protected void setter(SONSettings object, Positioning value) {
-				SONSettings.setErrLabelPositioning(value);
+				setErrLabelPositioning(value);
 			}
 			protected Positioning getter(SONSettings object) {
-				return SONSettings.getErrLabelPositioning();
+				return getErrLabelPositioning();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
-				this, "Error label color", Color.class) {
+				this, "Error label color", Color.class, true, false, false) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setErrLabelColor(value);
+				setErrLabelColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getErrLabelColor();
+				return getErrLabelColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
-				this, "Group Foreground color", Color.class) {
+				this, "Group Foreground color", Color.class, true, false, false) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setGroupForegroundColor(value);
+				setGroupForegroundColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getGroupForegroundColor();
+				return getGroupForegroundColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
-				this, "Block fill color", Color.class) {
+				this, "Block fill color", Color.class, true, false, false) {
 			protected void setter(SONSettings object, Color value) {
-				SONSettings.setGroupForegroundColor(value);
+				setGroupForegroundColor(value);
 			}
 			protected Color getter(SONSettings object) {
-				return SONSettings.getGroupForegroundColor();
+				return getGroupForegroundColor();
 			}
 		});
 	}

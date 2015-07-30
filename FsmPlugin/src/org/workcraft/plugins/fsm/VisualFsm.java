@@ -6,6 +6,7 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -14,7 +15,6 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddingEvent;
-import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Finite State Machine")
@@ -57,7 +57,7 @@ public class VisualFsm extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualState vState1 = (VisualState)first;
@@ -65,8 +65,10 @@ public class VisualFsm extends AbstractVisualModel {
 		State mState1 = vState1.getReferencedState();
 		State mState2 = vState2.getReferencedState();
 
-		Event mEvent = ((Fsm)getMathModel()).createEvent(mState1, mState2, null);
-		VisualEvent vEvent = new VisualEvent(mEvent, vState1, vState2);
+		if (mConnection == null) {
+			mConnection = ((Fsm)getMathModel()).createEvent(mState1, mState2, null);
+		}
+		VisualEvent vEvent = new VisualEvent((Event)mConnection, vState1, vState2);
 
 		Container container = Hierarchy.getNearestContainer(vState1, vState2);
 		container.add(vEvent);

@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.cpog;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.dom.Container;
@@ -30,11 +29,6 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -55,22 +49,7 @@ public class CPOG extends AbstractMathModel {
 			}
 		});
 
-		// Update all vertex conditions when a variable is removed
-		new HierarchySupervisor() {
-			@Override
-			public void handleEvent(HierarchyEvent e) {
-				if (e instanceof NodesDeletingEvent) {
-					for (Node node: e.getAffectedNodes()) {
-						if (node instanceof Variable) {
-							final Variable var = (Variable)node;
-							for (Vertex v: new ArrayList<Vertex>(getVertices())) {
-					    		v.setCondition(BooleanReplacer.replace(v.getCondition(), var, Zero.instance()));
-							}
-						}
-					}
-				}
-			}
-		}.attach(getRoot());
+		new ConditionConsistencySupervisor(this).attach(getRoot());
 	}
 
 	public Arc connect(Vertex first, Vertex second) {

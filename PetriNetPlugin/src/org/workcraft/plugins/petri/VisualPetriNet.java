@@ -95,16 +95,17 @@ public class VisualPetriNet extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualComponent c1 = (VisualComponent) first;
 		VisualComponent c2 = (VisualComponent) second;
 
-		PetriNet net = (PetriNet)getMathModel();
-		MathConnection con = (MathConnection) net.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-
-		VisualConnection ret = new VisualConnection(con, c1, c2);
+		if (mConnection == null) {
+			PetriNet petriNet = (PetriNet)getMathModel();
+			mConnection = petriNet.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
+		}
+		VisualConnection ret = new VisualConnection(mConnection, c1, c2);
 
 		Hierarchy.getNearestContainer(c1, c2).add(ret);
 		return ret;

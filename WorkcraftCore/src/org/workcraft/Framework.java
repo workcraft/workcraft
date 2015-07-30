@@ -829,30 +829,33 @@ public class Framework {
 		return config;
 	}
 
-	public boolean checkFile(File f) {
+	public boolean checkFile(File f, String errorTitle) {
 		boolean result = true;
+		if (errorTitle == null) {
+			errorTitle = "File access error";
+		}
 		if (!f.exists()) {
 			JOptionPane.showMessageDialog(null,
 					"The path  \""	+ f.getPath() + "\" does not exisit.\n",
-					"File access error", JOptionPane.ERROR_MESSAGE);
+					errorTitle, JOptionPane.ERROR_MESSAGE);
 			result = false;
 		} else if (!f.isFile()) {
 			JOptionPane.showMessageDialog(null,
 					"The path  \""	+ f.getPath() + "\" is not a file.\n",
-					"File access error", JOptionPane.ERROR_MESSAGE);
+					errorTitle, JOptionPane.ERROR_MESSAGE);
 			result = false;
 		} else if (!f.canRead()) {
 			JOptionPane.showMessageDialog(null,
 					"The file  \""	+ f.getPath() + "\" cannot be read.\n",
-					"File access error", JOptionPane.ERROR_MESSAGE);
+					errorTitle, JOptionPane.ERROR_MESSAGE);
 			result = false;
 		}
 		return result;
 	}
 
-	public void openExternally(String fileName) {
+	public void openExternally(String fileName, String errorTitle) {
 		File file = new File(fileName);
-		if (checkFile(file)) {
+		if (checkFile(file, errorTitle)) {
 			DesktopApi.open(file);
 		}
 	}

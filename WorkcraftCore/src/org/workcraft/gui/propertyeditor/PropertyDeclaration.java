@@ -33,10 +33,6 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
 	private boolean combinable;
 	private boolean templatable;
 
-	public PropertyDeclaration(O object, String name, Class<V> cls) {
-		this(object, name, cls, true, true, true);
-	}
-
 	public PropertyDeclaration(O object, String name, Class<V> cls, boolean writable, boolean combinable, boolean templatable) {
 		this.object = object;
 		this.name = name;

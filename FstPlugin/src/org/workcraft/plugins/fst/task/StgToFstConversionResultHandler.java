@@ -10,7 +10,7 @@ import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.Fst;
-import org.workcraft.plugins.fst.FstModelDescriptor;
+import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
@@ -43,7 +43,7 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
 					final Workspace workspace = framework.getWorkspace();
 					final Path<String> directory = path.getParent();
 					final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));;
-					final ModelEntry me = new ModelEntry(new FstModelDescriptor() , model);
+					final ModelEntry me = new ModelEntry(new FstDescriptor() , model);
 					boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 					workspace.add(directory, name, me, true, openInEditor);
 				} else if (result.getOutcome() != Outcome.CANCELLED) {

@@ -49,6 +49,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.Hierarchy;
 
@@ -225,7 +226,7 @@ public class WorkspaceEntry implements ObservableState {
 			savedMemento = capturedMemento;
 		}
 
-		if (CommonEditorSettings.getDebugClipboard()) {
+		if (CommonDebugSettings.getCopyModelOnChange()) {
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
 			clipboard.setContents(new StringSelection(str), null);
@@ -352,7 +353,7 @@ public class WorkspaceEntry implements ObservableState {
 				model.deleteSelection();
 				final Framework framework = Framework.getInstance();
 				framework.clipboard = framework.save(modelEntry);
-				if (CommonEditorSettings.getDebugClipboard()) {
+				if (CommonDebugSettings.getCopyModelOnChange()) {
 					// copy the memento clipboard into the system-wide clipboard as a string
 					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 					clipboard.setContents(new StringSelection(getClipboardAsString()), null);
