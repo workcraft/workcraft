@@ -49,8 +49,8 @@ public class SONModule implements Module{
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.SONModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.SONDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.son.SONModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.son.SONDescriptor\"/>");
 
 		cm.registerGlobalReplacement(VisualSON.class.getName(),
 				"<VisualONGroup mathGroup=",

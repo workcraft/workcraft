@@ -40,8 +40,8 @@ public class PetriNetModule implements Module {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.PetriNetModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.PetriNetDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.petri.PetriNetModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.petri.PetriNetDescriptor\"/>");
 	}
 
 }

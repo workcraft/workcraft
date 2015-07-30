@@ -67,8 +67,8 @@ public class PolicyNetModule implements Module {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.PolicyNetModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.PolicyNetDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.policy.PolicyNetModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.policy.PolicyNetDescriptor\"/>");
 	}
 
 }

@@ -109,8 +109,8 @@ public class FsmModule  implements Module {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.FsmModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.FsmDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.fsm.FsmModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.fsm.FsmDescriptor\"/>");
 	}
 
 }

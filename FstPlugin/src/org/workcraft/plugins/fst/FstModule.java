@@ -78,8 +78,8 @@ public class FstModule  implements Module {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.FstModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.FstDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.fst.FstModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.fst.FstDescriptor\"/>");
 	}
 
 }

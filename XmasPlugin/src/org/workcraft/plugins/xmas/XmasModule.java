@@ -40,8 +40,8 @@ public class XmasModule implements Module {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.XmasModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.XmasDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.xmas.XmasModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.xmas.XmasDescriptor\"/>");
 	}
 
 }

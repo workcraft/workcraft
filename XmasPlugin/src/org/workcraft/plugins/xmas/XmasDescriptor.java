@@ -21,25 +21,7 @@ public class XmasDescriptor implements ModelDescriptor {
 
 	@Override
 	public VisualModelDescriptor getVisualModelDescriptor() {
-		return new VisualModelDescriptor()
-		{
-			@Override
-			public VisualModel create(MathModel mathModel)
-					throws VisualModelInstantiationException {
-				return new VisualXmas((Xmas)mathModel);
-			}
-
-			@Override
-			public Iterable<GraphEditorTool> createTools() {
-				try {
-					throw new VisualModelInstantiationException();
-				} catch (VisualModelInstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
-			}
-		};
+		return new VisualXmasDescriptor();
 	}
 
 }

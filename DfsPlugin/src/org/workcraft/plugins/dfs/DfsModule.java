@@ -138,7 +138,7 @@ public class DfsModule implements Module {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.DfsModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.DfsDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.dfs.DfsModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.dfs.DfsDescriptor\"/>");
 	}
 }

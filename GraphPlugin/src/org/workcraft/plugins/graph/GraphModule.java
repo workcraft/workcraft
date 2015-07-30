@@ -47,8 +47,8 @@ public class GraphModule implements Module {
 		final CompatibilityManager cm = framework.getCompatibilityManager();
 
 		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.circuit.GraphModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.circuit.GraphDescriptor\"/>");
+				"<descriptor class=\"org.workcraft.plugins.graph.GraphModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.graph.GraphDescriptor\"/>");
 	}
 
 }
