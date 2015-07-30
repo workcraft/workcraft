@@ -54,7 +54,7 @@ public class DotLayoutSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<DotLayoutSettings, Boolean>(
-				this, "Import connections shape from Dot graph (experimental)", Boolean.class, true, false, false) {
+				this, "Import connections shape from Dot graph", Boolean.class, true, false, false) {
 			protected void setter(DotLayoutSettings object, Boolean value) {
 				setImportConnectionsShape(value);
 			}

@@ -91,6 +91,12 @@ public class VerilogSerialiser implements ModelSerialiser {
 		return Format.VERILOG;
 	}
 
+	private void writeCircuit(PrintWriter out, Circuit circuit) {
+		writeHeader(out, circuit);
+		writeInstances(out, circuit);
+		out.println(KEYWORD_ENDMODULE);
+	}
+
 	private void writeHeader(PrintWriter out, Circuit circuit) {
 		String topName = circuit.getTitle();
 		if ((topName == null) || topName.isEmpty()) {
@@ -150,12 +156,6 @@ public class VerilogSerialiser implements ModelSerialiser {
 			}
 			out.print(");\n");
 		}
-	}
-
-	private void writeCircuit(PrintWriter out, Circuit circuit) {
-		writeHeader(out, circuit);
-		writeInstances(out, circuit);
-		out.println(KEYWORD_ENDMODULE);
 	}
 
 }

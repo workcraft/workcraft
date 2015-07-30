@@ -10,6 +10,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitModelDescriptor;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.petrify.tasks.SynthesisResult;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -48,7 +49,7 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 			}
 
 			String verilog = result.getReturnValue().getVerilog();
-			if (verilog != null) {
+			if (CircuitSettings.getOpenSynthesisResult() && (verilog != null)) {
 				try {
 					ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
 					final Circuit circuit = new VerilogImporter().importCircuit(in);

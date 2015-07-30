@@ -92,7 +92,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	private double getRootSpaceX() {
+	public double getRootSpaceX() {
 		double result = 0.0;
 		Node node = this;
 		while (node != null) {
@@ -105,7 +105,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	private void setRootSpaceX(double value) {
+	public void setRootSpaceX(double value) {
 		Node node = getParent();
 		while (node != null) {
 			if (node instanceof VisualTransformableNode) {
@@ -130,7 +130,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	private double getRootSpaceY() {
+	public double getRootSpaceY() {
 		double result = 0.0;
 		Node node = this;
 		while (node != null) {
@@ -143,7 +143,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	private void setRootSpaceY(double value) {
+	public void setRootSpaceY(double value) {
 		Node node = getParent();
 		while (node != null) {
 			if (node instanceof VisualTransformableNode) {
