@@ -9,15 +9,15 @@ import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.gui.ScencoConfigurationDialog;
+import org.workcraft.plugins.cpog.gui.ScencoSatBasedDialog;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScencoTool implements Tool {
+public class ScencoSATBasedTool implements Tool {
 
 	private EncoderSettings settings;
-	private ScencoConfigurationDialog dialog;
+	private ScencoSatBasedDialog dialog;
 	PresetManager<EncoderSettings> pmgr;
 
 	@Override
@@ -29,21 +29,21 @@ public class ScencoTool implements Tool {
 
 	@Override
 	public String getSection() {
-		return "Encoding";
+		return "!Encoding";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "SCENCO";
+		return "SAT-based optimal encoding";
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();
-		settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
+		settings = new EncoderSettings(10, GenerationMode.SCENCO, false, false);
 		pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-		dialog = new ScencoConfigurationDialog(mainWindow, pmgr, settings, we);
+		dialog = new ScencoSatBasedDialog(mainWindow, pmgr, settings, we);
 
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
