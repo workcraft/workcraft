@@ -347,7 +347,6 @@ public class CpogParsingTool {
 
     		boolean finished = false;
     		while (!finished) {
-    			//System.out.println(getChildren(visualCpog, child));
     			if (getChildren(visualCpog, child).size() == 1) {
     				ArrayList<Node> nextVertices = getChildren(visualCpog, child);
     				VisualVertex nextVertex = (VisualVertex) nextVertices.get(0);
@@ -395,7 +394,6 @@ public class CpogParsingTool {
     				VisualArc a = (VisualArc) c;
 
     				if (a.getCondition().equals(arc.getCondition())) {
-    					System.out.println(a.getFirst().getLabel() + " " + a.getSecond().getLabel());
     					toBeRemoved.add(a);
     				}
     			}

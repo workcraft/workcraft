@@ -38,7 +38,7 @@ public class ImportAndMineEventLog extends PGMinerTool {
         Scanner k;
 		try {
 			k = new Scanner(eventLog);
-			System.out.println("Event log input");
+			System.out.println("\nEvent log data:");
 			while (k.hasNext()) {
 				String line = k.nextLine();
 				System.out.println(line);
@@ -54,20 +54,7 @@ public class ImportAndMineEventLog extends PGMinerTool {
 
       }
 
-	@Override
-	public File getOutputFile(File inputFile) {
 
-		String filePath = inputFile.getAbsolutePath();
-
-		int index = filePath.lastIndexOf('/');
-		String fileName = filePath.substring(index + 1);
-		String suffix = fileName.substring(fileName.indexOf('.'));
-		fileName = fileName.replace(suffix, "") + ".1.cpog";
-		filePath = filePath.substring(0, index + 1);
-		File outputFile = new File(filePath + fileName);
-
-		return outputFile;
-	}
 
 
 

@@ -77,17 +77,4 @@ public class MineSelectedGraphs extends PGMinerTool{
 		return inputFile;
 	}
 
-	@Override
-	public File getOutputFile(File inputFile) {
-
-		String filePath = inputFile.getAbsolutePath();
-
-		int index = filePath.lastIndexOf('/');
-		String fileName = filePath.substring(index + 1).replace(".tr", "") + ".1.cpog";
-		filePath = filePath.substring(0, index + 1);
-		File outputFile = new File(filePath + fileName);
-
-		return outputFile;
-	}
-
 }

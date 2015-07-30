@@ -57,6 +57,9 @@ public class ImportEventLog extends PGMinerTool {
 					while (line.endsWith(" \n")) {
 						line = line.replace(" \n", "\n");
 					}
+					while (line.endsWith(" ")) {
+						line = line.substring(0, line.length() - 1);
+					}
 					line = line.replace(" ", " -> ");
 					line = "e" + (i++) + " = " + line;
 					System.out.println(line);
@@ -70,11 +73,7 @@ public class ImportEventLog extends PGMinerTool {
 
 	}
 
-	@Override
-	public File getOutputFile(File inputFile) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 
 }
