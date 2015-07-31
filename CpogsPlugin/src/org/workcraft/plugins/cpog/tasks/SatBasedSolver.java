@@ -77,9 +77,8 @@ public class SatBasedSolver {
 
 	public void run(WorkspaceEntry we) {
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
-		ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
+		ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
 		ArrayList<String> check;
-		CpogParsingTool.getScenarios(cpog, scenarios);
 
 		we.captureMemento();
 
@@ -88,23 +87,11 @@ public class SatBasedSolver {
 		HashMap<String, Integer> events = new HashMap<String, Integer>();
 		ArrayList<Point2D> positions = new ArrayList<Point2D>();
 		ArrayList<Integer> count = new ArrayList<Integer>();
-		int n = 0;
 
 		// Scenario contains single graphs compose CPOG
 		int m = scenarios.size();
-
-		// If less than two, do not encode scenarios
-		if (m < 2) {
-			JOptionPane.showMessageDialog(null,
-					"At least two scenarios are expected.",
-					"Not enough scenarios",
-					JOptionPane.ERROR_MESSAGE);
-			we.cancelMemento();
-			return;
-		}
-
 		// scan scenarios
-		n = cpogBuilder.scanScenarios(m, scenarios, events, positions, count);
+		int n = cpogBuilder.scanScenarios(m, scenarios, events, positions, count);
 
 		// construct constraints
 		char [][][] constraints = new char[m][n][n];

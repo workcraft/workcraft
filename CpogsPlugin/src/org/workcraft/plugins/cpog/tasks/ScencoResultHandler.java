@@ -40,9 +40,9 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 	private String getErrorMessage(String msg) {
 		String[] sentence = msg.split("\n");
 		int i=0;
-		for (i=0; i <sentence.length; i++){
-			if(sentence[i].contains(".error")){
-					return sentence[i+1];
+		for (i=0; i <sentence.length; i++) {
+			if(sentence[i].contains(".error")) {
+				return sentence[i+1];
 			}
 		}
 		return "Internal error. Contact developers at www.workcraft.org/";

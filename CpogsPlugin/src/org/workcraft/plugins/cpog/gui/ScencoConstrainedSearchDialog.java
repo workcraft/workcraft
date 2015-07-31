@@ -133,8 +133,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
 	private void createCustomPanel() {
 		VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
-		ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
-		CpogParsingTool.getScenarios(cpog, scenarios);
+		ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
 		m = scenarios.size();
 
 		// TABLE OF ENCODINGS

@@ -14,6 +14,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Func;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
@@ -492,20 +493,21 @@ public class CpogParsingTool {
         visualCpog.select(prevSelection);
     }
 
-    public static void getScenarios(VisualCPOG visualCpog, ArrayList<VisualTransformableNode> groups) {
-            ArrayList<Node> prevSelection = copySelected(visualCpog);
-            visualCpog.selectAll();
+    public static ArrayList<VisualTransformableNode> getScenarios(VisualCPOG visualCpog) {
+    	ArrayList<VisualTransformableNode> result = new ArrayList<>();
+    	ArrayList<Node> prevSelection = copySelected(visualCpog);
+    	visualCpog.selectAll();
 
-            for(Node n : visualCpog.getSelection()) {
-                if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
-                    if (prevSelection.contains(n)) {
-                        groups.add((VisualTransformableNode) n);
-                    }
-                }
-            }
-
-            visualCpog.select(prevSelection);
-        }
+    	for(Node n : visualCpog.getSelection()) {
+    		if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
+    			if (prevSelection.contains(n)) {
+    				result.add((VisualTransformableNode) n);
+    			}
+    		}
+    	}
+    	visualCpog.select(prevSelection);
+    	return result;
+    }
 
     public int findVertex(ArrayList<ArrayList<Node>> outer, Node target)
 	 {
@@ -864,6 +866,11 @@ public class CpogParsingTool {
 
         return result;
     }
+
+	public static boolean hasEnoughScenarios(WorkspaceEntry we) {
+		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+		return (getScenarios(cpog).size() > 1);
+	}
 
 /*    public void combineConditions(String old, String newCond, final VisualCPOG visualCpog) throws ParseException {
         if (!old.contains(newCond)) {

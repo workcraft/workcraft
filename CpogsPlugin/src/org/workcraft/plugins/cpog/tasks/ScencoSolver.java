@@ -27,9 +27,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoSolver {
 
+	public static final String TITLE_SCENCO_ERROR = "SCENCO error";
+	public static final String MSG_NOT_ENOUGH_SCENARIOS = "Not enough scenarios. Select at least two scenarios.";
+
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
-//	private File scenarioFile, encodingFile,resultDir;
 	private ScencoExecutionSupport cpogBuilder;
 	private VisualCPOG cpog;
 
@@ -83,8 +85,7 @@ public class ScencoSolver {
 		ArrayList<String> check;
 
 		cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
-		scenarios = new ArrayList<>();
-		CpogParsingTool.getScenarios(cpog, scenarios);
+		scenarios = CpogParsingTool.getScenarios(cpog);
 		we.captureMemento();
 
 		cpogBuilder.reset_vars(	verbose, genMode, numSol, customFlag, customPath, effort,
@@ -93,19 +94,9 @@ public class ScencoSolver {
 		events = new HashMap<String, Integer>();
 		positions = new ArrayList<Point2D>();
 		count = new ArrayList<Integer>();
-		n = 0;
 
 		// Scenario contains single graphs compose CPOG
 		m = scenarios.size();
-
-		// If less than two, do not encode scenarios
-		if (m < 2) {
-			args.add("ERROR");
-			args.add("At least two scenarios are expected");
-			args.add("Not enough scenarios");
-			return args;
-		}
-
 		// scan scenarios
 		n = cpogBuilder.scanScenarios(m, scenarios, events, positions, count);
 
@@ -123,7 +114,7 @@ public class ScencoSolver {
 		File scenarioFile = new File(workingDirectory , "scenarios.cpog");
 		File encodingFile = new File(workingDirectory, "custom.enc");
 		File resultDirectory = new File(workingDirectory, "result");
-		resultDirectory.mkdir(); // ???
+		resultDirectory.mkdir();
 		if((cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
 			cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
 			args.add("ERROR");
@@ -151,8 +142,8 @@ public class ScencoSolver {
 				if(!f.exists() || f.isDirectory()){
 					cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
 					args.add("ERROR");
-					args.add("At least two scenarios are expected");
-					args.add("Not enough scenarios");
+					args.add(MSG_NOT_ENOUGH_SCENARIOS);
+					args.add(TITLE_SCENCO_ERROR);
 					return args;
 				}
 			}
@@ -403,7 +394,6 @@ public class ScencoSolver {
 
 		we.saveMemento();
 	}
-
 
 	private void instantiateParameters(int elements, int scenarios){
 		scencoCommand = CpogSettings.getScencoCommand();

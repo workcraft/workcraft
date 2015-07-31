@@ -86,11 +86,11 @@ public class FileUtils {
 
 	public static String getTempPrefix(String title) {
 		// Prefix must be at least 3 symbols long.
-		if ((title != null) && title.isEmpty()) {
-			return TEMP_DIRECTORY_PREFIX;
-		} else {
-			return TEMP_DIRECTORY_PREFIX + title + "-";
+		String s = TEMP_DIRECTORY_PREFIX;
+		if ((title != null) && !title.isEmpty()) {
+			s = TEMP_DIRECTORY_PREFIX + title + "-";
 		}
+		return s.replaceAll("\\s","_");
 	}
 
 	public static File createTempDirectory(String prefix) {

@@ -2,6 +2,8 @@ package org.workcraft.plugins.cpog.tools;
 
 import java.io.File;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.gui.MainWindow;
@@ -43,23 +45,28 @@ public class ScencoHeuristicTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();
-		settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
-		pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-		dialog = new ScencoConstrainedSearchDialog(mainWindow, pmgr, settings, we, "Heuristic encoding", 0);
+		if ( !CpogParsingTool.hasEnoughScenarios(we) ) {
+			JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS,
+					ScencoSolver.TITLE_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
+		} else {
+			settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
+			pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
+			dialog = new ScencoConstrainedSearchDialog(mainWindow, pmgr, settings, we, "Heuristic encoding", 0);
 
-		GUI.centerToParent(dialog, mainWindow);
-		dialog.setVisible(true);
-		// TASK INSERTION
-		if (dialog.getModalResult() == 1) {
-			//dialog.getEncoder();
+			GUI.centerToParent(dialog, mainWindow);
+			dialog.setVisible(true);
+			// TASK INSERTION
+			if (dialog.getModalResult() == 1) {
+				//dialog.getEncoder();
 
-			// Instantiate Solver
-			ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);
-			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(we, solver);
-			// Instantiate object for handling solution
-			ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
-			//Run both
-			framework.getTaskManager().queue(scencoTask, "Heuristic encoding execution", resultScenco);
+				// Instantiate Solver
+				ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);
+				final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(we, solver);
+				// Instantiate object for handling solution
+				ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
+				//Run both
+				framework.getTaskManager().queue(scencoTask, "Heuristic encoding execution", resultScenco);
+			}
 		}
 	}
 

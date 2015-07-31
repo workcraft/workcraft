@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -21,12 +20,12 @@ public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Environment URI";
+		return "Environment";
 	}
 
 	@Override
 	public Class<?> getType() {
-		return URI.class;
+		return File.class;
 	}
 
 	@Override

@@ -25,8 +25,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -73,7 +73,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 		propertyClasses.put(boolean.class, new BooleanProperty());
 		propertyClasses.put(Boolean.class, new BooleanProperty());
 		propertyClasses.put(Color.class, new ColorProperty());
-		propertyClasses.put(URI.class, new FileProperty());
+		propertyClasses.put(File.class, new FileProperty());
 
 		final Framework framework = Framework.getInstance();
 		PluginManager pluginManager = framework.getPluginManager();

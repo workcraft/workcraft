@@ -152,8 +152,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
 	private void createButtonPanel(final String string) {
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
-		ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
-		CpogParsingTool.getScenarios(cpog, scenarios);
+		ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
 		m = scenarios.size();
 
 		int value = 2;

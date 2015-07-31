@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cpog.gui;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -21,7 +19,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -38,6 +35,8 @@ import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.IntDocument;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class ScencoSatBasedDialog extends JDialog {
@@ -162,8 +161,7 @@ public class ScencoSatBasedDialog extends JDialog {
 
 	private void createGenerationPanel() {
 		VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
-		ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
-		CpogParsingTool.getScenarios(cpog, scenarios);
+		ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
 		m = scenarios.size();
 
 		generationPanel = new JPanel(new SimpleFlowLayout());
@@ -264,10 +262,8 @@ public class ScencoSatBasedDialog extends JDialog {
 	}
 
 	private void sizeWindow(int width, int height, int row1, int row2) {
-		// setMaximumSize(new Dimension(width,height));
 		setMinimumSize(new Dimension(width, height));
 		setPreferredSize(new Dimension(width, height));
-		// layout.setRow(new double[] {row1, row2});
 		pack();
 
 	}
