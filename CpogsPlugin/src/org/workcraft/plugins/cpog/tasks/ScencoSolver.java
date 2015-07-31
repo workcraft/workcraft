@@ -277,7 +277,7 @@ public class ScencoSolver {
 				StringTokenizer string = new StringTokenizer(stdOut[i], " ");
 				int j = 0;
 				string.nextElement();
-				while (string.hasMoreElements()) {
+				while (j < m) {
 					opt_enc[j++] = (String) string.nextElement();
 				}
 			}

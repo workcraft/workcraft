@@ -24,8 +24,12 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 			String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
 			final Framework framework = Framework.getInstance();
 			if(errorMessage.contains("Internal error")){
-				JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
+				String[] sentence = result.getReturnValue().getStdout().split("\n");
+				for (int i=0; i <sentence.length; i++){
+					System.out.println(sentence[i]);
+				}
 			}
+			JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
 
 
 		} else if (result.getOutcome() == Outcome.FINISHED) {
