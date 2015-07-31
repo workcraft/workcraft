@@ -77,7 +77,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 			command.add(stgFile.getCanonicalPath());
 
 			// Call petrify on command line.
-			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, new File("."));
+			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDirectory);
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends ExternalProcessResult> res = externalProcessTask.run(mon);
 

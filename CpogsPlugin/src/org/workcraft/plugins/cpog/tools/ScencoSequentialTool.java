@@ -52,9 +52,9 @@ public class ScencoSequentialTool implements Tool {
 		dialog.setVisible(true);
 		// TASK INSERTION
 		if (dialog.getModalResult() == 1) {
+			ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);
 			// Instantiate Solver
-			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(dialog.getSettings(),we,
-					new ScencoSolver(dialog.getSettings(), we));
+			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(we, solver);
 			// Instantiate object for handling solution
 			ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
 			//Run both

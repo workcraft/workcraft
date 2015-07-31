@@ -1,6 +1,5 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
 		command.add(outputPath);
 
 
-		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
+		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, null).run(monitor);
 
 		if (res.getOutcome() != Outcome.FINISHED)
 			return res;

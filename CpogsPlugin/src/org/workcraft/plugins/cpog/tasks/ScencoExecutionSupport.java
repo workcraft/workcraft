@@ -35,6 +35,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -95,10 +97,12 @@ public class ScencoExecutionSupport {
 
 	// FUNCTION FOR PARSING FILE CONTAINING BEST SOLUTION FOUND. IT PRINTS
 	// THE MICROCONTROLLER SYNTHESISED WITH ABC TOOL
-	protected void printController(int m, File resultDir, String[] opt_enc){
+	protected void printController(int m, String resultDirectoryPath, String[] opt_enc){
 		System.out.println();
-		String fileName = resultDir.getAbsolutePath();
-		for(int i=0; i<m; i++) fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
+		String fileName = resultDirectoryPath;
+		for(int i=0; i<m; i++) {
+			fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
+		}
 		fileName = fileName.concat(".prg");
 		File f = new File(fileName);
 		if(f.exists() && !f.isDirectory()){
@@ -123,16 +127,9 @@ public class ScencoExecutionSupport {
 	}
 
 	// FUNCTION FOR DELETING TEMPORARY FILE USED BY SCENCO TOOL
-	protected void deleteTempFiles(File scenarioFile, File encodingFile, File resultDir){
-		if ((scenarioFile != null) &&scenarioFile.exists()) {
-			scenarioFile.delete();
-		}
-		if ((encodingFile != null) && encodingFile.exists()) {
-			encodingFile.delete();
-		}
-		if((resultDir != null) && resultDir.exists()){
-			resultDir.delete();
-		}
+	protected void deleteTempFiles(File workingDirectory, File resultDirectory){
+		FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
+		FileUtils.deleteFile(resultDirectory, CommonDebugSettings.getKeepTemporaryFiles());
 	}
 
 

@@ -54,8 +54,8 @@ public class ScencoSingleLiteralTool implements Tool {
 			//dialog.getEncoder();
 
 			// Instantiate Solver
-			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(dialog.getSettings(),we,
-					new ScencoSolver(dialog.getSettings(), we));
+			ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);
+			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(we, solver);
 			// Instantiate object for handling solution
 			ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
 			//Run both

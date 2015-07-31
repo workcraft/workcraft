@@ -19,8 +19,11 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 
 	@Override
 	public void finished(Result<? extends ScencoResult> result, String description) {
-		if (result.getOutcome() == Outcome.FAILED) {
-
+		if (result.getOutcome() == Outcome.FINISHED) {
+			String[] stdoutLines = result.getReturnValue().getStdout().split("\n");
+			String resultDirectory = result.getReturnValue().getResultDirectory();
+			solver.handleResult(stdoutLines, resultDirectory);
+		} else if (result.getOutcome() == Outcome.FAILED) {
 			String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
 			final Framework framework = Framework.getInstance();
 			if(errorMessage.contains("Internal error")){
@@ -30,13 +33,8 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 				}
 			}
 			JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
-
-
-		} else if (result.getOutcome() == Outcome.FINISHED) {
-
-			solver.handleResult(result.getReturnValue().getStdout().split("\n"));
-			}
 		}
+	}
 
 	// Get the error from the STDOUT of SCENCO
 	private String getErrorMessage(String msg) {

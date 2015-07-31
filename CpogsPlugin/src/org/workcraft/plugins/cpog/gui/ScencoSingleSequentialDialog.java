@@ -88,7 +88,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(365,140,200,100);
+		sizeWindow(365,155,200,100);
 	}
 
 	private void createStandardPanel() {
@@ -97,7 +97,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
 				// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
 				optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
-				optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
+				//optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
 				OptimiseBox = new JComboBox<String>();
 				OptimiseBox.setEditable(false);
 				OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
@@ -109,7 +109,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 				// ABC TOOL DISABLE FLAG
 				abcCheck = new JCheckBox("", settings.isAbcFlag());
 				abcLabel = new JLabel(ScencoDialogSupport.textAbcLabel);
-				abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
+				//abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 				abcLabel.addMouseListener(new MouseAdapter()
 				{
 				    public void mouseClicked(MouseEvent e)
@@ -127,7 +127,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
 				// VERBOSE MODE INSTANTIATION
 				verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
-				verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
+				//verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
 				verboseModeCheck = new JCheckBox("",false);
 				verboseModeLabel.addMouseListener(new MouseAdapter()
 				{
@@ -236,7 +236,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
 	private void sizeWindow(int width, int height, int row1, int row2){
 		setMinimumSize(new Dimension(width,height));
-		setPreferredSize(new Dimension(width,height));
+		//setPreferredSize(new Dimension(width,height));
 		pack();
 
 	}

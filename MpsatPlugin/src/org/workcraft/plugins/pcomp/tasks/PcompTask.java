@@ -79,7 +79,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
 			command.add(inputFile.getAbsolutePath());
 		}
 
-		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
+		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, workingDirectory).run(monitor);
 		if (res.getOutcome() != Outcome.FINISHED) {
 			return res;
 		}

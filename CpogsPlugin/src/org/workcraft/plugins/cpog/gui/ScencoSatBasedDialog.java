@@ -103,7 +103,7 @@ public class ScencoSatBasedDialog extends JDialog {
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(365, 240, 200, 100);
+		sizeWindow(395, 240, 200, 100);
 	}
 
 	private void createStandardPanel() {
@@ -112,7 +112,7 @@ public class ScencoSatBasedDialog extends JDialog {
 
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
 		optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
-		optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
+		//optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
 		OptimiseBox = new JComboBox<String>();
 		OptimiseBox.setEditable(false);
 		OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
@@ -124,7 +124,7 @@ public class ScencoSatBasedDialog extends JDialog {
 		// ABC TOOL DISABLE FLAG
 		abcCheck = new JCheckBox("", settings.isAbcFlag());
 		abcLabel = new JLabel("Use ABC for logic synthesis");
-		abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
+		//abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		abcLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				abcCheck.setSelected(abcCheck.isSelected() ? false : true);
@@ -140,7 +140,7 @@ public class ScencoSatBasedDialog extends JDialog {
 
 		// VERBOSE MODE INSTANTIATION
 		verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
-		verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
+		//verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
 		verboseModeCheck = new JCheckBox("", false);
 		verboseModeLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -171,9 +171,9 @@ public class ScencoSatBasedDialog extends JDialog {
 				.createTitledBorder("Encoding parameters"));
 
 		bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
-		bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);
+		//bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);
 		circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
-		circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeLabel);
+		//circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeLabel);
 		int value = 2;
 		while (value < m) {
 			value *= 2;

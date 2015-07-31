@@ -1,6 +1,5 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 			command.add(outputPath);
 		}
 
-		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
+		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, null).run(monitor);
 		if (res.getOutcome() != Outcome.FINISHED) {
 			return res;
 		}

@@ -13,7 +13,6 @@ import org.workcraft.plugins.cpog.gui.ScencoConstrainedSearchDialog;
 import org.workcraft.plugins.cpog.tasks.ScencoExternalToolTask;
 import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
-import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -55,8 +54,8 @@ public class ScencoHeuristicTool implements Tool {
 			//dialog.getEncoder();
 
 			// Instantiate Solver
-			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(dialog.getSettings(),we,
-					new ScencoSolver(dialog.getSettings(), we));
+			ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);
+			final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(we, solver);
 			// Instantiate object for handling solution
 			ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
 			//Run both

@@ -94,9 +94,9 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		createButtonPanel(mode);
 
 		if(mode != 1){
-			height = 120;
+			height = 135;
 		}else{
-			height = 95;
+			height = 110;
 		}
 
 		double size[][] = new double[][] { { TableLayout.FILL },
@@ -125,9 +125,9 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 		if (mode != 1){
-			sizeWindow(495, 560, 200, 100);
+			sizeWindow(570, 570, 200, 100);
 		}else{
-			sizeWindow(495, 520, 200, 100);
+			sizeWindow(570, 530, 200, 100);
 		}
 	}
 
@@ -142,10 +142,10 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 				ScencoDialogSupport.normalBitText +
 				ScencoDialogSupport.dontCareBit + ScencoDialogSupport.dontCareBitText +
 				ScencoDialogSupport.reservedBit + ScencoDialogSupport.reservedBitText);
-		exampleLabel.setPreferredSize(ScencoDialogSupport.dimensionCustomExampleLabel);
+		//exampleLabel.setPreferredSize(ScencoDialogSupport.dimensionCustomExampleLabel);
 
 		customEncLabel = new JLabel(ScencoDialogSupport.textCustomiseLabel);
-		customEncLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
+		//customEncLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		customEncodings = new JCheckBox("", false);
 		customEncLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -183,9 +183,9 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		});
 
 		bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
-		bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabelCustom);
+		//bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabelCustom);
 		circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
-		circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
+		//circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		int value = 2;
 		while (value < m) {
 			value *= 2;
@@ -276,7 +276,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
 		optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
-		optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
+		//optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
 		OptimiseBox = new JComboBox<String>();
 		OptimiseBox.setEditable(false);
 		OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
@@ -300,7 +300,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 				}
 			}
 		});
-		abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
+		//abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		abcCheck.addActionListener(new ActionListener() {
 
 			@Override
@@ -317,7 +317,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
 		// VERBOSE MODE INSTANTIATION
 		verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
-		verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
+		//verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		verboseModeCheck = new JCheckBox("", false);
 		verboseModeLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -351,7 +351,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		if (mode != 1){
 			// NUMBER OF SOLUTIONS TO GENERATE
 			numberOfSolutionsLabel = new JLabel(ScencoDialogSupport.textNumberSolutionLabel);
-			numberOfSolutionsLabel.setPreferredSize(ScencoDialogSupport.dimensionNumberSolutionLabel);
+			//numberOfSolutionsLabel.setPreferredSize(ScencoDialogSupport.dimensionNumberSolutionLabel);
 			numberOfSolutionsText = new JTextField();
 			numberOfSolutionsText.setDocument(new IntDocument(3));
 			numberOfSolutionsText.setText(String.valueOf(settings

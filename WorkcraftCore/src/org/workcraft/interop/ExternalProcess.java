@@ -112,13 +112,13 @@ public class ExternalProcess {
 
 	private LinkedList<ExternalProcessListener> listeners = new LinkedList<ExternalProcessListener>();
 
-	public ExternalProcess (String[] command, String workingDirectory) {
+	public ExternalProcess (String[] command, String workingDirectoryPath) {
 		processBuilder = new ProcessBuilder(command);
-		processBuilder.directory(workingDirectory == null? null : new File(workingDirectory));
+		processBuilder.directory(workingDirectoryPath == null? null : new File(workingDirectoryPath));
 	}
 
 	public ExternalProcess(String[] array, File workingDir) {
-		this(array, workingDir.getAbsolutePath());
+		this(array, (workingDir == null ? null : workingDir.getAbsolutePath()));
 	}
 
 	private void outputData(byte[] data) {

@@ -2,7 +2,6 @@ package org.workcraft.plugins.cpog.tasks;
 
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -22,6 +21,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -29,7 +29,7 @@ public class ScencoSolver {
 
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
-	private File scenarioFile, encodingFile,resultDir;
+//	private File scenarioFile, encodingFile,resultDir;
 	private ScencoExecutionSupport cpogBuilder;
 	private VisualCPOG cpog;
 
@@ -99,9 +99,7 @@ public class ScencoSolver {
 		m = scenarios.size();
 
 		// If less than two, do not encode scenarios
-		if (m < 2)
-		{
-			cpogBuilder.deleteTempFiles(scenarioFile, encodingFile, resultDir);
+		if (m < 2) {
 			args.add("ERROR");
 			args.add("At least two scenarios are expected");
 			args.add("Not enough scenarios");
@@ -120,14 +118,14 @@ public class ScencoSolver {
 			return check;
 		}
 
-		try {
-			scenarioFile = File.createTempFile("scenarios", "cpog");
-			encodingFile = File.createTempFile("custom", "enc");
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
+		String prefix = FileUtils.getTempPrefix(we.getTitle());
+		File workingDirectory = FileUtils.createTempDirectory(prefix);
+		File scenarioFile = new File(workingDirectory , "scenarios.cpog");
+		File encodingFile = new File(workingDirectory, "custom.enc");
+		File resultDirectory = new File(workingDirectory, "result");
+		resultDirectory.mkdir(); // ???
 		if((cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
-			cpogBuilder.deleteTempFiles(scenarioFile, encodingFile, resultDir);
+			cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
 			args.add("ERROR");
 			args.add("Error on writing scenario file.");
 			args.add("Workcraft error");
@@ -151,7 +149,7 @@ public class ScencoSolver {
 				gateLibFlag = "-lib";
 				f = new File(abcFolder + gatesLibrary);
 				if(!f.exists() || f.isDirectory()){
-					cpogBuilder.deleteTempFiles(scenarioFile, encodingFile, resultDir);
+					cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
 					args.add("ERROR");
 					args.add("At least two scenarios are expected");
 					args.add("Not enough scenarios");
@@ -218,15 +216,6 @@ public class ScencoSolver {
 				System.out.println("Error");
 		}
 
-		//FileUtils.deleteDirectoryTree(new File(genEncodingDir));
-		try {
-			resultDir = File.createTempFile("folder-name","");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		resultDir.delete();
-		resultDir.mkdir();
-
 		//Adding arguments to list
 		scencoCommand = CpogSettings.getScencoCommand();
 		if (scencoCommand != null && !scencoCommand.isEmpty()) args.add(scencoCommand);
@@ -248,15 +237,14 @@ public class ScencoSolver {
 		if (gateLibFlag != null && !gateLibFlag.isEmpty()) args.add(gateLibFlag);
 		if (gatesLibrary != null && !gatesLibrary.isEmpty()) args.add(gatesLibrary);
 		args.add("-res");
-		if (resultDir.getAbsolutePath() != null && !resultDir.getAbsolutePath().isEmpty()) args.add(resultDir.getAbsolutePath());
+		if ((resultDirectory.getAbsolutePath() != null) && !resultDirectory.getAbsolutePath().isEmpty()) args.add(resultDirectory.getAbsolutePath());
 		if (modBitFlag != null && !modBitFlag.isEmpty()) args.add(modBitFlag);
 		if (modBit != null && !modBit.isEmpty()) args.add(modBit);
 
 		return args;
-
 	}
 
-	public void handleResult(String[] stdOut){
+	public void handleResult(String[] outputLines, String resultDirectoryPath){
 		opt_enc = new String[m];
 		opt_formulaeVertices = new String[n*n];
 		truthTableVertices =  new String[n*n];
@@ -267,14 +255,14 @@ public class ScencoSolver {
 		truthTableArcs =  new String[n*n];
 		arcNames = new String[n*n];
 
-		for (int i=0; i <stdOut.length; i++){
+		for (int i=0; i <outputLines.length; i++){
 			if(settings.isVerboseMode())
-				System.out.println(stdOut[i]);
+				System.out.println(outputLines[i]);
 
 			// Read Optimal Encoding
-			if(stdOut[i].contains("MIN: ")){
+			if(outputLines[i].contains("MIN: ")){
 
-				StringTokenizer string = new StringTokenizer(stdOut[i], " ");
+				StringTokenizer string = new StringTokenizer(outputLines[i], " ");
 				int j = 0;
 				string.nextElement();
 				while (j < m) {
@@ -283,13 +271,13 @@ public class ScencoSolver {
 			}
 
 			// Read Optimal Formulae
-			if(stdOut[i].contains(".start_formulae")){
+			if(outputLines[i].contains(".start_formulae")){
 				i++;
 				v = 0; a = 0;
-				while(stdOut[i].contains(".end_formulae") == false){
+				while(outputLines[i].contains(".end_formulae") == false){
 					if(settings.isVerboseMode())
-						System.out.println(stdOut[i]);
-					StringTokenizer st2 = new StringTokenizer(stdOut[i], ",");
+						System.out.println(outputLines[i]);
+					StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
 					String el = (String)st2.nextElement();
 					if(el.equals("V")){ //formula of a vertex
 						opt_vertices[v] = (String) st2.nextElement();
@@ -308,17 +296,17 @@ public class ScencoSolver {
 			}
 
 			// Read statistics
-			if(stdOut[i].contains(".statistics")){
+			if(outputLines[i].contains(".statistics")){
 				i++;
-				while(stdOut[i].contains(".end_statistics") == false){
-					System.out.println(stdOut[i]);
+				while(outputLines[i].contains(".end_statistics") == false){
+					System.out.println(outputLines[i]);
 					i++;
 				}
 			}
 		}
 
 		// Print controller
-		cpogBuilder.printController(m, resultDir, opt_enc);
+		cpogBuilder.printController(m, resultDirectoryPath, opt_enc);
 
 		// group similar constraints
 		HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
