@@ -786,7 +786,7 @@ public class CpogParsingTool {
 			 if (startPoint == null) {
 				 startPoint = new Point2D.Double (centre.getX(), centre.getY());
 			 } else {
-				 if (centre.getY() < startPoint.getY()) {
+				 if (centre.getY() > startPoint.getY()) {
 				 	startPoint.setLocation(startPoint.getX(), centre.getY());
 			 	}
 				 if (centre.getX() < startPoint.getX()){
@@ -796,16 +796,13 @@ public class CpogParsingTool {
 		 }
 		 for(VisualScenarioPage page : pages) {
 			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) page.getBoundingBox();
-			 Point2D.Double bl = new Point2D.Double(rect.getCenterX(), rect.getCenterY() + (rect.getHeight()/2));
+			 Point2D.Double bl = new Point2D.Double(0, rect.getCenterY() + (rect.getHeight()/2));
 
 			 if (startPoint == null) {
 				 startPoint = new Point2D.Double(bl.getX(), bl.getY());
 			 } else {
 				 if (bl.getY() > startPoint.getY()) {
 					 startPoint.setLocation(startPoint.getX(), bl.getY());
-				 }
-				 if (bl.getX() < startPoint.getX()) {
-					 startPoint.setLocation(bl.getX(), startPoint.getY());
 				 }
 			 }
 		 }
@@ -819,6 +816,7 @@ public class CpogParsingTool {
 		 return startPoint;
 
 	 }
+
 
 	 public ArrayList<String> getUsedReferences()
 	 {
