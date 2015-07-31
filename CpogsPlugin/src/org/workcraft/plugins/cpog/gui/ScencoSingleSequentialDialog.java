@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cpog.gui;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -34,6 +32,8 @@ import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class ScencoSingleSequentialDialog extends JDialog {
@@ -88,7 +88,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(365,155,200,100);
+		sizeWindow(365, 151, 200, 100);
 	}
 
 	private void createStandardPanel() {
@@ -195,7 +195,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 				//settings.setSolutionNumber(Integer.parseInt(numberOfSolutionsText.getText()));
 
 				// generation mode selection
-				settings.setGenerationModeInt(string.matches("Single-literal Search") ? 4 : 5);
+				settings.setGenerationModeInt(string.matches("Single-literal encoding") ? 4 : 5);
 
 
 				// custom encodings

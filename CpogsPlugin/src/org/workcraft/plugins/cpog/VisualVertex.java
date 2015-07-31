@@ -92,8 +92,9 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 			        BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));
 		} else {
 			g.setStroke(new BasicStroke((float)strokeWidth));
-			if (value != One.instance())
-				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, colorisation));
+// FIXME: Gray colour of vertices with undecided conditions is confusing.
+//			if (value != One.instance())
+//				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, colorisation));
 		}
 		g.draw(shape);
 		drawConditionInLocalSpace(r);

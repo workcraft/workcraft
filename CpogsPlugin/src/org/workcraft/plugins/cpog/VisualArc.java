@@ -95,11 +95,12 @@ public class VisualArc extends VisualConnection {
 
 	@Override
 	public Color getDrawColor() {
-		BooleanFormula value = evaluate();
-
-		if (value == Zero.instance() || value == One.instance()) return super.getDrawColor();
-
-		return Color.LIGHT_GRAY;
+// FIXME: Gray colour of arcs with undecided conditions is confusing.
+//		BooleanFormula value = evaluate();
+//		if ((value != Zero.instance() && (value != One.instance())) {
+//			return Color.LIGHT_GRAY;
+//		}
+		return super.getDrawColor();
 	}
 
 	private BooleanFormula evaluate() {

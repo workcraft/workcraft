@@ -52,7 +52,7 @@ public class ScencoSequentialTool implements Tool {
 		} else {
 			settings = new EncoderSettings(10, GenerationMode.SEQUENTIAL, false, false);
 			pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-			dialog = new ScencoSingleSequentialDialog(mainWindow, pmgr, settings, we, "Sequential Encoding");
+			dialog = new ScencoSingleSequentialDialog(mainWindow, pmgr, settings, we, "Sequential encoding");
 
 			GUI.centerToParent(dialog, mainWindow);
 			dialog.setVisible(true);
@@ -64,7 +64,7 @@ public class ScencoSequentialTool implements Tool {
 				// Instantiate object for handling solution
 				ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
 				//Run both
-				framework.getTaskManager().queue(scencoTask, "Sequential Encoding execution", resultScenco);
+				framework.getTaskManager().queue(scencoTask, "Sequential encoding execution", resultScenco);
 			}
 		}
 	}

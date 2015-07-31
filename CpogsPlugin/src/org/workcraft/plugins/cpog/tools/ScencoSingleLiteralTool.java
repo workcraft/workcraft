@@ -39,7 +39,7 @@ public class ScencoSingleLiteralTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Single-literal encoding";
+		return "Single-literal search";
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class ScencoSingleLiteralTool implements Tool {
 		} else {
 			settings = new EncoderSettings(10, GenerationMode.OLD_SYNT, false, false);
 			pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
-			dialog = new ScencoSingleSequentialDialog(mainWindow, pmgr, settings, we, "Single-literal Search");
+			dialog = new ScencoSingleSequentialDialog(mainWindow, pmgr, settings, we, "Single-literal encoding");
 
 			GUI.centerToParent(dialog, mainWindow);
 			dialog.setVisible(true);
@@ -65,7 +65,7 @@ public class ScencoSingleLiteralTool implements Tool {
 				// Instantiate object for handling solution
 				ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
 				//Run both
-				framework.getTaskManager().queue(scencoTask, "Single-literal Search execution", resultScenco);
+				framework.getTaskManager().queue(scencoTask, "Single-literal encoding execution", resultScenco);
 			}
 		}
 	}
