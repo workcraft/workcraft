@@ -15,7 +15,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MineSelectedGraphs extends PGMinerTool{
 
 	public String getDisplayName() {
-		return "Process mine selected graphs";
+		return "Extract concurrency";
 	}
 
 	@Override

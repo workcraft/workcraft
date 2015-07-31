@@ -13,7 +13,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class ImportAndMineEventLog extends PGMinerTool {
 
 	public String getDisplayName() {
-		return "Mine event log and import";
+		return "Import event log and extract concurrency";
 	}
 
 	public File getInputFile(WorkspaceEntry we) {

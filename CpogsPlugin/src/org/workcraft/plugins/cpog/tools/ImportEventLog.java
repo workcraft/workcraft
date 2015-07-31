@@ -61,7 +61,7 @@ public class ImportEventLog extends PGMinerTool {
 						line = line.substring(0, line.length() - 1);
 					}
 					line = line.replace(" ", " -> ");
-					line = "e" + (i++) + " = " + line;
+					line = "t" + (i++) + " = " + line;
 					System.out.println(line);
 					visualCpog.getSelectionTool().insertExpression(line, false, false, true);
 				}

@@ -74,11 +74,12 @@ public class CpogModule implements Module {
 			}
 		});
 
+		pm.registerClass(Tool.class, ImportEventLog.class);
+
 		pm.registerClass(Tool.class, MineSelectedGraphs.class);
 
 		pm.registerClass(Tool.class, ImportAndMineEventLog.class);
 
-		pm.registerClass(Tool.class, ImportEventLog.class);
 
 	}
 
