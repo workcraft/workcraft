@@ -18,17 +18,17 @@ import org.workcraft.util.FileUtils;
 public class MpsatTask implements Task<ExternalProcessResult> {
 	private final String[] args;
 	private final String inputFileName;
-	private final File workingDirectory;
+	private final File directory;
 	private final boolean tryPnml;
 
-	public MpsatTask(String[] args, String inputFileName, File workingDirectory, boolean tryPnml) {
+	public MpsatTask(String[] args, String inputFileName, File directory, boolean tryPnml) {
 		this.args = args;
 		this.inputFileName = inputFileName;
-		if (workingDirectory == null) {
+		if (directory == null) {
 			// Prefix must be at least 3 symbols long.
-			workingDirectory = FileUtils.createTempDirectory("mpsat-");
+			directory = FileUtils.createTempDirectory("mpsat-");
 		}
-		this.workingDirectory = workingDirectory;
+		this.directory = directory;
 		this.tryPnml = tryPnml;
 	}
 
@@ -50,7 +50,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		// Input file argument
 		command.add(inputFileName);
 
-		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDirectory);
+		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command);
 		Result<? extends ExternalProcessResult> res = externalProcessTask.run(monitor);
 		if(res.getOutcome() == Outcome.CANCELLED) {
 			return res;
@@ -59,11 +59,11 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 		try {
 			String unfoldingFileName = "mpsat" + MpsatUtilitySettings.getUnfoldingExtension(tryPnml);
-			File unfoldingFile = new File(workingDirectory, unfoldingFileName);
+			File unfoldingFile = new File(directory, unfoldingFileName);
 			if(unfoldingFile.exists()) {
 				outputFiles.put(unfoldingFileName, FileUtils.readAllBytes(unfoldingFile));
 			}
-			File g = new File(workingDirectory, "mpsat.g");
+			File g = new File(directory, "mpsat.g");
 			if(g.exists()) {
 				outputFiles.put("mpsat.g", FileUtils.readAllBytes(g));
 			}

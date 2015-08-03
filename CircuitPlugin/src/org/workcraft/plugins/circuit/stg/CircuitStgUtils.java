@@ -41,11 +41,11 @@ public class CircuitStgUtils {
 		VisualSTG resultStg = null;
 		Framework framework = Framework.getInstance();
 		String prefix = FileUtils.getTempPrefix(title);
-		File workingDirectory = FileUtils.createTempDirectory(prefix);
+		File directory = FileUtils.createTempDirectory(prefix);
 		try {
-			File devStgFile = exportDevStg(devStg, workingDirectory);
-			File envStgFile = exportEnvStg(envFile, workingDirectory);
-			File stgFile = composeDevStgWithEnvStg(devStgFile, envStgFile, workingDirectory);
+			File devStgFile = exportDevStg(devStg, directory);
+			File envStgFile = exportEnvStg(envFile, directory);
+			File stgFile = composeDevStgWithEnvStg(devStgFile, envStgFile, directory);
 			if (stgFile != null) {
 				WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
 				STG stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
@@ -54,19 +54,19 @@ public class CircuitStgUtils {
 			}
 		} catch (Throwable e) {
 		} finally {
-			FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 		return resultStg;
 	}
 
-	private static File composeDevStgWithEnvStg(File devStgFile, File envStgFile, File workingDirectory) throws IOException {
+	private static File composeDevStgWithEnvStg(File devStgFile, File envStgFile, File directory) throws IOException {
 		File stgFile = null;
 		Framework framework = Framework.getInstance();
 		if ((devStgFile != null) && (envStgFile != null)) {
 			// Generating .g for the whole system (circuit and environment)
-			stgFile = new File(workingDirectory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+			stgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 			PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile},
-					ConversionMode.OUTPUT, true, false, workingDirectory);
+					ConversionMode.OUTPUT, true, false, directory);
 
 			Result<? extends ExternalProcessResult>  pcompResult = framework.getTaskManager().execute(
 					pcompTask, "Running pcomp", null);
@@ -80,7 +80,7 @@ public class CircuitStgUtils {
 		return stgFile;
 	}
 
-	private static File exportEnvStg(File envFile, File workingDirectory) throws DeserialisationException, IOException {
+	private static File exportEnvStg(File envFile, File directory) throws DeserialisationException, IOException {
 		Framework framework = Framework.getInstance();
 		File envStgFile = null;
 		if (envFile.getName().endsWith(StgUtils.ASTG_FILE_EXT)) {
@@ -88,7 +88,7 @@ public class CircuitStgUtils {
 		} else {
 			STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 			Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-			envStgFile = new File(workingDirectory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+			envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 			ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
 			Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 					envExportTask, "Exporting environment .g", null);
@@ -99,7 +99,7 @@ public class CircuitStgUtils {
 		return envStgFile;
 	}
 
-	private static File exportDevStg(VisualSTG visualStg, File workingDirectory) throws IOException {
+	private static File exportDevStg(VisualSTG visualStg, File directory) throws IOException {
 		Framework framework = Framework.getInstance();
 
 		STG devStg = (STG)visualStg.getMathModel();
@@ -108,7 +108,7 @@ public class CircuitStgUtils {
 			throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to .g format.");
 		}
 
-		File devStgFile =  new File(workingDirectory, StgUtils.DEVICE_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+		File devStgFile =  new File(directory, StgUtils.DEVICE_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 		ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
 		Result<? extends Object> devExportResult = framework.getTaskManager().execute(
 				devExportTask, "Exporting device .g", null);

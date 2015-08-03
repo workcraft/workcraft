@@ -58,26 +58,26 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		}
 
 		String prefix = FileUtils.getTempPrefix(we.getTitle());
-		File workingDirectory = FileUtils.createTempDirectory(prefix);
+		File directory = FileUtils.createTempDirectory(prefix);
 		try {
-			File equationsFile = new File(workingDirectory, "petrify.eqn");
+			File equationsFile = new File(directory, "petrify.eqn");
 			command.add("-eqn");
 			command.add(equationsFile.getCanonicalPath());
 
-			File verilogFile = new File(workingDirectory, "petrify.v");
+			File verilogFile = new File(directory, "petrify.v");
 			command.add("-vl");
 			command.add(verilogFile.getCanonicalPath());
 
-			File logFile = new File(workingDirectory, "petrify.log");
+			File logFile = new File(directory, "petrify.log");
 			command.add("-log");
 			command.add(logFile.getCanonicalPath());
 
 			STGModel stg = WorkspaceUtils.getAs(we, STGModel.class);
-			File stgFile = getInputSTG(stg, workingDirectory);
+			File stgFile = getInputSTG(stg, directory);
 			command.add(stgFile.getCanonicalPath());
 
 			// Call petrify on command line.
-			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, workingDirectory);
+			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command);
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends ExternalProcessResult> res = externalProcessTask.run(mon);
 
@@ -102,18 +102,18 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		} catch (IOException e1) {
 			throw new RuntimeException(e1);
 		} finally {
-			FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 
-	private File getInputSTG(Model model, File workingDirectory) throws IOException {
+	private File getInputSTG(Model model, File directory) throws IOException {
 		final Framework framework = Framework.getInstance();
 		Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 		if (stgExporter == null) {
 			throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
 		}
 
-		File stgFile = new File(workingDirectory, "petrify" + stgExporter.getExtenstion());
+		File stgFile = new File(directory, "petrify" + stgExporter.getExtenstion());
 		ExportTask exportTask = new ExportTask(stgExporter, model, stgFile.getCanonicalPath());
 		Result<? extends Object> res = framework.getTaskManager().execute(exportTask, "Exporting .g");
 		if (res.getOutcome() != Outcome.FINISHED) {

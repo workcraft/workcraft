@@ -126,13 +126,6 @@ public class ScencoExecutionSupport {
 		return;
 	}
 
-	// FUNCTION FOR DELETING TEMPORARY FILE USED BY SCENCO TOOL
-	protected void deleteTempFiles(File workingDirectory, File resultDirectory){
-		FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
-		FileUtils.deleteFile(resultDirectory, CommonDebugSettings.getKeepTemporaryFiles());
-	}
-
-
 	// RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
 	protected void reset_vars(String verbose, String genMode, String numSol, String customFlag, String customPath, String effort, String espressoFlag, String abcFlag, String gateLibFlag, String cpogSize, String disableFunction, String oldSynt){
 		verbose = ""; genMode= ""; numSol= ""; customFlag= ""; customPath= ""; effort= ""; espressoFlag= "";

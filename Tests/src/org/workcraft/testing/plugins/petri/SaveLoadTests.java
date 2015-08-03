@@ -37,6 +37,7 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -75,7 +76,9 @@ public class SaveLoadTests {
 		Framework framework = Framework.getInstance();
 		framework.getPluginManager().loadManifest();
 
-		ModelEntry modelEntry = framework.load(new Base16Reader(testDataMathModel));
+		final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
+		ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel));
+		ModelEntry modelEntry = framework.load(bis);
 		PetriNet petri = (PetriNet)modelEntry.getModel();
 
 		Assert.assertNotNull(petri);
@@ -89,7 +92,9 @@ public class SaveLoadTests {
 		Framework framework = Framework.getInstance();
 		framework.getPluginManager().loadManifest();
 
-		ModelEntry modelEntry = framework.load(new Base16Reader(testDataVisualModel));
+		final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
+		ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel));
+		ModelEntry modelEntry = framework.load(bis);
 		VisualPetriNet petriVisual = (VisualPetriNet)modelEntry.getModel();
 		PetriNet petri = (PetriNet)petriVisual.getMathModel();
 
@@ -101,10 +106,7 @@ public class SaveLoadTests {
 		assertVisualPetriEquals(petriVisual, sample);
 	}
 
-	private void assertVisualPetriEquals(VisualPetriNet petriVisual,
-			VisualPetriNet sample) {
-		// TODO Auto-generated method stub
-
+	private void assertVisualPetriEquals(VisualPetriNet petriVisual, VisualPetriNet sample) {
 	}
 
 	@Test

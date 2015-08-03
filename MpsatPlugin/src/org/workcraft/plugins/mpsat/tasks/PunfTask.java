@@ -38,7 +38,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 		command.add("-m=" + outputPath);
 		command.add(inputPath);
 
-		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, null).run(monitor);
+		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command).run(monitor);
 
 		if (res.getOutcome() != Outcome.FINISHED) {
 			return res;

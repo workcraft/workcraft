@@ -21,6 +21,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -110,13 +111,13 @@ public class ScencoSolver {
 		}
 
 		String prefix = FileUtils.getTempPrefix(we.getTitle());
-		File workingDirectory = FileUtils.createTempDirectory(prefix);
-		File scenarioFile = new File(workingDirectory , "scenarios.cpog");
-		File encodingFile = new File(workingDirectory, "custom.enc");
-		File resultDirectory = new File(workingDirectory, "result");
+		File directory = FileUtils.createTempDirectory(prefix);
+		File scenarioFile = new File(directory , "scenarios.cpog");
+		File encodingFile = new File(directory, "custom.enc");
+		File resultDirectory = new File(directory, "result");
 		resultDirectory.mkdir();
 		if((cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
-			cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 			args.add("ERROR");
 			args.add("Error on writing scenario file.");
 			args.add("Workcraft error");
@@ -140,7 +141,7 @@ public class ScencoSolver {
 				gateLibFlag = "-lib";
 				f = new File(abcFolder + gatesLibrary);
 				if(!f.exists() || f.isDirectory()){
-					cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
+					FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 					args.add("ERROR");
 					args.add(MSG_NOT_ENOUGH_SCENARIOS);
 					args.add(TITLE_SCENCO_ERROR);

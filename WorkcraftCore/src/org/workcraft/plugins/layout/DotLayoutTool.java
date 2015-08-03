@@ -191,10 +191,10 @@ public class DotLayoutTool extends AbstractLayoutTool {
 	@Override
 	public void layout(VisualModel model) {
 		String prefix = FileUtils.getTempPrefix(model.getTitle());
-		File workingDirectory = FileUtils.createTempDirectory(prefix);
+		File directory = FileUtils.createTempDirectory(prefix);
 		try {
-			File original = new File(workingDirectory,"original.dot");
-			File layout = new File(workingDirectory, "layout.dot");
+			File original = new File(directory,"original.dot");
+			File layout = new File(directory, "layout.dot");
 
 			saveGraph((VisualModel)model, original);
 
@@ -205,7 +205,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 			args.add(layout.getAbsolutePath());
 			args.add(original.getAbsolutePath());
 
-			Task<ExternalProcessResult> task = new ExternalProcessTask(args, workingDirectory);
+			Task<ExternalProcessResult> task = new ExternalProcessTask(args);
 			final Framework framework = Framework.getInstance();
 			Result<? extends ExternalProcessResult> res = framework.getTaskManager().execute(task, "Laying out the graph...");
 
@@ -231,7 +231,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 		} catch (SerialisationException e) {
 			throw new RuntimeException(e);
 		} finally {
-			FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

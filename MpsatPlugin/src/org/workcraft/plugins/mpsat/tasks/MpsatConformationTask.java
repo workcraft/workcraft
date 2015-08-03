@@ -51,13 +51,13 @@ public class MpsatConformationTask extends MpsatChainTask {
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		Framework framework = Framework.getInstance();
-		File workingDirectory = null;
+		File directory = null;
 		try {
 			// Common variables
 			monitor.progressUpdate(0.10);
 			String title = we.getTitle();
 			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
-			workingDirectory = FileUtils.createTempDirectory(prefix);
+			directory = FileUtils.createTempDirectory(prefix);
 
 			STG devStg = (STG)we.getModelEntry().getVisualModel().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
@@ -68,7 +68,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			monitor.progressUpdate(0.20);
 
 			// Generating .g for the model
-			File devStgFile =  new File(workingDirectory, "dev.g");
+			File devStgFile =  new File(directory, "dev.g");
 			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
 			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
 					devExportTask, "Exporting circuit .g", subtaskMonitor);
@@ -90,7 +90,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			} else {
 				STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 				Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-				envStgFile = new File(workingDirectory, "env.g");
+				envStgFile = new File(directory, "env.g");
 				ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
 				Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 						envExportTask, "Exporting environment .g", subtaskMonitor);
@@ -106,8 +106,8 @@ public class MpsatConformationTask extends MpsatChainTask {
 			monitor.progressUpdate(0.40);
 
 			// Generating .g for the whole system (model and environment)
-			File stgFile = new File(workingDirectory, "system.g");
-			PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
+			File stgFile = new File(directory, "system.g");
+			PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, directory);
 			pcompResult = framework.getTaskManager().execute(
 					pcompTask, "Running pcomp", subtaskMonitor);
 
@@ -125,7 +125,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			monitor.progressUpdate(0.50);
 
 			// Generate unfolding
-			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(directory, "system" + MpsatUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
@@ -153,7 +153,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 					MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
-					unfoldingFile.getCanonicalPath(), workingDirectory, true);
+					unfoldingFile.getCanonicalPath(), directory, true);
 			Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 					mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
@@ -183,7 +183,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		} finally {
-			FileUtils.deleteFile(workingDirectory, CommonDebugSettings.getKeepTemporaryFiles());
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

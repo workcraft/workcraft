@@ -25,6 +25,10 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 
 	private final File workingDir;
 
+	public ExternalProcessTask(List<String> args) {
+		this(args, null);
+	}
+
 	public ExternalProcessTask(List<String> args, File workingDir) {
 		this.args = args;
 		this.workingDir = workingDir;

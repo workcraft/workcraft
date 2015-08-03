@@ -26,6 +26,7 @@ import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -109,15 +110,15 @@ public class SatBasedSolver {
 
 		// Write scenarios into file.
 		String prefix = FileUtils.getTempPrefix(we.getTitle());
-		File workingDirectory = FileUtils.createTempDirectory(prefix);
-		File scenarioFile = new File(workingDirectory , "scenarios.cpog");
-		File encodingFile = new File(workingDirectory, "custom.enc");
-		File resultDirectory = new File(workingDirectory, "result");
+		File directory = FileUtils.createTempDirectory(prefix);
+		File scenarioFile = new File(directory , "scenarios.cpog");
+		File encodingFile = new File(directory, "custom.enc");
+		File resultDirectory = new File(directory, "result");
 		resultDirectory.mkdir(); // ???
 
 		int res;
 		if((res = cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
-			cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 			if(res != -1){
 				JOptionPane.showMessageDialog(null,
 						"Error on writing scenario file.",
@@ -146,7 +147,7 @@ public class SatBasedSolver {
 				gateLibFlag = "-lib";
 				f = new File(abcFolder + gatesLibrary);
 				if(!f.exists() || f.isDirectory()){
-					cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
+					FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 					JOptionPane.showMessageDialog(null,
 							"It is needed to compute area of circuit properly",
 							"Gate library not present",
@@ -228,7 +229,7 @@ public class SatBasedSolver {
 						we.cancelMemento();
 						JOptionPane.showMessageDialog(null, "SCENCO is not able to solve the CPOG, try other options.",
 								"Encoding result", JOptionPane.ERROR_MESSAGE);
-						cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
+						FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 						return;
 					}
 					System.out.println("INFORMATION: Scenco cannot solve the CPOG.");
@@ -244,7 +245,7 @@ public class SatBasedSolver {
 
 		// IF SOLUTION IS NULL AN ERROR OCCURRED
 		if(solution == null){
-			cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 			we.cancelMemento();
 			return;
 		}
@@ -307,7 +308,7 @@ public class SatBasedSolver {
 					false, opt_enc,opt_formulaeVertices,truthTableVertices,
 					opt_vertices, opt_sources, opt_dests, opt_formulaeArcs,
 					truthTableArcs, arcNames, this) != 0){
-				cpogBuilder.deleteTempFiles(workingDirectory, resultDirectory);
+				FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 				we.cancelMemento();
 				return;
 			}
