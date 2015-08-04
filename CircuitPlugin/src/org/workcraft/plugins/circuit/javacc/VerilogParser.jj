@@ -63,7 +63,7 @@ TOKEN :
 |   <REG : "reg">
 |   <WIRE : "wire">
 |   <NAME : ["A"-"Z", "a"-"z", "_" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9"])*>
-|   <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "-"])*>
+|   <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
 |   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
 |   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
 |   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
