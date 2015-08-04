@@ -216,6 +216,7 @@ public class SatBasedSolver {
 			if (SCENCO) {
 				if (pr > 0) {
 					we.cancelMemento();
+					FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 					JOptionPane.showMessageDialog(null, "Exhaustive search option is not able to solve the CPOG with conditions, try other options.",
 							"Encoding result", JOptionPane.ERROR_MESSAGE);
 					return;
@@ -240,6 +241,7 @@ public class SatBasedSolver {
 		catch(Exception e)
 		{
 			we.cancelMemento();
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);
 		}
 
@@ -250,96 +252,99 @@ public class SatBasedSolver {
 			return;
 		}
 
-		boolean[][] encoding = solution.getEncoding();
-
-		// IF OLD SCENDO MODE IS SELECTED, GET THE ENCODING SOLUTION FROM IT AND
-		// SYNTHESISE IT THROUGH SCENCO IN ORDER TO OUTPUT THE MICROCONTROLLER
-		// AND AREA INFORMATION
-
 		try{
-			encodingFile = File.createTempFile("encoding", "cpog");
-			PrintStream Output = new PrintStream(encodingFile);
+			boolean[][] encoding = solution.getEncoding();
 
-			for(int i=0; i<m; i++){
-				for(int j=0; j<settings.getBits(); j++){
-					if(encoding[i][j]){
-						Output.print("1");
-						//System.out.print("1");
+			// IF OLD SCENDO MODE IS SELECTED, GET THE ENCODING SOLUTION FROM IT AND
+			// SYNTHESISE IT THROUGH SCENCO IN ORDER TO OUTPUT THE MICROCONTROLLER
+			// AND AREA INFORMATION
+
+			try{
+				PrintStream Output = new PrintStream(encodingFile);
+
+				for(int i=0; i<m; i++){
+					for(int j=0; j<settings.getBits(); j++){
+						if(encoding[i][j]){
+							Output.print("1");
+							//System.out.print("1");
+						}
+						else{
+							Output.print("0");
+							//System.out.print("0");
+						}
 					}
-					else{
-						Output.print("0");
-						//System.out.print("0");
-					}
+					Output.println();
+					// System.out.println();
 				}
-				Output.println();
-				// System.out.println();
+				Output.println(settings.getBits());
+				//System.out.println(settings.getBits());
+				Output.close();
+				customPath = encodingFile.getAbsolutePath();
+
+				// setting all the arguments for calling Scenco for synthesys
+				ArrayList<String> parameters = new ArrayList<String>();
+				if(!scencoCommand.isEmpty()) parameters.add(scencoCommand);
+				if(!scenarioFile.getAbsolutePath().isEmpty()) parameters.add(scenarioFile.getAbsolutePath());
+				parameters.add("-m");
+				if(!effort.isEmpty()) parameters.add(effort);
+				if(!genMode.isEmpty()) parameters.add(genMode);
+				if(!numSol.isEmpty()) parameters.add(numSol);
+				if(!customFlag.isEmpty()) parameters.add(customFlag);
+				if(!customPath.isEmpty()) parameters.add(customPath);
+				if(!verbose.isEmpty()) parameters.add(verbose);
+				if(!cpogSize.isEmpty()) parameters.add(cpogSize);
+				if(!disableFunction.isEmpty()) parameters.add(disableFunction);
+				if(!oldSynt.isEmpty()) parameters.add(oldSynt);
+				if(!espressoFlag.isEmpty()) parameters.add(espressoFlag);
+				if(!espressoCommand.isEmpty()) parameters.add(espressoCommand);
+				if(!abcFlag.isEmpty()) parameters.add(abcFlag);
+				if(!abcFolder.isEmpty()) parameters.add(abcFolder);
+				if(!gateLibFlag.isEmpty()) parameters.add(gateLibFlag);
+				if(!gatesLibrary.isEmpty()) parameters.add(gatesLibrary);
+				parameters.add("-res");
+				if((resultDirectory != null) && !resultDirectory.getAbsolutePath().isEmpty()) parameters.add(resultDirectory.getAbsolutePath());
+				if(!modBitFlag.isEmpty()) parameters.add(modBitFlag);
+				if(!modBit.isEmpty()) parameters.add(modBit);
+
+				if(cpogBuilder.callingScenco(process,settings,parameters,Double.MAX_VALUE, we, 0,
+						false, opt_enc,opt_formulaeVertices,truthTableVertices,
+						opt_vertices, opt_sources, opt_dests, opt_formulaeArcs,
+						truthTableArcs, arcNames, this) != 0){
+					FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+					we.cancelMemento();
+					return;
+				}
+
+				// CONNECT FORMULAE INTO VISUAL ELEMENTS FOR OLD SCENCO MODE
+				try {
+					cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, opt_formulaeVertices,
+							opt_vertices, opt_formulaeArcs, arcNames);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+				// PRINT CONTROLLER FOR OLD SCENCO MODE
+				cpogBuilder.printController(m, resultDirectory.getAbsolutePath(), opt_enc);
+			}catch (IOException e) {
+				System.out.println("Error: " + e);
 			}
-			Output.println(settings.getBits());
-			//System.out.println(settings.getBits());
-			Output.close();
-			customPath = encodingFile.getAbsolutePath();
 
-			// setting all the arguments for calling Scenco for synthesys
-			ArrayList<String> parameters = new ArrayList<String>();
-			if(!scencoCommand.isEmpty()) parameters.add(scencoCommand);
-			if(!scenarioFile.getAbsolutePath().isEmpty()) parameters.add(scenarioFile.getAbsolutePath());
-			parameters.add("-m");
-			if(!effort.isEmpty()) parameters.add(effort);
-			if(!genMode.isEmpty()) parameters.add(genMode);
-			if(!numSol.isEmpty()) parameters.add(numSol);
-			if(!customFlag.isEmpty()) parameters.add(customFlag);
-			if(!customPath.isEmpty()) parameters.add(customPath);
-			if(!verbose.isEmpty()) parameters.add(verbose);
-			if(!cpogSize.isEmpty()) parameters.add(cpogSize);
-			if(!disableFunction.isEmpty()) parameters.add(disableFunction);
-			if(!oldSynt.isEmpty()) parameters.add(oldSynt);
-			if(!espressoFlag.isEmpty()) parameters.add(espressoFlag);
-			if(!espressoCommand.isEmpty()) parameters.add(espressoCommand);
-			if(!abcFlag.isEmpty()) parameters.add(abcFlag);
-			if(!abcFolder.isEmpty()) parameters.add(abcFolder);
-			if(!gateLibFlag.isEmpty()) parameters.add(gateLibFlag);
-			if(!gatesLibrary.isEmpty()) parameters.add(gatesLibrary);
-			parameters.add("-res");
-			if((resultDirectory != null) && !resultDirectory.getAbsolutePath().isEmpty()) parameters.add(resultDirectory.getAbsolutePath());
-			if(!modBitFlag.isEmpty()) parameters.add(modBitFlag);
-			if(!modBit.isEmpty()) parameters.add(modBit);
 
-			if(cpogBuilder.callingScenco(process,settings,parameters,Double.MAX_VALUE, we, 0,
-					false, opt_enc,opt_formulaeVertices,truthTableVertices,
-					opt_vertices, opt_sources, opt_dests, opt_formulaeArcs,
-					truthTableArcs, arcNames, this) != 0){
-				FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
-				we.cancelMemento();
-				return;
-			}
+			// CREATE RESULT PART
+			VisualScenario resultCpog = cpog.createVisualScenario();
+			resultCpog.setLabel("Composition");
+			VisualVertex [] vertices = new VisualVertex[n];
 
-			// CONNECT FORMULAE INTO VISUAL ELEMENTS FOR OLD SCENCO MODE
-			try {
-				cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, opt_formulaeVertices,
-						opt_vertices, opt_formulaeArcs, arcNames);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,
+					events, vertices, cpog, resultCpog, positions, count, formulaeName);
 
-			// PRINT CONTROLLER FOR OLD SCENCO MODE
-			cpogBuilder.printController(m, resultDirectory.getAbsolutePath(), opt_enc);
-		}catch (IOException e) {
-			System.out.println("Error: " + e);
+			// Building CPOG
+			cpogBuilder.buildCpog(n,m, constraints, cpog, vertices, formulaeName);
+
+			we.saveMemento();
+		}finally{
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
-
-
-		// CREATE RESULT PART
-		VisualScenario resultCpog = cpog.createVisualScenario();
-		resultCpog.setLabel("Composition");
-		VisualVertex [] vertices = new VisualVertex[n];
-
-		cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,
-				events, vertices, cpog, resultCpog, positions, count, formulaeName);
-
-		// Building CPOG
-		cpogBuilder.buildCpog(n,m, constraints, cpog, vertices, formulaeName);
-
-		we.saveMemento();
 	}
 
 	public void setSettings(EncoderSettings settings) {

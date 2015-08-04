@@ -245,7 +245,6 @@ public class ScencoExecutionSupport {
 			for(int i = 0; i < n; i++)
 				if (graph[i][i] > 0)
 				{
-					//cpogBuilder.deleteTempFiles(scenarioFile, encodingFile, resultDir);
 					args.add("ERROR");
 					args.add("Scenario '" + scenarios.get(k).getLabel() + "' is cyclic.");
 					args.add("Invalid scenario");

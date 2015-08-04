@@ -30,6 +30,7 @@ public class ScencoSolver {
 
 	public static final String TITLE_SCENCO_ERROR = "SCENCO error";
 	public static final String MSG_NOT_ENOUGH_SCENARIOS = "Not enough scenarios. Select at least two scenarios.";
+	public static final String MSG_SELECTION_MODE_UNDEFINED = "Selection mode undefined.";
 
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
@@ -74,6 +75,7 @@ public class ScencoSolver {
 	private HashMap<String, Integer> events;
 	private ArrayList<Point2D> positions;
 	private ArrayList<Integer> count;
+	private File directory;
 
 	public ScencoSolver(EncoderSettings settings, WorkspaceEntry we){
 		this.settings = settings;
@@ -111,7 +113,7 @@ public class ScencoSolver {
 		}
 
 		String prefix = FileUtils.getTempPrefix(we.getTitle());
-		File directory = FileUtils.createTempDirectory(prefix);
+		directory = FileUtils.createTempDirectory(prefix);
 		File scenarioFile = new File(directory , "scenarios.cpog");
 		File encodingFile = new File(directory, "custom.enc");
 		File resultDirectory = new File(directory, "result");
@@ -205,7 +207,11 @@ public class ScencoSolver {
 				numSol = "1";
 				break;
 			default:
-				System.out.println("Error");
+				FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+				args.add("ERROR");
+				args.add(MSG_SELECTION_MODE_UNDEFINED);
+				args.add(TITLE_SCENCO_ERROR);
+				return args;
 		}
 
 		//Adding arguments to list
@@ -247,153 +253,158 @@ public class ScencoSolver {
 		truthTableArcs =  new String[n*n];
 		arcNames = new String[n*n];
 
-		for (int i=0; i <outputLines.length; i++){
-			if(settings.isVerboseMode())
-				System.out.println(outputLines[i]);
-
-			// Read Optimal Encoding
-			if(outputLines[i].contains("MIN: ")){
-
-				StringTokenizer string = new StringTokenizer(outputLines[i], " ");
-				int j = 0;
-				string.nextElement();
-				while (j < m) {
-					opt_enc[j++] = (String) string.nextElement();
-				}
-			}
-
-			// Read Optimal Formulae
-			if(outputLines[i].contains(".start_formulae")){
-				i++;
-				v = 0; a = 0;
-				while(outputLines[i].contains(".end_formulae") == false){
-					if(settings.isVerboseMode())
-						System.out.println(outputLines[i]);
-					StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
-					String el = (String)st2.nextElement();
-					if(el.equals("V")){ //formula of a vertex
-						opt_vertices[v] = (String) st2.nextElement();
-						truthTableVertices[v] = (String) st2.nextElement();
-						opt_formulaeVertices[v++] = (String) st2.nextElement();
-					}else{
-						opt_sources[a] = (String) st2.nextElement();
-						opt_dests[a] = (String) st2.nextElement();
-						arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
-						truthTableArcs[a] = (String) st2.nextElement();
-						opt_formulaeArcs[a++] = (String) st2.nextElement();
-					}
-					i++;
-				}
-
-			}
-
-			// Read statistics
-			if(outputLines[i].contains(".statistics")){
-				i++;
-				while(outputLines[i].contains(".end_statistics") == false){
+		try{
+			for (int i=0; i <outputLines.length; i++){
+				if(settings.isVerboseMode())
 					System.out.println(outputLines[i]);
+
+				// Read Optimal Encoding
+				if(outputLines[i].contains("MIN: ")){
+
+					StringTokenizer string = new StringTokenizer(outputLines[i], " ");
+					int j = 0;
+					string.nextElement();
+					while (j < m) {
+						opt_enc[j++] = (String) string.nextElement();
+					}
+				}
+
+				// Read Optimal Formulae
+				if(outputLines[i].contains(".start_formulae")){
 					i++;
+					v = 0; a = 0;
+					while(outputLines[i].contains(".end_formulae") == false){
+						if(settings.isVerboseMode())
+							System.out.println(outputLines[i]);
+						StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
+						String el = (String)st2.nextElement();
+						if(el.equals("V")){ //formula of a vertex
+							opt_vertices[v] = (String) st2.nextElement();
+							truthTableVertices[v] = (String) st2.nextElement();
+							opt_formulaeVertices[v++] = (String) st2.nextElement();
+						}else{
+							opt_sources[a] = (String) st2.nextElement();
+							opt_dests[a] = (String) st2.nextElement();
+							arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
+							truthTableArcs[a] = (String) st2.nextElement();
+							opt_formulaeArcs[a++] = (String) st2.nextElement();
+						}
+						i++;
+					}
+
+				}
+
+				// Read statistics
+				if(outputLines[i].contains(".statistics")){
+					i++;
+					while(outputLines[i].contains(".end_statistics") == false){
+						System.out.println(outputLines[i]);
+						i++;
+					}
 				}
 			}
-		}
 
-		// Print controller
-		cpogBuilder.printController(m, resultDirectoryPath, opt_enc);
+			// Print controller
+			cpogBuilder.printController(m, resultDirectoryPath, opt_enc);
 
-		// group similar constraints
-		HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
-		HashMap<String, Integer> task = new HashMap<String, Integer>();
+			// group similar constraints
+			HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
+			HashMap<String, Integer> task = new HashMap<String, Integer>();
 
-		cpogBuilder.groupConstraints(n,m,constraints,task);
+			cpogBuilder.groupConstraints(n,m,constraints,task);
 
-		char [][] matrix = new char[m][task.size()];
-		String [] instance = new String[m];
-		for(String s : task.keySet())
-			for(int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
+			char [][] matrix = new char[m][task.size()];
+			String [] instance = new String[m];
+			for(String s : task.keySet())
+				for(int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
 
-		for(int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
+			for(int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
 
-		int freeVariables;
-		if(settings.getGenMode() != GenerationMode.SCENCO)
-			freeVariables = opt_enc[0].length();
-		else{
-			freeVariables = settings.getBits();
-		}
-		settings.getCircuitSize();
-
-		// GET PREDICATES FROM WORKCRAFT ENVIRONMENT
-		VisualVariable predicatives[] = new VisualVariable[n];
-		int pr = 0;
-		for(VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
-			predicatives[pr++] = variable;
-		}
-
-		Variable [] vars = new Variable[freeVariables + pr];
-		for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
-		for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
-
-		CpogEncoding solution = null;
-
-		// READ OUTPUT OF SCENCO INSTANTIATING THE OPTIMAL ENCODING SOLUTION
-		// AND CONNECTING IT TO EACH VISUAL VERTEX EXPLOITING A MAP
-		System.out.println("Op-code selected for graphs:");
-		for(int i=0; i<m; i++){
-			opt_enc[i] = opt_enc[i].replace('-', 'X');
-			String name;
-			if (scenarios.get(i).getLabel().isEmpty()) {
-				name = "CPOG " + i;
-			} else {
-				name = scenarios.get(i).getLabel();
+			int freeVariables;
+			if(settings.getGenMode() != GenerationMode.SCENCO)
+				freeVariables = opt_enc[0].length();
+			else{
+				freeVariables = settings.getBits();
 			}
-			System.out.println(name + ": " + opt_enc[i]);
-		}
+			settings.getCircuitSize();
 
-		solution = new CpogEncoding(null, null);
-		//BooleanFormula[][] encodingVars = opt_task.getEncodingVars();
-		BooleanFormula[] formule = new BooleanFormula[v + a];
-
-		// Set optimal formulae to graphs
-		try {
-			cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, opt_formulaeVertices,
-					opt_vertices, opt_formulaeArcs, arcNames);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		//Set Formule
-		solution.setFormule(formule);
-
-		// Set optimal encoding to graphs
-		boolean[][] opt_encoding = new boolean[m][];
-		for(int i=0;i<m;i++)
-		{
-			opt_encoding[i] = new boolean[freeVariables + pr];
-			for(int j=0;j<freeVariables;j++){
-				if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') opt_encoding[i][j] = false;
-				else	opt_encoding[i][j] = true;
-			}
-			for(int j=freeVariables;j<freeVariables + pr;j++){
-				opt_encoding[i][j] = false;
+			// GET PREDICATES FROM WORKCRAFT ENVIRONMENT
+			VisualVariable predicatives[] = new VisualVariable[n];
+			int pr = 0;
+			for(VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
+				predicatives[pr++] = variable;
 			}
 
+			Variable [] vars = new Variable[freeVariables + pr];
+			for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
+			for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
+
+			CpogEncoding solution = null;
+
+			// READ OUTPUT OF SCENCO INSTANTIATING THE OPTIMAL ENCODING SOLUTION
+			// AND CONNECTING IT TO EACH VISUAL VERTEX EXPLOITING A MAP
+			System.out.println("Op-code selected for graphs:");
+			for(int i=0; i<m; i++){
+				opt_enc[i] = opt_enc[i].replace('-', 'X');
+				String name;
+				if (scenarios.get(i).getLabel().isEmpty()) {
+					name = "CPOG " + i;
+				} else {
+					name = scenarios.get(i).getLabel();
+				}
+				System.out.println(name + ": " + opt_enc[i]);
+			}
+
+			solution = new CpogEncoding(null, null);
+			//BooleanFormula[][] encodingVars = opt_task.getEncodingVars();
+			BooleanFormula[] formule = new BooleanFormula[v + a];
+
+			// Set optimal formulae to graphs
+			try {
+				cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, opt_formulaeVertices,
+						opt_vertices, opt_formulaeArcs, arcNames);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			//Set Formule
+			solution.setFormule(formule);
+
+			// Set optimal encoding to graphs
+			boolean[][] opt_encoding = new boolean[m][];
+			for(int i=0;i<m;i++)
+			{
+				opt_encoding[i] = new boolean[freeVariables + pr];
+				for(int j=0;j<freeVariables;j++){
+					if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') opt_encoding[i][j] = false;
+					else	opt_encoding[i][j] = true;
+				}
+				for(int j=freeVariables;j<freeVariables + pr;j++){
+					opt_encoding[i][j] = false;
+				}
+
+			}
+			solution.setEncoding(opt_encoding);
+
+			boolean[][] encoding = solution.getEncoding();
+
+			// CREATE RESULT PART
+			VisualScenario resultCpog = cpog.createVisualScenario();
+			resultCpog.setLabel("Composition");
+			VisualVertex [] vertices = new VisualVertex[n];
+
+			//INSTANTIATING THE ENCODING INTO GRAPHS IN WORKCRAFT
+			cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,
+					events, vertices, cpog, resultCpog, positions, count, formulaeName);
+
+			// Building CPOG
+			cpogBuilder.buildCpog(n,m, constraints, cpog, vertices, formulaeName);
+
+			we.saveMemento();
+		}finally{
+			// clean up temporary files
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
-		solution.setEncoding(opt_encoding);
-
-		boolean[][] encoding = solution.getEncoding();
-
-		// CREATE RESULT PART
-		VisualScenario resultCpog = cpog.createVisualScenario();
-		resultCpog.setLabel("Composition");
-		VisualVertex [] vertices = new VisualVertex[n];
-
-		//INSTANTIATING THE ENCODING INTO GRAPHS IN WORKCRAFT
-		cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,
-				events, vertices, cpog, resultCpog, positions, count, formulaeName);
-
-		// Building CPOG
-		cpogBuilder.buildCpog(n,m, constraints, cpog, vertices, formulaeName);
-
-		we.saveMemento();
 	}
 
 	private void instantiateParameters(int elements, int scenarios){
@@ -402,6 +413,10 @@ public class ScencoSolver {
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();
 		espressoFlag = "-e";
+	}
+
+	public File getDirectory() {
+		return directory;
 	}
 
 }
