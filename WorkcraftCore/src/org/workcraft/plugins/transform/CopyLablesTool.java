@@ -21,7 +21,7 @@
 
 package org.workcraft.plugins.transform;
 
-import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
@@ -30,12 +30,7 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CopyLablesTool implements Tool {
-
-	@Override
-	public String getSection() {
-		return "! Transformations";
-	}
+public class CopyLablesTool extends TransformationTool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {

@@ -7,22 +7,17 @@ import java.util.Queue;
 
 import javax.swing.JOptionPane;
 
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DeadlockCheckerTool implements Tool {
+public class DeadlockCheckerTool extends VerificationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Deadlock";
-	}
-
-	@Override
-	public String getSection() {
-		return "! Verification";
 	}
 
 	@Override

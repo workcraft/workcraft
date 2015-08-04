@@ -2,21 +2,16 @@ package org.workcraft.plugins.policy.tools;
 
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.tasks.CheckDeadlockTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckDeadlockTool implements Tool {
+public class CheckDeadlockTool extends VerificationTool {
 
 	public String getDisplayName() {
 		return " Deadlock with bundels [MPSat]";
-	}
-
-	@Override
-	public String getSection() {
-		return "! Verification";
 	}
 
 	@Override

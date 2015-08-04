@@ -36,10 +36,6 @@ public class ImportEventLog extends PGMinerTool {
         } catch (NullPointerException e2) {
 
         }
-
-
-
-
         return eventLog;
 	}
 
@@ -63,17 +59,15 @@ public class ImportEventLog extends PGMinerTool {
 					line = line.replace(" ", " -> ");
 					line = "t" + (i++) + " = " + line;
 					System.out.println(line);
-					visualCpog.getSelectionTool().insertExpression(line, false, false, true, true);
+					CpogSelectionTool selectionTool = visualCpog.getSelectionTool();
+					System.out.println(visualCpog + "   " + selectionTool);
+					selectionTool.insertExpression(line, false, false, true, true);
 				}
 				k.close();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 	}
-
-
-
 
 }

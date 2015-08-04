@@ -2,21 +2,16 @@ package org.workcraft.plugins.dfs.tools;
 
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.tasks.CheckDataflowDeadlockTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckDataflowDeadlockTool implements Tool {
+public class CheckDataflowDeadlockTool extends VerificationTool {
 
 	public String getDisplayName() {
 		return " Deadlock [MPSat]";
-	}
-
-	@Override
-	public String getSection() {
-		return "! Verification";
 	}
 
 	@Override

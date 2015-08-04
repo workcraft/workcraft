@@ -39,7 +39,7 @@ public class ScencoSingleLiteralTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Single-literal search";
+		return "Single-literal encoding";
 	}
 
 	@Override

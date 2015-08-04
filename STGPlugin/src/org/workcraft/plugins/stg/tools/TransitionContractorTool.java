@@ -3,7 +3,7 @@ package org.workcraft.plugins.stg.tools;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -12,16 +12,11 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TransitionContractorTool implements Tool {
+public class TransitionContractorTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Contract selected transitions";
-	}
-
-	@Override
-	public String getSection() {
-		return "! Transformations";
 	}
 
 	@Override

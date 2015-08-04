@@ -38,6 +38,7 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.MainMenu;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.ListMap;
@@ -201,8 +202,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 					popup.addSeparator();
 				}
 				for (String section : sections) {
-					String menuName = (section.startsWith("!") ? section.substring(1) : section);
-					JMenu menu = new JMenu(menuName);
+					String menuName = MainMenu.getMenuNameFromSection(section);
+					JMenu menu = new JMenu(menuName.trim());
 					for (Pair<String, Tool> tool : Tools.getSectionTools(section, applicableTools)) {
 						JMenuItem item = new JMenuItem(tool.getFirst());
 						tools.put(item, tool.getSecond());

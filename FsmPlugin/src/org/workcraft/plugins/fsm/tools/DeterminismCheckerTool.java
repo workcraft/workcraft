@@ -5,23 +5,18 @@ import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DeterminismCheckerTool implements Tool {
+public class DeterminismCheckerTool extends VerificationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Determinism";
-	}
-
-	@Override
-	public String getSection() {
-		return "! Verification";
 	}
 
 	@Override

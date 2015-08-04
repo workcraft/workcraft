@@ -56,6 +56,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
+	private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
+
 	class ToolAction extends Action {
 		Tool tool;
 		String text;
@@ -534,9 +536,9 @@ public class MainMenu extends JMenuBar {
 			JMenu mnSection = mnTools;
 			if (!section.isEmpty()) {
 				mnSection = new JMenu(section);
-				boolean promote = section.startsWith("!");
-				if (promote) {
-					mnSection.setText(section.substring(1));
+				if (isPromotedSection(section)) {
+					String menuName = getMenuNameFromSection(section);
+					mnSection.setText(menuName);
 					mnToolsList.add(mnSection);
 				} else {
 					mnTools.add(mnSection);
@@ -550,6 +552,22 @@ public class MainMenu extends JMenuBar {
 			}
 		}
 		addToolsMenu();
+	}
+
+	public static boolean isPromotedSection(String section) {
+		return ((section != null) && section.startsWith(MENU_SECTION_PROMOTED_PREFIX));
+	}
+
+	public static String getMenuNameFromSection(String section) {
+		String result = "";
+		if (section != null) {
+			if (section.startsWith(MENU_SECTION_PROMOTED_PREFIX)) {
+				result = section.substring(MENU_SECTION_PROMOTED_PREFIX.length());
+			} else {
+				result = section;
+			}
+		}
+		return result.trim();
 	}
 
 	private void addToolsMenu() {

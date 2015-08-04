@@ -2,21 +2,16 @@ package org.workcraft.plugins.stg.tools;
 
 import java.util.Set;
 
-import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SignalMirrorTool implements Tool {
+public class SignalMirrorTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Mirror signals";
-	}
-
-	@Override
-	public String getSection() {
-		return "! Transformations";
 	}
 
 	@Override
