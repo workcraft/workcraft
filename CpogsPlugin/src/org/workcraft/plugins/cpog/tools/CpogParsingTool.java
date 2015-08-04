@@ -119,7 +119,6 @@ public class CpogParsingTool {
                     VisualVertex v = (VisualVertex) n;
                     if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
                         VisualPage p = (VisualPage) v.getParent();
-                        p.setPosition(new Double(x, y));
                         Point2D.Double newPosition = new
                                 Point2D.Double (refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
                                                 refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());
@@ -348,7 +347,6 @@ public class CpogParsingTool {
 
     		boolean finished = false;
     		while (!finished) {
-    			//System.out.println(getChildren(visualCpog, child));
     			if (getChildren(visualCpog, child).size() == 1) {
     				ArrayList<Node> nextVertices = getChildren(visualCpog, child);
     				VisualVertex nextVertex = (VisualVertex) nextVertices.get(0);
@@ -377,7 +375,6 @@ public class CpogParsingTool {
 
     		while(!connections.isEmpty()) {
     			VisualArc arc  = (VisualArc) connections.get(0);
-    			connections.remove(0);
     			String insert = "";
 
     			if (!FormulaToString(arc.getCondition()).equals("1")) {
@@ -385,7 +382,7 @@ public class CpogParsingTool {
     			}
 
 
-    			if (!(FormulaToString(current.getCondition()).equals("1")) || (FormulaToString(current.getCondition()).equals(FormulaToString(arc.getCondition())))) {
+    			if (!(FormulaToString(current.getCondition()).equals("1")) || !(FormulaToString(current.getCondition()).equals(FormulaToString(arc.getCondition())))) {
         			insert = insert + "[" + FormulaToString(current.getCondition()) + "]";
         		}
 
@@ -402,7 +399,7 @@ public class CpogParsingTool {
     			}
 
     			if (toBeRemoved.size() > 1) {
-					insert = insert + "(" + arc.getSecond().getLabel() + " + ";
+					insert = insert + "(";// + arc.getSecond().getLabel() + " + ";
 				}
 
     			for (VisualArc a : toBeRemoved) {
@@ -790,7 +787,7 @@ public class CpogParsingTool {
 			 if (startPoint == null) {
 				 startPoint = new Point2D.Double (centre.getX(), centre.getY());
 			 } else {
-				 if (centre.getY() < startPoint.getY()) {
+				 if (centre.getY() > startPoint.getY()) {
 				 	startPoint.setLocation(startPoint.getX(), centre.getY());
 			 	}
 				 if (centre.getX() < startPoint.getX()){
@@ -800,16 +797,13 @@ public class CpogParsingTool {
 		 }
 		 for(VisualScenarioPage page : pages) {
 			 Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) page.getBoundingBox();
-			 Point2D.Double bl = new Point2D.Double(rect.getCenterX(), rect.getCenterY() + (rect.getHeight()/2));
+			 Point2D.Double bl = new Point2D.Double(0, rect.getCenterY() + (rect.getHeight()/2));
 
 			 if (startPoint == null) {
 				 startPoint = new Point2D.Double(bl.getX(), bl.getY());
 			 } else {
 				 if (bl.getY() > startPoint.getY()) {
 					 startPoint.setLocation(startPoint.getX(), bl.getY());
-				 }
-				 if (bl.getX() < startPoint.getX()) {
-					 startPoint.setLocation(bl.getX(), startPoint.getY());
 				 }
 			 }
 		 }
@@ -823,6 +817,7 @@ public class CpogParsingTool {
 		 return startPoint;
 
 	 }
+
 
 	 public ArrayList<String> getUsedReferences()
 	 {

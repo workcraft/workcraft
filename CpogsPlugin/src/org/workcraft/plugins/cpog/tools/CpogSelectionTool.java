@@ -1,15 +1,61 @@
 package org.workcraft.plugins.cpog.tools;
 
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
+
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.observation.*;
-import org.workcraft.plugins.cpog.*;
+import org.workcraft.observation.HierarchyEvent;
+import org.workcraft.observation.HierarchySupervisor;
+import org.workcraft.observation.NodesAddedEvent;
+import org.workcraft.observation.NodesDeletingEvent;
+import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateSupervisor;
+import org.workcraft.plugins.cpog.CPOGHangingConnectionRemover;
+import org.workcraft.plugins.cpog.Variable;
+import org.workcraft.plugins.cpog.VisualArc;
+import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.VisualScenarioPage;
+import org.workcraft.plugins.cpog.VisualVariable;
+import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.CpogConnector;
 import org.workcraft.plugins.cpog.expressions.CpogFormula;
 import org.workcraft.plugins.cpog.expressions.CpogFormulaToString;
@@ -20,20 +66,6 @@ import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.BadLocationException;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 
@@ -106,14 +138,14 @@ public class CpogSelectionTool extends SelectionTool {
 							exp = exp + " " + s;
 						} else {
 							if (exp.compareTo("") != 0) {
-								insertExpression(exp, false, false, false);
+								insertExpression(exp, false, false, false, true);
 								exp = "";
 							}
 							exp = s;
 						}
 					}
 					if (exp.compareTo("") != 0) {
-						insertExpression(exp, false, false, false);
+						insertExpression(exp, false, false, false, true);
 					}
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
@@ -124,90 +156,7 @@ public class CpogSelectionTool extends SelectionTool {
 		});
 		buttonPanel.add(btnInsert);
 
-		/*
-		final JButton btnProcessMine = new JButton("Process Mine");
-		btnProcessMine.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String allGraphs = parsingTool.getExpressionFromGraph((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel());
-				ArrayList<String> tempGraphs = new ArrayList<>();
-				ArrayList<String> graphs = new ArrayList<>();
-
-				try {
-					String prefix = "input", suffix = ".tr";
-					File inputFile = File.createTempFile(prefix, ".tr");
-
-					PrintStream expressions = new PrintStream(inputFile);
-
-					int i = allGraphs.indexOf(" + ");
-					while (i > -1) {
-						allGraphs = allGraphs.substring(0, i) + "\n" + allGraphs.substring(i + 2);
-						i = allGraphs.indexOf(" + ");
-					}
-					allGraphs = allGraphs.replaceAll(" -> ", " ");
-
-					while (allGraphs.contains("\n")) {
-						int index = allGraphs.indexOf("\n");
-						String graph = (allGraphs.substring(0, index));
-						allGraphs = allGraphs.substring(index + 1);
-						tempGraphs.add(graph);
-					}
-
-					//tempGraphs.add(allGraphs);
-
-					for (String graph : tempGraphs) {
-						int index = graph.indexOf("= ");
-						if (index >= 0) {
-							graph = graph.substring(index + 2);
-						}
-						while (graph.endsWith(" ")) {
-							graph = graph.substring(0, graph.length() - 1);
-						}
-						graphs.add(graph);
-					}
-
-					for (String graph : graphs) {
-						expressions.println(graph);
-					}
-
-					expressions.close();
-					//J.R.Beaumont OS X file path for pgminer-algebra tool.  Has not yet fully been integrated into Workcraft, this is currently for a demo
-                    //Process process = new ProcessBuilder("/Users/Jonny/Documents/workspace/trunk-cpog-update/tools/pgminer/pgminer-algebra", inputFile.getAbsolutePath()).start();
-					Process process = new ProcessBuilder("/home/jonny/Documents/Workspace/trunk-cpog-update/tools/pgminer/pgminer-algebra" , inputFile.getAbsolutePath()).start();
-
-					String filePath = inputFile.getAbsolutePath();
-
-					int index = filePath.lastIndexOf('/');
-					String fileName = filePath.substring(index + 1).replace(suffix, "") + ".1.cpog";
-					filePath = filePath.substring(0, index + 1);
-
-					File outputFile = new File(filePath + fileName);
-
-					boolean open = false;
-					while (!open) {
-						try {
-							Scanner k = new Scanner(outputFile);
-							open = true;
-							while (k.hasNext()) {
-								String line = k.nextLine();
-								System.out.println(line);
-								insertExpression(editor, line, false, false, true);
-							}
-							k.close();
-						} catch (IOException ex) {
-							open = false;
-						}
-					}
-
-
-				} catch (IOException exception) {
-					exception.printStackTrace();
-				}
-			}
-
-		});
-		buttonPanel.add(btnProcessMine);*/
 
 		final JButton btnTextInsert = new JButton("Text File");
 		btnTextInsert.addActionListener(new ActionListener() {
@@ -233,7 +182,7 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                 while (fileIn.hasNextLine()) {
                     equation = fileIn.nextLine();
-                    insertExpression(equation, true, false, false);
+                    insertExpression(equation, true, false, false, true);
                 }
             }
 
@@ -260,7 +209,7 @@ public class CpogSelectionTool extends SelectionTool {
 	}
 
 	public HashMap<String, VisualVertex> insertExpression(String text,
-			final boolean createDuplicates, boolean getVertList, boolean forceTransitiveRemoval) {
+			final boolean createDuplicates, boolean getVertList, boolean forceTransitiveRemoval, boolean zoomFit) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
         we.captureMemento();
@@ -484,6 +433,10 @@ public class CpogSelectionTool extends SelectionTool {
                 graphName = graphName.replace("}", "");
                 LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
                 bfsLayout(visualCpog, roots);
+                if (referenceMap.containsKey(graphName)) {
+                	//referenceMap.remove(graphName, referenceMap.get(graphName));
+                	referenceMap.remove(graphName);
+                }
                 GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
                 g.addRefPage(inserted);
                 referenceMap.put(graphName, g);
@@ -492,18 +445,24 @@ public class CpogSelectionTool extends SelectionTool {
                 }
             }
 
-
-        editor.forceRedraw();
-
         Collection<Node> prevSelection = visualCpog.getSelection();
 
-        visualCpog.selectAll();
+        we.saveMemento();
 
+        visualCpog.selectNone();
+
+        editor.requestFocus();
+
+        editor.forceRedraw();
+        //Doesn't allow zoomFit when creating a new CPOG model
+        //Such as when extracting concurrency
+        if (zoomFit) {
         editor.getMainWindow().zoomFit();
+        }
 
         visualCpog.select(prevSelection);
 
-        we.saveMemento();
+
 
         return null;
     }
@@ -593,7 +552,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         page.setLabel(PGF.getGraphName());
 
-        coordinate.setLocation(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight() / 2));
+        coordinate.setLocation(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight() / 2) + 1);
         page.setPosition(coordinate);
 
         attatchRefEventHandler(visualCpog, page, editor);
@@ -928,7 +887,7 @@ public class CpogSelectionTool extends SelectionTool {
             eqLocation = newExpression.indexOf('=');
             g.updateNormalForm(newExpression.substring(eqLocation + 1));
 
-            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, false).clone();
+            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, false, true).clone();
             for (VisualVertex v : vertMap.values()) {
                 Point2D.Double newPosition = new Point2D.Double(g.getVertMap().get(v.getLabel()).getX(), g.getVertMap().get(v.getLabel()).getY());
                 v.setPosition(newPosition);
