@@ -434,7 +434,6 @@ public class CpogSelectionTool extends SelectionTool {
                 LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
                 bfsLayout(visualCpog, roots);
                 if (referenceMap.containsKey(graphName)) {
-                	//referenceMap.remove(graphName, referenceMap.get(graphName));
                 	referenceMap.remove(graphName);
                 }
                 GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());

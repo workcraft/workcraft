@@ -194,7 +194,7 @@ public class CpogParsingTool {
 		 ArrayList<Node> vertices = new ArrayList<Node>();
 		 ArrayList<String> expression = new ArrayList<String>();
 
-         getGroups(visualCpog, groups);
+         groups = getScenarios(visualCpog);
          originalSelection = copySelected(visualCpog);
 		 //Add vertices from group
 		 if (!groups.isEmpty()) {
@@ -491,17 +491,36 @@ public class CpogParsingTool {
     }
 
     public static ArrayList<VisualTransformableNode> getScenarios(VisualCPOG visualCpog) {
-    	ArrayList<VisualTransformableNode> result = new ArrayList<>();
+    	ArrayList<VisualTransformableNode> scenarios = new ArrayList<>();
+    	TreeSet<String> nameList = new TreeSet<>();
     	ArrayList<Node> prevSelection = copySelected(visualCpog);
     	visualCpog.selectAll();
 
     	for(Node n : visualCpog.getSelection()) {
     		if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
     			if (prevSelection.contains(n)) {
-    				result.add((VisualTransformableNode) n);
+    				scenarios.add((VisualTransformableNode) n);
+    				VisualTransformableNode node = (VisualTransformableNode) n;
+    				nameList.add(node.getLabel());
     			}
     		}
     	}
+
+
+    	ArrayList<VisualTransformableNode> result = new ArrayList<>();
+
+    	for (String name : nameList) {
+    		boolean found = false;
+    		int i = 0;
+    		while (!found) {
+    			if (scenarios.get(i).getLabel().equals(name)) {
+    				result.add(scenarios.remove(i));
+    				found = true;
+    			}
+    			i++;
+    		}
+    	}
+
     	visualCpog.select(prevSelection);
     	return result;
     }
