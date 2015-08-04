@@ -7,6 +7,8 @@ import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -18,24 +20,29 @@ public class ImportEventLog extends PGMinerTool {
 	}
 
 	@Override
-	public File getInputFile(WorkspaceEntry we) {
+	public File getInputFile(WorkspaceEntry we) throws OperationCancelledException {
+
+		File eventLog;
 		JFileChooser chooser = new JFileChooser();
-        File eventLog;
+		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			 eventLog = chooser.getSelectedFile();
+		        try {
+		        	if (!eventLog.exists()) {
+		        		throw new FileNotFoundException();
+		        	}
 
-        chooser.showOpenDialog(null);
-        eventLog = chooser.getSelectedFile();
-        try {
-        	if (!eventLog.exists()) {
-        		throw new FileNotFoundException();
-        	}
+		        } catch (FileNotFoundException e1) {
+		            // TODO Auto-generated catch block
+		            JOptionPane.showMessageDialog(null, e1.getMessage(),
+		                    "File not found error", JOptionPane.ERROR_MESSAGE);
+		        } catch (NullPointerException e2) {
 
-        } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
-            JOptionPane.showMessageDialog(null, e1.getMessage(),
-                    "File not found error", JOptionPane.ERROR_MESSAGE);
-        } catch (NullPointerException e2) {
+		        }
 
-        }
+		} else {
+			throw new OperationCancelledException("Open operation cancelled by user.");
+		}
+
 
 
 
@@ -44,11 +51,13 @@ public class ImportEventLog extends PGMinerTool {
 	}
 
 	public void run(WorkspaceEntry we) {
-		File eventLog = getInputFile(we);
-		VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 
-		 Scanner k;
 			try {
+				File eventLog = getInputFile(we);
+				VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+
+				Scanner k;
+
 				k = new Scanner(eventLog);
 				System.out.println("Event log input");
 				int i = 0;
@@ -69,6 +78,8 @@ public class ImportEventLog extends PGMinerTool {
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (OperationCancelledException e) {
+
 			}
 
 	}

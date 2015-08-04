@@ -52,6 +52,9 @@ public class MineSelectedGraphs extends PGMinerTool{
 				if (index >= 0) {
 					graph = graph.substring(index + 2);
 				}
+				while (graph.startsWith(" ")) {
+					graph = graph.substring(1);
+				}
 				while (graph.endsWith(" ")) {
 					graph = graph.substring(0, graph.length() - 1);
 				}
@@ -72,7 +75,7 @@ public class MineSelectedGraphs extends PGMinerTool{
 						"Error: No graphs have been selected",
 						"Error",
 						JOptionPane.ERROR_MESSAGE);
-			return null;
+						throw e2;
 			}
 
 		importAndExtract = false;

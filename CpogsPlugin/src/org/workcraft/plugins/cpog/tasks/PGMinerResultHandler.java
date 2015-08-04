@@ -3,18 +3,21 @@ package org.workcraft.plugins.cpog.tasks;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -40,8 +43,13 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 
 				@Override
 				public void run() {
-					if (!importAndExtract) {
 					final Framework framework = Framework.getInstance();
+					MainWindow mainWindow = framework.getMainWindow();
+					if (result.getOutcome() == Outcome.FAILED) {
+						JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run", "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
+					} else {
+					if (!importAndExtract) {
+
 					CpogDescriptor cpogModel = new CpogDescriptor();
 					MathModel mathModel = cpogModel.createMathModel();
 					Path<String> path = we.getWorkspacePath();
@@ -73,11 +81,22 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 						} else {
 							line = line.replaceAll("\r", "");
 							System.out.println(line);
-							visualCpog.getSelectionTool().insertExpression(line, false, false, true, false);
-							line = "";
+							while (line.endsWith(" ")) {
+								line = line.substring(0, line.length() - 1);
+							}
+							if (!(line.endsWith("="))) {
+								visualCpog.getSelectionTool().insertExpression(line, false, false, true, false);
+								line = "";
+							}
+							else {
+								JOptionPane.showMessageDialog(mainWindow, "PGMiner finished with no result", "No concurrency", JOptionPane.ERROR_MESSAGE);
+							}
+
 						}
 					}
+					System.out.println();
 
+				}
 				}
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
