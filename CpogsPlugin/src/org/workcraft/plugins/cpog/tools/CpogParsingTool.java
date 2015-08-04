@@ -118,7 +118,6 @@ public class CpogParsingTool {
                     VisualVertex v = (VisualVertex) n;
                     if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
                         VisualPage p = (VisualPage) v.getParent();
-                        p.setPosition(new Double(x, y));
                         Point2D.Double newPosition = new
                                 Point2D.Double (refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
                                                 refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());

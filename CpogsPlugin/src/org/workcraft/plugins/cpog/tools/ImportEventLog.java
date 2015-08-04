@@ -63,7 +63,7 @@ public class ImportEventLog extends PGMinerTool {
 					line = line.replace(" ", " -> ");
 					line = "t" + (i++) + " = " + line;
 					System.out.println(line);
-					visualCpog.getSelectionTool().insertExpression(line, false, false, true);
+					visualCpog.getSelectionTool().insertExpression(line, false, false, true, true);
 				}
 				k.close();
 			} catch (FileNotFoundException e) {

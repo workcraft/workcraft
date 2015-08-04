@@ -20,6 +20,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class PGMinerTool implements Tool {
 
+	protected boolean importAndExtract;
+
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		if (we.getModelEntry() == null) return false;
@@ -42,7 +44,7 @@ public abstract class PGMinerTool implements Tool {
 		PGMinerTask task = new PGMinerTask(inputFile);
 
 		final Framework framework = Framework.getInstance();
-		PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel());
+		PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, importAndExtract);
 		framework.getTaskManager().queue(task, "PGMiner", result);
 
 	}

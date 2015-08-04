@@ -74,6 +74,9 @@ public class MineSelectedGraphs extends PGMinerTool{
 						JOptionPane.ERROR_MESSAGE);
 			return null;
 			}
+
+		importAndExtract = false;
+
 		return inputFile;
 	}
 

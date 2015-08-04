@@ -106,14 +106,14 @@ public class CpogSelectionTool extends SelectionTool {
 							exp = exp + " " + s;
 						} else {
 							if (exp.compareTo("") != 0) {
-								insertExpression(exp, false, false, false);
+								insertExpression(exp, false, false, false, true);
 								exp = "";
 							}
 							exp = s;
 						}
 					}
 					if (exp.compareTo("") != 0) {
-						insertExpression(exp, false, false, false);
+						insertExpression(exp, false, false, false, true);
 					}
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
@@ -150,7 +150,7 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                 while (fileIn.hasNextLine()) {
                     equation = fileIn.nextLine();
-                    insertExpression(equation, true, false, false);
+                    insertExpression(equation, true, false, false, true);
                 }
             }
 
@@ -177,7 +177,7 @@ public class CpogSelectionTool extends SelectionTool {
 	}
 
 	public HashMap<String, VisualVertex> insertExpression(String text,
-			final boolean createDuplicates, boolean getVertList, boolean forceTransitiveRemoval) {
+			final boolean createDuplicates, boolean getVertList, boolean forceTransitiveRemoval, boolean zoomFit) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
         we.captureMemento();
@@ -401,6 +401,9 @@ public class CpogSelectionTool extends SelectionTool {
                 graphName = graphName.replace("}", "");
                 LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
                 bfsLayout(visualCpog, roots);
+                if (referenceMap.containsKey(graphName)) {
+                	referenceMap.remove(graphName, referenceMap.get(graphName));
+                }
                 GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
                 g.addRefPage(inserted);
                 referenceMap.put(graphName, g);
@@ -409,18 +412,24 @@ public class CpogSelectionTool extends SelectionTool {
                 }
             }
 
-
-        editor.forceRedraw();
-
         Collection<Node> prevSelection = visualCpog.getSelection();
 
-        visualCpog.selectAll();
+        we.saveMemento();
 
+        visualCpog.selectNone();
+
+        editor.requestFocus();
+
+        editor.forceRedraw();
+        //Doesn't allow zoomFit when creating a new CPOG model
+        //Such as when extracting concurrency
+        if (zoomFit) {
         editor.getMainWindow().zoomFit();
+        }
 
         visualCpog.select(prevSelection);
 
-        we.saveMemento();
+
 
         return null;
     }
@@ -510,7 +519,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         page.setLabel(PGF.getGraphName());
 
-        coordinate.setLocation(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight() / 2));
+        coordinate.setLocation(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight() / 2) + 1);
         page.setPosition(coordinate);
 
         attatchRefEventHandler(visualCpog, page, editor);
@@ -845,7 +854,7 @@ public class CpogSelectionTool extends SelectionTool {
             eqLocation = newExpression.indexOf('=');
             g.updateNormalForm(newExpression.substring(eqLocation + 1));
 
-            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, false).clone();
+            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, false, true).clone();
             for (VisualVertex v : vertMap.values()) {
                 Point2D.Double newPosition = new Point2D.Double(g.getVertMap().get(v.getLabel()).getX(), g.getVertMap().get(v.getLabel()).getY());
                 v.setPosition(newPosition);

@@ -62,6 +62,7 @@ public class GraphReference {
     }
 
     public void setPageCentre(Point2D.Double centre){
+    	System.out.println("Page centre set");
         pageCentre = centre;
     }
 

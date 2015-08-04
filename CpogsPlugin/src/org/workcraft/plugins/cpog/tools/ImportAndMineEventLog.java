@@ -49,6 +49,7 @@ public class ImportAndMineEventLog extends PGMinerTool {
 			e.printStackTrace();
 		}
 
+        importAndExtract = true;
 
         return eventLog;
 
