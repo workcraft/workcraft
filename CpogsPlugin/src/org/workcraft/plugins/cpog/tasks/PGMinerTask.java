@@ -28,39 +28,43 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 		//Build the commands for PGMiner
-		ArrayList<String> command = new ArrayList<>();
-		command.add(CpogSettings.getPGMinerCommand());
-		command.add(inputFile.getAbsolutePath());
-
-		//Call PGMiner
-		ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
-		SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-
-		Result<? extends ExternalProcessResult> result = task.run(mon);
-
-		if (result.getOutcome() != Outcome.FINISHED) {
-			return result;
-		}
-
-		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 		try {
-			File outputFile = getOutputFile(inputFile);
-			if(outputFile.exists()) {
-				outputFiles.put("output.1.cpog", FileUtils.readAllBytes(outputFile));
+			ArrayList<String> command = new ArrayList<>();
+			command.add(CpogSettings.getPGMinerCommand());
+			command.add(inputFile.getAbsolutePath());
+
+			//Call PGMiner
+			ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
+			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+
+			Result<? extends ExternalProcessResult> result = task.run(mon);
+
+			if (result.getOutcome() != Outcome.FINISHED) {
+				return result;
 			}
-		} catch (IOException e) {
-			return new Result<ExternalProcessResult>(e);
+
+			Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
+			try {
+				File outputFile = getOutputFile(inputFile);
+				if(outputFile.exists()) {
+					outputFiles.put("output.1.cpog", FileUtils.readAllBytes(outputFile));
+				}
+			} catch (IOException e) {
+				return new Result<ExternalProcessResult>(e);
+			}
+
+			ExternalProcessResult retVal = result.getReturnValue();
+			ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+			if (retVal.getReturnCode() == 0) {
+				return Result.finished(finalResult);
+			} else {
+				return Result.failed(finalResult);
+			}
+		} catch (NullPointerException e) {
+			//Open window dialog was cancelled, do nothing
 		}
 
-		ExternalProcessResult retVal = result.getReturnValue();
-		ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
-		if (retVal.getReturnCode() == 0) {
-			return Result.finished(finalResult);
-		} else {
-			return Result.failed(finalResult);
-		}
-
-
+		return null;
 	}
 
 	public File getOutputFile(File inputFile) {

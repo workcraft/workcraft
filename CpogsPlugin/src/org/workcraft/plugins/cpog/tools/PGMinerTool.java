@@ -1,9 +1,9 @@
 package org.workcraft.plugins.cpog.tools;
 
 import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
@@ -25,18 +25,26 @@ public abstract class PGMinerTool implements Tool {
 		return "! Process Mining";
 	}
 
-	abstract public File getInputFile(WorkspaceEntry we);
+	abstract public File getInputFile(WorkspaceEntry we) throws OperationCancelledException;
 
 
 	@Override
 	public void run(WorkspaceEntry we) {
 
-		File inputFile = getInputFile(we);
-		PGMinerTask task = new PGMinerTask(inputFile);
+		try {
 
-		final Framework framework = Framework.getInstance();
-		PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, importAndExtract);
-		framework.getTaskManager().queue(task, "PGMiner", result);
+			File inputFile = getInputFile(we);
+
+			PGMinerTask task = new PGMinerTask(inputFile);
+
+			final Framework framework = Framework.getInstance();
+			PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, importAndExtract);
+			framework.getTaskManager().queue(task, "PGMiner", result);
+		} catch (ArrayIndexOutOfBoundsException | OperationCancelledException e) {
+
+		}
+
 	}
+
 
 }

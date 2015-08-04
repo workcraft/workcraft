@@ -23,7 +23,6 @@ import org.workcraft.plugins.cpog.tools.GraphToCpogConverterTool;
 import org.workcraft.plugins.cpog.tools.ImportAndMineEventLog;
 import org.workcraft.plugins.cpog.tools.ImportEventLog;
 import org.workcraft.plugins.cpog.tools.MineSelectedGraphs;
-import org.workcraft.plugins.cpog.tools.PGMinerTool;
 import org.workcraft.plugins.cpog.tools.ScencoExhaustiveTool;
 import org.workcraft.plugins.cpog.tools.ScencoHeuristicTool;
 import org.workcraft.plugins.cpog.tools.ScencoRandomTool;
@@ -50,7 +49,6 @@ public class CpogModule implements Module {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
-
 		pm.registerClass(ModelDescriptor.class, CpogDescriptor.class);
 
 		pm.registerClass(PropertyClassProvider.class, EncodingPropertyProvider.class);
@@ -65,9 +63,6 @@ public class CpogModule implements Module {
 		pm.registerClass(XMLDeserialiser.class, RhoClauseDeserialiser.class);
 		pm.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
 		pm.registerClass(Settings.class, CpogSettings.class);
-
-		//p.registerClass(Tool.class, CpogEncoder.class);
-
 
 		pm.registerClass(Tool.class, ScencoHeuristicTool.class);
 		pm.registerClass(Tool.class, ScencoSATBasedTool.class);

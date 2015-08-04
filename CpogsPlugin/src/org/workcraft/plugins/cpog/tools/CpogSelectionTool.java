@@ -103,7 +103,6 @@ public class CpogSelectionTool extends SelectionTool {
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		this.editor = editor;
-		((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel()).setSelectionTool(this);
 		super.createInterfacePanel(editor);
 		expressionText = new JTextArea();
 		expressionText.setLineWrap(false);
@@ -434,7 +433,6 @@ public class CpogSelectionTool extends SelectionTool {
                 LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
                 bfsLayout(visualCpog, roots);
                 if (referenceMap.containsKey(graphName)) {
-                	//referenceMap.remove(graphName, referenceMap.get(graphName));
                 	referenceMap.remove(graphName);
                 }
                 GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());

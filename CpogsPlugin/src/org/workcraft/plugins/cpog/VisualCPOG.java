@@ -290,12 +290,4 @@ public class VisualCPOG extends AbstractVisualModel
 		}
 	}
 
-	public void setSelectionTool(CpogSelectionTool tool) {
-		selectionTool = tool;
-	}
-
-	public CpogSelectionTool getSelectionTool() {
-		return selectionTool;
-	}
-
 }
