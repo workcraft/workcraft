@@ -1,11 +1,15 @@
 package org.workcraft.plugins.cpog.tasks;
 
+import java.io.File;
+
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.FileUtils;
 
 public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 
@@ -26,12 +30,20 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 		} else if (result.getOutcome() == Outcome.FAILED) {
 			String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
 			final Framework framework = Framework.getInstance();
+
+			// In case of an internal error, activate automatically verbose mode
 			if(errorMessage.contains("Internal error")){
 				String[] sentence = result.getReturnValue().getStdout().split("\n");
 				for (int i=0; i <sentence.length; i++){
 					System.out.println(sentence[i]);
 				}
 			}
+
+			//Removing temporary files
+			File dir = solver.getDirectory();
+			FileUtils.deleteFile(dir, CommonDebugSettings.getKeepTemporaryFiles());
+
+			//Display the error
 			JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
