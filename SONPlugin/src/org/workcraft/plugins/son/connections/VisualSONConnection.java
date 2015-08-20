@@ -42,9 +42,9 @@ public class VisualSONConnection extends VisualConnection {
 	public VisualSONConnection(SONConnection refConnection, VisualComponent first, VisualComponent second) {
 		super(refConnection, first, second);
 		addPropertyDeclarations();
-		removePropertyDeclarationByName("Line width");
-		removePropertyDeclarationByName("Arrow width");
-		removePropertyDeclarationByName("Arrow length");
+		removePropertyDeclarationByName(VisualConnection.PROPERTY_LINE_WIDTH);
+		removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_WIDTH);
+		removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_LENGTH);
 	}
 
 	public SONConnection getReferencedSONConnection() {

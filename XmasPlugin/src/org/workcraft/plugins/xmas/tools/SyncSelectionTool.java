@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit.tools;
+package org.workcraft.plugins.xmas.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -20,17 +21,17 @@ import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.xmas.components.VisualSyncComponent;
+import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.util.Hierarchy;
 
-public class CircuitSelectionTool extends SelectionTool {
+public class SyncSelectionTool extends SelectionTool {
 
 	private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
 
 	@Override
-	public void mouseClicked(GraphEditorMouseEvent e) {
+	public void mouseClicked(GraphEditorMouseEvent e)
+	{
 		boolean processed = false;
 		if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
 			VisualModel model = e.getEditor().getModel();
@@ -50,61 +51,35 @@ public class CircuitSelectionTool extends SelectionTool {
 	private JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
 		JPopupMenu popup = new JPopupMenu();
 
-		if (node instanceof VisualFunctionComponent) {
-			final VisualFunctionComponent component = (VisualFunctionComponent)node;
+		if (node instanceof VisualSyncComponent) {
+			final VisualSyncComponent component = (VisualSyncComponent)node;
 
 			popup.setFocusable(false);
-			popup.add(new JLabel("Function component"));
+			popup.add(new JLabel("Sync component"));
 			popup.addSeparator();
-			{
-				JMenuItem addOutput = new JMenuItem("Add output (EAST)");
-				addOutput.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						editor.getWorkspaceEntry().saveMemento();
-						VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-						vcircuit.getOrCreateContact(component, null, IOType.OUTPUT);
-						component.setContactsDefaultPosition();
+
+			JMenuItem addInput = new JMenuItem("Add input-output pair");
+			addInput.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					editor.getWorkspaceEntry().saveMemento();
+					component.addInput("", Positioning.TOP);
+					component.addOutput("", Positioning.BOTTOM);
+				}
+			});
+
+			JMenuItem removeInput = new JMenuItem("Remove input-output pair");
+			removeInput.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					for(VisualXmasContact contact : component.getContacts()) {
+						contact=null;
 					}
-				});
-				popup.add(addOutput);
-			}
-			{
-				JMenuItem addInput = new JMenuItem("Add input (WEST)");
-				addInput.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						editor.getWorkspaceEntry().saveMemento();
-						VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-						vcircuit.getOrCreateContact(component, null, IOType.INPUT);
-						component.setContactsDefaultPosition();
-					}
-				});
-				popup.add(addInput);
-			}
-			popup.addSeparator();
-			{
-				JMenuItem defaultContactPosition = new JMenuItem("Set contacts in default position");
-				defaultContactPosition.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						editor.getWorkspaceEntry().saveMemento();
-						component.setContactsDefaultPosition();
-					}
-				});
-				popup.add(defaultContactPosition);
-			}
-			{
-				JMenuItem centerPivotPoint = new JMenuItem("Center pivot point");
-				centerPivotPoint.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						editor.getWorkspaceEntry().saveMemento();
-						component.centerPivotPoint();
-					}
-				});
-				popup.add(centerPivotPoint);
-			}
+				}
+			});
+
+			popup.add(addInput);
+			popup.add(removeInput);
 			return popup;
 		}
 

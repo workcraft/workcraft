@@ -1,6 +1,5 @@
 package org.workcraft.plugins.xmas.tools;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -8,6 +7,9 @@ import java.util.Collection;
 import org.workcraft.Tool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -19,25 +21,55 @@ import org.workcraft.plugins.xmas.components.QueueComponent;
 import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
+import org.workcraft.plugins.xmas.components.SyncComponent;
+import org.workcraft.plugins.xmas.components.VisualForkComponent;
+import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
+import org.workcraft.plugins.xmas.components.VisualJoinComponent;
+import org.workcraft.plugins.xmas.components.VisualMergeComponent;
+import org.workcraft.plugins.xmas.components.VisualQueueComponent;
+import org.workcraft.plugins.xmas.components.VisualSinkComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
+import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.XmasContact;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
 public class JsonExport implements Tool {
 
+	//private final Framework framework;
+
+	//VisualCircuit circuit;
+	//private CheckCircuitTask checkTask;
+
+
+	//ProgressMonitor<? super MpsatChainResult> monitor;
+
+	/*public CircuitTestTool(Framework framework, Workspace ws) {
+		this.framework = framework;
+//		this.ws = ws;
+	}*/
+
+
+	private static final Positioning LEFT = null;
+
 	public String getDisplayName() {
 		return "Export to JSON file";
 	}
+
 
 	public String getSection() {
 		return "Export";
 	}
 
+
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, Xmas.class);
 	}
+
+	//public Collection<String> src_nodes;
+	public Collection<VisualSourceComponent> src_nodes;
 
 	public void run(WorkspaceEntry we) {
 		System.out.println("Running tests");
@@ -47,11 +79,15 @@ public class JsonExport implements Tool {
 
 		Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
 
+		//src_nodes = cnet.getSourceComponent();
+    	int no=1;
+
 		SourceComponent src_node = null;
 		SinkComponent snk_node = null;
 
 		FunctionComponent fun_node = null;
 		QueueComponent qu_node = null;
+		SyncComponent syc_node = null;
 
 		ForkComponent frk_node = null;
 		JoinComponent jn_node = null;
@@ -59,25 +95,65 @@ public class JsonExport implements Tool {
 		SwitchComponent sw_node = null;
 		MergeComponent mrg_node = null;
 
-		//CommonVisualSettings.setForegroundColor(new Color(0, 0, 0, 64));
-		VisualSourceComponent src_v;
-		for (Node node : vnet.getNodes()) {
-            if(node instanceof VisualSourceComponent) {
-        		//System.out.println("Changing Colour ...............src_v");
-            	src_v=(VisualSourceComponent)node;
-            	src_v.setColorRed();
-                src_v.setForegroundColor(new Color(255, 0, 0, 64));
-            }
-		}
-		//for (VisualSourceComponent node : vnet.getVisualSourceComponent()) {
+		for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
+        	for(VisualComponent vp: vg.getComponents()) {
+				if(vp instanceof VisualSourceComponent) {
+					VisualSourceComponent vsc=(VisualSourceComponent)vp;
+					SourceComponent sc=vsc.getReferencedSourceComponent();
+				    sc.setGr(no);
+				}
+				else if(vp instanceof VisualSinkComponent) {
+					VisualSinkComponent vsc=(VisualSinkComponent)vp;
+					SinkComponent sc=vsc.getReferencedSinkComponent();
+				    sc.setGr(no);
+				}
+				else if(vp instanceof VisualFunctionComponent) {
+					VisualFunctionComponent vsc=(VisualFunctionComponent)vp;
+					FunctionComponent sc=vsc.getReferencedFunctionComponent();
+				    sc.setGr(no);
+				}
+				else if(vp instanceof VisualQueueComponent) {
+					VisualQueueComponent vsc=(VisualQueueComponent)vp;
+					QueueComponent sc=vsc.getReferencedQueueComponent();
+				    sc.setGr(no);
+				}
+				else if(vp instanceof VisualForkComponent) {
+					VisualForkComponent vsc=(VisualForkComponent)vp;
+					ForkComponent sc=vsc.getReferencedForkComponent();
+				    sc.setGr(no);
+				}
+				else if(vp instanceof VisualJoinComponent) {
+					VisualJoinComponent vsc=(VisualJoinComponent)vp;
+					JoinComponent sc=vsc.getReferencedJoinComponent();
+				    sc.setGr(no);
+					System.out.println("Join no =" + no + " " + sc.getGr());
+				}
+				else if(vp instanceof VisualSwitchComponent) {
+					VisualSwitchComponent vsc=(VisualSwitchComponent)vp;
+					SwitchComponent sc=vsc.getReferencedSwitchComponent();
+				    sc.setGr(no);
+				}
+				else if(vp instanceof VisualMergeComponent) {
+					VisualMergeComponent vsc=(VisualMergeComponent)vp;
+					MergeComponent sc=vsc.getReferencedMergeComponent();
+				    sc.setGr(no);
+				}
+			}
+			no++;
+	    }
 
-		//}
+		//Set Component properties from VisualComponent
+		VisualSourceComponent vsc;
+		VisualFunctionComponent fsc;
+		VisualQueueComponent vqc;
 
-		for (SourceComponent node : cnet.getSourceComponent()) {
+		for (SourceComponent node : cnet.getSourceComponents()) {
 			//System.out.println("Name =" + node.getName());
 			//System.out.println("Name =" + cnet.getPostset(node).size());
 			//System.out.println("Num =" + cnet.getPostset(node).size());
 			System.out.println("Name =" + cnet.getName(node));
+			//((SourceComponent)node).setVal('b');
+			System.out.println("Val =" + ((SourceComponent)node).getType());
 			src_node=node;
 		}
 		//System.out.println("Name_ =" + cnet.getName(src_node));
@@ -94,12 +170,12 @@ public class JsonExport implements Tool {
 			System.out.println("Name =" + cnet.getName(node));
 			contact_node=node;
 		}*/
-		System.out.println("Name_ =" + cnet.getName(contact_node));
+		//System.out.println("Name_ =" + cnet.getName(contact_node));
 		for (Connection c : cnet.getConnections(contact_node)) {
 			//System.out.println("OutputConnection =" + cnet.getName(c));
 			//if((c.getFirst() instanceof Contact)) System.out.println("Found First Contact");
 			if((c.getSecond() instanceof XmasContact)) {
-				System.out.println("Found Output Contact" + cnet.getName(c.getSecond()));
+				//System.out.println("Found Output Contact" + cnet.getName(c.getSecond()));
 				Node cp_node = c.getSecond().getParent();
 				//System.out.println("Found Output Component" + cnet.getName(cp_node));
 			}
@@ -107,6 +183,7 @@ public class JsonExport implements Tool {
 		int num_nodes=0;
 		for (Node node : cnet.getNodes()) {
             //System.out.println("Name =" + cnet.getName(node));
+			//cnet.getLabel(node);
 			num_nodes++;
 		}
 		//GEN JSON
@@ -153,6 +230,11 @@ public class JsonExport implements Tool {
             	contacts=src_node.getOutputs();
         		num_outputs=1;
             }
+            else if(node instanceof SinkComponent) {
+            	snk_node=(SinkComponent)node;
+            	contacts=snk_node.getOutputs();
+        		num_outputs=1;
+            }
             else if(node instanceof FunctionComponent) {
             	fun_node=(FunctionComponent)node;
             	contacts=fun_node.getOutputs();
@@ -183,9 +265,10 @@ public class JsonExport implements Tool {
             	contacts=mrg_node.getOutputs();
         		num_outputs=1;
             }
-            else if(node instanceof SinkComponent) {
-            	snk_node=(SinkComponent)node;
-            	contacts=snk_node.getOutputs();
+            else if(node instanceof SyncComponent) {
+            	syc_node=(SyncComponent)node;
+            	contacts=syc_node.getOutputs();
+        		num_outputs=contacts.size();
             }
             for(XmasContact contact_node_ : contacts) {
             	for (Connection c : cnet.getConnections(contact_node_)) {
@@ -197,8 +280,8 @@ public class JsonExport implements Tool {
                 		int contact_cnt=1;
                 		int contact_no=1;
             			if(cp_node instanceof JoinComponent) {
-            				jn_node=(JoinComponent)cp_node;
-                        	contacts_=jn_node.getInputs();
+            				JoinComponent jn_node_=(JoinComponent)cp_node;
+                        	contacts_=jn_node_.getInputs();
                         	for(XmasContact jncnt_node : contacts_) {
                         		if(jncnt_node==c.getSecond()) {
                         			//System.out.println("  Found jn contact = " + contact_no);
@@ -208,8 +291,8 @@ public class JsonExport implements Tool {
                         	}
             			}
             			else if(cp_node instanceof MergeComponent) {
-            				mrg_node=(MergeComponent)cp_node;
-                        	contacts_=mrg_node.getInputs();
+            				MergeComponent mrg_node_=(MergeComponent)cp_node;
+                        	contacts_=mrg_node_.getInputs();
                         	for(XmasContact mrgcnt_node : contacts_) {
                         		if(mrgcnt_node==c.getSecond()) {
                         			//System.out.println("  Found mrg contact = " + contact_no);
@@ -234,22 +317,174 @@ public class JsonExport implements Tool {
             		}
             	}
             }
-			if(node instanceof QueueComponent) {
+			if(node instanceof SourceComponent) {
+				  System.out.println("      ],");
+				  writer.println("      ],");
+				}
+			else if(node instanceof QueueComponent) {
 			  System.out.println("      ],");
 			  writer.println("      ],");
 			}
+			else if(node instanceof SyncComponent) {
+				  System.out.println("      ],");
+				  writer.println("      ],");
+			}
 			else {
+				  System.out.println("      ],");
+				  writer.println("      ],");
+				}
+			/*else {
 			  System.out.println("      ]");
 			  writer.println("      ]");
-			}
-			if(node instanceof QueueComponent) {
+			}*/
+			if(node instanceof SourceComponent) {
+				//char srcchecktype = src_node.getVal();
+				//System.out.println("type = " + srcchecktype);
+				//int srccheckmode = src_node.getMode();
+				//System.out.println("mode = " + srccheckmode);
 				System.out.println("      \"fields\": [");
 				writer.println("      \"fields\": [");
 				System.out.println("        {");
 				writer.println("        {");
-				int qusize = qu_node.getCapacity();
-    			System.out.println("          \"size\": " + qusize);
-    			writer.println("          \"size\": " + qusize);
+				int sgr = src_node.getGr();
+				System.out.println("          \"gr\": " + sgr + ",");
+    			writer.println("          \"gr\": " + sgr + ",");
+    			String srcgp = src_node.getGp();
+				System.out.println("          \"gpf\": " + srcgp);
+    			writer.println("          \"gpf\": " + srcgp);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof SinkComponent) {
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+				int sgr = snk_node.getGr();
+				System.out.println("          \"gr\": " + sgr);
+    			writer.println("          \"gr\": " + sgr);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof FunctionComponent) {
+				//char fncheckfn = fun_node.getVal();
+				//System.out.println("val = " + fncheckfn);
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+    			//String fs = fun_node.getFun();
+				//System.out.println("          \"fn\": " + fs);
+    			//writer.println("          \"fn\": " + fs + ",");
+				int fgr = fun_node.getGr();
+				System.out.println("          \"gr\": " + fgr);
+    			writer.println("          \"gr\": " + fgr);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof QueueComponent) {
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+				int quchecksize = qu_node.getCapacity();
+				//System.out.println("capacity = " + quchecksize + ",");
+				//int qusize = qu_node.getCapacity();
+				//int qusize = 2;    //hardwire
+				int qusize = 2;    //hardwire
+				//int qusize = 3;    //hardwire
+    			System.out.println("          \"size\": " + qusize + ",");
+    			writer.println("          \"size\": " + qusize + ",");
+				int quinit = qu_node.getInit();
+				System.out.println("          \"init\": " + quinit + ",");
+    			writer.println("          \"init\": " + quinit + ",");
+    			int qgr = qu_node.getGr();
+				System.out.println("          \"gr\": " + qgr + ",");
+    			writer.println("          \"gr\": " + qgr + ",");
+    			String qugp = qu_node.getGp();
+				System.out.println("          \"gpf\": " + qugp);
+    			writer.println("          \"gpf\": " + qugp);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof ForkComponent) {
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+				int fgr = frk_node.getGr();
+				System.out.println("          \"gr\": " + fgr);
+    			writer.println("          \"gr\": " + fgr);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof JoinComponent) {
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+				int jgr = jn_node.getGr();
+				System.out.println("          \"gr\": " + jgr);
+    			writer.println("          \"gr\": " + jgr);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof SwitchComponent) {
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+				int sgr = sw_node.getGr();
+				System.out.println("          \"gr\": " + sgr);
+    			writer.println("          \"gr\": " + sgr);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof MergeComponent) {
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+				int mgr = mrg_node.getGr();
+				System.out.println("          \"gr\": " + mgr);
+    			writer.println("          \"gr\": " + mgr);
+				System.out.println("        }");
+				writer.println("        }");
+              	System.out.println("      ]");
+              	writer.println("      ]");
+			}
+			else if(node instanceof SyncComponent) {
+				System.out.println("      \"fields\": [");
+				writer.println("      \"fields\": [");
+				System.out.println("        {");
+				writer.println("        {");
+    			String sycgp = syc_node.getGp1();
+				System.out.println("          \"gpf1\": " + sycgp + ",");
+    			writer.println("          \"gpf1\": " + sycgp + ",");
+    			sycgp = syc_node.getGp2();
+				System.out.println("          \"gpf2\": " + sycgp + ",");
+    			writer.println("          \"gpf2\": " + sycgp + ",");
+    			String styp = syc_node.getTyp();
+    			String styp_="a";
+    			if(styp.charAt(0)=='a') styp_ = "a";
+    			else if(styp.charAt(0)=='m') styp_ = "m";
+    			else if(styp.charAt(0)=='p') styp_ = "p";
+				System.out.println("          \"typ\": " + "\"" + styp_ + "\"");
+    			writer.println("          \"typ\": " + "\"" + styp_ + "\"");
 				System.out.println("        }");
 				writer.println("        }");
               	System.out.println("      ]");
@@ -268,6 +503,7 @@ public class JsonExport implements Tool {
 		writer.println("  ]");
 		System.out.println("}");
 		writer.println("}");
+		System.out.println("Output written to JsonFile" + '\n');
 		}
 		catch (Exception e)
 	    {
@@ -281,5 +517,4 @@ public class JsonExport implements Tool {
 	            }
 	    }
 	}
-
 }

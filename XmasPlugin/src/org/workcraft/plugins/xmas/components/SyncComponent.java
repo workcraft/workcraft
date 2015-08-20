@@ -22,32 +22,36 @@
 package org.workcraft.plugins.xmas.components;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.xmas.components.VisualQueueComponent.class)
-public class QueueComponent extends XmasComponent {
-	public static final String PROPERTY_CAPACITY = "Capacity";
-	public static final String PROPERTY_INIT = "Init";
+@VisualClass(org.workcraft.plugins.xmas.components.VisualSyncComponent.class)
+public class SyncComponent extends XmasComponent {
 
-	public int capacity = 2;
-	public int init = 0;
+	public String gp1 = "0";
+	public String gp2 = "0";
+	public String typ = "a";
 
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_CAPACITY));
+	public void setGp1(String gp1) {
+		this.gp1 = gp1;
 	}
 
-	public int getCapacity() {
-		return capacity;
+	public String getGp1() {
+		return gp1;
 	}
 
-	public void setInit(int init) {
-		this.init = init;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT));
+	public void setGp2(String gp2) {
+		this.gp2 = gp2;
 	}
 
-	public int getInit() {
-		return init;
+	public String getGp2() {
+		return gp2;
+	}
+
+	public void setTyp(String typ) {
+		this.typ = typ;
+	}
+
+	public String getTyp() {
+		return typ;
 	}
 
 }

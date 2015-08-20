@@ -9,7 +9,7 @@ import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.xmas.components.CreditComponent;
 import org.workcraft.plugins.xmas.components.ForkComponent;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.JoinComponent;
@@ -18,6 +18,8 @@ import org.workcraft.plugins.xmas.components.QueueComponent;
 import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
+import org.workcraft.plugins.xmas.components.SyncComponent;
+import org.workcraft.plugins.xmas.tools.SyncSelectionTool;
 
 public class XmasToolsProvider implements CustomToolsProvider {
 
@@ -25,7 +27,8 @@ public class XmasToolsProvider implements CustomToolsProvider {
 	public Iterable<GraphEditorTool> getTools() {
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new SelectionTool(false));
+		result.add(new SyncSelectionTool());
+		//result.add(new SelectionTool());
 		result.add(new CommentGeneratorTool());
 		result.add(new ConnectionTool());
 
@@ -37,6 +40,8 @@ public class XmasToolsProvider implements CustomToolsProvider {
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(JoinComponent.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SwitchComponent.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(MergeComponent.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CreditComponent.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SyncComponent.class)));
 
 		return result;
 	}

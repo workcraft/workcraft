@@ -44,6 +44,10 @@ public class VisualForkComponent extends VisualXmasComponent {
 		}
 	}
 
+	public ForkComponent getReferencedForkComponent() {
+		return (ForkComponent)getReferencedComponent();
+	}
+
 	@Override
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();

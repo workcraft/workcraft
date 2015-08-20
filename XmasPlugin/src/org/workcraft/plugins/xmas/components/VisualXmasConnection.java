@@ -16,6 +16,7 @@ public class VisualXmasConnection extends VisualConnection {
 
 	public VisualXmasConnection(MathConnection con, VisualComponent c1, VisualComponent c2) {
 		super(con, c1, c2);
+		removePropertyDeclarationByName(VisualConnection.PROPERTY_LINE_WIDTH);
 	}
 
 	@Override

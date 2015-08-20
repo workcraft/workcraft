@@ -37,6 +37,9 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
+	private int gr = 0;
+	private String gp = "0";
+
 	public Node getParent() {
 		return groupImpl.getParent();
 	}
@@ -115,6 +118,23 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
 			}
 		}
 		return result;
+	}
+
+
+	public void setGr(int gr) {
+		this.gr = gr;
+	}
+
+	public int getGr() {
+		return gr;
+	}
+
+	public void setGp(String gp) {
+		this.gp = gp;
+	}
+
+	public String getGp() {
+		return gp;
 	}
 
 }

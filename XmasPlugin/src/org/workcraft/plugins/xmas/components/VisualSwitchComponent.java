@@ -45,6 +45,10 @@ public class VisualSwitchComponent extends VisualXmasComponent {
 		}
 	}
 
+	public SwitchComponent getReferencedSwitchComponent() {
+		return (SwitchComponent)getReferencedComponent();
+	}
+
 	@Override
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();

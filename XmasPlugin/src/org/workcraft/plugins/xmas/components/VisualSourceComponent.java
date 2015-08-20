@@ -30,7 +30,10 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.dom.visual.Stylable;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.xmas.components.SourceComponent.Mode;
+import org.workcraft.plugins.xmas.components.SourceComponent.Type;
 
 
 @DisplayName("Source")
@@ -46,12 +49,32 @@ public class VisualSourceComponent extends VisualXmasComponent {
 		if (component.getChildren().isEmpty()) {
 			this.addOutput("", Positioning.BOTTOM);
 		}
+		addPropertyDeclarations();
 	}
 
-	public void setColorRed() {
-		this.color = new Color(255, 0, 0, 255);
-		this.setForegroundColor(new Color(255, 0, 0, 255));
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Type>(
+				this, SourceComponent.PROPERTY_TYPE, Type.class, true, true, true) {
+			protected void setter(VisualSourceComponent object, Type value) {
+				object.getReferencedSourceComponent().setType(value);
+			}
+			protected Type getter(VisualSourceComponent object) {
+				return object.getReferencedSourceComponent().getType();
+			}
+		});
+		addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Mode>(
+				this, SourceComponent.PROPERTY_MODE, Mode.class, true, true, true) {
+			protected void setter(VisualSourceComponent object, Mode value) {
+				object.getReferencedSourceComponent().setMode(value);
+			}
+			protected Mode getter(VisualSourceComponent object) {
+				return object.getReferencedSourceComponent().getMode();
+			}
+		});
+	}
+
+	public SourceComponent getReferencedSourceComponent() {
+		return (SourceComponent)getReferencedComponent();
 	}
 
 	@Override
@@ -65,6 +88,16 @@ public class VisualSourceComponent extends VisualXmasComponent {
 		shape.lineTo(0, +0.5 * size);
 
 		return shape;
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualSourceComponent) {
+			SourceComponent srcComponent = ((VisualSourceComponent)src).getReferencedSourceComponent();
+			getReferencedSourceComponent().setType(srcComponent.getType());
+			getReferencedSourceComponent().setMode(srcComponent.getMode());
+		}
 	}
 
 }

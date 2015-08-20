@@ -24,12 +24,12 @@ package org.workcraft.plugins.xmas.components;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
-@VisualClass(org.workcraft.plugins.xmas.components.VisualQueueComponent.class)
-public class QueueComponent extends XmasComponent {
+@VisualClass(org.workcraft.plugins.xmas.components.VisualCreditComponent.class)
+public class CreditComponent extends XmasComponent {
 	public static final String PROPERTY_CAPACITY = "Capacity";
 	public static final String PROPERTY_INIT = "Init";
 
-	public int capacity = 2;
+	public int capacity = 1;
 	public int init = 0;
 
 	public void setCapacity(int capacity) {
@@ -49,5 +49,4 @@ public class QueueComponent extends XmasComponent {
 	public int getInit() {
 		return init;
 	}
-
 }

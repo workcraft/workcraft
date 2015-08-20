@@ -23,12 +23,15 @@ package org.workcraft.plugins.xmas.components;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.observation.PropertyChangedEvent;
 
 @DisplayName("Contact")
 @VisualClass(org.workcraft.plugins.xmas.components.VisualXmasContact.class)
 public class XmasContact extends MathNode {
+
+	public static final String PROPERTY_IO_TYPE = "I/O type";
+
 	public enum IOType {
 		INPUT("Input"),
 		OUTPUT("Output");
@@ -55,17 +58,23 @@ public class XmasContact extends MathNode {
 		setIOType(ioType);
 	}
 
-	@Override
-	public void setParent(Node parent) {
-		super.setParent(parent);
+	public void setIOType(IOType value) {
+		if (this.ioType != value) {
+			this.ioType = value;
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
+		}
 	}
 
 	public IOType getIOType() {
 		return ioType;
 	}
 
-	public void setIOType(IOType ioType) {
-		this.ioType = ioType;
+	public boolean isInput() {
+		return (getIOType() == IOType.INPUT);
+	}
+
+	public boolean isOutput() {
+		return (getIOType() == IOType.OUTPUT);
 	}
 
 }

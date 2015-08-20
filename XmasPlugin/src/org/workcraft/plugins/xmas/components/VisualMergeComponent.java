@@ -44,6 +44,10 @@ public class VisualMergeComponent extends VisualXmasComponent {
 		}
 	}
 
+	public MergeComponent getReferencedMergeComponent() {
+		return (MergeComponent)getReferencedComponent();
+	}
+
 	@Override
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();

@@ -42,6 +42,10 @@ public class VisualSinkComponent extends VisualXmasComponent {
 		}
 	}
 
+	public SinkComponent getReferencedSinkComponent() {
+		return (SinkComponent)getReferencedComponent();
+	}
+
 	@Override
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();

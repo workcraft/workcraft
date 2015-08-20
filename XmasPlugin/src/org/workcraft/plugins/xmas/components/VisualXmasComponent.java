@@ -64,10 +64,51 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 			this.quadrant = quadrant;
 		}
 
+		public int getQuadrant() {
+			return quadrant;
+		}
+
 		@Override
 		public String toString() {
 			return name;
 		}
+
+		public Orientation rotateClockwise() {
+			switch (this) {
+			case ORIENTATION_0: return ORIENTATION_90;
+			case ORIENTATION_90: return ORIENTATION_180;
+			case ORIENTATION_180: return ORIENTATION_270;
+			case ORIENTATION_270: return ORIENTATION_0;
+			default: return this;
+			}
+		}
+
+		public Orientation rotateCounterclockwise() {
+			switch (this) {
+			case ORIENTATION_0: return ORIENTATION_270;
+			case ORIENTATION_90: return ORIENTATION_0;
+			case ORIENTATION_180: return ORIENTATION_90;
+			case ORIENTATION_270: return ORIENTATION_180;
+			default: return this;
+			}
+		}
+
+		public Orientation flipHorizontal() {
+			switch (this) {
+			case ORIENTATION_90: return ORIENTATION_270;
+			case ORIENTATION_270: return ORIENTATION_90;
+			default: return this;
+			}
+		}
+
+		public Orientation flipVertical() {
+			switch (this) {
+			case ORIENTATION_0: return ORIENTATION_180;
+			case ORIENTATION_180: return ORIENTATION_0;
+			default: return this;
+			}
+		}
+
 	};
 
 	private Orientation orientation = Orientation.ORIENTATION_0;
@@ -95,7 +136,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 		return (XmasComponent)getReferencedComponent();
 	}
 
-	public VisualXmasComponent.Orientation getOrientation() {
+	public Orientation getOrientation() {
 		return orientation;
 	}
 
@@ -225,13 +266,13 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
 		g.draw(getShape());
-
-		AffineTransform at = new AffineTransform();
-		at.quadrantRotate(-orientation.quadrant);
-		r.getGraphics().transform(at);
-
-		drawNameInLocalSpace(r);
-		drawLabelInLocalSpace(r);
+//
+//		AffineTransform at = new AffineTransform();
+//		at.quadrantRotate(-orientation.quadrant);
+//		r.getGraphics().transform(at);
+//
+//		drawNameInLocalSpace(r);
+//		drawLabelInLocalSpace(r);
 	}
 
 	@Override
@@ -241,6 +282,31 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 			VisualXmasComponent srcComponent = (VisualXmasComponent)src;
 			setOrientation(srcComponent.getOrientation());
 		}
+	}
+
+
+	@Override
+	public void rotateClockwise() {
+		setOrientation(getOrientation().rotateClockwise());
+		super.rotateClockwise();
+	}
+
+	@Override
+	public void rotateCounterclockwise() {
+		setOrientation(getOrientation().rotateCounterclockwise());
+		super.rotateCounterclockwise();
+	}
+
+	@Override
+	public void flipHorizontal() {
+		setOrientation(getOrientation().flipHorizontal());
+		super.flipHorizontal();
+	}
+
+	@Override
+	public void flipVertical() {
+		setOrientation(getOrientation().flipVertical());
+		super.flipVertical();
 	}
 
 }

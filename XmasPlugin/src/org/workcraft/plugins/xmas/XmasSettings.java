@@ -25,6 +25,7 @@ public class XmasSettings implements Settings {
 	private static double wireWidth = defaultWireWidth;
 	private static String jasonFileName = defaultJasonFileName;
 
+
 	public XmasSettings() {
 		properties.add(new PropertyDeclaration<XmasSettings, Double>(
 				this, "Border width", Double.class, true, false, false) {

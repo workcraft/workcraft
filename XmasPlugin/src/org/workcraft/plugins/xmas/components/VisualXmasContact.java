@@ -60,7 +60,7 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualXmasContact, IOType>(
-				this, "I/O type", IOType.class, false, false, false) {
+				this, XmasContact.PROPERTY_IO_TYPE, IOType.class, false, false, false) {
 			protected void setter(VisualXmasContact object, IOType value) {
 				object.setIOType(value);
 			}
@@ -114,6 +114,14 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 		p2.setLocation(pointInLocalSpace);
 		Shape shape = getShape();
 		return shape.contains(p2);
+	}
+
+	public boolean isInput() {
+		return getReferencedContact().isInput();
+	}
+
+	public boolean isOutput() {
+		return getReferencedContact().isOutput();
 	}
 
 	@Override

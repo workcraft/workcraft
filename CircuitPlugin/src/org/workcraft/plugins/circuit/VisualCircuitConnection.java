@@ -24,7 +24,7 @@ public class VisualCircuitConnection extends VisualConnection {
 
 	public VisualCircuitConnection(MathConnection refConnection, VisualComponent c1, VisualComponent c2) {
 		super(refConnection, c1, c2);
-		removePropertyDeclarationByName("Line width");
+		removePropertyDeclarationByName(VisualConnection.PROPERTY_LINE_WIDTH);
 	}
 
 	@Override

@@ -30,42 +30,44 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
-@DisplayName("Join")
-@Hotkey(KeyEvent.VK_T)
-@SVGIcon("images/icons/svg/xmas-join.svg")
-public class VisualJoinComponent extends VisualXmasComponent {
+@DisplayName("Sync")
+@Hotkey(KeyEvent.VK_F)
+@SVGIcon("images/icons/svg/xmas-sync.svg")
+public class VisualSyncComponent extends VisualXmasComponent {
 
-	public VisualJoinComponent(JoinComponent component) {
+	public int xOffset = 0;
+
+	public VisualSyncComponent(SyncComponent component) {
 		super(component);
 		if (component.getChildren().isEmpty()) {
-			this.addInput("", Positioning.TOP_LEFT);
-			this.addInput("", Positioning.TOP_RIGHT);
+			this.addInput("", Positioning.TOP);
 			this.addOutput("", Positioning.BOTTOM);
+		}
+		else {
+			int numInputs = ((XmasComponent)component).getInputs().size();
+			int numOutputs = ((XmasComponent)component).getOutputs().size();
+			if(numInputs>numOutputs) {
+				xOffset = numInputs - 1;
+			}
+			else {
+				xOffset = numOutputs - 1;
+			}
 		}
 	}
 
-	public JoinComponent getReferencedJoinComponent() {
-		return (JoinComponent)getReferencedComponent();
+	public SyncComponent getReferencedSyncComponent() {
+		return (SyncComponent)getReferencedComponent();
 	}
 
 	@Override
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(-0.5 * size, -0.5 * size);
-		shape.lineTo(-0.5 * size, -0.1 * size);
-
-		shape.moveTo(+0.5 * size, -0.5 * size);
-		shape.lineTo(+0.5 * size, -0.1 * size);
-
-		shape.moveTo(-0.5 * size, -0.1 * size);
-		shape.lineTo(+0.5 * size, -0.1 * size);
-
-		shape.moveTo(-0.5 * size, +0.1 * size);
-		shape.lineTo(+0.5 * size, +0.1 * size);
-
-		shape.moveTo(0, +0.1 * size);
-		shape.lineTo(0, +0.5 * size);
+		shape.moveTo(-0.35 * size, -0.4 * size);
+		shape.lineTo(+0.35 * size + (xOffset*0.5), -0.4 * size);
+		shape.lineTo(+0.35 * size + (xOffset*0.5), +0.4 * size);
+		shape.lineTo(-0.35 * size, +0.4 * size);
+		shape.closePath();
 
 		return shape;
 	}

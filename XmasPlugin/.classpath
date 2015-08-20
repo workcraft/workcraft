@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="/ThirdParty/batik/batik-awt-util.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/jackson-core-asl-1.8.10.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/jackson-mapper-asl-1.8.10.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
