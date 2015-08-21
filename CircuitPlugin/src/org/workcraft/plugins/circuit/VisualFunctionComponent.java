@@ -81,8 +81,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 					}
 				}
 				break;
-			default:
-				break;
 			}
 		}
 		return renderingResult;

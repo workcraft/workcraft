@@ -587,7 +587,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	protected void drawContactLabels(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		AffineTransform oldTransform = g.getTransform();
+		AffineTransform savedTransform = g.getTransform();
 
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
 				new Func<VisualContact, Boolean>() {
@@ -599,9 +599,9 @@ public class VisualCircuitComponent extends VisualComponent implements
 			drawContactLabel(r, vc);
 		}
 
-		AffineTransform at = new AffineTransform();
-		at.quadrantRotate(-1);
-		g.transform(at);
+		AffineTransform rotateTransform = new AffineTransform();
+		rotateTransform.quadrantRotate(-1);
+		g.transform(rotateTransform);
 
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
 				new Func<VisualContact, Boolean>() {
@@ -613,7 +613,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 			drawContactLabel(r, vc);
 		}
 
-		g.setTransform(oldTransform);
+		g.setTransform(savedTransform);
 	}
 
 	private void drawBypass(DrawRequest r) {

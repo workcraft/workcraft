@@ -46,25 +46,25 @@ public class XmasModule implements Module {
 		framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new STGGen(framework);
+				return new STGGen();
 			}
 		});
 		framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new VerTool(framework);
+				return new VerTool();
 			}
 		});
 		framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new VerAnalysis(framework);
+				return new VerAnalysis();
 			}
 		});
 		framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new VerQuery(framework);
+				return new VerQuery();
 			}
 		});
 

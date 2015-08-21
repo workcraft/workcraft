@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.GraphEditorPanel;
@@ -49,24 +48,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class VerAnalysis extends AbstractTool implements Tool {
 
-
-	private static final JCheckBox[] NULL = null;
-	private final Framework framework;
-
-    public VerAnalysis(Framework framework) {
-		this.framework = framework;
-	}
-
-	public String getDisplayName() {
-		return "Analysis";
-	}
-
-	public String getSection() {
-		return "Verification";
-	}
-
 	private static class qslist {
-
 		   String name;
 		   int chk;
 
@@ -79,41 +61,27 @@ public class VerAnalysis extends AbstractTool implements Tool {
 	int cnt_syncnodes=0;
 	int index=1;
 	JFrame mainFrame = null;
-	public String command = "/home/frank/work_wk/vxm";
 	static String level="";
 	static String display="";
 	static String highlight="";
 	static String soln="";
 	static List<qslist> qslist = new ArrayList<qslist>();
 
+	@Override
+	public String getDisplayName() {
+		return "Analysis";
+	}
+
+	@Override
+	public String getSection() {
+		return "Verification";
+	}
+
 	public void dispose() {
 		mainFrame.setVisible(false);
 	}
 
 	public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
-
-	private class RadioListener implements ActionListener{
-
-        private JTextField textField;
-
-        public void RadioListener(JTextField textField){
-            this.textField = textField;
-        }
-
-        public void actionPerformed(ActionEvent e){
-            JRadioButton button = (JRadioButton) e.getSource();
-
-            // Set enabled based on button text (you can use whatever text you prefer)
-            for (JRadioButton r : rlist) {
-            	if(r==button) {
-                    r.setSelected(true);
-            	}
-            	else {
-            		r.setSelected(false);
-            	}
-    		}
-        }
-    }
 
     private static String ProcessArg(String file,int index) {
 		   String typ=null;
@@ -309,59 +277,56 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
 		for(String st : s.split(" |;|\n")) {
 			int n=1;
-		    //if(st.startsWith("Q")){
-		        if(st.contains("->")) {
-			        //System.out.println("testst" + st);
-		        	typ=0;
-		        	for(String st_ : st.split("->")) {
-		        		str=st_;
-				        //System.out.println("str===" + str);
-		        		for(Node node : vnet.getNodes()) {
-							if(node instanceof VisualQueueComponent) {
-				            	vqc=(VisualQueueComponent)node;
-				            	qc=vqc.getReferencedQueueComponent();
-				            	//System.out.println("x===" + xnet.getName(qc));
-				            	if(xnet.getName(qc).equals(str) && typ==0) {
-				            		vqc.setForegroundColor(Color.pink);
-				            	}
-				            }
-							else if(node instanceof VisualSyncComponent) {
-				            	vsc=(VisualSyncComponent)node;
-				            	sc=vsc.getReferencedSyncComponent();
-						        //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
-				            	if(xnet.getName(sc).equals(str) && typ==0) {
-				            		vsc.setForegroundColor(Color.pink);
-				            	}
+			if(st.contains("->")) {
+				//System.out.println("testst" + st);
+				typ=0;
+				for(String st_ : st.split("->")) {
+					str=st_;
+					//System.out.println("str===" + str);
+					for(Node node : vnet.getNodes()) {
+						if(node instanceof VisualQueueComponent) {
+							vqc=(VisualQueueComponent)node;
+							qc=vqc.getReferencedQueueComponent();
+							//System.out.println("x===" + xnet.getName(qc));
+							if(xnet.getName(qc).equals(str) && typ==0) {
+								vqc.setForegroundColor(Color.pink);
 							}
 						}
-		        	}
-		        }
-		        else if(st.contains("<-")) {
-			        //System.out.println("testst_" + st);
-		        	typ=1;
-		        	for(String st_ : st.split("<-")) {
-		        		str=st_;
-				        //System.out.println("str===" + str);
-		        		for(Node node : vnet.getNodes()) {
-							if(node instanceof VisualQueueComponent) {
-				            	vqc=(VisualQueueComponent)node;
-				            	qc=vqc.getReferencedQueueComponent();
-				            	if(xnet.getName(qc).equals(str) && typ==1) {
-				            		vqc.setForegroundColor(Color.red);
-				            	}
-				            }
-							else if(node instanceof VisualSyncComponent) {
-				            	vsc=(VisualSyncComponent)node;
-				            	sc=vsc.getReferencedSyncComponent();
-				            	if(xnet.getName(sc).equals(str) && typ==1) {
-				            		vsc.setForegroundColor(Color.red);
-				            	}
+						else if(node instanceof VisualSyncComponent) {
+							vsc=(VisualSyncComponent)node;
+							sc=vsc.getReferencedSyncComponent();
+							//System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
+							if(xnet.getName(sc).equals(str) && typ==0) {
+								vsc.setForegroundColor(Color.pink);
 							}
 						}
-		        	}
-		        }
-
-		    //}
+					}
+				}
+			}
+			else if(st.contains("<-")) {
+				//System.out.println("testst_" + st);
+				typ=1;
+				for(String st_ : st.split("<-")) {
+					str=st_;
+					//System.out.println("str===" + str);
+					for(Node node : vnet.getNodes()) {
+						if(node instanceof VisualQueueComponent) {
+							vqc=(VisualQueueComponent)node;
+							qc=vqc.getReferencedQueueComponent();
+							if(xnet.getName(qc).equals(str) && typ==1) {
+								vqc.setForegroundColor(Color.red);
+							}
+						}
+						else if(node instanceof VisualSyncComponent) {
+							vsc=(VisualSyncComponent)node;
+							sc=vsc.getReferencedSyncComponent();
+							if(xnet.getName(sc).equals(str) && typ==1) {
+								vsc.setForegroundColor(Color.red);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -446,19 +411,21 @@ public class VerAnalysis extends AbstractTool implements Tool {
 				panellist.get(panellist.size()-1).add(new JLabel(check));
 				panellist.get(panellist.size()-1).add(new JTextField(nxt.next(),1));
 			}
+			line_.close();
 		}
 		panellist.get(panellist.size()-1).add(jcb=new JCheckBox(""));
+
 		ItemListener itemListener = new ItemListener() {
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			if(e.getSource() instanceof JCheckBox){
-				JCheckBox sjcb=(JCheckBox) e.getSource();
-				if(sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
-				if(sjcb.isSelected()) System.out.println("indexb==" + index);
-				if(jcblast!=null) jcblast.setSelected(false);
-				jcblast=sjcb;
-				//String name = sjcb.getName();
-				//System.out.println(name);
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getSource() instanceof JCheckBox){
+					JCheckBox sjcb=(JCheckBox) e.getSource();
+					if(sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
+					if(sjcb.isSelected()) System.out.println("indexb==" + index);
+					if(jcblast!=null) jcblast.setSelected(false);
+					jcblast=sjcb;
+					//String name = sjcb.getName();
+					//System.out.println(name);
 				}
 			}
 		};
@@ -471,8 +438,6 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
         final Xmas xnet = (Xmas)we.getModelEntry().getMathModel();
         final VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
-
-        PrintWriter writer = null;
 
         mainFrame = new JFrame("Analysis");
 		JPanel panelmain = new JPanel();
@@ -513,23 +478,17 @@ public class VerAnalysis extends AbstractTool implements Tool {
         });
 
         okButton.addActionListener(new ActionListener() {
-
+        	@Override
             public void actionPerformed(ActionEvent e) {
             	int no=1;
-
 				dispose();
-
-				if(index!=0) {
-		            try
-		            {
-		                //writer = new PrintWriter(file);  //need for splitter?
+				if (index != 0) {
+		            try {
 		                Process p1 = Runtime.getRuntime().exec("cp /home/frank/work_wk/CPNFile /home/frank/work_wk/in");
 		                p1.waitFor();
-		                String arg="";
-		                String command = "/home/frank/work_wk/vxm ";
-		                arg=ProcessArg("/home/frank/work_wk/vsettings",index);
+		                String arg = ProcessArg("/home/frank/work_wk/vsettings",index);
 		                System.out.println("arg = " + arg);
-		                command = command + arg;
+		                String command = "vxm " + arg;
 
 		                Process p = Runtime.getRuntime().exec(command);
 		                String s, str="";
@@ -549,21 +508,20 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		                	process_qsl("/home/frank/work_wk/qsl");
 		                	str = process_eq("/home/frank/work_wk/equ"); //testing str assignment - fpb
 		                }
-		                else if(level.equals("normal") && test==2) {
+		                else if(level.equals("normal") && (test == 2)) {
 		                	System.out.println("LEVEL IS NORMAL ");
 		        			str = process_loc("/home/frank/work_wk/loc");
 		                }
-		                if(test>0) {
+		                if (test>0) {
 		            		if(display.equals("popup")) {
 		            			if(!level.equals("advanced")) {
 		            				SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test,str);
 		            			}
 		            			else {
 		            				SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test,str);
-
 		            			}
 		            		}
-		                	if(test==2) {
+		                	if (test==2) {
 		                		if(highlight.equals("local")) {
 		                			local_highlight(str,xnet,vnet);
 		                		}
@@ -578,20 +536,12 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		            			JOptionPane.showMessageDialog(null, message);
 		            		}
 		        		}
-		            }
-		            catch (Exception e1)
-		            {
-		                    e1.printStackTrace();
-		            }
-		            finally
-		            {
-
+		            } catch (Exception e1) {
+	                    e1.printStackTrace();
 		            }
 		        }
 		    }
-
         });
-
 	}
 
 	@Override

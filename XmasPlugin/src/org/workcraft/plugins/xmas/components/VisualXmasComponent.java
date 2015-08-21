@@ -25,6 +25,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,18 +36,23 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
+
+	private static final String PROPERTY_ORIENTATION = "Orientation";
+
 	// Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
 	public static final char DEGREE_SYMBOL = 0x00B0;
 
@@ -122,7 +128,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualXmasComponent, Orientation>(
-				this, "Orientation", Orientation.class, true, true, true) {
+				this, PROPERTY_ORIENTATION, Orientation.class, true, true, true) {
 			protected void setter(VisualXmasComponent object, Orientation value) {
 				object.setOrientation(value);
 			}
@@ -142,10 +148,13 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
     public void setOrientation(VisualXmasComponent.Orientation orientation) {
 		if (this.orientation != orientation) {
-			transformChanging();
-			localToParentTransform.quadrantRotate(orientation.quadrant - this.orientation.quadrant);
+			for (VisualXmasContact contact: getContacts()) {
+				AffineTransform rotateTransform = new AffineTransform();
+				rotateTransform.quadrantRotate(orientation.getQuadrant() - getOrientation().getQuadrant());
+				TransformHelper.applyTransform(contact, rotateTransform);
+			}
 			this.orientation = orientation;
-			transformChanged();
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_ORIENTATION));
 		}
 	}
 
@@ -163,13 +172,12 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 		if (!getChildren().contains(vc)) {
 			this.getReferencedXmasComponent().add(vc.getReferencedComponent());
 			add(vc);
-			vc.setX(size / 2 * positioning.xSign);
-			vc.setY(size / 2 * positioning.ySign);
+			vc.setPosition(new Point2D.Double(size / 2 * positioning.xSign, size / 2 * positioning.ySign));
 		}
 	}
 	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = new Rectangle2D.Double(-size/2, -size/2, size, size);
+		Rectangle2D bb = getShape().getBounds2D();
 		for (VisualXmasContact c: getContacts()) {
 			Rectangle2D.union(bb, c.getBoundingBox(), bb);
 		}
@@ -265,14 +273,16 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 		Decoration d = r.getDecoration();
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+
+		AffineTransform savedTransform = g.getTransform();
+		AffineTransform rotateTransform = new AffineTransform();
+		rotateTransform.quadrantRotate(getOrientation().getQuadrant());
+		g.transform(rotateTransform);
 		g.draw(getShape());
-//
-//		AffineTransform at = new AffineTransform();
-//		at.quadrantRotate(-orientation.quadrant);
-//		r.getGraphics().transform(at);
-//
-//		drawNameInLocalSpace(r);
-//		drawLabelInLocalSpace(r);
+		g.setTransform(savedTransform);
+
+		drawNameInLocalSpace(r);
+		drawLabelInLocalSpace(r);
 	}
 
 	@Override

@@ -2,26 +2,20 @@ package org.workcraft.plugins.xmas.tools;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -40,35 +34,28 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class VerTool extends AbstractTool implements Tool {
 
-
-	private final Framework framework;
-
-    public VerTool(Framework framework) {
-		this.framework = framework;
-	}
-
-	public String getDisplayName() {
-		return "Verification";
-	}
-
+	@Override
 	public String getSection() {
 		return "Verification";
 	}
 
+	@Override
+	public String getDisplayName() {
+		return "Verification";
+	}
+
 	private static class qslist {
+		String name;
+		int chk;
 
-		   String name;
-		   int chk;
-
-		   public qslist(String s1,int n) {
-		     name = s1;
-		     chk=n;
-		   }
+		public qslist(String s1,int n) {
+			name = s1;
+			chk=n;
+		}
 	}
 
 	int cnt_syncnodes=0;
 	JFrame mainFrame = null;
-	public String command = "/home/frank/work_wk/vxm";
 	static String level="";
 	static String display="";
 	static String highlight="";
@@ -78,31 +65,6 @@ public class VerTool extends AbstractTool implements Tool {
 	public void dispose() {
 		mainFrame.setVisible(false);
 	}
-
-	public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
-
-	private class RadioListener implements ActionListener{
-
-        private JTextField textField;
-
-        public void RadioListener(JTextField textField){
-            this.textField = textField;
-        }
-
-        public void actionPerformed(ActionEvent e){
-            JRadioButton button = (JRadioButton) e.getSource();
-
-            // Set enabled based on button text (you can use whatever text you prefer)
-            for (JRadioButton r : rlist) {
-            	if(r==button) {
-                    r.setSelected(true);
-            	}
-            	else {
-            		r.setSelected(false);
-            	}
-    		}
-        }
-    }
 
     private static String ProcessArg(String file) {
 		   String typ=null;
@@ -391,18 +353,12 @@ public class VerTool extends AbstractTool implements Tool {
         Xmas xnet = (Xmas)we.getModelEntry().getMathModel();
         VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
 
-        PrintWriter writer = null;
-        try
-        {
-
+        try {
             Process p1 = Runtime.getRuntime().exec("cp /home/frank/work_wk/CPNFile /home/frank/work_wk/in");
             p1.waitFor();
-            String arg="";
-            String command = "/home/frank/work_wk/vxm ";
-            arg=ProcessArg("/home/frank/work_wk/vsettings");
-            //System.out.println("arg = " + arg);
-            command = command + arg;
-            //System.out.println("commandd = " + command);
+            String arg = ProcessArg("/home/frank/work_wk/vsettings");
+            System.out.println("arg = " + arg);
+            String command = "vxm " + arg;
 
             Process p = Runtime.getRuntime().exec(command);
             String s, str="";
@@ -429,10 +385,8 @@ public class VerTool extends AbstractTool implements Tool {
         		if(display.equals("popup")) {
         			if(!level.equals("advanced")) {
         				SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test,str);
-        			}
-        			else {
+        			} else {
         				SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test,str);
-
         			}
         		}
             	if(test==2) {
@@ -450,23 +404,14 @@ public class VerTool extends AbstractTool implements Tool {
         			JOptionPane.showMessageDialog(null, message);
         		}
     		}
-        }
-        catch (Exception e)
-        {
-                e.printStackTrace();
-        }
-        finally
-        {
-                if ( writer != null )
-                {
-                    //writer.close();
-                }
+        } catch (Exception e) {
+        	e.printStackTrace();
         }
 
         //final SolutionsDialog solutionsDialog = new SolutionsDialog("hello", null);
         //GUI.centerAndSizeToParent(solutionsDialog, we.getFramework().getMainWindow());
 		//solutionsDialog.setVisible(true);
-
+		final Framework framework = Framework.getInstance();
         for(GraphEditorPanel e : framework.getMainWindow().getEditors(we)) {
         	editor1 = e;
         	g = (Graphics2D)e.getGraphics();
@@ -474,16 +419,6 @@ public class VerTool extends AbstractTool implements Tool {
         		//GUI.drawEditorMessage(editor1, g, Color.RED, "hello");
         	}
         }
-
-        try
-        {
-        	throw new InvalidConnectionException("first");
-        }
-        catch (Exception e)
-        {
-        	//GUI.drawEditorMessage(editor1, g, Color.RED, "");
-        }
-
 	}
 
 	@Override

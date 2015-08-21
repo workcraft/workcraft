@@ -27,9 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
@@ -52,31 +50,24 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class VerQuery extends AbstractTool implements Tool {
 
-
-	private static final JCheckBox[] NULL = null;
-	private final Framework framework;
-
-    public VerQuery(Framework framework) {
-		this.framework = framework;
-	}
-
-	public String getDisplayName() {
-		return "Query";
-	}
-
+	@Override
 	public String getSection() {
 		return "Verification";
 	}
 
+	@Override
+	public String getDisplayName() {
+		return "Query";
+	}
+
 	private static class qslist {
+		String name;
+		int chk;
 
-		   String name;
-		   int chk;
-
-		   public qslist(String s1,int n) {
-		     name = s1;
-		     chk=n;
-		   }
+		public qslist(String s1,int n) {
+			name = s1;
+			chk=n;
+		}
 	}
 
 	int cnt_syncnodes=0;
@@ -86,7 +77,6 @@ public class VerQuery extends AbstractTool implements Tool {
 	static JComboBox q1combob = null;
 	static JComboBox q2combob = null;
 	JComboBox qscombob = null;
-	public String command = "/home/frank/work_wk/vxm";
 	static String level="";
 	static String display="";
 	static String highlight="";
@@ -96,31 +86,6 @@ public class VerQuery extends AbstractTool implements Tool {
 	public void dispose() {
 		mainFrame.setVisible(false);
 	}
-
-	public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
-
-	private class RadioListener implements ActionListener{
-
-        private JTextField textField;
-
-        public void RadioListener(JTextField textField){
-            this.textField = textField;
-        }
-
-        public void actionPerformed(ActionEvent e){
-            JRadioButton button = (JRadioButton) e.getSource();
-
-            // Set enabled based on button text (you can use whatever text you prefer)
-            for (JRadioButton r : rlist) {
-            	if(r==button) {
-                    r.setSelected(true);
-            	}
-            	else {
-            		r.setSelected(false);
-            	}
-    		}
-        }
-    }
 
     private static String ProcessArg(String file,int index) {
 		   String typ=null;
@@ -619,16 +584,12 @@ public class VerQuery extends AbstractTool implements Tool {
 				dispose();
 
 				if(index!=0) {
-		            try
-		            {
-
+		            try {
 		                Process p1 = Runtime.getRuntime().exec("cp /home/frank/work_wk/CPNFile /home/frank/work_wk/in");
 		                p1.waitFor();
-		                String arg="";
-		                String command = "/home/frank/work_wk/vxm ";
-		                arg=ProcessArg("/home/frank/work_wk/vsettings",index);
+		                String arg = ProcessArg("/home/frank/work_wk/vsettings",index);
 		                System.out.println("arg = " + arg);
-		                command = command + arg;
+		                String command = "vxm " + arg;
 
 		                Process p = Runtime.getRuntime().exec(command);
 		                String s, str="", str_="";
@@ -637,7 +598,6 @@ public class VerQuery extends AbstractTool implements Tool {
 		                int test=0;
 		                init_highlight(xnet,vnet);
 		                while ((s = stdInput.readLine()) != null) {
-		                	//if(n==1) test=check_type(s);
 		                	if(test==0) test=check_type(s);
 		                	if(n>0) str = str + s + '\n';
 		                	n++;
@@ -660,7 +620,6 @@ public class VerQuery extends AbstractTool implements Tool {
 		            			}
 		            			else {
 		            				SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test,str_);
-
 		            			}
 		            		}
 		                	if(test==2) {
@@ -678,20 +637,12 @@ public class VerQuery extends AbstractTool implements Tool {
 		            			JOptionPane.showMessageDialog(null, message);
 		            		}
 		        		}
-		            }
-		            catch (Exception e1)
-		            {
-		                    e1.printStackTrace();
-		            }
-		            finally
-		            {
-
+		            } catch (Exception e1) {
+		                   e1.printStackTrace();
 		            }
 		        }
 		    }
-
         });
-
 	}
 
 	@Override

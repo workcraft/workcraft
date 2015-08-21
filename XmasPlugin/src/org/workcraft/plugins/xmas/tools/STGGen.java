@@ -34,40 +34,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class STGGen implements Tool {
 
-
-	private final Framework framework;
-
-    public STGGen(Framework framework) {
-		this.framework = framework;
-	}
-
-	public String getDisplayName() {
-		return "Generate STG";
-	}
-
-
-	public String getSection() {
-		return "Sync";
-	}
-
-	int cnt_syncnodes=0;
-	JFrame mainFrame = null;
-
-	public void dispose() {
-		mainFrame.setVisible(false);
-	}
-
-	public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
+	private List<JRadioButton> rlist = new ArrayList<JRadioButton>();
 
 	private class RadioListener implements ActionListener{
-
-        private JTextField textField;
-
-        public void RadioListener(JTextField textField){
-            this.textField = textField;
-        }
-
-        public void actionPerformed(ActionEvent e){
+		@Override
+		public void actionPerformed(ActionEvent e){
             JRadioButton button = (JRadioButton) e.getSource();
 
             // Set enabled based on button text (you can use whatever text you prefer)
@@ -82,10 +53,29 @@ public class STGGen implements Tool {
         }
     }
 
+    @Override
+    public String getSection() {
+		return "Sync";
+	}
+
+    @Override
+	public String getDisplayName() {
+		return "Generate STG";
+	}
+
+	int cnt_syncnodes=0;
+	JFrame mainFrame = null;
+
+	public void dispose() {
+		mainFrame.setVisible(false);
+	}
+
+	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, Xmas.class);
 	}
 
+	@Override
 	public void run(final WorkspaceEntry we) {
         System.out.println("Generating Circuit");
 
@@ -168,6 +158,7 @@ public class STGGen implements Tool {
         			// TODO Auto-generated catch block
         			e1.printStackTrace();
         		}
+        		final Framework framework = Framework.getInstance();
         		final Workspace workspace = framework.getWorkspace();
         		final Path<String> directory = we.getWorkspacePath().getParent();
         		String desiredName="STG";
