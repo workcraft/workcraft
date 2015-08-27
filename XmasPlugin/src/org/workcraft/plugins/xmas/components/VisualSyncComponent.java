@@ -22,16 +22,13 @@
 package org.workcraft.plugins.xmas.components;
 
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
 
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
 @DisplayName("Sync")
-@Hotkey(KeyEvent.VK_F)
 @SVGIcon("images/icons/svg/xmas-sync.svg")
 public class VisualSyncComponent extends VisualXmasComponent {
 

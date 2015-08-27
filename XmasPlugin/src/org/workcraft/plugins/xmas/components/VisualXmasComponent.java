@@ -271,6 +271,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
+
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
 

@@ -43,11 +43,12 @@ public class VisualSourceComponent extends VisualXmasComponent {
 	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
 
 	public Color color = new Color(0, 255, 0, 255);
+	private VisualXmasContact oContact = null;
 
 	public VisualSourceComponent(SourceComponent component) {
 		super(component);
 		if (component.getChildren().isEmpty()) {
-			this.addOutput("", Positioning.BOTTOM);
+			oContact = addOutput("o", Positioning.BOTTOM);
 		}
 		addPropertyDeclarations();
 	}
@@ -75,6 +76,10 @@ public class VisualSourceComponent extends VisualXmasComponent {
 
 	public SourceComponent getReferencedSourceComponent() {
 		return (SourceComponent)getReferencedComponent();
+	}
+
+	public VisualXmasContact getOContact() {
+		return oContact;
 	}
 
 	@Override

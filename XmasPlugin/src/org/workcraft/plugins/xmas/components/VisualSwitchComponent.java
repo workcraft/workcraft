@@ -22,17 +22,14 @@
 package org.workcraft.plugins.xmas.components;
 
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
 
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
 
 @DisplayName("Switch")
-@Hotkey(KeyEvent.VK_W)
 @SVGIcon("images/icons/svg/xmas-switch.svg")
 public class VisualSwitchComponent extends VisualXmasComponent {
 

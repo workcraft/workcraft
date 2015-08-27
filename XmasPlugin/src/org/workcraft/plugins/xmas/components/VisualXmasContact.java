@@ -32,6 +32,7 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -43,7 +44,7 @@ import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 public class VisualXmasContact extends VisualComponent implements StateObserver {
 	public static final String IO_TYPE_PROPERTY_NAME = "IOtype";
 
-	private double size = 0.4;
+	private double size = 0.25;
 
 	public VisualXmasContact(XmasContact contact) {
 		super(contact);
@@ -94,11 +95,20 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
+		Decoration d = r.getDecoration();
+
 		Shape shape = getShape();
 		g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));
-		g.setColor(Coloriser.colorise(getFillColor(), colorisation));
+
+		Color fillColor = d.getBackground();
+		if (fillColor == null) {
+			fillColor = getFillColor();
+		}
+
+		g.setColor(fillColor);
 		g.fill(shape);
+
+		Color colorisation = d.getColorisation();
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		g.draw(shape);
 	}

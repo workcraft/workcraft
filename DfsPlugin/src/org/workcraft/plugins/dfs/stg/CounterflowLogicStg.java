@@ -35,31 +35,31 @@ public class CounterflowLogicStg extends NodeStg {
 	}
 
 	public List<VisualSignalTransition> getForwardTransitions() {
-		Set<VisualSignalTransition> tmp = new HashSet<VisualSignalTransition>();
+		Set<VisualSignalTransition> tmp = new HashSet<>();
 		tmp.addAll(fwCRs.values());
 		tmp.addAll(fwCFs.values());
-		List<VisualSignalTransition> result = new ArrayList<VisualSignalTransition>();
+		List<VisualSignalTransition> result = new ArrayList<>();
 		result.addAll(tmp);
 		return result;
 	}
 
 	public List<VisualSignalTransition> getBackwardTransitions() {
-		Set<VisualSignalTransition> tmp = new HashSet<VisualSignalTransition>();
+		Set<VisualSignalTransition> tmp = new HashSet<>();
 		tmp.addAll(bwCRs.values());
 		tmp.addAll(bwCFs.values());
-		List<VisualSignalTransition> result = new ArrayList<VisualSignalTransition>();
+		List<VisualSignalTransition> result = new ArrayList<>();
 		result.addAll(tmp);
 		return result;
 	}
 
 	@Override
 	public List<VisualSignalTransition> getAllTransitions() {
-		Set<VisualSignalTransition> tmp = new HashSet<VisualSignalTransition>();
+		Set<VisualSignalTransition> tmp = new HashSet<>();
 		tmp.addAll(fwCRs.values());
 		tmp.addAll(fwCFs.values());
 		tmp.addAll(bwCRs.values());
 		tmp.addAll(bwCFs.values());
-		List<VisualSignalTransition> result = new ArrayList<VisualSignalTransition>();
+		List<VisualSignalTransition> result = new ArrayList<>();
 		result.addAll(tmp);
 		return result;
 	}
@@ -68,4 +68,5 @@ public class CounterflowLogicStg extends NodeStg {
 	public List<VisualPlace> getAllPlaces() {
 		return Arrays.asList(fwC0, fwC1, bwC0, bwC1);
 	}
+
 }

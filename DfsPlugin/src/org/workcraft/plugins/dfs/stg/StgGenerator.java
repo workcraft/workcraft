@@ -62,13 +62,13 @@ public class StgGenerator {
 	private static final double xScaling = 6;
 	private static final double yScaling = 6;
 
-	private Map<VisualLogic, LogicStg> logicMap = new HashMap<VisualLogic, LogicStg>();
-	private Map<VisualRegister, RegisterStg> registerMap = new HashMap<VisualRegister, RegisterStg>();
-	private Map<VisualCounterflowLogic, CounterflowLogicStg> counterflowLogicMap = new HashMap<VisualCounterflowLogic, CounterflowLogicStg>();
-	private Map<VisualCounterflowRegister, CounterflowRegisterStg> counterflowRegisterMap = new HashMap<VisualCounterflowRegister, CounterflowRegisterStg>();
-	private Map<VisualControlRegister, BinaryRegisterStg> controlRegisterMap = new HashMap<VisualControlRegister, BinaryRegisterStg>();
-	private Map<VisualPushRegister, BinaryRegisterStg> pushRegisterMap = new HashMap<VisualPushRegister, BinaryRegisterStg>();
-	private Map<VisualPopRegister, BinaryRegisterStg> popRegisterMap = new HashMap<VisualPopRegister, BinaryRegisterStg>();
+	private Map<VisualLogic, LogicStg> logicMap = new HashMap<>();
+	private Map<VisualRegister, RegisterStg> registerMap = new HashMap<>();
+	private Map<VisualCounterflowLogic, CounterflowLogicStg> counterflowLogicMap = new HashMap<>();
+	private Map<VisualCounterflowRegister, CounterflowRegisterStg> counterflowRegisterMap = new HashMap<>();
+	private Map<VisualControlRegister, BinaryRegisterStg> controlRegisterMap = new HashMap<>();
+	private Map<VisualPushRegister, BinaryRegisterStg> pushRegisterMap = new HashMap<>();
+	private Map<VisualPopRegister, BinaryRegisterStg> popRegisterMap = new HashMap<>();
 	private final VisualDfs dfs;
 	private final VisualSTG stg;
 
@@ -112,27 +112,27 @@ public class StgGenerator {
 			}
 
 			for(VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
-				connectLogicSTG(l);
+				connectLogicStg(l);
 			}
 			for(VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
-				connectRegisterSTG(r);
+				connectRegisterStg(r);
 			}
 
 			for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
-				connectCounterflowLogicSTG(l);
+				connectCounterflowLogicStg(l);
 			}
 			for(VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
-				connectCounterflowRegisterSTG(r);
+				connectCounterflowRegisterStg(r);
 			}
 
 			for(VisualControlRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualControlRegister.class)) {
-				connectControlRegisterSTG(r);
+				connectControlRegisterStg(r);
 			}
 			for(VisualPushRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualPushRegister.class)) {
-				connectPushRegisterSTG(r);
+				connectPushRegisterStg(r);
 			}
 			for(VisualPopRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualPopRegister.class)) {
-				connectPopRegisterSTG(r);
+				connectPopRegisterStg(r);
 			}
 		} catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);
@@ -266,36 +266,36 @@ public class StgGenerator {
 		return new LogicStg(C0, C1, CRs, CFs);
 	}
 
-	private void connectLogicSTG(VisualLogic l) throws InvalidConnectionException {
-		LogicStg lstg = getLogicSTG(l);
+	private void connectLogicStg(VisualLogic l) throws InvalidConnectionException {
+		LogicStg lstg = getLogicStg(l);
 		for (VisualLogic n: dfs.getPreset(l, VisualLogic.class)) {
-			LogicStg nstg = getLogicSTG(n);
+			LogicStg nstg = getLogicStg(n);
 			createReadArc(nstg.C1, lstg.CRs.get(n), true);
 			createReadArc(nstg.C0, lstg.CFs.get(n), false);
 		}
 		for (VisualRegister n: dfs.getPreset(l, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArc(nstg.M1, lstg.CRs.get(n), true);
 			createReadArc(nstg.M0, lstg.CFs.get(n), false);
 		}
 		for (VisualControlRegister n: dfs.getPreset(l, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			createReadArc(nstg.M1, lstg.CRs.get(n), true);
 			createReadArc(nstg.M0, lstg.CFs.get(n), false);
 		}
 		for (VisualPushRegister n: dfs.getPreset(l, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArc(nstg.tM1, lstg.CRs.get(n), true);
 			createReadArc(nstg.tM0, lstg.CFs.get(n), false);
 		}
 		for (VisualPopRegister n: dfs.getPreset(l, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArc(nstg.M1, lstg.CRs.get(n), true);
 			createReadArc(nstg.M0, lstg.CFs.get(n), false);
 		}
 	}
 
-	public LogicStg getLogicSTG(VisualLogic logic) {
+	public LogicStg getLogicStg(VisualLogic logic) {
 		return logicMap.get(logic);
 	}
 
@@ -353,71 +353,71 @@ public class StgGenerator {
 		return new RegisterStg(M0, M1, MR, MF);
 	}
 
-	private void connectRegisterSTG(VisualRegister r) throws InvalidConnectionException {
-		RegisterStg rstg = getRegisterSTG(r);
+	private void connectRegisterStg(VisualRegister r) throws InvalidConnectionException {
+		RegisterStg rstg = getRegisterStg(r);
 		// preset
 		for (VisualLogic n: dfs.getPreset(r, VisualLogic.class)) {
-			LogicStg nstg = getLogicSTG(n);
+			LogicStg nstg = getLogicStg(n);
 			createReadArc(nstg.C1, rstg.MR, true);
 			createReadArc(nstg.C0, rstg.MF, false);
 		}
 		// R-preset
 		for (VisualRegister n: dfs.getRPreset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArc(nstg.M1, rstg.MR, true);
 			createReadArc(nstg.M0, rstg.MF, false);
 		}
 		for (VisualCounterflowRegister n: dfs.getRPreset(r, VisualCounterflowRegister.class)) {
-			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
+			CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
 			createReadArc(nstg.orM1, rstg.MR, true);
 			createReadArc(nstg.orM0, rstg.MF, false);
 			createReadArc(nstg.andM1, rstg.MF, false);
 			createReadArc(nstg.andM0, rstg.MR, false);
 		}
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			createReadArc(nstg.M1, rstg.MR, true);
 			createReadArc(nstg.M0, rstg.MF, false);
 		}
 		for (VisualPushRegister n: dfs.getRPreset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArc(nstg.tM1, rstg.MR, true);
 			createReadArc(nstg.tM0, rstg.MF, false);
 		}
 		for (VisualPopRegister n: dfs.getRPreset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArc(nstg.M1, rstg.MR, true);
 			createReadArc(nstg.M0, rstg.MF, false);
 		}
 		// R-postset
 		for (VisualRegister n: dfs.getRPostset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArc(nstg.M1, rstg.MF, false);
 			createReadArc(nstg.M0, rstg.MR, false);
 		}
 		for (VisualCounterflowRegister n: dfs.getRPostset(r, VisualCounterflowRegister.class)) {
-			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
+			CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
 			createReadArc(nstg.andM1, rstg.MF, false);
 			createReadArc(nstg.andM0, rstg.MR, false);
 		}
 		for (VisualControlRegister n: dfs.getRPostset(r, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			createReadArc(nstg.M1, rstg.MF, false);
 			createReadArc(nstg.M0, rstg.MR, false);
 		}
 		for (VisualPushRegister n: dfs.getRPostset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArc(nstg.M1, rstg.MF, false);
 			createReadArc(nstg.M0, rstg.MR, false);
 		}
 		for (VisualPopRegister n: dfs.getRPostset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArc(nstg.tM1, rstg.MF, false);
 			createReadArc(nstg.tM0, rstg.MR, false);
 		}
 	}
 
-	public RegisterStg getRegisterSTG(VisualRegister register) {
+	public RegisterStg getRegisterStg(VisualRegister register) {
 		return registerMap.get(register);
 	}
 
@@ -550,33 +550,33 @@ public class StgGenerator {
 		return new CounterflowLogicStg(fwC0, fwC1, fwCRs, fwCFs, bwC0, bwC1, bwCRs, bwCFs);
 	}
 
-	private void connectCounterflowLogicSTG(VisualCounterflowLogic l) throws InvalidConnectionException {
-		CounterflowLogicStg lstg = getCounterflowLogicSTG(l);
+	private void connectCounterflowLogicStg(VisualCounterflowLogic l) throws InvalidConnectionException {
+		CounterflowLogicStg lstg = getCounterflowLogicStg(l);
 		// preset
 		for (VisualCounterflowLogic n: dfs.getPreset(l, VisualCounterflowLogic.class)) {
-			CounterflowLogicStg nstg = getCounterflowLogicSTG(n);
+			CounterflowLogicStg nstg = getCounterflowLogicStg(n);
 			createReadArc(nstg.fwC1, lstg.fwCRs.get(n), true);
 			createReadArc(nstg.fwC0, lstg.fwCFs.get(n), false);
 		}
 		for (VisualCounterflowRegister n: dfs.getPreset(l, VisualCounterflowRegister.class)) {
-			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
+			CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
 			createReadArc(nstg.orM1, lstg.fwCRs.get(n), true);
 			createReadArc(nstg.orM0, lstg.fwCFs.get(n), false);
 		}
 		// postset
 		for (VisualCounterflowLogic n: dfs.getPostset(l, VisualCounterflowLogic.class)) {
-			CounterflowLogicStg nstg = getCounterflowLogicSTG(n);
+			CounterflowLogicStg nstg = getCounterflowLogicStg(n);
 			createReadArc(nstg.bwC1, lstg.bwCRs.get(n), false);
 			createReadArc(nstg.bwC0, lstg.bwCFs.get(n), false);
 		}
 		for (VisualCounterflowRegister n: dfs.getPostset(l, VisualCounterflowRegister.class)) {
-			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
+			CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
 			createReadArc(nstg.orM1, lstg.bwCRs.get(n), false);
 			createReadArc(nstg.orM0, lstg.bwCFs.get(n), false);
 		}
 	}
 
-	public CounterflowLogicStg getCounterflowLogicSTG(VisualCounterflowLogic logic) {
+	public CounterflowLogicStg getCounterflowLogicStg(VisualCounterflowLogic logic) {
 		return counterflowLogicMap.get(logic);
 	}
 
@@ -682,18 +682,18 @@ public class StgGenerator {
 		return new CounterflowRegisterStg(orM0, orM1, orMRfw, orMRbw, orMFfw, orMFbw, andM0, andM1, andMR, andMF);
 	}
 
-	private void connectCounterflowRegisterSTG(VisualCounterflowRegister r) throws InvalidConnectionException {
-		CounterflowRegisterStg rstg = getCounterflowRegisterSTG(r);
+	private void connectCounterflowRegisterStg(VisualCounterflowRegister r) throws InvalidConnectionException {
+		CounterflowRegisterStg rstg = getCounterflowRegisterStg(r);
 
         for (VisualRegister n: dfs.getPreset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterSTG(n);
+            RegisterStg nstg = getRegisterStg(n);
             createReadArc(nstg.M1, rstg.orMRfw, true);
             createReadArc(nstg.M1, rstg.andMR, false);
             createReadArc(nstg.M0, rstg.orMFfw, false);
             createReadArc(nstg.M0, rstg.andMF, false);
         }
         for (VisualRegister n: dfs.getPostset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterSTG(n);
+            RegisterStg nstg = getRegisterStg(n);
             createReadArc(nstg.M1, rstg.orMRbw, true);
             createReadArc(nstg.M1, rstg.andMR, false);
             createReadArc(nstg.M0, rstg.orMFbw, false);
@@ -701,14 +701,14 @@ public class StgGenerator {
         }
 
         for (VisualCounterflowLogic n: dfs.getPreset(r, VisualCounterflowLogic.class)) {
-			CounterflowLogicStg nstg = getCounterflowLogicSTG(n);
+			CounterflowLogicStg nstg = getCounterflowLogicStg(n);
 			createReadArc(nstg.fwC1, rstg.orMRfw, true);
 			createReadArc(nstg.fwC0, rstg.orMFfw, false);
 			createReadArc(nstg.fwC1, rstg.andMR, false);
 			createReadArc(nstg.fwC0, rstg.andMF, false);
 		}
 		for (VisualCounterflowLogic n: dfs.getPostset(r, VisualCounterflowLogic.class)) {
-			CounterflowLogicStg nstg = getCounterflowLogicSTG(n);
+			CounterflowLogicStg nstg = getCounterflowLogicStg(n);
 			createReadArc(nstg.bwC1, rstg.orMRbw, true);
 			createReadArc(nstg.bwC0, rstg.orMFbw, false);
 			createReadArc(nstg.bwC1, rstg.andMR, false);
@@ -716,12 +716,12 @@ public class StgGenerator {
 		}
 
 		for (VisualCounterflowRegister n: dfs.getPreset(r, VisualCounterflowRegister.class)) {
-			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
+			CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
 			createReadArc(nstg.orM1, rstg.orMRfw, true);
 			createReadArc(nstg.orM0, rstg.orMFfw, false);
 		}
 		for (VisualCounterflowRegister n: dfs.getPostset(r, VisualCounterflowRegister.class)) {
-			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
+			CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
 			createReadArc(nstg.orM1, rstg.orMRbw, true);
 			createReadArc(nstg.orM0, rstg.orMFbw, false);
 		}
@@ -731,7 +731,7 @@ public class StgGenerator {
 		rSet.addAll(dfs.getRPreset(r, VisualCounterflowRegister.class));
 		rSet.addAll(dfs.getRPostset(r, VisualCounterflowRegister.class));
 		for (VisualCounterflowRegister n: rSet) {
-			CounterflowRegisterStg nstg = getCounterflowRegisterSTG(n);
+			CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
 			createReadArc(nstg.orM1, rstg.andMR, true);
 			createReadArc(nstg.orM0, rstg.andMF, false);
 			createReadArc(nstg.andM1, rstg.orMFfw, false);
@@ -741,7 +741,7 @@ public class StgGenerator {
 		}
 	}
 
-	public CounterflowRegisterStg getCounterflowRegisterSTG(VisualCounterflowRegister register) {
+	public CounterflowRegisterStg getCounterflowRegisterStg(VisualCounterflowRegister register) {
 		return counterflowRegisterMap.get(register);
 	}
 
@@ -899,11 +899,11 @@ public class StgGenerator {
 		return generateBinaryRegisterSTG(r, andSync, orSync);
 	}
 
-	private void connectControlRegisterSTG(VisualControlRegister r) throws InvalidConnectionException {
-		BinaryRegisterStg rstg = getControlRegisterSTG(r);
+	private void connectControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
+		BinaryRegisterStg rstg = getControlRegisterStg(r);
 		// preset
 		for (VisualLogic n: dfs.getPreset(r, VisualLogic.class)) {
-			LogicStg nstg = getLogicSTG(n);
+			LogicStg nstg = getLogicStg(n);
 			createReadArcs(nstg.C1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.C1, rstg.fMRs.values(), true);
 			createReadArc(nstg.C0, rstg.tMF, false);
@@ -911,7 +911,7 @@ public class StgGenerator {
 		}
 		// R-preset
 		for (VisualRegister n: dfs.getRPreset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArcs(nstg.M1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.M1, rstg.fMRs.values(), true);
 			createReadArc(nstg.M0, rstg.tMF, false);
@@ -919,7 +919,7 @@ public class StgGenerator {
 		}
 		Collection<VisualControlRegister> crPreset = dfs.getRPreset(r, VisualControlRegister.class);
 		for (VisualControlRegister n: crPreset) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			Connection connection = dfs.getConnection(n, r);
 			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
@@ -931,7 +931,7 @@ public class StgGenerator {
 			if (r.getReferencedControlRegister().getSynchronisationType() != SynchronisationType.PLAIN) {
 				for (VisualControlRegister m: crPreset) {
 					if (m == n) continue;
-					BinaryRegisterStg mstg = getControlRegisterSTG(m);
+					BinaryRegisterStg mstg = getControlRegisterStg(m);
 					if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
 						createReadArc(mstg.M1, rstg.tMRs.get(n), true);
 					}
@@ -944,14 +944,14 @@ public class StgGenerator {
 			createReadArc(nstg.M0, rstg.fMF, false);
 		}
 		for (VisualPushRegister n: dfs.getRPreset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArcs(nstg.tM1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.tM1, rstg.fMRs.values(), true);
 			createReadArc(nstg.tM0, rstg.tMF, false);
 			createReadArc(nstg.tM0, rstg.fMF, false);
 		}
 		for (VisualPopRegister n: dfs.getRPreset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArcs(nstg.M1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.M1, rstg.fMRs.values(), true);
 			createReadArc(nstg.M0, rstg.tMF, false);
@@ -959,21 +959,21 @@ public class StgGenerator {
 		}
 		// R-postset
 		for (VisualRegister n: dfs.getRPostset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false);
 			createReadArc(nstg.M1, rstg.fMF, false);
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false);
 			createReadArcs(nstg.M0, rstg.fMRs.values(), false);
 		}
 		for (VisualControlRegister n: dfs.getRPostset(r, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false);
 			createReadArc(nstg.M1, rstg.fMF, false);
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false);
 			createReadArcs(nstg.M0, rstg.fMRs.values(), false);
 		}
 		for (VisualPushRegister n: dfs.getRPostset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			Connection connection = dfs.getConnection(r, n);
 			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMF, false);
@@ -986,7 +986,7 @@ public class StgGenerator {
 			createReadArcs(nstg.M0, rstg.fMRs.values(), false);
 		}
 		for (VisualPopRegister n: dfs.getRPostset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			Connection connection = dfs.getConnection(r, n);
 			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMF, false);
@@ -1000,7 +1000,7 @@ public class StgGenerator {
 		}
 	}
 
-	public BinaryRegisterStg getControlRegisterSTG(VisualControlRegister register) {
+	public BinaryRegisterStg getControlRegisterStg(VisualControlRegister register) {
 		return controlRegisterMap.get(register);
 	}
 
@@ -1008,11 +1008,11 @@ public class StgGenerator {
 		return generateBinaryRegisterSTG(r, false, false);
 	}
 
-	private void connectPushRegisterSTG(VisualPushRegister r) throws InvalidConnectionException {
-		BinaryRegisterStg rstg = getPushRegisterSTG(r);
+	private void connectPushRegisterStg(VisualPushRegister r) throws InvalidConnectionException {
+		BinaryRegisterStg rstg = getPushRegisterStg(r);
 		// preset
 		for (VisualLogic n: dfs.getPreset(r, VisualLogic.class)) {
-			LogicStg nstg = getLogicSTG(n);
+			LogicStg nstg = getLogicStg(n);
 			createReadArcs(nstg.C1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.C1, rstg.fMRs.values(), true);
 			createReadArc(nstg.C0, rstg.tMF, false);
@@ -1020,14 +1020,14 @@ public class StgGenerator {
 		}
 		// R-preset
 		for (VisualRegister n: dfs.getRPreset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArcs(nstg.M1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.M1, rstg.fMRs.values(), true);
 			createReadArc(nstg.M0, rstg.tMF, false);
 			createReadArc(nstg.M0, rstg.fMF, false);
 		}
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			Connection connection = dfs.getConnection(n, r);
 			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
@@ -1042,14 +1042,14 @@ public class StgGenerator {
 			}
 		}
 		for (VisualPushRegister n: dfs.getRPreset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArcs(nstg.tM1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.tM1, rstg.fMRs.values(), true);
 			createReadArc(nstg.tM0, rstg.tMF, false);
 			createReadArc(nstg.tM0, rstg.fMF, false);
 		}
 		for (VisualPopRegister n: dfs.getRPreset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArcs(nstg.M1, rstg.tMRs.values(), true);
 			createReadArcs(nstg.M1, rstg.fMRs.values(), true);
 			createReadArc(nstg.M0, rstg.tMF, false);
@@ -1057,28 +1057,28 @@ public class StgGenerator {
 		}
 		// R-postset
 		for (VisualRegister n: dfs.getRPostset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false); // register M1 in R-postset is read only by tMF
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false); // register M0 in R-postset is read only by tMR
 		}
 		for (VisualControlRegister n: dfs.getRPostset(r, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false);
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false);
 		}
 		for (VisualPushRegister n: dfs.getRPostset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false);
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false);
 		}
 		for (VisualPopRegister n: dfs.getRPostset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArc(nstg.tM1, rstg.tMF, false); // pop tM1 in R-postset is read only by tMF
 			createReadArcs(nstg.tM0, rstg.tMRs.values(), false); // pop tM0 in R-postset is read only by tMR
 		}
 	}
 
-	public BinaryRegisterStg getPushRegisterSTG(VisualPushRegister register) {
+	public BinaryRegisterStg getPushRegisterStg(VisualPushRegister register) {
 		return pushRegisterMap.get(register);
 	}
 
@@ -1087,22 +1087,22 @@ public class StgGenerator {
 		return generateBinaryRegisterSTG(r, false, false);
 	}
 
-	private void connectPopRegisterSTG(VisualPopRegister r) throws InvalidConnectionException {
-		BinaryRegisterStg rstg = getPopRegisterSTG(r);
+	private void connectPopRegisterStg(VisualPopRegister r) throws InvalidConnectionException {
+		BinaryRegisterStg rstg = getPopRegisterStg(r);
 		// preset
 		for (VisualLogic n: dfs.getPreset(r, VisualLogic.class)) {
-			LogicStg nstg = getLogicSTG(n);
+			LogicStg nstg = getLogicStg(n);
 			createReadArcs(nstg.C1, rstg.tMRs.values(), true);
 			createReadArc(nstg.C0, rstg.tMF, false);
 		}
 		// R-preset
 		for (VisualRegister n: dfs.getRPreset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArcs(nstg.M1, rstg.tMRs.values(), true);
 			createReadArc(nstg.M0, rstg.tMF, false);
 		}
 		for (VisualControlRegister n: dfs.getRPreset(r, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			Connection connection = dfs.getConnection(n, r);
 			if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
 				createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
@@ -1117,39 +1117,39 @@ public class StgGenerator {
 			}
 		}
 		for (VisualPushRegister n: dfs.getRPreset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArcs(nstg.tM1, rstg.tMRs.values(), true);
 			createReadArc(nstg.tM0, rstg.tMF, false);
 		}
 		for (VisualPopRegister n: dfs.getRPreset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArcs(nstg.M1, rstg.tMRs.values(), true);
 			createReadArc(nstg.M0, rstg.tMF, false);
 		}
 		// R-postset
 		for (VisualRegister n: dfs.getRPostset(r, VisualRegister.class)) {
-			RegisterStg nstg = getRegisterSTG(n);
+			RegisterStg nstg = getRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false);
 			createReadArc(nstg.M1, rstg.fMF, false);
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false);
 			createReadArcs(nstg.M0, rstg.fMRs.values(), false);
 		}
 		for (VisualControlRegister n: dfs.getRPostset(r, VisualControlRegister.class)) {
-			BinaryRegisterStg nstg = getControlRegisterSTG(n);
+			BinaryRegisterStg nstg = getControlRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false);
 			createReadArc(nstg.M1, rstg.fMF, false);
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false);
 			createReadArcs(nstg.M0, rstg.fMRs.values(), false);
 		}
 		for (VisualPushRegister n: dfs.getRPostset(r, VisualPushRegister.class)) {
-			BinaryRegisterStg nstg = getPushRegisterSTG(n);
+			BinaryRegisterStg nstg = getPushRegisterStg(n);
 			createReadArc(nstg.M1, rstg.tMF, false);
 			createReadArc(nstg.M1, rstg.fMF, false);
 			createReadArcs(nstg.M0, rstg.tMRs.values(), false);
 			createReadArcs(nstg.M0, rstg.fMRs.values(), false);
 		}
 		for (VisualPopRegister n: dfs.getRPostset(r, VisualPopRegister.class)) {
-			BinaryRegisterStg nstg = getPopRegisterSTG(n);
+			BinaryRegisterStg nstg = getPopRegisterStg(n);
 			createReadArc(nstg.tM1, rstg.tMF, false);
 			createReadArc(nstg.tM1, rstg.fMF, false);
 			createReadArcs(nstg.tM0, rstg.tMRs.values(), false);
@@ -1157,41 +1157,28 @@ public class StgGenerator {
 		}
 	}
 
-	public BinaryRegisterStg getPopRegisterSTG(VisualPopRegister register) {
+	public BinaryRegisterStg getPopRegisterStg(VisualPopRegister register) {
 		return popRegisterMap.get(register);
 	}
 
 	public boolean isRelated(Node highLevelNode, Node node) {
+		NodeStg nodeStg = null;
 		if (highLevelNode instanceof VisualLogic) {
-			VisualLogic logic = (VisualLogic)highLevelNode;
-			LogicStg lstg = getLogicSTG(logic);
-			if (lstg != null) 	return lstg.contains(node);
+			nodeStg = getLogicStg((VisualLogic)highLevelNode);
 		} else if (highLevelNode instanceof VisualRegister) {
-			VisualRegister register = (VisualRegister)highLevelNode;
-			RegisterStg rstg = getRegisterSTG(register);
-			if (rstg != null) 	return rstg.contains(node);
+			nodeStg = getRegisterStg((VisualRegister)highLevelNode);
 		} else if (highLevelNode instanceof VisualCounterflowLogic) {
-			VisualCounterflowLogic logic = (VisualCounterflowLogic)highLevelNode;
-			CounterflowLogicStg lstg = getCounterflowLogicSTG(logic);
-			if (lstg != null) 	return lstg.contains(node);
+			nodeStg = getCounterflowLogicStg((VisualCounterflowLogic)highLevelNode);
 		} else if (highLevelNode instanceof VisualCounterflowRegister) {
-			VisualCounterflowRegister register = (VisualCounterflowRegister)highLevelNode;
-			CounterflowRegisterStg rstg = getCounterflowRegisterSTG(register);
-			if (rstg != null) 	return rstg.contains(node);
+			nodeStg = getCounterflowRegisterStg((VisualCounterflowRegister)highLevelNode);
 		} else if (highLevelNode instanceof VisualControlRegister) {
-			VisualControlRegister register = (VisualControlRegister)highLevelNode;
-			BinaryRegisterStg rstg = getControlRegisterSTG(register);
-			if (rstg != null) 	return rstg.contains(node);
+			nodeStg = getControlRegisterStg((VisualControlRegister)highLevelNode);
 		} else if (highLevelNode instanceof VisualPushRegister) {
-			VisualPushRegister register = (VisualPushRegister)highLevelNode;
-			BinaryRegisterStg rstg = getPushRegisterSTG(register);
-			if (rstg != null) 	return rstg.contains(node);
+			nodeStg = getPushRegisterStg((VisualPushRegister)highLevelNode);
 		} else if (highLevelNode instanceof VisualPopRegister) {
-			VisualPopRegister register = (VisualPopRegister)highLevelNode;
-			BinaryRegisterStg rstg = getPopRegisterSTG(register);
-			if (rstg != null) 	return rstg.contains(node);
+			nodeStg = getPopRegisterStg((VisualPopRegister)highLevelNode);
 		}
-		return false;
+		return ((nodeStg != null) && nodeStg.contains(node));
 	}
 
 }

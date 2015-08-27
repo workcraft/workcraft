@@ -1,4 +1,4 @@
-package org.workcraft.plugins.dfs.stg;
+package org.workcraft.plugins.xmas.stg;
 
 import java.util.List;
 

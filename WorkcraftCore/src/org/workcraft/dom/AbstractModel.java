@@ -23,6 +23,7 @@ package org.workcraft.dom;
 
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -147,6 +148,30 @@ public abstract class AbstractModel implements Model {
 	@Override
 	public Set<Node> getPreset(Node component) {
 		return nodeContextTracker.getPreset(component);
+	}
+
+	@Override
+	public <R> Set<R> getPreset(Node node, Class<R> type) {
+		Set<R> result = new HashSet<R>();
+		for (Node pred: getPreset(node)) {
+			try {
+				result.add(type.cast(pred));
+			} catch (ClassCastException e) {
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public <R> Set<R> getPostset(Node node, Class<R> type) {
+		Set<R> result = new HashSet<R>();
+		for (Node pred: getPostset(node)) {
+			try {
+				result.add(type.cast(pred));
+			} catch (ClassCastException e) {
+			}
+		}
+		return result;
 	}
 
 	@Override

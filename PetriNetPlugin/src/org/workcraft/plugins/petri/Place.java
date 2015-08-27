@@ -38,29 +38,34 @@ public class Place extends MathNode {
 		return tokens;
 	}
 
-	public void setTokens(int tokens) {
-		if (tokens < 0) {
-			throw new ArgumentException("The number of tokens cannot be negative.");
+	public void setTokens(int value) {
+		if (value != tokens) {
+			if (value < 0) {
+				throw new ArgumentException("The number of tokens cannot be negative.");
+			}
+			if (value > capacity) {
+				setCapacity(value);
+			}
+			this.tokens = value;
+			sendNotification( new PropertyChangedEvent(this, PROPERTY_TOKENS) );
 		}
-		if (tokens > capacity) {
-			capacity = tokens;
-		}
-		this.tokens = tokens;
-		sendNotification( new PropertyChangedEvent(this, PROPERTY_TOKENS) );
 	}
 
 	public int getCapacity() {
 		return capacity;
 	}
 
-	public void setCapacity(int capacity) {
-		if (capacity < 1) {
-			throw new ArgumentException("Negative or zero capacity is not allowed.");
+	public void setCapacity(int value) {
+		if (value != capacity) {
+			if (value < 1) {
+				throw new ArgumentException("Negative or zero capacity is not allowed.");
+			}
+			if (tokens > value) {
+				throw new ArgumentException("The place capacity "+ value + " is too small for the current number of tokens " + tokens + " .");
+			}
+			this.capacity = value;
+			sendNotification ( new PropertyChangedEvent (this, PROPERTY_CAPACITY));
 		}
-		if (tokens > capacity) {
-			throw new ArgumentException("The place capacity "+ capacity + " is too small for the current number of tokens " + tokens + " .");
-		}
-		this.capacity = capacity;
-		sendNotification ( new PropertyChangedEvent (this, PROPERTY_CAPACITY));
 	}
+
 }

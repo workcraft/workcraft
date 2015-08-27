@@ -20,6 +20,7 @@ import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.plugins.xmas.components.SyncComponent;
 import org.workcraft.plugins.xmas.tools.SyncSelectionTool;
+import org.workcraft.plugins.xmas.tools.XmasSimulationTool;
 
 public class XmasToolsProvider implements CustomToolsProvider {
 
@@ -42,6 +43,7 @@ public class XmasToolsProvider implements CustomToolsProvider {
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(MergeComponent.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CreditComponent.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SyncComponent.class)));
+		result.add(new XmasSimulationTool());
 
 		return result;
 	}

@@ -22,16 +22,13 @@
 package org.workcraft.plugins.xmas.components;
 
 import java.awt.Shape;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
 
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
 @DisplayName("Merge")
-@Hotkey(KeyEvent.VK_M)
 @SVGIcon("images/icons/svg/xmas-merge.svg")
 public class VisualMergeComponent extends VisualXmasComponent {
 
