@@ -1,9 +1,8 @@
 package org.workcraft.plugins.xmas.stg;
 
 import java.awt.geom.AffineTransform;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.workcraft.dom.Container;
@@ -18,10 +17,11 @@ import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.XmasUtils;
+import org.workcraft.plugins.xmas.components.VisualForkComponent;
 import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
+import org.workcraft.plugins.xmas.components.VisualJoinComponent;
 import org.workcraft.plugins.xmas.components.VisualSinkComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
-import org.workcraft.plugins.xmas.components.VisualXmasComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.util.Hierarchy;
 
@@ -41,6 +41,8 @@ public class StgGenerator {
 	private Map<VisualSourceComponent, SourceStg> sourceMap = new HashMap<>();
 	private Map<VisualSinkComponent, SinkStg> sinkMap = new HashMap<>();
 	private Map<VisualFunctionComponent, FunctionStg> functionMap = new HashMap<>();
+	private Map<VisualForkComponent, ForkStg> forkMap = new HashMap<>();
+	private Map<VisualJoinComponent, JoinStg> joinMap = new HashMap<>();
 	private final VisualXmas xmas;
 	private final VisualSTG stg;
 
@@ -52,31 +54,46 @@ public class StgGenerator {
 
 	private void convert() {
 		try {
-			for(VisualSourceComponent sourceComponent : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
-				SourceStg sourceStg = generateSourceStg(sourceComponent);
-				sourceMap.put(sourceComponent, sourceStg);
+			for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
+				SourceStg sourceStg = generateSourceStg(component);
+				sourceMap.put(component, sourceStg);
 			}
-			for(VisualSinkComponent sinkComponent : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
-				SinkStg sinkStg = generateSinkStg(sinkComponent);
-				sinkMap.put(sinkComponent, sinkStg);
+			for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
+				SinkStg sinkStg = generateSinkStg(component);
+				sinkMap.put(component, sinkStg);
 			}
-			for(VisualFunctionComponent functionComponent : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
-				FunctionStg functionStg = generateFunctionStg(functionComponent);
-				functionMap.put(functionComponent, functionStg);
+			for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
+				FunctionStg functionStg = generateFunctionStg(component);
+				functionMap.put(component, functionStg);
+			}
+			for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
+				ForkStg forkStg = generateForkStg(component);
+				forkMap.put(component, forkStg);
+			}
+			for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
+				JoinStg joinStg = generateJoinStg(component);
+				joinMap.put(component, joinStg);
 			}
 
-			for(VisualSourceComponent sourceComponent : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
-				connectSourceStg(sourceComponent);
+			for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
+				connectSourceStg(component);
 			}
-			for(VisualSinkComponent sinkComponent : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
-				connectSinkStg(sinkComponent);
+			for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
+				connectSinkStg(component);
 			}
-			for(VisualFunctionComponent functionComponent : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
-				connectFunctionStg(functionComponent);
+			for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
+				connectFunctionStg(component);
+			}
+			for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
+				connectForkStg(component);
+			}
+			for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
+				connectJoinStg(component);
 			}
 		} catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);
 		}
+		stg.selectNone();
 	}
 
 	public VisualSTG getStg() {
@@ -106,6 +123,78 @@ public class StgGenerator {
 		}
 	}
 
+	private ContactStg generateInputContactStg(String signalName, double x, double y) throws InvalidConnectionException {
+		return generateInputContactStg(signalName, x, y, 1, 1);
+	}
+
+	private ContactStg generateInputContactStg(String signalName, double x, double y, int cntF, int cntR) throws InvalidConnectionException {
+		SignalTransition.Type type = SignalTransition.Type.INTERNAL;
+
+		VisualPlace p0 = stg.createPlace(signalName + name0, null);
+		p0.getReferencedPlace().setTokens(1);
+		setPosition(p0, x - 4.0, y + 1.0);
+
+		VisualPlace p1 = stg.createPlace(signalName + name1, null);
+		p1.getReferencedPlace().setTokens(0);
+		setPosition(p1, x - 4.0, y - 1.0);
+
+		ArrayList<VisualSignalTransition> tFs = new ArrayList<>(cntF);
+		for (int i = 0; i < cntF; i++) {
+			VisualSignalTransition tF = stg.createSignalTransition(signalName, type, SignalTransition.Direction.MINUS, null);
+			createConsumingArc(p1, tF);
+			createProducingArc(tF, p0);
+			setPosition(tF, x + 0.0, y + 1.0 + i);
+			tFs.add(tF);
+		}
+
+		ArrayList<VisualSignalTransition> tRs = new ArrayList<>(cntR);
+		for (int i = 0; i < cntR; i++) {
+			VisualSignalTransition tR = stg.createSignalTransition(signalName, type, SignalTransition.Direction.PLUS, null);
+			createConsumingArc(p0, tR);
+			createProducingArc(tR, p1);
+			setPosition(tR, x + 0.0, y - 1.0 - i);
+			tRs.add(tR);
+		}
+
+		return new ContactStg(p0, p1, tFs, tRs);
+	}
+
+	private ContactStg generateOutputContactStg(String signalName, double x, double y) throws InvalidConnectionException {
+		return generateOutputContactStg(signalName, x, y, 1, 1);
+	}
+
+	private ContactStg generateOutputContactStg(String signalName, double x, double y, int cntF, int cntR) throws InvalidConnectionException {
+		SignalTransition.Type type = SignalTransition.Type.INTERNAL;
+
+		VisualPlace p0 = stg.createPlace(signalName + name0, null);
+		p0.getReferencedPlace().setTokens(1);
+		setPosition(p0, x + 4.0, y + 1.0);
+
+		VisualPlace p1 = stg.createPlace(signalName + name1, null);
+		p1.getReferencedPlace().setTokens(0);
+		setPosition(p1, x + 4.0, y - 1.0);
+
+		ArrayList<VisualSignalTransition> tFs = new ArrayList<>(cntF);
+		for (int i = 0; i < cntF; i++) {
+			VisualSignalTransition tF = stg.createSignalTransition(signalName, type, SignalTransition.Direction.MINUS, null);
+			createConsumingArc(p1, tF);
+			createProducingArc(tF, p0);
+			setPosition(tF, x - 0.0, y + 1.0 + i);
+			tFs.add(tF);
+		}
+
+		ArrayList<VisualSignalTransition> tRs = new ArrayList<>(cntR);
+		for (int i = 0; i < cntR; i++) {
+			VisualSignalTransition tR = stg.createSignalTransition(signalName, type, SignalTransition.Direction.PLUS, null);
+			createConsumingArc(p0, tR);
+			createProducingArc(tR, p1);
+			setPosition(tR, x - 0.0, y - 1.0 - i);
+			tRs.add(tR);
+		}
+
+		return new ContactStg(p0, p1, tFs, tRs);
+	}
+
 	public ContactStg getContactStg(VisualXmasContact contact) {
 		return contactMap.get(contact);
 	}
@@ -116,69 +205,29 @@ public class StgGenerator {
 		AffineTransform transform = TransformHelper.getTransformToRoot(component);
 		double x =	xScaling * (transform.getTranslateX() + component.getX());
 		double y =	yScaling * (transform.getTranslateY() + component.getY());
-		Collection<Node> nodes = new LinkedList<Node>();
-		SignalTransition.Type type = SignalTransition.Type.INTERNAL;
-
-		Container curContainer = null;
 		ContactStg oStg = null;
-		VisualXmasContact oContact = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
-				VisualPlace o0 = stg.createPlace(name + nameOirdy + name0, curContainer);
-				o0.getReferencedPlace().setTokens(1);
-				o0.setForegroundColor(component.getForegroundColor());
-				o0.setFillColor(component.getFillColor());
-				setPosition(o0, x + 4.0, y + 1.0);
-				nodes.add(o0);
-
-				VisualPlace o1 = stg.createPlace(name + nameOirdy + name1, curContainer);
-				o1.getReferencedPlace().setTokens(0);
-				o1.setForegroundColor(component.getForegroundColor());
-				o1.setFillColor(component.getFillColor());
-				setPosition(o1, x + 4.0, y - 1.0);
-				nodes.add(o1);
-
-				VisualSignalTransition oF = stg.createSignalTransition(name + nameOirdy, type, SignalTransition.Direction.MINUS, curContainer);
-				createConsumingArc(o1, oF);
-				createProducingArc(oF, o0);
-				setPosition(oF, x - 0.0, y + 1.0);
-				nodes.add(oF);
-
-				VisualSignalTransition oR = stg.createSignalTransition(name + nameOirdy, type, SignalTransition.Direction.PLUS, curContainer);
-				createConsumingArc(o0, oR);
-				createProducingArc(oR, o1);
-				setPosition(oR, x - 0.0, y - 1.0);
-				nodes.add(oR);
-
-				oStg = new ContactStg(o0, o1, oF, oR);
-				oContact = contact;
-				contactMap.put(oContact, oStg);
+				oStg = generateOutputContactStg(name + nameOirdy, x, y);
+				contactMap.put(contact, oStg);
 			}
 		}
-
-		stg.select(nodes);
+		stg.select(oStg.getAllNodes());
 		stg.groupSelection();
-
 		return new SourceStg(oStg);
 	}
 
 	private void connectSourceStg(VisualSourceComponent component) throws InvalidConnectionException {
-		VisualPlace i1 = null;
+		VisualXmasContact oContact = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
-				VisualXmasComponent succComponent =  XmasUtils.getConnectedComponent(xmas, contact);
-				if (succComponent instanceof VisualSinkComponent) {
-					SinkStg stg = getSinkStg((VisualSinkComponent)succComponent);
-					i1 = stg.i.rdy1;
-				} else if (succComponent instanceof VisualFunctionComponent) {
-					FunctionStg stg = getFunctionStg((VisualFunctionComponent)succComponent);
-					i1 = stg.i.rdy1;
-				}
+				oContact =  XmasUtils.getConnectedContact(xmas, contact);
 			}
 		}
-		if (i1 != null) {
-			SourceStg stg = getSourceStg(component);
-			createReadArc(i1, stg.o.rdyF);
+		SourceStg sourceStg = getSourceStg(component);
+		if ((sourceStg != null) && (oContact != null)) {
+			ContactStg oStg = getContactStg(oContact);
+			createReadArc(oStg.rdy1, sourceStg.o.rdyFs.get(0));
 		}
 	}
 
@@ -192,68 +241,31 @@ public class StgGenerator {
 		AffineTransform transform = TransformHelper.getTransformToRoot(component);
 		double x =	xScaling * (transform.getTranslateX() + component.getX());
 		double y =	yScaling * (transform.getTranslateY() + component.getY());
-		Collection<Node> nodes = new LinkedList<Node>();
-		SignalTransition.Type type = SignalTransition.Type.INTERNAL;
-
-		Container curContainer = null;
 		ContactStg iStg = null;
-		VisualXmasContact iContact = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				VisualPlace i0 = stg.createPlace(name + nameItrdy + name0, curContainer);
-				i0.getReferencedPlace().setTokens(1);
-				i0.setForegroundColor(component.getForegroundColor());
-				i0.setFillColor(component.getFillColor());
-				setPosition(i0, x - 4.0, y + 1.0);
-				nodes.add(i0);
-
-				VisualPlace i1 = stg.createPlace(name + nameItrdy + name1, curContainer);
-				i1.getReferencedPlace().setTokens(0);
-				i1.setForegroundColor(component.getForegroundColor());
-				i1.setFillColor(component.getFillColor());
-				setPosition(i1, x - 4.0, y - 1.0);
-				nodes.add(i1);
-
-				VisualSignalTransition iF = stg.createSignalTransition(name + nameItrdy, type, SignalTransition.Direction.MINUS, curContainer);
-				createConsumingArc(i1, iF);
-				createProducingArc(iF, i0);
-				setPosition(iF, x + 0.0, y + 1.0);
-				nodes.add(iF);
-
-				VisualSignalTransition iR = stg.createSignalTransition(name + nameItrdy, type, SignalTransition.Direction.PLUS, curContainer);
-				createConsumingArc(i0, iR);
-				createProducingArc(iR, i1);
-				setPosition(iR, x + 0.0, y - 1.0);
-				nodes.add(iR);
-
-				iStg = new ContactStg(i0, i1, iF, iR);
-				iContact = contact;
-				contactMap.put(iContact, iStg);
+				iStg = generateOutputContactStg(name + nameItrdy, x, y);
+				contactMap.put(contact, iStg);
 			}
 		}
-
-		stg.select(nodes);
+		stg.select(iStg.getAllNodes());
 		stg.groupSelection();
 		return new SinkStg(iStg);
 	}
 
 	private void connectSinkStg(VisualSinkComponent component) throws InvalidConnectionException {
-		VisualPlace o1 = null;
+		VisualXmasContact iContact = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				VisualXmasComponent prevComponent =  XmasUtils.getConnectedComponent(xmas, contact);
-				if (prevComponent instanceof VisualSourceComponent) {
-					SourceStg stg = getSourceStg((VisualSourceComponent)prevComponent);
-					o1 = stg.o.rdy1;
-				} else if (prevComponent instanceof VisualFunctionComponent) {
-					FunctionStg stg = getFunctionStg((VisualFunctionComponent)prevComponent);
-					o1 = stg.o.rdy1;
-				}
+				iContact =  XmasUtils.getConnectedContact(xmas, contact);
 			}
 		}
-		if (o1 != null) {
-			SinkStg stg = getSinkStg(component);
-			createReadArc(o1, stg.i.rdyF);
+		SinkStg sinkStg = getSinkStg(component);
+		if (iContact != null) {
+			ContactStg iStg = getContactStg(iContact);
+			if ((sinkStg != null) && (iStg !=null)) {
+				createReadArc(iStg.rdy1, sinkStg.i.rdyFs.get(0));
+			}
 		}
 	}
 
@@ -267,124 +279,207 @@ public class StgGenerator {
 		AffineTransform transform = TransformHelper.getTransformToRoot(component);
 		double x =	xScaling * (transform.getTranslateX() + component.getX());
 		double y =	yScaling * (transform.getTranslateY() + component.getY());
-		Collection<Node> nodes = new LinkedList<Node>();
-		SignalTransition.Type type = SignalTransition.Type.INTERNAL;
-
-		Container curContainer = null;
 		ContactStg iStg = null;
-		VisualXmasContact iContact = null;
 		ContactStg oStg = null;
-		VisualXmasContact oContact = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				VisualPlace i0 = stg.createPlace(name + nameItrdy + name0, curContainer);
-				i0.getReferencedPlace().setTokens(1);
-				i0.setForegroundColor(component.getForegroundColor());
-				i0.setFillColor(component.getFillColor());
-				setPosition(i0, x - 4.0, y + 4.0);
-				nodes.add(i0);
-
-				VisualPlace i1 = stg.createPlace(name + nameItrdy + name1, curContainer);
-				i1.getReferencedPlace().setTokens(0);
-				i1.setForegroundColor(component.getForegroundColor());
-				i1.setFillColor(component.getFillColor());
-				setPosition(i1, x - 4.0, y + 2.0);
-				nodes.add(i1);
-
-				VisualSignalTransition iF = stg.createSignalTransition(name + nameItrdy, type, SignalTransition.Direction.MINUS, curContainer);
-				createConsumingArc(i1, iF);
-				createProducingArc(iF, i0);
-				setPosition(iF, x + 0.0, y + 4.0);
-				nodes.add(iF);
-
-				VisualSignalTransition iR = stg.createSignalTransition(name + nameItrdy, type, SignalTransition.Direction.PLUS, curContainer);
-				createConsumingArc(i0, iR);
-				createProducingArc(iR, i1);
-				setPosition(iR, x + 0.0, y + 2.0);
-				nodes.add(iR);
-
-				iStg = new ContactStg(i0, i1, iF, iR);
-				iContact = contact;
-				contactMap.put(iContact, iStg);
+				iStg = generateInputContactStg(name + nameItrdy, x, y + 3.0);
+				contactMap.put(contact, iStg);
 			} else {
-				VisualPlace o0 = stg.createPlace(name + nameOirdy + name0, curContainer);
-				o0.getReferencedPlace().setTokens(1);
-				o0.setForegroundColor(component.getForegroundColor());
-				o0.setFillColor(component.getFillColor());
-				setPosition(o0, x + 4.0, y - 2.0);
-				nodes.add(o0);
-
-				VisualPlace o1 = stg.createPlace(name + nameOirdy + name1, curContainer);
-				o1.getReferencedPlace().setTokens(0);
-				o1.setForegroundColor(component.getForegroundColor());
-				o1.setFillColor(component.getFillColor());
-				setPosition(o1, x + 4.0, y - 4.0);
-				nodes.add(o1);
-
-				VisualSignalTransition oF = stg.createSignalTransition(name + nameOirdy, type, SignalTransition.Direction.MINUS, curContainer);
-				createConsumingArc(o1, oF);
-				createProducingArc(oF, o0);
-				setPosition(oF, x - 0.0, y - 2.0);
-				nodes.add(oF);
-
-				VisualSignalTransition oR = stg.createSignalTransition(name + nameOirdy, type, SignalTransition.Direction.PLUS, curContainer);
-				createConsumingArc(o0, oR);
-				createProducingArc(oR, o1);
-				setPosition(oR, x - 0.0, y - 4.0);
-				nodes.add(oR);
-
-				oStg = new ContactStg(o0, o1, oF, oR);
-				oContact = contact;
-				contactMap.put(oContact, oStg);
+				oStg = generateOutputContactStg(name + nameOirdy, x, y - 3.0);
+				contactMap.put(contact, oStg);
 			}
 		}
-		stg.select(nodes);
+		stg.selectNone();
+		stg.addToSelection(iStg.getAllNodes());
+		stg.addToSelection(oStg.getAllNodes());
 		stg.groupSelection();
 		return new FunctionStg(iStg, oStg);
 	}
 
 	private void connectFunctionStg(VisualFunctionComponent component) throws InvalidConnectionException {
-		VisualPlace i0 = null;
-		VisualPlace i1 = null;
-		VisualPlace o0 = null;
-		VisualPlace o1 = null;
+		VisualXmasContact iContact = null;
+		VisualXmasContact oContact = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				VisualXmasComponent prevComponent =  XmasUtils.getConnectedComponent(xmas, contact);
-				if (prevComponent instanceof VisualSourceComponent) {
-					SourceStg stg = getSourceStg((VisualSourceComponent)prevComponent);
-					o0 = stg.o.rdy0;
-					o1 = stg.o.rdy1;
-				} else if (prevComponent instanceof VisualFunctionComponent) {
-					FunctionStg stg = getFunctionStg((VisualFunctionComponent)prevComponent);
-					o0 = stg.o.rdy0;
-					o1 = stg.o.rdy1;
-				}
+				iContact =  XmasUtils.getConnectedContact(xmas, contact);
 			} else {
-				VisualXmasComponent succComponent =  XmasUtils.getConnectedComponent(xmas, contact);
-				if (succComponent instanceof VisualSinkComponent) {
-					SinkStg stg = getSinkStg((VisualSinkComponent)succComponent);
-					i0 = stg.i.rdy0;
-					i1 = stg.i.rdy1;
-				} else if (succComponent instanceof VisualFunctionComponent) {
-					FunctionStg stg = getFunctionStg((VisualFunctionComponent)succComponent);
-					i0 = stg.i.rdy0;
-					i1 = stg.i.rdy1;
-				}
+				oContact =  XmasUtils.getConnectedContact(xmas, contact);
 			}
 		}
-		if ( (i0 != null) && (i1 != null) && (o0 != null) && (o1 != null) ) {
-			FunctionStg stg = getFunctionStg(component);
-			createReadArc(o0, stg.o.rdyF);
-			createReadArc(o1, stg.o.rdyR);
-			createReadArc(i0, stg.i.rdyF);
-			createReadArc(i1, stg.i.rdyR);
+		FunctionStg functionStg = getFunctionStg(component);
+		if (iContact != null) {
+			ContactStg iStg = getContactStg(iContact);
+			if ((functionStg != null) && (iStg != null)) {
+				createReadArc(iStg.rdy0, functionStg.o.rdyFs.get(0));
+				createReadArc(iStg.rdy1, functionStg.o.rdyRs.get(0));
+			}
+		}
+		if (oContact != null) {
+			ContactStg oStg = getContactStg(oContact);
+			if ((functionStg != null) && (oStg != null)) {
+				createReadArc(oStg.rdy0, functionStg.i.rdyFs.get(0));
+				createReadArc(oStg.rdy1, functionStg.i.rdyRs.get(0));
+			}
 		}
 	}
 
 	public FunctionStg getFunctionStg(VisualFunctionComponent component) {
 		return functionMap.get(component);
 	}
+
+
+	private ForkStg generateForkStg(VisualForkComponent component) throws InvalidConnectionException {
+		String name = xmas.getMathName(component);
+		AffineTransform transform = TransformHelper.getTransformToRoot(component);
+		double x =	xScaling * (transform.getTranslateX() + component.getX());
+		double y =	yScaling * (transform.getTranslateY() + component.getY());
+		ContactStg iStg = null;
+		ContactStg aStg = null;
+		ContactStg bStg = null;
+		for (VisualXmasContact contact: component.getContacts()) {
+			if (contact.isInput()) {
+				iStg = generateInputContactStg(name + nameItrdy, x, y, 2, 1);
+				contactMap.put(contact, iStg);
+			} else if (aStg == null) {
+				aStg = generateOutputContactStg(name + nameAirdy, x, y - 5.0, 2, 1);
+				contactMap.put(contact, aStg);
+			} else {
+				bStg = generateOutputContactStg(name + nameBirdy, x, y + 5.0, 2, 1);
+				contactMap.put(contact, bStg);
+			}
+		}
+		stg.selectNone();
+		stg.addToSelection(iStg.getAllNodes());
+		stg.addToSelection(aStg.getAllNodes());
+		stg.addToSelection(bStg.getAllNodes());
+		stg.groupSelection();
+		return new ForkStg(iStg, aStg, bStg);
+	}
+
+	private void connectForkStg(VisualForkComponent component) throws InvalidConnectionException {
+		VisualXmasContact iContact = null;
+		VisualXmasContact aContact = null;
+		VisualXmasContact bContact = null;
+		for (VisualXmasContact contact: component.getContacts()) {
+			if (contact.isInput()) {
+				iContact =  XmasUtils.getConnectedContact(xmas, contact);
+			} else if (aContact == null) {
+				aContact =  XmasUtils.getConnectedContact(xmas, contact);
+			} else {
+				bContact =  XmasUtils.getConnectedContact(xmas, contact);
+			}
+		}
+		ForkStg forkStg = getForkStg(component);
+		if (iContact != null) {
+			ContactStg iStg = getContactStg(iContact);
+			if ((forkStg != null) && (iStg != null)) {
+				createReadArc(iStg.rdy0, forkStg.a.rdyFs.get(0));
+				createReadArc(iStg.rdy0, forkStg.b.rdyFs.get(0));
+				createReadArc(iStg.rdy1, forkStg.a.rdyRs.get(0));
+				createReadArc(iStg.rdy1, forkStg.b.rdyRs.get(0));
+			}
+		}
+		if (aContact != null) {
+			ContactStg aStg = getContactStg(aContact);
+			if ((forkStg != null) && (aStg != null)) {
+				createReadArc(aStg.rdy0, forkStg.i.rdyFs.get(0));
+				createReadArc(aStg.rdy0, forkStg.b.rdyFs.get(1));
+				createReadArc(aStg.rdy1, forkStg.i.rdyRs.get(0));
+				createReadArc(aStg.rdy1, forkStg.b.rdyRs.get(0));
+			}
+		}
+		if (bContact != null) {
+			ContactStg bStg = getContactStg(bContact);
+			if ((forkStg != null) && (bStg != null)) {
+				createReadArc(bStg.rdy0, forkStg.i.rdyFs.get(1));
+				createReadArc(bStg.rdy0, forkStg.a.rdyFs.get(1));
+				createReadArc(bStg.rdy1, forkStg.i.rdyRs.get(0));
+				createReadArc(bStg.rdy1, forkStg.a.rdyRs.get(0));
+			}
+		}
+	}
+
+	public ForkStg getForkStg(VisualForkComponent component) {
+		return forkMap.get(component);
+	}
+
+
+	private JoinStg generateJoinStg(VisualJoinComponent component) throws InvalidConnectionException {
+		String name = xmas.getMathName(component);
+		AffineTransform transform = TransformHelper.getTransformToRoot(component);
+		double x =	xScaling * (transform.getTranslateX() + component.getX());
+		double y =	yScaling * (transform.getTranslateY() + component.getY());
+		ContactStg aStg = null;
+		ContactStg bStg = null;
+		ContactStg oStg = null;
+		for (VisualXmasContact contact: component.getContacts()) {
+			if (contact.isOutput()) {
+				oStg = generateOutputContactStg(name + nameOirdy, x, y, 2, 1);
+				contactMap.put(contact, oStg);
+			} else if (aStg == null) {
+				aStg = generateInputContactStg(name + nameAtrdy, x, y - 5.0, 2, 1);
+				contactMap.put(contact, aStg);
+			} else {
+				bStg = generateInputContactStg(name + nameBtrdy, x, y + 5.0, 2, 1);
+				contactMap.put(contact, bStg);
+			}
+		}
+		stg.selectNone();
+		stg.addToSelection(aStg.getAllNodes());
+		stg.addToSelection(bStg.getAllNodes());
+		stg.addToSelection(oStg.getAllNodes());
+		stg.groupSelection();
+		return new JoinStg(aStg, bStg, oStg);
+	}
+
+	private void connectJoinStg(VisualJoinComponent component) throws InvalidConnectionException {
+		VisualXmasContact aContact = null;
+		VisualXmasContact bContact = null;
+		VisualXmasContact oContact = null;
+		for (VisualXmasContact contact: component.getContacts()) {
+			if (contact.isOutput()) {
+				oContact =  XmasUtils.getConnectedContact(xmas, contact);
+			} else if (aContact == null) {
+				aContact =  XmasUtils.getConnectedContact(xmas, contact);
+			} else {
+				bContact =  XmasUtils.getConnectedContact(xmas, contact);
+			}
+		}
+		JoinStg joinStg = getJoinStg(component);
+		if (aContact != null) {
+			ContactStg aStg = getContactStg(aContact);
+			if ((joinStg != null) && (aStg != null)) {
+				createReadArc(aStg.rdy0, joinStg.b.rdyFs.get(1));
+				createReadArc(aStg.rdy0, joinStg.o.rdyFs.get(0));
+				createReadArc(aStg.rdy1, joinStg.b.rdyRs.get(0));
+				createReadArc(aStg.rdy1, joinStg.o.rdyRs.get(0));
+			}
+		}
+		if (bContact != null) {
+			ContactStg bStg = getContactStg(bContact);
+			if ((joinStg != null) && (bStg != null)) {
+				createReadArc(bStg.rdy0, joinStg.a.rdyFs.get(1));
+				createReadArc(bStg.rdy0, joinStg.o.rdyFs.get(1));
+				createReadArc(bStg.rdy1, joinStg.a.rdyRs.get(0));
+				createReadArc(bStg.rdy1, joinStg.o.rdyRs.get(0));
+			}
+		}
+		if (oContact != null) {
+			ContactStg oStg = getContactStg(oContact);
+			if ((joinStg != null) && (oStg != null)) {
+				createReadArc(oStg.rdy0, joinStg.a.rdyFs.get(0));
+				createReadArc(oStg.rdy0, joinStg.b.rdyFs.get(0));
+				createReadArc(oStg.rdy1, joinStg.a.rdyRs.get(0));
+				createReadArc(oStg.rdy1, joinStg.b.rdyRs.get(0));
+			}
+		}
+	}
+
+	public JoinStg getJoinStg(VisualJoinComponent component) {
+		return joinMap.get(component);
+	}
+
 
 	public boolean isRelated(Node highLevelNode, Node node) {
 		NodeStg nodeStg = null;

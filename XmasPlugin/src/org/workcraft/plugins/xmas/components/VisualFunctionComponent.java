@@ -67,8 +67,8 @@ public class VisualFunctionComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(-0.5 * size, 0);
-		shape.lineTo(+0.5 * size, 0);
+		shape.moveTo(-0.5 * size, 0.0);
+		shape.lineTo(+0.5 * size, 0.0);
 
 		shape.moveTo(-0.2 * size, +0.2 * size);
 		shape.lineTo(+0.2 * size, -0.2 * size);

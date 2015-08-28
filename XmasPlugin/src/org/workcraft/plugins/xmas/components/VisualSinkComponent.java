@@ -38,7 +38,7 @@ public class VisualSinkComponent extends VisualXmasComponent {
 	public VisualSinkComponent(SinkComponent component) {
 		super(component);
 		if (component.getChildren().isEmpty()) {
-			this.addInput("", Positioning.TOP);
+			this.addInput("i", Positioning.CENTER);
 		}
 	}
 
@@ -50,17 +50,17 @@ public class VisualSinkComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(0, -0.5 * size);
-		shape.lineTo(0, +0.5 * size);
+		shape.moveTo(0.0, 0.0);
+		shape.lineTo(0.0, +0.3 * size);
 
-		shape.moveTo(-0.5 * size, 0);
-		shape.lineTo(+0.5 * size, 0);
+		shape.moveTo(-0.35 * size, 0.3);
+		shape.lineTo(+0.35 * size, 0.3);
 
-		shape.moveTo(-0.3 * size, +0.2 * size);
-		shape.lineTo(+0.3 * size, +0.2 * size);
+		shape.moveTo(-0.20 * size, +0.4 * size);
+		shape.lineTo(+0.20 * size, +0.4 * size);
 
-		shape.moveTo(-0.1 * size, +0.4 * size);
-		shape.lineTo(+0.1 * size, +0.4 * size);
+		shape.moveTo(-0.05 * size, +0.5 * size);
+		shape.lineTo(+0.05 * size, +0.5 * size);
 
 		return shape;
 	}

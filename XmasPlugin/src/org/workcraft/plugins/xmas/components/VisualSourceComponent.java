@@ -48,7 +48,7 @@ public class VisualSourceComponent extends VisualXmasComponent {
 	public VisualSourceComponent(SourceComponent component) {
 		super(component);
 		if (component.getChildren().isEmpty()) {
-			oContact = addOutput("o", Positioning.BOTTOM);
+			oContact = addOutput("o", Positioning.CENTER);
 		}
 		addPropertyDeclarations();
 	}
@@ -86,11 +86,11 @@ public class VisualSourceComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(-0.5 * size, -0.5 * size);
-		shape.lineTo(+0.5 * size, -0.5 * size);
+		shape.moveTo(0.0, 0.0);
+		shape.lineTo(0.0, -0.5 * size);
 
-		shape.moveTo(0, -0.5 * size);
-		shape.lineTo(0, +0.5 * size);
+		shape.moveTo(-0.4 * size, -0.5 * size);
+		shape.lineTo(+0.4 * size, -0.5 * size);
 
 		return shape;
 	}

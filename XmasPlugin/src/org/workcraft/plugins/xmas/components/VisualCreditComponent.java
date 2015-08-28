@@ -41,8 +41,8 @@ public class VisualCreditComponent extends VisualXmasComponent {
 		super(component);
 		addPropertyDeclarations();
 		if (component.getChildren().isEmpty()) {
-			this.addInput("", Positioning.TOP);
-			this.addOutput("", Positioning.BOTTOM);
+			this.addInput("i", Positioning.LEFT);
+			this.addOutput("o", Positioning.RIGHT);
 		}
 	}
 
@@ -76,17 +76,20 @@ public class VisualCreditComponent extends VisualXmasComponent {
 		Path2D shape = new Path2D.Double();
 
 		shape.moveTo(-0.5 * size, -0.4 * size);
-		shape.lineTo(+0.5 * size, -0.4 * size);
-		shape.lineTo(+0.5 * size, +0.4 * size);
 		shape.lineTo(-0.5 * size, +0.4 * size);
+		shape.lineTo(+0.5 * size, +0.4 * size);
+		shape.lineTo(+0.5 * size, -0.4 * size);
 		shape.closePath();
 
-		shape.moveTo(-0.5 * size, 0);
-		shape.lineTo(+0.5 * size, 0);
+		shape.moveTo(0.0, -0.4 * size);
+		shape.lineTo(0.0, +0.4 * size);
 
 		double tokenSize = size / 10.0;
-		shape.append(new Ellipse2D.Double(-0.5 * tokenSize, +1.2 * tokenSize, tokenSize, tokenSize), false);
-		shape.append(new Ellipse2D.Double(-0.5 * tokenSize, -2.2 * tokenSize, tokenSize, tokenSize), false);
+		for (int i = 0; i < 3; i++) {
+			shape.append(new Ellipse2D.Double(-0.2 * size - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
+			shape.append(new Ellipse2D.Double(+0.2 * size - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
+			tokenSize /= 2.0;
+		}
 
 		return shape;
 	}

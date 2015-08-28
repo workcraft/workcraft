@@ -17,7 +17,7 @@ public class XmasSettings implements Settings {
 	private static final String keyWireWidth  = prefix + ".wireWidth";
 	private static final String keyJasonFileName  = prefix + ".jasonFileName";
 
-	private static final double defaultBorderWidth = 0.1;
+	private static final double defaultBorderWidth = 0.06;
 	private static final double defaultWireWidth = 0.04;
 	private static final String defaultJasonFileName = "";
 

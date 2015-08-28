@@ -35,9 +35,9 @@ public class VisualMergeComponent extends VisualXmasComponent {
 	public VisualMergeComponent(MergeComponent component) {
 		super(component);
 		if (component.getChildren().isEmpty()) {
-			this.addInput("", Positioning.TOP_LEFT);
-			this.addInput("", Positioning.TOP_RIGHT);
-			this.addOutput("", Positioning.BOTTOM);
+			this.addInput("a", Positioning.TOP_LEFT);
+			this.addInput("b", Positioning.BOTTOM_LEFT);
+			this.addOutput("o", Positioning.RIGHT);
 		}
 	}
 
@@ -50,16 +50,16 @@ public class VisualMergeComponent extends VisualXmasComponent {
 		Path2D shape = new Path2D.Double();
 
 		shape.moveTo(-0.5 * size, -0.5 * size);
-		shape.lineTo(-0.5 * size, 0);
+		shape.lineTo(        0.0, -0.5 * size);
 
-		shape.moveTo(+0.5 * size, -0.5 * size);
-		shape.lineTo(+0.5 * size, 0);
+		shape.moveTo(-0.5 * size, +0.5 * size);
+		shape.lineTo(        0.0, +0.5 * size);
 
-		shape.moveTo(-0.5 * size, 0);
-		shape.lineTo(+0.5 * size, 0);
+		shape.moveTo(        0.0, -0.5 * size);
+		shape.lineTo(        0.0, +0.5 * size);
 
-		shape.moveTo(0, 0);
-		shape.lineTo(0, +0.5 * size);
+		shape.moveTo(        0.0, 0.0);
+		shape.lineTo(+0.5 * size, 0.0);
 
 		return shape;
 	}

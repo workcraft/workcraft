@@ -26,6 +26,9 @@ import org.workcraft.plugins.xmas.stg.StgGenerator;
 import org.workcraft.util.Func;
 
 public class XmasSimulationTool extends StgSimulationTool {
+	private static final Color COLOR_IRDY = Color.RED;
+	private static final Color COLOR_TRDY = Color.BLUE;
+	private static final Color COLOR_BOTH_RDY = Color.MAGENTA;
 	private StgGenerator generator;
 
 	@Override
@@ -110,13 +113,12 @@ public class XmasSimulationTool extends StgSimulationTool {
 							} else {
 								if (isReady) {
 									if (contact.isInput()) {
-										return Color.GREEN;
+										return COLOR_TRDY;
 									} else {
-										return Color.BLUE;
+										return COLOR_IRDY;
 									}
-								} else {
-									return Color.WHITE;
 								}
+								return null;
 							}
 						}
 					};
@@ -133,11 +135,11 @@ public class XmasSimulationTool extends StgSimulationTool {
 						@Override
 						public Color getColorisation() {
 							if (firstReady && secondReady) {
-								return Color.RED;
+								return COLOR_BOTH_RDY;
 							} if (firstReady) {
-								return Color.BLUE;
+								return COLOR_IRDY;
 							} if (secondReady) {
-								return Color.GREEN;
+								return COLOR_TRDY;
 							}
 							return null;
 						}

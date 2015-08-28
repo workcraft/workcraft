@@ -46,8 +46,8 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		addPropertyDeclarations();
 		component.setCapacity(1);
 		if (component.getChildren().isEmpty()) {
-			this.addInput("", Positioning.TOP);
-			this.addOutput("", Positioning.BOTTOM);
+			this.addInput("i", Positioning.LEFT);
+			this.addOutput("o", Positioning.RIGHT);
 		}
 	}
 
@@ -72,13 +72,13 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		Path2D shape = new Path2D.Double();
 
 		shape.moveTo(-0.5 * size, -0.4 * size);
-		shape.lineTo(+0.5 * size, -0.4 * size);
-		shape.lineTo(+0.5 * size, +0.4 * size);
 		shape.lineTo(-0.5 * size, +0.4 * size);
+		shape.lineTo(+0.5 * size, +0.4 * size);
+		shape.lineTo(+0.5 * size, -0.4 * size);
 		shape.closePath();
 
-		shape.moveTo(-0.5 * size, 0);
-		shape.lineTo(+0.5 * size, 0);
+		shape.moveTo(0.0, -0.4 * size);
+		shape.lineTo(0.0, +0.4 * size);
 
 		return shape;
 	}

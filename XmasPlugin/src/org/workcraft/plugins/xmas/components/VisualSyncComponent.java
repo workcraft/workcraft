@@ -37,8 +37,8 @@ public class VisualSyncComponent extends VisualXmasComponent {
 	public VisualSyncComponent(SyncComponent component) {
 		super(component);
 		if (component.getChildren().isEmpty()) {
-			this.addInput("", Positioning.TOP);
-			this.addOutput("", Positioning.BOTTOM);
+			this.addInput("i", Positioning.LEFT);
+			this.addOutput("o", Positioning.RIGHT);
 		}
 		else {
 			int numInputs = ((XmasComponent)component).getInputs().size();
@@ -60,10 +60,10 @@ public class VisualSyncComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(-0.35 * size, -0.4 * size);
-		shape.lineTo(+0.35 * size + (xOffset*0.5), -0.4 * size);
-		shape.lineTo(+0.35 * size + (xOffset*0.5), +0.4 * size);
-		shape.lineTo(-0.35 * size, +0.4 * size);
+		shape.moveTo(-0.5 * size, -0.4 * size);
+		shape.lineTo(-0.5 * size, +0.4 * size + (xOffset * 0.5));
+		shape.lineTo(+0.5 * size, +0.4 * size + (xOffset * 0.5));
+		shape.lineTo(+0.5 * size, -0.4 * size);
 		shape.closePath();
 
 		return shape;

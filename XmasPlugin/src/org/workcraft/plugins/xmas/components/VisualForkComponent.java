@@ -35,9 +35,9 @@ public class VisualForkComponent extends VisualXmasComponent {
 	public VisualForkComponent(ForkComponent component) {
 		super(component);
 		if (component.getChildren().isEmpty()) {
-			this.addInput("", Positioning.TOP);
-			this.addOutput("", Positioning.BOTTOM_RIGHT);
-			this.addOutput("", Positioning.BOTTOM_LEFT);
+			this.addInput("i", Positioning.LEFT);
+			this.addOutput("a", Positioning.TOP_RIGHT);
+			this.addOutput("b", Positioning.BOTTOM_RIGHT);
 		}
 	}
 
@@ -49,19 +49,19 @@ public class VisualForkComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(0, -0.5 * size);
-		shape.lineTo(0, -0.1 * size);
+		shape.moveTo(-0.5 * size, 0.0);
+		shape.lineTo(-0.1 * size, 0.0);
 
-		shape.moveTo(-0.5 * size, -0.1 * size);
-		shape.lineTo(+0.5 * size, -0.1 * size);
+		shape.moveTo(-0.1 * size, -0.5 * size);
+		shape.lineTo(-0.1 * size, +0.5 * size);
 
-		shape.moveTo(-0.5 * size, +0.1 * size);
-		shape.lineTo(+0.5 * size, +0.1 * size);
+		shape.moveTo(+0.1 * size, -0.5 * size);
+		shape.lineTo(+0.1 * size, +0.5 * size);
 
-		shape.moveTo(-0.5 * size, +0.1 * size);
-		shape.lineTo(-0.5 * size, +0.5 * size);
+		shape.moveTo(+0.1 * size, -0.5 * size);
+		shape.lineTo(+0.5 * size, -0.5 * size);
 
-		shape.moveTo(+0.5 * size, +0.1 * size);
+		shape.moveTo(+0.1 * size, +0.5 * size);
 		shape.lineTo(+0.5 * size, +0.5 * size);
 
 		return shape;

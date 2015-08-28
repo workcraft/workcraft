@@ -1,6 +1,6 @@
 package org.workcraft.plugins.xmas.stg;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -13,12 +13,12 @@ public class SinkStg extends NodeStg {
 	}
 
 	@Override
-	public List<VisualSignalTransition> getAllTransitions() {
+	public Collection<VisualSignalTransition> getAllTransitions() {
 		return i.getAllTransitions();
 	}
 
 	@Override
-	public List<VisualPlace> getAllPlaces() {
+	public Collection<VisualPlace> getAllPlaces() {
 		return i.getAllPlaces();
 	}
 

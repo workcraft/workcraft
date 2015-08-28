@@ -35,4 +35,31 @@ public class XmasUtils {
 		return visualXmas.getVisualComponent(component, VisualXmasComponent.class);
 	}
 
+	public static XmasContact getConnectedContact(final Xmas xmas, XmasContact contact) {
+		XmasContact result = null;
+		if (contact.isInput()) {
+			for (Node prevNode: xmas.getPreset(contact)) {
+				if (prevNode instanceof XmasContact) {
+					result = (XmasContact)prevNode;
+					break;
+				}
+			}
+		} else {
+			for (Node succNode: xmas.getPostset(contact)) {
+				if (succNode instanceof XmasContact) {
+					result = (XmasContact)succNode;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	public static VisualXmasContact getConnectedContact(final VisualXmas visualXmas, VisualXmasContact visualContact) {
+		Xmas xmas = (Xmas)visualXmas.getMathModel();
+		XmasContact contact = visualContact.getReferencedContact();
+		XmasContact connectedContact = getConnectedContact(xmas, contact);
+		return visualXmas.getVisualComponent(connectedContact, VisualXmasContact.class);
+	}
+
 }
