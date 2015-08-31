@@ -30,7 +30,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Forward Computed", Boolean.class) {
+				this, CounterflowLogic.PROPERTY_FORWARD_COMPUTED, Boolean.class, true, true, true) {
 			public void setter(VisualCounterflowLogic object, Boolean value) {
 				object.getReferencedCounterflowLogic().setForwardComputed(value);
 			}
@@ -40,7 +40,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Backward Computed", Boolean.class) {
+				this, CounterflowLogic.PROPERTY_BACKWARD_COMPUTED, Boolean.class, true, true, true) {
 			public void setter(VisualCounterflowLogic object, Boolean value) {
 				object.getReferencedCounterflowLogic().setBackwardComputed(value);
 			}
@@ -51,7 +51,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
 
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Forward Early Evaluation", Boolean.class) {
+				this, CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION, Boolean.class, true, true, true) {
 			public void setter(VisualCounterflowLogic object, Boolean value) {
 				object.getReferencedCounterflowLogic().setForwardEarlyEvaluation(value);
 			}
@@ -61,7 +61,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
-				this, "Backward Early Evaluation", Boolean.class) {
+				this, CounterflowLogic.PROPERTY_BACKWARD_EARLY_EVALUATION, Boolean.class, true, true, true) {
 			public void setter(VisualCounterflowLogic object, Boolean value) {
 				object.getReferencedCounterflowLogic().setBackwardEarlyEvaluation(value);
 			}

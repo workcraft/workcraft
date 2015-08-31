@@ -23,15 +23,21 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		this.result = result;
 	}
 
-	private String getMessage(boolean isSatisfiable, boolean inversePredicate) {
+	private String getMessage(boolean isSatisfiable) {
 		String propertyName = "Property";
 		MpsatSettings settings = task.getSettings();
-		if ((settings != null) && (settings.getName() != null)) {
+		if ((settings == null) && (result.getReturnValue() != null)) {
+			 settings = result.getReturnValue().getMpsatSettings();
+		}
+		if ((settings != null) && (settings.getName() != null) && !settings.getName().isEmpty()) {
 			propertyName = settings.getName();
 		}
-		String propertyText =  propertyName + (isSatisfiable == inversePredicate ? " is violated" : " holds ");
-		String predicateText = " (its predicate is " + (isSatisfiable ? "satisfiable" : "unsatisfiable") + ").";
-		return propertyText + predicateText;
+		boolean inversePredicate = true;
+		if (settings != null) {
+			inversePredicate = settings.getInversePredicate();
+		}
+		String propertyStatus = isSatisfiable == inversePredicate ? " is violated." : " holds.";
+		return (propertyName + propertyStatus);
 	}
 
 	@Override
@@ -39,11 +45,11 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
 		List<Solution> solutions = mdp.getSolutions();
 		String title = "Verification results";
-		String message = getMessage(!solutions.isEmpty(), true);
+		String message = getMessage(!solutions.isEmpty());
 		if (Solution.hasTraces(solutions)) {
-			String extendedMessage = "<html>" + message +  "<br>Trace(s) leading to the problematic states:</html>";
+			String extendedMessage = "<html><br>&#160;" + message +  "<br><br>&#160;Trace(s) leading to the problematic state(s):<br><br></html>";
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, extendedMessage, solutions);
-			GUI.centerAndSizeToParent(solutionsDialog, Framework.getInstance().getMainWindow());
+			GUI.centerToParent(solutionsDialog, Framework.getInstance().getMainWindow());
 			solutionsDialog.setVisible(true);
 		} else {
 			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);

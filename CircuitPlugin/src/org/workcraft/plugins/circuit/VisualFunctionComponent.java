@@ -15,6 +15,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -71,10 +72,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 				BooleanFormula setFunction = gateOutput.getSetFunction();
 				if ((setFunction == null) || setFunction.equals(Zero.instance()) || setFunction.equals(One.instance())) {
 					renderingResult = null;
-				} else if (gateOutput.getResetFunction() == null) {
-					renderingResult = GateRenderer.renderGate(setFunction);
 				} else {
-					renderingResult = CElementRenderer.renderGate(setFunction, gateOutput.getResetFunction());
+					BooleanFormula resetFunction = gateOutput.getResetFunction();
+					if (resetFunction == null) {
+						renderingResult = GateRenderer.renderGate(setFunction);
+					} else {
+						renderingResult = CElementRenderer.renderGate(setFunction, resetFunction);
+					}
 				}
 				break;
 			default:
@@ -128,8 +132,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			if (v != null) {
 				at = VisualContact.Direction.getDirectionTransform(v.getDirection());
 			}
-			double inputPositionX = snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
-			double outputPositionX = snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
+			double inputPositionX = TransformHelper.snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
+			double outputPositionX = TransformHelper.snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
 
 			for (Node n: this.getChildren()) {
 				if (n instanceof VisualFunctionContact) {
@@ -164,12 +168,26 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		super.notify(e);
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
-			if (pc.getPropertyName().equals("direction")) {
+			if (pc.getPropertyName().equals(VisualContact.PROPERTY_DIRECTION)) {
 				if ((getMainContact() == pc.getSender()) && (getRenderingResult() != null)) {
 					setContactsDefaultPosition();
 				}
 			}
 		}
+	}
+
+	private Point2D getContactLinePositionInLocalSpace(VisualFunctionContact vc, ComponentRenderingResult rr) {
+		Point2D pinPosition = null;
+		if (vc.isInput()) {
+			String cname = vc.getReferencedContact().getName();
+			Point2D p = rr.contactPositions().get(cname);
+			if (p != null) {
+				pinPosition = new Point2D.Double(p.getX(), p.getY());
+			}
+		} else {
+			pinPosition = new Point2D.Double(rr.boundingBox().getMaxX(), 0.0);
+		}
+		return pinPosition;
 	}
 
 	private void drawContactLines(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
@@ -178,15 +196,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		for (Node node: this.getChildren()) {
 			if (node instanceof VisualFunctionContact) {
 				VisualFunctionContact vc = (VisualFunctionContact)node;
-				Point2D pinPosition = null;
-				if (vc.isInput()) {
-					String cname = vc.getReferencedContact().getName();
-					pinPosition = rr.contactPositions().get(cname);
-				} else {
-					pinPosition = new Point2D.Double(rr.boundingBox().getMaxX(), 0.0);
-				}
-				if (pinPosition != null) {
-					Point2D p1 = at.transform(pinPosition, null);
+				Point2D p1 = getContactLinePositionInLocalSpace(vc, rr);
+				if (p1 != null) {
+					at.transform(p1, p1);
 					Point2D p2 = vc.getPosition();
 					Line2D line = new Line2D.Double(p1, p2);
 					g.draw(line);
@@ -201,7 +213,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			Point2D labelPosition = cr.getLabelPosition();
 			if (labelPosition != null) {
 				at.transform(labelPosition, labelPosition);
-				Arc2D cShape = new Arc2D.Double(labelPosition.getX()-0.2, labelPosition.getY()-0.2, 0.4, 0.4, 60, 240, Arc2D.OPEN);
+				Arc2D cShape = new Arc2D.Double(labelPosition.getX()-0.15, labelPosition.getY()-0.15, 0.30, 0.30, 60, 240, Arc2D.OPEN);
 				g.draw(cShape);
 			}
 
@@ -209,19 +221,42 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			if (plusPosition != null) {
 				at.transform(plusPosition, plusPosition);
 				Path2D plusShape = new Path2D.Double();
-				plusShape.moveTo(plusPosition.getX()-0.15, plusPosition.getY());
-				plusShape.lineTo(plusPosition.getX()+0.15, plusPosition.getY());
-				plusShape.moveTo(plusPosition.getX(), plusPosition.getY()-0.15);
-				plusShape.lineTo(plusPosition.getX(), plusPosition.getY()+0.15);
+				plusShape.moveTo(plusPosition.getX()-0.10, plusPosition.getY());
+				plusShape.lineTo(plusPosition.getX()+0.10, plusPosition.getY());
+				plusShape.moveTo(plusPosition.getX(), plusPosition.getY()-0.10);
+				plusShape.lineTo(plusPosition.getX(), plusPosition.getY()+0.10);
 				g.draw(plusShape);
 			}
 
 			Point2D minusPosition = cr.getMinusPosition();
 			if (minusPosition != null) {
 				at.transform(minusPosition, minusPosition);
-				Line2D minusShape = new Line2D.Double(minusPosition.getX()-0.15, minusPosition.getY(), minusPosition.getX()+0.15, minusPosition.getY());
+				Line2D minusShape = new Line2D.Double(minusPosition.getX()-0.10, minusPosition.getY(), minusPosition.getX()+0.10, minusPosition.getY());
 				g.draw(minusShape);
 			}
+		}
+	}
+
+	private void drawBypass(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
+		Point2D inputPos = null;
+		Point2D outputPos = null;
+		for (Node node: this.getChildren()) {
+			if (node instanceof VisualFunctionContact) {
+				VisualFunctionContact vc = (VisualFunctionContact)node;
+				if (vc.isInput()) {
+					inputPos = getContactLinePositionInLocalSpace(vc, rr);
+				} else {
+					outputPos = getContactLinePositionInLocalSpace(vc, rr);
+				}
+			}
+		}
+		if ((inputPos != null) && (outputPos != null)) {
+			g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+			g.setColor(GateRenderer.foreground);
+			at.transform(inputPos, inputPos);
+			at.transform(outputPos, outputPos);
+			Line2D line = new Line2D.Double(inputPos, outputPos);
+			g.draw(line);
 		}
 	}
 
@@ -270,6 +305,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 			rr.draw(g);
 			g.transform(bt);
+
+			if (isBufferOrInverter() && getIsZeroDelay()) {
+				drawBypass(g, rr, at);
+			}
 
 			drawContactLines(g, rr, at);
 			drawCelementSymbols(g, rr, at);

@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -39,11 +38,8 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
@@ -53,6 +49,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.Hierarchy;
 
@@ -79,7 +76,7 @@ public class WorkspaceEntry implements ObservableState {
 			}
 			workspace.fireEntryChanged(this);
 			final Framework framework = Framework.getInstance();
-			framework.getMainWindow().refreshTitle(this);
+			framework.getMainWindow().refreshWorkspaceEntryTitle(this, true);
 		}
 	}
 
@@ -203,7 +200,8 @@ public class WorkspaceEntry implements ObservableState {
 		MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
 		MainWindow mainWindow = Framework.getInstance().getMainWindow();
 		if (mainWindow != null) {
-			mainWindow.getMainMenu().getToolsMenu().setEnabled(canModify);
+			mainWindow.getMainMenu().updateToolsMenuState(canModify);
+			mainWindow.getPropertyView().setVisible(canModify);
 		}
 	}
 
@@ -228,7 +226,7 @@ public class WorkspaceEntry implements ObservableState {
 			savedMemento = capturedMemento;
 		}
 
-		if (CommonEditorSettings.getDebugClipboard()) {
+		if (CommonDebugSettings.getCopyModelOnChange()) {
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
 			clipboard.setContents(new StringSelection(str), null);
@@ -355,7 +353,7 @@ public class WorkspaceEntry implements ObservableState {
 				model.deleteSelection();
 				final Framework framework = Framework.getInstance();
 				framework.clipboard = framework.save(modelEntry);
-				if (CommonEditorSettings.getDebugClipboard()) {
+				if (CommonDebugSettings.getCopyModelOnChange()) {
 					// copy the memento clipboard into the system-wide clipboard as a string
 					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 					clipboard.setContents(new StringSelection(getClipboardAsString()), null);
@@ -382,12 +380,7 @@ public class WorkspaceEntry implements ObservableState {
 				setChanged(true);
 
 				VisualModel model = result.getVisualModel();
-				Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
-				Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
-				HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =
-						VisualModelTransformer.setConnectionsScaleMode(includedConnections, ScaleMode.NONE);
 				VisualModelTransformer.translateSelection(model, 1.0, 1.0);
-				VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
 						"Clipboard paste failed", JOptionPane.ERROR_MESSAGE);

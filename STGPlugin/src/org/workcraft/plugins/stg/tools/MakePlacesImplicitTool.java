@@ -2,22 +2,17 @@ package org.workcraft.plugins.stg.tools;
 
 import java.util.HashSet;
 
-import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MakePlacesImplicitTool implements Tool {
+public class MakePlacesImplicitTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Make places implicit";
-	}
-
-	@Override
-	public String getSection() {
-		return "Transformations";
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -85,8 +86,8 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 		}
 		// Clean up
 		finally {
-			FileUtils.deleteFile(netFile, MpsatUtilitySettings.getDebugTemporaryFiles());
-			FileUtils.deleteFile(unfoldingFile, MpsatUtilitySettings.getDebugTemporaryFiles());
+			FileUtils.deleteFile(netFile, CommonDebugSettings.getKeepTemporaryFiles());
+			FileUtils.deleteFile(unfoldingFile, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

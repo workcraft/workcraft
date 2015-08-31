@@ -32,7 +32,7 @@ public class VisualState extends VisualComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-				this, "Initial", Boolean.class, true, false, false) {
+				this, State.PROPERTY_INITIAL, Boolean.class, true, false, false) {
 			public void setter(VisualState object, Boolean value) {
 				object.getReferencedState().setInitial(value);
 			}
@@ -42,7 +42,7 @@ public class VisualState extends VisualComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualState, Boolean>(
-				this, "Final", Boolean.class, true, true, true) {
+				this, State.PROPERTY_FINAL, Boolean.class, true, true, true) {
 			public void setter(VisualState object, Boolean value) {
 				object.getReferencedState().setFinal(value);
 			}

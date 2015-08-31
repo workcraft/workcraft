@@ -11,6 +11,8 @@ import org.workcraft.plugins.fsm.State;
 @VisualClass(org.workcraft.plugins.fst.VisualSignalEvent.class)
 public class SignalEvent extends Event {
 
+	public static final String PROPERTY_DIRECTION = "Direction";
+
 	public enum Direction {
 		PLUS("+"),
 		MINUS("-"),
@@ -52,7 +54,7 @@ public class SignalEvent extends Event {
 
 	public void setDirection(Direction direction) {
 		this.direction = direction;
-		sendNotification(new PropertyChangedEvent(this, "direction"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
 	}
 
 	public Signal getSignal() {

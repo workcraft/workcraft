@@ -22,8 +22,7 @@ package org.workcraft.plugins.cpog.optimisation.expressions;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-public class DumbBooleanWorker implements BooleanWorker
-{
+public class DumbBooleanWorker implements BooleanWorker {
 	@Override
 	public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
 		return new And(x,y);
@@ -63,4 +62,5 @@ public class DumbBooleanWorker implements BooleanWorker
 	public BooleanFormula zero() {
 		return Zero.instance();
 	}
+
 }

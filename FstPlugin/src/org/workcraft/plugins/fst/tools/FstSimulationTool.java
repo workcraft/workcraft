@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -15,8 +16,10 @@ import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
+import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -34,7 +37,7 @@ public class FstSimulationTool extends StgSimulationTool {
 	@Override
 	public void activated(final GraphEditor editor) {
 		super.activated(editor);
-		setStatePaneVisibility(false);
+		setStatePaneVisibility(true);
 	}
 
 	@Override
@@ -63,13 +66,17 @@ public class FstSimulationTool extends StgSimulationTool {
 		if ((savedState == null) || savedState.isEmpty()) {
 			return;
 		}
-		VisualFst fst = (VisualFst)editor.getModel();
-		for (VisualState state: fst.getVisualStates()) {
-			String ref = fst.getNodeMathReference(state);
-			Node node = net.getNodeByReference(ref);
-			if (node instanceof Place) {
-				boolean isInitial = ((Place)node).getTokens() > 0;
-				state.getReferencedState().setInitial(isInitial);
+		MathModel model = editor.getModel().getMathModel();
+		if (model instanceof Fst) {
+			editor.getWorkspaceEntry().saveMemento();
+			Fst fst = (Fst)model;
+			for (State state: fst.getStates()) {
+				String ref = fst.getNodeReference(state);
+				Node node = net.getNodeByReference(ref);
+				if (node instanceof Place) {
+					boolean isInitial = ((Place)node).getTokens() > 0;
+					state.setInitial(isInitial);
+				}
 			}
 		}
 	}

@@ -6,6 +6,8 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 public class Environment extends MathNode {
+	public static final String PROPERTY_FILE = "file";
+	public static final String PROPERTY_BASE = "base";
 	private File file;
 	private File base;
 
@@ -19,7 +21,7 @@ public class Environment extends MathNode {
 
 	public void setFile(File file) {
 		this.file = file;
-		sendNotification(new PropertyChangedEvent(this, "file"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_FILE));
 	}
 
 	public File getBase() {
@@ -28,7 +30,7 @@ public class Environment extends MathNode {
 
 	public void setBase(File base) {
 		this.base = base;
-		sendNotification(new PropertyChangedEvent(this, "base"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_BASE));
 	}
 
 }

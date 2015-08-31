@@ -21,7 +21,7 @@ public class InitialStateSupervisor extends StateSupervisor {
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pce = (PropertyChangedEvent)e;
 			Object sender = e.getSender();
-			if ((sender instanceof State) && pce.getPropertyName().equals("initial")) {
+			if ((sender instanceof State) && pce.getPropertyName().equals(State.PROPERTY_INITIAL)) {
 				// Update all the states on a change of the initial property
 				handleInitialStateChange((State)sender);
 			}

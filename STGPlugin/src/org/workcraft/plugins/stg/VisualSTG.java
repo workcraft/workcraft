@@ -47,6 +47,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -111,19 +112,19 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualConnection connection = null;
 		if (first instanceof VisualTransition) {
 			if (second instanceof VisualTransition) {
-				connection = createImplicitPlaceConnection((VisualTransition) first, (VisualTransition) second);
+				connection = createImplicitPlaceConnection((VisualTransition)first, (VisualTransition)second);
 			} else if (second instanceof VisualImplicitPlaceArc) {
 				VisualImplicitPlaceArc con = (VisualImplicitPlaceArc)second;
 				VisualPlace place = makeExplicit(con);
 				connection = connect(first, place);
 			} else if (second instanceof VisualPlace) {
-				connection = createSimpleConnection((VisualComponent) first, (VisualComponent) second);
+				connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second, mConnection);
 			}
 		} else if (first instanceof VisualImplicitPlaceArc) {
 			if (second instanceof VisualTransition) {
@@ -132,13 +133,12 @@ public class VisualSTG extends AbstractVisualModel {
 				connection = connect(place, second);
 			}
 		} else {
-			connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second);
+			connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second, mConnection);
 		}
 		return connection;
 	}
 
-	private VisualImplicitPlaceArc createImplicitPlaceConnection(VisualTransition t1,
-			VisualTransition t2) throws InvalidConnectionException {
+	private VisualImplicitPlaceArc createImplicitPlaceConnection(VisualTransition t1, VisualTransition t2) throws InvalidConnectionException {
 		final ConnectionResult connectResult = stg.connect(t1.getReferencedTransition(), t2.getReferencedTransition());
 
 		STGPlace implicitPlace = connectResult.getImplicitPlace();
@@ -153,19 +153,16 @@ public class VisualSTG extends AbstractVisualModel {
 		return connection;
 	}
 
-	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent)
-			throws InvalidConnectionException {
+	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent,
+			MathConnection mConnection) throws InvalidConnectionException {
 
-		MathNode firstRef = firstComponent.getReferencedComponent();
-		MathNode secondRef = secondComponent.getReferencedComponent();
-		ConnectionResult result = stg.connect(firstRef, secondRef);
-
-		MathConnection refConnection = result.getSimpleResult();
-		if (refConnection == null) {
-			throw new NullPointerException();
+		if (mConnection == null) {
+			MathNode firstRef = firstComponent.getReferencedComponent();
+			MathNode secondRef = secondComponent.getReferencedComponent();
+			ConnectionResult result = stg.connect(firstRef, secondRef);
+			mConnection = result.getSimpleResult();
 		}
-
-		VisualConnection connection = new VisualConnection(refConnection, firstComponent, secondComponent);
+		VisualConnection connection = new VisualConnection(mConnection, firstComponent, secondComponent);
 		Hierarchy.getNearestContainer(firstComponent, secondComponent).add(connection);
 		return connection;
 	}
@@ -272,13 +269,13 @@ public class VisualSTG extends AbstractVisualModel {
 	public VisualPlace createPlace(String mathName, Container container) {
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		STGPlace mathPlace = stg.createPlace(mathName, mathContainer);
-		return createComponent(mathPlace, container, VisualPlace.class);
+		return createVisualComponent(mathPlace, container, VisualPlace.class);
 	}
 
 	public VisualDummyTransition createDummyTransition(String mathName, Container container) {
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		DummyTransition mathTransition = stg.createDummyTransition(mathName, mathContainer);
-		return createComponent(mathTransition, container, VisualDummyTransition.class);
+		return createVisualComponent(mathTransition, container, VisualDummyTransition.class);
 	}
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
@@ -289,7 +286,7 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 		SignalTransition mathTransition = stg.createSignalTransition(mathName, mathContainer);
 		mathTransition.setSignalType(type);
-		return createComponent(mathTransition, container, VisualSignalTransition.class);
+		return createVisualComponent(mathTransition, container, VisualSignalTransition.class);
 	}
 
 	public Collection<VisualPlace> getVisualPlaces() {
@@ -335,12 +332,14 @@ public class VisualSTG extends AbstractVisualModel {
 		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
 			for (Type type : Type.values()) {
+				LinkedList<PropertyDescriptor> typeDescriptors = new LinkedList<>();
 				Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
 				for (final String signalName : stg.getSignalNames(type, container)) {
 					if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-					properties.add(new SignalNamePropertyDescriptor(stg, signalName, container));
-					properties.add(new SignalTypePropertyDescriptor(stg, signalName, container));
+					typeDescriptors.add(new SignalNamePropertyDescriptor(stg, signalName, container));
+					typeDescriptors.add(new SignalTypePropertyDescriptor(stg, signalName, container));
 				}
+				properties.addSorted(typeDescriptors);
 			}
 		}
 		return properties;

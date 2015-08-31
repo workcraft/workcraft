@@ -18,7 +18,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
 
 	@Override
 	public String getName() {
-		return "Direction";
+		return SignalEvent.PROPERTY_DIRECTION;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.workcraft.plugins.graph;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -12,7 +13,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class GraphModule implements Module {
 
 	@Override
+	public String getDescription() {
+		return "Directed Graph";
+	}
+
+	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
@@ -28,11 +39,16 @@ public class GraphModule implements Module {
 			}
 		});
 
-		pm.registerClass(ModelDescriptor.class, GraphModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, GraphDescriptor.class);
 	}
 
-	@Override
-	public String getDescription() {
-		return "Directed Graph";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.graph.GraphModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.graph.GraphDescriptor\"/>");
 	}
+
 }

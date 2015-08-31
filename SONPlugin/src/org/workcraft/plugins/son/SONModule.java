@@ -31,7 +31,7 @@ public class SONModule implements Module{
 		final Framework framework = Framework.getInstance();
 		PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(ModelDescriptor.class, SONModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, SONDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
 		//pm.registerClass(Tool.class, TestTool.class);
 		//verification
@@ -52,6 +52,10 @@ public class SONModule implements Module{
 	private void initCompatibilityManager() {
 		final Framework framework = Framework.getInstance();
 		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.son.SONModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.son.SONDescriptor\"/>");
 
 		cm.registerGlobalReplacement(VisualSON.class.getName(),
 				"<VisualONGroup mathGroup=",

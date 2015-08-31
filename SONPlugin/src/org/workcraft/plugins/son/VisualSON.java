@@ -13,13 +13,16 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -186,7 +189,7 @@ public class VisualSON extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect (Node first, Node second) throws InvalidConnectionException{
+	public VisualConnection connect (Node first, Node second, MathConnection mConnection) throws InvalidConnectionException{
 		validateConnection(first, second);
 		VisualComponent c1= (VisualComponent)first;
 		VisualComponent c2= (VisualComponent)second;
@@ -197,9 +200,10 @@ public class VisualSON extends AbstractVisualModel {
 				semantics = Semantics.ASYNLINE;
 			}
 		}
-
-		SONConnection con = (SONConnection)net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
-		VisualSONConnection ret = new VisualSONConnection(con, c1, c2);
+		if (mConnection == null) {
+			mConnection = net.connect(c1.getReferencedComponent(), c2.getReferencedComponent(), semantics);
+		}
+		VisualSONConnection ret = new VisualSONConnection((SONConnection)mConnection, c1, c2);
 		Hierarchy.getNearestContainer(c1,c2).add(ret);
 
 		return ret;
@@ -342,8 +346,9 @@ public class VisualSON extends AbstractVisualModel {
 
 			// Final touch on visual part
 			if (group != null) {
-				Point2D groupCenter = centralizeComponents(selected);
-				group.setPosition(groupCenter);
+				Point2D centre = TransformHelper.getSnappedCentre(selected);
+				VisualModelTransformer.translateNodes(selected, -centre.getX(), -centre.getY());
+				group.setPosition(centre);
 				select(group);
 			}
 		}
@@ -408,8 +413,9 @@ public class VisualSON extends AbstractVisualModel {
 
 			// Final touch on visual part
 			if (block != null) {
-				Point2D groupCenter = centralizeComponents(selected);
-				block.setPosition(groupCenter);
+				Point2D centre = TransformHelper.getSnappedCentre(selected);
+				VisualModelTransformer.translateNodes(selected, -centre.getX(), -centre.getY());
+				block.setPosition(centre);
 				select(block);
 			}
 		}

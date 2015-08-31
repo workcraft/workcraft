@@ -67,6 +67,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.FontHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -82,6 +83,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -177,6 +179,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
 		traceTable = new JTable(new TraceTableModel());
 		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		traceTable.setRowHeight(FontHelper.getFontSizeInPixels(traceTable.getFont()));
 		traceTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
 
 		tracePane = new JScrollPane();
@@ -372,7 +375,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		net = (PetriNetModel)visualNet.getMathModel();
 		initialMarking = readMarking();
 		super.activated(editor);
-		setStatePaneVisibility(true);
+		setStatePaneVisibility(false);
 		resetTraces(editor);
 		editor.forceRedraw();
 	}
@@ -667,6 +670,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		}
 		MathModel model = editor.getModel().getMathModel();
 		if (model instanceof PetriNetModel) {
+			editor.getWorkspaceEntry().saveMemento();
 			PetriNetModel pn = (PetriNetModel)model;
 			for (Place place: savedState.keySet()) {
 				String ref = net.getNodeReference(place);
@@ -686,10 +690,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	private final class TraceTableCellRendererImplementation implements TableCellRenderer {
 		private final JLabel label = new JLabel() {
 			@Override
-			public void paint( Graphics g ) {
-				g.setColor( getBackground() );
-				g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
-				super.paint( g );
+			public void paint(Graphics g) {
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+				super.paint(g);
 			}
 		};
 
@@ -699,7 +703,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					return row == mainTrace.getPosition();
 				}
 			} else {
-				if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
+				if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition())
+						&& (row < mainTrace.getPosition() + branchTrace.size())) {
 					return (row == mainTrace.getPosition() + branchTrace.getPosition());
 				}
 			}
@@ -710,13 +715,15 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		public Component getTableCellRendererComponent(JTable table, Object value,
 				boolean isSelected, boolean hasFocus,	int row, int column) {
 			JLabel result = null;
+			label.setBorder(PropertyEditorTable.BORDER_RENDER);
 			if ((net != null) && (value instanceof String)) {
 				label.setText((String) value);
-				label.setForeground(Color.BLACK);
 				if (isActive(row, column)) {
-					label.setBackground(Color.YELLOW);
+					label.setForeground(table.getSelectionForeground());
+					label.setBackground(table.getSelectionBackground());
 				} else {
-					label.setBackground(Color.WHITE);
+					label.setForeground(table.getForeground());
+					label.setBackground(table.getBackground());
 				}
 				result = label;
 			}

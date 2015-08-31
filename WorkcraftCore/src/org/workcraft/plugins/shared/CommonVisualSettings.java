@@ -59,7 +59,7 @@ public class CommonVisualSettings implements Settings {
 	private static final boolean defaultLabelVisibility = true;
 	private static final Positioning defaultLabelPositioning = Positioning.TOP;
 	private static final Color defaultLabelColor = Color.BLACK;
-	private static final boolean defaultNameVisibility = false;
+	private static final boolean defaultNameVisibility = true;
 	private static final Positioning defaultNamePositioning = Positioning.BOTTOM;
 	private static final Color defaultNameColor = Color.BLUE.darker();
 	private static final Integer defaultRedrawInterval = 20;
@@ -81,142 +81,142 @@ public class CommonVisualSettings implements Settings {
 
 	public CommonVisualSettings() {
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-				this, "Base size (cm)", Double.class) {
+				this, "Base size (cm)", Double.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Double value) {
-				CommonVisualSettings.setBaseSize(value);
+				setBaseSize(value);
 			}
 			protected Double getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getBaseSize();
+				return getBaseSize();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-				this, "Stroke width (cm)", Double.class) {
+				this, "Stroke width (cm)", Double.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Double value) {
-				CommonVisualSettings.setStrokeWidth(value);
+				setStrokeWidth(value);
 			}
 			protected Double getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getStrokeWidth();
+				return getStrokeWidth();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-				this, "Pivot size", Double.class) {
+				this, "Pivot size (cm)", Double.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Double value) {
-				CommonVisualSettings.setPivotSize(value);
+				setPivotSize(value);
 			}
 			protected Double getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getPivotSize();
+				return getPivotSize();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-				this, "Pivot stroke width", Double.class) {
+				this, "Pivot stroke width (cm)", Double.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Double value) {
-				CommonVisualSettings.setPivotWidth(value);
+				setPivotWidth(value);
 			}
 			protected Double getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getPivotWidth();
+				return getPivotWidth();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-				this, "Border color", Color.class) {
+				this, "Border color", Color.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Color value) {
-				CommonVisualSettings.setBorderColor(value);
+				setBorderColor(value);
 			}
 			protected Color getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getBorderColor();
+				return getBorderColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-				this, "Fill color", Color.class) {
+				this, "Fill color", Color.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Color value) {
-				CommonVisualSettings.setFillColor(value);
+				setFillColor(value);
 			}
 			protected Color getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getFillColor();
+				return getFillColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Double>(
-				this, "Line spacing in multi-line text (ratio)", Double.class) {
+				this, "Line spacing in multi-line text (ratio)", Double.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Double value) {
-				CommonVisualSettings.setLineSpacing(value);
+				setLineSpacing(value);
 			}
 			protected Double getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getLineSpacing();
+				return getLineSpacing();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-				this, "Show component labels", Boolean.class) {
+				this, "Show component labels", Boolean.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Boolean value) {
-				CommonVisualSettings.setLabelVisibility(value);
+				setLabelVisibility(value);
 			}
 			protected Boolean getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getLabelVisibility();
+				return getLabelVisibility();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-				this, "Label positioning", Positioning.class) {
+				this, "Label positioning", Positioning.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Positioning value) {
-				CommonVisualSettings.setLabelPositioning(value);
+				setLabelPositioning(value);
 			}
 			protected Positioning getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getLabelPositioning();
+				return getLabelPositioning();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-				this, "Label color", Color.class) {
+				this, "Label color", Color.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Color value) {
-				CommonVisualSettings.setLabelColor(value);
+				setLabelColor(value);
 			}
 			protected Color getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getLabelColor();
+				return getLabelColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-				this, "Show component names", Boolean.class) {
+				this, "Show component names", Boolean.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Boolean value) {
-				CommonVisualSettings.setNameVisibility(value);
+				setNameVisibility(value);
 			}
 			protected Boolean getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getNameVisibility();
+				return getNameVisibility();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Positioning>(
-				this, "Name positioning", Positioning.class) {
+				this, "Name positioning", Positioning.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Positioning value) {
-				CommonVisualSettings.setNamePositioning(value);
+				setNamePositioning(value);
 			}
 			protected Positioning getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getNamePositioning();
+				return getNamePositioning();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Color>(
-				this, "Name color", Color.class) {
+				this, "Name color", Color.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Color value) {
-				CommonVisualSettings.setNameColor(value);
+				setNameColor(value);
 			}
 			protected Color getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getNameColor();
+				return getNameColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonVisualSettings, Integer>(
-				this, "Minimal redraw interval (ms)", Integer.class) {
+				this, "Minimal redraw interval (ms)", Integer.class, true, false, false) {
 			protected void setter(CommonVisualSettings object, Integer value) {
-				CommonVisualSettings.setRedrawInterval(value);
+				setRedrawInterval(value);
 			}
 			protected Integer getter(CommonVisualSettings object) {
-				return CommonVisualSettings.getRedrawInterval();
+				return getRedrawInterval();
 			}
 		});
 	}

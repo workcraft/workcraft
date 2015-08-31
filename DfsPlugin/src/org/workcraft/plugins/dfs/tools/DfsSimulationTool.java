@@ -16,6 +16,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.dfs.BinaryRegister.Marking;
+import org.workcraft.plugins.dfs.VisualAbstractRegister;
 import org.workcraft.plugins.dfs.VisualBinaryRegister;
 import org.workcraft.plugins.dfs.VisualControlRegister;
 import org.workcraft.plugins.dfs.VisualCounterflowLogic;
@@ -38,6 +39,7 @@ import org.workcraft.plugins.dfs.stg.RegisterStg;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
@@ -65,11 +67,30 @@ public class DfsSimulationTool extends StgSimulationTool {
 		return generator.getStg();
 	}
 
+	private VisualPlace getVisualPlace(Place place) {
+		VisualPlace result = null;
+		for (VisualPlace vp: Hierarchy.getDescendantsOfType(visualNet.getRoot(), VisualPlace.class)) {
+			if (vp.getReferencedPlace() == place) {
+				result = vp;
+				break;
+			}
+		}
+		return result;
+	}
+
+	private void copyTokenColor(VisualAbstractRegister r, Node nodeM) {
+		VisualPlace vp = getVisualPlace((Place)nodeM);
+		if (vp != null) {
+			r.setTokenColor(vp.getTokenColor());
+		}
+	}
+
 	@Override
 	public void applyInitState(final GraphEditor editor) {
 		if ((savedState == null) || savedState.isEmpty()) {
 			return;
 		}
+		editor.getWorkspaceEntry().saveMemento();
 		VisualDfs dfs = (VisualDfs)editor.getModel();
 		for(VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
 			String refC = StgGenerator.nameC + dfs.getNodeMathReference(l) + StgGenerator.name1;
@@ -85,6 +106,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 			if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
 				boolean marked = (savedState.get(nodeM) > 0);
 				r.getReferencedRegister().setMarked(marked);
+				copyTokenColor(r, nodeM);
 			}
 		}
 		for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
@@ -107,12 +129,14 @@ public class DfsSimulationTool extends StgSimulationTool {
 			if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
 				boolean orMarked = (savedState.get(nodeOrM) > 0);
 				r.getReferencedCounterflowRegister().setOrMarked(orMarked);
+				copyTokenColor(r, nodeOrM);
 			}
 			String refAndM = StgGenerator.nameAndM + dfs.getNodeMathReference(r) + StgGenerator.name1;
 			Node nodeAndM = net.getNodeByReference(refAndM);
 			if ((nodeAndM instanceof Place) && savedState.containsKey(nodeAndM)) {
 				boolean andMarked = (savedState.get(nodeAndM) > 0);
 				r.getReferencedCounterflowRegister().setAndMarked(andMarked);
+				copyTokenColor(r, nodeAndM);
 			}
 		}
 		for(VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
@@ -123,6 +147,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 				if (savedState.get(nodeTrueM) > 0) {
 					r.getReferencedBinaryRegister().setMarking(Marking.TRUE_TOKEN);
 				}
+				copyTokenColor(r, nodeTrueM);
 			}
 			String refFalseM = StgGenerator.nameFalseM + dfs.getNodeMathReference(r) + StgGenerator.name1;
 			Node nodeFalseM = net.getNodeByReference(refFalseM);
@@ -130,6 +155,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 				if (savedState.get(nodeFalseM) > 0) {
 					r.getReferencedBinaryRegister().setMarking(Marking.FALSE_TOKEN);
 				}
+				copyTokenColor(r, nodeFalseM);
 			}
 		}
 	}

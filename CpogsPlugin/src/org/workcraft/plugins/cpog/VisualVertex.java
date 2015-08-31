@@ -32,7 +32,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -46,8 +45,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.expressions.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.expressions.CpogVisitor;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.PrettifyBooleanReplacer;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
@@ -55,6 +53,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 @DisplayName("Vertex")
 @SVGIcon("images/icons/svg/vertex.svg")
 public class VisualVertex extends VisualComponent implements CpogFormulaVariable {
+	public static final String PROPERTY_CONDITION = "Condition";
 	public static Font conditionFont;
 	private RenderedFormula conditionRenderedFormula = new RenderedFormula("", One.instance(), conditionFont, getLabelPositioning(), getLabelOffset());
 
@@ -93,8 +92,9 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 			        BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));
 		} else {
 			g.setStroke(new BasicStroke((float)strokeWidth));
-			if (value != One.instance())
-				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, colorisation));
+// FIXME: Gray colour of vertices with undecided conditions is confusing.
+//			if (value != One.instance())
+//				g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, colorisation));
 		}
 		g.draw(shape);
 		drawConditionInLocalSpace(r);
@@ -132,26 +132,11 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	public void setCondition(BooleanFormula condition) {
 		getMathVertex().setCondition(condition);
-		sendNotification(new PropertyChangedEvent(this, "condition"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
 	}
 
 	public BooleanFormula evaluate() {
-		return getCondition().accept(
-			new BooleanReplacer(new HashMap<BooleanVariable, BooleanFormula>()) {
-				@Override
-				public BooleanFormula visit(BooleanVariable node) {
-					switch(((Variable)node).getState())
-					{
-					case TRUE:
-						return One.instance();
-					case FALSE:
-						return Zero.instance();
-					default:
-						return node;
-					}
-				}
-			}
-		);
+		return getCondition().accept(new PrettifyBooleanReplacer());
 	}
 
 	@Override

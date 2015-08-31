@@ -58,7 +58,6 @@ public class CommonEditorSettings implements Settings {
 	private static final String keyIconSize = prefix + ".iconSize";
 	private static final String keyTitleStyle = prefix + ".titleStyle";
 	private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
-	private static final String keyDebugClipboard = prefix + ".debugClipboard";
 	private static final String keyOpenNonvisual = prefix + ".openNonvisual";
 
 	private static final Color defaultBackgroundColor = Color.WHITE;
@@ -68,7 +67,6 @@ public class CommonEditorSettings implements Settings {
 	private static final int defaultRecentCount = 10;
 	private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
 	private static final boolean defaultShowAbsolutePaths = false;
-	private static final boolean defaultDebugClipboard = false;
 	private static final boolean defaultOpenNonvisual = true;
 
 	private static Color backgroundColor = defaultBackgroundColor;
@@ -78,97 +76,86 @@ public class CommonEditorSettings implements Settings {
 	private static int recentCount = defaultRecentCount;
 	private static TitleStyle titleStyle = defaultTitleStyle;
 	private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
-	private static boolean debugClipboard = defaultDebugClipboard;
 	private static boolean openNonvisual = defaultOpenNonvisual;
 
 	public CommonEditorSettings() {
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
-				this, "Background color", Color.class) {
+				this, "Background color", Color.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, Color value) {
-				CommonEditorSettings.setBackgroundColor(value);
+				setBackgroundColor(value);
 			}
 			protected Color getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getBackgroundColor();
+				return getBackgroundColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-				this, "Show grid", Boolean.class) {
+				this, "Show grid", Boolean.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, Boolean value) {
-				CommonEditorSettings.setShowGrid(value);
+				setShowGrid(value);
 			}
 			protected Boolean getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getShowGrid();
+				return getShowGrid();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-				this, "Show rulers", Boolean.class) {
+				this, "Show rulers", Boolean.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, Boolean value) {
-				CommonEditorSettings.setShowRulers(value);
+				setShowRulers(value);
 			}
 			protected Boolean getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getShowRulers();
+				return getShowRulers();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-				this, "Icon width (pixels, 8-256)", Integer.class) {
+				this, "Icon width (pixels, 8-256)", Integer.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, Integer value) {
-				CommonEditorSettings.setIconSize(value);
+				setIconSize(value);
 			}
 			protected Integer getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getIconSize();
+				return getIconSize();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-				this, "Number of recent files (0-99)", Integer.class) {
+				this, "Number of recent files (0-99)", Integer.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, Integer value) {
-				CommonEditorSettings.setRecentCount(value);
+				setRecentCount(value);
 			}
 			protected Integer getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getRecentCount();
+				return getRecentCount();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, TitleStyle>(
-				this, "Model title style", TitleStyle.class) {
+				this, "Model title style", TitleStyle.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, TitleStyle value) {
-				CommonEditorSettings.setTitleStyle(value);
+				setTitleStyle(value);
 			}
 			protected TitleStyle getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getTitleStyle();
+				return getTitleStyle();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-				this, "Names shown with absolute paths", Boolean.class) {
+				this, "Names shown with absolute paths", Boolean.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, Boolean value) {
-				CommonEditorSettings.setShowAbsolutePaths(value);
+				setShowAbsolutePaths(value);
 			}
 			protected Boolean getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getShowAbsolutePaths();
+				return getShowAbsolutePaths();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-				this, "Debug clipboard", Boolean.class) {
+				this, "Open non-visual models (imported or transformed)", Boolean.class, true, false, false) {
 			protected void setter(CommonEditorSettings object, Boolean value) {
-				CommonEditorSettings.setDebugClipboard(value);
+				setOpenNonvisual(value);
 			}
 			protected Boolean getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getDebugClipboard();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-				this, "Open non-visual models (imported or transformed)", Boolean.class) {
-			protected void setter(CommonEditorSettings object, Boolean value) {
-				CommonEditorSettings.setOpenNonvisual(value);
-			}
-			protected Boolean getter(CommonEditorSettings object) {
-				return CommonEditorSettings.getOpenNonvisual();
+				return getOpenNonvisual();
 			}
 		});
 	}
@@ -187,7 +174,6 @@ public class CommonEditorSettings implements Settings {
 		setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
 		setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
 		setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
-		setDebugClipboard(config.getBoolean(keyDebugClipboard, defaultDebugClipboard));
 		setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
 	}
 
@@ -200,7 +186,6 @@ public class CommonEditorSettings implements Settings {
 		config.setInt(keyRecentCount, getRecentCount());
 		config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
 		config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
-		config.setBoolean(keyDebugClipboard, getDebugClipboard());
 		config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
 	}
 
@@ -280,14 +265,6 @@ public class CommonEditorSettings implements Settings {
 
 	public static boolean getShowAbsolutePaths() {
 		return showAbsolutePaths;
-	}
-
-	public static Boolean getDebugClipboard() {
-		return debugClipboard;
-	}
-
-	public static void setDebugClipboard(Boolean value) {
-		debugClipboard = value;
 	}
 
 	public static Boolean getOpenNonvisual() {

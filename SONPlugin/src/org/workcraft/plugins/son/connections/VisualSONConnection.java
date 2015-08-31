@@ -41,7 +41,7 @@ public class VisualSONConnection extends VisualConnection {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, String>(
-				this, "Semantic", String.class) {
+				this, "Semantic", String.class, true, true, true) {
 			public void setter(VisualSONConnection object, String value) {
 			}
 			public String getter(VisualSONConnection object) {

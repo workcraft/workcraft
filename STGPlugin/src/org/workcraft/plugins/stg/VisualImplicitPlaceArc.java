@@ -78,7 +78,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-				this, "Tokens", Integer.class) {
+				this, Place.PROPERTY_TOKENS, Integer.class, true, true, true) {
 			public void setter(VisualImplicitPlaceArc object, Integer value) {
 				object.getImplicitPlace().setTokens(value);
 			}
@@ -88,7 +88,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-				this, "Capacity", Integer.class) {
+				this, Place.PROPERTY_CAPACITY, Integer.class, true, true, true) {
 			public void setter(VisualImplicitPlaceArc object, Integer value) {
 				object.getImplicitPlace().setCapacity(value);
 			}
@@ -98,7 +98,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Color>(
-				this, "Token color", Color.class) {
+				this, VisualPlace.PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
 			public void setter(VisualImplicitPlaceArc object, Color value) {
 				object.setTokenColor(value);
 			}
@@ -182,7 +182,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 
 	public void setTokenColor(Color tokenColor) {
 		this.tokenColor = tokenColor;
-		sendNotification(new PropertyChangedEvent(this, "token color"));
+		sendNotification(new PropertyChangedEvent(this, VisualPlace.PROPERTY_TOKEN_COLOR));
 	}
 
 	@Override

@@ -21,7 +21,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pce = (PropertyChangedEvent)e;
 			Object sender = e.getSender();
-			if ((sender instanceof Event) && pce.getPropertyName().equals("symbol")) {
+			if ((sender instanceof Event) && pce.getPropertyName().equals(Event.PROPERTY_SYMBOL)) {
 				// Update the collection of symbols on a change of event symbol property
 				handleEventSymbolChange((Event)sender);
 			}

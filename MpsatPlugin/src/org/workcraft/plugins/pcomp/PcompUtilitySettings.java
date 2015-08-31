@@ -43,22 +43,22 @@ public class PcompUtilitySettings implements Settings {
 
 	public PcompUtilitySettings() {
 		properties.add(new PropertyDeclaration<PcompUtilitySettings, String>(
-				this, "PComp command", String.class) {
+				this, "PComp command", String.class, true, false, false) {
 			protected void setter(PcompUtilitySettings object, String value) {
-				PcompUtilitySettings.setCommand(value);
+				setCommand(value);
 			}
 			protected String getter(PcompUtilitySettings object) {
-				return PcompUtilitySettings.getCommand();
+				return getCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PcompUtilitySettings, String>(
-				this, "Additional command line arguments", String.class) {
+				this, "Additional command line arguments", String.class, true, false, false) {
 			protected void setter(PcompUtilitySettings object, String value) {
-				PcompUtilitySettings.setExtraArgs(value);
+				setExtraArgs(value);
 			}
 			protected String getter(PcompUtilitySettings object) {
-				return PcompUtilitySettings.getExtraArgs();
+				return getExtraArgs();
 			}
 		});
 	}

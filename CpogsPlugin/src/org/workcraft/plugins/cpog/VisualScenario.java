@@ -27,6 +27,9 @@ import org.workcraft.util.Hierarchy;
 
 public class VisualScenario extends VisualGroup
 {
+	public static final String PROPERTY_ENCODING = "Encoding";
+	public static final String PROPERTY_LABEL = "Label";
+
 	private static final class ReverseComparator implements Comparator<Variable>
 	{
 		@Override
@@ -65,7 +68,7 @@ public class VisualScenario extends VisualGroup
 
 	public VisualScenario() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualScenario, String>(
-				this, "Label", String.class) {
+				this, PROPERTY_LABEL, String.class, true, true, true) {
 			public void setter(VisualScenario object, String value) {
 				object.setLabel(value);
 			}
@@ -75,7 +78,7 @@ public class VisualScenario extends VisualGroup
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualScenario, Encoding>(
-				this, "Encoding", Encoding.class) {
+				this, PROPERTY_ENCODING, Encoding.class, true, true, true) {
 			public void setter(VisualScenario object, Encoding value) {
 				object.setEncoding(value);
 			}
@@ -276,7 +279,7 @@ public class VisualScenario extends VisualGroup
 
 	public void setLabel(String label) {
 		this.label = label;
-		sendNotification(new PropertyChangedEvent(this, "label"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
 	}
 
 	public String getLabel() {
@@ -285,7 +288,7 @@ public class VisualScenario extends VisualGroup
 
 	public void setEncoding(Encoding encoding) {
 		this.encoding = encoding;
-		sendNotification(new PropertyChangedEvent(this, "encoding"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
 	}
 
 	public Encoding getEncoding() {

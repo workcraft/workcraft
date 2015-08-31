@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 import org.workcraft.NodeFactory;
@@ -44,21 +45,24 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
-import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.TitlePropertyDescriptor;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
+import org.workcraft.plugins.layout.DotLayoutTool;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 
 @MouseListeners ({ DefaultAnchorGenerator.class })
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
@@ -96,47 +100,62 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	protected final void createDefaultFlatStructure() throws NodeCreationException {
-		HashMap <MathNode, VisualComponent> createdNodes = new HashMap <MathNode, VisualComponent>();
-		HashMap <VisualConnection, MathConnection> createdConnections = new	HashMap <VisualConnection, MathConnection>();
+		HashMap <MathNode, VisualComponent> createdNodes = new HashMap<>();
+		// Create components
+		Queue<Pair<Container, Container>> containerQueue = new LinkedList<>();
+		containerQueue.add(new Pair<Container, Container>(getMathModel().getRoot(), getRoot()));
+        while (!containerQueue.isEmpty()) {
+        	Pair<Container, Container> container = containerQueue.remove();
+        	Container mathContainer = container.getFirst();
+        	Container visualContainer = container.getSecond();
+    		for (Node node : mathContainer.getChildren()) {
+    			if (node instanceof MathConnection) continue;
+    			if (node instanceof MathNode) {
+    				MathNode mathNode = (MathNode)node;
+    				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(mathNode);
+    				if (visualComponent != null) {
+    					visualContainer.add(visualComponent);
+    					createdNodes.put(mathNode, visualComponent);
+    				}
+    				if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
+    					containerQueue.add(new Pair<Container, Container>((Container)mathNode, (Container)visualComponent));
+    				}
+    			}
+        	}
+        }
+        // Create connections
+		containerQueue.add(new Pair<Container, Container>(getMathModel().getRoot(), getRoot()));
+        while (!containerQueue.isEmpty()) {
+        	Pair<Container, Container> container = containerQueue.remove();
+        	Container mathContainer = container.getFirst();
+    		for (Node node : mathContainer.getChildren()) {
+    			if (node instanceof MathConnection) {
+    				MathConnection mathConnection = (MathConnection)node;
+    				VisualComponent firstComponent = createdNodes.get(mathConnection.getFirst());
+    				VisualComponent secondComponent = createdNodes.get(mathConnection.getSecond());
+    				try {
+						connect(firstComponent, secondComponent, mathConnection);
+					} catch (InvalidConnectionException e) {
+					}
+    			} else if (node instanceof MathNode) {
+    				MathNode mathNode = (MathNode)node;
+    				VisualComponent visualComponent = createdNodes.get(mathNode);
+    				if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
+    					containerQueue.add(new Pair<Container, Container>((Container)mathNode, (Container)visualComponent));
+    				}
+    			}
+    		}
+        }
+	}
 
-		for (Node n : mathModel.getRoot().getChildren()) {
-			if (n instanceof MathConnection) {
-				MathConnection connection = (MathConnection)n;
-
-				VisualConnection visualConnection = NodeFactory.createVisualConnection(connection);
-				if (visualConnection != null) {
-					// Will create incomplete instance, setConnection() needs to be called later to finalise.
-					// This is to avoid cross-reference problems.
-					createdConnections.put(visualConnection, connection);
-				}
-			} else {
-				MathNode node = (MathNode)n;
-				VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(node);
-
-				if (visualComponent != null) {
-					getRoot().add(visualComponent);
-					createdNodes.put(node, visualComponent);
-				}
-			}
-		}
-
-		for (VisualConnection vc : createdConnections.keySet()) {
-			MathConnection mc = createdConnections.get(vc);
-			vc.setVisualConnectionDependencies(
-					createdNodes.get(mc.getFirst()),
-					createdNodes.get(mc.getSecond()),
-					new Polyline(vc), mc);
-
-			getRoot().add(vc);
-//			if (mc.getFirst() == mc.getSecond()) {
-//				vc.setConnectionType(ConnectionType.BEZIER);
-//			}
-		}
+	@Override
+	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+		return connect(first, second, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends VisualComponent> T createComponent(MathNode mathNode, Container container, Class<T> type) {
+	public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Container container, Class<T> type) {
 		if (container == null) {
 			container = getRoot();
 		}
@@ -151,7 +170,22 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return (T)component;
 	}
 
+	@Override
+	public <T extends VisualComponent> T getVisualComponent(MathNode mathNode, Class<T> type) {
+		T result = null;
+		if (mathNode != null) {
+			Collection<T> visualComponents = Hierarchy.getDescendantsOfType(getRoot(), type);
+			for (T visualComponent: visualComponents) {
+				if (visualComponent.getReferencedComponent() == mathNode) {
+					result = visualComponent;
+					break;
+				}
+			}
+		}
+		return result;
+	}
 
+	@Override
 	public void draw (Graphics2D g, Decorator decorator) {
 		DrawMan.draw(this, g, decorator, getRoot());
 	}
@@ -327,37 +361,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		getMathModel().setName(node, name);
 	}
 
-	public static Point2D centralizeComponents(Collection<Node> components) {
-		// Find weighted center
-		double deltaX = 0.0;
-		double deltaY = 0.0;
-		int num = 0;
-		for (Node node: components) {
-			if (node instanceof VisualTransformableNode) {
-				VisualTransformableNode tn = (VisualTransformableNode)node;
-				deltaX += tn.getX();
-				deltaY += tn.getY();
-				num++;
-			}
-		}
-		if (num>0) {
-			deltaX /= num;
-			deltaY /= num;
-		}
-		// Round numbers
-		deltaX = Math.round(deltaX*2)/2;
-		deltaY = Math.round(deltaY*2)/2;
-
-		// Move components
-		for (Node node: components) {
-			if (node instanceof VisualTransformableNode && !(node instanceof ControlPoint)) {
-				VisualTransformableNode tn = (VisualTransformableNode)node;
-				tn.setPosition(new Point2D.Double(tn.getX() - deltaX, tn.getY() - deltaY));
-			}
-		}
-		return new Point2D.Double(deltaX, deltaY);
-	}
-
 	@Override
 	public Container getCurrentLevel() {
 		return currentLevel;
@@ -369,13 +372,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		currentLevel = newCurrentLevel;
 
 		// manage the isInside value for all parents and children
-		Collapsible collapsabla = null;
+		Collapsible collapsible = null;
 		if (newCurrentLevel instanceof Collapsible) {
-			collapsabla = (Collapsible)newCurrentLevel;
+			collapsible = (Collapsible)newCurrentLevel;
 		}
 
-		if (collapsabla != null) {
-			collapsabla.setIsCurrentLevelInside(true);
+		if (collapsible != null) {
+			collapsible.setIsCurrentLevelInside(true);
 			Node parent = newCurrentLevel.getParent();
 			while (parent != null) {
 				if (parent instanceof Collapsible) {
@@ -424,7 +427,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			group = new VisualGroup();
 			getCurrentLevel().add(group);
 			getCurrentLevel().reparent(nodes, group);
-			group.setPosition(centralizeComponents(nodes));
+			Point2D centre = TransformHelper.getSnappedCentre(nodes);
+			VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
+			group.setPosition(centre);
 			select(group);
 		}
 		return group;
@@ -440,7 +445,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			page = new VisualPage(pageNode);
 			getCurrentLevel().add(page);
 			reparent(page, this, getCurrentLevel(), nodes);
-			page.setPosition(centralizeComponents(nodes));
+			Point2D pos = TransformHelper.getSnappedCentre(nodes);
+			VisualModelTransformer.translateNodes(nodes, -pos.getX(), -pos.getY());
+			page.setPosition(pos);
 			select(page);
 		}
 		return page;
@@ -452,9 +459,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
 			if (node instanceof VisualGroup) {
 				VisualGroup group = (VisualGroup)node;
-				for(Node subNode : group.unGroup()) {
-					toSelect.add(subNode);
-				}
+				ArrayList<Node> nodesToReparent = new ArrayList<Node>(group.getChildren());
+				toSelect.addAll(nodesToReparent);
+				this.reparent(getCurrentLevel(), this, group, nodesToReparent);
 				getCurrentLevel().remove(group);
 			} else if (node instanceof VisualPage) {
 				VisualPage page = (VisualPage)node;
@@ -470,11 +477,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		select(toSelect);
 	}
 
-
-	@Override
-	public void ungroupPageSelection() {
-		ungroupSelection();
-	}
 
 	@Override
 	public void deleteSelection() {
@@ -528,7 +530,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@Override
 	public ModelProperties getProperties(Node node) {
-		return new ModelProperties();
+		ModelProperties properties = new ModelProperties();
+		if (node == null) {
+			properties.add(new TitlePropertyDescriptor(this));
+		}
+		return properties;
 	}
 
 	public Collection<Node> getMathChildren(Collection<Node> nodes) {
@@ -560,21 +566,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
 		dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
 
-		// FIXME: A hack to preserve the root coordinates of reparented nodes and shape of included connections (intro).
 		// Save root-space position of components and set connections scale mode to follow components.
 		HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
-		Collection<VisualConnection> srcConnections = Hierarchy.getDescendantsOfType(srcRoot, VisualConnection.class);
-		Collection<VisualConnection> srcIncludedConnections = SelectionHelper.getIncludedConnections(srcChildren, srcConnections);
-//		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.NONE);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap =	VisualModelTransformer.setConnectionsScaleMode(srcIncludedConnections, ScaleMode.ADAPTIVE);
 
-		Collection<Node> dstChildren = new HashSet<Node>(srcChildren);
+		Collection<Node> dstChildren = new LinkedList<>(srcChildren);
 		srcRoot.reparent(dstChildren, dstContainer);
 
-		// FIXME: A hack to preserve the root coordinates of reparented nodes and shape of included connections (outro).
-		// Restore root-space position of components and connections scale mode.
 		VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
-		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
 	}
 
 	@Override
@@ -586,6 +584,32 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	@Override
 	public VisualNode getTemplateNode() {
 		return templateNode;
+	}
+
+	@Override
+	@NoAutoSerialisation
+	public String getTitle() {
+		if (mathModel != null) {
+			return mathModel.getTitle();
+		} else {
+			return super.getTitle();
+		}
+	}
+
+	@Override
+	@NoAutoSerialisation
+	public void setTitle(String title) {
+		if (mathModel != null) {
+			mathModel.setTitle(title);
+		} else {
+			super.setTitle(title);
+		}
+		sendNotification(new ModelModifiedEvent(this));
+	}
+
+	@Override
+	public AbstractLayoutTool getBestLayoutTool() {
+		return new DotLayoutTool();
 	}
 
 }

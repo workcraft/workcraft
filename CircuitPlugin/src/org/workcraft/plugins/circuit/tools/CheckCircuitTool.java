@@ -1,21 +1,16 @@
 package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckCircuitTool implements Tool {
+public class CheckCircuitTool extends VerificationTool {
 
 	public String getDisplayName() {
 		return "Conformation, deadlock and hazard (reuse unfolding) [MPSat]";
-	}
-
-	@Override
-	public String getSection() {
-		return "Verification";
 	}
 
 	@Override

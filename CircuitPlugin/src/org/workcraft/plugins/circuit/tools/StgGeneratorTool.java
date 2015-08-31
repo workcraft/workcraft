@@ -8,7 +8,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.stg.STGModelDescriptor;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -37,7 +37,7 @@ public class StgGeneratorTool implements Tool {
 		final Workspace workspace = Framework.getInstance().getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String name = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new STGModelDescriptor(), converter.getStg());
+		final ModelEntry me = new ModelEntry(new StgDescriptor(), converter.getStg());
 		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 		workspace.add(directory, name, me, false, openInEditor);
 	}

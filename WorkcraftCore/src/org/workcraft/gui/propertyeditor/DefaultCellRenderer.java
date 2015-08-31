@@ -13,12 +13,15 @@ public class DefaultCellRenderer extends JLabel implements TableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		if (value != null) {
-			setText((String)value);
+			String text = value.toString();
+			setText(text);
+			setFont(table.getFont());
+			setOpaque(text.isEmpty());
 		} else {
 			setText("");
+			setOpaque(true);
 		}
-		setFont(table.getFont());
-		setOpaque(value == null || value.equals(""));
+		setBorder(PropertyEditorTable.BORDER_RENDER);
 		return this;
 	}
 

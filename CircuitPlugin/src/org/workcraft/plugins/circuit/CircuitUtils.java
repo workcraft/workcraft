@@ -10,14 +10,20 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
+import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class CircuitUtils {
 
 	public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact) {
 		Contact mathDriver = findDriver((Circuit)circuit.getMathModel(), contact.getReferencedContact());
-		return getVisualContact(circuit, mathDriver);
+		return circuit.getVisualComponent(mathDriver, VisualContact.class);
 	}
 
 	public static Contact findDriver(Circuit circuit, MathNode curNode) {
@@ -41,6 +47,14 @@ public class CircuitUtils {
             		queue.addAll(circuit.getPreset(node));
             	} else if (node instanceof Contact) {
             		Contact contact = (Contact)node;
+//TODO: Complete support for zero-delay buffers and inverters.
+//            		Node parent = contact.getParent();
+//            		if (contact.isOutput() && (parent instanceof CircuitComponent)) {
+//            			CircuitComponent component = (CircuitComponent)parent;
+//            			if (component.isBufferOrInverter() && component.getIsZeroDelay()) {
+//            				contact = component.getInputs().iterator().next();
+//            			}
+//            		}
             		if (contact.isDriver()) {
             			result = contact;
             		} else if (node == curNode) {
@@ -56,14 +70,8 @@ public class CircuitUtils {
 	}
 
 	public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
-		Collection<VisualContact> result = new HashSet<>();
-		for (Contact mathContact: findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact())) {
-			VisualContact visualContact = getVisualContact(circuit, mathContact);
-			if (visualContact != null) {
-				result.add(visualContact);
-			}
-		}
-		return result;
+		Collection<Contact> drivenContacts = findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+		return getVisualContacts(circuit, drivenContacts);
 	}
 
 	public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode) {
@@ -97,33 +105,60 @@ public class CircuitUtils {
 		return result;
 	}
 
-	public static String getContactName(Circuit circuit, Contact contact) {
-		String result = null;
-		if (contact.isPort()) {
-			result = circuit.getName(contact);
-		} else {
-			if (contact.isInput()) {
-				result = getInputContactName(circuit, contact);
-			} else if (contact.isOutput()) {
-				result = getOutputContactName(circuit, contact);
+	public static Contact findSignal(Circuit circuit, Contact contact) {
+		Contact result = contact;
+		Contact driver = findDriver(circuit, contact);
+		if (driver != null) {
+			result = driver;
+			for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
+				if (signal.isPort() && signal.isOutput()) {
+					if (driver == CircuitUtils.findDriver(circuit, signal)) {
+						result = signal;
+						break;
+					}
+				}
 			}
 		}
 		return result;
 	}
 
-	public static String getContactName(VisualCircuit circuit, VisualContact contact) {
-		return getContactName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+	public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact) {
+		Contact mathSignal = findSignal((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+		return circuit.getVisualComponent(mathSignal, VisualContact.class);
 	}
 
-	private static String getInputContactName(Circuit circuit, Contact contact) {
+	public static String getWireName(Circuit circuit, Contact contact) {
 		String result = null;
-		Node parent = contact.getParent();
-		if (parent instanceof FunctionComponent) {
-			FunctionComponent component = (FunctionComponent)parent;
-			String componentName = circuit.getName(component);
-			String componentFlatName = NamespaceHelper.hierarchicalToFlatName(componentName);
-			String contactName = circuit.getName(contact);
-			result = componentFlatName + "_" + contactName;
+		if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
+			Contact signal = findSignal(circuit, contact);
+			result = getContactName(circuit, signal);
+		}
+		return result;
+	}
+
+	public static String getWireName(VisualCircuit circuit, VisualContact contact) {
+		return getWireName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+	}
+
+	public static String getSignalName(Circuit circuit, Contact contact) {
+		String result = null;
+		if (contact.isPort() || contact.isInput()) {
+			result = getContactName(circuit, contact);
+		} else {
+			result = getOutputContactName(circuit, contact);
+		}
+		return result;
+	}
+
+	public static String getSignalName(VisualCircuit circuit, VisualContact contact) {
+		return getSignalName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+	}
+
+	private static String getContactName(Circuit circuit, Contact contact) {
+		String result = null;
+		if (contact != null) {
+			String contactRef = circuit.getNodeReference(contact);
+			result = NamespaceHelper.hierarchicalToFlatName(contactRef);
 		}
 		return result;
 	}
@@ -137,11 +172,10 @@ public class CircuitUtils {
 			Contact outputPort = getDrivenOutputPort(circuit, contact);
 			if (outputPort != null) {
 				// If a single output port is driven, then take its name.
-				result = circuit.getName(outputPort);
+				String outputPortRef = circuit.getNodeReference(outputPort);
+				result = NamespaceHelper.hierarchicalToFlatName(outputPortRef);
 			} else {
 				// If the component has a single output, use the component name. Otherwise append the contact.
-				String componentName = circuit.getName(component);
-				result = NamespaceHelper.hierarchicalToFlatName(componentName);
 				int output_cnt = 0;
 				for (Node node: component.getChildren()) {
 					if (node instanceof Contact) {
@@ -151,9 +185,12 @@ public class CircuitUtils {
 						}
 					}
 				}
-				if (output_cnt > 1) {
-					String suffix = "_" + circuit.getName(contact);
-					result += suffix;
+				if (output_cnt == 1) {
+					String componentRef = circuit.getNodeReference(component);
+					result = NamespaceHelper.hierarchicalToFlatName(componentRef);
+				} else {
+					String contactRef = circuit.getNodeReference(contact);
+					result = NamespaceHelper.hierarchicalToFlatName(contactRef);
 				}
 			}
 		}
@@ -173,20 +210,6 @@ public class CircuitUtils {
 		}
 		if (multipleOutputPorts) {
 			result = null;
-		}
-		return result;
-	}
-
-	public static VisualContact getVisualContact(VisualCircuit visualCircuit, Contact contact) {
-		VisualContact result = null;
-		if (contact != null) {
-			Collection<VisualContact> visualContacts = Hierarchy.getDescendantsOfType(visualCircuit.getRoot(), VisualContact.class);
-			for (VisualContact visualContact: visualContacts) {
-				if (visualContact.getReferencedContact() == contact) {
-					result = visualContact;
-					break;
-				}
-			}
 		}
 		return result;
 	}
@@ -221,6 +244,130 @@ public class CircuitUtils {
 			}
 		  }
 		  return result;
+	}
+
+	public static BooleanFormula parseContactFuncton(final Circuit circuit,
+			final FunctionComponent component, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				FunctionContact contact = (FunctionContact)circuit.getNodeByReference(component, name);
+				if (contact == null) {
+					contact = new FunctionContact();
+					contact.setIOType(IOType.INPUT);
+					component.add(contact);
+					circuit.setName(contact, name);
+				}
+				return contact;
+			}
+		});
+	}
+
+	public static BooleanFormula parsePortFuncton(final Circuit circuit, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				FunctionContact port = (FunctionContact)circuit.getNodeByReference(null, name);
+				if (port == null) {
+					port = new FunctionContact();
+					port.setIOType(IOType.OUTPUT);
+					circuit.add(port);
+					circuit.setName(port, name);
+				}
+				return port;
+			}
+		});
+	}
+
+	public static BooleanFormula parseContactFuncton(final VisualCircuit circuit,
+			final VisualFunctionComponent component, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				BooleanFormula result = null;
+				VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
+				if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
+					result = (BooleanFormula)contact.getReferencedContact();
+				}
+				return result;
+			}
+		});
+	}
+
+	public static BooleanFormula parsePortFuncton(final VisualCircuit circuit, String function) throws ParseException {
+		if (function == null) {
+			return null;
+		}
+		return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+			@Override
+			public BooleanFormula eval(String name) {
+				BooleanFormula result = null;
+				VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
+				if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
+					result = (BooleanFormula)port.getReferencedContact();
+				}
+				return result;
+			}
+		});
+	}
+
+	public static HashSet<MathNode> getComponentPostset(final Circuit circuit, MathNode mathNode) {
+		HashSet<MathNode> result = new HashSet<>();
+		Set<Node> postset = new HashSet<>();
+		if (mathNode instanceof Contact) {
+			postset.addAll(circuit.getPostset(mathNode));
+		} else if (mathNode instanceof CircuitComponent) {
+			CircuitComponent component = (CircuitComponent)mathNode;
+			for (Contact contact: component.getContacts()) {
+				if (contact.isOutput()) {
+					postset.addAll(circuit.getPostset(contact));
+				}
+			}
+		}
+		for (Node nextNode: postset) {
+			CircuitComponent nextComponent = null;
+			if (nextNode instanceof Contact) {
+				if (nextNode.getParent() instanceof CircuitComponent) {
+					nextComponent = (CircuitComponent)nextNode.getParent();
+				}
+			} else if (nextNode instanceof CircuitComponent) {
+				nextComponent = (CircuitComponent)nextNode;
+			}
+			if (nextComponent != null) {
+				result.add(nextComponent);
+			}
+		}
+		return result;
+	}
+
+	public static HashSet<VisualComponent> getComponentPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
+		HashSet<VisualComponent> result = new HashSet<>();
+		Circuit circuit = (Circuit)visualCircuit.getMathModel();
+		MathNode mathComponent = visualComponent.getReferencedComponent();
+		for (MathNode node: getComponentPostset(circuit, mathComponent)) {
+			result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
+		}
+		return result;
+	}
+
+	private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
+		HashSet<VisualContact> result = new HashSet<>();
+		for (Contact mathContact: mathContacts) {
+			VisualContact visualContact = visualCircuit.getVisualComponent(mathContact, VisualContact.class);
+			if (visualContact != null) {
+				result.add(visualContact);
+			}
+		}
+		return result;
 	}
 
 }

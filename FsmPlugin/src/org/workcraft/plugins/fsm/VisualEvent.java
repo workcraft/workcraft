@@ -16,14 +16,17 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Geometry;
 
 public class VisualEvent extends VisualConnection {
+	public static final String PROPERTY_LABEL_COLOR = "Label color";
+
 	// Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
 	public static final char EPSILON_SYMBOL = 0x03B5;
 
-	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
+	public static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 
 	private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
 	private Color labelColor = CommonVisualSettings.getLabelColor();
@@ -43,7 +46,7 @@ public class VisualEvent extends VisualConnection {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualEvent, Color>(
-				this, "Label color", Color.class) {
+				this, PROPERTY_LABEL_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualEvent object, Color value) {
 				object.setLabelColor(value);
 			}
@@ -144,6 +147,7 @@ public class VisualEvent extends VisualConnection {
 
 	public void setLabelColor(Color symbolColor) {
 		this.labelColor = symbolColor;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_COLOR));
 	}
 
 }

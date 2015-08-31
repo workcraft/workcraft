@@ -27,14 +27,14 @@ public class PcompTask implements Task<ExternalProcessResult> {
 	private final ConversionMode conversionMode;
 	private final boolean useSharedOutputs;
 	private final boolean useImprovedComposition;
-	private final File workingDirectory;
+	private final File directory;
 
-	public PcompTask(File[] inputFiles, ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File workingDirectory) {
+	public PcompTask(File[] inputFiles, ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File directory) {
 		this.inputFiles = inputFiles;
 		this.conversionMode = conversionMode;
 		this.useSharedOutputs = useSharedOutputs;
 		this.useImprovedComposition = useImprovedComposition;
-		this.workingDirectory = workingDirectory;
+		this.directory = directory;
 	}
 
 	@Override
@@ -65,10 +65,10 @@ public class PcompTask implements Task<ExternalProcessResult> {
 
 		File listFile = null;
 		try {
-			if (workingDirectory == null) {
+			if (directory == null) {
 				listFile = File.createTempFile("places_", ".list");
 			} else {
-				listFile = new File(workingDirectory, "places.list");
+				listFile = new File(directory, "places.list");
 			}
 		} catch (IOException e) {
 			return Result.exception(e);
@@ -79,7 +79,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
 			command.add(inputFile.getAbsolutePath());
 		}
 
-		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command, new File(".")).run(monitor);
+		Result<? extends ExternalProcessResult> res = new ExternalProcessTask(command).run(monitor);
 		if (res.getOutcome() != Outcome.FINISHED) {
 			return res;
 		}

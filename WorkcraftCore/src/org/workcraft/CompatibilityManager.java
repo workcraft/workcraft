@@ -21,9 +21,14 @@ public class CompatibilityManager {
 	@SuppressWarnings("serial")
 	private class CompatibilityMap extends HashMap<String, String> { };
 
+	private final CompatibilityMap metaCompatibilityMap = new CompatibilityMap();
 	private final CompatibilityMap modelCompatibilityMap = new CompatibilityMap();
 	private final HashMap<String, CompatibilityMap> globalReplacementMap = new HashMap<String, CompatibilityMap>();
 	private final HashMap<String, HashMap<String, CompatibilityMap>> contextualReplacementMap = new HashMap<String, HashMap<String, CompatibilityMap>>();
+
+	public void registerMetaReplacement(String oldMetaData, String metaData) {
+		metaCompatibilityMap.put(oldMetaData, metaData);
+	}
 
 	public void registerModelReplacement(String oldModelName, String modelName) {
 		modelCompatibilityMap.put(oldModelName, modelName);
@@ -62,10 +67,19 @@ public class CompatibilityManager {
 		return newline;
 	}
 
+	private String replaceMetaData(String line) {
+		for (Map.Entry<String, String> replacement: metaCompatibilityMap.entrySet()) {
+			if (line.contains(replacement.getKey())) {
+				line = replace(line, replacement, "Compatibility management: legacy meta data");
+			}
+		}
+		return line;
+	}
+
 	private String replaceModelName(String line) {
 		for (Map.Entry<String, String> replacement: modelCompatibilityMap.entrySet()) {
 			if (line.contains(replacement.getKey())) {
-				replace(line, replacement, "Compatibility management: legacy model class");
+				line = replace(line, replacement, "Compatibility management: legacy model class");
 			}
 		}
 		return line;
@@ -127,12 +141,16 @@ public class CompatibilityManager {
 		try {
 			while ((zei = zis.getNextEntry()) != null)	{
 				ZipEntry zeo = new ZipEntry(zei.getName());
+				boolean isMetaEntry = "meta".equals(zei.getName());
 			    zos.putNextEntry(zeo);
 			    String modelName = null;
 			    String className = null;
 			    String line = null;
 			    while ((line = br.readLine()) != null) {
-			    	if (modelName == null) {
+			    	if (isMetaEntry) {
+			    		byte[] data = replaceMetaData(line).getBytes();
+			    		zos.write(data, 0, data.length);
+			    	} else if (modelName == null) {
 			    		byte[] data = replaceModelName(line).getBytes();
 			    		zos.write(data, 0, data.length);
 			    		modelName = extractModelName(line);
@@ -151,7 +169,6 @@ public class CompatibilityManager {
 			zos.close();
 			out.close();
 		} catch (IOException e) {
-		//	e.printStackTrace();
 		}
 		return new ByteArrayInputStream(out.toByteArray());
 	}

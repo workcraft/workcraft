@@ -37,6 +37,7 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
 	public GenericCellEditor() {
 		textField = new JTextField();
 		textField.setFocusable(true);
+		textField.setBorder(PropertyEditorTable.BORDER_EDIT);
 		textField.addFocusListener(new FocusAdapter() {
 			@Override
 		    public void focusLost(FocusEvent e) {
@@ -52,6 +53,7 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
 	public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected,	int row, int column) {
 		textField.setText(value.toString());
+		textField.setFont(table.getFont());
 		return textField;
 	}
 }

@@ -6,6 +6,8 @@ import org.workcraft.plugins.fsm.Symbol;
 
 public class Signal extends Symbol {
 
+	public static final String PROPERTY_TYPE = "Type";
+
 	public enum Type {
 		INPUT("input"),
 		OUTPUT("output"),
@@ -44,7 +46,7 @@ public class Signal extends Symbol {
 
 	public void setType(Type type) {
 		this.type = type;
-		sendNotification(new PropertyChangedEvent(this, "type"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
 	}
 
 	public boolean hasDirection() {

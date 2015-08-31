@@ -7,7 +7,7 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Hierarchy;
 
@@ -37,12 +37,12 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
 				Hierarchy.getChildrenOfType(getRoot(), FunctionContact.class));
 
 		for (final FunctionContact functionContact: functionContacts) {
-			final BooleanFormula setFunction = BooleanReplacer.replace(
+			final BooleanFormula setFunction = BooleanUtils.cleverReplace(
 					functionContact.getSetFunction(), contact, Zero.instance());
 
 			functionContact.setSetFunction(setFunction);
 
-			final BooleanFormula resetFunction = BooleanReplacer.replace(
+			final BooleanFormula resetFunction = BooleanUtils.cleverReplace(
 					functionContact.getResetFunction(), contact, Zero.instance());
 
 			functionContact.setResetFunction(resetFunction);

@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat.tools;
 import java.io.File;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -16,12 +16,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatCustomPropertyChecker implements Tool {
-
-	@Override
-	public String getSection() {
-		return "Verification";
-	}
+public class MpsatCustomPropertyChecker extends VerificationTool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {

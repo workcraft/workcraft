@@ -136,7 +136,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		if (provider==null) {
 			provider = topProvider;
 		}
-		if (reference.equals("") || reference.equals(NamespaceHelper.hierarchySeparator)) {
+		if (reference.isEmpty() || reference.equals(NamespaceHelper.hierarchySeparator)) {
 			return provider;
 		}
 		String head =  NamespaceHelper.getReferenceHead(reference);
@@ -163,7 +163,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
 		do {
 			component = getNamespaceProvider(node);
 			if (component != null) {
-				if (!result.equals("")) {
+				if (!result.isEmpty()) {
 					result = NamespaceHelper.hierarchySeparator + result;
 				}
 				String name = getNameManager(component).getName(node);

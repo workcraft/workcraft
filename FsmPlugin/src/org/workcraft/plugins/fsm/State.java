@@ -8,6 +8,9 @@ import org.workcraft.observation.PropertyChangedEvent;
 @DisplayName("State")
 @VisualClass(org.workcraft.plugins.fsm.VisualState.class)
 public class State extends MathNode {
+	public static final String PROPERTY_INITIAL = "Initial";
+	public static final String PROPERTY_FINAL = "Final";
+
 	private boolean initialState = false;
 	private boolean finalState = false;
 
@@ -17,7 +20,7 @@ public class State extends MathNode {
 
 	public void setInitial(boolean value) {
 		if (setInitialQuiet(value)) {
-			sendNotification(new PropertyChangedEvent(this, "initial"));
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_INITIAL));
 		}
 	}
 
@@ -36,7 +39,7 @@ public class State extends MathNode {
 	public void setFinal(boolean value) {
 		if (finalState != value) {
 			finalState = value;
-			sendNotification(new PropertyChangedEvent(this, "final"));
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_FINAL));
 		}
 	}
 

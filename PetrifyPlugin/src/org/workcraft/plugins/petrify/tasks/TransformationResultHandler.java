@@ -12,7 +12,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
-import org.workcraft.plugins.stg.STGModelDescriptor;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -43,7 +43,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
 					final Workspace workspace = framework.getWorkspace();
 					final Path<String> directory = path.getParent();
 					final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-					final ModelEntry me = new ModelEntry(new STGModelDescriptor() , model);
+					final ModelEntry me = new ModelEntry(new StgDescriptor() , model);
 					boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 					workspace.add(directory, name, me, true, openInEditor);
 				} else {

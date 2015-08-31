@@ -72,7 +72,7 @@ public class DfsSettings implements Settings {
 
 	public DfsSettings() {
 		properties.add(new PropertyDeclaration<DfsSettings, Color>(
-				this, "Computed logic color", Color.class) {
+				this, "Computed logic color", Color.class, true, false, false) {
 			protected void setter(DfsSettings object, Color value) {
 				setComputedLogicColor(value);
 			}
@@ -82,7 +82,7 @@ public class DfsSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<DfsSettings, Color>(
-				this, "Register synchronisation color", Color.class) {
+				this, "Register synchronisation color", Color.class, true, false, false) {
 			protected void setter(DfsSettings object, Color value) {
 				setSynchronisationRegisterColor(value);
 			}
@@ -92,7 +92,7 @@ public class DfsSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<DfsSettings, Palette>(
-				this, "Token palette", Palette.class) {
+				this, "Token palette", Palette.class, true, false, false) {
 			protected void setter(DfsSettings object, Palette value) {
 				setTokenPalette(value);
 			}

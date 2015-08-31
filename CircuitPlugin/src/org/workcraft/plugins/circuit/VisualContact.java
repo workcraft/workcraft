@@ -50,6 +50,8 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualContact extends VisualComponent implements StateObserver {
 
+	public static final String PROPERTY_DIRECTION = "Direction";
+
 	public enum Direction {
 		WEST("West"),
 		NORTH("North"),
@@ -151,7 +153,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Direction>(
-				this, "Direction", Direction.class) {
+				this, PROPERTY_DIRECTION, Direction.class, true, true, true) {
 			protected void setter(VisualContact object, Direction value) {
 				object.setDirection(value);
 			}
@@ -161,7 +163,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, IOType>(
-				this, "I/O type", IOType.class, true, true, false) {
+				this, Contact.PROPERTY_IO_TYPE, IOType.class, true, true, false) {
 			protected void setter(VisualContact object, IOType value) {
 				object.getReferencedContact().setIOType(value);
 			}
@@ -171,7 +173,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-				this, "Init to one", Boolean.class) {
+				this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true, true) {
 			protected void setter(VisualContact object, Boolean value) {
 				object.getReferencedContact().setInitToOne(value);
 			}
@@ -322,7 +324,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (value != direction) {
 			sendNotification(new TransformChangingEvent(this));
 			this.direction = value;
-			sendNotification(new PropertyChangedEvent(this, "direction"));
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
 			sendNotification(new TransformChangedEvent(this));
 		}
 	}

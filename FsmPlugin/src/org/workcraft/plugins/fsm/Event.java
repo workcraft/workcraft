@@ -8,6 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 @DisplayName("Event")
 @VisualClass(org.workcraft.plugins.fsm.VisualEvent.class)
 public class Event extends MathConnection {
+	public static final String PROPERTY_SYMBOL = "Symbol";
 
 	private Symbol symbol;
 
@@ -25,7 +26,7 @@ public class Event extends MathConnection {
 
 	public void setSymbol(Symbol symbol) {
 		this.symbol = symbol;
-		sendNotification(new PropertyChangedEvent(this, "symbol"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_SYMBOL));
 	}
 
 }

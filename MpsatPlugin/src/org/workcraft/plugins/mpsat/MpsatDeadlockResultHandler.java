@@ -36,9 +36,9 @@ final class MpsatDeadlockResultHandler implements Runnable {
 			String message = "The system has a deadlock.";
 			JOptionPane.showMessageDialog(null, message, title, JOptionPane.WARNING_MESSAGE);
 		} else {
-			String message = "The system has a deadlock after the following trace(s):";
+			String message = "<html><br>&#160;The system has a deadlock after the following trace(s):<br><br></html>";
 			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, message, solutions);
-			GUI.centerAndSizeToParent(solutionsDialog, Framework.getInstance().getMainWindow());
+			GUI.centerToParent(solutionsDialog, Framework.getInstance().getMainWindow());
 			solutionsDialog.setVisible(true);
 		}
 	}

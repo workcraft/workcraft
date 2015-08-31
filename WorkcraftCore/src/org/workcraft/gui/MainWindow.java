@@ -53,7 +53,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -97,6 +96,7 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -114,6 +114,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
+	public static final String TITLE_OUTPUT = "Output";
+	public static final String TITLE_PROBLEMS = "Problems";
+	public static final String TITLE_JAVASCRIPT = "Javascript";
+	public static final String TITLE_TASKS = "Tasks";
+	public static final String TITLE_WORKSPACE = "Workspace";
+	public static final String TITLE_PROPERTY_EDITOR = "Property editor";
+	public static final String TITLE_TOOL_CONTROLS = "Tool controls";
+	public static final String TITLE_EDITOR_TOOLS = "Editor tools";
+	public static final String TITLE_PLACEHOLDER = "";
+
 	private static final String UILAYOUT_PATH = "./config/uilayout.xml";
 	private static final int VIEWPORT_MARGIN = 30;
 
@@ -182,14 +192,13 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	public void setLAF(String laf) throws OperationCancelledException {
-		if (JOptionPane.showConfirmDialog(this,
+	public void setLookAndFeel(String laf) throws OperationCancelledException {
+		int dialogResult = JOptionPane.showConfirmDialog(this,
 				"Changing Look and Feel requires GUI restart.\n\n"
 				+ "This will cause the visual editor windows to be closed.\n\nProceed?",
-				"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-			if (laf == null)
-				laf = UIManager.getSystemLookAndFeelClassName();
+				"Confirm", JOptionPane.YES_NO_OPTION);
 
+		if (dialogResult == JOptionPane.YES_OPTION) {
 			final Framework framework = Framework.getInstance();
 			framework.setConfigVar("gui.lookandfeel", laf);
 			framework.restartGUI();
@@ -201,9 +210,9 @@ public class MainWindow extends JFrame {
 	}
 
 	private DockableWindow createDockableWindow(JComponent component,
-			String name, Dockable neighbour, int options) {
-		return createDockableWindow(component, name, neighbour, options,
-				DockingConstants.CENTER_REGION, name);
+			String title, Dockable neighbour, int options) {
+		return createDockableWindow(component, title, neighbour, options,
+				DockingConstants.CENTER_REGION, title);
 	}
 
 	private DockableWindow createDockableWindow(JComponent component,
@@ -269,13 +278,7 @@ public class MainWindow extends JFrame {
 				}
 				visualModel = vmd.create((MathModel) modelEntry.getModel());
 				modelEntry.setModel(visualModel);
-				try {
-					DotLayoutTool dotLayout = new DotLayoutTool();
-					dotLayout.layout(visualModel);
-				} catch (LayoutException e) {
-					RandomLayoutTool randomLayout = new RandomLayoutTool();
-					randomLayout.layout(visualModel);
-				}
+				applyDefaultLayout(visualModel);
 				we.setModelEntry(modelEntry);
 			} catch (LayoutException e) {
 				// Layout failed for whatever reason, ignore
@@ -306,35 +309,24 @@ public class MainWindow extends JFrame {
 					DockableWindowContentPanel.CLOSE_BUTTON	| DockableWindowContentPanel.MAXIMIZE_BUTTON,
 					DockingConstants.CENTER_REGION,	"Document" + we.getWorkspacePath());
 		}
-
-		editorWindow.addTabListener(new DockableWindowTabListener() {
-			@Override
-			public void tabSelected(JTabbedPane tabbedPane, int tabIndex) {
-				requestFocus(editor);
-			}
-
-			@Override
-			public void tabDeselected(JTabbedPane tabbedPane, int tabIndex) {
-			}
-
-			@Override
-			public void dockedStandalone() {
-			}
-
-			@Override
-			public void dockedInTab(JTabbedPane tabbedPane, int tabIndex) {
-			}
-
-			@Override
-			public void headerClicked() {
-				requestFocus(editor);
-			}
-		});
-
+		editorWindow.addTabListener(new EditorWindowTabListener(editor));
 		editorWindows.put(we, editorWindow);
 		requestFocus(editor);
 		setWorkActionsEnableness(true);
 		return editor;
+	}
+
+	private void applyDefaultLayout(VisualModel visualModel) {
+		AbstractLayoutTool layoutTool = visualModel.getBestLayoutTool();
+		if (layoutTool == null) {
+			layoutTool = new DotLayoutTool();
+		}
+		try {
+			layoutTool.layout(visualModel);
+		} catch (LayoutException e) {
+			layoutTool = new RandomLayoutTool();
+			layoutTool.layout(visualModel);
+		}
 	}
 
 	private void registerUtilityWindow(DockableWindow dockableWindow) {
@@ -374,10 +366,8 @@ public class MainWindow extends JFrame {
 
 		final Framework framework = Framework.getInstance();
 		String laf = framework.getConfigVar("gui.lookandfeel");
-		if (laf == null) {
-			laf = UIManager.getCrossPlatformLookAndFeelClassName();
-		}
-		LAF.setLAF(laf);
+		SilverOceanTheme.enable();
+		LookAndFeelHelper.setLookAndFeel(laf);
 		SwingUtilities.updateComponentTreeUI(this);
 
 		content = new JPanel(new BorderLayout(0, 0));
@@ -426,48 +416,48 @@ public class MainWindow extends JFrame {
 		float xSplit = 0.88f;
 		float ySplit = 0.82f;
 		outputDockable = createDockableWindow(
-				outputWindow, "Output",
+				outputWindow, TITLE_OUTPUT,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, ySplit);
 
 		erroDockable = createDockableWindow(
-				errorWindow, "Problems", outputDockable,
+				errorWindow, TITLE_PROBLEMS, outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		javaScriptDockable = createDockableWindow(
-				javaScriptWindow, "Javascript",	outputDockable,
+				javaScriptWindow, TITLE_JAVASCRIPT,	outputDockable,
+				DockableWindowContentPanel.CLOSE_BUTTON);
+
+		tasksDockable = createDockableWindow(
+				new TaskManagerWindow(), TITLE_TASKS, outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		workspaceDockable = createDockableWindow(
-				workspaceWindow, "Workspace",
+				workspaceWindow, TITLE_WORKSPACE,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.EAST_REGION, xSplit);
 
 		propertyEditorDockable = createDockableWindow(
-				propertyEditorWindow, "Property editor", workspaceDockable,
+				propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.NORTH_REGION, ySplit);
 
 		toolControlsDockable = createDockableWindow(
-				editorToolsWindow, "Tool controls", propertyEditorDockable,
+				editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.4f);
 
 		editorToolsDockable = createDockableWindow(
-				toolControlsWindow, "Editor tools", toolControlsDockable,
+				toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
 				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.82f);
 
 		documentPlaceholder = createDockableWindow(
-				new DocumentPlaceholder(), "", null, outputDockable,
+				new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
 				0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
 
 		DockingManager.display(outputDockable);
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,	0.5f));
-
-		tasksDockable = createDockableWindow(
-				new TaskManagerWindow(), "Tasks", outputDockable,
-				DockableWindowContentPanel.CLOSE_BUTTON);
 
 		setVisible(true);
 		loadDockingLayout();
@@ -490,9 +480,9 @@ public class MainWindow extends JFrame {
 			public void run() {
 				// hack to fix the annoying delay occurring when
 				// createGlyphVector is called for the first time
-				Font font = new Font("Sans-serif", Font.PLAIN, 1);
+				Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 				font.createGlyphVector(new FontRenderContext(
-						new AffineTransform(), true, true), "");
+						new AffineTransform(), true, true), TITLE_PLACEHOLDER);
 
 				// force svg rendering classes to load
 				GUI.createIconFromSVG("images/icons/svg/place.svg");
@@ -503,7 +493,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void setWorkActionsEnableness(boolean enable) {
-		getMainMenu().getExportMenu().setEnabled(enable);
+		getMainMenu().setExportMenuState(enable);
 		MainWindowActions.MERGE_WORK_ACTION.setEnabled(enable);
 		MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(enable);
 		MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(enable);
@@ -588,8 +578,9 @@ public class MainWindow extends JFrame {
 
 			if (editorInFocus == editor) {
 				toolControlsWindow.setContent(null);
-				mainMenu.reset();
+				mainMenu.removeToolsMenu();
 				editorInFocus = null;
+				setDockableTitle(getPropertyEditor(), TITLE_PROPERTY_EDITOR);
 			}
 
 			editorWindows.remove(we, dockableWindow);
@@ -805,10 +796,9 @@ public class MainWindow extends JFrame {
 			ModelDescriptor info = dialog.getSelectedModel();
 			try {
 				MathModel mathModel = info.createMathModel();
-				String name = dialog.getModelTitle();
-
-				if (!dialog.getModelTitle().isEmpty()) {
-					mathModel.setTitle(dialog.getModelTitle());
+				String title = dialog.getModelTitle();
+				if (!title.isEmpty()) {
+					mathModel.setTitle(title);
 				}
 				if (dialog.createVisualSelected()) {
 					VisualModelDescriptor v = info.getVisualModelDescriptor();
@@ -817,10 +807,10 @@ public class MainWindow extends JFrame {
 					}
 					VisualModel visualModel = v.create(mathModel);
 					ModelEntry me = new ModelEntry(info, visualModel);
-					framework.getWorkspace().add(path, name, me, false, dialog.openInEditorSelected());
+					framework.getWorkspace().add(path, title, me, false, dialog.openInEditorSelected());
 				} else {
 					ModelEntry me = new ModelEntry(info, mathModel);
-					framework.getWorkspace().add(path, name, me, false, false);
+					framework.getWorkspace().add(path, title, me, false, false);
 				}
 			} catch (VisualModelInstantiationException e) {
 				e.printStackTrace();
@@ -841,11 +831,7 @@ public class MainWindow extends JFrame {
 
 			toolControlsWindow.setContent(sender.getToolBox());
 			editorToolsWindow.setContent(sender.getToolBox().getControlPanel());
-
 			mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
-
-			mainMenu.revalidate();
-			mainMenu.repaint();
 			sender.updatePropertyView();
 
 			framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
@@ -961,7 +947,7 @@ public class MainWindow extends JFrame {
 
 	public void openWork(File f) {
 		final Framework framework = Framework.getInstance();
-		if (framework.checkFile(f)) {
+		if (framework.checkFile(f, null)) {
 			try {
 				WorkspaceEntry we = framework.getWorkspace().open(f, false);
 				if (we.getModelEntry().isVisual()) {
@@ -1045,7 +1031,7 @@ public class MainWindow extends JFrame {
 				JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
 			}
 			we.setChanged(false);
-			refreshTitle(we);
+			refreshWorkspaceEntryTitle(we, true);
 			lastSavePath = we.getFile().getParent();
 			pushRecentFile(we.getFile().getPath(), true);
 		}
@@ -1058,7 +1044,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private String getFileNameForCurrentWork() {
-		String fileName = "";
+		String fileName = TITLE_PLACEHOLDER;
 		if (editorInFocus != null) {
 			WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
 			if (we != null) {
@@ -1098,7 +1084,7 @@ public class MainWindow extends JFrame {
 				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
 			}
 			we.setChanged(false);
-			refreshTitle(we);
+			refreshWorkspaceEntryTitle(we, true);
 			lastSavePath = we.getFile().getParent();
 			pushRecentFile(we.getFile().getPath(), true);
 		} catch (SerialisationException e) {
@@ -1128,12 +1114,13 @@ public class MainWindow extends JFrame {
 
 	public void importFrom(File f, Importer[] importers) {
 		final Framework framework = Framework.getInstance();
-		if (framework.checkFile(f)) {
+		if (framework.checkFile(f, null)) {
 			for (Importer importer : importers) {
 				if (importer.accept(f)) {
 					try {
 						ModelEntry me = Import.importFromFile(importer, f);
-						me.getModel().setTitle(FileUtils.getFileNameWithoutExtension(f));
+						String title = FileUtils.getFileNameWithoutExtension(f);
+						me.getModel().setTitle(title);
 						boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 						framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, openInEditor);
 						lastOpenPath = f.getParent();
@@ -1168,7 +1155,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private String getTitle(WorkspaceEntry we, VisualModel model) {
-		String prefix = (we.isChanged() ? "*" : "");
+		String prefix = (we.isChanged() ? "*" : TITLE_PLACEHOLDER);
 		String suffix = null;
 		switch (CommonEditorSettings.getTitleStyle()) {
 		case LONG:
@@ -1178,25 +1165,34 @@ public class MainWindow extends JFrame {
 			suffix = " [" + model.getShortName() + "]";
 			break;
 		default:
-			suffix = "";
+			suffix = TITLE_PLACEHOLDER;
 			break;
 		}
 		return (prefix + we.getTitle() + suffix);
 	}
 
-	public void refreshTitle(WorkspaceEntry we) {
+	public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
 		for (DockableWindow w : editorWindows.get(we)) {
 			final GraphEditorPanel editor = getCurrentEditor();
 			String title = getTitle(we, editor.getModel());
-			w.getContentPanel().setTitle(title);
-			w.setTabText(title);
+			w.setTitle(title);
 		}
-		DockableWindow.updateHeaders(rootDockingPort,getDefaultActionListener());
+		if (updateHeaders) {
+			DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
+		}
 	}
 
-	public void refreshAllTitles() {
+	public void refreshWorkspaceEntryTitles() {
 		for (WorkspaceEntry we : editorWindows.keySet()) {
-			refreshTitle(we);
+			refreshWorkspaceEntryTitle(we, false);
+		}
+		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
+	}
+
+	public void setDockableTitle(DockableWindow dockable, String title) {
+		if (dockable != null) {
+			dockable.setTitle(title);
+			DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 		}
 	}
 
@@ -1221,7 +1217,8 @@ public class MainWindow extends JFrame {
 	public void closeActiveEditor() throws OperationCancelledException {
 		for (WorkspaceEntry k : editorWindows.keySet()) {
 			for (DockableWindow w : editorWindows.get(k)) {
-				if (w.getContentPanel().getContent() == editorInFocus) {
+				DockableWindowContentPanel contentPanel = w.getContentPanel();
+				if ((contentPanel != null) && (contentPanel.getContent() == editorInFocus)) {
 					closeDockableWindow(w);
 					return;
 				}
@@ -1323,7 +1320,7 @@ public class MainWindow extends JFrame {
 		dlg.setModal(true);
 		dlg.setResizable(true);
 		dlg.setVisible(true);
-		refreshAllTitles();
+		refreshWorkspaceEntryTitles();
 	}
 
 	public void resetLayout() {

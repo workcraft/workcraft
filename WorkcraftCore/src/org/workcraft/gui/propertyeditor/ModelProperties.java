@@ -55,6 +55,19 @@ public class ModelProperties implements Properties {
 		}
 	}
 
+	public void addSorted(final Collection<PropertyDescriptor> descriptors) {
+		if (descriptors != null) {
+			LinkedList<PropertyDescriptor> sortedDescriptors = new LinkedList<PropertyDescriptor>(descriptors);
+			Collections.sort(sortedDescriptors, new Comparator<PropertyDescriptor>() {
+				@Override
+				public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {
+					return (o1.getName().compareTo(o2.getName()));
+				}
+			});
+			propertyDescriptors.addAll(sortedDescriptors);
+		}
+	}
+
 	public void remove(final PropertyDescriptor descriptor) {
 		if (descriptor != null) {
 			propertyDescriptors.remove(descriptor);
@@ -71,18 +84,32 @@ public class ModelProperties implements Properties {
 		}
 	}
 
+	public void rename(final PropertyDescriptor descriptor, final String newPropertyName) {
+		if (descriptor != null) {
+			PropertyDerivative newDescriptor = new PropertyDerivative(descriptor) {
+				@Override
+				public String getName() {
+					return newPropertyName;
+				}
+			};
+			remove(descriptor);
+			add(newDescriptor);
+		}
+	}
+
+	public void renameByName(final String propertyName, final String newPropertyName) {
+		if (propertyName != null) {
+			for (PropertyDescriptor descriptor: new LinkedList<PropertyDescriptor>(propertyDescriptors)) {
+				if ((descriptor != null) && propertyName.equals(descriptor.getName())) {
+					rename(descriptor, newPropertyName);
+				}
+			}
+		}
+	}
+
 	@Override
 	public Collection<PropertyDescriptor> getDescriptors() {
 		return Collections.unmodifiableList(propertyDescriptors);
-	}
-
-	public void sortByPropertyName() {
-		Collections.sort(propertyDescriptors, new Comparator<PropertyDescriptor>() {
-			@Override
-			public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {
-				return (o1.getName().compareTo(o2.getName()));
-			}
-		});
 	}
 
 }

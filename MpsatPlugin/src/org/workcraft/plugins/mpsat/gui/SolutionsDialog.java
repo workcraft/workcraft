@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.gui;
 
 import info.clearthought.layout.TableLayout;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,6 +59,8 @@ public class SolutionsDialog extends JDialog {
 
 		this.setTitle(title);
 		this.setContentPane(contents);
+		setMinimumSize(new Dimension(450, 200));
+		setSize(new Dimension(500, 300));
 		this.setModal(true);
 	}
 

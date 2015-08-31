@@ -20,13 +20,17 @@ public class CircuitSettings implements Settings {
 	private static final String keyBorderWidth  = prefix + ".borderWidth";
 	private static final String keyWireWidth  = prefix + ".wireWidth";
 	private static final String keySimplifyStg = prefix + ".simplifyStg";
+	private static final String keyGateLibrary = prefix + ".gateLibrary";
+	private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
 
-	private static final boolean defaultShowContacts = true;
+	private static final boolean defaultShowContacts = false;
 	private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
 	private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
 	private static final Double defaultBorderWidth = 0.06;
 	private static final Double defaultWireWidth = 0.04;
 	private static final boolean defaultSimplifyStg = true;
+	private static final String defaultGateLibrary = "tools/petrify/petrify.lib";
+	private static final boolean defaultOpenSynthesisResult = true;
 
 	private static boolean showContacts = defaultShowContacts;
 	private static Color activeWireColor = defaultActiveWireColor;
@@ -34,65 +38,87 @@ public class CircuitSettings implements Settings {
 	private static Double borderWidth = defaultBorderWidth;
 	private static Double wireWidth = defaultWireWidth;
 	private static boolean simplifyStg = defaultSimplifyStg;
+	private static String gateLibrary = defaultGateLibrary;
+	private static boolean openSynthesisResult = defaultOpenSynthesisResult;
 
 	public CircuitSettings() {
 		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-				this, "Show contacts", Boolean.class) {
+				this, "Show contacts", Boolean.class, true, false, false) {
 			protected void setter(CircuitSettings object, Boolean value) {
-				CircuitSettings.setShowContacts(value);
+				setShowContacts(value);
 			}
 			protected Boolean getter(CircuitSettings object) {
-				return CircuitSettings.getShowContacts();
+				return getShowContacts();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-				this, "Active wire", Color.class) {
+				this, "Active wire", Color.class, true, false, false) {
 			protected void setter(CircuitSettings object, Color value) {
-				CircuitSettings.setActiveWireColor(value);
+				setActiveWireColor(value);
 			}
 			protected Color getter(CircuitSettings object) {
-				return CircuitSettings.getActiveWireColor();
+				return getActiveWireColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Color>(
-				this, "Inactive wire", Color.class) {
+				this, "Inactive wire", Color.class, true, false, false) {
 			protected void setter(CircuitSettings object, Color value) {
-				CircuitSettings.setInactiveWireColor(value);
+				setInactiveWireColor(value);
 			}
 			protected Color getter(CircuitSettings object) {
-				return CircuitSettings.getInactiveWireColor();
+				return getInactiveWireColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-				this, "Border width", Double.class) {
+				this, "Border width", Double.class, true, false, false) {
 			protected void setter(CircuitSettings object, Double value) {
-				CircuitSettings.setBorderWidth(value);
+				setBorderWidth(value);
 			}
 			protected Double getter(CircuitSettings object) {
-				return CircuitSettings.getBorderWidth();
+				return getBorderWidth();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Double>(
-				this, "Wire width", Double.class) {
+				this, "Wire width", Double.class, true, false, false) {
 			protected void setter(CircuitSettings object, Double value) {
-				CircuitSettings.setWireWidth(value);
+				setWireWidth(value);
 			}
 			protected Double getter(CircuitSettings object) {
-				return CircuitSettings.getWireWidth();
+				return getWireWidth();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-				this, "Simplify generated circuit STG", Boolean.class) {
+				this, "Simplify generated circuit STG", Boolean.class, true, false, false) {
 			protected void setter(CircuitSettings object, Boolean value) {
-				CircuitSettings.setSimplifyStg(value);
+				setSimplifyStg(value);
 			}
 			protected Boolean getter(CircuitSettings object) {
-				return CircuitSettings.getSimplifyStg();
+				return getSimplifyStg();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CircuitSettings, String>(
+				this, "Gate library for technology mapping", String.class, true, false, false) {
+			protected void setter(CircuitSettings object, String value) {
+				setGateLibrary(value);
+			}
+			protected String getter(CircuitSettings object) {
+				return getGateLibrary();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+				this, "Import synthesis result (Petrify only)", Boolean.class, true, false, false) {
+			protected void setter(CircuitSettings object, Boolean value) {
+				setOpenSynthesisResult(value);
+			}
+			protected Boolean getter(CircuitSettings object) {
+				return getOpenSynthesisResult();
 			}
 		});
 	}
@@ -120,6 +146,8 @@ public class CircuitSettings implements Settings {
 		setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
 		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
 		setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
+		setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
+		setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
 	}
 
 	@Override
@@ -130,6 +158,8 @@ public class CircuitSettings implements Settings {
 		config.setDouble(keyBorderWidth, getBorderWidth());
 		config.setDouble(keyWireWidth, getWireWidth());
 		config.setBoolean(keySimplifyStg, getSimplifyStg());
+		config.set(keyGateLibrary, getGateLibrary());
+		config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
 	}
 
 	public static boolean getShowContacts() {
@@ -178,6 +208,22 @@ public class CircuitSettings implements Settings {
 
 	public static void setSimplifyStg(boolean value) {
 		simplifyStg = value;
+	}
+
+	public static String getGateLibrary() {
+		return gateLibrary;
+	}
+
+	public static void setGateLibrary(String value) {
+		gateLibrary = value;
+	}
+
+	public static boolean getOpenSynthesisResult() {
+		return openSynthesisResult;
+	}
+
+	public static void setOpenSynthesisResult(boolean value) {
+		openSynthesisResult = value;
 	}
 
 }

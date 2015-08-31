@@ -29,6 +29,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.HierarchySupervisor;
@@ -38,46 +39,99 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
 public class CircuitComponent extends MathGroup implements Container, ObservableHierarchy {
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-	private String name = "";
+	public static final String PROPERTY_MODULE = "Module";
+	public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
+	public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";
 
-	public CircuitComponent() {
-		// Update all set/reset functions of the component when its contact is removed
-		new HierarchySupervisor() {
-			@Override
-			public void handleEvent(HierarchyEvent e) {
-				if (e instanceof NodesDeletingEvent) {
-					for (Node node: e.getAffectedNodes()) {
-						if (node instanceof Contact) {
-							final Contact contact = (Contact)node;
-							for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
-								BooleanFormula setFunction = BooleanReplacer.replace(fc.getSetFunction(), contact, Zero.instance());
-								fc.setSetFunction(setFunction);
-								BooleanFormula resetFunction = BooleanReplacer.replace(fc.getResetFunction(), contact, Zero.instance());
-								fc.setResetFunction(resetFunction);
-							}
-						}
+	private final class CircuitHierarchySupervisor extends HierarchySupervisor {
+		@Override
+		public void handleEvent(HierarchyEvent e) {
+			if (e instanceof NodesDeletingEvent) {
+				for (Node node: e.getAffectedNodes()) {
+					if (node instanceof Contact) {
+						final Contact contact = (Contact)node;
+						removeContactfromFunctions(contact);
 					}
 				}
 			}
-		}.attach(this);
+		}
+
+		private void removeContactfromFunctions(final Contact contact) {
+			for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
+				BooleanFormula setFunction = BooleanUtils.cleverReplace(fc.getSetFunction(), contact, Zero.instance());
+				fc.setSetFunction(setFunction);
+				BooleanFormula resetFunction = BooleanUtils.cleverReplace(fc.getResetFunction(), contact, Zero.instance());
+				fc.setResetFunction(resetFunction);
+			}
+		}
 	}
 
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private String name = "";
+	private String module = "";
 	private boolean isEnvironment;
+	private boolean isZeroDelay;
+
+	public CircuitComponent() {
+		// Update all set/reset functions of the component when its contact is removed
+		new CircuitHierarchySupervisor().attach(this);
+	}
+
+	public void setName(String name) {
+		this.name = name;
+		sendNotification(new PropertyChangedEvent(this, NamePropertyDescriptor.PROPERTY_NAME));
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_MODULE));
+	}
+
+	public String getModule() {
+		return module;
+	}
+
+	public void setIsEnvironment(boolean value) {
+		this.isEnvironment = value;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));
+	}
 
 	public boolean getIsEnvironment() {
 		return isEnvironment;
 	}
 
-	public void setIsEnvironment(boolean isEnvironment) {
-		this.isEnvironment = isEnvironment;
-		sendNotification(new PropertyChangedEvent(this, "is environment"));
+	public void setIsZeroDelay(boolean value) {
+		this.isZeroDelay = value;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ZERO_DELAY));
+	}
+
+	public boolean getIsZeroDelay() {
+		return isZeroDelay;
+	}
+
+	public boolean isBufferOrInverter() {
+		int inputCount = 0;
+		int outputCount = 0;
+		for (Contact c: getContacts()) {
+			if (c.isInput()) {
+				inputCount++;
+			}
+			if (c.isOutput()) {
+				outputCount++;
+			}
+		}
+		return (inputCount == 1) && (outputCount == 1);
 	}
 
 	@Override
@@ -161,15 +215,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 			}
 		}
 		return result;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		sendNotification(new PropertyChangedEvent(this, "name"));
-	}
-
-	public String getName() {
-		return name;
 	}
 
 }

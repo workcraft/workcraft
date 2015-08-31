@@ -7,22 +7,17 @@ import java.util.Queue;
 
 import javax.swing.JOptionPane;
 
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReachabilityCheckerTool implements Tool {
+public class ReachabilityCheckerTool extends VerificationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Unreachable state";
-	}
-
-	@Override
-	public String getSection() {
-		return "Verification";
 	}
 
 	@Override

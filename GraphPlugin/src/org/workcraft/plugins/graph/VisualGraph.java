@@ -59,7 +59,7 @@ public class VisualGraph extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualComponent v1 = (VisualComponent)first;
@@ -67,10 +67,12 @@ public class VisualGraph extends AbstractVisualModel {
 		Node m1 = v1.getReferencedComponent();
 		Node m2 = v2.getReferencedComponent();
 
-		MathConnection mCon = ((Graph)getMathModel()).connect(m1, m2);
-		VisualConnection vCon = new VisualConnection(mCon, v1, v2);
+		if (mConnection == null) {
+			mConnection = ((Graph)getMathModel()).connect(m1, m2);
+		}
+		VisualConnection vConnection = new VisualConnection(mConnection, v1, v2);
 		Container container = Hierarchy.getNearestContainer(v1, v2);
-		container.add(vCon);
-		return vCon;
+		container.add(vConnection);
+		return vConnection;
 	}
 }

@@ -80,7 +80,7 @@ public class SONSelectionTool extends SelectionTool {
 
 		//Create pageButton
 		JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/page.svg"), "Group selection into a page (Alt+G)");
+				"images/icons/svg/selection-page.svg"), "Group selection into a page (Alt+G)");
 		groupPageButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {

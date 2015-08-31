@@ -29,14 +29,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -50,55 +48,24 @@ import org.workcraft.util.Hierarchy;
 
 
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
-	public static final int HIT_COMPONENT = 1;
-	public static final int HIT_CONNECTION = 2;
-	public static final int HIT_GROUP = 3;
+	public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
 	protected double size = CommonVisualSettings.getBaseSize();
 	protected final double margin = 0.20;
 
+	private boolean isCurrentLevelInside = false;
 	private boolean isCollapsed = false;
-	@Override
-	public void setIsCollapsed(boolean isCollapsed) {
-		sendNotification(new TransformChangingEvent(this));
-
-		this.isCollapsed = isCollapsed;
-		Point2D newCentre = AbstractVisualModel.centralizeComponents(getChildren());
-		this.setPosition(new Point2D.Double(this.getPosition().getX() + newCentre.getX(), this.getPosition().getY() + newCentre.getY()));
-
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-	@Override
-	public boolean getIsCollapsed() {
-		return isCollapsed&&!isExcited;
-	}
-
 	private boolean isExcited = false;
-	public void setIsExcited(boolean isExcited) {
-		if (this.isExcited==isExcited) return;
+	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-		sendNotification(new TransformChangingEvent(this));
-		this.isExcited = isExcited;
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-
-	private boolean isInside = false;
-	@Override
-	public void setIsCurrentLevelInside(boolean isInside) {
-		sendNotification(new TransformChangingEvent(this));
-		this.isInside = isInside;
-		sendNotification(new TransformChangedEvent(this));
-	}
-
-	public boolean isCurrentLevelInside() {
-		return isInside;
+	public VisualGroup() {
+		super();
+		addPropertyDeclarations();
 	}
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
-				this, "Is collapsed", Boolean.class) {
+				this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true, true) {
 
 			@Override
 			protected void setter(VisualGroup object, Boolean value) {
@@ -111,13 +78,41 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		});
 	}
 
-	public VisualGroup() {
-		super();
-		addPropertyDeclarations();
+	@Override
+	public void setIsCurrentLevelInside(boolean value) {
+		if (isCurrentLevelInside != value) {
+			sendNotification(new TransformChangingEvent(this));
+			this.isCurrentLevelInside = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
 	}
 
+	public boolean isCurrentLevelInside() {
+		return isCurrentLevelInside;
+	}
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	@Override
+	public void setIsCollapsed(boolean value) {
+		if (isCollapsed != value) {
+			sendNotification(new TransformChangingEvent(this));
+			isCollapsed = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
+	}
+
+	@Override
+	public boolean getIsCollapsed() {
+		return (isCollapsed && !isExcited);
+	}
+
+	@Override
+	public void setIsExcited(boolean value) {
+		if (isExcited != value) {
+			sendNotification(new TransformChangingEvent(this));
+			isExcited = value;
+			sendNotification(new TransformChangedEvent(this));
+		}
+	}
 
 	@Override
 	public void draw(DrawRequest r) {
@@ -172,7 +167,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		return Hierarchy.getChildrenOfType(this, VisualComponent.class);
 	}
 
-	public final Collection<VisualConnection> getConnections() {
+	public final Collection<VisualConnection> getnections() {
 		return Hierarchy.getChildrenOfType(this, VisualConnection.class);
 	}
 
@@ -180,16 +175,9 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
 		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
 		groupImpl.reparent(nodesToReparent, newParent);
-
-		// FIXME: A hack to preserve the shape of ungrouped connections (intro).
-		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(newParent, VisualConnection.class);
-		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(nodesToReparent, connections);
-		HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(includedConnections, ScaleMode.ADAPTIVE);
-
-		TransformHelper.applyTransformToNodes(nodesToReparent, localToParentTransform);
-
-		// FIXME: A hack to preserve the shape of ungrouped connections (outro).
-		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
+		double tx = localToParentTransform.getTranslateX();
+		double ty = localToParentTransform.getTranslateY();
+		VisualModelTransformer.translateNodes(nodesToReparent, -tx, -ty);
 		return nodesToReparent;
 	}
 
@@ -247,24 +235,20 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 		groupImpl.setParent(parent);
 	}
 
-
 	@Override
 	public void add(Collection<Node> nodes) {
 		groupImpl.add(nodes);
 	}
-
 
 	@Override
 	public void remove(Collection<Node> nodes) {
 		groupImpl.remove(nodes);
 	}
 
-
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {
 		groupImpl.reparent(nodes, newParent);
 	}
-
 
 	@Override
 	public void reparent(Collection<Node> nodes) {
@@ -273,10 +257,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
 	@Override
 	public Point2D getCenterInLocalSpace() {
-//		Rectangle2D bb = getBoundingBoxInLocalSpace();
-//		if (bb != null) {
-//			return new Point2D.Double(bb.getCenterX(), bb.getCenterY());
-//		}
 		return new Point2D.Double(0, 0);
 	}
 

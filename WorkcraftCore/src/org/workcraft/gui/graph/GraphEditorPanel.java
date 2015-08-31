@@ -38,7 +38,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +64,6 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
-import org.workcraft.gui.DockableWindow;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
@@ -82,7 +80,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
-	public OutputStream backup;
+
+	public static final String TITLE_SUFFIX_TEMPLATE = "template";
+	public static final String TITLE_SUFFIX_MODEL = "model";
+	public static final String TITLE_SUFFIX_SINGLE_ELEMENT = "single element";
+	public static final String TITLE_SUFFIX_SELECTED_ELEMENTS = " selected elements";
 
 	class Resizer implements ComponentListener {
 
@@ -302,6 +304,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 //		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
 		getModel().draw(g2d, toolboxPanel.getTool().getDecorator(this));
@@ -533,8 +536,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public void updatePropertyView() {
 		ModelProperties properties;
-		String titlePrefix = "Property editor";
-		String titleSuffix = "";
+		String titleSuffix = null;
 		VisualNode templateNode = getModel().getTemplateNode();
 		if (templateNode != null) {
 			properties = getNodeProperties(templateNode);
@@ -543,36 +545,35 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 					properties.remove(pd);
 				}
 			}
-			titlePrefix += " [template]";
+			titleSuffix = TITLE_SUFFIX_TEMPLATE;
 		} else {
 			Collection<Node> selection = getModel().getSelection();
 			if (selection.size() == 0) {
 				properties = getModelProperties();
-				titleSuffix += " [model]";
+				titleSuffix = TITLE_SUFFIX_MODEL;
 			} else	if (selection.size() == 1) {
 				Node node = selection.iterator().next();
 				properties = getNodeProperties(node);
-				titleSuffix += " [single element]";
+				titleSuffix = TITLE_SUFFIX_SINGLE_ELEMENT;
 			} else {
 				properties = getSelectionProperties(selection);
 				int nodeCount = selection.size();
-				titleSuffix += " [" + nodeCount + " selected elements]";
+				titleSuffix = nodeCount + " " + TITLE_SUFFIX_SELECTED_ELEMENTS;
 			}
 		}
 
 		final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
 		if(properties.getDescriptors().isEmpty()) {
 			propertyEditorWindow.clearObject();
-			titleSuffix = "";
 		} else {
 			propertyEditorWindow.setObject(propertiesWrapper(properties));
 		}
 
-		final DockableWindow propertyEditorDockable = mainWindow.getPropertyEditor();
-		String title = titlePrefix + titleSuffix;
-		propertyEditorDockable.getContentPanel().setTitle(title);
-		propertyEditorDockable.setTabText(title);
-
+		String title = MainWindow.TITLE_PROPERTY_EDITOR;
+		if (titleSuffix != null) {
+			title += " [" + titleSuffix + "]";
+		}
+		mainWindow.setDockableTitle(mainWindow.getPropertyEditor(), title);
 		updatePropertyViewRequested = false;
 	}
 

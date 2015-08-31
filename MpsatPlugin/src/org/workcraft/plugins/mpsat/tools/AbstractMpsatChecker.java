@@ -1,18 +1,13 @@
 package org.workcraft.plugins.mpsat.tools;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public abstract class AbstractMpsatChecker implements Tool {
-
-	@Override
-	public final String getSection() {
-		return "Verification";
-	}
+public abstract class AbstractMpsatChecker extends VerificationTool {
 
 	@Override
 	public final void run(WorkspaceEntry we) {

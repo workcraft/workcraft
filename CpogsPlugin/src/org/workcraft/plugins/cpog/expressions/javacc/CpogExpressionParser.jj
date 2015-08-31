@@ -78,7 +78,8 @@ public class CpogExpressionParser {
   
   CpogFormula sequence(CpogFormula a, CpogFormula b)
   {
-    CpogFormula result = worker.sequence(a, b);	vars.setSequenceCondition(result, globalBool);
+    CpogFormula result = worker.sequence(a, b);
+	vars.setSequenceCondition(result, globalBool);
     return result;
   }
   
@@ -149,16 +150,19 @@ public class CpogExpressionParser {
   public void setName(String name) throws ParseException
   {
     if (!nameSet)
-    {      graphName = name;
+    {
+      graphName = name;
       vars.setGraphName(name);
 		nameSet = true;
 	} else
-	{	  throw new ParseException("Only one '=' allowed in each equation");
+	{
+	  throw new ParseException("Only one '=' allowed in each equation");
 	}
   }
 
   public String getName()
-  {	return graphName;
+  {
+	return graphName;
   }
 
 }
@@ -185,7 +189,8 @@ TOKEN : /* OPERATORS */
 }
 TOKEN :
 {
-    < VARIABLE:    ("{")*["A"-"Z","a"-"z","_"](["=","!","'","/","\\","\u21d2","|","+","\u2228","^","\u2295","&","*","\u2227","\u2022","ï","¿","½","'","_","A"-"Z","a"-"z","0"-"9"])*("}")*(["+", "-", "~"])?>
+    < VARIABLE:
+    ("{")*["A"-"Z","a"-"z","_", "!"](["=","!","'","/","\\","\u21d2","|","+","\u2228","^","\u2295","&","*","\u2227","\u2022","ï¿½","ï¿½","ï¿½","'","_","A"-"Z","a"-"z","0"-"9"])*("}")*(["+", "-", "~"])?>
 }
 
 CpogFormula formula() :
@@ -195,27 +200,34 @@ CpogFormula formula() :
   	GraphFunc<String, ? extends CpogFormula> newVars;
 }
 {
-  name = stringLiteral() ( < GRAPHNAME > result = name()  {
+  name = stringLiteral() ( < GRAPHNAME > result = name()
+  {
     if (name.compareTo("_") != 0)
     { 
     	setName(name);
     }
     newVars = vars.removeGraphName(graphName);
   } )*
-  {    return result;  }  
+  {
+    return result;
+  }
+  
 }
 
 CpogFormula name() :
-{  CpogFormula op;
+{
+  CpogFormula op;
   CpogFormula result = null;
   String bool;
 }
 {
   result = overlayOp1() ( < OVERLAY > op = overlayOp1()
-  {    result = overlay(result, op);
+  {
+    result = overlay(result, op);
   } )*
   {
-    return result;}}
+    return result;}
+}
 
 CpogFormula overlayOp1() :
 {
@@ -225,7 +237,9 @@ CpogFormula overlayOp1() :
 {
   result = overlayOp() ( op = overlayOp()
   {
-    result = overlay(result, op);  } )*  
+    result = overlay(result, op);
+  } )*
+  
   { return result; }
 }
 
@@ -247,15 +261,20 @@ CpogFormula literal() :
 {
   Token t = null;
   String bool, str;
-  CpogFormula result = null;}
+  CpogFormula result = null;
+}
 {
-   (     t = < VARIABLE > 
+   (
+     t = < VARIABLE > 
 	{
 	  if (globalBool != "")
-	  {		result = var(t.image, globalBool);
+	  {
+		result = var(t.image, globalBool);
 	  }  else
-	  {	  	result = var(t.image);
-	  }	}
+	  {
+	  	result = var(t.image);
+	  }
+	}
 	| t = < BOOLOPEN >
 	{
 	  bool = stringLiteral();
@@ -265,19 +284,25 @@ CpogFormula literal() :
     | "(" result = name() ")"
   )
   {
-    return result; }}
+    return result; }
+}
 
 CpogFormula literal1(String bool) :
-{  Token t = null;
+{
+  Token t = null;
   CpogFormula result;
   String str = "", exp = "";
 }
-{  (    t = < VARIABLE >
+{
+  (
+    t = < VARIABLE >
     {
       if (globalBool == "")
-      {        result = var(t.image, bool);
+      {
+        result = var(t.image, bool);
       } else
-      {		result = var (t.image, globalBool + "&" + bool);
+      {
+		result = var (t.image, globalBool + "&" + bool);
       }
     }
   	| t = < BRACKOPEN >
@@ -285,19 +310,23 @@ CpogFormula literal1(String bool) :
   	  while (str.compareTo(")") != 0)
   	  {
   	    if (str.compareTo("]") == 0)
-  	    {		  exp = exp.substring(0, exp.length() - 1);
+  	    {
+		  exp = exp.substring(0, exp.length() - 1);
   	    }
-  	    exp = exp + str;  	    str = bracketInternals();
+  	    exp = exp + str;
+  	    str = bracketInternals();
   	  }
   	  result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).name();
   	}
   )
-	{  	  return result;
+	{
+  	  return result;
 	}
 }
 
 String stringLiteral() :
-{  Token t = null;
+{
+  Token t = null;
   String result;
   String str = "", exp = "";
 }
@@ -312,7 +341,8 @@ String stringLiteral() :
   	  return result;
 	}
 }
- String boolClose() :
+ 
+String boolClose() :
 {
   Token t = null;
   String result;
@@ -334,9 +364,11 @@ String bracketInternals() :
   Token t = null;
   String result = "";
 } 
-{  (
+{
+  (
   t = < OVERLAY >
-    {	  result = "+" + " ";
+    {
+	  result = "+" + " ";
 	}
   | t = < SEQUENCE >
     {
@@ -347,7 +379,8 @@ String bracketInternals() :
 	  result = t.image;
 	}
   | t = < BOOLCLOSE >
-    {      result = t.image;
+    {
+      result = t.image;
     }
   | t = < BRACKCLOSE >
     {
@@ -355,9 +388,11 @@ String bracketInternals() :
 	}
   | t = < BRACKOPEN >
   	{
-  	  String r = "";	  result = "(";
+  	  String r = "";
+	  result = "(";
 	  while (r.compareTo(")") != 0)
-	  {		r = bracketInternals();
+	  {
+		r = bracketInternals();
 		result = result + r;
 	  }
 	  
@@ -369,6 +404,7 @@ String bracketInternals() :
 
   )
 
-  {    return result;
+  {
+    return result;
   }
 }

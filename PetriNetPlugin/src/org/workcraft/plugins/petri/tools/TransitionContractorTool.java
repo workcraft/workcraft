@@ -4,7 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -21,17 +21,11 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TransitionContractorTool implements Tool {
-	private static final int ArrayList = 0;
+public class TransitionContractorTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Contract selected transitions";
-	}
-
-	@Override
-	public String getSection() {
-		return "Transformations";
 	}
 
 	@Override

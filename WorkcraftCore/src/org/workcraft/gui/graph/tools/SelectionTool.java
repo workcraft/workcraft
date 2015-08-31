@@ -38,7 +38,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -60,7 +59,6 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Flippable;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Rotatable;
-import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualComponent;
@@ -70,8 +68,6 @@ import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -101,8 +97,6 @@ public class SelectionTool extends AbstractTool {
 	private Point2D offset;
 	private Set<Point2D> snaps = new HashSet<Point2D>();
 	private DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
-
-	private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
 
 	private LinkedHashSet<Node> selected = new LinkedHashSet<Node>();
 	private SelectionMode selectionMode = SelectionMode.NONE;
@@ -167,7 +161,7 @@ public class SelectionTool extends AbstractTool {
 
 		if (enablePages) {
 			JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-					"images/icons/svg/page.svg"), "Group selection into a page (Alt+G)");
+					"images/icons/svg/selection-page.svg"), "Combine selection into a page (Alt+G)");
 			groupPageButton.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -300,7 +294,7 @@ public class SelectionTool extends AbstractTool {
 							return;
 						}
 					}
-					if ( model.getCurrentLevel() instanceof VisualPage) {
+					if (model.getCurrentLevel() instanceof VisualPage) {
 						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
 						Rectangle2D bb = currentPage.getBoundingBoxInRootSpace();
 						if ( !bb.contains(e.getPosition()) ) {
@@ -432,7 +426,7 @@ public class SelectionTool extends AbstractTool {
 				Point2D snapPos = editor.snap(pos, snaps);
 				offset = new Point2D.Double(snapPos.getX() - pos.getX(), snapPos.getY() - pos.getY());
 				// Initial move of the selection - beforeSelectionModification is needed
-				beforeSelectionModification(editor, ScaleMode.NONE);
+				beforeSelectionModification(editor);
 				VisualModelTransformer.translateSelection(model, offset.getX(), offset.getY());
 			} else {
 				// Do nothing if pressed on a node with modifiers
@@ -518,7 +512,7 @@ public class SelectionTool extends AbstractTool {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_G:
 				if (e.isShiftDown()) {
-					selectionPageUngroup(e.getEditor());
+					selectionUngroup(e.getEditor());
 				} else {
 					selectionPageGroup(e.getEditor());
 				}
@@ -682,8 +676,8 @@ public class SelectionTool extends AbstractTool {
 				scrollPane.getParent().remove(scrollPane);
 				if (!cancelInPlaceEdit) {
 					try {
-						component.setLabel(newText);
 						editor.getWorkspaceEntry().saveMemento();
+						component.setLabel(newText);
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
 						editLabelInPlace(editor, component, newText);
@@ -741,7 +735,7 @@ public class SelectionTool extends AbstractTool {
 	private void selectionOffset(final GraphEditor editor, double dx, double dy) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.NONE);
+			beforeSelectionModification(editor);
 			VisualModelTransformer.translateSelection(model, dx, dy);
 			afterSelectionModification(editor);
 		}
@@ -750,7 +744,7 @@ public class SelectionTool extends AbstractTool {
 	protected void selectionGroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.ADAPTIVE);
+			beforeSelectionModification(editor);
 			model.groupSelection();
 			afterSelectionModification(editor);
 		}
@@ -759,7 +753,7 @@ public class SelectionTool extends AbstractTool {
 	protected void selectionUngroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.ADAPTIVE);
+			beforeSelectionModification(editor);
 			model.ungroupSelection();
 			afterSelectionModification(editor);
 		}
@@ -768,17 +762,8 @@ public class SelectionTool extends AbstractTool {
 	protected void selectionPageGroup(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.ADAPTIVE);
+			beforeSelectionModification(editor);
 			model.groupPageSelection();
-			afterSelectionModification(editor);
-		}
-	}
-
-	protected void selectionPageUngroup(final GraphEditor editor) {
-		VisualModel model = editor.getModel();
-		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.ADAPTIVE);
-			model.ungroupPageSelection();
 			afterSelectionModification(editor);
 		}
 	}
@@ -786,11 +771,9 @@ public class SelectionTool extends AbstractTool {
 	protected void selectionRotateClockwise(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.NONE);
+			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, Math.PI/2);
 			for(Node node : model.getSelection()) {
-				if (node instanceof VisualGroup) continue;
-				if (node instanceof VisualPage) continue;
 				if (node instanceof Rotatable) {
 					((Rotatable)node).rotateClockwise();
 				}
@@ -802,11 +785,9 @@ public class SelectionTool extends AbstractTool {
 	protected void selectionRotateCounterclockwise(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.NONE);
+			beforeSelectionModification(editor);
 			VisualModelTransformer.rotateSelection(model, -Math.PI/2);
 			for(Node node : model.getSelection()) {
-				if (node instanceof VisualGroup) continue;
-				if (node instanceof VisualPage) continue;
 				if (node instanceof Rotatable) {
 					((Rotatable)node).rotateCounterclockwise();
 				}
@@ -818,11 +799,9 @@ public class SelectionTool extends AbstractTool {
 	protected void selectionFlipHorizontal(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.NONE);
+			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, -1.0, 1.0);
 			for(Node node : model.getSelection()) {
-				if (node instanceof VisualGroup) continue;
-				if (node instanceof VisualPage) continue;
 				if (node instanceof Flippable) {
 					((Flippable)node).flipHorizontal();
 				}
@@ -834,11 +813,9 @@ public class SelectionTool extends AbstractTool {
 	protected void selectionFlipVertical(final GraphEditor editor) {
 		VisualModel model = editor.getModel();
 		if (!model.getSelection().isEmpty()) {
-			beforeSelectionModification(editor, ScaleMode.NONE);
+			beforeSelectionModification(editor);
 			VisualModelTransformer.scaleSelection(model, 1.0, -1.0);
 			for(Node node : model.getSelection()) {
-				if (node instanceof VisualGroup) continue;
-				if (node instanceof VisualPage) continue;
 				if (node instanceof Flippable) {
 					((Flippable)node).flipVertical();
 				}
@@ -847,19 +824,12 @@ public class SelectionTool extends AbstractTool {
 		}
 	}
 
-	private void beforeSelectionModification(final GraphEditor editor, ScaleMode scaleMode) {
+	public void beforeSelectionModification(final GraphEditor editor) {
 		// Capture model memento for use in afterSelectionModification
 		editor.getWorkspaceEntry().captureMemento();
-		// FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (intro).
-		VisualModel model = editor.getModel();
-		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
-		Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
-		connectionToScaleModeMap = VisualModelTransformer.setConnectionsScaleMode(includedConnections, scaleMode);
 	}
 
-	private void afterSelectionModification(final GraphEditor editor) {
-		// FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (outro).
-		VisualModelTransformer.setConnectionsScaleMode(connectionToScaleModeMap);
+	public void afterSelectionModification(final GraphEditor editor) {
 		// Save memento that was captured in beforeSelectionModification
 		editor.getWorkspaceEntry().saveMemento();
 		// Redraw the editor window to recalculate all the bounding boxes

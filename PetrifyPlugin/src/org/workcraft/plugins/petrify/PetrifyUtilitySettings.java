@@ -38,8 +38,6 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
 	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
 	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
-	private static final String keyGateLibrary = prefix + ".petrify.gateLibrary";
-	private static final String keyDebugTemporaryFiles = prefix + ".debugTemporaryFiles";
 
 	private static final String defaultPetrifyCommand = "petrify";
 	private static final String defaultPetrifyArgs = "";
@@ -47,8 +45,6 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String defaultDrawAstgArgs = "";
 	private static final String defaultWriteSgCommand = "write_sg";
 	private static final String defaultWriteSgArgs = "";
-	private static final String defaultGateLibrary = "tools/petrify/petrify.lib";
-	private static final Boolean defaultDebugTemporaryFiles = false;
 
 	private static String petrifyCommand = defaultPetrifyCommand;
 	private static String petrifyArgs = defaultPetrifyArgs;
@@ -56,87 +52,65 @@ public class PetrifyUtilitySettings implements Settings {
 	private static String drawAstgArgs = defaultDrawAstgArgs;
 	private static String writeSgCommand = defaultWriteSgCommand;
 	private static String writeSgArgs = defaultWriteSgArgs;
-	private static String gateLibrary = defaultGateLibrary;
-	private static Boolean debigTemporaryFiles = defaultDebugTemporaryFiles;
 
 	public PetrifyUtilitySettings() {
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "petrify command", String.class) {
+				this, "petrify command", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
-				PetrifyUtilitySettings.setPetrifyCommand(value);
+				setPetrifyCommand(value);
 			}
 			protected String getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getPetrifyCommand();
+				return getPetrifyCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional petrify command line arguments", String.class) {
+				this, "Additional petrify command line arguments", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
-				PetrifyUtilitySettings.setPetrifyArgs(value);
+				setPetrifyArgs(value);
 			}
 			protected String getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getPetrifyArgs();
+				return getPetrifyArgs();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "write_sg command", String.class) {
+				this, "write_sg command", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
-				PetrifyUtilitySettings.setWriteSgCommand(value);
+				setWriteSgCommand(value);
 			}
 			protected String getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getWriteSgCommand();
+				return getWriteSgCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional write_sg command line arguments", String.class) {
+				this, "Additional write_sg command line arguments", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
-				PetrifyUtilitySettings.setWriteSgArgs(value);
+				setWriteSgArgs(value);
 			}
 			protected String getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getWriteSgArgs();
+				return getWriteSgArgs();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "draw_astg command", String.class) {
+				this, "draw_astg command", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
-				PetrifyUtilitySettings.setDrawAstgCommand(value);
+				setDrawAstgCommand(value);
 			}
 			protected String getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getDrawAstgCommand();
+				return getDrawAstgCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional draw_astg command line arguments", String.class) {
+				this, "Additional draw_astg command line arguments", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
-				PetrifyUtilitySettings.setDrawAstgArgs(value);
+				setDrawAstgArgs(value);
 			}
 			protected String getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getDrawAstgArgs();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Gate library for technology mapping", String.class) {
-			protected void setter(PetrifyUtilitySettings object, String value) {
-				PetrifyUtilitySettings.setGateLibrary(value);
-			}
-			protected String getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getGateLibrary();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
-				this, "Keep temporary files (debug)", Boolean.class) {
-			protected void setter(PetrifyUtilitySettings object, Boolean value) {
-				PetrifyUtilitySettings.setDebugTemporaryFiles(value);
-			}
-			protected Boolean getter(PetrifyUtilitySettings object) {
-				return PetrifyUtilitySettings.getDebugTemporaryFiles();
+				return getDrawAstgArgs();
 			}
 		});
 	}
@@ -154,8 +128,6 @@ public class PetrifyUtilitySettings implements Settings {
 		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
 		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
 		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
-		setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
-		setDebugTemporaryFiles(config.getBoolean(keyDebugTemporaryFiles, defaultDebugTemporaryFiles));
 	}
 
 	@Override
@@ -166,8 +138,6 @@ public class PetrifyUtilitySettings implements Settings {
 		config.set(keyDrawAstgArgs, getDrawAstgArgs());
 		config.set(keyWriteSgCommand, getWriteSgCommand());
 		config.set(keyWriteSgArgs, getWriteSgArgs());
-		config.set(keyGateLibrary, getGateLibrary());
-		config.setBoolean(keyDebugTemporaryFiles, getDebugTemporaryFiles());
 	}
 
 	@Override
@@ -226,22 +196,6 @@ public class PetrifyUtilitySettings implements Settings {
 
 	public static void setWriteSgArgs(String value) {
 		writeSgArgs = value;
-	}
-
-	public static String getGateLibrary() {
-		return gateLibrary;
-	}
-
-	public static void setGateLibrary(String value) {
-		gateLibrary = value;
-	}
-
-	public static Boolean getDebugTemporaryFiles() {
-		return debigTemporaryFiles;
-	}
-
-	public static void setDebugTemporaryFiles(Boolean value) {
-		debigTemporaryFiles = value;
 	}
 
 }

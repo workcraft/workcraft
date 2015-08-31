@@ -37,6 +37,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -48,6 +49,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.layout.javacc.DotParser;
 import org.workcraft.plugins.layout.javacc.ParseException;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
@@ -62,8 +64,9 @@ public class DotLayoutTool extends AbstractLayoutTool {
 	private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
 		final Framework framework = Framework.getInstance();
 		Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.DOT);
-		if (exporter == null)
+		if (exporter == null) {
 			throw new RuntimeException ("Cannot find a .dot exporter for the model " + model);
+		}
 		FileOutputStream out = new FileOutputStream(file);
 		exporter.export(model, out);
 		out.close();
@@ -115,18 +118,19 @@ public class DotLayoutTool extends AbstractLayoutTool {
 			parser.graph(new DotListener() {
 				@Override
 				public void node(String id, Map<String, String> properties) {
-					Node comp = model.getNodeByReference(id);
-
-					if(comp!=null && comp instanceof Movable) {
-						Movable m = (Movable)comp;
+					Node node = model.getNodeByReference(id);
+					if (node instanceof VisualTransformableNode) {
+						VisualTransformableNode m = (VisualTransformableNode)node;
 						String posStr = properties.get("pos");
 						if (posStr!=null) {
 							String [] posParts = posStr.split(",");
 							if(posParts.length==2) {
-								MovableHelper.resetTransform(m);
-								MovableHelper.translate(m,
-									Double.parseDouble(posParts[0])*1.0/72,
-									-Double.parseDouble(posParts[1])*1.0/72);
+								m.setRootSpaceX(Double.parseDouble(posParts[0])*1.0/72);
+								m.setRootSpaceY(-Double.parseDouble(posParts[1])*1.0/72);
+//								double x = Double.parseDouble(posParts[0])*1.0/72;
+//								double y = -Double.parseDouble(posParts[1])*1.0/72;
+//								MovableHelper.resetTransform(m);
+//								MovableHelper.translate(m, x, y);
 							} else {
 								System.err.println("Dot graph parse error: node 'pos' attribute has value '"
 										+ posStr + "', which is not a comma-separated pair of integers");
@@ -186,11 +190,11 @@ public class DotLayoutTool extends AbstractLayoutTool {
 
 	@Override
 	public void layout(VisualModel model) {
-		File original = null;
-		File layout = null;
+		String prefix = FileUtils.getTempPrefix(model.getTitle());
+		File directory = FileUtils.createTempDirectory(prefix);
 		try {
-			original = File.createTempFile("work", ".dot");
-			layout = File.createTempFile("worklayout", ".dot");
+			File original = new File(directory,"original.dot");
+			File layout = new File(directory, "layout.dot");
 
 			saveGraph((VisualModel)model, original);
 
@@ -201,7 +205,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 			args.add(layout.getAbsolutePath());
 			args.add(original.getAbsolutePath());
 
-			Task<ExternalProcessResult> task = new ExternalProcessTask(args, new File("."));
+			Task<ExternalProcessResult> task = new ExternalProcessTask(args);
 			final Framework framework = Framework.getInstance();
 			Result<? extends ExternalProcessResult> res = framework.getTaskManager().execute(task, "Laying out the graph...");
 
@@ -227,12 +231,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 		} catch (SerialisationException e) {
 			throw new RuntimeException(e);
 		} finally {
-			if (original != null) {
-				original.delete();
-			}
-			if (layout != null) {
-				layout.delete();
-			}
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

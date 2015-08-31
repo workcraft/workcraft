@@ -37,6 +37,7 @@ public class CpogSettings implements Settings {
 	private static final String keyEspressoCommand = prefix + ".espressoCommand";
 	private static final String keyAbcFolder = prefix + ".abcFolder";
 	private static final String keyGatesLibrary = prefix + ".gatesLibrary";
+	private static final String keyPGMinerCommand = prefix + ".PGMinerCommand";
 	private static final String keyUseSubscript = prefix + ".useSubscript";
 
 	private static final SatSolver defaultSatSolver = SatSolver.CLASP;
@@ -47,6 +48,7 @@ public class CpogSettings implements Settings {
 	private static final String defaultEspressoCommand = "espresso";
 	private static final String defaultAbcFolder = "abc/";
 	private static final String defaultGatesLibrary = "90nm.genlib";
+	private static final String defaultPGMinerCommand = "pgminer-algebra";
 	private static final boolean defaultUseSubscript = false;
 
 	private static SatSolver satSolver = defaultSatSolver;
@@ -57,96 +59,97 @@ public class CpogSettings implements Settings {
 	private static String espressoCommand = defaultEspressoCommand;
 	private static String abcFolder = defaultAbcFolder;
 	private static String gatesLibrary = defaultGatesLibrary;
+	private static String PGMinerCommand = defaultPGMinerCommand;
 	private static boolean useSubscript = defaultUseSubscript;
 
 	public CpogSettings() {
 		properties.add(new PropertyDeclaration<CpogSettings, SatSolver>(
-				this, "SAT solver", SatSolver.class) {
+				this, "SAT solver", SatSolver.class, true, false, false) {
 			protected void setter(CpogSettings object, SatSolver value) {
-				CpogSettings.setSatSolver(value);
+				setSatSolver(value);
 			}
 			protected SatSolver getter(CpogSettings object) {
-				return CpogSettings.getSatSolver();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<CpogSettings, Integer>(
-				this, "Circuit size in 2-input gates", Integer.class) {
-			protected void setter(CpogSettings object, Integer value) {
-				CpogSettings.setCircuitSize(value);
-			}
-			protected Integer getter(CpogSettings object) {
-				return CpogSettings.getCircuitSize();
+				return getSatSolver();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "Clasp solver command", String.class) {
+				this, "Clasp solver command", String.class, true, false, false) {
 			protected void setter(CpogSettings object, String value) {
-				CpogSettings.setClaspCommand(value);
+				setClaspCommand(value);
 			}
 			protected String getter(CpogSettings object) {
-				return CpogSettings.getClaspCommand();
+				return getClaspCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "MiniSat solver command", String.class) {
+				this, "MiniSat solver command", String.class, true, false, false) {
 			protected void setter(CpogSettings object, String value) {
-				CpogSettings.setMinisatCommand(value);
+				setMinisatCommand(value);
 			}
 			protected String getter(CpogSettings object) {
-				return CpogSettings.getMinisatCommand();
+				return getMinisatCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "Scenco command", String.class) {
+				this, "Scenco command", String.class, true, false, false) {
 			protected void setter(CpogSettings object, String value) {
-				CpogSettings.setScencoCommand(value);
+				setScencoCommand(value);
 			}
 			protected String getter(CpogSettings object) {
-				return CpogSettings.getScencoCommand();
+				return getScencoCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "Espresso command", String.class) {
+				this, "Espresso command", String.class, true, false, false) {
 			protected void setter(CpogSettings object, String value) {
-				CpogSettings.setEspressoCommand(value);
+				setEspressoCommand(value);
 			}
 			protected String getter(CpogSettings object) {
-				return CpogSettings.getEspressoCommand();
+				return getEspressoCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "Abc folder path", String.class) {
+				this, "Abc folder path", String.class, true, false, false) {
 			protected void setter(CpogSettings object, String value) {
-				CpogSettings.setAbcFolder(value);
+				setAbcFolder(value);
 			}
 			protected String getter(CpogSettings object) {
-				return CpogSettings.getAbcFolder();
+				return getAbcFolder();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, String>(
-				this, "Gate library (genlib format) inside abc folder", String.class) {
+				this, "Gate library (genlib format) inside abc folder", String.class, true, false, false) {
 			protected void setter(CpogSettings object, String value) {
-				CpogSettings.setGatesLibrary(value);
+				setGatesLibrary(value);
 			}
 			protected String getter(CpogSettings object) {
-				return CpogSettings.getGatesLibrary();
+				return getGatesLibrary();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<CpogSettings, Boolean>(
-				this, "\'_\' causes following text to be subscript in vertex and graph labels", Boolean.class) {
+				this, "\'_\' causes following text to be subscript in vertex and graph labels", Boolean.class, true, false, false) {
 			protected void setter(CpogSettings object, Boolean value) {
-				CpogSettings.setUseSubscript(value);
+				setUseSubscript(value);
 			}
 			protected Boolean getter(CpogSettings object) {
-				return CpogSettings.getUseSubscript();
+				return getUseSubscript();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CpogSettings, String>(
+				this, "PG miner command", String.class, true, false, false) {
+			protected void setter(CpogSettings object, String value) {
+				setPGMinerCommand(value);
+			}
+			protected String getter(CpogSettings object) {
+				return getPGMinerCommand();
 			}
 		});
 	}
@@ -161,6 +164,7 @@ public class CpogSettings implements Settings {
 		setEspressoCommand(config.getString(keyEspressoCommand, defaultEspressoCommand));
 		setAbcFolder(config.getString(keyAbcFolder, defaultAbcFolder));
 		setGatesLibrary(config.getString(keyGatesLibrary, defaultGatesLibrary));
+		setPGMinerCommand(config.getString(keyPGMinerCommand, defaultPGMinerCommand));
 		setUseSubscript(config.getBoolean(keyUseSubscript, defaultUseSubscript));
 	}
 
@@ -174,6 +178,7 @@ public class CpogSettings implements Settings {
 		config.set(keyEspressoCommand, getEspressoCommand());
 		config.set(keyAbcFolder, getAbcFolder());
 		config.set(keyGatesLibrary, getGatesLibrary());
+		config.set(keyPGMinerCommand, getPGMinerCommand());
 		config.setBoolean(keyUseSubscript, getUseSubscript());
 	}
 
@@ -262,6 +267,14 @@ public class CpogSettings implements Settings {
 
 	public static void setUseSubscript(boolean value) {
 		useSubscript = value;
+	}
+
+	public static void setPGMinerCommand(String value) {
+		PGMinerCommand = value;
+	}
+
+	public static String getPGMinerCommand() {
+		return PGMinerCommand;
 	}
 
 }

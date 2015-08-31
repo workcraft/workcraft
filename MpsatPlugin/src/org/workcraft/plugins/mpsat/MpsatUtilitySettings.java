@@ -38,80 +38,67 @@ public class MpsatUtilitySettings implements Settings {
 	private static final String keyExtraArgs = prefix + ".args";
 	private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 	private static final String keyDebugReach = prefix + ".debugReach";
-	private static final String keyDebugTemporaryFiles = prefix + ".debugTemporaryFiles";
 
 	private static final String defaultCommand = "mpsat";
 	private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
 	private static final String defaultExtraArgs = "";
 	private static final Boolean defaultUsePnmlUnfolding = true;
 	private static final Boolean defaultDebugReach = false;
-	private static final Boolean defaultDebugTemporaryFiles = false;
 
 	private static String command = defaultCommand;
 	private static SolutionMode solutionMode = defaultSolutionMode;
 	private static String extraArgs = defaultExtraArgs;
 	private static Boolean usePnmlUnfolding = defaultUsePnmlUnfolding;
 	private static Boolean debugReach = defaultDebugReach;
-	private static Boolean debigTemporaryFiles = defaultDebugTemporaryFiles;
 
 	public MpsatUtilitySettings() {
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
-				this, "MPSat command", String.class) {
+				this, "MPSat command", String.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, String value) {
-				MpsatUtilitySettings.setCommand(value);
+				setCommand(value);
 			}
 			protected String getter(MpsatUtilitySettings object) {
-				return MpsatUtilitySettings.getCommand();
+				return getCommand();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, SolutionMode>(
-				this, "Check mode", SolutionMode.class) {
+				this, "Check mode", SolutionMode.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, SolutionMode value) {
-				MpsatUtilitySettings.setSolutionMode(value);
+				setSolutionMode(value);
 			}
 			protected SolutionMode getter(MpsatUtilitySettings object) {
-				return MpsatUtilitySettings.getSolutionMode();
+				return getSolutionMode();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
-				this, "Additional arguments", String.class) {
+				this, "Additional arguments", String.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, String value) {
-				MpsatUtilitySettings.setExtraArgs(value);
+				setExtraArgs(value);
 			}
 			protected String getter(MpsatUtilitySettings object) {
-				return MpsatUtilitySettings.getExtraArgs();
+				return getExtraArgs();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
-				this, "Use PNML-based unfolding (where possible)", Boolean.class) {
+				this, "Use PNML-based unfolding (where possible)", Boolean.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, Boolean value) {
-				MpsatUtilitySettings.setUsePnmlUnfolding(value);
+				setUsePnmlUnfolding(value);
 			}
 			protected Boolean getter(MpsatUtilitySettings object) {
-				return MpsatUtilitySettings.getUsePnmlUnfolding();
+				return getUsePnmlUnfolding();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
-				this, "Print out Reach expressions (debug)", Boolean.class) {
+				this, "Print out Reach expressions (debug)", Boolean.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, Boolean value) {
-				MpsatUtilitySettings.setDebugReach(value);
+				setDebugReach(value);
 			}
 			protected Boolean getter(MpsatUtilitySettings object) {
-				return MpsatUtilitySettings.getDebugReach();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
-				this, "Keep temporary files (debug)", Boolean.class) {
-			protected void setter(MpsatUtilitySettings object, Boolean value) {
-				MpsatUtilitySettings.setDebugTemporaryFiles(value);
-			}
-			protected Boolean getter(MpsatUtilitySettings object) {
-				return MpsatUtilitySettings.getDebugTemporaryFiles();
+				return getDebugReach();
 			}
 		});
 	}
@@ -128,7 +115,6 @@ public class MpsatUtilitySettings implements Settings {
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
 		setUsePnmlUnfolding(config.getBoolean(keyUsePnmlUnfolding, defaultUsePnmlUnfolding));
 		setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
-		setDebugTemporaryFiles(config.getBoolean(keyDebugTemporaryFiles, defaultDebugTemporaryFiles));
 	}
 
 	@Override
@@ -138,7 +124,6 @@ public class MpsatUtilitySettings implements Settings {
 		config.set(keyExtraArgs, getExtraArgs());
 		config.setBoolean(keyUsePnmlUnfolding, getUsePnmlUnfolding());
 		config.setBoolean(keyDebugReach, getDebugReach());
-		config.setBoolean(keyDebugTemporaryFiles, getDebugTemporaryFiles());
 	}
 
 	@Override
@@ -193,14 +178,6 @@ public class MpsatUtilitySettings implements Settings {
 
 	public static void setDebugReach(Boolean value) {
 		debugReach = value;
-	}
-
-	public static Boolean getDebugTemporaryFiles() {
-		return debigTemporaryFiles;
-	}
-
-	public static void setDebugTemporaryFiles(Boolean value) {
-		debigTemporaryFiles = value;
 	}
 
 	public static String getUnfoldingExtension(boolean tryPnml) {

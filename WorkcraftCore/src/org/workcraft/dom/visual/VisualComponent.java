@@ -43,8 +43,16 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
-	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.5f);
-	public static final Font nameFont = new Font("Sans-serif", Font.ITALIC, 1).deriveFont(0.5f);
+	public static final String PROPERTY_LABEL = "Label";
+	public static final String PROPERTY_LABEL_POSITIONING = "Label positioning";
+	public static final String PROPERTY_LABEL_COLOR = "Label color";
+	public static final String PROPERTY_NAME_POSITIONING = "Name positioning";
+	public static final String PROPERTY_NAME_COLOR = "Name color";
+	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+	public static final String PROPERTY_FILL_COLOR = "Fill color";
+
+	public static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
+	public static final Font nameFont = new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
 
 	private MathNode refNode = null;
 	protected double size = CommonVisualSettings.getBaseSize();
@@ -90,7 +98,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void addColorPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, "Foreground color", Color.class) {
+				this, PROPERTY_FOREGROUND_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setForegroundColor(value);
 			}
@@ -100,7 +108,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, "Fill color", Color.class) {
+				this, PROPERTY_FILL_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setFillColor(value);
 			}
@@ -112,7 +120,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void addLabelPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, String>(
-				this, "Label", String.class) {
+				this, PROPERTY_LABEL, String.class, true, true, true) {
 			protected void setter(VisualComponent object, String value) {
 				object.setLabel(value);
 			}
@@ -122,7 +130,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-				this, "Label positioning", Positioning.class) {
+				this, PROPERTY_LABEL_POSITIONING, Positioning.class, true, true, true) {
 			protected void setter(VisualComponent object, Positioning value) {
 				object.setLabelPositioning(value);
 			}
@@ -132,7 +140,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, "Label color", Color.class) {
+				this, PROPERTY_LABEL_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setLabelColor(value);
 			}
@@ -144,7 +152,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void addNamePropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Positioning>(
-				this, "Name positioning", Positioning.class) {
+				this, PROPERTY_NAME_POSITIONING, Positioning.class, true, true, true) {
 			protected void setter(VisualComponent object, Positioning value) {
 				object.setNamePositioning(value);
 			}
@@ -154,7 +162,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualComponent, Color>(
-				this, "Name color", Color.class) {
+				this, PROPERTY_NAME_COLOR, Color.class, true, true, true) {
 			protected void setter(VisualComponent object, Color value) {
 				object.setNameColor(value);
 			}
@@ -170,7 +178,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setLabel(String label) {
 		this.label = label;
-		sendNotification(new PropertyChangedEvent(this, "label"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
 	}
 
 	public Positioning getLabelPositioning() {
@@ -179,7 +187,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setLabelPositioning(Positioning value) {
 		labelPositioning = value;
-		sendNotification(new PropertyChangedEvent(this, "label positioning"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_POSITIONING));
 	}
 
 	public Color getLabelColor() {
@@ -188,7 +196,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setLabelColor(Color value) {
 		labelColor = value;
-		sendNotification(new PropertyChangedEvent(this, "label color"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_COLOR));
 	}
 
 	public Positioning getNamePositioning() {
@@ -197,7 +205,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setNamePositioning(Positioning value) {
 		namePositioning = value;
-		sendNotification(new PropertyChangedEvent(this, "reference positioning"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_POSITIONING));
 	}
 
 	public Color getNameColor() {
@@ -206,7 +214,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setNameColor(Color value) {
 		nameColor = value;
-		sendNotification(new PropertyChangedEvent(this, "reference color"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_COLOR));
 	}
 
 	public Color getForegroundColor() {
@@ -215,7 +223,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setForegroundColor(Color value) {
 		foregroundColor = value;
-		sendNotification(new PropertyChangedEvent(this, "foreground color"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
 	}
 
 	public Color getFillColor() {
@@ -224,7 +232,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	public void setFillColor(Color value) {
 		fillColor = value;
-		sendNotification(new PropertyChangedEvent(this, "fill color"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_FILL_COLOR));
 	}
 
 	public MathNode getReferencedComponent() {

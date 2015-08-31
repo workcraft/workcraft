@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 
 public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<BooleanFormula>
 {
@@ -205,7 +205,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
 	private BooleanFormula replace(BooleanFormula where, BooleanVariable what, BooleanFormula with)
 	{
-		return BooleanReplacer.replace(where, Arrays.asList(new BooleanVariable[]{what}), Arrays.asList(new BooleanFormula[]{with}));
+		return BooleanUtils.prettifyReplace(where, what, with);
 	}
 
 	/**
@@ -269,11 +269,12 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 			BooleanFormula value = cpogFunctions[i];
 			for(int j=0;j<scenarios.length;j++)
 			{
-				BooleanFormula substituted = BooleanReplacer.replace(value, Arrays.asList(variables), Arrays.asList(encodings[j]));
+				BooleanFormula substituted = BooleanUtils.prettifyReplace(value, Arrays.asList(variables), Arrays.asList(encodings[j]));
 
 				BooleanFormula required = scenarios[j][i];
-				if(required != null)
+				if(required != null) {
 					tableConditions.add(iff(required, substituted));
+				}
 			}
 		}
 

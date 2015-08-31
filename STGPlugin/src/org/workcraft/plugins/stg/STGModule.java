@@ -1,5 +1,6 @@
 package org.workcraft.plugins.stg;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -29,10 +30,20 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 public class STGModule implements Module {
 
 	@Override
+	public String getDescription() {
+		return "Signal Transition Graphs";
+	}
+
+	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
-		pm.registerClass(ModelDescriptor.class, STGModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, StgDescriptor.class);
 
 		pm.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
 		pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
@@ -100,8 +111,13 @@ public class STGModule implements Module {
 		});
 	}
 
-	@Override
-	public String getDescription() {
-		return "Signal Transition Graphs";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.stg.STGModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.stg.StgDescriptor\"/>");
 	}
+
 }

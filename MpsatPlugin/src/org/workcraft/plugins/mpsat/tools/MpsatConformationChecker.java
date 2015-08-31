@@ -5,19 +5,14 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.VerificationTool;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatConformationTask;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatConformationChecker implements Tool {
-
-	@Override
-	public String getSection() {
-		return "Verification";
-	}
+public class MpsatConformationChecker extends VerificationTool {
 
 	@Override
 	public String getDisplayName() {
@@ -35,7 +30,7 @@ public class MpsatConformationChecker implements Tool {
 		JFileChooser fc = framework.getMainWindow().createOpenDialog("Open environment file", false, null);
 		if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			if (framework.checkFile(file)) {
+			if (framework.checkFile(file, null)) {
 				final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, file);
 
 				String description = "MPSat tool chain";

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -55,6 +56,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
+	private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
+
 	class ToolAction extends Action {
 		Tool tool;
 		String text;
@@ -119,34 +122,15 @@ public class MainMenu extends JMenuBar {
 	final private JMenu mnExport = new JMenu("Export");
 	final private JMenu mnRecent = new JMenu("Open recent");
 	final private JMenu mnWindows = new JMenu("Windows");
-	final private JMenu mnTools = new JMenu("Tools");
 	final private HashMap <Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
-
-	private String[] lafCaptions = new String[] {
-			"Java default",
-			"Windows",
-			"Substance: Moderate",
-			"Substance: Mist Silver",
-			"Substance: Raven",
-			"Substance: Business",
-			"Substance: Creme"
-	};
-	private String[] lafClasses = new String[] {
-			"javax.swing.plaf.metal.MetalLookAndFeel",
-			"com.sun.java.swing.plaf.windows.WindowsLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceModerateLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceRavenLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceBusinessLookAndFeel",
-			"org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel"
-	};
+	final private LinkedList<JMenu> mnToolsList = new LinkedList<>();
+	final private JMenu mnHelp = new JMenu("Help");
 
 	MainMenu(final MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
 		addFileMenu(mainWindow);
 		addEditMenu(mainWindow);
 		addViewMenu(mainWindow);
-		add(mnTools);
 		addHelpMenu(mainWindow);
 	}
 
@@ -225,7 +209,7 @@ public class MainMenu extends JMenuBar {
 		mnFile.add(miImport);
 		mnFile.add(mnExport);
 
-		// FIXME: Workspace functionality is not working yet.
+// FIXME: Workspace functionality is not working yet.
 //		mnFile.addSeparator();
 //		mnFile.add(miNewWorkspace);
 //		mnFile.add(miOpenWorkspace);
@@ -362,29 +346,28 @@ public class MainMenu extends JMenuBar {
 		miPanCenter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 		miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-		JMenu mnLAF = new JMenu("Look and Feel");
-		for (int i = 0; i < lafClasses.length; i++) {
-			JMenuItem miLAFItem = new JMenuItem();
-			miLAFItem.setText(lafCaptions[i]);
-			final String lafClass = lafClasses[i];
-			miLAFItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					try {
-						mainWindow.setLAF(lafClass);
-					} catch (OperationCancelledException e1) {
-					}
-				}
-			});
-			mnLAF.add(miLAFItem);
-		}
+// FIXME: Only the default Look and Feel works good, the others cause some problems.
+//		JMenu mnLookAndFeel = new JMenu("Look and Feel");
+//		for (final Entry<String, String> laf: LookAndFeelHelper.getLafMap().entrySet()) {
+//			JMenuItem miLAFItem = new JMenuItem();
+//			miLAFItem.setText(laf.getKey());
+//			miLAFItem.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					try {
+//						mainWindow.setLookAndFeel(laf.getValue());
+//					} catch (OperationCancelledException e1) {
+//					}
+//				}
+//			});
+//			mnLookAndFeel.add(miLAFItem);
+//		}
 
-		/*	ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
-		miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-		mnView.add(miSaveLayout);
-
-		ScriptedActionMenuItem miLoadLayout = new ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
-		miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-		mnView.add(miLoadLayout);*/
+// FIXME: Save-load of the layout is not functional yet.
+//  	ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
+//		miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+//
+//		ScriptedActionMenuItem miLoadLayout = new ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
+//		miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 		ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
 		miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -401,15 +384,17 @@ public class MainMenu extends JMenuBar {
 		mnView.add(miPanDown);
 		mnView.addSeparator();
 		mnView.add(mnWindows);
-		mnView.add(mnLAF);
+//		mnView.add(mnLookAndFeel);
+//		mnView.addSeparator();
 		mnView.add(miResetLayout);
-
+//		mnView.add(miSaveLayout);
+//		mnView.add(miLoadLayout);
 
 		add(mnView);
 	}
 
 	private void addHelpMenu(final MainWindow mainWindow) {
-		JMenu mnHelp = new JMenu();
+		//JMenu mnHelp = new JMenu();
 		mnHelp.setText("Help");
 
 		ActionMenuItem miOverview = new ActionMenuItem(MainWindowActions.HELP_OVERVIEW_ACTION);
@@ -440,13 +425,8 @@ public class MainMenu extends JMenuBar {
 		mnHelp.addSeparator();
 		mnHelp.add(miAbout);
 
+		//add(Box.createHorizontalGlue());
 		add(mnHelp);
-	}
-
-	final public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
-		we.updateActionState();
-		setToolsMenu(we);
-		setExportMenu(we);
 	}
 
 	private void setExportMenu(final WorkspaceEntry we) {
@@ -481,35 +461,18 @@ public class MainMenu extends JMenuBar {
 				haveNonVisual = true;
 			}
 		}
+		revalidate();
 	}
 
-	private void setToolsMenu(final WorkspaceEntry we) {
-		mnTools.setVisible(true);
-		mnTools.removeAll();
-
-		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we);
-		List<String> sections = Tools.getSections(tools);
-
-		for (String section : sections) {
-			JMenu target = mnTools;
-			if (!section.isEmpty()) {
-				JMenu sectionMenu = new JMenu (section);
-				mnTools.add(sectionMenu);
-				target = sectionMenu;
-			}
-			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
-				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
-				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
-				target.add(miTool);
-			}
-		}
+	public void setExportMenuState(boolean enable) {
+		mnExport.setEnabled(enable);
 	}
 
 	final public void registerUtilityWindow(DockableWindow window) {
 		ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(new ToggleWindowAction(window));
 		miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
 		miWindowItem.setSelected(!window.isClosed());
-		windowItems.put (window.getID(), miWindowItem);
+		windowItems.put(window.getID(), miWindowItem);
 		mnWindows.add(miWindowItem);
 	}
 
@@ -561,21 +524,78 @@ public class MainMenu extends JMenuBar {
 			mi.setSelected(true);
 	}
 
-	public void reset() {
-		mnTools.setVisible(false);
-		mnTools.removeAll();
+	private void createToolsMenu(final WorkspaceEntry we) {
+		removeToolsMenu();
+
+		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we);
+		List<String> sections = Tools.getSections(tools);
+
+		JMenu mnTools = new JMenu("Tools");
+		mnToolsList.clear();
+		for (String section : sections) {
+			JMenu mnSection = mnTools;
+			if (!section.isEmpty()) {
+				mnSection = new JMenu(section);
+				if (isPromotedSection(section)) {
+					String menuName = getMenuNameFromSection(section);
+					mnSection.setText(menuName);
+					mnToolsList.add(mnSection);
+				} else {
+					mnTools.add(mnSection);
+					mnToolsList.addFirst(mnTools);
+				}
+			}
+			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
+				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
+				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
+				mnSection.add(miTool);
+			}
+		}
+		addToolsMenu();
 	}
 
-	public JMenu getRecentMenu() {
-		return mnRecent;
+	public static boolean isPromotedSection(String section) {
+		return ((section != null) && section.startsWith(MENU_SECTION_PROMOTED_PREFIX));
 	}
 
-	public JMenu getExportMenu() {
-		return mnExport;
+	public static String getMenuNameFromSection(String section) {
+		String result = "";
+		if (section != null) {
+			if (section.startsWith(MENU_SECTION_PROMOTED_PREFIX)) {
+				result = section.substring(MENU_SECTION_PROMOTED_PREFIX.length());
+			} else {
+				result = section;
+			}
+		}
+		return result.trim();
 	}
 
-	public JMenu getToolsMenu() {
-		return mnTools;
+	private void addToolsMenu() {
+		for (JMenu mnTools: mnToolsList) {
+			add(mnTools);
+		}
+		remove(mnHelp);
+		add(mnHelp);
+		revalidate();
+	}
+
+	public void removeToolsMenu() {
+		for (JMenu mnTools: mnToolsList) {
+			remove(mnTools);
+		}
+		revalidate();
+	}
+
+	public void updateToolsMenuState(boolean enable) {
+		for (JMenu mnTool: mnToolsList) {
+			mnTool.setEnabled(enable);
+		}
+	}
+
+	public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
+		we.updateActionState();
+		createToolsMenu(we);
+		setExportMenu(we);
 	}
 
 }

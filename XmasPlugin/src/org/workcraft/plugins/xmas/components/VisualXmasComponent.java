@@ -81,7 +81,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualXmasComponent, Orientation>(
-				this, "Orientation", Orientation.class) {
+				this, "Orientation", Orientation.class, true, true, true) {
 			protected void setter(VisualXmasComponent object, Orientation value) {
 				object.setOrientation(value);
 			}

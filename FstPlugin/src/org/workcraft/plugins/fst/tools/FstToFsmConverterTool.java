@@ -5,7 +5,7 @@ import org.workcraft.Tool;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.FsmModelDescriptor;
+import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
@@ -43,7 +43,7 @@ public class FstToFsmConverterTool implements Tool {
 			final Workspace workspace = framework.getWorkspace();
 			final Path<String> directory = we.getWorkspacePath().getParent();
 			final String name = we.getWorkspacePath().getNode();
-			final ModelEntry me = new ModelEntry(new FsmModelDescriptor(), converter.getDstModel());
+			final ModelEntry me = new ModelEntry(new FsmDescriptor(), converter.getDstModel());
 			boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 			workspace.add(directory, name, me, false, openInEditor);
 		} finally {

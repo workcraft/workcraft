@@ -1,22 +1,17 @@
 package org.workcraft.gui.graph.tools;
 
-import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.workspace.WorkspaceEntry;
 
-abstract public class AbstractContractorTool implements Tool {
+abstract public class AbstractContractorTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Contract selected nodes";
-	}
-
-	@Override
-	public String getSection() {
-		return "Transformations";
 	}
 
 	@Override

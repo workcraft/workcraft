@@ -41,6 +41,8 @@ import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
 
 public class VisualXmasContact extends VisualComponent implements StateObserver {
+	public static final String IO_TYPE_PROPERTY_NAME = "IOtype";
+
 	private double size = 0.4;
 
 	public VisualXmasContact(XmasContact contact) {
@@ -70,7 +72,7 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 
 	public void setIOType(XmasContact.IOType type) {
 		getReferencedContact().setIOType(type);
-		sendNotification(new PropertyChangedEvent(this, "IOtype"));
+		sendNotification(new PropertyChangedEvent(this, IO_TYPE_PROPERTY_NAME));
 	}
 
 	public XmasContact.IOType getIOType() {

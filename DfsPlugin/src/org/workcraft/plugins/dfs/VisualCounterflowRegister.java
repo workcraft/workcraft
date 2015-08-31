@@ -30,7 +30,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowRegister, Boolean>(
-				this, "Or-marked", Boolean.class) {
+				this, CounterflowRegister.PROPERTY_OR_MARKED, Boolean.class, true, true, true) {
 			public void setter(VisualCounterflowRegister object, Boolean value) {
 				object.getReferencedCounterflowRegister().setOrMarked(value);
 			}
@@ -40,7 +40,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowRegister, Boolean>(
-				this, "And-marked", Boolean.class) {
+				this, CounterflowRegister.PROPERTY_AND_MARKED, Boolean.class, true, true, true) {
 			public void setter(VisualCounterflowRegister object, Boolean value) {
 				object.getReferencedCounterflowRegister().setAndMarked(value);
 			}

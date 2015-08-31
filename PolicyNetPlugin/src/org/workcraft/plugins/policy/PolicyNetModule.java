@@ -1,5 +1,6 @@
 package org.workcraft.plugins.policy;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -19,7 +20,17 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 public class PolicyNetModule implements Module {
 
 	@Override
+	public String getDescription() {
+		return "Policy Net";
+	}
+
+	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
@@ -44,16 +55,20 @@ public class PolicyNetModule implements Module {
 			}
 		});
 
-		pm.registerClass(ModelDescriptor.class, PolicyNetModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, PolicyNetDescriptor.class);
 		pm.registerClass(XMLSerialiser.class, BundleSerialiser.class);
 		pm.registerClass(XMLDeserialiser.class, BundleDeserialiser.class);
 		pm.registerClass(XMLSerialiser.class, VisualLocalitySerialiser.class);
 		pm.registerClass(XMLDeserialiser.class,VisualLocalityDeserialiser.class);
 	}
 
-	@Override
-	public String getDescription() {
-		return "Policy Net";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.policy.PolicyNetModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.policy.PolicyNetDescriptor\"/>");
 	}
 
 }

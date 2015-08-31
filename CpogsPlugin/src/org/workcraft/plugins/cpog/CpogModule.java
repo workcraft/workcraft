@@ -1,5 +1,6 @@
 package org.workcraft.plugins.cpog;
 
+import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
@@ -19,17 +20,36 @@ import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
 import org.workcraft.plugins.cpog.tools.CpogToGraphConverterTool;
 import org.workcraft.plugins.cpog.tools.GraphStatisticsTool;
 import org.workcraft.plugins.cpog.tools.GraphToCpogConverterTool;
-import org.workcraft.plugins.cpog.tools.ScencoTool;
+import org.workcraft.plugins.cpog.tools.ImportAndMineEventLog;
+import org.workcraft.plugins.cpog.tools.ImportEventLog;
+import org.workcraft.plugins.cpog.tools.MineSelectedGraphs;
+import org.workcraft.plugins.cpog.tools.ScencoExhaustiveTool;
+import org.workcraft.plugins.cpog.tools.ScencoHeuristicTool;
+import org.workcraft.plugins.cpog.tools.ScencoRandomTool;
+import org.workcraft.plugins.cpog.tools.ScencoSATBasedTool;
+import org.workcraft.plugins.cpog.tools.ScencoSequentialTool;
+import org.workcraft.plugins.cpog.tools.ScencoSingleLiteralTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class CpogModule implements Module {
+
+	@Override
+	public String getDescription() {
+		return "Conditional Partial Order Graphs";
+	}
+
 	@Override
 	public void init() {
+		initPluginManager();
+		initCompatibilityManager();
+	}
+
+	private void initPluginManager() {
 		final Framework framework = Framework.getInstance();
 		final PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(ModelDescriptor.class, CpogModelDescriptor.class);
+		pm.registerClass(ModelDescriptor.class, CpogDescriptor.class);
 
 		pm.registerClass(PropertyClassProvider.class, EncodingPropertyProvider.class);
 
@@ -44,9 +64,12 @@ public class CpogModule implements Module {
 		pm.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
 		pm.registerClass(Settings.class, CpogSettings.class);
 
-		//p.registerClass(Tool.class, CpogEncoder.class);
-
-		pm.registerClass(Tool.class, ScencoTool.class);
+		pm.registerClass(Tool.class, ScencoHeuristicTool.class);
+		pm.registerClass(Tool.class, ScencoSATBasedTool.class);
+		pm.registerClass(Tool.class, ScencoSingleLiteralTool.class);
+		pm.registerClass(Tool.class, ScencoSequentialTool.class);
+		pm.registerClass(Tool.class, ScencoExhaustiveTool.class);
+		pm.registerClass(Tool.class, ScencoRandomTool.class);
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
@@ -69,10 +92,22 @@ public class CpogModule implements Module {
 			}
 		});
 
+		pm.registerClass(Tool.class, ImportEventLog.class);
+
+		pm.registerClass(Tool.class, MineSelectedGraphs.class);
+
+		pm.registerClass(Tool.class, ImportAndMineEventLog.class);
+
+
 	}
 
-	@Override
-	public String getDescription() {
-		return "Conditional Partial Order Graphs";
+	private void initCompatibilityManager() {
+		final Framework framework = Framework.getInstance();
+		final CompatibilityManager cm = framework.getCompatibilityManager();
+
+		cm.registerMetaReplacement(
+				"<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
+				"<descriptor class=\"org.workcraft.plugins.cpog.CpogDescriptor\"/>");
 	}
+
 }

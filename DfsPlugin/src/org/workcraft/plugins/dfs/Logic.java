@@ -26,6 +26,9 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.dfs.VisualLogic.class)
 public class Logic extends MathDelayNode {
+	public static final String PROPERTY_EARLY_EVALUATION = "Early evaluation";
+	public static final String PROPERTY_COMPUTED = "Computed";
+
 	private boolean computed = false;
 	private boolean earlyEvaluation = false;
 
@@ -35,7 +38,7 @@ public class Logic extends MathDelayNode {
 
 	public void setComputed(boolean value) {
 		this.computed = value;
-		sendNotification(new PropertyChangedEvent(this, "computed"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_COMPUTED));
 	}
 
 	public boolean isEarlyEvaluation() {
@@ -44,7 +47,7 @@ public class Logic extends MathDelayNode {
 
 	public void setEarlyEvaluation(boolean value) {
 		this.earlyEvaluation = value;
-		sendNotification(new PropertyChangedEvent(this, "early evaluation"));
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_EARLY_EVALUATION));
 	}
 
 }

@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.FsmModelDescriptor;
+import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.VisualGraph;
@@ -39,7 +39,7 @@ public class DgToFsmConverterTool implements Tool {
 		final Workspace workspace = framework.getWorkspace();
 		final Path<String> directory = we.getWorkspacePath().getParent();
 		final String desiredName = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new FsmModelDescriptor(), converter.getDstModel());
+		final ModelEntry me = new ModelEntry(new FsmDescriptor(), converter.getDstModel());
 		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 		workspace.add(directory, desiredName, me, false, openInEditor);
 	}

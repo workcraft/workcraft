@@ -87,8 +87,9 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 
 		BooleanFormula formula=null;
 		try {
-			if (!string.equals(""))
+			if (!string.isEmpty()) {
 				formula = BooleanParser.parse(string, new VariableResolver(internalReferenceResolver));
+			}
 		} catch (ParseException e) {
 			throw new DeserialisationException(e);
 		}

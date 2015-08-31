@@ -54,52 +54,52 @@ public class STGSettings implements Settings {
 
 	public STGSettings() {
 		properties.add(new PropertyDeclaration<STGSettings, Color>(
-				this, "Input transition color", Color.class) {
+				this, "Input transition color", Color.class, true, false, false) {
 			protected void setter(STGSettings object, Color value) {
-				STGSettings.setInputColor(value);
+				setInputColor(value);
 			}
 			protected Color getter(STGSettings object) {
-				return STGSettings.getInputColor();
+				return getInputColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<STGSettings, Color>(
-				this, "Output transition color", Color.class) {
+				this, "Output transition color", Color.class, true, false, false) {
 			protected void setter(STGSettings object, Color value) {
-				STGSettings.setOutputColor(value);
+				setOutputColor(value);
 			}
 			protected Color getter(STGSettings object) {
-				return STGSettings.getOutputColor();
+				return getOutputColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<STGSettings, Color>(
-				this, "Internal transition color", Color.class) {
+				this, "Internal transition color", Color.class, true, false, false) {
 			protected void setter(STGSettings object, Color value) {
-				STGSettings.setInternalColor(value);
+				setInternalColor(value);
 			}
 			protected Color getter(STGSettings object) {
-				return STGSettings.getInternalColor();
+				return getInternalColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<STGSettings, Color>(
-				this, "Dummy transition color", Color.class) {
+				this, "Dummy transition color", Color.class, true, false, false) {
 			protected void setter(STGSettings object, Color value) {
-				STGSettings.setDummyColor(value);
+				setDummyColor(value);
 			}
 			protected Color getter(STGSettings object) {
-				return STGSettings.getDummyColor();
+				return getDummyColor();
 			}
 		});
 
 		properties.add(new PropertyDeclaration<STGSettings, Boolean>(
-				this, "Show signal toggle (~)", Boolean.class) {
+				this, "Show signal toggle (~)", Boolean.class, true, false, false) {
 			protected void setter(STGSettings object, Boolean value) {
-				STGSettings.setShowToggle(value);
+				setShowToggle(value);
 			}
 			protected Boolean getter(STGSettings object) {
-				return STGSettings.getShowToggle();
+				return getShowToggle();
 			}
 		});
 	}

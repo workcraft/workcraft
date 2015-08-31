@@ -21,6 +21,8 @@
 
 package org.workcraft.plugins.circuit;
 
+import java.util.Collection;
+
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
@@ -30,6 +32,7 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
@@ -77,12 +80,16 @@ public class Circuit extends AbstractMathModel {
 		return con;
 	}
 
+	public Collection<FunctionContact> getFunctionContacts() {
+		return Hierarchy.getDescendantsOfType(getRoot(), FunctionContact.class);
+	}
+
 	@Override
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);
 		if (node != null)  {
 			if (node instanceof Joint) {
-				properties.removeByName("Name");
+				properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
 			}
 		}
 		return properties;

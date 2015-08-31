@@ -10,7 +10,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.policy.tools.SelectionTool;
-import org.workcraft.plugins.policy.tools.SimulationTool;
+import org.workcraft.plugins.policy.tools.PolicySimulationTool;
 
 public class PolicyNetToolProvider implements CustomToolsProvider {
 
@@ -24,7 +24,7 @@ public class PolicyNetToolProvider implements CustomToolsProvider {
 
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Place.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(BundledTransition.class)));
-		result.add(new SimulationTool());
+		result.add(new PolicySimulationTool());
 
 		return result;
 	}

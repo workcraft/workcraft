@@ -133,7 +133,7 @@ public class VisualDfs extends AbstractVisualModel {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 		VisualComponent c1 = (VisualComponent) first;
 		VisualComponent c2 = (VisualComponent) second;
@@ -141,11 +141,15 @@ public class VisualDfs extends AbstractVisualModel {
 		MathNode ref2 = c2.getReferencedComponent();
 		VisualConnection ret = null;
 		if (first instanceof VisualControlRegister) {
-			ControlConnection con = ((Dfs)getMathModel()).controlConnect(ref1, ref2);
-			ret = new VisualControlConnection(con, c1, c2);
+			if (mConnection == null) {
+				mConnection = ((Dfs)getMathModel()).controlConnect(ref1, ref2);
+			}
+			ret = new VisualControlConnection((ControlConnection)mConnection, c1, c2);
 		} else {
-			MathConnection con = ((Dfs)getMathModel()).connect(ref1, ref2);
-			ret = new VisualConnection(con, c1, c2);
+			if (mConnection == null) {
+				mConnection = ((Dfs)getMathModel()).connect(ref1, ref2);
+			}
+			ret = new VisualConnection(mConnection, c1, c2);
 		}
 		if (ret != null) {
 			Hierarchy.getNearestContainer(c1, c2).add(ret);

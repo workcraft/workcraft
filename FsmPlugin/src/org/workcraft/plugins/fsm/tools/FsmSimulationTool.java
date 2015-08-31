@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -15,6 +16,8 @@ import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.fsm.Fsm;
+import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
@@ -66,13 +69,17 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 		if ((savedState == null) || savedState.isEmpty()) {
 			return;
 		}
-		VisualFsm fsm = (VisualFsm)editor.getModel();
-		for (VisualState state: fsm.getVisualStates()) {
-			String ref = fsm.getNodeMathReference(state);
-			Node node = net.getNodeByReference(ref);
-			if (node instanceof Place) {
-				boolean isInitial = ((Place)node).getTokens() > 0;
-				state.getReferencedState().setInitial(isInitial);
+		MathModel model = editor.getModel().getMathModel();
+		if (model instanceof Fsm) {
+			editor.getWorkspaceEntry().saveMemento();
+			Fsm fsm = (Fsm)model;
+			for (State state: fsm.getStates()) {
+				String ref = fsm.getNodeReference(state);
+				Node node = net.getNodeByReference(ref);
+				if (node instanceof Place) {
+					boolean isInitial = ((Place)node).getTokens() > 0;
+					state.setInitial(isInitial);
+				}
 			}
 		}
 	}

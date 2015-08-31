@@ -29,7 +29,7 @@ public class VisualLogic extends VisualDelayComponent {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
-				this, "Computed", Boolean.class) {
+				this, Logic.PROPERTY_COMPUTED, Boolean.class, true, true, true) {
 			public void setter(VisualLogic object, Boolean value) {
 				object.getReferencedLogic().setComputed(value);
 			}
@@ -39,7 +39,7 @@ public class VisualLogic extends VisualDelayComponent {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualLogic, Boolean>(
-				this, "Early Evaluation", Boolean.class) {
+				this, Logic.PROPERTY_EARLY_EVALUATION, Boolean.class, true, true, true) {
 			public void setter(VisualLogic object, Boolean value) {
 				object.getReferencedLogic().setEarlyEvaluation(value);
 			}

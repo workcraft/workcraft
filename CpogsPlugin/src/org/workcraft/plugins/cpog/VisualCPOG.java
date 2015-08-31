@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.cpog;
 
+import java.awt.geom.Point2D;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
@@ -29,9 +30,12 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -41,6 +45,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
@@ -109,6 +114,7 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	private CPOG mathModel;
+	private CpogSelectionTool selectionTool;
 
 	public VisualCPOG(CPOG model) {
 		this(model, null);
@@ -148,7 +154,7 @@ public class VisualCPOG extends AbstractVisualModel
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 		VisualConnection ret = null;
 		if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) {
@@ -165,8 +171,10 @@ public class VisualCPOG extends AbstractVisualModel
 				v = (VisualVertex) second;
 				u = (VisualVariable) first;
 			}
-			DynamicVariableConnection con = mathModel.connect(v.getMathVertex(), u.getMathVariable());
-			ret = new VisualDynamicVariableConnection(con, v, u);
+			if (mConnection == null) {
+				mConnection = mathModel.connect(v.getMathVertex(), u.getMathVariable());
+			}
+			ret = new VisualDynamicVariableConnection((DynamicVariableConnection)mConnection, v, u);
 			Hierarchy.getNearestContainer(v, u).add(ret);
 		}
 		return ret;
@@ -199,7 +207,9 @@ public class VisualCPOG extends AbstractVisualModel
 			}
 			getCurrentLevel().add(scenario);
 			getCurrentLevel().reparent(nodes, scenario);
-			scenario.setPosition(centralizeComponents(nodes));
+			Point2D centre = TransformHelper.getSnappedCentre(nodes);
+			VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
+			scenario.setPosition(centre);
 			select(scenario);
 		}
 		return scenario;

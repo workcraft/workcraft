@@ -23,9 +23,11 @@ import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat.tasks.PunfTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -68,30 +70,29 @@ public class CheckCircuitTask extends MpsatChainTask {
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		Framework framework = Framework.getInstance();
-		File workingDirectory = null;
+		File directory = null;
 		try {
 			// Common variables
 			monitor.progressUpdate(0.05);
-			String title = we.getTitle();
 			VisualCircuit visualCircuit = (VisualCircuit)we.getModelEntry().getVisualModel();
 			File envFile = visualCircuit.getEnvironmentFile();
 			boolean hasEnvironment = ((envFile != null) && envFile.exists());
 
-			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
-			workingDirectory = FileUtils.createTempDirectory(prefix);
+			String prefix = FileUtils.getTempPrefix(we.getTitle());
+			directory = FileUtils.createTempDirectory(prefix);
 
 			CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
 			STG devStg = (STG)generator.getStg().getMathModel();
 			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 			if (devStgExporter == null) {
-				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
+				throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to .g format.");
 			}
 			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
 			monitor.progressUpdate(0.10);
 
 			// Generating .g for the circuit
-			String devStgName = (hasEnvironment ? "dev.g" : "system.g");
-			File devStgFile =  new File(workingDirectory, devStgName);
+			String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
+			File devStgFile =  new File(directory, devStgName);
 			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
 			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
 					devExportTask, "Exporting circuit .g", subtaskMonitor);
@@ -114,12 +115,12 @@ public class CheckCircuitTask extends MpsatChainTask {
 				 stg = devStg;
 			} else {
 				File envStgFile = null;
-				if (envFile.getName().endsWith(".g")) {
+				if (envFile.getName().endsWith(StgUtils.ASTG_FILE_EXT)) {
 					envStgFile = envFile;
 				} else {
 					STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 					Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-					envStgFile = new File(workingDirectory, "env.g");
+					envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
 					ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
 					Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 							envExportTask, "Exporting environment .g", subtaskMonitor);
@@ -135,8 +136,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 				monitor.progressUpdate(0.25);
 
 				// Generating .g for the whole system (circuit and environment)
-				stgFile = new File(workingDirectory, "system.g");
-				PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, workingDirectory);
+				stgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+				PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, directory);
 				pcompResult = framework.getTaskManager().execute(
 						pcompTask, "Running pcomp", subtaskMonitor);
 
@@ -155,7 +156,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			File unfoldingFile = new File(workingDirectory, "system" + MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + MpsatUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
@@ -184,7 +185,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 						MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
-						unfoldingFile.getCanonicalPath(), workingDirectory, true);
+						unfoldingFile.getCanonicalPath(), directory, true);
 				Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 						mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
@@ -209,7 +210,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			// Check for deadlock
 			if (checkDeadlock) {
 				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(),
-						unfoldingFile.getCanonicalPath(), workingDirectory, true);
+						unfoldingFile.getCanonicalPath(), directory, true);
 				Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
 						mpsatDeadlockTask, "Running deadlock check [MPSat]", subtaskMonitor);
 
@@ -234,7 +235,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			// Check for hazards
 			if (checkHazard) {
 				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(),
-						unfoldingFile.getCanonicalPath(), workingDirectory, true);
+						unfoldingFile.getCanonicalPath(), directory, true);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the hazard property:");
 					System.out.println(hazardSettings.getReach());
@@ -268,7 +269,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
 		} finally {
-			FileUtils.deleteFile(workingDirectory, MpsatUtilitySettings.getDebugTemporaryFiles());
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

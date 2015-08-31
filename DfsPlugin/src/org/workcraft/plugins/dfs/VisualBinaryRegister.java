@@ -13,7 +13,7 @@ public abstract class VisualBinaryRegister extends VisualAbstractRegister {
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualBinaryRegister, Marking>(
-				this, "Marking", Marking.class) {
+				this, BinaryRegister.PROPERTY_MARKING, Marking.class, true, true, true) {
 			public void setter(VisualBinaryRegister object, Marking value) {
 				object.getReferencedBinaryRegister().setMarking(value);
 			}
