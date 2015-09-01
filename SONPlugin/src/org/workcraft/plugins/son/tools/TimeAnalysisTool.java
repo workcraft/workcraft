@@ -239,7 +239,7 @@ public class TimeAnalysisTool extends SONSimulationTool{
 		((AbstractDocument) min.getDocument()).setDocumentFilter(new InputFilter());
 
 		JLabel dash = new JLabel();
-		dash.setText("йд");
+		dash.setText("-");
 
 		final JTextField max = new JTextField();
 		max.setText(end);

@@ -34,10 +34,10 @@ public class VisualCondition extends VisualPlaceNode{
 	private static float strokeWidth = 0.1f;
 
 	private Positioning startTimePositioning = Positioning.LEFT;
-	private RenderedText startTimeRenderedText = new RenderedText("", font, startTimePositioning, new Point2D.Double(0.0,0.0));
+	private RenderedText startTimeRenderedText = new RenderedText("", timeFont, startTimePositioning, new Point2D.Double(0.0,0.0));
 
 	private Positioning endTimePositioning = Positioning.RIGHT;
-	private RenderedText endTimeRenderedText = new RenderedText("", font, endTimePositioning, new Point2D.Double(0.0,0.0));
+	private RenderedText endTimeRenderedText = new RenderedText("", timeFont, endTimePositioning, new Point2D.Double(0.0,0.0));
 
 	public VisualCondition(Condition refNode) {
 		super(refNode);
@@ -105,13 +105,13 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	private void cahceStartTimeRenderedText(DrawRequest r) {
-		String start = "start: "+ getStartTime();
+		String start = "Start: "+ getStartTime();
 
 		Point2D offset = getOffset(startTimePositioning);
 		offset.setLocation(offset.getX() , offset.getY() - labelOffset);
 
-		if (startTimeRenderedText.isDifferent(start, font, startTimePositioning, offset)) {
-			startTimeRenderedText = new RenderedText(start, font, startTimePositioning, offset);
+		if (startTimeRenderedText.isDifferent(start, timeFont, startTimePositioning, offset)) {
+			startTimeRenderedText = new RenderedText(start, timeFont, startTimePositioning, offset);
 		}
 	}
 
@@ -126,14 +126,14 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	private void cahceEndTimeRenderedText(DrawRequest r) {
-		String end = "end: "+ getEndTime();
+		String end = "End: "+ getEndTime();
 		//double o = 0.8 * size;
 
 		Point2D offset = getOffset(endTimePositioning);
 		offset.setLocation(offset.getX() , offset.getY() - labelOffset);
 
-		if (endTimeRenderedText.isDifferent(end, font, endTimePositioning, offset)) {
-			endTimeRenderedText = new RenderedText(end, font, endTimePositioning, offset);
+		if (endTimeRenderedText.isDifferent(end, timeFont, endTimePositioning, offset)) {
+			endTimeRenderedText = new RenderedText(end, timeFont, endTimePositioning, offset);
 		}
 	}
 

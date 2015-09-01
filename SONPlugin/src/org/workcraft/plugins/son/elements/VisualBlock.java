@@ -109,7 +109,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	}
 
 	private void cahceDurationRenderedText(DrawRequest r) {
-		String duration = "d: "+ this.getDuration();
+		String duration = "D: "+ this.getDuration();
 		//double o = 0.8 * size;
 
 		Point2D offset = getOffset(durationLabelPositioning);

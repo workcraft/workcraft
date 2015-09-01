@@ -28,15 +28,16 @@ import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 
 public class VisualPlaceNode extends VisualComponent{
 
-	protected Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+	protected Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+	protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
 	protected Positioning errLabelPositioning = Positioning.BOTTOM;
-	protected RenderedText errorRenderedText = new RenderedText("", font, errLabelPositioning, new Point2D.Double(0.0,0.0));
+	protected RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	protected Color errLabelColor = SONSettings.getErrLabelColor();
 
 	private Positioning durationLabelPositioning = Positioning.BOTTOM;
-	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
+	private RenderedText durationRenderedText = new RenderedText("", timeFont, durationLabelPositioning, new Point2D.Double(0.0,0.0));
 
-	private String inerfaceValue = "";
+	private String value = "";
 
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double labelOffset = 0.5;
@@ -49,7 +50,7 @@ public class VisualPlaceNode extends VisualComponent{
 
 	private void addPropertyDeclarations() {
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Boolean>(
-				this, "Marking", Boolean.class) {
+				this, "Marking", Boolean.class, true, true, true) {
 			public void setter(VisualPlaceNode object, Boolean value) {
 				setMarked(value);
 			}
@@ -59,7 +60,7 @@ public class VisualPlaceNode extends VisualComponent{
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Color>(
-				this, "Error color", Color.class) {
+				this, "Error color", Color.class, true, true, true) {
 			protected void setter(VisualPlaceNode object, Color value) {
 				object.setErrLabelColor(value);
 			}
@@ -138,8 +139,8 @@ public class VisualPlaceNode extends VisualComponent{
 			offset.setLocation(offset.getX(), offset.getY() + labelOffset);
 		}
 
-		if (errorRenderedText.isDifferent(error, font, errLabelPositioning, offset)) {
-			errorRenderedText = new RenderedText(error, font, errLabelPositioning, offset);
+		if (errorRenderedText.isDifferent(error, errorFont, errLabelPositioning, offset)) {
+			errorRenderedText = new RenderedText(error, errorFont, errLabelPositioning, offset);
 		}
 	}
 
@@ -154,7 +155,7 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	private void cahceDurationRenderedText(DrawRequest r) {
-		String duration = "d: "+ this.getDuration();
+		String duration = "D: "+ this.getDuration();
 
 		Point2D offset = getOffset(durationLabelPositioning);
 		if (durationLabelPositioning.ySign<0) {
@@ -163,8 +164,8 @@ public class VisualPlaceNode extends VisualComponent{
 			offset.setLocation(offset.getX(), offset.getY() + labelOffset);
 		}
 
-		if (durationRenderedText.isDifferent(duration, font, durationLabelPositioning, offset)) {
-			durationRenderedText = new RenderedText(duration, font, durationLabelPositioning, offset);
+		if (durationRenderedText.isDifferent(duration, timeFont, durationLabelPositioning, offset)) {
+			durationRenderedText = new RenderedText(duration, timeFont, durationLabelPositioning, offset);
 		}
 	}
 
@@ -270,12 +271,12 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	public void setInterface(String value){
-		this.inerfaceValue = value;
+		this.value = value;
 		sendNotification(new PropertyChangedEvent(this, "Interface"));
 	}
 
 	public String getInterface(){
-		return inerfaceValue;
+		return value;
 	}
 
 	public Color getErrLabelColor(){

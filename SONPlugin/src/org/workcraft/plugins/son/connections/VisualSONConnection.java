@@ -26,9 +26,8 @@ import org.workcraft.util.Geometry;
 
 public class VisualSONConnection extends VisualConnection {
 
-	public static final Font labelFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
-
-	private RenderedText labelRenderedText = new RenderedText("", labelFont, Positioning.CENTER, new Point2D.Double());
+	public static final Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
+	private RenderedText timeRenderedText = new RenderedText("", timeFont, Positioning.CENTER, new Point2D.Double());
 
 
 	public VisualSONConnection() {
@@ -61,7 +60,7 @@ public class VisualSONConnection extends VisualConnection {
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualSONConnection, Color>(
-				this, "Time color", Color.class) {
+				this, "Time color", Color.class, true, true, true) {
 			protected void setter(VisualSONConnection object, Color value) {
 				object.setTimeLabelColor(value);
 			}
@@ -135,10 +134,10 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	protected void cacheLabelRenderedText(DrawRequest r) {
-		String time = "t: "+ this.getTime();
+		String time = "T: "+ this.getTime();
 
-		if (labelRenderedText.isDifferent(time, labelFont, Positioning.CENTER, new Point2D.Double())) {
-			labelRenderedText = new RenderedText(time, labelFont, Positioning.CENTER, new Point2D.Double());
+		if (timeRenderedText.isDifferent(time, timeFont, Positioning.CENTER, new Point2D.Double())) {
+			timeRenderedText = new RenderedText(time, timeFont, Positioning.CENTER, new Point2D.Double());
 		}
 	}
 
@@ -151,7 +150,7 @@ public class VisualSONConnection extends VisualConnection {
 			firstDerivative = Geometry.multiply(firstDerivative, -1);
 		}
 
-		Rectangle2D bb = labelRenderedText.getBoundingBox();
+		Rectangle2D bb = timeRenderedText.getBoundingBox();
 		Point2D labelPosition = new Point2D.Double(bb.getCenterX(), bb.getMaxY());
 		if (Geometry.crossProduct(firstDerivative, secondDerivative) < 0) {
 			labelPosition.setLocation(labelPosition.getX(), bb.getMinY());
@@ -175,7 +174,7 @@ public class VisualSONConnection extends VisualConnection {
 			AffineTransform transform = getLabelTransform();
 			g.transform(transform);
 			g.setColor(Coloriser.colorise(getTimeLabelColor(), d.getColorisation()));
-			labelRenderedText.draw(g);
+			timeRenderedText.draw(g);
 			g.setTransform(oldTransform);
 		}
 	}
@@ -187,7 +186,7 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	private Rectangle2D getLabelBoundingBox() {
-		return BoundingBoxHelper.transform(labelRenderedText.getBoundingBox(), getLabelTransform());
+		return BoundingBoxHelper.transform(timeRenderedText.getBoundingBox(), getLabelTransform());
 	}
 
 	@Override
