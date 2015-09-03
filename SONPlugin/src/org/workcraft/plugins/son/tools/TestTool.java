@@ -56,10 +56,8 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
+		getScenario(net);
 
-		for(Condition node : net.getConditions()){
-			node.setFillColor(new Color(1.0f, 0.5f, 0.0f));
-		}
 	//	dfsTest(net);
 		//outputBefore(net);
 		//phaseTest(net);
@@ -73,6 +71,12 @@ public class TestTool extends AbstractTool implements Tool{
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
 		//conditionOutputTest(vnet);
+	}
+
+	private void getScenario(SON net){
+		ScenarioGenerator s = new ScenarioGenerator();
+		System.out.println(s.getScenario().toString(net));
+		System.out.println(s.getScenario().size());
 	}
 
 	private void dfsTest(SON net){

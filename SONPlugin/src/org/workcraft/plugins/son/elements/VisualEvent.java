@@ -113,5 +113,4 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 			setFaulty(srcComponent.isFaulty());
 		}
 	}
-
 }

@@ -12,6 +12,7 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.ErrTracingReset;
 import org.workcraft.plugins.son.tools.ReachabilityTool;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
+import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.plugins.son.tools.TimeConsistencyChecker;
 import org.workcraft.plugins.son.tools.TimeValueEstimator;
 import org.workcraft.plugins.son.tools.ClearMarkingTool;
@@ -33,7 +34,7 @@ public class SONModule implements Module{
 
 		pm.registerClass(ModelDescriptor.class, SONDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
-		//pm.registerClass(Tool.class, TestTool.class);
+		pm.registerClass(Tool.class, TestTool.class);
 		//verification
 		pm.registerClass(Tool.class, StructurePropertyChecker.class);
 		pm.registerClass(Tool.class, ReachabilityTool.class);

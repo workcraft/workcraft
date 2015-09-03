@@ -668,13 +668,20 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	protected void autoSimulator(final GraphEditor editor) throws InvalidStructureException{
-		SONCycleAlg cycle = new SONCycleAlg(net, phases);
-		if(!cycle.cycleTask(net.getComponents()).isEmpty()){
+		if(!acyclicChecker()){
 			autoSimuButton.setSelected(false);
-			throw new InvalidStructureException("cyclic structure error");
+			throw new InvalidStructureException("Cyclic structure error");
 		}else{
 			autoSimulationTask(editor);
 		}
+	}
+
+	protected boolean acyclicChecker(){
+		SONCycleAlg cycle = new SONCycleAlg(net, phases);
+		if(!cycle.cycleTask(net.getComponents()).isEmpty())
+			return false;
+		else
+			return true;
 	}
 
 	protected void autoSimulationTask(final GraphEditor editor){
