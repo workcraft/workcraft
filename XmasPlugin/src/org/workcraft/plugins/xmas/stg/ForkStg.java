@@ -3,16 +3,15 @@ package org.workcraft.plugins.xmas.stg;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class ForkStg extends NodeStg {
-	public final ContactStg i;
-	public final ContactStg a;
-	public final ContactStg b;
+	public final SignalStg i;
+	public final SignalStg a;
+	public final SignalStg b;
 
-	public ForkStg(ContactStg i, ContactStg a, ContactStg b) {
+	public ForkStg(SignalStg i, SignalStg a, SignalStg b) {
 		this.i = i;
 		this.a = a;
 		this.b = b;

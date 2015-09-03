@@ -7,11 +7,11 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class JoinStg extends NodeStg {
-	public final ContactStg a;
-	public final ContactStg b;
-	public final ContactStg o;
+	public final SignalStg a;
+	public final SignalStg b;
+	public final SignalStg o;
 
-	public JoinStg(ContactStg a, ContactStg b, ContactStg o) {
+	public JoinStg(SignalStg a, SignalStg b, SignalStg o) {
 		this.a = a;
 		this.b = b;
 		this.o = o;

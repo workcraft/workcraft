@@ -6,9 +6,9 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class SourceStg extends NodeStg {
-	public final ContactStg o;
+	public final SignalStg o;
 
-	public SourceStg(ContactStg o) {
+	public SourceStg(SignalStg o) {
 		this.o = o;
 	}
 

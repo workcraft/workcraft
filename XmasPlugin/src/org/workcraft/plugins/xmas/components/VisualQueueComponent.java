@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -44,7 +45,6 @@ public class VisualQueueComponent extends VisualXmasComponent {
 	public VisualQueueComponent(QueueComponent component) {
 		super(component);
 		addPropertyDeclarations();
-		component.setCapacity(1);
 		if (component.getChildren().isEmpty()) {
 			this.addInput("i", Positioning.LEFT);
 			this.addOutput("o", Positioning.RIGHT);
@@ -55,8 +55,26 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		addPropertyDeclaration(new PropertyDeclaration<VisualQueueComponent, Integer>(
 				this, QueueComponent.PROPERTY_CAPACITY, Integer.class, true, true, true) {
 			public void setter(VisualQueueComponent object, Integer value) {
+				double scale = (double)value / (double) object.getReferencedQueueComponent().getCapacity();
+				for (VisualXmasContact contact: getContacts()) {
+					double x = scaleContactCoord(contact.getX(), scale);
+					double y = scaleContactCoord(contact.getY(), scale);
+					contact.setPosition(new Point2D.Double(x, y));
+				}
 				object.getReferencedQueueComponent().setCapacity(value);
 			}
+
+			private double scaleContactCoord(double val, double scale) {
+				double result = val;
+				double len = getContactLength();
+				if (val > 0.0) {
+					result = scale * (val - len) + len;
+				} else if (val < 0.0) {
+					result = scale * (val + len) - len;
+				}
+				return result;
+			}
+
 			public Integer getter(VisualQueueComponent object) {
 				return object.getReferencedQueueComponent().getCapacity();
 			}
@@ -67,19 +85,54 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		return (QueueComponent)getReferencedComponent();
 	}
 
+	public double getSlotWidth() {
+		return 0.35 * size;
+	}
+
+	public double getSlotHeight() {
+		return 0.8 * size;
+	}
+
+	public double getContactLength() {
+		return 0.15 * size;
+	}
+
+	public Shape getSlotShape(int i) {
+		Path2D shape = new Path2D.Double();
+		QueueComponent ref = getReferencedQueueComponent();
+		if (ref != null) {
+			int c = ref.getCapacity();
+			double w2 = 0.5 * getSlotWidth();
+			double h2 = 0.5 * getSlotHeight();
+			double p = 2 * w2 * (i - 0.5 * (c - 1));
+			shape.moveTo(p - w2, -h2);
+			shape.lineTo(p - w2, +h2);
+			shape.lineTo(p + w2, +h2);
+			shape.lineTo(p + w2, -h2);
+			shape.closePath();
+		}
+		return shape;
+	}
+
 	@Override
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
+		QueueComponent ref = getReferencedQueueComponent();
+		if (ref != null) {
+			int c = ref.getCapacity();
+			double pos = 0.5 * c * getSlotWidth();
+			double len = getContactLength();
 
-		shape.moveTo(-0.5 * size, -0.4 * size);
-		shape.lineTo(-0.5 * size, +0.4 * size);
-		shape.lineTo(+0.5 * size, +0.4 * size);
-		shape.lineTo(+0.5 * size, -0.4 * size);
-		shape.closePath();
+			shape.moveTo(+pos, 0.0);
+			shape.lineTo(+pos + len, 0.0);
 
-		shape.moveTo(0.0, -0.4 * size);
-		shape.lineTo(0.0, +0.4 * size);
+			shape.moveTo(-pos, 0.0);
+			shape.lineTo(-pos - len, 0.0);
 
+			for (int i = 0; i < c; i++) {
+				shape.append(getSlotShape(i), false);
+			}
+		}
 		return shape;
 	}
 

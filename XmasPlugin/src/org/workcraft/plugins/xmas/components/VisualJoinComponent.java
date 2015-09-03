@@ -49,20 +49,31 @@ public class VisualJoinComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(-0.5 * size, -0.5 * size);
-		shape.lineTo(-0.1 * size, -0.5 * size);
+		shape.moveTo(-0.50 * size, -0.50 * size);
+		shape.lineTo(-0.18 * size, -0.50 * size);
 
-		shape.moveTo(-0.5 * size, +0.5 * size);
-		shape.lineTo(-0.1 * size, +0.5 * size);
+		shape.moveTo(-0.50 * size, +0.50 * size);
+		shape.lineTo(-0.18 * size, +0.50 * size);
 
-		shape.moveTo(-0.1 * size, -0.5 * size);
-		shape.lineTo(-0.1 * size, +0.5 * size);
+		shape.moveTo(-0.10 * size, -0.60 * size);
+		shape.lineTo(-0.10 * size, +0.60 * size);
 
-		shape.moveTo(+0.1 * size, -0.5 * size);
-		shape.lineTo(+0.1 * size, +0.5 * size);
+		shape.moveTo(+0.10 * size, -0.60 * size);
+		shape.lineTo(+0.10 * size, +0.60 * size);
 
-		shape.moveTo(+0.1 * size, 0.0);
-		shape.lineTo(+0.5 * size, 0.0);
+		shape.moveTo(+0.10 * size, +0.00);
+		shape.lineTo(+0.50 * size, +0.00);
+
+		// Arrows
+		shape.moveTo(-0.25 * size, -0.55 * size);
+		shape.lineTo(-0.15 * size, -0.50 * size);
+		shape.lineTo(-0.25 * size, -0.45 * size);
+		shape.closePath();
+
+		shape.moveTo(-0.25 * size, +0.55 * size);
+		shape.lineTo(-0.15 * size, +0.50 * size);
+		shape.lineTo(-0.25 * size, +0.45 * size);
+		shape.closePath();
 
 		return shape;
 	}

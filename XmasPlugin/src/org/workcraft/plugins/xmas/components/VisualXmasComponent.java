@@ -175,9 +175,14 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 			vc.setPosition(new Point2D.Double(size / 2 * positioning.xSign, size / 2 * positioning.ySign));
 		}
 	}
+
 	@Override
+    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		return getTransformedShape().getBounds2D();
+    }
+
 	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = getShape().getBounds2D();
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 		for (VisualXmasContact c: getContacts()) {
 			Rectangle2D.union(bb, c.getBoundingBox(), bb);
 		}
@@ -267,6 +272,14 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 	abstract public Shape getShape();
 
+	public Shape getTransformedShape() {
+		AffineTransform rotateTransform = new AffineTransform();
+		if (orientation != null) {
+			rotateTransform.quadrantRotate(orientation.getQuadrant());
+		}
+		return rotateTransform.createTransformedShape(getShape());
+	}
+
 	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
@@ -274,13 +287,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
-
-		AffineTransform savedTransform = g.getTransform();
-		AffineTransform rotateTransform = new AffineTransform();
-		rotateTransform.quadrantRotate(getOrientation().getQuadrant());
-		g.transform(rotateTransform);
-		g.draw(getShape());
-		g.setTransform(savedTransform);
+		g.draw(getTransformedShape());
 
 		drawNameInLocalSpace(r);
 		drawLabelInLocalSpace(r);

@@ -24,6 +24,7 @@ package org.workcraft.plugins.xmas.components;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 import org.workcraft.annotations.DisplayName;
@@ -31,6 +32,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.xmas.components.SourceComponent.Mode;
 import org.workcraft.plugins.xmas.components.SourceComponent.Type;
@@ -86,11 +88,11 @@ public class VisualSourceComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(0.0, 0.0);
-		shape.lineTo(0.0, -0.5 * size);
+		shape.moveTo(0.00, 0.00);
+		shape.lineTo(0.00, -0.60 * size);
 
-		shape.moveTo(-0.4 * size, -0.5 * size);
-		shape.lineTo(+0.4 * size, -0.5 * size);
+		shape.moveTo(-0.40 * size, -0.60 * size);
+		shape.lineTo(+0.40 * size, -0.60 * size);
 
 		return shape;
 	}

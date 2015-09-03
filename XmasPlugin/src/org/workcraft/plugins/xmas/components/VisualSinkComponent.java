@@ -50,17 +50,17 @@ public class VisualSinkComponent extends VisualXmasComponent {
 	public Shape getShape() {
 		Path2D shape = new Path2D.Double();
 
-		shape.moveTo(0.0, 0.0);
-		shape.lineTo(0.0, +0.3 * size);
+		shape.moveTo(0.00, +0.00);
+		shape.lineTo(0.00, +0.40 * size);
 
-		shape.moveTo(-0.35 * size, 0.3);
-		shape.lineTo(+0.35 * size, 0.3);
+		shape.moveTo(-0.35 * size, 0.40 * size);
+		shape.lineTo(+0.35 * size, 0.40 * size);
 
-		shape.moveTo(-0.20 * size, +0.4 * size);
-		shape.lineTo(+0.20 * size, +0.4 * size);
+		shape.moveTo(-0.20 * size, +0.55 * size);
+		shape.lineTo(+0.20 * size, +0.55 * size);
 
-		shape.moveTo(-0.05 * size, +0.5 * size);
-		shape.lineTo(+0.05 * size, +0.5 * size);
+		shape.moveTo(-0.05 * size, +0.70 * size);
+		shape.lineTo(+0.05 * size, +0.70 * size);
 
 		return shape;
 	}

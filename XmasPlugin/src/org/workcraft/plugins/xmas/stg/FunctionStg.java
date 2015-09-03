@@ -1,19 +1,16 @@
 package org.workcraft.plugins.xmas.stg;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
-import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class FunctionStg extends NodeStg {
-	public final ContactStg i;
-	public final ContactStg o;
+	public final SignalStg i;
+	public final SignalStg o;
 
-	public FunctionStg(ContactStg i, ContactStg o) {
+	public FunctionStg(SignalStg i, SignalStg o) {
 		this.i = i;
 		this.o = o;
 	}

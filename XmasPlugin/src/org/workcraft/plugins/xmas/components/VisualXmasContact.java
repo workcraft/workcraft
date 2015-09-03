@@ -94,23 +94,27 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 
 	@Override
 	public void draw(DrawRequest r) {
+
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
 
-		Shape shape = getShape();
-		g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));
+		boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
+		if (inSimulationMode || XmasSettings.getShowContacts()) {
+			Shape shape = getShape();
+			g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));
 
-		Color fillColor = d.getBackground();
-		if (fillColor == null) {
-			fillColor = getFillColor();
+			Color fillColor = d.getBackground();
+			if (fillColor == null) {
+				fillColor = getFillColor();
+			}
+
+			g.setColor(fillColor);
+			g.fill(shape);
+
+			Color colorisation = d.getColorisation();
+			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+			g.draw(shape);
 		}
-
-		g.setColor(fillColor);
-		g.fill(shape);
-
-		Color colorisation = d.getColorisation();
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		g.draw(shape);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ package org.workcraft.plugins.xmas;
 import java.util.ArrayList;
 
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
-import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -20,6 +19,7 @@ import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.plugins.xmas.components.SyncComponent;
 import org.workcraft.plugins.xmas.tools.SyncSelectionTool;
+import org.workcraft.plugins.xmas.tools.XmasConnectionTool;
 import org.workcraft.plugins.xmas.tools.XmasSimulationTool;
 
 public class XmasToolsProvider implements CustomToolsProvider {
@@ -29,9 +29,8 @@ public class XmasToolsProvider implements CustomToolsProvider {
 		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
 		result.add(new SyncSelectionTool());
-		//result.add(new SelectionTool());
 		result.add(new CommentGeneratorTool());
-		result.add(new ConnectionTool());
+		result.add(new XmasConnectionTool());
 
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SourceComponent.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SinkComponent.class)));
