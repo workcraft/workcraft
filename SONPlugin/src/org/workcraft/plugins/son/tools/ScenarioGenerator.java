@@ -2,12 +2,13 @@ package org.workcraft.plugins.son.tools;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -17,13 +18,16 @@ import java.util.HashSet;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.dom.Node;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -32,10 +36,12 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.BlockConnector;
+import org.workcraft.plugins.son.MarkingRef;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.Scenario;
+import org.workcraft.plugins.son.StepExecution;
 import org.workcraft.plugins.son.Step;
-import org.workcraft.plugins.son.Trace;
+import org.workcraft.plugins.son.StepRef;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -51,8 +57,11 @@ public class ScenarioGenerator extends SONSimulationTool{
 
 	protected JButton saveButton, loadButton, removeButton, resetButton;
 	protected JToggleButton startButton;
+	protected JTable scenarioTable;
 
+	protected final StepExecution stepExecution = new StepExecution();
 	protected final Scenario scenario = new Scenario();
+	protected final ArrayList<Scenario> saveList = new ArrayList<Scenario>();
 	private Color greyoutColor = Color.LIGHT_GRAY;
 
 	@Override
@@ -80,10 +89,10 @@ public class ScenarioGenerator extends SONSimulationTool{
 		controlPanel.add(loadButton);
 		controlPanel.add(removeButton);
 
-		traceTable = new JTable(new ScenarioTableModel());
-		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scenarioTable = new JTable(new ScenarioTableModel());
+		scenarioTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		infoPanel = new JScrollPane(traceTable);
+		infoPanel = new JScrollPane(scenarioTable);
 		infoPanel.setPreferredSize(new Dimension(1, 1));
 
 		statusPanel = new JPanel();
@@ -101,10 +110,19 @@ public class ScenarioGenerator extends SONSimulationTool{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(startButton.isSelected()){
-					branchTrace.clear();
-					net.clearMarking();
-					net.refreshColor();
-					scenarioGenerator(editor);
+					if(!acyclicChecker()){
+						startButton.setSelected(false);
+						try {
+							throw new InvalidStructureException("Cyclic structure error");
+						} catch (InvalidStructureException e1) {
+							errorMsg(e1.getMessage(), editor);
+						}
+					}else{
+						scenario.clear();
+						net.clearMarking();
+						net.refreshColor();
+						scenarioGenerator(editor);
+					}
 				}else{
 					Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
 					setGrayout(step, greyoutColor);
@@ -116,25 +134,18 @@ public class ScenarioGenerator extends SONSimulationTool{
 		resetButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(getScenario().toString(net));
+				System.out.println(getStepExecution().toString());
 			}
 		});
 
-		traceTable.addMouseListener(new MouseListener() {
+		scenarioTable.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int column = traceTable.getSelectedColumn();
-				int row = traceTable.getSelectedRow();
-				if (column == 1) {
-					if (row < branchTrace.size()) {
-						boolean work = true;
-						while (work && (branchTrace.getPosition() > row)) {
-							work = quietStepBack(editor);
-						}
-						while (work && (branchTrace.getPosition() < row)) {
-							work = quietStep(editor);
-						}
-					}
+				int column = scenarioTable.getSelectedColumn();
+				int row = scenarioTable.getSelectedRow();
+				if (column == 0 && row < saveList.size()) {
+					updateState(editor);
+					scenario.clear();
 				}
 			}
 
@@ -154,7 +165,7 @@ public class ScenarioGenerator extends SONSimulationTool{
 			public void mouseReleased(MouseEvent arg0) {
 			}
 		});
-		traceTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
+		scenarioTable.setDefaultRenderer(Object.class,	new ScenarioTableCellRendererImplementation());
 	}
 
 	@Override
@@ -176,31 +187,30 @@ public class ScenarioGenerator extends SONSimulationTool{
 	@Override
 	public void deactivated(final GraphEditor editor) {
 		BlockConnector.blockInternalConnector(visualNet);
+		scenario.clear();
+		net.clearMarking();
 	}
 
 	protected void scenarioGenerator(final GraphEditor editor){
 		applyMarking(initialMarking);
-		scenario.add(getCurrentMarking());
+
+		MarkingRef markingRef = new MarkingRef();
+		markingRef.addAll(net.getNodeRefs(getCurrentMarking()));
+		stepExecution.add(markingRef);
+		scenario.addAll(markingRef);
+		updateState(editor);
+
 		Step step = simuAlg.getEnabledNodes(sync, phases, false);
 		setDecoration(step);
-		try {
-			autoSimulator(editor);
-		} catch (InvalidStructureException e1) {
-			errorMsg(e1.getMessage(), editor);
-		}
+		autoSimulator(editor);
 	}
 
 	@Override
-	protected void autoSimulator(final GraphEditor editor) throws InvalidStructureException{
-
-		if(!acyclicChecker()){
-			startButton.setSelected(false);
-			throw new InvalidStructureException("Cyclic structure error");
-		}else{
-			autoSimulationTask(editor);
-		}
-
-		Collection<Node> nodes = getScenario().getAllNodes();
+	protected void autoSimulator(final GraphEditor editor){
+		autoSimulationTask(editor);
+		Collection<Node> nodes = new ArrayList<Node>();
+		nodes.addAll(getScenario().getNodes(net));
+		nodes.addAll(getScenario().getConnections(net));
 		setGrayout(nodes, Color.BLACK);
 	}
 
@@ -213,14 +223,77 @@ public class ScenarioGenerator extends SONSimulationTool{
 		}
 		step = conflictfilter(step);
 		if(!step.isEmpty()){
-			scenario.add(step);
 			step = simuAlg.getMinFire(step.iterator().next(), sync, step, false);
 			executeEvents(editor, step);
-			ArrayList<PlaceNode> marking = new ArrayList<PlaceNode>();
-			marking.addAll(getCurrentMarking());
-			marking.addAll(getSyncChannelPlaces(step));
-			scenario.add(marking);
 			autoSimulationTask(editor);
+		}
+	}
+
+	@Override
+	public void updateState(final GraphEditor editor) {
+		scenarioTable.tableChanged(new TableModelEvent(scenarioTable.getModel()));
+	}
+
+	@SuppressWarnings("serial")
+	protected final class ScenarioTableCellRendererImplementation implements TableCellRenderer {
+		JLabel label = new JLabel() {
+			@Override
+			public void paint( Graphics g ) {
+				g.setColor( getBackground() );
+				g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
+				super.paint( g );
+			}
+		};
+
+		boolean isActive(int row, int column) {
+			if (column==0) {
+				if (!saveList.isEmpty()) {
+					return row == mainTrace.getPosition();
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value,
+				boolean isSelected, boolean hasFocus,int row, int column) {
+
+			if (!(value instanceof String)) return null;
+
+			label.setText(((String)value));
+
+			if (isActive(row, column)) {
+				label.setBackground(Color.YELLOW);
+			} else {
+				label.setBackground(Color.WHITE);
+			}
+
+			return label;
+		}
+	}
+
+	@Override
+	public void executeEvents(final GraphEditor editor, Step step) {
+		ArrayList<PlaceNode> oldMarking = new ArrayList<PlaceNode>();
+		oldMarking.addAll(getCurrentMarking());
+		super.executeEvents(editor, step);
+
+		//add step references
+		StepRef stepRef = new StepRef();
+		stepRef.addAll(net.getNodeRefs(step));
+		stepExecution.add(stepRef);
+		scenario.addAll(stepRef);
+
+		//add marking references
+		MarkingRef markingRef = new MarkingRef();
+		ArrayList<PlaceNode> marking = new ArrayList<PlaceNode>();
+		marking.addAll(getCurrentMarking());
+		marking.addAll(getSyncChannelPlaces(step));
+		markingRef.addAll(net.getNodeRefs(marking));
+		stepExecution.add(markingRef);
+		for(String str : markingRef){
+			if(!scenario.contains(str))
+				scenario.add(str);
 		}
 	}
 
@@ -252,33 +325,7 @@ public class ScenarioGenerator extends SONSimulationTool{
 	public void setGrayout(Collection<? extends Node> nodes, Color color){
 		for(Node node : nodes){
 			net.setForegroundColor(node, color);
-			net.setTimeColor(node, color);
 		}
-	}
-
-	private ArrayList<SONConnection> getPreConnections(ArrayList<PlaceNode> marking){
-		ArrayList<SONConnection> result = new ArrayList<SONConnection>();
-		Step step = getStep(branchTrace.get(branchTrace.getPosition()));
-		for(PlaceNode c : marking){
-			for(SONConnection con : net.getOutputSONConnections(c)){
-				if(step.contains(con.getSecond()) && con.getSemantics() != Semantics.BHVLINE)
-					result.add(con);
-			}
-		}
-
-		return result;
-	}
-
-	private ArrayList<SONConnection> getPostConnections(ArrayList<PlaceNode> marking){
-		ArrayList<SONConnection> result = new ArrayList<SONConnection>();
-		Step step = getStep(branchTrace.get(branchTrace.getPosition()-1));
-		for(PlaceNode c : marking){
-			for(SONConnection con : net.getInputSONConnections(c)){
-				if(step.contains(con.getFirst()) && con.getSemantics() != Semantics.BHVLINE)
-					result.add(con);
-			}
-		}
-		return result;
 	}
 
 	@Override
@@ -300,29 +347,33 @@ public class ScenarioGenerator extends SONSimulationTool{
 
 		@Override
 		public String getColumnName(int column) {
-			if (column == 0) return "Scenario";
-			return "Trace";
+			if (column == 0) return "Save List";
+			return "Scenario";
 		}
 
 		@Override
 		public int getRowCount() {
-			return Math.max(scenario.size(), branchTrace.size());
+			return Math.max(0, scenario.size());
 		}
 
 		@Override
 		public Object getValueAt(int row, int column) {
 			if (column == 0) {
-				if (!scenario.isEmpty() && (row < scenario.size())) {
-					return scenario.get(row);
+				if (!stepExecution.isEmpty() && (row < stepExecution.size())) {
+					return stepExecution.get(row);
 				}
 			} else {
-				if (!branchTrace.isEmpty() && (row < branchTrace.size())) {
-					return branchTrace.get(row);
+				if (!scenario.isEmpty() && (row < scenario.size())) {
+					return scenario.get(row);
 					}
 				}
 			return "";
 		}
 	};
+
+	public StepExecution getStepExecution(){
+		return stepExecution;
+	}
 
 	public Scenario getScenario(){
 		return scenario;
@@ -357,6 +408,7 @@ public class ScenarioGenerator extends SONSimulationTool{
 	public void mousePressed(GraphEditorMouseEvent e){
 		if(startButton.isSelected()){
 			super.mousePressed(e);
+			autoSimulator(editor);
 		}
 	}
 

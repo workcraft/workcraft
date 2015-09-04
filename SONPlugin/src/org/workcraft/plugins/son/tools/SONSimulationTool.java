@@ -255,10 +255,15 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(autoSimuButton.isSelected()){
-					try {
+					if(!acyclicChecker()){
+						autoSimuButton.setSelected(false);
+						try {
+							throw new InvalidStructureException("Cyclic structure error");
+						} catch (InvalidStructureException e1) {
+							errorMsg(e1.getMessage(), editor);
+						}
+					}else{
 						autoSimulator(editor);
-					} catch (InvalidStructureException e1) {
-						errorMsg(e1.getMessage(), editor);
 					}
 				}
 			}
@@ -667,10 +672,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			c.setMarked(marking.get(c));
 	}
 
-	protected void autoSimulator(final GraphEditor editor) throws InvalidStructureException{
+	protected void autoSimulator(final GraphEditor editor){
 		if(!acyclicChecker()){
 			autoSimuButton.setSelected(false);
-			throw new InvalidStructureException("Cyclic structure error");
 		}else{
 			autoSimulationTask(editor);
 		}
@@ -943,11 +947,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				}
 
 			if(autoSimuButton.isSelected()){
-				try {
-					autoSimulator(editor);
-				} catch (InvalidStructureException e1) {
-					errorMsg(e1.getMessage(), editor);
-				}
+				autoSimulator(editor);
 			}
 		}
 	}

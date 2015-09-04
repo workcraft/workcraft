@@ -45,7 +45,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.Scenario;
+import org.workcraft.plugins.son.StepExecution;
 import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
@@ -83,7 +83,7 @@ public class TimeAnalysisTool extends SONSimulationTool{
 	private String timeLabel = "Time interval: ";
 
 	private Color greyoutColor = Color.LIGHT_GRAY;
-	private Scenario scenario = new Scenario();
+	private StepExecution scenario = new StepExecution();
 	private ArrayList<Node> syncSet = new ArrayList<Node>();
 
 	protected Map<PlaceNode, Boolean> finalMarking;;
@@ -153,10 +153,10 @@ public class TimeAnalysisTool extends SONSimulationTool{
 		int buttonHeight = (int)Math.round(autoSimuButton.getPreferredSize().getHeight() + 5);
 		Dimension panelSize = new Dimension(buttonWidth * 6, buttonHeight);
 
-		traceTable = new JTable(new TraceTableModel());
-		traceTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
+		scenarioTable = new JTable(new TraceTableModel());
+		scenarioTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
 
-		tablePanel = new JScrollPane(traceTable);
+		tablePanel = new JScrollPane(scenarioTable);
 
 		JPanel scenarioControl = new JPanel();
 		scenarioControl.setLayout(new FlowLayout());
@@ -602,7 +602,7 @@ public class TimeAnalysisTool extends SONSimulationTool{
 		return result;
 	}
 
-	public Scenario getScenario(){
+	public StepExecution getScenario(){
 		scenario.clear();
 		syncSet.clear();
 		net.clearMarking();

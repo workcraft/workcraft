@@ -75,8 +75,8 @@ public class TestTool extends AbstractTool implements Tool{
 
 	private void getScenario(SON net){
 		ScenarioGenerator s = new ScenarioGenerator();
-		System.out.println(s.getScenario().toString(net));
-		System.out.println(s.getScenario().size());
+		System.out.println(s.getStepExecution().toString());
+		System.out.println(s.getStepExecution().size());
 	}
 
 	private void dfsTest(SON net){

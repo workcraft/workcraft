@@ -105,6 +105,14 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
+	public ArrayList<String> getNodeRefs(Collection<? extends Node> nodes){
+		ArrayList<String> result = new ArrayList<String>();
+		for(Node node : nodes)
+			result.add(getNodeReference(node));
+
+		return result;
+	}
+
 	public Collection<Condition> getConditions(){
 		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for(Node node : getComponents())
@@ -331,7 +339,7 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
-	//Group based
+	//Group based methods
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
