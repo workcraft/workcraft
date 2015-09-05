@@ -107,7 +107,6 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
 			if (fillColor == null) {
 				fillColor = getFillColor();
 			}
-
 			g.setColor(fillColor);
 			g.fill(shape);
 

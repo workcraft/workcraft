@@ -26,31 +26,68 @@ public class QueueStg extends NodeStg {
 		List<VisualSignalTransition> result = new ArrayList<>();
 		result.addAll(i.getAllTransitions());
 		result.addAll(o.getAllTransitions());
+		result.addAll(getMemTransitions());
+		result.addAll(getHeadTransitions());
+		result.addAll(getTailTransitions());
+		return result;
+	}
+
+	public List<VisualSignalTransition> getMemTransitions() {
+		List<VisualSignalTransition> result = new ArrayList<>();
 		for (SignalStg mem: memList) {
 			result.addAll(mem.getAllTransitions());
 		}
+		return result;
+	}
+
+	public List<VisualSignalTransition> getHeadTransitions() {
+		List<VisualSignalTransition> result = new ArrayList<>();
 		for (SignalStg head: headList) {
 			result.addAll(head.getAllTransitions());
 		}
+		return result;
+	}
+
+	public List<VisualSignalTransition> getTailTransitions() {
+		List<VisualSignalTransition> result = new ArrayList<>();
 		for (SignalStg tail: tailList) {
 			result.addAll(tail.getAllTransitions());
 		}
 		return result;
 	}
 
+
 	@Override
 	public List<VisualPlace> getAllPlaces() {
 		List<VisualPlace> result = new ArrayList<>();
 		result.addAll(i.getAllPlaces());
 		result.addAll(o.getAllPlaces());
-		for (SignalStg memSignal: memList) {
-			result.addAll(memSignal.getAllPlaces());
+		result.addAll(getMemPlaces());
+		result.addAll(getHeadPlaces());
+		result.addAll(getTailPlaces());
+		return result;
+	}
+
+	public List<VisualPlace> getMemPlaces() {
+		List<VisualPlace> result = new ArrayList<>();
+		for (SignalStg mem: memList) {
+			result.addAll(mem.getAllPlaces());
 		}
-		for (SignalStg hdSignal: headList) {
-			result.addAll(hdSignal.getAllPlaces());
+		return result;
+	}
+
+	public List<VisualPlace> getHeadPlaces() {
+		List<VisualPlace> result = new ArrayList<>();
+		for (SignalStg head: headList) {
+			result.addAll(head.getAllPlaces());
 		}
-		for (SignalStg tlSignal: tailList) {
-			result.addAll(tlSignal.getAllPlaces());
+		return result;
+	}
+
+	public List<VisualPlace> getTailPlaces() {
+		List<VisualPlace> result = new ArrayList<>();
+		for (SignalStg tail: tailList) {
+			result.addAll(tail.getAllPlaces());
 		}
 		return result;
 	}

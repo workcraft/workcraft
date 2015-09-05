@@ -85,10 +85,10 @@ public class VisualCreditComponent extends VisualXmasComponent {
 		shape.lineTo(0.0, +0.4 * size);
 
 		double tokenSize = size / 10.0;
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			shape.append(new Ellipse2D.Double(-0.2 * size - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
 			shape.append(new Ellipse2D.Double(+0.2 * size - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
-			tokenSize /= 2.0;
+			tokenSize /= 3.0;
 		}
 
 		return shape;

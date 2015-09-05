@@ -1,25 +1,35 @@
 package org.workcraft.plugins.xmas.stg;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class SourceStg extends NodeStg {
 	public final SignalStg o;
+	public final SignalStg oracle;
 
-	public SourceStg(SignalStg o) {
+	public SourceStg(SignalStg o, SignalStg oracle) {
 		this.o = o;
+		this.oracle = oracle;
 	}
 
 	@Override
 	public Collection<VisualSignalTransition> getAllTransitions() {
-		return o.getAllTransitions();
+		List<VisualSignalTransition> result = new ArrayList<>();
+		result.addAll(o.getAllTransitions());
+		result.addAll(oracle.getAllTransitions());
+		return result;
 	}
 
 	@Override
 	public Collection<VisualPlace> getAllPlaces() {
-		return o.getAllPlaces();
+		List<VisualPlace> result = new ArrayList<>();
+		result.addAll(o.getAllPlaces());
+		result.addAll(oracle.getAllPlaces());
+		return result;
 	}
 
 }

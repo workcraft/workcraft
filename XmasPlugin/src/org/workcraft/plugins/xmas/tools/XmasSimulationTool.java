@@ -19,16 +19,28 @@ import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xmas.VisualXmas;
+import org.workcraft.plugins.xmas.components.QueueDecoration;
+import org.workcraft.plugins.xmas.components.SlotState;
+import org.workcraft.plugins.xmas.components.VisualQueueComponent;
+import org.workcraft.plugins.xmas.components.VisualSinkComponent;
+import org.workcraft.plugins.xmas.components.VisualSourceComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasConnection;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
+import org.workcraft.plugins.xmas.stg.QueueStg;
 import org.workcraft.plugins.xmas.stg.SignalStg;
+import org.workcraft.plugins.xmas.stg.SinkStg;
+import org.workcraft.plugins.xmas.stg.SourceStg;
 import org.workcraft.plugins.xmas.stg.StgGenerator;
 import org.workcraft.util.Func;
 
 public class XmasSimulationTool extends StgSimulationTool {
 	private static final Color COLOR_IRDY = Color.RED;
 	private static final Color COLOR_TRDY = Color.BLUE;
-	private static final Color COLOR_BOTH_RDY = Color.MAGENTA;
+	private static final Color COLOR_BOTH_READY = Color.MAGENTA;
+	private static final Color COLOR_NONE_READY = Color.BLACK;
+	private static final Color COLOR_CONTACT_IRDY = COLOR_IRDY;
+	private static final Color COLOR_CONTACT_TRDY = COLOR_TRDY;
+	private static final Color COLOR_CONTACT_NOT_READY = Color.WHITE;
 	private StgGenerator generator;
 
 	@Override
@@ -56,7 +68,7 @@ public class XmasSimulationTool extends StgSimulationTool {
 			new Func<Node, Boolean>() {
 				@Override
 				public Boolean eval(Node node) {
-					return node instanceof VisualXmasContact;
+					return node instanceof VisualTransformableNode;
 				}
 			});
 
@@ -68,6 +80,21 @@ public class XmasSimulationTool extends StgSimulationTool {
 			if (node instanceof VisualXmasContact) {
 				SignalStg contactStg = generator.getContactStg((VisualXmasContact)node);
 				transition = getExcitedTransition(contactStg.getAllTransitions());
+			} else if (node instanceof VisualSourceComponent) {
+				SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
+				transition = getExcitedTransition(sourceStg.oracle.getAllTransitions());
+			} else if (node instanceof VisualSinkComponent) {
+				SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent)node);
+				transition = getExcitedTransition(sinkStg.oracle.getAllTransitions());
+			} else if (node instanceof VisualQueueComponent) {
+				QueueStg queueStg = generator.getQueueStg((VisualQueueComponent)node);
+				if (posNode.getY() < -0.3 ) {
+					transition = getExcitedTransition(queueStg.getHeadTransitions());
+				} else if (posNode.getY() > +0.3){
+					transition = getExcitedTransition(queueStg.getTailTransitions());
+				} else {
+					transition = getExcitedTransition(queueStg.getMemTransitions());
+				}
 			}
 		}
 
@@ -113,12 +140,12 @@ public class XmasSimulationTool extends StgSimulationTool {
 							} else {
 								if (isReady) {
 									if (contact.isInput()) {
-										return COLOR_TRDY;
+										return COLOR_CONTACT_TRDY;
 									} else {
-										return COLOR_IRDY;
+										return COLOR_CONTACT_IRDY;
 									}
 								}
-								return null;
+								return COLOR_CONTACT_NOT_READY;
 							}
 						}
 					};
@@ -135,12 +162,106 @@ public class XmasSimulationTool extends StgSimulationTool {
 						@Override
 						public Color getColorisation() {
 							if (firstReady && secondReady) {
-								return COLOR_BOTH_RDY;
+								return COLOR_BOTH_READY;
 							} if (firstReady) {
 								return COLOR_IRDY;
 							} if (secondReady) {
 								return COLOR_TRDY;
 							}
+							return COLOR_NONE_READY;
+						}
+
+						@Override
+						public Color getBackground() {
+							return null;
+						}
+					};
+				} else if (node instanceof VisualSourceComponent) {
+					final VisualSourceComponent source = (VisualSourceComponent)node;
+					final SourceStg sourceStg = generator.getSourceStg(source);
+					final boolean isExcited = (getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null);
+					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
+
+					return new Decoration() {
+						@Override
+						public Color getColorisation() {
+							if (isExcited) {
+								if (isInTrace) {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								} else {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								}
+							}
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							if (isExcited) {
+								if (isInTrace) {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								} else {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								}
+							}
+							return null;
+						}
+					};
+				} else if (node instanceof VisualSinkComponent) {
+					final VisualSinkComponent sink = (VisualSinkComponent)node;
+					final SinkStg sinkStg = generator.getSinkStg(sink);
+					final boolean isExcited = (getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null);
+					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
+
+					return new Decoration() {
+						@Override
+						public Color getColorisation() {
+							if (isExcited) {
+								if (isInTrace) {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								} else {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								}
+							}
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							if (isExcited) {
+								if (isInTrace) {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								} else {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								}
+							}
+							return null;
+						}
+					};
+				} else if (node instanceof VisualQueueComponent) {
+					final VisualQueueComponent queue = (VisualQueueComponent)node;
+					final QueueStg queueStg = generator.getQueueStg(queue);
+					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
+
+					return new QueueDecoration() {
+						@Override
+						public SlotState getSlotState(int i) {
+							SlotState result = null;
+							int capacity = queue.getReferencedQueueComponent().getCapacity();
+							if ((i >= 0) && (i < capacity)) {
+								boolean isFull = (queueStg.memList.get(i).one.getReferencedPlace().getTokens() != 0);
+								boolean isHead = (queueStg.headList.get(i).one.getReferencedPlace().getTokens() != 0);
+								boolean isTail= (queueStg.tailList.get(i).one.getReferencedPlace().getTokens() != 0);
+								boolean isMemExcited = (getExcitedTransition(queueStg.memList.get(i).getAllTransitions()) != null);
+								boolean isHeadExcited = (getExcitedTransition(queueStg.headList.get(i).getAllTransitions()) != null);
+								boolean isTailExcited = (getExcitedTransition(queueStg.tailList.get(i).getAllTransitions()) != null);
+								result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
+							}
+							return result;
+						}
+
+						@Override
+						public Color getColorisation() {
 							return null;
 						}
 

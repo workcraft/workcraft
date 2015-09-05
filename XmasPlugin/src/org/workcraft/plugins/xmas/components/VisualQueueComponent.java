@@ -22,8 +22,10 @@
 package org.workcraft.plugins.xmas.components;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
@@ -32,13 +34,24 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.shared.CommonSimulationSettings;
 
 @DisplayName("Queue")
 @Hotkey(KeyEvent.VK_Q)
 @SVGIcon("images/icons/svg/xmas-queue.svg")
 public class VisualQueueComponent extends VisualXmasComponent {
+
 	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+
+	private final double slotWidth = 0.35 * size;
+	private final double slotHeight = 0.8 * size;
+	private final double contactLength = 0.5 * size - slotWidth;
+	private final double tokenSize = 0.5 * slotWidth;
+	private final double headSize = 0.15 * size;
+	private final double tailSize = 0.15 * size;
 
 	public Color color = new Color(0, 0, 0, 255);
 
@@ -66,11 +79,10 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
 			private double scaleContactCoord(double val, double scale) {
 				double result = val;
-				double len = getContactLength();
 				if (val > 0.0) {
-					result = scale * (val - len) + len;
+					result = scale * (val - contactLength) + contactLength;
 				} else if (val < 0.0) {
-					result = scale * (val + len) - len;
+					result = scale * (val + contactLength) - contactLength;
 				}
 				return result;
 			}
@@ -85,30 +97,61 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		return (QueueComponent)getReferencedComponent();
 	}
 
-	public double getSlotWidth() {
-		return 0.35 * size;
+
+	private boolean isInitialised() {
+		return (getReferencedQueueComponent() != null);
 	}
 
-	public double getSlotHeight() {
-		return 0.8 * size;
+	private double getSlotOffset(int i) {
+		int capacity = getReferencedQueueComponent().getCapacity();
+		return (slotWidth * (i - 0.5 * (capacity - 1)));
 	}
 
-	public double getContactLength() {
-		return 0.15 * size;
-	}
-
-	public Shape getSlotShape(int i) {
+	public Shape getSlotShape(int index) {
 		Path2D shape = new Path2D.Double();
-		QueueComponent ref = getReferencedQueueComponent();
-		if (ref != null) {
-			int c = ref.getCapacity();
-			double w2 = 0.5 * getSlotWidth();
-			double h2 = 0.5 * getSlotHeight();
-			double p = 2 * w2 * (i - 0.5 * (c - 1));
-			shape.moveTo(p - w2, -h2);
-			shape.lineTo(p - w2, +h2);
-			shape.lineTo(p + w2, +h2);
-			shape.lineTo(p + w2, -h2);
+		if (isInitialised()) {
+			double w2 = 0.5 * slotWidth;
+			double h2 = 0.5 * slotHeight;
+			double slotOffset = getSlotOffset(index);
+			shape.moveTo(slotOffset - w2, -h2);
+			shape.lineTo(slotOffset - w2, +h2);
+			shape.lineTo(slotOffset + w2, +h2);
+			shape.lineTo(slotOffset + w2, -h2);
+			shape.closePath();
+		}
+		return shape;
+	}
+
+	public Shape getTokenShape(int index) {
+		Path2D shape = new Path2D.Double();
+		if (isInitialised()) {
+			double slotOffset = getSlotOffset(index);
+			shape.append(new Ellipse2D.Double(slotOffset - 0.5 * tokenSize, -0.5 * tokenSize, tokenSize, tokenSize), false);
+		}
+		return shape;
+	}
+
+	public Shape getHeadShape(int index) {
+		Path2D shape = new Path2D.Double();
+		if (isInitialised()) {
+			double slotOffset = getSlotOffset(index);
+			double headOffset = -0.5 * slotHeight;
+			shape.moveTo(slotOffset - 0.7 * headSize, headOffset);
+			shape.lineTo(slotOffset + 0.00, headOffset + headSize);
+			shape.lineTo(slotOffset + 0.7 * headSize, headOffset);
+			shape.closePath();
+		}
+		return shape;
+	}
+
+	public Shape getTailShape(int index) {
+		Path2D shape = new Path2D.Double();
+		if (isInitialised()) {
+			double slotOffset = getSlotOffset(index);
+			double tailOffset = 0.5 * slotHeight;
+			shape.moveTo(slotOffset - 0.7 * tailSize, tailOffset);
+			shape.lineTo(slotOffset + 0.00, tailOffset - tailSize);
+			shape.lineTo(slotOffset + 0.7 * tailSize, tailOffset);
 			shape.closePath();
 		}
 		return shape;
@@ -119,21 +162,72 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		Path2D shape = new Path2D.Double();
 		QueueComponent ref = getReferencedQueueComponent();
 		if (ref != null) {
-			int c = ref.getCapacity();
-			double pos = 0.5 * c * getSlotWidth();
-			double len = getContactLength();
+			int capacity = ref.getCapacity();
+			double contactOffset = 0.5 * capacity * slotWidth;
 
-			shape.moveTo(+pos, 0.0);
-			shape.lineTo(+pos + len, 0.0);
+			shape.moveTo(+contactOffset, 0.0);
+			shape.lineTo(+contactOffset + contactLength, 0.0);
 
-			shape.moveTo(-pos, 0.0);
-			shape.lineTo(-pos - len, 0.0);
+			shape.moveTo(-contactOffset, 0.0);
+			shape.lineTo(-contactOffset - contactLength, 0.0);
 
-			for (int i = 0; i < c; i++) {
+			for (int i = 0; i < capacity; i++) {
 				shape.append(getSlotShape(i), false);
 			}
 		}
 		return shape;
+	}
+
+	@Override
+	public void draw(org.workcraft.dom.visual.DrawRequest r) {
+		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
+		if (d instanceof QueueDecoration) {
+			int capacity = getReferencedQueueComponent().getCapacity();
+			// Quiescent elements
+			g.setColor(getForegroundColor());
+			for (int i = 0; i < capacity; i++) {
+				SlotState slot = ((QueueDecoration)d).getSlotState(i);
+				g.draw(getSlotShape(i));
+				if (!slot.isMemExcited && slot.isFull) {
+					g.draw(getTokenShape(i));
+					g.fill(getTokenShape(i));
+				}
+				if (!slot.isHeadExcited && slot.isHead) {
+					g.draw(getHeadShape(i));
+					g.fill(getHeadShape(i));
+				}
+				if (!slot.isTailExcited && slot.isTail) {
+					g.draw(getTailShape(i));
+					g.fill(getTailShape(i));
+				}
+			}
+			// Excited elements
+			g.setColor(Coloriser.colorise(getForegroundColor(), CommonSimulationSettings.getEnabledForegroundColor()));
+			for (int i = 0; i < capacity; i++) {
+				SlotState slot = ((QueueDecoration)d).getSlotState(i);
+				if (slot.isMemExcited) {
+					g.draw(getTokenShape(i));
+					if (slot.isFull) {
+						g.fill(getTokenShape(i));
+					}
+				}
+				if (slot.isHeadExcited) {
+					g.draw(getHeadShape(i));
+					if (slot.isHead) {
+						g.fill(getHeadShape(i));
+					}
+				}
+				if (slot.isTailExcited) {
+					g.draw(getTailShape(i));
+					if (slot.isTail) {
+						g.fill(getTailShape(i));
+					}
+				}
+			}
+		} else {
+			super.draw(r);
+		}
 	}
 
 	@Override
