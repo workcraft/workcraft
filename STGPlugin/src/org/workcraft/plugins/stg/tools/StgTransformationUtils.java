@@ -4,14 +4,18 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualNamedTransition;
+import org.workcraft.plugins.stg.VisualReadArc;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.util.Pair;
 
 public class StgTransformationUtils {
 
@@ -68,6 +72,52 @@ public class StgTransformationUtils {
 			replaceNamedTransition(stg, dummyTransition, newDummyTransition);
 		}
 		return newDummyTransition;
+	}
+
+	public static VisualReadArc convertDualArcToReadArc(VisualSTG stg, VisualConnection consumingArc, VisualConnection producingArc) {
+		VisualReadArc readArc = null;
+		VisualPlace place = null;
+		if (consumingArc.getFirst() instanceof VisualPlace) {
+			place = (VisualPlace)consumingArc.getFirst();
+		}
+		VisualTransition transition = null;
+		if (consumingArc.getSecond() instanceof VisualTransition) {
+			transition = (VisualTransition)consumingArc.getSecond();
+		}
+		if ((place != null) && (transition != null)) {
+			try {
+				stg.remove(consumingArc);
+				stg.remove(producingArc);
+				VisualConnection connection = stg.connectUndirected(place, transition);
+				if (connection instanceof VisualReadArc) {
+					readArc = (VisualReadArc)connection;
+				}
+			} catch (InvalidConnectionException e) {
+			}
+		}
+		return readArc;
+	}
+
+	public static Pair<VisualConnection, VisualConnection> converReadArcTotDualArc(VisualSTG stg, VisualReadArc readArc) {
+		VisualPlace place = null;
+		if (readArc.getFirst() instanceof VisualPlace) {
+			place = (VisualPlace)readArc.getFirst();
+		}
+		VisualTransition transition = null;
+		if (readArc.getSecond() instanceof VisualTransition) {
+			transition = (VisualTransition)readArc.getSecond();
+		}
+		VisualConnection consumingArc = null;
+		VisualConnection producingArc = null;
+		if ((place != null) && (transition != null)) {
+			try {
+				stg.remove(readArc);
+				consumingArc = stg.connect(place, transition);
+				producingArc = stg.connect(transition, place);
+			} catch (InvalidConnectionException e) {
+			}
+		}
+		return new Pair<VisualConnection, VisualConnection>(consumingArc, producingArc);
 	}
 
 }

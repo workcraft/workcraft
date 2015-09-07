@@ -23,11 +23,11 @@ public class MakePlacesExplicitTool extends TransformationTool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
-		HashSet<VisualImplicitPlaceArc> connections = new HashSet<VisualImplicitPlaceArc>(stg.getVisualImplicitPlaceArcs());
-		if (!stg.getSelection().isEmpty()) {
+		HashSet<VisualImplicitPlaceArc> connections = new HashSet<>(stg.getVisualImplicitPlaceArcs());
+		if ( !stg.getSelection().isEmpty() ) {
 			connections.retainAll(stg.getSelection());
 		}
-		if (!connections.isEmpty()) {
+		if ( !connections.isEmpty() ) {
 			we.saveMemento();
 			for (VisualImplicitPlaceArc connection: connections) {
 				stg.makeExplicit(connection);

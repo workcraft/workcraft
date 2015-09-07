@@ -56,6 +56,7 @@ public class ConnectionTool extends AbstractTool {
 	static private final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
 	protected boolean forbidSelfLoops = true;
+	protected boolean directedArcs = true;
 
 	private Point2D firstPoint = null;
 	private VisualNode firstNode = null;
@@ -67,16 +68,17 @@ public class ConnectionTool extends AbstractTool {
 	private VisualConnection templateNode = null;
 
 	public ConnectionTool() {
-		this(true);
+		this(true, true);
 	}
 
-	public ConnectionTool(boolean forbidSelfLoops) {
+	public ConnectionTool(boolean forbidSelfLoops, boolean directedArcs) {
 		this.forbidSelfLoops = forbidSelfLoops;
+		this.directedArcs = directedArcs;
 	}
 
 	@Override
 	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/connect.svg");
+		return GUI.createIconFromSVG("images/icons/svg/tool-connection.svg");
 	}
 
 	@Override
@@ -158,7 +160,12 @@ public class ConnectionTool extends AbstractTool {
 				g.draw(path);
 			} else {
 				try {
-					editor.getModel().validateConnection(firstNode, currentNode);
+					VisualModel model = editor.getModel();
+					if (directedArcs) {
+						model.validateConnection(firstNode, currentNode);
+					} else {
+						model.validateUndirectedConnection(firstNode, currentNode);
+					}
 					g.setColor(validConnectionColor);
 					g.draw(path);
 				} catch (InvalidConnectionException e) {
@@ -255,7 +262,12 @@ public class ConnectionTool extends AbstractTool {
 				vc.setSplitPoint(rootToLocalTransform.transform(currentPoint, null));
 			}
 			VisualModel model = editor.getModel();
-			VisualConnection connection = model.connect(firstNode, currentNode);
+			VisualConnection connection = null;
+			if (directedArcs) {
+				connection = model.connect(firstNode, currentNode);
+			} else {
+				connection = model.connectUndirected(firstNode, currentNode);
+			}
 			connection.copyStyle(templateNode);
 			if (controlPoints.isEmpty() && (firstNode == currentNode)) {
 				connection.getGraphic().setDefaultControlPoints();

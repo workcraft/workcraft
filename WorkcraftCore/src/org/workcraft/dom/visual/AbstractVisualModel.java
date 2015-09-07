@@ -153,6 +153,16 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return connect(first, second, null);
 	}
 
+	@Override
+	public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
+		validateConnection(first, second);
+	}
+
+	@Override
+	public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
+		return connect(first, second, null);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Container container, Class<T> type) {

@@ -25,6 +25,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,12 +103,18 @@ public class VisualSTG extends AbstractVisualModel {
 		if (first == second) {
 			throw new InvalidConnectionException ("Self-loops are not allowed.");
 		}
-		if (getConnection(first, second) != null) {
-			throw new InvalidConnectionException ("This arc already exisits.");
-		}
 		if (((first instanceof VisualPlace) || (first instanceof VisualImplicitPlaceArc))
-			&& ((second instanceof VisualPlace) || (second instanceof VisualImplicitPlaceArc))) {
+				&& ((second instanceof VisualPlace) || (second instanceof VisualImplicitPlaceArc))) {
 			throw new InvalidConnectionException ("Arcs between places are not allowed.");
+		}
+		Connection forwardConnection = getConnection(first, second);
+		Connection backwardConnection = getConnection(second, first);
+		if ((forwardConnection instanceof VisualReadArc) || (backwardConnection instanceof VisualReadArc)) {
+			// Read arc exists
+			throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
+		} else if (forwardConnection != null) {
+			// Consuming/producing arc exists
+			throw new InvalidConnectionException ("This arc already exisits.");
 		}
 	}
 
@@ -164,6 +171,50 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 		VisualConnection connection = new VisualConnection(mConnection, firstComponent, secondComponent);
 		Hierarchy.getNearestContainer(firstComponent, secondComponent).add(connection);
+		return connection;
+	}
+
+	@Override
+	public void validateUndirectedConnection(Node first, Node second)	throws InvalidConnectionException {
+		if (first == second) {
+			throw new InvalidConnectionException ("Self-loops are not allowed.");
+		}
+		if ((first instanceof VisualPlace) && (second instanceof VisualPlace)) {
+			throw new InvalidConnectionException ("Read-arcs between places are not allowed.");
+		}
+		if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
+			throw new InvalidConnectionException ("Read-arcs between transitions are not allowed.");
+		}
+		Connection forwardConnection = getConnection(first, second);
+		Connection backwardConnection = getConnection(second, first);
+		if ((forwardConnection != null) || (backwardConnection != null)) {
+			throw new InvalidConnectionException ("Nodes are already connected.");
+		}
+	}
+
+	@Override
+	public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
+		validateUndirectedConnection(first, second);
+
+		VisualConnection connection = null;
+		if ((first instanceof VisualPlace) && (second instanceof VisualTransition)) {
+			connection = createReadarcConnection((VisualPlace)first, (VisualTransition)second);
+		} else if ((first instanceof VisualTransition) && (second instanceof VisualPlace)) {
+			connection = createReadarcConnection((VisualPlace)second, (VisualTransition)first);
+		}
+		return connection;
+	}
+
+	private VisualReadArc createReadarcConnection(VisualPlace place, VisualTransition transition)
+			 throws InvalidConnectionException {
+
+		Place mPlace = place.getReferencedPlace();
+		Transition mTransition = transition.getReferencedTransition();
+		MathConnection mConsumingConnection = stg.connect(mPlace, mTransition).getSimpleResult();
+		MathConnection mProducingConnection = stg.connect(mTransition, mPlace).getSimpleResult();
+
+		VisualReadArc connection = new VisualReadArc(place, transition, mConsumingConnection, mProducingConnection);
+		Hierarchy.getNearestContainer(place, transition).add(connection);
 		return connection;
 	}
 
@@ -293,10 +344,6 @@ public class VisualSTG extends AbstractVisualModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
 	}
 
-	public Collection<VisualImplicitPlaceArc> getVisualImplicitPlaceArcs() {
-		return Hierarchy.getDescendantsOfType(getRoot(), VisualImplicitPlaceArc.class);
-	}
-
 	public Collection<VisualTransition> getVisualTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
 	}
@@ -307,6 +354,40 @@ public class VisualSTG extends AbstractVisualModel {
 
 	public Collection<VisualDummyTransition> getVisualDummyTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), VisualDummyTransition.class);
+	}
+
+	public Collection<VisualConnection> getVisualConnections() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class);
+	}
+
+	public HashSet<VisualConnection> getVisualConsumingArcs() {
+		HashSet<VisualConnection> connections = new HashSet<>();
+		for (VisualConnection connection: Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class)) {
+			if (connection instanceof VisualReadArc) continue;
+			if (connection.getSecond() instanceof VisualTransition) {
+				connections.add(connection);
+			}
+		}
+		return connections;
+	}
+
+	public HashSet<VisualConnection> getVisualProducerArcs() {
+		HashSet<VisualConnection> connections = new HashSet<>();
+		for (VisualConnection connection: Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class)) {
+			if (connection instanceof VisualReadArc) continue;
+			if (connection.getFirst() instanceof VisualTransition) {
+				connections.add(connection);
+			}
+		}
+		return connections;
+	}
+
+	public Collection<VisualReadArc> getVisualReadArcs() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualReadArc.class);
+	}
+
+	public Collection<VisualImplicitPlaceArc> getVisualImplicitPlaceArcs() {
+		return Hierarchy.getDescendantsOfType(getRoot(), VisualImplicitPlaceArc.class);
 	}
 
 	public VisualPlace getVisualPlace(Place place) {

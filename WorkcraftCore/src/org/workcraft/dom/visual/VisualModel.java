@@ -52,6 +52,9 @@ public interface VisualModel extends Model, ObservableState {
 	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
 	public VisualConnection connect(Node first, Node second, MathConnection connection) throws InvalidConnectionException;
 
+	public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException;
+	public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException;
+
 	public <T extends VisualComponent> T createVisualComponent(MathNode refNode, Container container, Class<T> type);
 	public <T extends VisualComponent> T getVisualComponent(MathNode refNode, Class<T> type);
 

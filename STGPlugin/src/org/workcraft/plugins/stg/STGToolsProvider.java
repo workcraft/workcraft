@@ -8,6 +8,7 @@ import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.tools.StgConnectionTool;
+import org.workcraft.plugins.stg.tools.StgReadArcConnectionTool;
 import org.workcraft.plugins.stg.tools.StgSelectionTool;
 import org.workcraft.plugins.stg.tools.StgSignalTransitionGeneratorTool;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
@@ -20,7 +21,8 @@ public class STGToolsProvider implements CustomToolsProvider {
 
 		result.add(new StgSelectionTool());
 		result.add(new CommentGeneratorTool());
-		result.add(new StgConnectionTool(true));
+		result.add(new StgConnectionTool());
+		result.add(new StgReadArcConnectionTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(STGPlace.class)));
 		result.add(new StgSignalTransitionGeneratorTool());
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(DummyTransition.class)));

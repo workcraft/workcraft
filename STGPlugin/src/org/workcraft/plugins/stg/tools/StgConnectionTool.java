@@ -7,8 +7,8 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 
 public class StgConnectionTool extends ConnectionTool {
 
-	public StgConnectionTool(boolean forbidSelfLoops) {
-		super(forbidSelfLoops);
+	public StgConnectionTool() {
+		super(true, true);
 	}
 
 	@Override
