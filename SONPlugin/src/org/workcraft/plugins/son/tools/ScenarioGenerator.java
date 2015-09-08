@@ -55,14 +55,36 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScenarioGenerator extends SONSimulationTool{
 
-	protected JButton saveButton, loadButton, removeButton, resetButton;
+	protected JButton saveButton, removeButton, resetButton, importButton, exportButton;
 	protected JToggleButton startButton;
 	protected JTable scenarioTable;
 
 	protected final StepExecution stepExecution = new StepExecution();
-	protected final Scenario scenario = new Scenario();
-	protected final ArrayList<Scenario> saveList = new ArrayList<Scenario>();
+	protected Scenario scenario = new Scenario();
+	protected SaveList saveList = new SaveList();
 	private Color greyoutColor = Color.LIGHT_GRAY;
+	private boolean setCellColor = true;
+
+	public class SaveList extends ArrayList<Scenario>{
+		private static final long serialVersionUID = 1L;
+		private int position = 0;
+
+		public int getPosition() {
+			return position;
+		}
+
+		public void setPosition(int value) {
+			position = Math.min(Math.max(0, value), size());
+		}
+
+		public void incPosition(int value) {
+			setPosition(position + value);
+		}
+
+		public void decPosition(int value) {
+			setPosition(position - value);
+		}
+	}
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
@@ -71,8 +93,9 @@ public class ScenarioGenerator extends SONSimulationTool{
 		startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-start.svg"), "Generate scenario");
 		resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-reset.svg"), "Reset scenario");
 		saveButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save scenario");
-		loadButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-load.svg"), "Load seleted scenario");
-		removeButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-delete.svg"), "Remove seleted scenario");
+		removeButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-delete.svg"), "Remove scenario");
+		importButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-import.svg"), "Import scenarios");
+		exportButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-export.svg"), "Export scenarios");
 
 		int buttonWidth = (int)Math.round(startButton.getPreferredSize().getWidth() + 5);
 		int buttonHeight = (int)Math.round(startButton.getPreferredSize().getHeight() + 5);
@@ -84,13 +107,16 @@ public class ScenarioGenerator extends SONSimulationTool{
 		controlPanel.add(new JSeparator());
 		controlPanel.add(startButton);
 		controlPanel.add(resetButton);
-		controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		controlPanel.add(saveButton);
-		controlPanel.add(loadButton);
+		controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		controlPanel.add(importButton);
+		controlPanel.add(exportButton);
+		controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		controlPanel.add(removeButton);
 
 		scenarioTable = new JTable(new ScenarioTableModel());
 		scenarioTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
 
 		infoPanel = new JScrollPane(scenarioTable);
 		infoPanel.setPreferredSize(new Dimension(1, 1));
@@ -110,19 +136,7 @@ public class ScenarioGenerator extends SONSimulationTool{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(startButton.isSelected()){
-					if(!acyclicChecker()){
-						startButton.setSelected(false);
-						try {
-							throw new InvalidStructureException("Cyclic structure error");
-						} catch (InvalidStructureException e1) {
-							errorMsg(e1.getMessage(), editor);
-						}
-					}else{
-						scenario.clear();
-						net.clearMarking();
-						net.refreshColor();
-						scenarioGenerator(editor);
-					}
+					start();
 				}else{
 					Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
 					setGrayout(step, greyoutColor);
@@ -134,7 +148,39 @@ public class ScenarioGenerator extends SONSimulationTool{
 		resetButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(getStepExecution().toString());
+				startButton.setSelected(true);
+				start();
+			}
+		});
+
+		saveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!scenario.isEmpty()){
+					setCellColor = true;
+					Scenario cache = new Scenario();
+					cache.addAll(scenario);
+					saveList.add(cache);
+					saveList.setPosition(saveList.size()-1);
+					updateState(editor);
+				}
+			}
+		});
+
+		removeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!saveList.isEmpty()){
+					setCellColor = true;
+					saveList.remove(saveList.getPosition());
+					scenario.clear();
+					if(saveList.getPosition() > saveList.size()-1)
+						saveList.decPosition(1);
+					if(!saveList.isEmpty())
+						scenario.addAll(saveList.get(saveList.getPosition()));
+					updateColor();
+					updateState(editor);
+				}
 			}
 		});
 
@@ -143,9 +189,18 @@ public class ScenarioGenerator extends SONSimulationTool{
 			public void mouseClicked(MouseEvent e) {
 				int column = scenarioTable.getSelectedColumn();
 				int row = scenarioTable.getSelectedRow();
+
 				if (column == 0 && row < saveList.size()) {
-					updateState(editor);
-					scenario.clear();
+					saveList.setPosition(row);
+					Object obj = scenarioTable.getValueAt(row, column);
+					if(obj instanceof Scenario){
+						startButton.setSelected(false);
+						setCellColor = true;
+						scenario.clear();
+						scenario.addAll((Scenario)obj);
+						updateState(editor);
+						updateColor();
+					}
 				}
 			}
 
@@ -166,6 +221,26 @@ public class ScenarioGenerator extends SONSimulationTool{
 			}
 		});
 		scenarioTable.setDefaultRenderer(Object.class,	new ScenarioTableCellRendererImplementation());
+	}
+
+	private void start(){
+		if(!acyclicChecker()){
+			startButton.setSelected(false);
+			startButton.repaint();
+			try {
+				throw new InvalidStructureException("Cyclic structure error");
+			} catch (InvalidStructureException e1) {
+				errorMsg(e1.getMessage(), editor);
+			}
+		}else{
+			scenario.clear();
+			net.clearMarking();
+			net.refreshColor();
+			setCellColor = false;
+			saveList.setPosition(0);
+			scenarioGenerator(editor);
+		}
+
 	}
 
 	@Override
@@ -234,9 +309,19 @@ public class ScenarioGenerator extends SONSimulationTool{
 		scenarioTable.tableChanged(new TableModelEvent(scenarioTable.getModel()));
 	}
 
+	public void updateColor(){
+		net.clearMarking();
+		setGrayout(net.getNodes(), greyoutColor);
+		Collection<Node> nodes = new ArrayList<Node>();
+		nodes.addAll(getScenario().getNodes(net));
+		nodes.addAll(getScenario().getConnections(net));
+		setGrayout(nodes, Color.BLACK);
+	}
+
 	@SuppressWarnings("serial")
-	protected final class ScenarioTableCellRendererImplementation implements TableCellRenderer {
-		JLabel label = new JLabel() {
+	protected class ScenarioTableCellRendererImplementation implements TableCellRenderer {
+
+		JLabel label = new JLabel () {
 			@Override
 			public void paint( Graphics g ) {
 				g.setColor( getBackground() );
@@ -245,37 +330,33 @@ public class ScenarioGenerator extends SONSimulationTool{
 			}
 		};
 
-		boolean isActive(int row, int column) {
-			if (column==0) {
-				if (!saveList.isEmpty()) {
-					return row == mainTrace.getPosition();
-				}
-			}
-			return false;
-		}
-
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value,
 				boolean isSelected, boolean hasFocus,int row, int column) {
+			if(value instanceof String)
+				label.setText(((String)value));
+			else if(value instanceof Scenario){
+				label.setText("Senario "+(row+1));
+			}
+			else
+				return null;
 
-			if (!(value instanceof String)) return null;
-
-			label.setText(((String)value));
-
-			if (isActive(row, column)) {
-				label.setBackground(Color.YELLOW);
+			if (row == saveList.getPosition() && column == 0 && !saveList.isEmpty() && setCellColor) {
+				label.setBackground(Color.PINK);
 			} else {
 				label.setBackground(Color.WHITE);
 			}
 
 			return label;
 		}
+
 	}
 
 	@Override
 	public void executeEvents(final GraphEditor editor, Step step) {
 		ArrayList<PlaceNode> oldMarking = new ArrayList<PlaceNode>();
 		oldMarking.addAll(getCurrentMarking());
+		setCellColor = false;
 		super.executeEvents(editor, step);
 
 		//add step references
@@ -353,14 +434,14 @@ public class ScenarioGenerator extends SONSimulationTool{
 
 		@Override
 		public int getRowCount() {
-			return Math.max(0, scenario.size());
+			return Math.max(saveList.size(), scenario.size());
 		}
 
 		@Override
 		public Object getValueAt(int row, int column) {
 			if (column == 0) {
-				if (!stepExecution.isEmpty() && (row < stepExecution.size())) {
-					return stepExecution.get(row);
+				if (!saveList.isEmpty() && (row < saveList.size())) {
+					return saveList.get(row);
 				}
 			} else {
 				if (!scenario.isEmpty() && (row < scenario.size())) {
@@ -377,6 +458,10 @@ public class ScenarioGenerator extends SONSimulationTool{
 
 	public Scenario getScenario(){
 		return scenario;
+	}
+
+	public ArrayList<Scenario> getSaveList(){
+		return saveList;
 	}
 
 	@Override

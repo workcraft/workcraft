@@ -1,79 +1,130 @@
 package org.workcraft.plugins.son.test;
 
-import java.util.ArrayList;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
+import java.util.EventObject;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
-import org.workcraft.plugins.son.OutputRedirect;
-import org.workcraft.plugins.son.tasks.VerificationResult;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.Task;
+/** @see http://stackoverflow.com/a/10067560/230513 */
+public class test extends JPanel {
 
-public class test implements Task<VerificationResult> {
+    private NumberFormat nf = NumberFormat.getCurrencyInstance();
 
-	private Logger logger = Logger.getLogger(this.getClass().getName());
+    public test() {
+        DefaultTableModel model = new DefaultTableModel(
+            new String[]{"Amount"}, 0) {
 
-	@Override
-	public Result<? extends VerificationResult> run (ProgressMonitor <? super VerificationResult> monitor){
-		try{
-		output();
-		}catch (Exception e){
-			return new Result<VerificationResult>(Outcome.FAILED);
-		}
-
-		return new Result<VerificationResult>(Outcome.FINISHED);
-	}
-
-	public void output() throws Exception{
-		OutputRedirect.Redirect();
-
-		int i = 0;
-        while (i < 10)
-        {
-            logger.error ("Current time: " + System.currentTimeMillis ());
-            Thread.sleep (1000L);
-            i++;
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return Double.class;
+            }
+        };
+        for (int i = 0; i < 16; i++) {
+            model.addRow(new Object[]{Double.valueOf(i)});
         }
-	}
+        JTable table = new JTable(model) {
 
-	public enum SONConnectionType
-	{
-		POLYLINE,
-		BEZIER,
-		SYNCLINE,
-		ASYNLINE,
-		BHVLINE;
+            @Override // Always selectAll()
+            public boolean editCellAt(int row, int column, EventObject e) {
+                boolean result = super.editCellAt(row, column, e);
+                final Component editor = getEditorComponent();
+                if (editor == null || !(editor instanceof JTextComponent)) {
+                    return result;
+                }
+                if (e instanceof MouseEvent) {
+                    EventQueue.invokeLater(new Runnable() {
 
-		public String getTypetoString(SONConnectionType type){
-			if (type == SONConnectionType.POLYLINE)
-				return "POLY";
-			if (type == SONConnectionType.SYNCLINE)
-				return "SYNC";
-			if (type == SONConnectionType.ASYNLINE)
-				return "ASYN";
-			if (type == SONConnectionType.BHVLINE)
-				return "BHV";
-			return "";
-		}
-	};
-	public void print(){
-		System.out.println(this.toString());
-	}
+                        @Override
+                        public void run() {
+                            ((JTextComponent) editor).selectAll();
+                        }
+                    });
+                } else {
+                    ((JTextComponent) editor).selectAll();
+                }
+                return result;
+            }
+        };
+        table.setPreferredScrollableViewportSize(new Dimension(123, 123));
+        table.setDefaultRenderer(Double.class, new CurrencyRenderer(nf));
+        table.setDefaultEditor(Double.class, new CurrencyEditor(nf));
+        this.add(new JScrollPane(table));
+    }
 
-	public static void main(String[] arg){
-		boolean a = false;
-		boolean b = true;
-		boolean c;
-		System.out.println(c = a && b);
-/*		test t = new test();
-		t.print();*/
-		ArrayList<String> test = new ArrayList<String>();
-		test.add("a");
-		test.add("b");
-		test.add("c");
-		System.out.println(test.toString());
-	}
+    private static class CurrencyRenderer extends DefaultTableCellRenderer {
 
+        private NumberFormat formatter;
 
+        public CurrencyRenderer(NumberFormat formatter) {
+            this.formatter = formatter;
+            this.setHorizontalAlignment(JLabel.RIGHT);
+        }
+
+        @Override
+        public void setValue(Object value) {
+            setText((value == null) ? "" : formatter.format(value));
+        }
+    }
+
+    private static class CurrencyEditor extends DefaultCellEditor {
+
+        private NumberFormat formatter;
+        private JTextField textField;
+
+        public CurrencyEditor(NumberFormat formatter) {
+            super(new JTextField());
+            this.formatter = formatter;
+            this.textField = (JTextField) this.getComponent();
+            textField.setHorizontalAlignment(JTextField.RIGHT);
+            textField.setBorder(null);
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            try {
+                return new Double(textField.getText());
+            } catch (NumberFormatException e) {
+                return Double.valueOf(0);
+            }
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table,
+            Object value, boolean isSelected, int row, int column) {
+            textField.setText((value == null)
+                ? "" : formatter.format((Double) value));
+            return textField;
+        }
+    }
+
+    private void display() {
+        JFrame f = new JFrame("RenderEditNumber");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.add(this);
+        f.pack();
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                new test().display();
+            }
+        });
+    }
 }
