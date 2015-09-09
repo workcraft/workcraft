@@ -74,7 +74,7 @@ public class TestTool extends AbstractTool implements Tool{
 	}
 
 	private void getScenario(SON net){
-		ScenarioGenerator s = new ScenarioGenerator();
+		ScenarioGeneratorTool s = new ScenarioGeneratorTool();
 		System.out.println(s.getStepExecution().toString());
 		System.out.println(s.getStepExecution().size());
 	}

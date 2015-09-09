@@ -6,27 +6,17 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -36,55 +26,47 @@ import javax.swing.text.DocumentFilter;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.StepExecution;
-import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
-import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
-import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
-import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
-import org.workcraft.plugins.son.exception.InvalidStructureException;
-import org.workcraft.plugins.son.gui.SONGUI;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeAnalysisTool extends SONSimulationTool{
+public class TimeValueSetterTool extends AbstractTool{
 
-	private JPanel interfacePanel, timePropertyPanel, timeInputPanel, buttonPanel;
-	private JPanel scenarioPanel;
-	private JButton clearButton;
-	private JTabbedPane modeTabs;
-	private JScrollPane tablePanel;
+	protected SON net;
+	protected VisualSON visualNet;
+
+	protected Map<PlaceNode, Boolean>initialMarking;;
+	protected SimulationAlg simuAlg;
+	private JPanel interfacePanel, timePropertyPanel, timeInputPanel;
 
 	private int labelheight = 20;
 	private int labelwidth = 35;
+
 	private Color selectedColor = new Color(255, 228, 181);
 	private Font font = new Font("Arial", Font.PLAIN, 12);
 	private String startLabel = "Start time interval: ";
 	private String endLabel = "End time interval: ";
 	private String durationLabel = "Duration interval: ";
 	private String timeLabel = "Time interval: ";
-
-	private Color greyoutColor = Color.LIGHT_GRAY;
-	private StepExecution scenario = new StepExecution();
-	private ArrayList<Node> syncSet = new ArrayList<Node>();
 
 	protected Map<PlaceNode, Boolean> finalMarking;;
 
@@ -141,84 +123,14 @@ public class TimeAnalysisTool extends SONSimulationTool{
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);
 
-		this.editor = editor;
 		timePropertyPanel = new JPanel();
 		timePropertyPanel.setBorder(BorderFactory.createTitledBorder("Time value"));
 		timePropertyPanel.setLayout(new WrapLayout());
 		timePropertyPanel.setPreferredSize(new Dimension(0, 250));
 
-		autoSimuButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-time-scenario.svg"), "Generate a scenario");
-
-		int buttonWidth = (int)Math.round(autoSimuButton.getPreferredSize().getWidth() + 5);
-		int buttonHeight = (int)Math.round(autoSimuButton.getPreferredSize().getHeight() + 5);
-		Dimension panelSize = new Dimension(buttonWidth * 6, buttonHeight);
-
-		scenarioTable = new JTable(new TraceTableModel());
-		scenarioTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
-
-		tablePanel = new JScrollPane(scenarioTable);
-
-		JPanel scenarioControl = new JPanel();
-		scenarioControl.setLayout(new FlowLayout());
-		scenarioControl.setPreferredSize(panelSize);
-		scenarioControl.setMaximumSize(panelSize);
-		scenarioControl.add(autoSimuButton);
-
-		scenarioPanel = new JPanel();
-		scenarioPanel.setLayout(new WrapLayout());
-		scenarioPanel.setPreferredSize(new Dimension(0, 250));
-		scenarioPanel.add(scenarioControl);
-		scenarioPanel.add(tablePanel);
-
-		modeTabs = new JTabbedPane();
-		modeTabs.addTab("Setting", timePropertyPanel);
-		modeTabs.addTab("Scenario", scenarioPanel);
-
-		clearButton = new JButton("Output");
-		clearButton.setPreferredSize(new Dimension(75,25));
-
-		buttonPanel = new JPanel();
-		buttonPanel.add(clearButton);
-
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
-		interfacePanel.add(modeTabs, BorderLayout.PAGE_START);
-		interfacePanel.add(buttonPanel, BorderLayout.PAGE_END);
-
-		clearButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(getScenario().toString(net));
-
-			}
-		});
-
-		autoSimuButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(autoSimuButton.isSelected()){
-					branchTrace.clear();
-					net.clearMarking();
-					net.refreshColor();
-					scenarioGenerator(editor);
-				}else{
-					Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-					setGrayout(step, greyoutColor);
-					net.clearMarking();
-				}
-			}
-		});
-
-		modeTabs.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				autoSimuButton.setSelected(false);
-				Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-				setGrayout(step, greyoutColor);
-				net.clearMarking();
-			}
-		});
+		interfacePanel.add(timePropertyPanel, BorderLayout.PAGE_START);
 	}
 
 	private JPanel createTimeInputPanel(final String title, final String value, final Node node){
@@ -514,12 +426,18 @@ public class TimeAnalysisTool extends SONSimulationTool{
 
 		//set property states for initial and final states
 		removeProperties();
-		finalMarking = simuAlg.getFinalMarking();
 		setProperties();
 
 		editor.forceRedraw();
 		editor.getModel().setTemplateNode(null);
 	}
+
+	protected void initialise(){
+		simuAlg = new SimulationAlg(net);
+		initialMarking=simuAlg.getInitialMarking();
+		finalMarking = simuAlg.getFinalMarking();
+	}
+
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
@@ -528,10 +446,6 @@ public class TimeAnalysisTool extends SONSimulationTool{
 		BlockConnector.blockInternalConnector(visualNet);
 		net.refreshColor();
 		net.clearMarking();
-		scenario.clear();
-		syncSet.clear();
-		mainTrace.clear();
-		branchTrace.clear();
 	}
 
 	private void setProperties(){
@@ -554,195 +468,41 @@ public class TimeAnalysisTool extends SONSimulationTool{
 		}
 	}
 
-	protected void scenarioGenerator(final GraphEditor editor){
-		applyMarking(initialMarking);
-		Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-		setDecoration(step);
-
-		try {
-			autoSimulator(editor);
-		} catch (InvalidStructureException e1) {
-			errorMsg(e1.getMessage(), editor);
-		}
-	}
-
-	protected void autoSimulator(final GraphEditor editor) throws InvalidStructureException{
-		super.autoSimulator(editor);
-		Collection<Node> nodes = getScenario().getAllNodes();
-		nodes.addAll(syncSet);
-		setGrayout(nodes, Color.BLACK);
-	}
-
-	@Override
-	protected void autoSimulationTask(final GraphEditor editor){
-		Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-		if(step.isEmpty()){
-			autoSimuButton.setSelected(false);
-		}
-		step = conflictfilter(step);
-		if(!step.isEmpty()){
-			step = simuAlg.getMinFire(step.iterator().next(), sync, step, isRev);
-			executeEvents(editor, step);
-			autoSimulationTask(editor);
-		}
-	}
-
-	@Override
-	protected boolean step(final GraphEditor editor) {
-		boolean ret = quietStep(editor);
-		return ret;
-	}
-
-	private ArrayList<PlaceNode> getCurrentMarking(){
-		ArrayList<PlaceNode> result = new ArrayList<PlaceNode>();
-		for(PlaceNode c : readSONMarking().keySet()){
-			if(c.isMarked())
-				result.add(c);
-		}
-		return result;
-	}
-
-	public StepExecution getScenario(){
-		scenario.clear();
-		syncSet.clear();
-		net.clearMarking();
-		if(branchTrace.isEmpty())
-			return scenario;
-		branchTrace.setPosition(0);
-		applyMarking(initialMarking);
-
-		boolean work = true;
-		while (work && branchTrace.canProgress()) {
-			ArrayList<PlaceNode> marking = getCurrentMarking();
-			Step step = getStep(branchTrace.get(branchTrace.getPosition()));
-			scenario.add(marking);
-			scenario.add(getPreConnections(marking));
-			scenario.add(step);
-			if(step.size() > 1)
-				syncSet.addAll(getSyncSet(step));
-			work = quietStep(editor);
-			marking = getCurrentMarking();
-			scenario.add(getPostConnections(marking));
-		}
-		scenario.add(getCurrentMarking());
-		if(!autoSimuButton.isSelected()){
-			net.clearMarking();
-		}
-		return scenario;
-	}
-
-	//get related communication connections and channel places among a synchronous step.
-	private ArrayList<Node> getSyncSet(Step step){
-		ArrayList<Node> result = new ArrayList<Node>();
-		for(TransitionNode e :step){
-			Collection<SONConnection> outputs = net.getSONConnections(e);
-			for(SONConnection con : outputs){
-				if(con.getSemantics() == Semantics.ASYNLINE || con.getSemantics() == Semantics.SYNCLINE){
-					ChannelPlace cp = null;
-					if(con.getFirst() instanceof ChannelPlace){
-						cp = (ChannelPlace)con.getFirst();
-					}else{
-						cp = (ChannelPlace)con.getSecond();
-					}
-					Collection<SONConnection> outputs2 = net.getSONConnections(cp);
-					for(SONConnection con2 : outputs2){
-						Node first = con2.getFirst();
-						Node second = con2.getSecond();
-						if((step.contains(first) && first !=e) || (step.contains(second) && second != e)){
-							result.add(con);
-							result.add(cp);
-							result.add(con2);
-						}
-					}
-				}
-			}
-		}
-		return result;
-	}
-
-	public void setGrayout(Collection<? extends Node> nodes, Color color){
-		for(Node node : nodes){
-			net.setForegroundColor(node, color);
-			net.setTimeColor(node, color);
-		}
-	}
-
-	@Override
-	protected void setDecoration(Step enabled){
-		if(autoSimuButton.isSelected()){
-			setGrayout(net.getNodes(), greyoutColor);
-			for(TransitionNode e : enabled){
-				e.setForegroundColor(CommonSimulationSettings.getEnabledForegroundColor());
-			}
-		}
-	}
-
-	private ArrayList<SONConnection> getPreConnections(ArrayList<PlaceNode> marking){
-		ArrayList<SONConnection> result = new ArrayList<SONConnection>();
-		Step step = getStep(branchTrace.get(branchTrace.getPosition()));
-		for(PlaceNode c : marking){
-			for(SONConnection con : net.getOutputSONConnections(c)){
-				if(step.contains(con.getSecond()) && con.getSemantics() != Semantics.BHVLINE)
-					result.add(con);
-			}
-		}
-
-		return result;
-	}
-
-	private ArrayList<SONConnection> getPostConnections(ArrayList<PlaceNode> marking){
-		ArrayList<SONConnection> result = new ArrayList<SONConnection>();
-		Step step = getStep(branchTrace.get(branchTrace.getPosition()-1));
-		for(PlaceNode c : marking){
-			for(SONConnection con : net.getInputSONConnections(c)){
-				if(step.contains(con.getFirst()) && con.getSemantics() != Semantics.BHVLINE)
-					result.add(con);
-			}
-		}
-		return result;
-	}
-
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e){
-		if(modeTabs.getSelectedIndex() == 0){
-			for(Node node : net.getComponents()){
-				net.setFillColor(node, CommonVisualSettings.getFillColor());
-			}
-			Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
-			if( node instanceof VisualSONConnection){
-				VisualSONConnection con = (VisualSONConnection)node;
-				if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
-					//((VisualSONConnection) node).setColor(selectedColor);
-					updateTimePanel(e.getEditor(), node);
-					return;
-				}
-			}
-
-			Node node2 = HitMan.hitFirstNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualBlock.class);
-			if(node2 != null){
-				if(((VisualBlock)node2).getIsCollapsed()){
-					((VisualBlock) node2).setFillColor(selectedColor);
-					updateTimePanel(e.getEditor(), node2);
-					return;
-				}
-			}
-
-			Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-					new Func<Node, Boolean>() {
-						@Override
-						public Boolean eval(Node node) {
-							return node instanceof VisualPlaceNode;
-						}
-					});
-				if (node3 instanceof VisualPlaceNode) {
-					((VisualPlaceNode) node).setFillColor(selectedColor);
-					updateTimePanel(e.getEditor(), node3);
-				}
-		}else{
-			if(autoSimuButton.isSelected()){
-				super.mousePressed(e);
+		for(Node node : net.getComponents()){
+			net.setFillColor(node, CommonVisualSettings.getFillColor());
+		}
+		Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
+		if( node instanceof VisualSONConnection){
+			VisualSONConnection con = (VisualSONConnection)node;
+			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
+				//((VisualSONConnection) node).setColor(selectedColor);
+				updateTimePanel(e.getEditor(), node);
+				return;
 			}
 		}
+
+		Node node2 = HitMan.hitFirstNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualBlock.class);
+		if(node2 != null){
+			if(((VisualBlock)node2).getIsCollapsed()){
+				((VisualBlock) node2).setFillColor(selectedColor);
+				updateTimePanel(e.getEditor(), node2);
+				return;
+			}
+		}
+
+		Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
+				new Func<Node, Boolean>() {
+					@Override
+					public Boolean eval(Node node) {
+						return node instanceof VisualPlaceNode;
+					}
+				});
+			if (node3 instanceof VisualPlaceNode) {
+				((VisualPlaceNode) node).setFillColor(selectedColor);
+				updateTimePanel(e.getEditor(), node3);
+			}
 	}
 
 	@Override
@@ -752,7 +512,7 @@ public class TimeAnalysisTool extends SONSimulationTool{
 
 	@Override
 	public String getLabel() {
-		return "Time analysis";
+		return "Set time value";
 	}
 
 	@Override

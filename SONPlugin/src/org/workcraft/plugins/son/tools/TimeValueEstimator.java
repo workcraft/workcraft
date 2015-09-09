@@ -26,7 +26,7 @@ public class TimeValueEstimator implements Tool{
 	@Override
 	public void run(WorkspaceEntry we) {
 		final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
-		final TimeAnalysisTool tool = toolbox.getToolInstance(TimeAnalysisTool.class);
+		final TimeValueSetterTool tool = toolbox.getToolInstance(TimeValueSetterTool.class);
 		toolbox.selectTool(tool);
 	}
 

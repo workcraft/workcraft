@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ import org.workcraft.plugins.son.gui.SONGUI;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScenarioGenerator extends SONSimulationTool{
+public class ScenarioGeneratorTool extends SONSimulationTool{
 
 	protected JButton saveButton, removeButton, resetButton, importButton, exportButton;
 	protected JToggleButton startButton;
@@ -481,7 +482,7 @@ public class ScenarioGenerator extends SONSimulationTool{
 
 	@Override
 	public int getHotKeyCode() {
-		return 0;
+		return KeyEvent.VK_G;
 	}
 
 	@Override

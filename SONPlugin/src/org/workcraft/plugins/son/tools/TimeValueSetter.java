@@ -6,7 +6,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeConsistencyChecker implements Tool{
+public class TimeValueSetter implements Tool{
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -20,7 +20,7 @@ public class TimeConsistencyChecker implements Tool{
 
 	@Override
 	public String getDisplayName() {
-		return "Consistency";
+		return "Set time value";
 	}
 
 	@Override
@@ -29,5 +29,4 @@ public class TimeConsistencyChecker implements Tool{
 		final TimeValueSetterTool tool = toolbox.getToolInstance(TimeValueSetterTool.class);
 		toolbox.selectTool(tool);
 	}
-
 }
