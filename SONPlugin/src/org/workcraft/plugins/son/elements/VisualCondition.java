@@ -57,7 +57,7 @@ public class VisualCondition extends VisualPlaceNode{
 		});
 
 		addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-				this, "Final", Boolean.class, false, true, true) {
+				this, "Final", Boolean.class, false, false, false) {
 			public void setter(VisualCondition object, Boolean value) {
 				setFinal(value);
 			}
@@ -127,7 +127,6 @@ public class VisualCondition extends VisualPlaceNode{
 
 	private void cahceEndTimeRenderedText(DrawRequest r) {
 		String end = "End: "+ getEndTime();
-		//double o = 0.8 * size;
 
 		Point2D offset = getOffset(endTimePositioning);
 		offset.setLocation(offset.getX() , offset.getY() - labelOffset);
@@ -186,22 +185,6 @@ public class VisualCondition extends VisualPlaceNode{
 		sendNotification(new PropertyChangedEvent(this, "final"));
 	}
 
-	public String getStartTime(){
-		return ((Condition)getReferencedComponent()).getStartTime();
-	}
-
-	public void setStartTime(String time){
-		((Condition)getReferencedComponent()).setStartTime(time);
-	}
-
-	public String getEndTime(){
-		return ((Condition)getReferencedComponent()).getEndTime();
-	}
-
-	public void setEndTime(String time){
-		((Condition)getReferencedComponent()).setEndTime(time);
-	}
-
 	public Color getStartTimeColor(){
 		return ((Condition)getReferencedComponent()).getStartTimeColor();
 	}
@@ -217,4 +200,5 @@ public class VisualCondition extends VisualPlaceNode{
 	public void setEndTimeColor(Color value){
 		((Condition)getReferencedComponent()).setEndTimeColor(value);
 	}
+
 }

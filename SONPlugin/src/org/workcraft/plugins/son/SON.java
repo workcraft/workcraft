@@ -26,11 +26,10 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
-import org.workcraft.plugins.son.propertydescriptors.ConditionEndTimePropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.ConditionStartTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.PlaceNodeTimePropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.BlockTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -410,15 +409,11 @@ public class SON extends AbstractMathModel {
 			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE)
 				properties.add(new ConnectionTimePropertyDescriptor((SONConnection)node));
 		}
-		if (node instanceof PlaceNode) {
-			properties.add(new PlaceNodeTimePropertyDescriptor((PlaceNode)node));
-		}
-		if (node instanceof Block) {
-			properties.add(new BlockTimePropertyDescriptor((Block)node));
-		}
-		if (node instanceof Condition) {
-			properties.add(new ConditionStartTimePropertyDescriptor((Condition)node));
-			properties.add(new ConditionEndTimePropertyDescriptor((Condition)node));
+
+		if (node instanceof Time) {
+			properties.add(new StartTimePropertyDescriptor((Time)node));
+			properties.add(new EndTimePropertyDescriptor((Time)node));
+			properties.add(new DurationPropertyDescriptor((Time)node));
 		}
 
 		return properties;

@@ -105,6 +105,22 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 		return ((Event)getReferencedComponent()).getFillColor();
 	}
 
+	public String getStartTime(){
+		return ((Event)getReferencedComponent()).getStartTime();
+	}
+
+	public void setStartTime(String time){
+		((Event)getReferencedComponent()).setStartTime(time);
+	}
+
+	public String getEndTime(){
+		return ((Event)getReferencedComponent()).getEndTime();
+	}
+
+	public void setEndTime(String time){
+		((Event)getReferencedComponent()).setEndTime(time);
+	}
+
 	@Override
 	public void copyStyle(Stylable src) {
 		super.copyStyle(src);

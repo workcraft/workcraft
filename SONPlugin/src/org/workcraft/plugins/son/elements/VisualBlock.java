@@ -162,6 +162,22 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		return  this.getReferencedComponent().getIsCollapsed();
 	}
 
+	public String getStartTime(){
+		return ((Block)getReferencedComponent()).getStartTime();
+	}
+
+	public void setStartTime(String time){
+		((Block)getReferencedComponent()).setStartTime(time);
+	}
+
+	public String getEndTime(){
+		return ((Block)getReferencedComponent()).getEndTime();
+	}
+
+	public void setEndTime(String time){
+		((Block)getReferencedComponent()).setEndTime(time);
+	}
+
 	public String getDuration(){
 		return ((Block)getReferencedComponent()).getDuration();
 	}

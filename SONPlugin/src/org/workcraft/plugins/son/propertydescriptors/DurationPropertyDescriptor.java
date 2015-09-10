@@ -4,18 +4,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.Time;
 
-public class ConditionStartTimePropertyDescriptor implements PropertyDescriptor{
-	private final Condition c;
+public class DurationPropertyDescriptor implements PropertyDescriptor{
+	private final Time t;
 
-	public ConditionStartTimePropertyDescriptor(Condition c) {
-		this.c = c;
+	public DurationPropertyDescriptor(Time t) {
+		this.t = t;
 	}
 
 	@Override
 	public String getName() {
-		return "Start time";
+		return "Duration";
 	}
 
 	@Override
@@ -40,12 +40,13 @@ public class ConditionStartTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return c.getStartTime();
+		return t.getDuration();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		c.setStartTime((String)value);
+
+		t.setDuration((String)value);
 	}
 
 	@Override

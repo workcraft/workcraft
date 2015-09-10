@@ -30,6 +30,7 @@ public class VisualPlaceNode extends VisualComponent{
 
 	protected Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
 	protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
+
 	protected Positioning errLabelPositioning = Positioning.BOTTOM;
 	protected RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0,0.0));
 	protected Color errLabelColor = SONSettings.getErrLabelColor();
@@ -285,6 +286,22 @@ public class VisualPlaceNode extends VisualComponent{
 
 	public void setErrLabelColor(Color errLabelColor){
 		this.errLabelColor = errLabelColor;
+	}
+
+	public String getStartTime(){
+		return ((PlaceNode)getReferencedComponent()).getStartTime();
+	}
+
+	public void setStartTime(String time){
+		((PlaceNode)getReferencedComponent()).setStartTime(time);
+	}
+
+	public String getEndTime(){
+		return ((PlaceNode)getReferencedComponent()).getEndTime();
+	}
+
+	public void setEndTime(String time){
+		((PlaceNode)getReferencedComponent()).setEndTime(time);
 	}
 
 	public Color getDurationColor(){

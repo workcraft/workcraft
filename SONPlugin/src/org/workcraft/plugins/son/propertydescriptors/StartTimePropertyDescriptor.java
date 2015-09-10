@@ -4,18 +4,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.Time;
 
-public class PlaceNodeTimePropertyDescriptor implements PropertyDescriptor{
-	private final PlaceNode c;
+public class StartTimePropertyDescriptor implements PropertyDescriptor{
+	private final Time t;
 
-	public PlaceNodeTimePropertyDescriptor(PlaceNode c) {
-		this.c = c;
+	public StartTimePropertyDescriptor(Time t) {
+		this.t = t;
 	}
 
 	@Override
 	public String getName() {
-		return "Duration";
+		return "Start time";
 	}
 
 	@Override
@@ -40,13 +40,12 @@ public class PlaceNodeTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return c.getDuration();
+		return t.getStartTime();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-
-		c.setDuration((String)value);
+		t.setStartTime((String)value);
 	}
 
 	@Override

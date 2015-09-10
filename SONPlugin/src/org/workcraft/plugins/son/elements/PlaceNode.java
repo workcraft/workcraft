@@ -5,15 +5,21 @@ import java.awt.Color;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.Time;
 
-public class PlaceNode extends MathNode {
+public class PlaceNode extends MathNode implements Time{
 
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	private String label = "";
 	private int errors = 0;
+
+	private String statTime = "0000-9999";
+	private String endTime = "0000-9999";
 	private String duration = "0000-9999";
+
 	protected Color durationColor = Color.BLACK;
+
 	private boolean marked = false;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
 
@@ -64,6 +70,24 @@ public class PlaceNode extends MathNode {
 
 	public Color getTokenColor() {
 		return tokenColor;
+	}
+
+	public void setStartTime(String duration){
+		this.statTime = duration;
+		sendNotification( new PropertyChangedEvent(this, "start time") );
+	}
+
+	public String getStartTime(){
+		return statTime;
+	}
+
+	public void setEndTime(String endTime){
+		this.endTime = endTime;
+		sendNotification( new PropertyChangedEvent(this, "end time") );
+	}
+
+	public String getEndTime(){
+		return endTime;
 	}
 
 	public void setDuration(String duration){

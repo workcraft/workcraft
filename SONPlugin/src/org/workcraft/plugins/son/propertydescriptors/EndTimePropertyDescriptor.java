@@ -4,13 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.Time;
 
-public class ConditionEndTimePropertyDescriptor implements PropertyDescriptor{
-	private final Condition c;
+public class EndTimePropertyDescriptor implements PropertyDescriptor{
+	private final Time t;
 
-	public ConditionEndTimePropertyDescriptor(Condition c) {
-		this.c = c;
+	public EndTimePropertyDescriptor(Time t) {
+		this.t = t;
 	}
 
 	@Override
@@ -40,13 +40,13 @@ public class ConditionEndTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return c.getEndTime();
+		return t.getEndTime();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 
-		c.setEndTime((String)value);
+		t.setEndTime((String)value);
 	}
 
 	@Override

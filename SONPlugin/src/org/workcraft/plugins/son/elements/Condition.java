@@ -9,30 +9,11 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
 public class Condition extends PlaceNode{
 
-	private String statTime = "0000-9999";
-	private String endTime = "0000-9999";
 	private boolean initialState = false;
 	private boolean finalState = false;
+
 	protected Color startTimeColor = Color.BLACK;
 	protected Color endTimeColor = Color.BLACK;
-
-	public void setStartTime(String duration){
-		this.statTime = duration;
-		sendNotification( new PropertyChangedEvent(this, "start time") );
-	}
-
-	public String getStartTime(){
-		return statTime;
-	}
-
-	public void setEndTime(String endTime){
-		this.endTime = endTime;
-		sendNotification( new PropertyChangedEvent(this, "end time") );
-	}
-
-	public String getEndTime(){
-		return endTime;
-	}
 
 	public boolean isInitial() {
 		return initialState;
@@ -51,7 +32,6 @@ public class Condition extends PlaceNode{
 		finalState = value;
 		sendNotification(new PropertyChangedEvent(this, "final"));
 	}
-
 
 	public Color getStartTimeColor(){
 		return startTimeColor;

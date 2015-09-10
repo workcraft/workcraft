@@ -9,16 +9,21 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.Time;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
-public class Block extends PageNode implements TransitionNode{
+public class Block extends PageNode implements TransitionNode, Time{
 	private String label="";
 	private Color foregroundColor = CommonVisualSettings.getBorderColor();
 	private Color fillColor  = CommonVisualSettings.getFillColor();
 	private boolean isCollapsed = false;
+
 	private String duration = "0000-9999";
+	private String statTime = "0000-9999";
+	private String endTime = "0000-9999";
+
 	private Color durationColor = Color.BLACK;
 
 	public Collection<Node> getComponents(){
@@ -107,6 +112,7 @@ public class Block extends PageNode implements TransitionNode{
 		sendNotification( new PropertyChangedEvent(this, "duration") );
 	}
 
+	@Override
 	public String getDuration(){
 		return duration;
 	}
@@ -119,4 +125,25 @@ public class Block extends PageNode implements TransitionNode{
 		this.durationColor = value;
 	}
 
+	@Override
+	public void setStartTime(String duration){
+		this.statTime = duration;
+		sendNotification( new PropertyChangedEvent(this, "start time") );
+	}
+
+	@Override
+	public String getStartTime(){
+		return statTime;
+	}
+
+	@Override
+	public void setEndTime(String endTime){
+		this.endTime = endTime;
+		sendNotification( new PropertyChangedEvent(this, "end time") );
+	}
+
+	@Override
+	public String getEndTime(){
+		return endTime;
+	}
 }
