@@ -21,13 +21,11 @@
 
 package org.workcraft.plugins.stg;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -39,11 +37,8 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -52,6 +47,8 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualPlaceShadow;
+import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -62,7 +59,6 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Signal Transition Graph")
 @CustomTools(STGToolsProvider.class)
 public class VisualSTG extends AbstractVisualModel {
-	private STG stg;
 
 	public VisualSTG() {
 		this(new STG(), null);
@@ -74,7 +70,6 @@ public class VisualSTG extends AbstractVisualModel {
 
 	public VisualSTG(STG model, VisualGroup root) {
 		super(model, root);
-		this.stg = model;
 		if (root == null) {
 			try {
 				createDefaultFlatStructure();
@@ -103,18 +98,16 @@ public class VisualSTG extends AbstractVisualModel {
 		if (first == second) {
 			throw new InvalidConnectionException ("Self-loops are not allowed.");
 		}
-		if (((first instanceof VisualPlace) || (first instanceof VisualImplicitPlaceArc))
-				&& ((second instanceof VisualPlace) || (second instanceof VisualImplicitPlaceArc))) {
+		if ( ((first instanceof VisualPlace) || (first instanceof VisualPlaceShadow) || (first instanceof VisualImplicitPlaceArc))
+		  && ((second instanceof VisualPlace) || (second instanceof VisualPlaceShadow) || (second instanceof VisualImplicitPlaceArc))) {
 			throw new InvalidConnectionException ("Arcs between places are not allowed.");
 		}
-		Connection forwardConnection = getConnection(first, second);
-		Connection backwardConnection = getConnection(second, first);
-		if ((forwardConnection instanceof VisualReadArc) || (backwardConnection instanceof VisualReadArc)) {
-			// Read arc exists
-			throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
-		} else if (forwardConnection != null) {
-			// Consuming/producing arc exists
-			throw new InvalidConnectionException ("This arc already exisits.");
+		if (hasMathConnection(first, second)) {
+			if (hasMathConnection(second, first)) {
+				throw new InvalidConnectionException ("This arc already exists.");
+			} else {
+				throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
+			}
 		}
 	}
 
@@ -146,6 +139,7 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	private VisualImplicitPlaceArc createImplicitPlaceConnection(VisualTransition t1, VisualTransition t2) throws InvalidConnectionException {
+		STG stg = (STG)getMathModel();
 		final ConnectionResult connectResult = stg.connect(t1.getReferencedTransition(), t2.getReferencedTransition());
 
 		STGPlace implicitPlace = connectResult.getImplicitPlace();
@@ -163,6 +157,7 @@ public class VisualSTG extends AbstractVisualModel {
 	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent,
 			MathConnection mConnection) throws InvalidConnectionException {
 
+		STG stg = (STG)getMathModel();
 		if (mConnection == null) {
 			MathNode firstRef = firstComponent.getReferencedComponent();
 			MathNode secondRef = secondComponent.getReferencedComponent();
@@ -179,15 +174,14 @@ public class VisualSTG extends AbstractVisualModel {
 		if (first == second) {
 			throw new InvalidConnectionException ("Self-loops are not allowed.");
 		}
-		if ((first instanceof VisualPlace) && (second instanceof VisualPlace)) {
+		if ( ((first instanceof VisualPlace) || (first instanceof VisualPlaceShadow))
+		  && ((second instanceof VisualPlace) || (second instanceof VisualPlaceShadow))) {
 			throw new InvalidConnectionException ("Read-arcs between places are not allowed.");
 		}
 		if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
 			throw new InvalidConnectionException ("Read-arcs between transitions are not allowed.");
 		}
-		Connection forwardConnection = getConnection(first, second);
-		Connection backwardConnection = getConnection(second, first);
-		if ((forwardConnection != null) || (backwardConnection != null)) {
+		if (hasMathConnection(first, second) || (hasMathConnection(second, first))) {
 			throw new InvalidConnectionException ("Nodes are already connected.");
 		}
 	}
@@ -196,44 +190,52 @@ public class VisualSTG extends AbstractVisualModel {
 	public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
 		validateUndirectedConnection(first, second);
 
+		VisualComponent place = null;
+		VisualComponent transition = null;
+		if (first instanceof VisualTransition) {
+			place = (VisualComponent)second;
+			transition = (VisualComponent)first;
+		} else if (second instanceof VisualTransition) {
+			place = (VisualComponent)first;
+			transition = (VisualComponent)second;
+		}
 		VisualConnection connection = null;
-		if ((first instanceof VisualPlace) && (second instanceof VisualTransition)) {
-			connection = createReadarcConnection((VisualPlace)first, (VisualTransition)second);
-		} else if ((first instanceof VisualTransition) && (second instanceof VisualPlace)) {
-			connection = createReadarcConnection((VisualPlace)second, (VisualTransition)first);
+		if ((place != null) && (transition != null)) {
+			connection = createReadarcConnection(place, transition);
 		}
 		return connection;
 	}
 
-	private VisualReadArc createReadarcConnection(VisualPlace place, VisualTransition transition)
+	private VisualReadArc createReadarcConnection(VisualComponent place, VisualComponent transition)
 			 throws InvalidConnectionException {
+		STG stg = (STG)getMathModel();
 
-		Place mPlace = place.getReferencedPlace();
-		Transition mTransition = transition.getReferencedTransition();
-		MathConnection mConsumingConnection = stg.connect(mPlace, mTransition).getSimpleResult();
-		MathConnection mProducingConnection = stg.connect(mTransition, mPlace).getSimpleResult();
+		Place mPlace = null;
+		if (place instanceof VisualPlace) {
+			mPlace = ((VisualPlace)place).getReferencedPlace();
+		} else if (place instanceof VisualPlaceShadow) {
+			mPlace = ((VisualPlaceShadow)place).getReferencedPlace();
+		}
+		Transition mTransition = null;
+		if (transition instanceof VisualTransition) {
+			mTransition = ((VisualTransition)transition).getReferencedTransition();
+		}
 
-		VisualReadArc connection = new VisualReadArc(place, transition, mConsumingConnection, mProducingConnection);
-		Hierarchy.getNearestContainer(place, transition).add(connection);
+		VisualReadArc connection = null;
+		if ((mPlace != null) && (mTransition !=null)) {
+			MathConnection mConsumingConnection = stg.connect(mPlace, mTransition).getSimpleResult();
+			MathConnection mProducingConnection = stg.connect(mTransition, mPlace).getSimpleResult();
+
+			connection = new VisualReadArc(place, transition, mConsumingConnection, mProducingConnection);
+			Hierarchy.getNearestContainer(place, transition).add(connection);
+		}
 		return connection;
 	}
 
 	public VisualPlace makeExplicit(VisualImplicitPlaceArc connection) {
 		Container group = Hierarchy.getNearestAncestor(connection, Container.class);
-
-		List<Point2D> locations = new LinkedList<Point2D>();
-		int splitIndex = -1;
+		STG stg = (STG)getMathModel();
 		Point2D splitPoint = connection.getSplitPoint();
-		if (connection.getGraphic() instanceof Polyline) {
-			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
-			Polyline polyline = (Polyline)connection.getGraphic();
-			for (ControlPoint cp:  polyline.getControlPoints()) {
-				Point2D location = localToRootTransform.transform(cp.getPosition(), null);
-				locations.add(location);
-			}
-			splitIndex = polyline.getNearestSegment(splitPoint, null);
-		}
-
 		STGPlace implicitPlace = connection.getImplicitPlace();
 		stg.makeExplicit(implicitPlace);
 		VisualPlace place = new VisualPlace(implicitPlace);
@@ -246,19 +248,10 @@ public class VisualSTG extends AbstractVisualModel {
 		group.add(con1);
 		group.add(con2);
 
-		if (!locations.isEmpty()) {
-			int splitIndex1 = splitIndex;
-			if ((splitIndex1 > 0) && (locations.get(splitIndex1-1).distanceSq(splitPoint) < 0.001)) {
-				splitIndex1--;
-			}
-			ConnectionHelper.addControlPoints(con1, locations.subList(0, splitIndex1));
-
-			int splitIndex2 = splitIndex;
-			if ((splitIndex2 < locations.size()) && (locations.get(splitIndex2).distanceSq(splitPoint) < 0.001)) {
-				splitIndex2++;
-			}
-			ConnectionHelper.addControlPoints(con2, locations.subList(splitIndex2, locations.size()));
-		}
+		LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(connection, splitPoint);
+		ConnectionHelper.addControlPoints(con1, prefixLocationsInRootSpace);
+		LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPoint);
+		ConnectionHelper.addControlPoints(con2, suffixLocationsInRootSpace);
 
 		con1.copyStyle(connection);
 		con2.copyStyle(connection);
@@ -292,24 +285,7 @@ public class VisualSTG extends AbstractVisualModel {
 			Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
 			parent.add(connection);
 			if (preserveConnectionShape) {
-				List<Point2D> locations = new LinkedList<Point2D>();
-	 			if (con1.getGraphic() instanceof Polyline) {
-	 				Polyline polyline = (Polyline)con1.getGraphic();
-	 				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con1);
-					for (ControlPoint cp:  polyline.getControlPoints()) {
-						Point2D location = localToRootTransform.transform(cp.getPosition(), null);
-						locations.add(location);
-					}
-	 			}
-	 			locations.add(place.getPosition());
-	 			if (con2.getGraphic() instanceof Polyline) {
-	 				Polyline polyline = (Polyline)con2.getGraphic();
-	 				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con2);
-					for (ControlPoint cp:  polyline.getControlPoints()) {
-						Point2D location = localToRootTransform.transform(cp.getPosition(), null);
-						locations.add(location);
-					}
-	 			}
+				LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(place, con1, con2);
 	 			ConnectionHelper.addControlPoints(connection, locations);
 			}
 			// Remove explicit place, all its connections will get removed automatically by the hanging connection remover
@@ -318,18 +294,21 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	public VisualPlace createPlace(String mathName, Container container) {
+		STG stg = (STG)getMathModel();
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		STGPlace mathPlace = stg.createPlace(mathName, mathContainer);
 		return createVisualComponent(mathPlace, container, VisualPlace.class);
 	}
 
 	public VisualDummyTransition createDummyTransition(String mathName, Container container) {
+		STG stg = (STG)getMathModel();
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		DummyTransition mathTransition = stg.createDummyTransition(mathName, mathContainer);
 		return createVisualComponent(mathTransition, container, VisualDummyTransition.class);
 	}
 
 	public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
+		STG stg = (STG)getMathModel();
 		Container mathContainer = NamespaceHelper.getMathContainer(this, container);
 		String mathName = null;
 		if ((signalName != null) && (direction != null)) {
@@ -412,6 +391,7 @@ public class VisualSTG extends AbstractVisualModel {
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);
 		if (node == null) {
+			STG stg = (STG)getMathModel();
 			for (Type type : Type.values()) {
 				LinkedList<PropertyDescriptor> typeDescriptors = new LinkedList<>();
 				Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());

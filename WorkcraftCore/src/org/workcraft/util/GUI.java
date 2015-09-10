@@ -87,17 +87,19 @@ public class GUI {
 	}
 
 	public static void drawEditorMessage(GraphEditor editor, Graphics2D g, Color color, String message) {
-		g.setFont(UIManager.getFont("Button.font"));
-		Rectangle r = g.getFont().getStringBounds(message, g.getFontRenderContext()).getBounds();
-		r.x = editor.getWidth()/2 - r.width/2;
-		r.y = editor.getHeight() - 20 - r.height;
-		g.setColor(new Color(240, 240, 240, 192));
-		g.fillRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
-		g.setColor(new Color(224, 224, 224));
-		g.drawRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
-		g.setColor(color);
-		LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
-		g.drawString (message, r.x, r.y+r.height-(int)(lm.getDescent()));
+		if (message != null) {
+			g.setFont(UIManager.getFont("Button.font"));
+			Rectangle r = g.getFont().getStringBounds(message, g.getFontRenderContext()).getBounds();
+			r.x = editor.getWidth()/2 - r.width/2;
+			r.y = editor.getHeight() - 20 - r.height;
+			g.setColor(new Color(240, 240, 240, 192));
+			g.fillRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
+			g.setColor(new Color(224, 224, 224));
+			g.drawRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
+			g.setColor(color);
+			LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
+			g.drawString (message, r.x, r.y+r.height-(int)(lm.getDescent()));
+		}
 	}
 
 	public static ImageIcon createIconFromSVG(String path, int height, int width, Color background) {

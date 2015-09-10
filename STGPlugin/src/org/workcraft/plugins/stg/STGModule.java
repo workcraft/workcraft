@@ -15,14 +15,10 @@ import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
-import org.workcraft.plugins.stg.serialisation.ReadArcDeserialiser;
-import org.workcraft.plugins.stg.serialisation.ReadArcSerialiser;
-import org.workcraft.plugins.stg.tools.DualArcToReadArcConverterTool;
 import org.workcraft.plugins.stg.tools.DummyToSignalTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
 import org.workcraft.plugins.stg.tools.MakePlacesImplicitTool;
 import org.workcraft.plugins.stg.tools.PetriNetToStgConverterTool;
-import org.workcraft.plugins.stg.tools.ReadArcToDualArcConverterTool;
 import org.workcraft.plugins.stg.tools.SignalMirrorTool;
 import org.workcraft.plugins.stg.tools.SignalToDummyTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.StgToPetriNetConverterTool;
@@ -51,9 +47,6 @@ public class STGModule implements Module {
 
 		pm.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
 		pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
-
-		pm.registerClass(XMLSerialiser.class, ReadArcSerialiser.class);
-		pm.registerClass(XMLDeserialiser.class, ReadArcDeserialiser.class);
 
 		pm.registerClass(Exporter.class, DotGExporter.class);
 		pm.registerClass(Importer.class, DotGImporter.class);
@@ -93,20 +86,6 @@ public class STGModule implements Module {
 			@Override
 			public Tool create() {
 				return new DummyToSignalTransitionConverterTool();
-			}
-		});
-
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new DualArcToReadArcConverterTool();
-			}
-		});
-
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new ReadArcToDualArcConverterTool();
 			}
 		});
 

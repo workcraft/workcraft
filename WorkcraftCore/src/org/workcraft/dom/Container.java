@@ -27,8 +27,11 @@ import java.util.Collection;
 public interface Container extends Node {
 	public void add(Node node);
 	public void add(Collection<Node> nodes);
+
 	public void remove(Node node);
 	public void remove(Collection<Node> nodes);
+
 	public void reparent(Collection<Node> nodes);
 	public void reparent(Collection<Node> nodes, Container newParent);
+
 }

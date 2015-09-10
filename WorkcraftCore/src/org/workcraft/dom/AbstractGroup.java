@@ -35,7 +35,7 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.ObservableHierarchyImpl;
 import org.workcraft.util.Hierarchy;
 
-public abstract class AbstractGroup implements ObservableHierarchy, Container {
+public abstract class AbstractGroup implements Container, ObservableHierarchy {
 	private Node parent = null;
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 	private Container groupRef;

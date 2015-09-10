@@ -4,5 +4,4 @@ import org.workcraft.dom.Container;
 
 public interface NamespaceProvider extends Container {
 
-
 }

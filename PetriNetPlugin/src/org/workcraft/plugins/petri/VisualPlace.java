@@ -30,28 +30,50 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.CustomTouchable;
+import org.workcraft.dom.visual.Distributable;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.Hierarchy;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/place.svg")
-public class VisualPlace extends VisualComponent {
+public class VisualPlace extends VisualComponent implements Container, Distributable, CustomTouchable,
+		StateObserver, ObservableHierarchy {
+
 	public static final String PROPERTY_TOKEN_COLOR = "Token color";
+	public static final String PROPERTY_DISTRIBUTED = "Distributed";
+
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
 	protected Color tokenColor = CommonVisualSettings.getBorderColor();
+
+	protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+	private boolean distributed = true;
 
 	public VisualPlace(Place place) {
 		super(place);
@@ -86,6 +108,16 @@ public class VisualPlace extends VisualComponent {
 			}
 			public Integer getter(VisualPlace object) {
 				return object.getReferencedPlace().getCapacity();
+			}
+		});
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Boolean>(
+				this, PROPERTY_DISTRIBUTED, Boolean.class, true, true, true) {
+			public void setter(VisualPlace object, Boolean value) {
+				object.setIsDistributed(value);
+			}
+			public Boolean getter(VisualPlace object) {
+				return object.getIsDistributed();
 			}
 		});
 	}
@@ -132,6 +164,36 @@ public class VisualPlace extends VisualComponent {
 		}
 	}
 
+
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+	}
+
+	public Place getReferencedPlace() {
+		return (Place)getReferencedComponent();
+	}
+
+	public Color getTokenColor() {
+		return tokenColor;
+	}
+
+	public void setTokenColor(Color tokenColor) {
+		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualPlace) {
+			VisualPlace srcPlace = (VisualPlace)src;
+			getReferencedPlace().setCapacity(srcPlace.getReferencedPlace().getCapacity());
+			getReferencedPlace().setTokens(srcPlace.getReferencedPlace().getTokens());
+			setTokenColor(srcPlace.getTokenColor());
+		}
+	}
+
 	public static void drawTokens(DrawRequest r, int count, double size, double separation,
 			double diameter, double borderWidth, Color color) {
 		Graphics2D g = r.getGraphics();
@@ -171,33 +233,116 @@ public class VisualPlace extends VisualComponent {
 		}
 	}
 
+
 	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
-	}
-
-	public Place getReferencedPlace() {
-		return (Place)getReferencedComponent();
-	}
-
-	public Color getTokenColor() {
-		return tokenColor;
-	}
-
-	public void setTokenColor(Color tokenColor) {
-		this.tokenColor = tokenColor;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
+	public Collection<Node> getChildren() {
+		return groupImpl.getChildren();
 	}
 
 	@Override
-	public void copyStyle(Stylable src) {
-		super.copyStyle(src);
-		if (src instanceof VisualPlace) {
-			VisualPlace srcPlace = (VisualPlace)src;
-			getReferencedPlace().setCapacity(srcPlace.getReferencedPlace().getCapacity());
-			getReferencedPlace().setTokens(srcPlace.getReferencedPlace().getTokens());
-			setTokenColor(srcPlace.getTokenColor());
+	public void add(Node node) {
+		groupImpl.add(node);
+		if (node instanceof VisualPlaceShadow) {
+			((VisualPlaceShadow) node).addObserver(this);
 		}
+	}
+
+	@Override
+	public void remove(Node node) {
+		if (node instanceof VisualPlaceShadow) {
+		}
+		groupImpl.remove(node);
+	}
+
+	@Override
+	public void add(Collection<Node> nodes) {
+		groupImpl.add(nodes);
+		for (Node node : nodes) {
+			if (node instanceof VisualPlaceShadow) {
+				((VisualPlaceShadow) node).addObserver(this);
+			}
+		}
+	}
+
+	@Override
+	public void remove(Collection<Node> nodes) {
+		for (Node n : nodes) {
+			remove(n);
+		}
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes, Container newParent) {
+		groupImpl.reparent(nodes, newParent);
+	}
+
+	@Override
+	public void reparent(Collection<Node> nodes) {
+		groupImpl.reparent(nodes);
+	}
+
+	@Override
+	public void addObserver(HierarchyObserver obs) {
+		groupImpl.addObserver(obs);
+	}
+
+	@Override
+	public void removeObserver(HierarchyObserver obs) {
+		groupImpl.removeObserver(obs);
+	}
+
+	@Override
+	public void removeAllObservers() {
+		groupImpl.removeAllObservers();
+	}
+
+	@Override
+	public void setIsDistributed(boolean value) {
+		distributed = value;
+	}
+
+	@Override
+	public boolean getIsDistributed() {
+		return distributed;
+	}
+
+
+	public Rectangle2D getOutlineBoxInLocalSpace() {
+		return super.getInternalBoundingBoxInLocalSpace();
+	}
+
+	@Override
+    public final Rectangle2D getOutlineBox() {
+    	return transformToParentSpace(getOutlineBoxInLocalSpace());
+    }
+
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getInternalBoundingBoxInLocalSpace();
+		if (getIsDistributed()) {
+			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
+			bb = BoundingBoxHelper.union(bb, BoundingBoxHelper.mergeBoundingBoxes(children));
+		}
+		return bb;
+	}
+
+	@Override
+	public Node customHitTest(Point2D point) {
+		Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
+		for (Node node : getChildren()) {
+			if (node instanceof VisualNode) {
+				VisualTransformableNode vn = (VisualTransformableNode)node;
+				if (vn.hitTest(pointInLocalSpace)) {
+					return vn;
+				}
+			}
+		}
+		return (hitTest(point) ? this : null);
+	}
+
+	@Override
+	public void notify(StateEvent e) {
 	}
 
 }

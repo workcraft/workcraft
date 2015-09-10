@@ -21,6 +21,7 @@
 
 package org.workcraft.gui.graph.tools;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import javax.swing.Icon;
@@ -29,6 +30,7 @@ import javax.swing.JPanel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.util.GUI;
 
 public abstract class AbstractTool implements GraphEditorTool {
 
@@ -61,7 +63,13 @@ public abstract class AbstractTool implements GraphEditorTool {
 	}
 
 	@Override
+	public String getHintMessage() {
+		return null;
+	}
+
+	@Override
 	public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
+		GUI.drawEditorMessage(editor, g, Color.BLACK, getHintMessage());
 	}
 
 	@Override

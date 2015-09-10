@@ -27,4 +27,5 @@ public interface NodeContext {
 	public Set<Node> getPreset(Node node);
 	public Set<Node> getPostset(Node node);
 	public Set<Connection> getConnections (Node node);
+	public boolean hasConnection(Node first, Node second);
 }

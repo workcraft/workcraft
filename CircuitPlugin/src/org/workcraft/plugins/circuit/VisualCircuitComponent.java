@@ -764,36 +764,34 @@ public class VisualCircuitComponent extends VisualComponent implements
 				}
 			}
 		}
-		if (hitTest(point)) {
-			return this;
-		} else {
-			return null;
-		}
+		return (hitTest(point) ? this : null);
 	}
 
 	@Override
 	public void notify(StateEvent e) {
 		if (e instanceof TransformChangedEvent) {
 			TransformChangedEvent t = (TransformChangedEvent) e;
-			VisualContact vc = (VisualContact) t.sender;
+			if (t.sender instanceof VisualContact) {
+				VisualContact vc = (VisualContact)t.sender;
 
-			AffineTransform at = t.sender.getTransform();
-			double x = at.getTranslateX();
-			double y = at.getTranslateY();
-			Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox();//getInternalBoundingBoxInLocalSpace();
-			if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
-				vc.setDirection(Direction.WEST);
+				AffineTransform at = t.sender.getTransform();
+				double x = at.getTranslateX();
+				double y = at.getTranslateY();
+				Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox();//getInternalBoundingBoxInLocalSpace();
+				if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+					vc.setDirection(Direction.WEST);
+				}
+				if ((x >= bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+					vc.setDirection(Direction.EAST);
+				}
+				if ((y <= bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+					vc.setDirection(Direction.NORTH);
+				}
+				if ((y >= bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+					vc.setDirection(Direction.SOUTH);
+				}
+				invalidateBoundingBox();
 			}
-			if ((x >= bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
-				vc.setDirection(Direction.EAST);
-			}
-			if ((y <= bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
-				vc.setDirection(Direction.NORTH);
-			}
-			if ((y >= bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
-				vc.setDirection(Direction.SOUTH);
-			}
-			invalidateBoundingBox();
 		}
 
 		if (e instanceof PropertyChangedEvent) {

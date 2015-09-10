@@ -163,6 +163,16 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		return connect(first, second, null);
 	}
 
+	public boolean hasMathConnection(Node first, Node second) {
+		boolean result = false;
+		if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
+			MathNode mathFirst = ((VisualComponent)first).getReferencedComponent();
+			MathNode mathSecond = ((VisualComponent)second).getReferencedComponent();
+			result = getMathModel().hasConnection(mathFirst, mathSecond);
+		}
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Container container, Class<T> type) {

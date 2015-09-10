@@ -136,11 +136,6 @@ public abstract class AbstractModel implements Model {
 	}
 
 	@Override
-	public Set<Connection> getConnections(Node component) {
-		return nodeContextTracker.getConnections(component);
-	}
-
-	@Override
 	public Set<Node> getPostset(Node component) {
 		return nodeContextTracker.getPostset(component);
 	}
@@ -148,6 +143,16 @@ public abstract class AbstractModel implements Model {
 	@Override
 	public Set<Node> getPreset(Node component) {
 		return nodeContextTracker.getPreset(component);
+	}
+
+	@Override
+	public Set<Connection> getConnections(Node component) {
+		return nodeContextTracker.getConnections(component);
+	}
+
+	@Override
+	public boolean hasConnection(Node first, Node second) {
+		return nodeContextTracker.hasConnection(first, second);
 	}
 
 	@Override

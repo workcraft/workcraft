@@ -8,4 +8,5 @@ public interface Collapsible {
 	public boolean isCurrentLevelInside();
 
 	public void setIsExcited(boolean value);
+
 }

@@ -23,7 +23,7 @@ public class MakePlacesImplicitTool extends TransformationTool {
 	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
-		HashSet<VisualPlace> places = new HashSet<VisualPlace>(stg.getVisualPlaces());
+		HashSet<VisualPlace> places = new HashSet<>(stg.getVisualPlaces());
 		if (!stg.getSelection().isEmpty()) {
 			places.retainAll(stg.getSelection());
 		}

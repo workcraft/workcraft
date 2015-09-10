@@ -27,7 +27,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -827,8 +826,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 	}
 
 	@Override
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the highlighted transitions to fire them.");
+	public String getHintMessage() {
+		return "Click on the highlighted transitions to fire them.";
 	}
 
 	public String getLabel() {

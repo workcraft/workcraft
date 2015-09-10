@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.stg;
+package org.workcraft.plugins.petri;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,18 +30,18 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
 public class VisualReadArc extends VisualConnection {
-	private MathConnection refCon1;
-	private MathConnection refCon2;
+	private MathConnection mathConsumingArc;
+	private MathConnection mathProducingArc;
 
-	public VisualReadArc () {
+	public VisualReadArc() {
 		this(null, null, null, null);
 	}
 
-	public VisualReadArc (VisualComponent first, VisualComponent second,
-			MathConnection refCon1, MathConnection refCon2) {
-		super(null, first, second);
-		this.refCon1 = refCon1;
-		this.refCon2 = refCon2;
+	public VisualReadArc(VisualComponent place, VisualComponent transition,
+			MathConnection mathConsumingArc, MathConnection mathProducingArc) {
+		super(null, place, transition);
+		this.mathConsumingArc = mathConsumingArc;
+		this.mathProducingArc = mathProducingArc;
 		setLineWidth(0.01);
 		removePropertyDeclarations();
 	}
@@ -51,25 +51,25 @@ public class VisualReadArc extends VisualConnection {
 		removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_WIDTH);
 	}
 
-	public MathConnection getRefCon1() {
-		return refCon1;
+	public MathConnection getMathConsumingArc() {
+		return mathConsumingArc;
 	}
 
-	public MathConnection getRefCon2() {
-		return refCon2;
+	public MathConnection getMathProducingArc() {
+		return mathProducingArc;
 	}
 
 	@Override
 	public Set<MathNode> getMathReferences() {
 		Set<MathNode> ret = new HashSet<MathNode>();
-		ret.add(refCon1);
-		ret.add(refCon2);
+		ret.add(mathConsumingArc);
+		ret.add(mathProducingArc);
 		return ret;
 	}
 
-	public void setDependencies(MathConnection refCon1, MathConnection refCon2) {
-		this.refCon1 = refCon1;
-		this.refCon2 = refCon2;
+	public void setDependencies(MathConnection mathConsumingArc, MathConnection mathProducingArc) {
+		this.mathConsumingArc = mathConsumingArc;
+		this.mathProducingArc = mathProducingArc;
 	}
 
 	@Override

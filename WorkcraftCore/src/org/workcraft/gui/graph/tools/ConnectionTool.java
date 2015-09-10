@@ -30,6 +30,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -104,13 +105,14 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	protected void updateState(GraphEditor editor) {
-		VisualNode node = (VisualNode) HitMan.hitTestForConnection(currentPoint, editor.getModel());
-		if (isConnectable(node)) {
-			currentNode = node;
+		currentNode = (VisualNode)HitMan.hitTestForConnection(currentPoint, editor.getModel());
+		if ((currentNode == null) || isConnectable(currentNode)) {
 			if (currentNode != firstNode) {
 				mouseLeftFirstNode = true;
 				warningMessage = null;
 			}
+		} else {
+			currentNode = null;
 		}
 	}
 
@@ -205,7 +207,7 @@ public class ConnectionTool extends AbstractTool {
 				}
 			} else {
 				if (firstNode == null) {
-					startConnection(editor);
+					startConnection(e);
 					editor.getWorkspaceEntry().setCanModify(false);
 				} else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
 					if (forbidSelfLoops) {
@@ -217,9 +219,9 @@ public class ConnectionTool extends AbstractTool {
 					warningMessage = "Connection with group element is not allowed.";
 				} else {
 					editor.getWorkspaceEntry().saveMemento();
-					finishConnection(editor);
+					finishConnection(e);
 					if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-						startConnection(editor);
+						startConnection(e);
 					} else {
 						resetState(editor);
 					}
@@ -231,7 +233,7 @@ public class ConnectionTool extends AbstractTool {
 		editor.repaint();
 	}
 
-	private void startConnection(GraphEditor editor) {
+	public void startConnection(GraphEditorMouseEvent e) {
 		firstNode = currentNode;
 		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
 		if (firstNode instanceof VisualConnection) {
@@ -249,7 +251,8 @@ public class ConnectionTool extends AbstractTool {
 		controlPoints = new LinkedList<Point2D>();
 	}
 
-	private void finishConnection(GraphEditor editor) {
+	public VisualConnection finishConnection(GraphEditorMouseEvent e) {
+		VisualConnection connection = null;
 		try {
 			if (firstNode instanceof VisualConnection) {
 				VisualConnection vc = (VisualConnection)firstNode;
@@ -261,22 +264,29 @@ public class ConnectionTool extends AbstractTool {
 				AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
 				vc.setSplitPoint(rootToLocalTransform.transform(currentPoint, null));
 			}
-			VisualModel model = editor.getModel();
-			VisualConnection connection = null;
+			VisualModel model = e.getEditor().getModel();
 			if (directedArcs) {
 				connection = model.connect(firstNode, currentNode);
 			} else {
 				connection = model.connectUndirected(firstNode, currentNode);
+				if ((connection != null) && (connection.getSecond() != currentNode)) {
+					// Reverse the list of control points if the undirected connection is reverted.
+					Collections.reverse(controlPoints);
+				}
 			}
-			connection.copyStyle(templateNode);
-			if (controlPoints.isEmpty() && (firstNode == currentNode)) {
-				connection.getGraphic().setDefaultControlPoints();
-			} else {
-				ConnectionHelper.addControlPoints(connection, controlPoints);
+			if (connection != null) {
+				connection.copyStyle(templateNode);
+				if (controlPoints.isEmpty() && (firstNode == currentNode)) {
+					// Self-loop without predefined control points.
+					connection.getGraphic().setDefaultControlPoints();
+				} else {
+					ConnectionHelper.addControlPoints(connection, controlPoints);
+				}
 			}
 		} catch (InvalidConnectionException exeption) {
 			Toolkit.getDefaultToolkit().beep();
 		}
+		return connection;
 	}
 
 	@Override
@@ -292,14 +302,21 @@ public class ConnectionTool extends AbstractTool {
 		if (warningMessage != null) {
 			GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
 		} else {
-			String message;
-			if (firstNode == null) {
-				message = "Click on the first component.";
-			} else {
-				message = "Click on the second component or create a polyline segment. Hold Ctrl to connect continuously.";
-			}
-			GUI.drawEditorMessage(editor, g, Color.BLACK, message);
+			super.drawInScreenSpace(editor, g);
 		}
+	}
+
+	@Override
+	public String getHintMessage() {
+		return ((firstNode == null) ? getFirstHintMessage() : getSecondHintMessage());
+	}
+
+	public String getFirstHintMessage() {
+		return "Click on the first component.";
+	}
+
+	public String getSecondHintMessage() {
+		return "Click on the second component or create a polyline segment. Hold Ctrl to connect continuously.";
 	}
 
 	@Override
