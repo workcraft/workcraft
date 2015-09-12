@@ -38,6 +38,7 @@ import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.DefaultMathNodeRemover;
+import org.workcraft.dom.DefaultReplicaRemover;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -61,6 +62,7 @@ import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 
@@ -88,8 +90,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		new TransformEventPropagator().attach(getRoot());
 		new SelectionEventPropagator(this).attach(getRoot());
 		new RemovedNodeDeselector(this).attach(getRoot());
-		new DefaultHangingConnectionRemover(this, "Visual").attach(getRoot());
+		new DefaultHangingConnectionRemover(this).attach(getRoot());
 		new DefaultMathNodeRemover().attach(getRoot());
+		new DefaultReplicaRemover(this).attach(getRoot());
 
 		new StateSupervisor() {
 			@Override
@@ -277,7 +280,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		}
 	}
 
-	private void validateSelection (Collection<Node> nodes) {
+	private void validateSelection(Collection<Node> nodes) {
 		for (Node node : nodes)
 			validateSelection(node);
 	}
@@ -500,25 +503,49 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
 	@Override
 	public void deleteSelection() {
+		// XXX: The order of removal influences the remaining selection because there are listeners that remove hanging connections and replica nodes.
+		// Remove selected connections
+		deleteSelection(new Func<Node, Boolean>() {
+			@Override
+			public Boolean eval(Node node) {
+				return (node instanceof VisualConnection);
+			}
+		});
+		// Remove selected replica nodes
+		deleteSelection(new Func<Node, Boolean>() {
+			@Override
+			public Boolean eval(Node node) {
+				return (node instanceof Replica);
+			}
+		});
+		// Remove remaining selected nodes
+		deleteSelection(new Func<Node, Boolean>() {
+			@Override
+			public Boolean eval(Node node) {
+				return true;
+			}
+		});
+	}
+
+	private void deleteSelection(final Func<Node, Boolean> filter) {
 		HashMap<Container, LinkedList<Node>> batches = new HashMap<Container, LinkedList<Node>>();
-		LinkedList<Node> remainingSelection = new LinkedList<Node>();
-
-		for (Node n : selection) {
-			if (n.getParent() instanceof Container) {
-				Container c = (Container)n.getParent();
-				LinkedList<Node> batch = batches.get(c);
-				if (batch == null) {
-					batch = new LinkedList<Node>();
-					batches.put(c, batch);
+		for (Node node : selection) {
+			LinkedList<Node> batch = null;
+			if (node.getParent() instanceof Container) {
+				Container container = (Container)node.getParent();
+				if (filter.eval(node)) {
+					batch = batches.get(container);
+					if (batch == null) {
+						batch = new LinkedList<Node>();
+						batches.put(container, batch);
+					}
+					batch.add(node);
 				}
-				batch.add(n);
-			} else remainingSelection.add(n);
+			}
 		}
-
-		for (Container c : batches.keySet()) {
-			c.remove(batches.get(c));
+		for (Container container : batches.keySet()) {
+			container.remove(batches.get(container));
 		}
-		select(remainingSelection);
 	}
 
 	private Point2D transformToCurrentSpace(Point2D pointInRootSpace) {
@@ -560,8 +587,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	public Collection<Node> getMathChildren(Collection<Node> nodes) {
 		Collection<Node> ret = new HashSet<Node>();
 		for (Node node: nodes) {
-			if (node instanceof DependentNode) {
-				ret.addAll( ((DependentNode)node).getMathReferences());
+			if ((node instanceof Dependent) && !(node instanceof Replica)) {
+				ret.addAll( ((Dependent)node).getMathReferences());
 			} else if (node instanceof VisualGroup) {
 				ret.addAll(getMathChildren(node.getChildren()));
 			}

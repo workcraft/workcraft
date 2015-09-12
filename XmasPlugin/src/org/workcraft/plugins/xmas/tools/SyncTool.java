@@ -24,6 +24,7 @@ import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
@@ -313,8 +314,8 @@ public class SyncTool implements Tool {
 		//Finds all sync connections + groups
 		Collection <VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
 		for(VisualConnection vc: lvc) {
-			VisualComponent vc1 = vc.getFirst();
-			VisualComponent vc2 = vc.getSecond();
+			VisualNode vc1 = vc.getFirst();
+			VisualNode vc2 = vc.getSecond();
 				Node vn1 = vc1.getParent();
 				Node vn2 = vc2.getParent();
 				/*if(vn1 instanceof VisualSourceComponent) {

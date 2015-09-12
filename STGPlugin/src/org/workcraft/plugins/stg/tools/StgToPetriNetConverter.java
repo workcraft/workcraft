@@ -7,10 +7,14 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.DefaultModelConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STGPlace;
@@ -52,6 +56,30 @@ public 	class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG, Vi
 		for (VisualImplicitPlaceArc connection: stg.getVisualImplicitPlaceArcs()) {
 			stg.makeExplicit(connection);
 		}
+	}
+
+	@Override
+	public VisualConnection convertConnection(VisualConnection srcConnection) {
+		VisualConnection dstConnection = null;
+		if (srcConnection instanceof VisualReadArc) {
+			VisualNode srcFirst = srcConnection.getFirst();
+			VisualNode srcSecond = srcConnection.getSecond();
+			VisualNode dstFirst = getSrcToDstNode(srcFirst);
+			VisualNode dstSecond = getSrcToDstNode(srcSecond);
+			if ((dstFirst != null) && (dstSecond != null)) {
+				try {
+					dstConnection = getDstModel().connectUndirected(dstFirst, dstSecond);
+					dstConnection.copyStyle(srcConnection);
+					dstConnection.copyShape(srcConnection);
+				} catch (InvalidConnectionException e) {
+					e.printStackTrace();
+				}
+			}
+
+		} else {
+			dstConnection = super.convertConnection(srcConnection);
+		}
+		return dstConnection;
 	}
 
 }

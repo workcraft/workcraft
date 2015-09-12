@@ -212,7 +212,7 @@ public class HitMan
 				boolean isHidden = ((n instanceof Hidable) && ((Hidable)n).isHidden());
 				boolean isContainer = (n instanceof Container);
 				boolean isCollapsed = ((n instanceof Collapsible) && ((Collapsible)n).getIsCollapsed());
-				boolean isDistributable = (n instanceof Distributable);
+				boolean isDistributable = (n instanceof Replica);
 				return (isMovable && !isHidden && (isCollapsed || isDistributable || !isContainer));
 			}
 		});

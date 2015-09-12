@@ -345,7 +345,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	public String getLabel() {
-		return "no label";
+		return "";
 	}
 
 }

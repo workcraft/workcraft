@@ -42,8 +42,7 @@ class DrawMan
 		this.decorator = decorator;
 	}
 
-	private void transformAndDraw(Decoration decoration, Movable node)
-	{
+	private void transformAndDraw(Decoration decoration, Movable node) {
 		graphics.transform(node.getTransform());
 		simpleDraw(decoration, node);
 	}

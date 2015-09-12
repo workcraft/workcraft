@@ -39,6 +39,7 @@ import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -47,7 +48,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualPlaceShadow;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -98,8 +99,8 @@ public class VisualSTG extends AbstractVisualModel {
 		if (first == second) {
 			throw new InvalidConnectionException ("Self-loops are not allowed.");
 		}
-		if ( ((first instanceof VisualPlace) || (first instanceof VisualPlaceShadow) || (first instanceof VisualImplicitPlaceArc))
-		  && ((second instanceof VisualPlace) || (second instanceof VisualPlaceShadow) || (second instanceof VisualImplicitPlaceArc))) {
+		if ( ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
+		  && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
 			throw new InvalidConnectionException ("Arcs between places are not allowed.");
 		}
 		if (hasMathConnection(first, second)) {
@@ -174,8 +175,8 @@ public class VisualSTG extends AbstractVisualModel {
 		if (first == second) {
 			throw new InvalidConnectionException ("Self-loops are not allowed.");
 		}
-		if ( ((first instanceof VisualPlace) || (first instanceof VisualPlaceShadow))
-		  && ((second instanceof VisualPlace) || (second instanceof VisualPlaceShadow))) {
+		if ( ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
+		  && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
 			throw new InvalidConnectionException ("Read-arcs between places are not allowed.");
 		}
 		if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
@@ -190,31 +191,32 @@ public class VisualSTG extends AbstractVisualModel {
 	public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
 		validateUndirectedConnection(first, second);
 
-		VisualComponent place = null;
-		VisualComponent transition = null;
+
+		VisualNode place = null;
+		VisualNode transition = null;
 		if (first instanceof VisualTransition) {
-			place = (VisualComponent)second;
-			transition = (VisualComponent)first;
+			place = (VisualNode)second;
+			transition = (VisualNode)first;
 		} else if (second instanceof VisualTransition) {
-			place = (VisualComponent)first;
-			transition = (VisualComponent)second;
+			place = (VisualNode)first;
+			transition = (VisualNode)second;
 		}
 		VisualConnection connection = null;
 		if ((place != null) && (transition != null)) {
-			connection = createReadarcConnection(place, transition);
+			connection = createReadArcConnection(place, transition);
 		}
 		return connection;
 	}
 
-	private VisualReadArc createReadarcConnection(VisualComponent place, VisualComponent transition)
+	private VisualReadArc createReadArcConnection(VisualNode place, VisualNode transition)
 			 throws InvalidConnectionException {
 		STG stg = (STG)getMathModel();
 
 		Place mPlace = null;
 		if (place instanceof VisualPlace) {
 			mPlace = ((VisualPlace)place).getReferencedPlace();
-		} else if (place instanceof VisualPlaceShadow) {
-			mPlace = ((VisualPlaceShadow)place).getReferencedPlace();
+		} else if (place instanceof VisualReplicaPlace) {
+			mPlace = ((VisualReplicaPlace)place).getReferencedPlace();
 		}
 		Transition mTransition = null;
 		if (transition instanceof VisualTransition) {

@@ -25,7 +25,7 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.STG;
@@ -56,7 +56,7 @@ public class ConnectionRemoverTest {
 		LinkedList<Node> toDeleteThen = new LinkedList<Node>();
 
 		for (Node n : vstg.getRoot().getChildren()) {
-			DependentNode dn = (DependentNode)n;
+			Dependent dn = (Dependent)n;
 			if (!dn.getMathReferences().contains(t1))
 				toDelete.add(n);
 			else

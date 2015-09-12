@@ -32,29 +32,28 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
 
-@DisplayName("Terminal")
+@DisplayName("Replica place")
 @SVGIcon("images/icons/svg/terminal.svg")
-public class VisualPlaceShadow extends VisualComponent implements StateObserver {
+public class VisualReplicaPlace extends VisualReplica {
 
-	public VisualPlaceShadow(Place place) {
-		super(place);
-		place.addObserver(this);
-		removePropertyDeclarations();
+	private double size = 0.5;
+	private double strokeWidth = 0.1;
+
+	public VisualReplicaPlace() {
+		super();
 	}
 
-	private void removePropertyDeclarations() {
-		removePropertyDeclarationByName(VisualComponent.PROPERTY_LABEL);
-		removePropertyDeclarationByName(VisualComponent.PROPERTY_LABEL_COLOR);
-		removePropertyDeclarationByName(VisualComponent.PROPERTY_LABEL_POSITIONING);
+	public VisualReplicaPlace(VisualComponent master) {
+		super();
+		setMaster(master);
 	}
 
 	public Shape getShape() {
-		double wh = size / 2.0;
+		double wh = size;
 		double xy = - wh / 2.0;
 		return new Ellipse2D.Double(xy, xy, wh, wh);
 	}
@@ -64,26 +63,26 @@ public class VisualPlaceShadow extends VisualComponent implements StateObserver 
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
 		cacheRenderedText(r);  // needed to better estimate the bounding box
-		Color colorisation =d.getColorisation();
+		Color colorisation = d.getColorisation();
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 		if (colorisation != null) {
-			g.setStroke(new BasicStroke((float)strokeWidth/2.0f));
+			g.setStroke(new BasicStroke((float)strokeWidth));
 			g.draw(getShape());
 		}
 		drawNameInLocalSpace(r);
 	}
 
-	@Override
-	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		return getShape().getBounds2D();
-	}
-
 	public Place getReferencedPlace() {
-		return (Place)getReferencedComponent();
+		if (getMaster() instanceof VisualPlace) {
+			VisualPlace visualPlace = (VisualPlace)getMaster();
+			return visualPlace.getReferencedPlace();
+		}
+		return null;
 	}
 
 	@Override
-	public void notify(StateEvent e) {
-	}
+    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+        return getShape().getBounds2D();
+    }
 
 }

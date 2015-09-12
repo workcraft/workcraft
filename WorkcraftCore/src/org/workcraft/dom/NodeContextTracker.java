@@ -21,6 +21,7 @@
 
 package org.workcraft.dom;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,40 +82,55 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 		}
 	}
 
-	private void nodeRemoved(Node n) {
-		for (Node postsetNodes: postsets.get(n)) {
-			presets.get(postsetNodes).remove(n);
-		}
-		for (Node presetNodes: presets.get(n)) {
-			postsets.get(presetNodes).remove(n);
-		}
-		removeHashes(n);
-
-		if (n instanceof Connection) {
-			Connection con = (Connection)n;
-			Node c1 = con.getFirst();
-			Node c2 = con.getSecond();
-
-			LinkedHashSet<Node> set = postsets.get(c1);
-			if (set != null) {
-				postsets.get(c1).remove(c2);
-			}
-			set = presets.get(c2);
-			if (set != null) {
-				presets.get(c2).remove(c1);
-			}
-			LinkedHashSet<Connection> conSet = connections.get(c1);
-			if (conSet != null) {
-				connections.get(c1).remove(con);
-			}
-			conSet = connections.get(c2);
-			if (conSet != null) {
-				connections.get(c2).remove(con);
+	private void nodeRemoved(Node node) {
+		LinkedHashSet<Node> nodePostset = postsets.get(node);
+		if (nodePostset != null) {
+			for (Node succNode: nodePostset) {
+				LinkedHashSet<Node> succNodePreset = presets.get(succNode);
+				if (succNodePreset != null) {
+					succNodePreset.remove(node);
+				}
 			}
 		}
+		LinkedHashSet<Node> nodePreset = presets.get(node);
+		if (nodePreset != null) {
+			for (Node predNode: nodePreset) {
+				LinkedHashSet<Node> predNodePostset = postsets.get(predNode);
+				if (predNodePostset != null) {
+					predNodePostset.remove(node);
+				}
+			}
+		}
+		removeHashes(node);
 
-		for (Node nn : n.getChildren()) {
-			nodeRemoved(nn);
+		if (node instanceof Connection) {
+			Connection connection = (Connection)node;
+			Node first = connection.getFirst();
+			Node second = connection.getSecond();
+
+			LinkedHashSet<Node> firstPostset = postsets.get(first);
+			if (firstPostset != null) {
+				firstPostset.remove(second);
+			}
+			LinkedHashSet<Node> secondPreset = presets.get(second);
+			if (secondPreset != null) {
+				secondPreset.remove(first);
+			}
+			LinkedHashSet<Connection> firstConnections = connections.get(first);
+			if (firstConnections != null) {
+				firstConnections.remove(connection);
+			}
+			LinkedHashSet<Connection> secondConnections = connections.get(second);
+			if (secondConnections != null) {
+				secondConnections.remove(connection);
+			}
+		}
+
+		Collection<Node> children = node.getChildren();
+		if (children != null) {
+			for (Node childNode : children) {
+				nodeRemoved(childNode);
+			}
 		}
 	}
 
@@ -146,14 +162,18 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 	@Override
 	public void handleEvent(HierarchyEvent e) {
 		if (e instanceof NodesReparentingEvent) {
-			for (Node n : e.getAffectedNodes())
+			for (Node n : e.getAffectedNodes()) {
 				nodeAdded(n);
+			}
 		} else if (e instanceof NodesAddedEvent) {
-			for (Node n : e.getAffectedNodes())
+			for (Node n : e.getAffectedNodes()) {
 				nodeAdded(n);
+			}
 		} else if (e instanceof NodesDeletedEvent) {
-			for (Node n : e.getAffectedNodes())
+			for (Node n : e.getAffectedNodes()) {
 				nodeRemoved(n);
+			}
 		}
 	}
+
 }

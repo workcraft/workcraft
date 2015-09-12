@@ -85,8 +85,8 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 
 	@Override
 	public VisualConnection convertConnection(VisualConnection srcConnection) {
-		VisualComponent srcFirst = srcConnection.getFirst();
-		VisualComponent srcSecond = srcConnection.getSecond();
+		VisualNode srcFirst = srcConnection.getFirst();
+		VisualNode srcSecond = srcConnection.getSecond();
 		VisualNode dstFirst = getSrcToDstNode(srcFirst);
 		VisualNode dstSecond = getSrcToDstNode(srcSecond);
 		VisualConnection dstConnection = null;

@@ -55,8 +55,8 @@ public class SelectionHelper {
 		Collection<VisualConnection> result = new HashSet<VisualConnection>();
         Collection<Node> recursiveNodes = getRecursivelyIncludedNodes(nodes);
         for (VisualConnection connection : connections) {
-        	VisualComponent first = connection.getFirst();
-			VisualComponent second = connection.getSecond();
+        	VisualNode first = connection.getFirst();
+        	VisualNode second = connection.getSecond();
 			if (recursiveNodes.contains(first) && recursiveNodes.contains(second)) {
         		result.add(connection);
         	}

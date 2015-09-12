@@ -1,7 +1,7 @@
 package org.workcraft.plugins.dfs;
 
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -16,7 +16,7 @@ public class VisualControlConnection extends VisualConnection {
 		this(refConnection, null, null);
 	}
 
-	public VisualControlConnection(ControlConnection refConnection, VisualComponent first, VisualComponent second) {
+	public VisualControlConnection(ControlConnection refConnection, VisualNode first, VisualNode second) {
 		super(refConnection, first, second);
 		addPropertyDeclarations();
 	}
@@ -44,7 +44,7 @@ public class VisualControlConnection extends VisualConnection {
 	}
 
 	@Override
-	public void setVisualConnectionDependencies(VisualComponent first,	VisualComponent second,
+	public void setVisualConnectionDependencies(VisualNode first, VisualNode second,
 			ConnectionGraphic graphic, MathConnection refConnection) {
 		super.setVisualConnectionDependencies(first, second, graphic, refConnection);
 		setBubble(getReferencedControlConnection().isInverting());

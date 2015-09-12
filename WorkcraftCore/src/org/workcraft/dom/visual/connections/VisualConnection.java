@@ -37,13 +37,12 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Shapable;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
@@ -58,7 +57,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, DependentNode,
+public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, Dependent,
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
 	public static final String PROPERTY_CONNECTION_TYPE = "Connection type";
@@ -106,8 +105,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
 	private MathConnection refConnection = null;
-	private VisualComponent first = null;
-	private VisualComponent second = null;
+	private VisualNode first = null;
+	private VisualNode second = null;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
 	private ScaleMode scaleMode = ScaleMode.NONE;
@@ -145,7 +144,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		this(refConnection, null, null);
 	}
 
-	public VisualConnection(MathConnection refConnection, VisualComponent first, VisualComponent second) {
+	public VisualConnection(MathConnection refConnection, VisualNode first, VisualNode second) {
 		this.refConnection = refConnection;
 		if ((first != null) && (second != null)) {
 			this.first = first;
@@ -255,7 +254,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		}
 	}
 
-	public void setVisualConnectionDependencies(VisualComponent first,	VisualComponent second,
+	public void setVisualConnectionDependencies(VisualNode first,	VisualNode second,
 			ConnectionGraphic graphic, MathConnection refConnection) {
 		if (first == null)
 			throw new NullPointerException("first");
@@ -458,11 +457,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		return graphic.getBoundingBox();
 	}
 
-	public VisualComponent getFirst() {
+	public VisualNode getFirst() {
 		return first;
 	}
 
-	public VisualComponent getSecond() {
+	public VisualNode getSecond() {
 		return second;
 	}
 

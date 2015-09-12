@@ -21,6 +21,8 @@
 
 package org.workcraft.serialisation.xml;
 
+import static org.workcraft.serialisation.xml.BeanInfoCache.getBeanInfo;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -30,13 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
-
-import static org.workcraft.serialisation.xml.BeanInfoCache.*;
 
 class DefaultNodeDeserialiser {
 	private DeserialiserFactory fac;
@@ -154,19 +154,19 @@ class DefaultNodeDeserialiser {
 						parameterTypes[i] = constructorParameters[i].getClass();
 					Constructor<?> ctor = new ConstructorParametersMatcher().match(Class.forName(className), parameterTypes);
 					instance = ctor.newInstance(constructorParameters);
-				}
-				else {
+				} else {
 					// Still don't know how to deserialise the class.
 					// Let's see if it is a dependent node.
 
-					if (DependentNode.class.isAssignableFrom(cls)) {
+					if (Dependent.class.isAssignableFrom(cls)) {
 						// Check for the simple case when there is only one reference to the underlying model.
 						String ref = currentLevelElement.getAttribute("ref");
-						if (ref.isEmpty())
+						String master = currentLevelElement.getAttribute("master");
+						if (ref.isEmpty()) {
 							// Bad luck, we probably can't do anything.
 							// But let's try a default constructor just in case.
 							instance = cls.newInstance();
-						else {
+						} else {
 							// Hooray, we've got a reference, so there is likely an appropriate constructor.
 							Object refObject = externalReferenceResolver.getObject(ref);
 							Constructor<?> ctor = new ConstructorParametersMatcher().match(cls, refObject.getClass());
@@ -208,8 +208,9 @@ class DefaultNodeDeserialiser {
 		try {
 			XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
 
-			if (deserialiser instanceof CustomXMLDeserialiser)
+			if (deserialiser instanceof CustomXMLDeserialiser) {
 				((CustomXMLDeserialiser)deserialiser).initInstance(currentLevelElement, instance, externalReferenceResolver, initialiser);
+			}
 		} catch (InstantiationException e) {
 			throw new DeserialisationException(e);
 		} catch (IllegalAccessException e) {
@@ -217,7 +218,7 @@ class DefaultNodeDeserialiser {
 		}
 
 		if (currentLevel.getSuperclass() != Object.class) {
-				doInitialisation(element, instance, currentLevel.getSuperclass(), externalReferenceResolver);
+			doInitialisation(element, instance, currentLevel.getSuperclass(), externalReferenceResolver);
 		}
 	}
 
@@ -239,10 +240,9 @@ class DefaultNodeDeserialiser {
 			} catch (IllegalAccessException e) {
 				throw new DeserialisationException(e);
 			}
-
-			if (currentLevel.getSuperclass() != Object.class) {
-				doFinalisation(element, instance, internalReferenceResolver, externalReferenceResolver, currentLevel.getSuperclass());
-			}
+		}
+		if (currentLevel.getSuperclass() != Object.class) {
+			doFinalisation(element, instance, internalReferenceResolver, externalReferenceResolver, currentLevel.getSuperclass());
 		}
 	}
 

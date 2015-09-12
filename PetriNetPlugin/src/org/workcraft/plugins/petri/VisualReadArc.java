@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
 public class VisualReadArc extends VisualConnection {
@@ -37,7 +37,7 @@ public class VisualReadArc extends VisualConnection {
 		this(null, null, null, null);
 	}
 
-	public VisualReadArc(VisualComponent place, VisualComponent transition,
+	public VisualReadArc(VisualNode place, VisualNode transition,
 			MathConnection mathConsumingArc, MathConnection mathProducingArc) {
 		super(null, place, transition);
 		this.mathConsumingArc = mathConsumingArc;
