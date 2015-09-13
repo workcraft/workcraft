@@ -308,8 +308,9 @@ public class TimeAlg extends RelationAlgorithm{
 					hasSpecifiedInput = true;
 			}else{
 				for(SONConnection con : getInputPNConnections(c)){
-					if(!con.getTime().isSpecified()){
+					if(con.getTime().isSpecified()){
 						hasSpecifiedInput = true;
+						break;
 					}
 				}
 			}
@@ -320,8 +321,9 @@ public class TimeAlg extends RelationAlgorithm{
 					hasSpecifiedOutput = true;
 			}else{
 				for(SONConnection con : getOutputPNConnections(c)){
-					if(!con.getTime().isSpecified()){
+					if(con.getTime().isSpecified()){
 						hasSpecifiedOutput = true;
+						break;
 					}
 				}
 			}
