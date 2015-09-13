@@ -4,7 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.son.Time;
+import org.workcraft.plugins.son.Interval;
+import org.workcraft.plugins.son.elements.Time;
 
 public class StartTimePropertyDescriptor implements PropertyDescriptor{
 	private final Time t;
@@ -40,12 +41,15 @@ public class StartTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return t.getStartTime();
+		Interval value = t.getStartTime();
+		return value.toString();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		t.setStartTime((String)value);
+		String input = (String)value;
+		Interval result = new Interval(Interval.getMin(input), Interval.getMax(input));
+		t.setStartTime(result);
 	}
 
 	@Override

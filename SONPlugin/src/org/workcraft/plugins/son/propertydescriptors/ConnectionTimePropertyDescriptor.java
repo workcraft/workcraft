@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.connections.SONConnection;
 
 public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
@@ -40,13 +41,15 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return con.getTime();
+		Interval value = con.getTime();
+		return value.toString();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
 		String input = (String)value;
-		con.setTime(input);
+		Interval result = new Interval(Interval.getMin(input), Interval.getMax(input));
+		con.setTime(result);
 	}
 
 	@Override

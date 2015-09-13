@@ -19,8 +19,8 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.util.Geometry;
 
@@ -134,7 +134,7 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	protected void cacheLabelRenderedText(DrawRequest r) {
-		String time = "T: "+ this.getTime();
+		String time = "T: "+ getTime().toString();
 
 		if (timeRenderedText.isDifferent(time, timeFont, Positioning.CENTER, new Point2D.Double())) {
 			timeRenderedText = new RenderedText(time, timeFont, Positioning.CENTER, new Point2D.Double());
@@ -165,7 +165,7 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	protected void drawLabelInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility() && TimeAlg.isSpecified(getTime())) {
+		if (getLabelVisibility() && getTime().isSpecified()) {
 			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -212,11 +212,11 @@ public class VisualSONConnection extends VisualConnection {
 		getReferencedSONConnection().setColor(color);
 	}
 
-	public String getTime() {
+	public Interval getTime() {
 		return getReferencedSONConnection().getTime();
 	}
 
-	public void setTime(String time) {
+	public void setTime(Interval time) {
 		getReferencedSONConnection().setTime(time);
 	}
 

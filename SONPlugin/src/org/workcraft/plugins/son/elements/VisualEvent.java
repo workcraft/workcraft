@@ -15,6 +15,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 
 
@@ -105,19 +106,19 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 		return ((Event)getReferencedComponent()).getFillColor();
 	}
 
-	public String getStartTime(){
+	public Interval getStartTime(){
 		return ((Event)getReferencedComponent()).getStartTime();
 	}
 
-	public void setStartTime(String time){
+	public void setStartTime(Interval time){
 		((Event)getReferencedComponent()).setStartTime(time);
 	}
 
-	public String getEndTime(){
+	public Interval getEndTime(){
 		return ((Event)getReferencedComponent()).getEndTime();
 	}
 
-	public void setEndTime(String time){
+	public void setEndTime(Interval time){
 		((Event)getReferencedComponent()).setEndTime(time);
 	}
 

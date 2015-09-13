@@ -6,7 +6,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.Time;
+import org.workcraft.plugins.son.Interval;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
 public class Event extends Transition implements TransitionNode, Time{
@@ -16,9 +16,9 @@ public class Event extends Transition implements TransitionNode, Time{
 	private String label="";
 	private Boolean faulty = false;
 
-	private String statTime = "0000-9999";
-	private String endTime = "0000-9999";
-	private String duration = "0";
+	private Interval statTime = new Interval(0000, 9999);
+	private Interval endTime = new Interval(0000, 9999);
+	private Interval duration = new Interval(0000, 0000);
 
 	@Override
 	public void setLabel(String label){
@@ -47,30 +47,30 @@ public class Event extends Transition implements TransitionNode, Time{
 		return faulty;
 	}
 
-	public void setStartTime(String duration){
+	public void setStartTime(Interval duration){
 		this.statTime = duration;
 		sendNotification( new PropertyChangedEvent(this, "start time") );
 	}
 
-	public String getStartTime(){
+	public Interval getStartTime(){
 		return statTime;
 	}
 
-	public void setEndTime(String endTime){
+	public void setEndTime(Interval endTime){
 		this.endTime = endTime;
 		sendNotification( new PropertyChangedEvent(this, "end time") );
 	}
 
-	public String getEndTime(){
+	public Interval getEndTime(){
 		return endTime;
 	}
 
-	public void setDuration(String duration){
+	public void setDuration(Interval duration){
 		this.duration = duration;
 		sendNotification( new PropertyChangedEvent(this, "duration") );
 	}
 
-	public String getDuration(){
+	public Interval getDuration(){
 		return duration;
 	}
 

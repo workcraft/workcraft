@@ -23,12 +23,16 @@ import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
+import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.InconsistencyTimeException;
+import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -56,7 +60,8 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		getScenario(net);
+		timeTest(net);
+		//getScenario(net);
 
 	//	dfsTest(net);
 		//outputBefore(net);
@@ -71,6 +76,37 @@ public class TestTool extends AbstractTool implements Tool{
 		//this.convertBlockTest(net, vnet);
 		//relation(net, vnet);
 		//conditionOutputTest(vnet);
+	}
+
+	private void timeTest(SON net){
+		TimeAlg timeAlg = new TimeAlg(net);
+
+		for(Node node : net.getComponents()){
+			System.out.println(net.getNodeReference(node));
+			try {
+				for(String str : timeAlg.TimeConsistecy(node, getSyncCPs(net))){
+					System.out.println(str);
+				}
+			} catch (InvalidStructureException e) {
+				System.out.println("Structure error");
+			}
+		}
+	}
+
+	protected Collection<ChannelPlace> getSyncCPs(SON net){
+		Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
+		HashSet<Node> nodes = new HashSet<Node>();
+		nodes.addAll(net.getTransitionNodes());
+		nodes.addAll(net.getChannelPlaces());
+		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
+
+		for(Path path : cycleAlg.syncCycleTask(nodes)){
+			for(Node node : path){
+				if(node instanceof ChannelPlace)
+					result.add((ChannelPlace)node);
+			}
+		}
+		return result;
 	}
 
 	private void getScenario(SON net){

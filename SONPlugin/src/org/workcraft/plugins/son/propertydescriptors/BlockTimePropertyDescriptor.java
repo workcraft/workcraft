@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.elements.Block;
 
 
@@ -41,12 +42,15 @@ public class BlockTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public Object getValue() throws InvocationTargetException {
-		return b.getDuration();
+		Interval value = b.getDuration();
+		return value.toString();
 	}
 
 	@Override
 	public void setValue(Object value) throws InvocationTargetException {
-		b.setDuration((String)value);
+		String input = (String)value;
+		Interval result = new Interval(Interval.getMin(input), Interval.getMax(input));
+		b.setDuration(result);
 	}
 
 	@Override

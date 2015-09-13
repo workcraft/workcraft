@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.workcraft.plugins.son.Before;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
@@ -191,7 +192,7 @@ public class SONMainTask implements Task<VerificationResult>{
 		}else{
 			BSONAlg bsonAlg = new BSONAlg(net);
 			logger.info("\nOutput BSON causal dependencies:");
-			Map<TransitionNode, Collection<TransitionNode[]>> before = bsonAlg.getAllBefore();
+			Map<TransitionNode, Before> before = bsonAlg.getAllBefore();
 
 			for(TransitionNode e : before.keySet()){
 				logger.info("before("+ net.getNodeReference(e)+"): ");

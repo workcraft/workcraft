@@ -44,7 +44,7 @@ public class BlockConnector {
 					//set input value
 					String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
 					String type = "-"+con.getReferencedSONConnection().getSemantics();
-					String time = "-"+con.getTime();
+					String time = "-"+con.getTime().toString();
 					String value = "";
 					if(((VisualPlaceNode)first).getInterface() == ""){
 						value = "to-"+name+type+time+";";
@@ -71,7 +71,7 @@ public class BlockConnector {
 					 //set output value
 					String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
 					String type = "-"+con.getReferencedSONConnection().getSemantics();
-					String time = "-"+con.getTime();
+					String time = "-"+con.getTime().toString();
 					String value = "";
 					if(((VisualPlaceNode)second).getInterface() == ""){
 						value = "from-"+name+type+time+";";
@@ -184,7 +184,15 @@ public class BlockConnector {
 							}
 							//set time value
 							if(con != null){
-								con.setTime(piece[3] + "-" + piece[4]);
+								int min = 0000;
+								int max = 9999;
+								try{
+									 min = Integer.parseInt(piece[3]);
+									 max = Integer.parseInt(piece[4]);
+								} catch (NumberFormatException e1) {
+									  e1.printStackTrace();
+								}
+								con.setTime(new Interval(min, max));
 							}
 						//create output connection
 						}else if(piece[0].equals("from")){
@@ -206,7 +214,15 @@ public class BlockConnector {
 								ex.printStackTrace();
 							}
 							if(con != null){
-								con.setTime(piece[3] + "-" + piece[4]);
+								int min = 4444;
+								int max = 9999;
+								try{
+									 min = Integer.parseInt(piece[3]);
+									 max = Integer.parseInt(piece[4]);
+								} catch (NumberFormatException e1) {
+									  e1.printStackTrace();
+								}
+								con.setTime(new Interval(min, max));
 							}
 						}
 					}

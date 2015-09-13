@@ -6,10 +6,11 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.Interval;
 
 public class SONConnection extends MathConnection{
 
-	private String time = "0000-9999";
+	private Interval time = new Interval(0000, 9999);
 	private Color timeColor = Color.BLACK;
 	private Color color=CommonVisualSettings.getBorderColor();
 
@@ -59,11 +60,11 @@ public class SONConnection extends MathConnection{
 		sendNotification(new PropertyChangedEvent(this, "semantics"));
 	}
 
-	public String getTime(){
+	public Interval getTime(){
 		return time;
 	}
 
-	public void setTime(String time){
+	public void setTime(Interval time){
 		this.time = time;
 		sendNotification(new PropertyChangedEvent(this, "time interval"));
 	}

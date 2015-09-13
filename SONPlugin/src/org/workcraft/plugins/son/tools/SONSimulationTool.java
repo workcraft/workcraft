@@ -460,7 +460,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		}
 	};
 
-
 	protected void errorMsg(String message, final GraphEditor editor){
 
 		final Framework framework = Framework.getInstance();

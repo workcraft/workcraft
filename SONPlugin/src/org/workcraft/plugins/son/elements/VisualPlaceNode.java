@@ -20,8 +20,8 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 
@@ -130,7 +130,7 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	private void cahceErrorRenderedText(DrawRequest r) {
-		String error = "Err = "+((Integer)this.getErrors()).toString();
+		String error = "Err = "+((Integer)getErrors()).toString();
 
 
 		Point2D offset = getOffset(errLabelPositioning);
@@ -156,7 +156,7 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	private void cahceDurationRenderedText(DrawRequest r) {
-		String duration = "D: "+ this.getDuration();
+		String duration = "D: "+ getDuration().toString();
 
 		Point2D offset = getOffset(durationLabelPositioning);
 		if (durationLabelPositioning.ySign<0) {
@@ -171,7 +171,7 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	protected void drawDurationInLocalSpace(DrawRequest r) {
-		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
+		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -194,7 +194,7 @@ public class VisualPlaceNode extends VisualComponent{
 		if (ErrTracingDisable.showErrorTracing()) {
 			bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
 		}
-		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
+		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
 			bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
 		}
 
@@ -229,11 +229,11 @@ public class VisualPlaceNode extends VisualComponent{
 		((PlaceNode)getReferencedComponent()).setErrors(errors);
 	}
 
-	public String getDuration(){
+	public Interval getDuration(){
 		return ((PlaceNode)getReferencedComponent()).getDuration();
 	}
 
-	public void setDuration(String time){
+	public void setDuration(Interval time){
 		((PlaceNode)getReferencedComponent()).setDuration(time);
 	}
 
@@ -288,19 +288,19 @@ public class VisualPlaceNode extends VisualComponent{
 		this.errLabelColor = errLabelColor;
 	}
 
-	public String getStartTime(){
+	public Interval getStartTime(){
 		return ((PlaceNode)getReferencedComponent()).getStartTime();
 	}
 
-	public void setStartTime(String time){
+	public void setStartTime(Interval time){
 		((PlaceNode)getReferencedComponent()).setStartTime(time);
 	}
 
-	public String getEndTime(){
+	public Interval getEndTime(){
 		return ((PlaceNode)getReferencedComponent()).getEndTime();
 	}
 
-	public void setEndTime(String time){
+	public void setEndTime(Interval time){
 		((PlaceNode)getReferencedComponent()).setEndTime(time);
 	}
 

@@ -22,7 +22,6 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
 
 
 @DisplayName("Condition")
@@ -105,7 +104,7 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	private void cahceStartTimeRenderedText(DrawRequest r) {
-		String start = "Start: "+ getStartTime();
+		String start = "Start: "+ getStartTime().toString();
 
 		Point2D offset = getOffset(startTimePositioning);
 		offset.setLocation(offset.getX() , offset.getY() - labelOffset);
@@ -116,7 +115,7 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	protected void drawStartTimeInLocalSpace(DrawRequest r) {
-		if (isInitial() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getStartTime())) {
+		if (isInitial() && SONSettings.getTimeVisibility() && getStartTime().isSpecified()) {
 			cahceStartTimeRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -126,7 +125,7 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	private void cahceEndTimeRenderedText(DrawRequest r) {
-		String end = "End: "+ getEndTime();
+		String end = "End: "+ getEndTime().toString();
 
 		Point2D offset = getOffset(endTimePositioning);
 		offset.setLocation(offset.getX() , offset.getY() - labelOffset);
@@ -137,7 +136,7 @@ public class VisualCondition extends VisualPlaceNode{
 	}
 
 	protected void drawEndTimeInLocalSpace(DrawRequest r) {
-		if (isFinal() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getEndTime())) {
+		if (isFinal() && SONSettings.getTimeVisibility() && getEndTime().isSpecified()) {
 			cahceEndTimeRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -157,11 +156,11 @@ public class VisualCondition extends VisualPlaceNode{
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-		if (isInitial() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getStartTime())) {
+		if (isInitial() && SONSettings.getTimeVisibility() && getStartTime().isSpecified()) {
 			bb = BoundingBoxHelper.union(bb, startTimeRenderedText.getBoundingBox());
 		}
 
-		if (isFinal() && SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getEndTime())) {
+		if (isFinal() && SONSettings.getTimeVisibility() && getEndTime().isSpecified()) {
 			bb = BoundingBoxHelper.union(bb, endTimeRenderedText.getBoundingBox());
 		}
 		return bb;

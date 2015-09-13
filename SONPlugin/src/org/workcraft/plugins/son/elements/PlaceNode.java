@@ -5,7 +5,7 @@ import java.awt.Color;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.Time;
+import org.workcraft.plugins.son.Interval;
 
 public class PlaceNode extends MathNode implements Time{
 
@@ -14,9 +14,9 @@ public class PlaceNode extends MathNode implements Time{
 	private String label = "";
 	private int errors = 0;
 
-	private String statTime = "0000-9999";
-	private String endTime = "0000-9999";
-	private String duration = "0000-9999";
+	private Interval statTime = new Interval(0000, 9999);
+	private Interval endTime = new Interval(0000, 9999);
+	private Interval duration = new Interval(0000, 9999);
 
 	protected Color durationColor = Color.BLACK;
 
@@ -72,30 +72,30 @@ public class PlaceNode extends MathNode implements Time{
 		return tokenColor;
 	}
 
-	public void setStartTime(String duration){
+	public void setStartTime(Interval duration){
 		this.statTime = duration;
 		sendNotification( new PropertyChangedEvent(this, "start time") );
 	}
 
-	public String getStartTime(){
+	public Interval getStartTime(){
 		return statTime;
 	}
 
-	public void setEndTime(String endTime){
+	public void setEndTime(Interval endTime){
 		this.endTime = endTime;
 		sendNotification( new PropertyChangedEvent(this, "end time") );
 	}
 
-	public String getEndTime(){
+	public Interval getEndTime(){
 		return endTime;
 	}
 
-	public void setDuration(String duration){
+	public void setDuration(Interval duration){
 		this.duration = duration;
 		sendNotification( new PropertyChangedEvent(this, "duration") );
 	}
 
-	public String getDuration(){
+	public Interval getDuration(){
 		return duration;
 	}
 

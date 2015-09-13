@@ -24,8 +24,8 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.util.Hierarchy;
@@ -109,7 +109,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	}
 
 	private void cahceDurationRenderedText(DrawRequest r) {
-		String duration = "D: "+ this.getDuration();
+		String duration = "D: "+ getDuration().toString();
 		//double o = 0.8 * size;
 
 		Point2D offset = getOffset(durationLabelPositioning);
@@ -125,7 +125,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	}
 
 	protected void drawDurationInLocalSpace(DrawRequest r) {
-		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
+		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -144,7 +144,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-		if (SONSettings.getTimeVisibility() && TimeAlg.isSpecified(getDuration())) {
+		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
 			bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
 		}
 		return bb;
@@ -162,27 +162,27 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		return  this.getReferencedComponent().getIsCollapsed();
 	}
 
-	public String getStartTime(){
+	public Interval getStartTime(){
 		return ((Block)getReferencedComponent()).getStartTime();
 	}
 
-	public void setStartTime(String time){
+	public void setStartTime(Interval time){
 		((Block)getReferencedComponent()).setStartTime(time);
 	}
 
-	public String getEndTime(){
+	public Interval getEndTime(){
 		return ((Block)getReferencedComponent()).getEndTime();
 	}
 
-	public void setEndTime(String time){
+	public void setEndTime(Interval time){
 		((Block)getReferencedComponent()).setEndTime(time);
 	}
 
-	public String getDuration(){
+	public Interval getDuration(){
 		return ((Block)getReferencedComponent()).getDuration();
 	}
 
-	public void setDuration(String time){
+	public void setDuration(Interval time){
 		((Block)getReferencedComponent()).setDuration(time);
 	}
 

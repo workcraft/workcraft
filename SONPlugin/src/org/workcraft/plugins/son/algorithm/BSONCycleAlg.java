@@ -79,14 +79,14 @@ public class BSONCycleAlg extends ONCycleAlg{
 			//add before relation
             Node n = nodes.get(i);
             if(upperT.contains(n)){
-                for(TransitionNode[] before : bsonAlg.before((TransitionNode)n, phases)){
-                	TransitionNode c0 = before[0];
-                	TransitionNode c1 = before[1];
-                    int index = nodeIndex.get(c0);
+                for(TransitionNode[] v : bsonAlg.before((TransitionNode)n, phases)){
+                	TransitionNode v0 = v[0];
+                	TransitionNode v1 = v[1];
+                    int index = nodeIndex.get(v0);
                     if(result[index] == null){
                             result[index] = new ArrayList<Integer>();
                     }
-                    result[index].add(nodeIndex.get(c1));
+                    result[index].add(nodeIndex.get(v1));
                 }
             }
         }

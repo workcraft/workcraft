@@ -9,7 +9,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.Time;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.util.Hierarchy;
 
@@ -20,9 +20,9 @@ public class Block extends PageNode implements TransitionNode, Time{
 	private Color fillColor  = CommonVisualSettings.getFillColor();
 	private boolean isCollapsed = false;
 
-	private String duration = "0000-9999";
-	private String statTime = "0000-9999";
-	private String endTime = "0000-9999";
+	private Interval duration = new Interval(0000, 9999);
+	private Interval statTime = new Interval(0000, 9999);
+	private Interval endTime = new Interval(0000, 9999);
 
 	private Color durationColor = Color.BLACK;
 
@@ -107,13 +107,13 @@ public class Block extends PageNode implements TransitionNode, Time{
 	public void setFaulty(boolean fault) {
 	}
 
-	public void setDuration(String duration){
+	public void setDuration(Interval duration){
 		this.duration = duration;
 		sendNotification( new PropertyChangedEvent(this, "duration") );
 	}
 
 	@Override
-	public String getDuration(){
+	public Interval getDuration(){
 		return duration;
 	}
 
@@ -126,24 +126,24 @@ public class Block extends PageNode implements TransitionNode, Time{
 	}
 
 	@Override
-	public void setStartTime(String duration){
+	public void setStartTime(Interval duration){
 		this.statTime = duration;
 		sendNotification( new PropertyChangedEvent(this, "start time") );
 	}
 
 	@Override
-	public String getStartTime(){
+	public Interval getStartTime(){
 		return statTime;
 	}
 
 	@Override
-	public void setEndTime(String endTime){
+	public void setEndTime(Interval endTime){
 		this.endTime = endTime;
 		sendNotification( new PropertyChangedEvent(this, "end time") );
 	}
 
 	@Override
-	public String getEndTime(){
+	public Interval getEndTime(){
 		return endTime;
 	}
 }
