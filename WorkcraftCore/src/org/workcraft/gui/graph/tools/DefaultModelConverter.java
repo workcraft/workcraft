@@ -14,6 +14,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
@@ -26,8 +27,14 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 
 	@Override
 	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = new HashMap<Class<? extends MathNode>, Class<? extends MathNode>>();
+		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = new HashMap<>();
 		result.put(CommentNode.class, CommentNode.class);
+		return result;
+	}
+
+	@Override
+	public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap() {
+		Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> result = new HashMap<>();
 		return result;
 	}
 
@@ -81,6 +88,35 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 			}
 		}
 		return dstComponent;
+	}
+
+	@Override
+	public VisualReplica convertReplica(VisualReplica srcReplica) {
+		VisualReplica dstReplica = null;
+		Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> replicaClassMap = getReplicaClassMap();
+		Class<? extends VisualReplica> dstVisualReplicaClass = replicaClassMap.get(srcReplica.getClass());
+		if (dstVisualReplicaClass != null) {
+			Container dstContainer = null;
+			Node srcParent = srcReplica.getParent();
+			VisualComponent srcMasterComponent = srcReplica.getMaster();
+			if ((srcParent instanceof Container) && (srcParent instanceof VisualNode)) {
+				VisualNode dstParent = getSrcToDstNode((VisualNode)srcParent);
+				if (dstParent instanceof Container) {
+					dstContainer = (Container)dstParent;
+				}
+			}
+
+			VisualComponent dstMasterComponent = null;
+			VisualNode dstMasterNode = getSrcToDstNode(srcMasterComponent);
+			if (dstMasterNode instanceof VisualComponent) {
+				dstMasterComponent = (VisualComponent)dstMasterNode;
+			}
+
+			dstReplica = getDstModel().createVisualReplica(dstMasterComponent, dstContainer, dstVisualReplicaClass);
+			dstReplica.copyPosition(srcReplica);
+			dstReplica.copyStyle(srcReplica);
+		}
+		return dstReplica;
 	}
 
 	@Override

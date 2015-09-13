@@ -58,6 +58,8 @@ public interface VisualModel extends Model, ObservableState {
 	public <T extends VisualComponent> T createVisualComponent(MathNode refNode, Container container, Class<T> type);
 	public <T extends VisualComponent> T getVisualComponent(MathNode refNode, Class<T> type);
 
+	public <T extends VisualReplica> T createVisualReplica(VisualComponent master, Container container, Class<T> type);
+
 	public void selectAll();
 	public void selectNone();
 	public void selectInverse();

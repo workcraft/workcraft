@@ -5,6 +5,7 @@ import java.util.Map;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.DefaultModelConverter;
@@ -12,12 +13,12 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.STGPlace;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.util.Hierarchy;
 
 public class PetriNetToStgConverter extends DefaultModelConverter<VisualPetriNet, VisualSTG> {
 
@@ -30,6 +31,13 @@ public class PetriNetToStgConverter extends DefaultModelConverter<VisualPetriNet
 		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
 		result.put(Place.class, STGPlace.class);
 		result.put(Transition.class, DummyTransition.class);
+		return result;
+	}
+
+	@Override
+	public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap() {
+		Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> result = super.getReplicaClassMap();
+		result.put(VisualReplicaPlace.class, VisualReplicaPlace.class);
 		return result;
 	}
 

@@ -23,6 +23,8 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +64,7 @@ import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
@@ -206,6 +209,27 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			}
 		}
 		return result;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends VisualReplica> T createVisualReplica(VisualComponent masterComponent, Container container, Class<T> type) {
+		T replica = null;
+		try {
+			replica = NodeFactory.createNode(type);
+		} catch (NodeCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (replica != null) {
+			if (container == null) {
+				container = getRoot();
+			}
+			container.add(replica);
+			replica.setMaster(masterComponent);
+		}
+		return replica;
 	}
 
 	@Override

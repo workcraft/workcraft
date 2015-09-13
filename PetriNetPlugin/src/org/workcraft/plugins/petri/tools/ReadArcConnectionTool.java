@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 import javax.swing.Icon;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.Positioning;
@@ -24,6 +25,7 @@ import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.GUI;
+import org.workcraft.util.Hierarchy;
 
 public class ReadArcConnectionTool extends ConnectionTool {
 
@@ -73,9 +75,8 @@ public class ReadArcConnectionTool extends ConnectionTool {
 				if ((first instanceof VisualPlace) && (second instanceof VisualTransition)) {
 					VisualPlace place = (VisualPlace)first;
 					VisualTransition transition = (VisualTransition)second;
-					VisualReplicaPlace replica = new VisualReplicaPlace();
-					visualModel.add(replica);
-					replica.setMaster(place);
+					Container container = Hierarchy.getNearestContainer(place, transition);
+					VisualReplicaPlace replica = visualModel.createVisualReplica(place, container, VisualReplicaPlace.class);
 					Point2D splitPoint = readArc.getSplitPoint();
 	 				AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
 					Point2D splitPointInRootSpace = localToRootTransform.transform(splitPoint, null);
