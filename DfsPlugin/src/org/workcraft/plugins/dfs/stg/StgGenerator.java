@@ -160,29 +160,23 @@ public class StgGenerator {
 	}
 
 	private void createConsumingArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
-		stg.connect(p, t);
-		for (Connection c: stg.getConnections(p)) {
-			if ((c.getSecond() == t) && (c instanceof VisualConnection)) {
-				VisualConnection vc = (VisualConnection)c;
-				vc.setTokenColorPropagator(propagateTokenColor);
-			}
+		if (p != null && t != null) {
+			VisualConnection connection = stg.connect(p, t);
+			connection.setTokenColorPropagator(propagateTokenColor);
 		}
 	}
 
 	private void createProducingArc(VisualSignalTransition t, VisualPlace p, boolean propagateTokenColor) throws InvalidConnectionException {
-		stg.connect(t, p);
-		for (Connection c: stg.getConnections(t)) {
-			if ((c.getSecond() == p) && (c instanceof VisualConnection)) {
-				VisualConnection vc = (VisualConnection)c;
-				vc.setTokenColorPropagator(propagateTokenColor);
-			}
+		if (p != null && t != null) {
+			VisualConnection connection = stg.connect(t, p);
+			connection.setTokenColorPropagator(propagateTokenColor);
 		}
 	}
 
 	private void createReadArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
 		if (p != null && t != null) {
-			createConsumingArc(p, t, propagateTokenColor);
-			createProducingArc(t, p, false);
+			VisualConnection connection = stg.connectUndirected(p, t);
+			connection.setTokenColorPropagator(propagateTokenColor);
 		}
 	}
 

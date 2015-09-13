@@ -10,9 +10,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -135,12 +135,17 @@ public class StgGenerator {
 
 	private void createReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
 		if (p != null && t != null) {
-			VisualConnection consumingArc = stg.connect(p, t);
-			consumingArc.setArrowLength(0.0);
-			consumingArc.setLineWidth(0.0);
-			VisualConnection producingArc = stg.connect(t, p);
-			producingArc.setArrowLength(0.0);
-			producingArc.setLineWidth(0.0);
+			stg.connectUndirected(p, t);
+		}
+	}
+
+	private void createReplicaReadArc(VisualPlace p, VisualSignalTransition t, Point2D replicaPos) throws InvalidConnectionException {
+		if (p != null && t != null) {
+			VisualReplicaPlace replicaPlace = stg.createVisualReplica(p, null, VisualReplicaPlace.class);
+			if (replicaPos != null) {
+				replicaPlace.setRootSpacePosition(replicaPos);
+			}
+			stg.connectUndirected(replicaPlace, t);
 		}
 	}
 
@@ -316,7 +321,7 @@ public class StgGenerator {
 		SourceStg sourceStg = getSourceStg(component);
 		if ((sourceStg != null) && (oContact != null)) {
 			SignalStg oStg = getContactStg(oContact);
-			createReadArc(oStg.one, sourceStg.o.fallList.get(0));
+			createReadArc(oStg.one, sourceStg.oracle.fallList.get(0));
 		}
 	}
 
@@ -356,7 +361,7 @@ public class StgGenerator {
 		if (iContact != null) {
 			SignalStg iStg = getContactStg(iContact);
 			if ((sinkStg != null) && (iStg !=null)) {
-				createReadArc(iStg.one, sinkStg.i.fallList.get(0));
+				createReadArc(iStg.one, sinkStg.oracle.fallList.get(0));
 			}
 		}
 	}
