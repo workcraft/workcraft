@@ -202,7 +202,8 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	@Override
 	public boolean hitTest(Point2D point) {
-		return hitTestInLocalSpace(getParentToLocalTransform().transform(point, null));
+		Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
+		return hitTestInLocalSpace(pointInLocalSpace);
 	}
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();

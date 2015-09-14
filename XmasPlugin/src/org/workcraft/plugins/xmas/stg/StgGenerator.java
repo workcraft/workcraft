@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Positioning;
@@ -139,11 +140,12 @@ public class StgGenerator {
 		}
 	}
 
-	private void createReplicaReadArc(VisualPlace p, VisualSignalTransition t, Point2D replicaPos) throws InvalidConnectionException {
+	private void createReplicaReadArc(VisualPlace p, VisualSignalTransition t, Point2D replicaPosition) throws InvalidConnectionException {
 		if (p != null && t != null) {
-			VisualReplicaPlace replicaPlace = stg.createVisualReplica(p, null, VisualReplicaPlace.class);
-			if (replicaPos != null) {
-				replicaPlace.setRootSpacePosition(replicaPos);
+			Container container = Hierarchy.getNearestContainer(t);
+			VisualReplicaPlace replicaPlace = stg.createVisualReplica(p, container, VisualReplicaPlace.class);
+			if (replicaPosition != null) {
+				replicaPlace.setRootSpacePosition(replicaPosition);
 			}
 			stg.connectUndirected(replicaPlace, t);
 		}

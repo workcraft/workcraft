@@ -21,16 +21,15 @@
 
 package org.workcraft.plugins.petri;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.gui.Coloriser;
@@ -40,22 +39,16 @@ import org.workcraft.gui.graph.tools.Decoration;
 @SVGIcon("images/icons/svg/terminal.svg")
 public class VisualReplicaPlace extends VisualReplica {
 
-	private double size = 0.5;
-	private double strokeWidth = 0.1;
-
 	public VisualReplicaPlace() {
 		super();
+		removePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR);
+		removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
+		removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
 	}
 
 	public VisualReplicaPlace(VisualComponent master) {
 		super();
 		setMaster(master);
-	}
-
-	public Shape getShape() {
-		double wh = size;
-		double xy = - wh / 2.0;
-		return new Ellipse2D.Double(xy, xy, wh, wh);
 	}
 
 	@Override
@@ -65,11 +58,17 @@ public class VisualReplicaPlace extends VisualReplica {
 		cacheRenderedText(r);  // needed to better estimate the bounding box
 		Color colorisation = d.getColorisation();
 		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		if (colorisation != null) {
-			g.setStroke(new BasicStroke((float)strokeWidth));
-			g.draw(getShape());
-		}
 		drawNameInLocalSpace(r);
+	}
+
+	@Override
+	public boolean getNameVisibility() {
+		return true;
+	}
+
+	@Override
+	public Positioning getNamePositioning() {
+		return Positioning.CENTER;
 	}
 
 	public Place getReferencedPlace() {
@@ -82,7 +81,11 @@ public class VisualReplicaPlace extends VisualReplica {
 
 	@Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return getShape().getBounds2D();
+        Rectangle2D nameBoundingBox = getNameBoundingBox();
+        if (nameBoundingBox == null) {
+        	nameBoundingBox = new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
+        }
+		return BoundingBoxHelper.expand(nameBoundingBox, 0.2, 0.2);
     }
 
 }
