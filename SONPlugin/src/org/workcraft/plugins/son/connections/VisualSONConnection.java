@@ -165,7 +165,7 @@ public class VisualSONConnection extends VisualConnection {
 	}
 
 	protected void drawLabelInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility() && getTime().isSpecified()) {
+		if (getLabelVisibility() && getReferencedSONConnection().getTime().isSpecified()) {
 			cacheLabelRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -212,12 +212,13 @@ public class VisualSONConnection extends VisualConnection {
 		getReferencedSONConnection().setColor(color);
 	}
 
-	public Interval getTime() {
-		return getReferencedSONConnection().getTime();
+	public String getTime() {
+		return getReferencedSONConnection().getTime().toString();
 	}
 
-	public void setTime(Interval time) {
-		getReferencedSONConnection().setTime(time);
+	public void setTime(String time) {
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		getReferencedSONConnection().setTime(input);
 	}
 
 	public Color getTimeLabelColor() {

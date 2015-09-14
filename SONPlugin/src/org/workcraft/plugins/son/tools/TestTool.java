@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
@@ -23,6 +24,7 @@ import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
@@ -30,6 +32,7 @@ import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
+import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.InconsistencyTimeException;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
@@ -61,6 +64,7 @@ public class TestTool extends AbstractTool implements Tool{
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 		timeTest(net);
+		bhvTimeTest(net);
 		//getScenario(net);
 
 	//	dfsTest(net);
@@ -84,7 +88,7 @@ public class TestTool extends AbstractTool implements Tool{
 		for(Node node : net.getComponents()){
 			System.out.println(net.getNodeReference(node));
 			try {
-				for(String str : timeAlg.TimeConsistecy(node, getSyncCPs(net))){
+				for(String str : timeAlg.onConsistecy(node)){
 					System.out.println(str);
 				}
 			} catch (InvalidStructureException e) {
@@ -92,6 +96,45 @@ public class TestTool extends AbstractTool implements Tool{
 			}
 		}
 	}
+
+	private void bhvTimeTest(SON net){
+		BSONAlg bsonAlg = new BSONAlg(net);
+
+		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
+		Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
+		Map<Condition, Collection<Phase>> phases = bsonAlg.getAllPhases();
+
+		TimeAlg timeAlg = new TimeAlg(net);
+
+		for(ONGroup group : upperGroups){
+			for(TransitionNode t : group.getTransitionNodes()){
+				System.out.println(net.getNodeReference(t));
+				for(String str : timeAlg.bsonConsistency(t, phases)){
+					System.out.println(str);
+				}
+			}
+		}
+
+		for(ONGroup group : lowerGroups){
+			for(Condition c : group.getConditions()){
+				if(net.getInputPNConnections(c).isEmpty() ){
+					System.out.println("ini: "+net.getNodeReference(c));
+					for(String str : timeAlg.bsonConsistency2(c)){
+						System.out.println(str);
+					}
+				}
+
+				if(net.getOutputPNConnections(c).isEmpty() ){
+					System.out.println("fine: "+net.getNodeReference(c));
+					for(String str : timeAlg.bsonConsistency3(c)){
+						System.out.println(str);
+					}
+				}
+
+			}
+		}
+	}
+
 
 	protected Collection<ChannelPlace> getSyncCPs(SON net){
 		Collection<ChannelPlace> result = new HashSet<ChannelPlace>();

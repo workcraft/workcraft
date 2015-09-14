@@ -7,6 +7,9 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.Interval;
+import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
 public class Event extends Transition implements TransitionNode, Time{
@@ -49,7 +52,7 @@ public class Event extends Transition implements TransitionNode, Time{
 
 	public void setStartTime(Interval duration){
 		this.statTime = duration;
-		sendNotification( new PropertyChangedEvent(this, "start time") );
+		sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
 	}
 
 	public Interval getStartTime(){
@@ -58,7 +61,7 @@ public class Event extends Transition implements TransitionNode, Time{
 
 	public void setEndTime(Interval endTime){
 		this.endTime = endTime;
-		sendNotification( new PropertyChangedEvent(this, "end time") );
+		sendNotification( new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME) );
 	}
 
 	public Interval getEndTime(){
@@ -67,7 +70,7 @@ public class Event extends Transition implements TransitionNode, Time{
 
 	public void setDuration(Interval duration){
 		this.duration = duration;
-		sendNotification( new PropertyChangedEvent(this, "duration") );
+		sendNotification( new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION) );
 	}
 
 	public Interval getDuration(){

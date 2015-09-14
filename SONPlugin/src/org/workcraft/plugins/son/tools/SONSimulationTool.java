@@ -93,9 +93,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected SimulationAlg simuAlg;
 	private ErrorTracingAlg	errAlg;
 
-	protected Collection<Path> sync;;
-	protected Map<Condition, Collection<Phase>> phases;;
-	protected Map<PlaceNode, Boolean>initialMarking;;
+	protected Collection<Path> sync;
+	protected Map<Condition, Collection<Phase>> phases;
+	protected Map<PlaceNode, Boolean>initialMarking;
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;

@@ -6,6 +6,9 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.Interval;
+import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 
 public class PlaceNode extends MathNode implements Time{
 
@@ -74,7 +77,7 @@ public class PlaceNode extends MathNode implements Time{
 
 	public void setStartTime(Interval duration){
 		this.statTime = duration;
-		sendNotification( new PropertyChangedEvent(this, "start time") );
+		sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
 	}
 
 	public Interval getStartTime(){
@@ -83,7 +86,7 @@ public class PlaceNode extends MathNode implements Time{
 
 	public void setEndTime(Interval endTime){
 		this.endTime = endTime;
-		sendNotification( new PropertyChangedEvent(this, "end time") );
+		sendNotification( new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME) );
 	}
 
 	public Interval getEndTime(){
@@ -92,7 +95,7 @@ public class PlaceNode extends MathNode implements Time{
 
 	public void setDuration(Interval duration){
 		this.duration = duration;
-		sendNotification( new PropertyChangedEvent(this, "duration") );
+		sendNotification( new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION) );
 	}
 
 	public Interval getDuration(){

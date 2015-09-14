@@ -20,7 +20,7 @@ public class TimeValueSetter implements Tool{
 
 	@Override
 	public String getDisplayName() {
-		return "Set time value";
+		return "Time value setting";
 	}
 
 	@Override

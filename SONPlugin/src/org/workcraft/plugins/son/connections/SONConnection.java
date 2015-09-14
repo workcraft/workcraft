@@ -7,6 +7,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.Interval;
+import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 
 public class SONConnection extends MathConnection{
 
@@ -66,7 +67,7 @@ public class SONConnection extends MathConnection{
 
 	public void setTime(Interval time){
 		this.time = time;
-		sendNotification(new PropertyChangedEvent(this, "time interval"));
+		sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
 	}
 
 

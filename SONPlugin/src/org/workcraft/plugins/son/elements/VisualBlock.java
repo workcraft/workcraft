@@ -38,6 +38,8 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	private static final float strokeWidth = 0.06f;
 
 	private Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+	protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
+
 	private Positioning durationLabelPositioning = Positioning.BOTTOM;
 	private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
 
@@ -119,13 +121,13 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 			offset.setLocation(offset.getX(), offset.getY()+0.6);
 		}
 
-		if (durationRenderedText.isDifferent(duration, font, durationLabelPositioning, offset)) {
-			durationRenderedText = new RenderedText(duration, font, durationLabelPositioning, offset);
+		if (durationRenderedText.isDifferent(duration, timeFont, durationLabelPositioning, offset)) {
+			durationRenderedText = new RenderedText(duration, timeFont, durationLabelPositioning, offset);
 		}
 	}
 
 	protected void drawDurationInLocalSpace(DrawRequest r) {
-		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
+		if (SONSettings.getTimeVisibility() && ((Block)getReferencedComponent()).getDuration().isSpecified()) {
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -144,7 +146,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
+		if (SONSettings.getTimeVisibility() && ((Block)getReferencedComponent()).getDuration().isSpecified()) {
 			bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
 		}
 		return bb;
@@ -162,28 +164,31 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
 		return  this.getReferencedComponent().getIsCollapsed();
 	}
 
-	public Interval getStartTime(){
-		return ((Block)getReferencedComponent()).getStartTime();
+	public String getStartTime(){
+		return ((Block)getReferencedComponent()).getStartTime().toString();
 	}
 
-	public void setStartTime(Interval time){
-		((Block)getReferencedComponent()).setStartTime(time);
+	public void setStartTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Block)getReferencedComponent()).setStartTime(input);
 	}
 
-	public Interval getEndTime(){
-		return ((Block)getReferencedComponent()).getEndTime();
+	public String getEndTime(){
+		return ((Block)getReferencedComponent()).getEndTime().toString();
 	}
 
-	public void setEndTime(Interval time){
-		((Block)getReferencedComponent()).setEndTime(time);
+	public void setEndTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Block)getReferencedComponent()).setEndTime(input);
 	}
 
-	public Interval getDuration(){
-		return ((Block)getReferencedComponent()).getDuration();
+	public String getDuration(){
+		return ((Block)getReferencedComponent()).getDuration().toString();
 	}
 
-	public void setDuration(Interval time){
-		((Block)getReferencedComponent()).setDuration(time);
+	public void setDuration(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Block)getReferencedComponent()).setDuration(input);
 	}
 
 	public Color getDurationColor(){

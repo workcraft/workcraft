@@ -195,9 +195,9 @@ public class SONSelectionTool extends SelectionTool {
 				if (selectedNode instanceof VisualCondition) {
 					VisualCondition vc = (VisualCondition) selectedNode;
 					if (vc.isMarked() == false)
-						vc.setMarked(true);
+						vc.setIsMarked(true);
 					else if (vc.isMarked() == true)
-						vc.setMarked(false);
+						vc.setIsMarked(false);
 				}
 
 				if (selectedNode instanceof VisualEvent) {

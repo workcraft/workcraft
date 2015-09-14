@@ -9,6 +9,7 @@ import org.workcraft.plugins.son.elements.Time;
 
 public class EndTimePropertyDescriptor implements PropertyDescriptor{
 	private final Time t;
+	public static final String PROPERTY_END_TIME = "End time";
 
 	public EndTimePropertyDescriptor(Time t) {
 		this.t = t;
@@ -16,7 +17,7 @@ public class EndTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public String getName() {
-		return "End time";
+		return PROPERTY_END_TIME;
 	}
 
 	@Override

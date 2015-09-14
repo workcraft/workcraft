@@ -106,20 +106,31 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 		return ((Event)getReferencedComponent()).getFillColor();
 	}
 
-	public Interval getStartTime(){
-		return ((Event)getReferencedComponent()).getStartTime();
+	public void setStartTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Event)getReferencedComponent()).setStartTime(input);
 	}
 
-	public void setStartTime(Interval time){
-		((Event)getReferencedComponent()).setStartTime(time);
+	public String getStartTime(){
+		return ((Event)getReferencedComponent()).getStartTime().toString();
 	}
 
-	public Interval getEndTime(){
-		return ((Event)getReferencedComponent()).getEndTime();
+	public void setEndTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Event)getReferencedComponent()).setEndTime(input);
 	}
 
-	public void setEndTime(Interval time){
-		((Event)getReferencedComponent()).setEndTime(time);
+	public String getEndTime(){
+		return ((Event)getReferencedComponent()).getEndTime().toString();
+	}
+
+	public void setDuration(String time) {
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Event)getReferencedComponent()).setDuration((input));
+	}
+
+	public String getDuration() {
+		return ((Event)getReferencedComponent()).getDuration().toString();
 	}
 
 	@Override

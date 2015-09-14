@@ -9,6 +9,7 @@ import org.workcraft.plugins.son.connections.SONConnection;
 
 public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
 	private final SONConnection con;
+	public static final String PROPERTY_CONNECTION_TIME = "Time interval";
 
 	public ConnectionTimePropertyDescriptor(SONConnection con) {
 		this.con = con;
@@ -16,7 +17,7 @@ public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public String getName() {
-		return "Time interval";
+		return PROPERTY_CONNECTION_TIME;
 	}
 
 	@Override

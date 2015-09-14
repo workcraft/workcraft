@@ -127,7 +127,7 @@ public class Interval {
 	public boolean equals(Object obj){
 		if(obj instanceof Interval){
 			Interval interval = (Interval)obj;
-			if(this.getMin() == interval.getMin() && this.getMax() == interval.getMax())
+			if(this.getMin().equals(interval.getMin()) && this.getMax().equals(interval.getMax()))
 				return true;
 		}
 		return false;

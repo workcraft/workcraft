@@ -192,7 +192,7 @@ public class BlockConnector {
 								} catch (NumberFormatException e1) {
 									  e1.printStackTrace();
 								}
-								con.setTime(new Interval(min, max));
+								con.getReferencedSONConnection().setTime(new Interval(min, max));
 							}
 						//create output connection
 						}else if(piece[0].equals("from")){
@@ -222,7 +222,7 @@ public class BlockConnector {
 								} catch (NumberFormatException e1) {
 									  e1.printStackTrace();
 								}
-								con.setTime(new Interval(min, max));
+								con.getReferencedSONConnection().setTime(new Interval(min, max));
 							}
 						}
 					}

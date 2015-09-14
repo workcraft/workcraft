@@ -10,7 +10,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -35,9 +34,11 @@ import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.SimulationAlg;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
+import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
@@ -51,9 +52,8 @@ public class TimeValueSetterTool extends AbstractTool{
 
 	protected SON net;
 	protected VisualSON visualNet;
+	protected TimeAlg timeAlg;
 
-	protected Map<PlaceNode, Boolean>initialMarking;;
-	protected SimulationAlg simuAlg;
 	private JPanel interfacePanel, timePropertyPanel, timeInputPanel;
 
 	private int labelheight = 20;
@@ -65,8 +65,6 @@ public class TimeValueSetterTool extends AbstractTool{
 	private String endLabel = "End time interval: ";
 	private String durationLabel = "Duration interval: ";
 	private String timeLabel = "Time interval: ";
-
-	protected Map<PlaceNode, Boolean> finalMarking;;
 
 	//Set limit integers to JTextField
 	class InputFilter extends DocumentFilter {
@@ -227,7 +225,9 @@ public class TimeValueSetterTool extends AbstractTool{
 		autoComplete(field);
 
 		if(title.equals(timeLabel)){
-			VisualSONConnection con = (VisualSONConnection)node;
+			VisualSONConnection vcon = (VisualSONConnection)node;
+			SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
+
 			Interval value = con.getTime();
 			if(isMin){
 				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
@@ -248,7 +248,9 @@ public class TimeValueSetterTool extends AbstractTool{
 			}
 		}
 		else if(title.equals(startLabel)){
-			VisualCondition c = (VisualCondition)node;
+			VisualCondition vc = (VisualCondition)node;
+			Condition c = (Condition)vc.getReferencedComponent();
+
 			Interval value = c.getStartTime();
 			if(isMin){
 				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
@@ -271,7 +273,9 @@ public class TimeValueSetterTool extends AbstractTool{
 		else if(title.equals(durationLabel)){
 			Interval value;
 			if(node instanceof VisualPlaceNode){
-				VisualPlaceNode c = (VisualPlaceNode)node;
+				VisualPlaceNode vc = (VisualPlaceNode)node;
+				PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+
 				value = c.getDuration();
 				if(isMin){
 					Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
@@ -292,7 +296,8 @@ public class TimeValueSetterTool extends AbstractTool{
 				}
 			}
 			else if(node instanceof VisualBlock){
-				VisualBlock b = (VisualBlock)node;
+				VisualBlock vb = (VisualBlock)node;
+				Block b = (Block)vb.getReferencedComponent();
 				value = b.getDuration();
 
 				if(isMin){
@@ -316,7 +321,9 @@ public class TimeValueSetterTool extends AbstractTool{
 		}
 
 		else if(title.equals(endLabel)){
-			VisualCondition c = (VisualCondition)node;
+			VisualCondition vc = (VisualCondition)node;
+			Condition c = (Condition)vc.getReferencedComponent();
+
 			Interval value = c.getEndTime();
 			if(isMin){
 				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
@@ -370,16 +377,19 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		Interval value;
 		if(node instanceof VisualSONConnection){
-			VisualSONConnection con = (VisualSONConnection)node;
+			VisualSONConnection vcon = (VisualSONConnection)node;
+			SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
+
 			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
-				value = ((VisualSONConnection)node).getTime();
+				value = con.getTime();
 				timePropertyPanel.add(createTimeInputPanel(timeLabel, value, node));
 			}
 		}
 		else if(node instanceof VisualPlaceNode){
 
 			if(node instanceof VisualCondition){
-				VisualCondition c2 = (VisualCondition)node;
+				VisualCondition vc2 = (VisualCondition)node;
+				Condition c2 = (Condition)vc2.getReferencedComponent();
 
 				if(c2.isInitial()){
 					value = c2.getStartTime();
@@ -391,12 +401,16 @@ public class TimeValueSetterTool extends AbstractTool{
 				}
 			}
 
-			VisualPlaceNode c = (VisualPlaceNode)node;
+			VisualPlaceNode vc = (VisualPlaceNode)node;
+			PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+
 			value =c.getDuration();
 			timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
 		}
 		else if(node instanceof VisualBlock){
-			VisualBlock b = (VisualBlock)node;
+			VisualBlock vb = (VisualBlock)node;
+			Block b = (Block)vb.getReferencedComponent();
+
 			value =b.getDuration();
 			timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
 		}
@@ -412,56 +426,28 @@ public class TimeValueSetterTool extends AbstractTool{
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
 		WorkspaceEntry we = editor.getWorkspaceEntry();
-		//BlockConnector.blockBoundingConnector(visualNet);
+		timeAlg = new TimeAlg(net);
 		we.setCanSelect(false);
 
 		net.refreshColor();
 		net.clearMarking();
-		initialise();
 		SONSettings.setTimeVisibility(true);
 
 		//set property states for initial and final states
-		removeProperties();
-		setProperties();
+		timeAlg.removeProperties();
+		timeAlg.setProperties();
 
 		editor.forceRedraw();
 		editor.getModel().setTemplateNode(null);
 	}
 
-	protected void initialise(){
-		simuAlg = new SimulationAlg(net);
-		initialMarking=simuAlg.getInitialMarking();
-		finalMarking = simuAlg.getFinalMarking();
-	}
-
-
 	@Override
 	public void deactivated(final GraphEditor editor) {
-		removeProperties();
+		timeAlg.removeProperties();
 		SONSettings.setTimeVisibility(false);
 		//BlockConnector.blockInternalConnector(visualNet);
 		net.refreshColor();
 		net.clearMarking();
-	}
-
-	private void setProperties(){
-		for(PlaceNode c : initialMarking.keySet()){
-			if((c instanceof Condition) && initialMarking.get(c))
-				((Condition)c).setInitial(true);
-		}
-		for(PlaceNode c : finalMarking.keySet()){
-			if((c instanceof Condition) && finalMarking.get(c))
-				((Condition)c).setFinal(true);
-		}
-	}
-
-	private void removeProperties(){
-		for(PlaceNode c : net.getPlaceNodes()){
-			if(c instanceof Condition){
-				((Condition)c).setInitial(false);
-				((Condition)c).setFinal(false);
-			}
-		}
 	}
 
 	@Override

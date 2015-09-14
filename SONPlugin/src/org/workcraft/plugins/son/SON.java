@@ -38,6 +38,8 @@ import org.workcraft.util.Hierarchy;
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
 
+	ArrayList<Scenario> scenarios = new ArrayList<Scenario>();
+
 	public SON(){
 		this(null, null);
 	}
@@ -339,6 +341,26 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
+	public Collection<SONConnection> getInputPNConnections(Node node){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getInputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				result.add(con);
+		}
+		return result;
+	}
+
+	public Collection<SONConnection> getOutputPNConnections(Node node){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getOutputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				result.add(con);
+		}
+		return result;
+	}
+
 	//Group based methods
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
@@ -400,6 +422,15 @@ public class SON extends AbstractMathModel {
 		if(!nodes.isEmpty())
 			result.append(']');
 		return result.toString();
+	}
+
+	//Scenario
+	public ArrayList<Scenario> getScenarioList(){
+		return scenarios;
+	}
+
+	public void setScenarioList(ArrayList<Scenario> scenarios){
+		this.scenarios = scenarios;
 	}
 
 	@Override

@@ -38,6 +38,7 @@ import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
 
+@SuppressWarnings("rawtypes")
 public class ParallelSimDialog  extends JDialog{
 
 	private static final long serialVersionUID = 1L;
@@ -96,7 +97,6 @@ public class ParallelSimDialog  extends JDialog{
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	class CheckListRenderer extends JCheckBox implements ListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -137,7 +137,6 @@ public class ParallelSimDialog  extends JDialog{
 		{
 			public void mouseClicked(MouseEvent event)
 			{
-				@SuppressWarnings("rawtypes")
 				JList list = (JList) event.getSource();
 
 				int index = list.locationToIndex(event.getPoint());

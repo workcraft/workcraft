@@ -308,6 +308,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 	@Override
 	public void updateState(final GraphEditor editor) {
 		scenarioTable.tableChanged(new TableModelEvent(scenarioTable.getModel()));
+		net.setScenarioList(saveList);
 	}
 
 	public void updateColor(){

@@ -53,7 +53,7 @@ public class VisualPlaceNode extends VisualComponent{
 		addPropertyDeclaration(new PropertyDeclaration<VisualPlaceNode, Boolean>(
 				this, "Marking", Boolean.class, true, true, true) {
 			public void setter(VisualPlaceNode object, Boolean value) {
-				setMarked(value);
+				setIsMarked(value);
 			}
 			public Boolean getter(VisualPlaceNode object) {
 				return isMarked();
@@ -171,7 +171,7 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	protected void drawDurationInLocalSpace(DrawRequest r) {
-		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
+		if (SONSettings.getTimeVisibility() && ((PlaceNode)getReferencedComponent()).getDuration().isSpecified()) {
 			cahceDurationRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -194,7 +194,7 @@ public class VisualPlaceNode extends VisualComponent{
 		if (ErrTracingDisable.showErrorTracing()) {
 			bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
 		}
-		if (SONSettings.getTimeVisibility() && getDuration().isSpecified()) {
+		if (SONSettings.getTimeVisibility() && ((PlaceNode)getReferencedComponent()).getDuration().isSpecified()) {
 			bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
 		}
 
@@ -217,7 +217,7 @@ public class VisualPlaceNode extends VisualComponent{
 		return ((PlaceNode)getReferencedComponent()).isMarked();
 	}
 
-	public void setMarked(boolean b) {
+	public void setIsMarked(boolean b) {
 		((PlaceNode)getReferencedComponent()).setMarked(b);
 	}
 
@@ -227,14 +227,6 @@ public class VisualPlaceNode extends VisualComponent{
 
 	public void setErrors(int errors){
 		((PlaceNode)getReferencedComponent()).setErrors(errors);
-	}
-
-	public Interval getDuration(){
-		return ((PlaceNode)getReferencedComponent()).getDuration();
-	}
-
-	public void setDuration(Interval time){
-		((PlaceNode)getReferencedComponent()).setDuration(time);
 	}
 
 	public Color getTokenColor() {
@@ -288,20 +280,31 @@ public class VisualPlaceNode extends VisualComponent{
 		this.errLabelColor = errLabelColor;
 	}
 
-	public Interval getStartTime(){
-		return ((PlaceNode)getReferencedComponent()).getStartTime();
+	public String getDuration(){
+		return ((PlaceNode)getReferencedComponent()).getDuration().toString();
 	}
 
-	public void setStartTime(Interval time){
-		((PlaceNode)getReferencedComponent()).setStartTime(time);
+	public void setDuration(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((PlaceNode)getReferencedComponent()).setDuration(input);
 	}
 
-	public Interval getEndTime(){
-		return ((PlaceNode)getReferencedComponent()).getEndTime();
+	public String getStartTime(){
+		return ((PlaceNode)getReferencedComponent()).getStartTime().toString();
 	}
 
-	public void setEndTime(Interval time){
-		((PlaceNode)getReferencedComponent()).setEndTime(time);
+	public void setStartTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((PlaceNode)getReferencedComponent()).setStartTime(input);
+	}
+
+	public String getEndTime(){
+		return ((PlaceNode)getReferencedComponent()).getEndTime().toString();
+	}
+
+	public void setEndTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((PlaceNode)getReferencedComponent()).setEndTime(input);
 	}
 
 	public Color getDurationColor(){
@@ -317,7 +320,7 @@ public class VisualPlaceNode extends VisualComponent{
 		super.copyStyle(src);
 		if (src instanceof VisualPlaceNode) {
 			VisualPlaceNode srcComponent = (VisualPlaceNode)src;
-			setMarked(srcComponent.isMarked());
+			setIsMarked(srcComponent.isMarked());
 		}
 	}
 }

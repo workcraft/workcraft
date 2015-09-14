@@ -8,7 +8,9 @@ import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.elements.Time;
 
 public class DurationPropertyDescriptor implements PropertyDescriptor{
+
 	private final Time t;
+	public static final String PROPERTY_DURATION = "Duration";
 
 	public DurationPropertyDescriptor(Time t) {
 		this.t = t;
@@ -16,7 +18,7 @@ public class DurationPropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public String getName() {
-		return "Duration";
+		return PROPERTY_DURATION;
 	}
 
 	@Override

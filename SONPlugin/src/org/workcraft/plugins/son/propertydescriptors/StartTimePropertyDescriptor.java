@@ -9,6 +9,7 @@ import org.workcraft.plugins.son.elements.Time;
 
 public class StartTimePropertyDescriptor implements PropertyDescriptor{
 	private final Time t;
+	public static final String PROPERTY_START_TIME = "Start time";
 
 	public StartTimePropertyDescriptor(Time t) {
 		this.t = t;
@@ -16,7 +17,7 @@ public class StartTimePropertyDescriptor implements PropertyDescriptor{
 
 	@Override
 	public String getName() {
-		return "Start time";
+		return PROPERTY_START_TIME;
 	}
 
 	@Override
