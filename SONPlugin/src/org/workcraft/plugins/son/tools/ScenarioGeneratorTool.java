@@ -160,7 +160,12 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 				if(!scenario.isEmpty()){
 					setCellColor = true;
 					Scenario cache = new Scenario();
+					//add scenario nodes
 					cache.addAll(scenario);
+					//add scenario connections
+					for(SONConnection con : scenario.runtimeGetConnections(net)){
+						cache.add(net.getNodeReference(con));
+					}
 					saveList.add(cache);
 					saveList.setPosition(saveList.size()-1);
 					updateState(editor);
@@ -177,8 +182,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 					scenario.clear();
 					if(saveList.getPosition() > saveList.size()-1)
 						saveList.decPosition(1);
-					if(!saveList.isEmpty())
-						scenario.addAll(saveList.get(saveList.getPosition()));
+					if(!saveList.isEmpty()){
+						scenario.addAll(saveList.get(saveList.getPosition()).getNodeRefs(net));
+					}
 					updateColor();
 					updateState(editor);
 				}
@@ -198,7 +204,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 						startButton.setSelected(false);
 						setCellColor = true;
 						scenario.clear();
-						scenario.addAll((Scenario)obj);
+						scenario.addAll(((Scenario)obj).getNodeRefs(net));
 						updateState(editor);
 						updateColor();
 					}
@@ -286,7 +292,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		autoSimulationTask(editor);
 		Collection<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(getScenario().getNodes(net));
-		nodes.addAll(getScenario().getConnections(net));
+		nodes.addAll(getScenario().runtimeGetConnections(net));
 		setGrayout(nodes, Color.BLACK);
 	}
 
@@ -316,7 +322,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		setGrayout(net.getNodes(), greyoutColor);
 		Collection<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(getScenario().getNodes(net));
-		nodes.addAll(getScenario().getConnections(net));
+		nodes.addAll(getScenario().runtimeGetConnections(net));
 		setGrayout(nodes, Color.BLACK);
 	}
 

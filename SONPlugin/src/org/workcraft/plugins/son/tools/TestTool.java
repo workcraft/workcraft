@@ -63,8 +63,8 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		timeTest(net);
-		bhvTimeTest(net);
+		//timeTest(net);
+		//bhvTimeTest(net);
 		//getScenario(net);
 
 	//	dfsTest(net);
@@ -82,7 +82,7 @@ public class TestTool extends AbstractTool implements Tool{
 		//conditionOutputTest(vnet);
 	}
 
-	private void timeTest(SON net){
+/*	private void timeTest(SON net){
 		TimeAlg timeAlg = new TimeAlg(net);
 
 		for(Node node : net.getComponents()){
@@ -95,9 +95,9 @@ public class TestTool extends AbstractTool implements Tool{
 				System.out.println("Structure error");
 			}
 		}
-	}
+	}*/
 
-	private void bhvTimeTest(SON net){
+/*	private void bhvTimeTest(SON net){
 		BSONAlg bsonAlg = new BSONAlg(net);
 
 		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
@@ -133,7 +133,7 @@ public class TestTool extends AbstractTool implements Tool{
 
 			}
 		}
-	}
+	}*/
 
 
 	protected Collection<ChannelPlace> getSyncCPs(SON net){

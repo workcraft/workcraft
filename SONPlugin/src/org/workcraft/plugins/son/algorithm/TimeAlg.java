@@ -9,6 +9,7 @@ import org.workcraft.plugins.son.Before;
 import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.Scenario;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -74,9 +75,8 @@ public class TimeAlg extends RelationAlgorithm{
 
 	private ArrayList<String> concurConsistency (TransitionNode t){
 		ArrayList<String> result = new ArrayList<String>();
-
-		Collection<SONConnection> inputConnections =  net.getInputPNConnections(t);;
-		Collection<SONConnection> outputConnections = net.getOutputPNConnections(t);;
+		Collection<SONConnection> inputConnections =  net.getInputPNConnections(t);
+		Collection<SONConnection> outputConnections = net.getOutputPNConnections(t);
 
 		if(inputConnections.size() > 1){
 			SONConnection con = inputConnections.iterator().next();
@@ -104,11 +104,19 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	private ArrayList<String> alterConsistency(Condition c){
+	private ArrayList<String> alterConsistency(Condition c, Scenario s){
 		ArrayList<String> result = new ArrayList<String>();
 
-		Collection<SONConnection> inputConnections = net.getInputPNConnections(c);
-		Collection<SONConnection> outputConnections = net.getOutputPNConnections(c);
+		Collection<SONConnection> inputConnections;
+		Collection<SONConnection> outputConnections;
+
+		if(s!=null){
+			inputConnections = net.getInputScenarioPNConnections(c, s);
+			outputConnections = net.getOutputScenarioPNConnections(c, s);
+		}else{
+			inputConnections =  net.getInputPNConnections(c);
+			outputConnections = net.getOutputPNConnections(c);
+		}
 
 		boolean isConsisent = false;
 
@@ -218,13 +226,16 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> bsonConsistency(TransitionNode t, Map<Condition, Collection<Phase>> phases){
+	public ArrayList<String> bsonConsistency(TransitionNode t, Map<Condition, Collection<Phase>> phases, Scenario s){
 		ArrayList<String> result = new ArrayList<String>();
 		BSONAlg bsonAlg = new BSONAlg(net);
 		Before before = bsonAlg.before(t, phases);
+
 		for(TransitionNode[] v : before){
         	TransitionNode v0 = v[0];
         	TransitionNode v1 = v[1];
+        	Collection<Node> scenarioNodes = s.getNodes(net);
+        	if(!scenarioNodes.contains(v1) || !scenarioNodes.contains(v0))continue;
 			//Equation 17
 			if(!v0.getStartTime().isSpecified() || !v1.getStartTime().isSpecified()){
 				result.add("Fail to run behavioural consistency checking: "+ resultHelper(v0) + " or " + resultHelper(v1)
@@ -250,10 +261,11 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> bsonConsistency2(Condition initialLow){
+	public ArrayList<String> bsonConsistency2(Condition initialLow, Scenario s){
 		ArrayList<String> result = new ArrayList<String>();
 		for(SONConnection con : net.getSONConnections()){
-			if(con.getSemantics() == Semantics.BHVLINE && con.getFirst() == initialLow){
+			if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == initialLow)
+					&& (s.getConnections(net).contains(con))){
 				Condition c = (Condition)con.getSecond();
 				if(!c.getStartTime().isSpecified() || !initialLow.getStartTime().isSpecified()){
 					result.add("Fail to run behavioural consistency checking: "
@@ -268,10 +280,11 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> bsonConsistency3(Condition finalLow){
+	public ArrayList<String> bsonConsistency3(Condition finalLow, Scenario s){
 		ArrayList<String> result = new ArrayList<String>();
 		for(SONConnection con : net.getSONConnections()){
-			if(con.getSemantics() == Semantics.BHVLINE && con.getFirst() == finalLow){
+			if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == finalLow)
+					&& (s.getConnections(net).contains(con))){
 				Condition c = (Condition)con.getSecond();
 				if(!c.getStartTime().isSpecified() || !finalLow.getStartTime().isSpecified()){
 					result.add("Fail to run behavioural consistency checking: "
@@ -286,22 +299,33 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> specifiedValueChecker(Node node, boolean isSync) throws InvalidStructureException{
+	public ArrayList<String> specifiedValueChecker(Node node, boolean isSync, Scenario s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
+
+		Collection<SONConnection> inputConnections;
+		Collection<SONConnection> outputConnections;
+
+		if(s!=null){
+			inputConnections = net.getInputScenarioPNConnections(node, s);
+			outputConnections = net.getOutputScenarioPNConnections(node, s);
+		}else{
+			inputConnections =  net.getInputPNConnections(node);
+			outputConnections = net.getOutputPNConnections(node);
+		}
 
 		if ((node instanceof Time) && !((Time)node).getDuration().isSpecified() && !isSync){
 			result.add("Fail to run time consistency checking, duration value is required.");
 		}
 
 		if(node instanceof TransitionNode){
-			for(SONConnection con : net.getInputPNConnections(node)){
+			for(SONConnection con : inputConnections){
 				if(!con.getTime().isSpecified()){
 					result.add("Fail to run time consistency checking, node has unspecified start time value.");
 					break;
 				}
 			}
 
-			for(SONConnection con : net.getOutputPNConnections(node)){
+			for(SONConnection con : outputConnections){
 				if(!con.getTime().isSpecified()){
 					result.add("Fail to run time consistency checking, node has unspecified end time value.");
 					break;
@@ -312,11 +336,11 @@ public class TimeAlg extends RelationAlgorithm{
 
 			boolean hasSpecifiedInput = false;
 			//initial state
-			if(net.getInputPNConnections(c).isEmpty()){
+			if(inputConnections.isEmpty()){
 				if(c.getStartTime().isSpecified())
 					hasSpecifiedInput = true;
 			}else{
-				for(SONConnection con : net.getInputPNConnections(c)){
+				for(SONConnection con : inputConnections){
 					if(con.getTime().isSpecified()){
 						hasSpecifiedInput = true;
 						break;
@@ -325,11 +349,11 @@ public class TimeAlg extends RelationAlgorithm{
 			}
 			boolean hasSpecifiedOutput = false;
 			//final state
-			if(net.getOutputPNConnections(c).isEmpty()){
+			if(outputConnections.isEmpty()){
 				if(c.getEndTime().isSpecified())
 					hasSpecifiedOutput = true;
 			}else{
-				for(SONConnection con : net.getOutputPNConnections(c)){
+				for(SONConnection con : outputConnections){
 					if(con.getTime().isSpecified()){
 						hasSpecifiedOutput = true;
 						break;
@@ -347,16 +371,17 @@ public class TimeAlg extends RelationAlgorithm{
 			ChannelPlace cp = (ChannelPlace)node;
 			Interval start = null;
 			TransitionNode input = null;
-			if(net.getInputSONConnections(cp).size() == 1){
-				SONConnection con = net.getInputSONConnections(cp).iterator().next();
+
+			if(inputConnections.size() == 1){
+				SONConnection con = inputConnections.iterator().next();
 				start = con.getTime();
 				input = (TransitionNode)con.getFirst();
 			}
 
 			Interval end = null;
 			TransitionNode output = null;
-			if(net.getOutputSONConnections(cp).size() == 1){
-				SONConnection con = net.getOutputSONConnections(cp).iterator().next();
+			if(outputConnections.size() == 1){
+				SONConnection con = outputConnections.iterator().next();
 				end = con.getTime();
 				output = (TransitionNode)con.getSecond();
 			}
@@ -384,12 +409,12 @@ public class TimeAlg extends RelationAlgorithm{
 		return "("+net.getNodeReference(node)+")";
 	}
 
-	public ArrayList<String> onConsistecy(Node node) throws InvalidStructureException{
+	public ArrayList<String> onConsistecy(Node node, Scenario s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 
 		//check for unspecified value.
 		if(!(node instanceof ChannelPlace)){
-			result.addAll(specifiedValueChecker(node, false));
+			result.addAll(specifiedValueChecker(node, false, s));
 			if(!result.isEmpty()){
 				setDefaultTime(node);
 				return result;
@@ -426,7 +451,7 @@ public class TimeAlg extends RelationAlgorithm{
 			Condition c = (Condition)node;
 
 			if(net.getInputPNConnections(c).size() > 1 || net.getOutputPNConnections(c).size() > 1){
-				result.addAll(alterConsistency(c));
+				result.addAll(alterConsistency(c, s));
 			}else{
 				if(c.isInitial() && !c.isFinal()){
 					SONConnection con = net.getOutputPNConnections(c).iterator().next();
@@ -450,13 +475,13 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> csonConsistecy(ChannelPlace cp, Collection<ChannelPlace> syncCPs) throws InvalidStructureException{
+	public ArrayList<String> csonConsistecy(ChannelPlace cp, Collection<ChannelPlace> syncCPs, Scenario s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 
 		if(syncCPs.contains(cp)){
-			result.addAll(specifiedValueChecker(cp, true));
+			result.addAll(specifiedValueChecker(cp, true, s));
 		}else{
-			result.addAll(specifiedValueChecker(cp, false));
+			result.addAll(specifiedValueChecker(cp, false, s));
 		}
 
 		if(!result.isEmpty())

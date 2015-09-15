@@ -361,6 +361,35 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
+
+	public Collection<SONConnection> getInputScenarioPNConnections(Node node, Scenario s){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getInputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				if(s!=null){
+					if(s.getConnections(this).contains(con))
+						result.add(con);
+				}else
+					result.add(con);
+		}
+		return result;
+	}
+
+	public Collection<SONConnection> getOutputScenarioPNConnections(Node node, Scenario s){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getOutputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				if(s!=null){
+					if(s.getConnections(this).contains(con))
+						result.add(con);
+				}else
+					result.add(con);
+		}
+		return result;
+	}
+
 	//Group based methods
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);

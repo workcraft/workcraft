@@ -6,20 +6,29 @@ import org.workcraft.dom.Node;
 
 public class TimeConsistencySettings {
 
-	private boolean errNodesHighlight;
+	private boolean inconsistencyHighlight, unspecifyHighlight;
 	private ArrayList<ONGroup> selectedGroups;
 	private Scenario seletedScenario;
 	private ArrayList<Node> seletedNodes;
+	private int tabIndex;
 
-	public TimeConsistencySettings(boolean errNodesHighlight,ArrayList<ONGroup> selectedGroups, Scenario seletedScenario, ArrayList<Node> seletedNodes){
-		this.errNodesHighlight = errNodesHighlight;
+	public TimeConsistencySettings(boolean inconsistencyHighlight,
+			boolean unspecifyHighlight, ArrayList<ONGroup> selectedGroups,
+			Scenario seletedScenario, ArrayList<Node> seletedNodes, int tabIndex){
+		this.inconsistencyHighlight = 	inconsistencyHighlight;
+		this.unspecifyHighlight = inconsistencyHighlight;
 		this.selectedGroups = selectedGroups;
 		this.seletedScenario = seletedScenario;
 		this.seletedNodes = seletedNodes;
+		this.tabIndex = tabIndex;
 	}
 
-	public boolean getErrNodesHighlight(){
-		return this.errNodesHighlight;
+	public boolean getInconsistencyHighlight(){
+		return this.inconsistencyHighlight;
+	}
+
+	public boolean getUnspecifyHighlight(){
+		return this.unspecifyHighlight;
 	}
 
 	public ArrayList<ONGroup> getSelectedGroups(){
@@ -32,6 +41,10 @@ public class TimeConsistencySettings {
 
 	public ArrayList<Node> getSeletedNodes(){
 		return this.seletedNodes;
+	}
+
+	public int getTabIndex(){
+		return tabIndex;
 	}
 
 }
