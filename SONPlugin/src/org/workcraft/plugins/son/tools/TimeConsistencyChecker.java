@@ -26,7 +26,7 @@ public class TimeConsistencyChecker implements Tool{
 
 	@Override
 	public String getDisplayName() {
-		return "Consistency...";
+		return "Check for consistency...";
 	}
 
 	@Override

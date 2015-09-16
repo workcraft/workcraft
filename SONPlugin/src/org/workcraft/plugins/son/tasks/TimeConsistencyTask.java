@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.tasks;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.Scenario;
 import org.workcraft.plugins.son.TimeConsistencySettings;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
@@ -53,11 +55,13 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 	public Result<? extends VerificationResult> run(
 			ProgressMonitor<? super VerificationResult> monitor) {
 
-		Collection<Node> components = new ArrayList<Node>();
+		Collection<Node> checkList = new ArrayList<Node>();
+		Collection<Node> unspecifyResult = new ArrayList<Node>();
+		Collection<Node> inconsistencyResult = new ArrayList<Node>();
 
 		infoMsg("-------------------------Time Consistency Checking Result-------------------------");
 		if(settings.getTabIndex() == 0){
-			components = new ArrayList<Node>();
+			checkList = new ArrayList<Node>();
 			Collection<ONGroup> groups = settings.getSelectedGroups();
 
 			RelationAlgorithm relationAlg = new RelationAlgorithm(net);
@@ -65,31 +69,54 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 			infoMsg("Initialising selected groups and components...");
 
 			for(ONGroup group : groups){
-				components.addAll(group.getComponents());
+				checkList.addAll(group.getComponents());
 			}
 
 			infoMsg("Selected Groups : " +  net.toString(groups));
 
 			ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
 			relatedCPlaces.addAll(relationAlg.getRelatedChannelPlace(groups));
-			components.addAll(relatedCPlaces);
+			checkList.addAll(relatedCPlaces);
 
 			infoMsg("Channel Places = " + relatedCPlaces.size()+"\n");
 
 		}else if(settings.getTabIndex() == 1){
 			infoMsg("Initialising selected scenario...");
-			components = settings.getSeletedScenario().getNodes(net);
-			infoMsg("Nodes = " + components.size()+"\n");
+			if(settings.getSeletedScenario()!=null)
+				checkList = settings.getSeletedScenario().getNodes(net);
+			infoMsg("Nodes = " + checkList.size()+"\n");
 
 		}else if(settings.getTabIndex() == 2){
 			//node info
 			infoMsg("Initialising selected components...");
-			components = settings.getSeletedNodes();
-			infoMsg("Selected nodes = " + components.size()+"\n");
+			checkList = settings.getSeletedNodes();
+			infoMsg("Selected nodes = " + checkList.size()+"\n");
 
 		}
 
-		for(Node node : components){
+		infoMsg("Running unspecified value checking task...");
+		for(Node node : checkList){
+			ArrayList<String> result;
+			if(settings.getTabIndex() == 1){
+				result = unspecifiedValueTask(node, syncCPs, settings.getSeletedScenario());
+			}else{
+				result = unspecifiedValueTask(node, syncCPs, null);
+			}
+
+			if(!result.isEmpty()){
+				unspecifyResult.add(node);
+				infoMsg("Node:" + net.getNodeReference(node));
+				for(String str : result){
+					errMsg("-"+str);
+				}
+			}
+		}
+
+		infoMsg("\nRemove unspecified nodes from checking list...");
+		checkList.removeAll(unspecifyResult);
+
+		infoMsg("\nRunning time consistency checking task...");
+		for(Node node : checkList){
 			ArrayList<String> result;
 			if(settings.getTabIndex() == 1){
 				result = timeConsistencyTask(node, settings.getSeletedScenario());
@@ -99,6 +126,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
 			if(!result.isEmpty()){
 				infoMsg("Node:" + net.getNodeReference(node));
+				inconsistencyResult.add(node);
 				for(String str : result){
 					errMsg("-"+str);
 					totalErrNum++;
@@ -106,9 +134,34 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 			}
 		}
 
+		inconsistencyHighlight(settings.getInconsistencyHighlight(), inconsistencyResult);
+		unspecifyHighlight(settings.getUnspecifyHighlight(), unspecifyResult);
+
 		logger.info("\n\nVerification-Result : "+ totalErrNum + " Error(s).");
+		timeAlg.removeProperties();
 
 		return new Result<VerificationResult>(Outcome.FINISHED);
+	}
+
+	public ArrayList<String> unspecifiedValueTask(Node node, Collection<ChannelPlace> syncCPs, Scenario s){
+		ArrayList<String> result = new ArrayList<String>();
+
+		//check for unspecified value.
+		try {
+			if(!(node instanceof ChannelPlace)){
+					result.addAll(timeAlg.specifiedValueChecking(node, false, s));
+			}else{
+				if(syncCPs.contains(node)){
+					result.addAll(timeAlg.specifiedValueChecking(node, true, s));
+				}else{
+					result.addAll(timeAlg.specifiedValueChecking(node, false, s));
+				}
+			}
+		} catch (InvalidStructureException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 
@@ -219,6 +272,22 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 			result.addAll(group.getConditions());
 		}
 		return result;
+	}
+
+	private void inconsistencyHighlight(boolean b, Collection<Node> nodes){
+		if(b){
+			for(Node node : nodes){
+				net.setForegroundColor(node, SONSettings.getRelationErrColor());
+			}
+		}
+	}
+
+	private void unspecifyHighlight(boolean b, Collection<Node> nodes){
+		if(b){
+			for(Node node : nodes){
+				net.setForegroundColor(node, new Color(204,204,255));
+			}
+		}
 	}
 
 	public void infoMsg(String msg){

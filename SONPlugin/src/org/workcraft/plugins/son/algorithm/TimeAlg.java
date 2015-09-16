@@ -234,8 +234,11 @@ public class TimeAlg extends RelationAlgorithm{
 		for(TransitionNode[] v : before){
         	TransitionNode v0 = v[0];
         	TransitionNode v1 = v[1];
-        	Collection<Node> scenarioNodes = s.getNodes(net);
-        	if(!scenarioNodes.contains(v1) || !scenarioNodes.contains(v0))continue;
+			if(s != null){
+	        	Collection<Node> scenarioNodes = s.getNodes(net);
+	        	if(!scenarioNodes.contains(v1) || !scenarioNodes.contains(v0))continue;
+			}
+
 			//Equation 17
 			if(!v0.getStartTime().isSpecified() || !v1.getStartTime().isSpecified()){
 				result.add("Fail to run behavioural consistency checking: "+ resultHelper(v0) + " or " + resultHelper(v1)
@@ -264,8 +267,10 @@ public class TimeAlg extends RelationAlgorithm{
 	public ArrayList<String> bsonConsistency2(Condition initialLow, Scenario s){
 		ArrayList<String> result = new ArrayList<String>();
 		for(SONConnection con : net.getSONConnections()){
-			if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == initialLow)
-					&& (s.getConnections(net).contains(con))){
+			if(s != null && !s.getConnections(net).contains(con)){
+				continue;
+			}
+			if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == initialLow)){
 				Condition c = (Condition)con.getSecond();
 				if(!c.getStartTime().isSpecified() || !initialLow.getStartTime().isSpecified()){
 					result.add("Fail to run behavioural consistency checking: "
@@ -283,8 +288,10 @@ public class TimeAlg extends RelationAlgorithm{
 	public ArrayList<String> bsonConsistency3(Condition finalLow, Scenario s){
 		ArrayList<String> result = new ArrayList<String>();
 		for(SONConnection con : net.getSONConnections()){
-			if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == finalLow)
-					&& (s.getConnections(net).contains(con))){
+			if(s != null && !s.getConnections(net).contains(con)){
+				continue;
+			}
+			if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == finalLow)){
 				Condition c = (Condition)con.getSecond();
 				if(!c.getStartTime().isSpecified() || !finalLow.getStartTime().isSpecified()){
 					result.add("Fail to run behavioural consistency checking: "
@@ -299,7 +306,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> specifiedValueChecker(Node node, boolean isSync, Scenario s) throws InvalidStructureException{
+	public ArrayList<String> specifiedValueChecking(Node node, boolean isSync, Scenario s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 
 		Collection<SONConnection> inputConnections;
@@ -405,21 +412,8 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	private String resultHelper(Node node){
-		return "("+net.getNodeReference(node)+")";
-	}
-
 	public ArrayList<String> onConsistecy(Node node, Scenario s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
-
-		//check for unspecified value.
-		if(!(node instanceof ChannelPlace)){
-			result.addAll(specifiedValueChecker(node, false, s));
-			if(!result.isEmpty()){
-				setDefaultTime(node);
-				return result;
-			}
-		}
 
 		//ON time consistency checking.
 		if(node instanceof TransitionNode){
@@ -477,15 +471,6 @@ public class TimeAlg extends RelationAlgorithm{
 
 	public ArrayList<String> csonConsistecy(ChannelPlace cp, Collection<ChannelPlace> syncCPs, Scenario s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
-
-		if(syncCPs.contains(cp)){
-			result.addAll(specifiedValueChecker(cp, true, s));
-		}else{
-			result.addAll(specifiedValueChecker(cp, false, s));
-		}
-
-		if(!result.isEmpty())
-			return result;
 		result.addAll(asynConsistency(cp, syncCPs));
 
 		if(!result.isEmpty())
@@ -534,5 +519,10 @@ public class TimeAlg extends RelationAlgorithm{
 			((Time)node).setStartTime(input);
 			((Time)node).setEndTime(input);
 		}
+	}
+
+
+	private String resultHelper(Node node){
+		return "("+net.getNodeReference(node)+")";
 	}
 }

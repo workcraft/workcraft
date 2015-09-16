@@ -48,8 +48,7 @@ public class StructureVerifyDialog extends JDialog{
 	protected JList groupList;
 	protected JCheckBox highLight, outputBefore;
 
-	protected ArrayList<ONGroup> selectedGroups = new ArrayList<ONGroup>();
-	protected ArrayList<Object> selectedItems = new ArrayList<Object>();
+	protected ArrayList<ONGroup> selectedGroups;
 	protected Font font = new Font("Arial", Font.PLAIN, 12);
 	protected Dimension buttonSize = new Dimension(100, 25);
 	protected int run = 0;
@@ -151,14 +150,14 @@ public class StructureVerifyDialog extends JDialog{
 
 	@SuppressWarnings("unchecked")
 	protected void createGroupItemsPanel(){
-
 		groupItemPanel = new JPanel();
+		selectedGroups = new ArrayList<ONGroup>();
 
 		DefaultListModel listModel = new DefaultListModel();
 
 		for(ONGroup group : net.getGroups()){
 			group.setForegroundColor(Color.ORANGE);
-			selectedItems.add(group);
+			selectedGroups.add(group);
 			if(group.getLabel().isEmpty())
 				listModel.addElement(new ListItem("Group: " + net.getNodeReference(group), group));
 			else
@@ -180,12 +179,12 @@ public class StructureVerifyDialog extends JDialog{
 					item.setSelected(!item.isSelected());
 
 					if(item.isSelected() ){
-						selectedItems.add(item.getListItem());
+						selectedGroups.add((ONGroup)item.getListItem());
 						item.setItemColor(Color.ORANGE);
 
 					}
 					if(!item.isSelected() ){
-						selectedItems.remove(item.getListItem());
+						selectedGroups.remove((ONGroup)item.getListItem());
 						item.setItemColor(Color.BLACK);
 					}
 					list.repaint(list.getCellBounds(index, index));
@@ -214,10 +213,12 @@ public class StructureVerifyDialog extends JDialog{
 		addAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectedItems.clear();
+				selectedGroups.clear();
 				for (int i = 0; i < getList().getModel().getSize(); i++){
 					((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
-					selectedItems.add(((ListItem) getList().getModel().getElementAt(i)).getListItem());
+					Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
+					if(obj instanceof ONGroup)
+						selectedGroups.add(((ONGroup)obj));
 					((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
 				}
 				getList().repaint();
@@ -237,7 +238,7 @@ public class StructureVerifyDialog extends JDialog{
 					((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);
 				}
 				getList().repaint();
-				selectedItems.clear();
+				selectedGroups.clear();
 			}
 		});
 
@@ -341,12 +342,8 @@ public class StructureVerifyDialog extends JDialog{
 		return this.net;
 	}
 
-	public ArrayList<ONGroup> getSelectedGroup(){
-		for(Object obj : selectedItems){
-			if(obj instanceof ONGroup)
-				selectedGroups.add((ONGroup)obj);
-		}
-		return this.selectedGroups;
+	public ArrayList<ONGroup> getSelectedGroups(){
+		return selectedGroups;
 	}
 
 	public JList getList(){
@@ -355,7 +352,7 @@ public class StructureVerifyDialog extends JDialog{
 
 	public StructureVerifySettings getSettings(){
 		return new StructureVerifySettings(highLight.isSelected(), outputBefore.isSelected(),
-				getSelectedGroup(), typeCombo.getSelectedIndex());
+				getSelectedGroups(), typeCombo.getSelectedIndex());
 	}
 
 	public int getRun(){

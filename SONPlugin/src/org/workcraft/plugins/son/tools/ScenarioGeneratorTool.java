@@ -91,10 +91,10 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);
 
-		startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-start.svg"), "Generate scenario");
-		resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-reset.svg"), "Reset scenario");
-		saveButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save scenario");
-		removeButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-delete.svg"), "Remove scenario");
+		startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-start.svg"), "Generate");
+		resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-reset.svg"), "Reset");
+		saveButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save");
+		removeButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-delete.svg"), "Remove");
 		importButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-import.svg"), "Import scenarios");
 		exportButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-export.svg"), "Export scenarios");
 
@@ -110,9 +110,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		controlPanel.add(resetButton);
 		controlPanel.add(saveButton);
 		controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		controlPanel.add(importButton);
-		controlPanel.add(exportButton);
-		controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+		//controlPanel.add(importButton);
+		//controlPanel.add(exportButton);
+		//controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		controlPanel.add(removeButton);
 
 		scenarioTable = new JTable(new ScenarioTableModel());
@@ -270,6 +270,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 	public void deactivated(final GraphEditor editor) {
 		BlockConnector.blockInternalConnector(visualNet);
 		scenario.clear();
+		net.refreshColor();
 		net.clearMarking();
 	}
 
@@ -484,7 +485,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "");
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the highlight node to choose a scenario");
 	}
 
 	@Override

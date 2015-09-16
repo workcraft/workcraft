@@ -16,7 +16,7 @@ public class TimeConsistencySettings {
 			boolean unspecifyHighlight, ArrayList<ONGroup> selectedGroups,
 			Scenario seletedScenario, ArrayList<Node> seletedNodes, int tabIndex){
 		this.inconsistencyHighlight = 	inconsistencyHighlight;
-		this.unspecifyHighlight = inconsistencyHighlight;
+		this.unspecifyHighlight = unspecifyHighlight;
 		this.selectedGroups = selectedGroups;
 		this.seletedScenario = seletedScenario;
 		this.seletedNodes = seletedNodes;

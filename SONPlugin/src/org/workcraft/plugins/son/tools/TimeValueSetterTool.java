@@ -32,7 +32,6 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -431,7 +430,6 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		net.refreshColor();
 		net.clearMarking();
-		SONSettings.setTimeVisibility(true);
 
 		//set property states for initial and final states
 		timeAlg.removeProperties();
@@ -444,7 +442,6 @@ public class TimeValueSetterTool extends AbstractTool{
 	@Override
 	public void deactivated(final GraphEditor editor) {
 		timeAlg.removeProperties();
-		SONSettings.setTimeVisibility(false);
 		//BlockConnector.blockInternalConnector(visualNet);
 		net.refreshColor();
 		net.clearMarking();
@@ -493,12 +490,12 @@ public class TimeValueSetterTool extends AbstractTool{
 
 	@Override
 	public String getLabel() {
-		return "Set time value";
+		return "Time value setter";
 	}
 
 	@Override
 	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the condition or connection to set time value.");
+		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the node to set time value in tool controls panel.");
 	}
 
 	@Override
