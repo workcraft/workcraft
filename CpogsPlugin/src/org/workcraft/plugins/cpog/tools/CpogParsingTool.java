@@ -1,5 +1,18 @@
 package org.workcraft.plugins.cpog.tools;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -7,7 +20,13 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.plugins.cpog.*;
+import org.workcraft.plugins.cpog.Variable;
+import org.workcraft.plugins.cpog.VisualArc;
+import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.VisualScenario;
+import org.workcraft.plugins.cpog.VisualScenarioPage;
+import org.workcraft.plugins.cpog.VisualVariable;
+import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -15,12 +34,6 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-import java.awt.geom.Rectangle2D;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CpogParsingTool {
 
@@ -403,7 +416,7 @@ public class CpogParsingTool {
 				}
 
     			for (VisualArc a : toBeRemoved) {
-    				insert = insert + a.getSecond().getLabel() + " + ";
+    				insert = insert + ((VisualVertex)a.getSecond()).getLabel() + " + ";
     			}
 
     			while ((insert.endsWith(" ")) || (insert.endsWith("+"))) {
@@ -616,7 +629,7 @@ public class CpogParsingTool {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
 			 if (!forceRemoval) {
-				 String arc = t.getFirst().getLabel() + " -> " + t.getSecond().getLabel();
+				 String arc = ((VisualVertex)t.getFirst()).getLabel() + " -> " + ((VisualVertex)t.getSecond()).getLabel();
              	if (!(text.contains(" " + arc + " ")) && !(text.endsWith(" " + arc)) && !(text.contains("(" + arc + " ")) && !(text.contains("(" + arc + ")")) && !(text.contains(" " + arc + ")"))) {
             	 	visualCpog.remove(t);
              	}

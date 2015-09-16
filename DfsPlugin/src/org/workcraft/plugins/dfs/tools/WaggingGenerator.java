@@ -13,6 +13,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -382,10 +383,12 @@ public class WaggingGenerator {
 		connection.setConnectionType(ConnectionType.POLYLINE);
 		Polyline p = (Polyline)connection.getGraphic();
 		ControlPoint cp1 = new ControlPoint();
-		cp1.setPosition(new Point2D.Double(connection.getFirst().getX() + x1Offset, connection.getFirst().getY() + y1Offset));
+		VisualTransformableNode firstNode = (VisualTransformableNode)connection.getFirst();
+		cp1.setPosition(new Point2D.Double(firstNode.getX() + x1Offset, firstNode.getY() + y1Offset));
 		p.add(cp1);
 		ControlPoint cp2 = new ControlPoint();
-		cp2.setPosition(new Point2D.Double(connection.getSecond().getX() + x2Offset, connection.getSecond().getY() + y2Offset));
+		VisualTransformableNode secondNode = (VisualTransformableNode)connection.getSecond();
+		cp2.setPosition(new Point2D.Double(secondNode.getX() + x2Offset, secondNode.getY() + y2Offset));
 		p.add(cp2);
 	}
 

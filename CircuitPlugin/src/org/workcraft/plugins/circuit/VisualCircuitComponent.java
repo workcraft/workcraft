@@ -587,7 +587,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 	protected void drawContactLabels(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
-		AffineTransform oldTransform = g.getTransform();
+		AffineTransform savedTransform = g.getTransform();
 
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
 				new Func<VisualContact, Boolean>() {
@@ -599,9 +599,9 @@ public class VisualCircuitComponent extends VisualComponent implements
 			drawContactLabel(r, vc);
 		}
 
-		AffineTransform at = new AffineTransform();
-		at.quadrantRotate(-1);
-		g.transform(at);
+		AffineTransform rotateTransform = new AffineTransform();
+		rotateTransform.quadrantRotate(-1);
+		g.transform(rotateTransform);
 
 		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
 				new Func<VisualContact, Boolean>() {
@@ -613,7 +613,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 			drawContactLabel(r, vc);
 		}
 
-		g.setTransform(oldTransform);
+		g.setTransform(savedTransform);
 	}
 
 	private void drawBypass(DrawRequest r) {
@@ -764,36 +764,34 @@ public class VisualCircuitComponent extends VisualComponent implements
 				}
 			}
 		}
-		if (hitTest(point)) {
-			return this;
-		} else {
-			return null;
-		}
+		return (hitTest(point) ? this : null);
 	}
 
 	@Override
 	public void notify(StateEvent e) {
 		if (e instanceof TransformChangedEvent) {
 			TransformChangedEvent t = (TransformChangedEvent) e;
-			VisualContact vc = (VisualContact) t.sender;
+			if (t.sender instanceof VisualContact) {
+				VisualContact vc = (VisualContact)t.sender;
 
-			AffineTransform at = t.sender.getTransform();
-			double x = at.getTranslateX();
-			double y = at.getTranslateY();
-			Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox();//getInternalBoundingBoxInLocalSpace();
-			if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
-				vc.setDirection(Direction.WEST);
+				AffineTransform at = t.sender.getTransform();
+				double x = at.getTranslateX();
+				double y = at.getTranslateY();
+				Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox();//getInternalBoundingBoxInLocalSpace();
+				if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+					vc.setDirection(Direction.WEST);
+				}
+				if ((x >= bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
+					vc.setDirection(Direction.EAST);
+				}
+				if ((y <= bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+					vc.setDirection(Direction.NORTH);
+				}
+				if ((y >= bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
+					vc.setDirection(Direction.SOUTH);
+				}
+				invalidateBoundingBox();
 			}
-			if ((x >= bb.getMaxX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
-				vc.setDirection(Direction.EAST);
-			}
-			if ((y <= bb.getMinY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
-				vc.setDirection(Direction.NORTH);
-			}
-			if ((y >= bb.getMaxY()) && (x > bb.getMinX()) && (x < bb.getMaxX())) {
-				vc.setDirection(Direction.SOUTH);
-			}
-			invalidateBoundingBox();
 		}
 
 		if (e instanceof PropertyChangedEvent) {

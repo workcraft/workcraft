@@ -13,8 +13,8 @@
    height="48px"
    id="svg2888"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="new.svg"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="xmas-sink.svg"
    inkscape:export-filename="/home/mech/workspace/Workcraft/images/icons/signal_transition22.png"
    inkscape:export-xdpi="41.25"
    inkscape:export-ydpi="41.25">
@@ -42,9 +42,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="16.854167"
-     inkscape:cx="24"
-     inkscape:cy="24"
+     inkscape:zoom="33.708334"
+     inkscape:cx="23.74842"
+     inkscape:cy="17.933893"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
@@ -55,7 +55,11 @@
      inkscape:window-y="63"
      inkscape:window-maximized="0"
      showguides="true"
-     inkscape:guide-bbox="true" />
+     inkscape:guide-bbox="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3114" />
+  </sodipodi:namedview>
   <metadata
      id="metadata2893">
     <rdf:RDF>
@@ -81,18 +85,18 @@
        id="path3064"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:3.35787821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 41.779774,23.334981 -36.6739469,0"
+       style="fill:none;stroke:#000000;stroke-width:3.12747669px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 41.779774,23.557478 -36.6739469,0"
        id="path3064-6"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:2.52873516px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 33.327126,30.014833 -20.798618,0"
+       style="fill:none;stroke:#000000;stroke-width:3.08214116px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 33.327126,30.489494 -20.798618,0"
        id="path3064-6-1"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:1.92622423px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 29.196069,35.787392 -12.068171,0"
+       style="fill:none;stroke:#000000;stroke-width:3.19247365px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 29.196069,37.4932 -12.068171,0"
        id="path3064-6-1-7"
        inkscape:connector-curvature="0" />
   </g>

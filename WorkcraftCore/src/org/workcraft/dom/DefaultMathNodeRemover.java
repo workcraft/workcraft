@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesAddedEvent;
@@ -33,22 +33,22 @@ import org.workcraft.observation.NodesDeletedEvent;
 
 public class DefaultMathNodeRemover extends HierarchySupervisor {
 
-	private HashMap<MathNode, HashSet<DependentNode>> referenceTracker = new HashMap<MathNode, HashSet<DependentNode>>();
+	private HashMap<MathNode, HashSet<Dependent>> referenceTracker = new HashMap<MathNode, HashSet<Dependent>>();
 
-	private void addReference(MathNode mathNode, DependentNode dependentNode) {
+	private void addReference(MathNode mathNode, Dependent dependentNode) {
 		if (mathNode != null) {
-			HashSet<DependentNode> refs = referenceTracker.get(mathNode);
+			HashSet<Dependent> refs = referenceTracker.get(mathNode);
 			if (refs == null) {
-				refs = new HashSet<DependentNode>();
+				refs = new HashSet<Dependent>();
 				referenceTracker.put(mathNode ,refs);
 			}
 			refs.add(dependentNode);
 		}
 	}
 
-	private void removeReference(MathNode mathNode, DependentNode dependentNode) {
+	private void removeReference(MathNode mathNode, Dependent dependentNode) {
 		if (mathNode != null) {
-			HashSet<DependentNode> refs = referenceTracker.get(mathNode);
+			HashSet<Dependent> refs = referenceTracker.get(mathNode);
 			if (refs != null) {
 				refs.remove(dependentNode);
 			}
@@ -77,8 +77,8 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 	}
 
 	private void nodeAdded(Node node) {
-		if (node instanceof DependentNode) {
-			DependentNode dependentNode = (DependentNode)node;
+		if (node instanceof Dependent) {
+			Dependent dependentNode = (Dependent)node;
 			for (MathNode mathNode : dependentNode.getMathReferences()) {
 				addReference(mathNode, dependentNode);
 			}
@@ -91,8 +91,8 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 	}
 
 	private void nodeRemoved(Node node) {
-		if (node instanceof DependentNode) {
-			DependentNode dependentNode = (DependentNode)node;
+		if (node instanceof Dependent) {
+			Dependent dependentNode = (Dependent)node;
 			for (MathNode mathNode : dependentNode.getMathReferences()) {
 				removeReference(mathNode, dependentNode);
 			}

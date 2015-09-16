@@ -21,6 +21,8 @@
 
 package org.workcraft.serialisation.xml;
 
+import static org.workcraft.serialisation.xml.BeanInfoCache.getBeanInfo;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -29,11 +31,9 @@ import java.util.Collection;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
-
-import static org.workcraft.serialisation.xml.BeanInfoCache.*;
 
 public class DefaultNodeSerialiser {
 	private SerialiserFactory fac;
@@ -113,10 +113,11 @@ public class DefaultNodeSerialiser {
 			else if (serialiser instanceof CustomXMLSerialiser)
 				((CustomXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
 		} else {
-			if (object instanceof DependentNode && object.getClass().equals(currentLevel)) {
-				Collection<MathNode> refs = ((DependentNode)object).getMathReferences();
-				if (refs.size() == 1)
+			if (object.getClass().equals(currentLevel) && (object instanceof Dependent)) {
+				Collection<MathNode> refs = ((Dependent)object).getMathReferences();
+				if (refs.size() == 1) {
 					curLevelElement.setAttribute("ref", externalReferences.getReference(refs.iterator().next()));
+				}
 			}
 		}
 

@@ -13,8 +13,8 @@
    height="48px"
    id="svg2888"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="new1.svg"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="xmas-switch.svg"
    inkscape:export-filename="/home/mech/workspace/Workcraft/images/icons/signal_transition22.png"
    inkscape:export-xdpi="41.25"
    inkscape:export-ydpi="41.25">
@@ -73,27 +73,31 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <g
-       id="g2416"
-       transform="translate(-2.2893027,-5.7236442)" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.78099227px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 23.067985,3.0793446 0,20.4083204"
-       id="path3064"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.35787821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 41.779774,23.334981 -36.6739469,0"
-       id="path3064-6"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.90756941px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 14.50927,22.611796 0,21.433554"
-       id="path3064-0"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.87607765px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 32.395549,22.680685 0,21.379672"
-       id="path3064-0-3"
-       inkscape:connector-curvature="0" />
+       id="g3107"
+       transform="matrix(0,-1,1,0,-0.15119103,47.036792)">
+      <g
+         transform="translate(-2.2893027,-5.7236442)"
+         id="g2416" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064"
+         d="m 23.067985,3.0793446 0,20.4083204"
+         style="fill:none;stroke:#000000;stroke-width:3.78099227px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064-6"
+         d="m 41.779774,23.334981 -36.6739469,0"
+         style="fill:none;stroke:#000000;stroke-width:3.35787821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064-0"
+         d="m 10.50927,22.611796 0,21.433554"
+         style="fill:none;stroke:#000000;stroke-width:3.90756941px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064-0-3"
+         d="m 36.395549,22.680685 0,21.379672"
+         style="fill:none;stroke:#000000;stroke-width:3.87607765px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
   </g>
 </svg>

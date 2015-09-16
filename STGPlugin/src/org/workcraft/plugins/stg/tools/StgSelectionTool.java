@@ -31,8 +31,7 @@ public class StgSelectionTool extends SelectionTool {
 	private boolean cancelInPlaceEdit = false;
 
 	@Override
-	public void mouseClicked(GraphEditorMouseEvent e)
-	{
+	public void mouseClicked(GraphEditorMouseEvent e) {
 		boolean processed = false;
 		if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
 			GraphEditor editor = e.getEditor();

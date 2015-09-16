@@ -28,6 +28,8 @@ import org.workcraft.plugins.serialisation.xml.StringDeserialiser;
 import org.workcraft.plugins.serialisation.xml.StringSerialiser;
 import org.workcraft.plugins.serialisation.xml.VisualConnectionDeserialiser;
 import org.workcraft.plugins.serialisation.xml.VisualConnectionSerialiser;
+import org.workcraft.plugins.serialisation.xml.VisualReplicaDeserialiser;
+import org.workcraft.plugins.serialisation.xml.VisualReplicaSerialiser;
 import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ModelSerialiser;
 
@@ -49,6 +51,7 @@ public class BuiltinSerialisers implements Module {
 		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BezierSerialiser.class);
 		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ConnectionSerialiser.class);
 		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, VisualConnectionSerialiser.class);
+		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, VisualReplicaSerialiser.class);
 		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, FileSerialiser.class);
 
 		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, AffineTransformDeserialiser.class);
@@ -61,6 +64,7 @@ public class BuiltinSerialisers implements Module {
 		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, BezierDeserialiser.class);
 		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, ConnectionDeserialiser.class);
 		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, VisualConnectionDeserialiser.class);
+		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, VisualReplicaDeserialiser.class);
 		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, FileDeserialiser.class);
 	}
 

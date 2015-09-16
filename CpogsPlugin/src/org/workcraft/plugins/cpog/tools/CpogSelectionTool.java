@@ -733,7 +733,7 @@ public class CpogSelectionTool extends SelectionTool {
                                     }
                                 }
                             }
-                            CPOGHangingConnectionRemover arcRemover = new CPOGHangingConnectionRemover(visualCpog, "CPOG");
+                            CPOGHangingConnectionRemover arcRemover = new CPOGHangingConnectionRemover(visualCpog);
                             for (Node n : toBeRemoved) {
                                 arcRemover.handleEvent(new NodesDeletingEvent(n.getParent(), n));
                                 visualCpog.removeWithoutNotify(n);
@@ -744,8 +744,8 @@ public class CpogSelectionTool extends SelectionTool {
                             if ((a.getFirst().getParent().equals(a.getSecond().getParent()))) {
                                 if ((a.getFirst().getParent() instanceof VisualPage) || (a.getFirst().getParent() instanceof VisualScenarioPage)) {
                                     VisualPage vp = (VisualPage) a.getFirst().getParent();
-                                    String first = a.getFirst().getLabel();
-                                    String second = a.getSecond().getLabel();
+                                    String first = ((VisualVertex)a.getFirst()).getLabel();
+                                    String second = ((VisualVertex)a.getSecond()).getLabel();
                                     refKey = vp.getLabel();
                                     relaventPages.addAll(referenceMap.get(refKey).getRefPages());
                                     relaventPages.remove(vp);

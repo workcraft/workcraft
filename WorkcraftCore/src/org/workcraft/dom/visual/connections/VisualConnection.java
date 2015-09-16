@@ -27,9 +27,11 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,13 +39,12 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Shapable;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
@@ -58,7 +59,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, DependentNode,
+public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, Dependent,
 		Connection, VisualConnectionProperties, ObservableHierarchy {
 
 	public static final String PROPERTY_CONNECTION_TYPE = "Connection type";
@@ -106,8 +107,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
 	private MathConnection refConnection = null;
-	private VisualComponent first = null;
-	private VisualComponent second = null;
+	private VisualNode first = null;
+	private VisualNode second = null;
 
 	private ConnectionType connectionType = ConnectionType.POLYLINE;
 	private ScaleMode scaleMode = ScaleMode.NONE;
@@ -145,7 +146,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		this(refConnection, null, null);
 	}
 
-	public VisualConnection(MathConnection refConnection, VisualComponent first, VisualComponent second) {
+	public VisualConnection(MathConnection refConnection, VisualNode first, VisualNode second) {
 		this.refConnection = refConnection;
 		if ((first != null) && (second != null)) {
 			this.first = first;
@@ -255,7 +256,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		}
 	}
 
-	public void setVisualConnectionDependencies(VisualComponent first,	VisualComponent second,
+	public void setVisualConnectionDependencies(VisualNode first,	VisualNode second,
 			ConnectionGraphic graphic, MathConnection refConnection) {
 		if (first == null)
 			throw new NullPointerException("first");
@@ -458,11 +459,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		return graphic.getBoundingBox();
 	}
 
-	public VisualComponent getFirst() {
+	public VisualNode getFirst() {
 		return first;
 	}
 
-	public VisualComponent getSecond() {
+	public VisualNode getSecond() {
 		return second;
 	}
 
@@ -528,6 +529,24 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		sendNotification(new PropertyChangedEvent(this, PROPERTY_SCALE_MODE));
 	}
 
+	public void inverseShape() {
+		if (getGraphic() instanceof Polyline) {
+			Polyline polyline = (Polyline)getGraphic();
+			LinkedList<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
+			Collections.reverse(controlPoints);
+			polyline.resetControlPoints();
+			for (ControlPoint cp: controlPoints) {
+				polyline.addControlPoint(cp);
+			}
+		} else if (getGraphic() instanceof Bezier) {
+			Bezier bezier = (Bezier)getGraphic();
+			BezierControlPoint[] controlPoints = bezier.getBezierControlPoints();
+			Point2D tmpPoint = controlPoints[0].getPosition();
+			controlPoints[0].setPosition(controlPoints[1].getPosition());
+			controlPoints[1].setPosition(tmpPoint);
+		}
+	}
+
 	@Override
 	public void copyStyle(Stylable src) {
 		super.copyStyle(src);
@@ -549,22 +568,20 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		if (src instanceof VisualConnection) {
 			VisualConnection srcConnection = (VisualConnection)src;
 			setConnectionType(srcConnection.getConnectionType());
-			ConnectionGraphic srcGraphics = srcConnection.getGraphic();
+			ConnectionGraphic srcGraphic = srcConnection.getGraphic();
 
-			if (srcGraphics instanceof Polyline) {
+			if (srcGraphic instanceof Polyline) {
 				Polyline polyline = (Polyline)getGraphic();
 				polyline.resetControlPoints();
-				for (ControlPoint srcControlPoint: srcGraphics.getControlPoints()) {
+				for (ControlPoint srcControlPoint: srcGraphic.getControlPoints()) {
 					polyline.addControlPoint(srcControlPoint.getPosition());
 				}
-			} else if (srcGraphics instanceof Bezier) {
-				BezierControlPoint[] srcControlPoints = ((Bezier)srcGraphics).getBezierControlPoints();
-				BezierControlPoint cp1 = new BezierControlPoint();
-				cp1.setPosition(srcControlPoints[0].getPosition());
-				BezierControlPoint cp2 = new BezierControlPoint();
-				cp2.setPosition(srcControlPoints[1].getPosition());
+			} else if (srcGraphic instanceof Bezier) {
 				Bezier bezier = (Bezier)getGraphic();
-				bezier.initControlPoints(cp1, cp2);
+				BezierControlPoint[] srcControlPoints = ((Bezier)srcGraphic).getBezierControlPoints();
+				BezierControlPoint[] dstControlPoints = bezier.getBezierControlPoints();
+				dstControlPoints[0].setPosition(srcControlPoints[0].getPosition());
+				dstControlPoints[1].setPosition(srcControlPoints[1].getPosition());
 			}
 		}
 	}

@@ -34,7 +34,7 @@ import java.util.HashSet;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.TransformHelper;
@@ -47,7 +47,7 @@ import org.workcraft.util.CieColorUtils;
 import org.workcraft.util.Pair;
 
 @DisplayName ("Bundle")
-public class VisualBundle extends VisualNode implements Drawable, DependentNode {
+public class VisualBundle extends VisualNode implements Drawable, Dependent {
 	public static final String PROPERTY_COLOR = "color";
 
 	private Bundle bundle;

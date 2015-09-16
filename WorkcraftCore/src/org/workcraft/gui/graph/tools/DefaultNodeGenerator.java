@@ -62,7 +62,11 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
 
 	@Override
 	public MathNode createMathNode() throws NodeCreationException {
-		return NodeFactory.createNode(cls);
+		MathNode result = null;
+		if (MathNode.class.isAssignableFrom(cls)) {
+			result = (MathNode)NodeFactory.createNode(cls.asSubclass(MathNode.class));
+		}
+		return result;
 	}
 
 	@Override

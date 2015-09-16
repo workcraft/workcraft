@@ -11,6 +11,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Hierarchy;
 
@@ -26,6 +27,7 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
 		preprocessing();
 		convertPages();
 		convertComponents();
+		convertReplicas();
 		convertGroups();
 		// Connections must be converted the last as their shapes change with node relocation.
 		convertConnections();
@@ -81,6 +83,15 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
 			for(VisualComponent srcComponent: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualComponentClass)) {
 				VisualComponent dstComponent = convertComponent(srcComponent);
 				putSrcToDstNode(srcComponent, dstComponent);
+			}
+		}
+	}
+
+	private void convertReplicas() {
+		for (Class<? extends VisualReplica> srcVisualReplicaClass: getReplicaClassMap().keySet()) {
+			for(VisualReplica srcReplica: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualReplicaClass)) {
+				VisualReplica dstReplica = convertReplica(srcReplica);
+				putSrcToDstNode(srcReplica, dstReplica);
 			}
 		}
 	}

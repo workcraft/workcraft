@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.cpog.CpogSettings;
@@ -35,8 +36,6 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
-import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -215,7 +214,7 @@ public class ScencoExecutionSupport {
 			if (c instanceof VisualArc)
 			{
 				VisualArc arc = (VisualArc)c;
-				VisualComponent c1 = arc.getFirst(), c2 = arc.getSecond();
+				VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
 				if (c1 instanceof VisualVertex && c2 instanceof VisualVertex)
 				{
 					int id1 = events.get(((VisualVertex)c1).getLabel());
@@ -288,12 +287,12 @@ public class ScencoExecutionSupport {
 					if (c instanceof VisualArc)
 					{
 						VisualArc arc = (VisualArc)c;
-						VisualComponent c1 = arc.getFirst(), c2 = arc.getSecond();
+						VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
 						if (c1 instanceof VisualVertex && c2 instanceof VisualVertex)
 						{
-							nodes.put(c1.getLabel(), 0);
-							nodes.put(c2.getLabel(), 0);
-							Output.println(c1.getLabel() + " " + c2.getLabel());
+							nodes.put(((VisualVertex)c1).getLabel(), 0);
+							nodes.put(((VisualVertex)c2).getLabel(), 0);
+							Output.println(((VisualVertex)c1).getLabel() + " " + ((VisualVertex)c2).getLabel());
 						}
 					}
 				}

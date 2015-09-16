@@ -73,9 +73,9 @@ public class Contact extends MathNode implements BooleanVariable {
 		}
 	}
 
-	public void setIOType(IOType t) {
-		if (this.ioType != t) {
-			this.ioType = t;
+	public void setIOType(IOType value) {
+		if (this.ioType != value) {
+			this.ioType = value;
 			sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
 		}
 	}

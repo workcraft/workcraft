@@ -1,17 +1,13 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.util.GUI;
 
 public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 	static boolean shiftPressed;
@@ -39,9 +35,8 @@ public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 	}
 
 	@Override
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK,
-				"Click to create falling (or rising with Ctrl) transition of output (or input with Shift) signal.");
+	public String getHintMessage() {
+		return "Click to create falling (or rising with Ctrl) transition of output (or input with Shift) signal.";
 	}
 }
 

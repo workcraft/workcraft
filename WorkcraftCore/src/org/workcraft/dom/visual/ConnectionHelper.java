@@ -2,6 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
@@ -14,7 +15,7 @@ public class ConnectionHelper {
 	public static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
 
 	static public void addControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
-		if ((locationsInRootSpace != null) && (connection.getGraphic() instanceof Polyline)) {
+		if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (locationsInRootSpace != null)) {
 			Polyline polyline = (Polyline)connection.getGraphic();
 			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
 			for (Point2D location: locationsInRootSpace) {
@@ -29,7 +30,7 @@ public class ConnectionHelper {
 
 	static public ControlPoint createControlPoint(VisualConnection connection, Point2D locationInRootSpace) {
 		ControlPoint result = null;
-		if (locationInRootSpace != null) {
+		if ((connection != null) && (locationInRootSpace != null)) {
 			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
 			Point2D locationInLocalSpace = rootToLocalTransform.transform(locationInRootSpace, null);
 
@@ -41,6 +42,73 @@ public class ConnectionHelper {
 			result = polyline.insertControlPointInSegment(locationOnConnection, segmentIndex);
 		}
 		return result;
+	}
+
+	static public LinkedList<Point2D> getPrefixControlPoints(VisualConnection connection, Point2D splitPointInRootSpace) {
+		LinkedList<Point2D> locationsInRootSpace = new LinkedList<>();
+		if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInRootSpace != null)) {
+			Polyline polyline = (Polyline)connection.getGraphic();
+			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
+			Point2D splitPointInLocalSpace = rootToLocalTransform.transform(splitPointInRootSpace, null);
+			int splitIndex = polyline.getNearestSegment(splitPointInLocalSpace, null);
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+			int index = -1;
+			for (ControlPoint cp:  polyline.getControlPoints()) {
+				Point2D cpLocation = cp.getPosition();
+				index++;
+				if ((index > splitIndex) || (splitPointInLocalSpace.distanceSq(cpLocation) < 0.001)) {
+					break;
+				}
+				Point2D locationInRootSpace = localToRootTransform.transform(cpLocation, null);
+				locationsInRootSpace.add(locationInRootSpace);
+			}
+		}
+		return locationsInRootSpace;
+	}
+
+	static public LinkedList<Point2D> getSuffixControlPoints(VisualConnection connection, Point2D splitPointInRootSpace) {
+		LinkedList<Point2D> locationsInRootSpace = new LinkedList<>();
+		if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInRootSpace != null)) {
+			Polyline polyline = (Polyline)connection.getGraphic();
+			AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
+			Point2D splitPointInLocalSpace = rootToLocalTransform.transform(splitPointInRootSpace, null);
+			int splitIndex = polyline.getNearestSegment(splitPointInLocalSpace, null);
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+			int index = -1;
+			for (ControlPoint cp:  polyline.getControlPoints()) {
+				Point2D cpLocation = cp.getPosition();
+				index++;
+				if ((index < splitIndex) || (splitPointInLocalSpace.distanceSq(cpLocation) < 0.001)) {
+					continue;
+				}
+				Point2D locationInRootSpace = localToRootTransform.transform(cp.getPosition(), null);
+				locationsInRootSpace.add(locationInRootSpace);
+			}
+		}
+		return locationsInRootSpace;
+	}
+
+
+	static public LinkedList<Point2D> getMergedControlPoints(VisualTransformableNode mergeNode, VisualConnection con1, VisualConnection con2) {
+		LinkedList<Point2D> locations = new LinkedList<>();
+		if (con1.getGraphic() instanceof Polyline) {
+			Polyline polyline = (Polyline)con1.getGraphic();
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con1);
+			for (ControlPoint cp:  polyline.getControlPoints()) {
+				Point2D location = localToRootTransform.transform(cp.getPosition(), null);
+				locations.add(location);
+			}
+		}
+		locations.add(mergeNode.getPosition());
+		if (con2.getGraphic() instanceof Polyline) {
+			Polyline polyline = (Polyline)con2.getGraphic();
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con2);
+			for (ControlPoint cp:  polyline.getControlPoints()) {
+				Point2D location = localToRootTransform.transform(cp.getPosition(), null);
+				locations.add(location);
+			}
+		}
+		return locations;
 	}
 
 }

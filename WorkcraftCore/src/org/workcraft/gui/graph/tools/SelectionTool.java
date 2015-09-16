@@ -288,16 +288,20 @@ public class SelectionTool extends AbstractTool {
 				if (e.getClickCount() > 1) {
 					if (model.getCurrentLevel() instanceof VisualGroup) {
 						VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
-						Rectangle2D bb = currentGroup.getBoundingBoxInRootSpace();
-						if ( !bb.contains(e.getPosition()) ) {
+						Rectangle2D bb = currentGroup.getBoundingBox();
+						Point2D pos = currentGroup.getRootSpacePosition();
+						Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
+						if ( !bbInRootSpace.contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}
 					}
 					if (model.getCurrentLevel() instanceof VisualPage) {
 						VisualPage currentPage = (VisualPage)model.getCurrentLevel();
-						Rectangle2D bb = currentPage.getBoundingBoxInRootSpace();
-						if ( !bb.contains(e.getPosition()) ) {
+						Rectangle2D bb = currentPage.getBoundingBox();
+						Point2D pos = currentPage.getRootSpacePosition();
+						Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
+						if ( !bbInRootSpace.contains(e.getPosition()) ) {
 							changeLevelUp(e.getEditor());
 							return;
 						}

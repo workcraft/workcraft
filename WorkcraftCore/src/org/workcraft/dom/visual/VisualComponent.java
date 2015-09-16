@@ -30,7 +30,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -42,7 +45,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
-public abstract class VisualComponent extends VisualTransformableNode implements Drawable, DependentNode {
+public abstract class VisualComponent extends VisualTransformableNode implements Dependent, Replicable, Drawable {
 	public static final String PROPERTY_LABEL = "Label";
 	public static final String PROPERTY_LABEL_POSITIONING = "Label positioning";
 	public static final String PROPERTY_LABEL_COLOR = "Label color";
@@ -68,6 +71,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	private Positioning namePositioning = CommonVisualSettings.getNamePositioning();
 	private RenderedText nameRenderedText = new RenderedText("", nameFont, getNamePositioning(), getNameOffset());
 	private Color nameColor = CommonVisualSettings.getNameColor();
+
+	private HashSet<Replica> replicas = new HashSet<>();
+
 
 	public VisualComponent(MathNode refNode) {
 		this(refNode, true, true, true);
@@ -305,10 +311,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
 	private void cacheNameRenderedText(DrawRequest r) {
 		String name = null;
-		if (CommonEditorSettings.getShowAbsolutePaths()) {
-			name = r.getModel().getMathModel().getNodeReference(getReferencedComponent());
+		MathModel mathModel = r.getModel().getMathModel();
+		MathNode mathNode = getReferencedComponent();
+		if ((this instanceof Replica) || CommonEditorSettings.getShowAbsolutePaths()) {
+			name = mathModel.getNodeReference(mathNode);
 		} else {
-			name = r.getModel().getMathModel().getName(getReferencedComponent());
+			name = mathModel.getName(mathNode);
 		}
 
 		if (name == null) {
@@ -378,6 +386,30 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return getInternalBoundingBoxInLocalSpace().contains(pointInLocalSpace);
 	}
+
+	@Override
+	public void addReplica(Replica replica) {
+		if (replica != null) {
+			if (replicas.add(replica)) {
+				replica.setMaster(this);
+			}
+		}
+	}
+
+	@Override
+	public void removeReplica(Replica replica) {
+		if (replica != null) {
+			if (replicas.remove(replica)) {
+				replica.setMaster(null);
+			}
+		}
+	}
+
+	@Override
+	public Collection<Replica> getReplicas() {
+		return Collections.unmodifiableCollection(replicas);
+	}
+
 
 	@Override
 	public void copyStyle(Stylable src) {

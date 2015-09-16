@@ -55,7 +55,7 @@ import javax.swing.Timer;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.DependentNode;
+import org.workcraft.dom.visual.Dependent;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
@@ -512,8 +512,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 			properties.addAll(((Properties)node).getDescriptors());
 		}
 		// Properties of the math node
-		if (node instanceof DependentNode) {
-			for (Node mathNode : ((DependentNode)node).getMathReferences()) {
+		if (node instanceof Dependent) {
+			for (Node mathNode : ((Dependent)node).getMathReferences()) {
 				Properties mathNodeProperties = getModel().getMathModel().getProperties(mathNode);
 				properties.addAll(mathNodeProperties.getDescriptors());
 				if (mathNode instanceof Properties) {

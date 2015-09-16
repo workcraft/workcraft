@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -32,7 +33,7 @@ public class SignalToDummyTransitionConverterTool extends TransformationTool {
 			we.saveMemento();
 			HashSet<VisualDummyTransition> dummyTransitions = new HashSet<VisualDummyTransition>(signalTransitions.size());
 			for (VisualSignalTransition transition: signalTransitions) {
-				VisualDummyTransition dummyTransition = StgTransformationUtils.convertSignalToDummyTransition(stg, transition);
+				VisualDummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, transition);
 				dummyTransitions.add(dummyTransition);
 			}
 			stg.select(new LinkedList<Node>(dummyTransitions));

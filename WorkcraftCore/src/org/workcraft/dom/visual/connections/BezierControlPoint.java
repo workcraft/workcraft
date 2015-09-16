@@ -47,7 +47,7 @@ public class BezierControlPoint extends ControlPoint {
 		this.parent = parent;
 	}
 
-	public void update (Point2D origin) {
+	public void update(Point2D origin) {
 		this.origin = origin;
 	}
 

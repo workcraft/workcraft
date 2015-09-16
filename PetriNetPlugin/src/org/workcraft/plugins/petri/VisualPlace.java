@@ -48,7 +48,9 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/place.svg")
 public class VisualPlace extends VisualComponent {
+
 	public static final String PROPERTY_TOKEN_COLOR = "Token color";
+
 	protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
 	protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
 	protected Color tokenColor = CommonVisualSettings.getBorderColor();
@@ -132,6 +134,24 @@ public class VisualPlace extends VisualComponent {
 		}
 	}
 
+	@Override
+	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+	}
+
+	public Place getReferencedPlace() {
+		return (Place)getReferencedComponent();
+	}
+
+	public Color getTokenColor() {
+		return tokenColor;
+	}
+
+	public void setTokenColor(Color tokenColor) {
+		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
+	}
+
 	public static void drawTokens(DrawRequest r, int count, double size, double separation,
 			double diameter, double borderWidth, Color color) {
 		Graphics2D g = r.getGraphics();
@@ -169,24 +189,6 @@ public class VisualPlace extends VisualComponent {
 				g.drawString(tokenString, (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
 			}
 		}
-	}
-
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
-	}
-
-	public Place getReferencedPlace() {
-		return (Place)getReferencedComponent();
-	}
-
-	public Color getTokenColor() {
-		return tokenColor;
-	}
-
-	public void setTokenColor(Color tokenColor) {
-		this.tokenColor = tokenColor;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
 	}
 
 	@Override

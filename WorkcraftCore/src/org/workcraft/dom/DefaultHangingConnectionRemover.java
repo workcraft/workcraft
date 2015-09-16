@@ -21,24 +21,21 @@
 
 package org.workcraft.dom;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import net.sf.jga.fn.UnaryFunctor;
-
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.util.Hierarchy;
 
+import net.sf.jga.fn.UnaryFunctor;
+
 
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 	private NodeContext nct;
-	private String id;
 
-	public DefaultHangingConnectionRemover (NodeContext nct, String id) {
+	public DefaultHangingConnectionRemover(NodeContext nct) {
 		this.nct = nct;
 	}
 
@@ -54,33 +51,40 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 				}
 			};
 
-			for (Node node : e.getAffectedNodes())
+			for (Node node : e.getAffectedNodes()) {
 				findHangingConnections(node, hangingConnections, hanging);
+			}
 
-
-			for (Connection con : hangingConnections)
-				if (con.getParent() instanceof Container)
-					((Container) con.getParent()).remove(con);
-				else
+			for (Connection con : hangingConnections) {
+				Node parent = con.getParent();
+				if (parent instanceof Container) {
+					((Container) parent).remove(con);
+				} else if (parent != null) {
 					throw new RuntimeException("Cannot remove a hanging connection because its parent is not a Container.");
-
+				}
+			}
 		}
 	}
 
 	public static boolean isConnectionInside (Collection<Node> nodes, Connection con) {
-		for (Node node : nodes)
-			if (node == con || Hierarchy.isDescendant(con, node))
+		for (Node node : nodes) {
+			if (node == con || Hierarchy.isDescendant(con, node)) {
 				return true;
+			}
+		}
 		return false;
 	}
 
 	public void findHangingConnections(Node node, HashSet<Connection> hangingConnections, UnaryFunctor<Connection, Boolean> hanging) {
 		// need only to remove those connections that are not already being deleted
-		for (Connection con : nct.getConnections(node))
-			if (hanging.fn(con))
+		for (Connection con : nct.getConnections(node)) {
+			if (hanging.fn(con)) {
 				hangingConnections.add(con);
-		for (Node nn : node.getChildren())
+			}
+		}
+		for (Node nn : node.getChildren()) {
 			findHangingConnections (nn, hangingConnections, hanging);
+		}
 	}
 
 }

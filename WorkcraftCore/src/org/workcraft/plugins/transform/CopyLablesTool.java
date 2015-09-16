@@ -21,6 +21,8 @@
 
 package org.workcraft.plugins.transform;
 
+import java.util.Collection;
+
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
@@ -42,7 +44,11 @@ public class CopyLablesTool extends TransformationTool {
 		VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
 		if (visualModel != null) {
 			MathModel mathModel = (MathModel)visualModel.getMathModel();
-			for (VisualComponent visualComponent : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
+			Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class);
+			if ( !visualModel.getSelection().isEmpty() ) {
+				components.retainAll(visualModel.getSelection());
+			}
+			for (VisualComponent visualComponent : components) {
 				Node refComponent = visualComponent.getReferencedComponent();
 				visualComponent.setLabel(mathModel.getName(refComponent));
 			}
