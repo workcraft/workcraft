@@ -12,9 +12,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
@@ -53,7 +55,9 @@ public class TimeValueSetterTool extends AbstractTool{
 	protected VisualSON visualNet;
 	protected TimeAlg timeAlg;
 
-	private JPanel interfacePanel, timePropertyPanel, timeInputPanel;
+	private JPanel interfacePanel, timePropertyPanel, timeInputPanel, granularityPanel;
+	private JRadioButton year_yearButton, hour_minusButton;
+	private ButtonGroup granularityGroup;
 
 	private int labelheight = 20;
 	private int labelwidth = 35;
@@ -117,15 +121,38 @@ public class TimeValueSetterTool extends AbstractTool{
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);
+		createGranularityButtons();
 
 		timePropertyPanel = new JPanel();
 		timePropertyPanel.setBorder(BorderFactory.createTitledBorder("Time value"));
 		timePropertyPanel.setLayout(new WrapLayout());
-		timePropertyPanel.setPreferredSize(new Dimension(0, 250));
+		timePropertyPanel.setPreferredSize(new Dimension(0, 175));
 
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
-		interfacePanel.add(timePropertyPanel, BorderLayout.PAGE_START);
+		interfacePanel.add(granularityPanel, BorderLayout.PAGE_START);
+		interfacePanel.add(timePropertyPanel, BorderLayout.PAGE_END);
+	}
+
+	private void createGranularityButtons(){
+		granularityPanel = new JPanel();
+		granularityPanel.setBorder(BorderFactory.createTitledBorder("Time Granularity"));
+		granularityPanel.setLayout(new FlowLayout());
+
+		year_yearButton = new JRadioButton();
+		year_yearButton.setText("T:year D:year");
+		year_yearButton.setSelected(true);
+
+		hour_minusButton = new JRadioButton();
+		hour_minusButton.setText("T:24-hour clock D:minus");
+
+		granularityGroup = new ButtonGroup();
+		granularityGroup.add(year_yearButton);
+		granularityGroup.add(hour_minusButton);
+
+		granularityPanel.add(year_yearButton);
+		granularityPanel.add(hour_minusButton);
+
 	}
 
 	private JPanel createTimeInputPanel(final String title, final Interval value, final Node node){

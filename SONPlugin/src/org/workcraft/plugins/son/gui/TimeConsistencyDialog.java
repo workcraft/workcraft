@@ -17,6 +17,7 @@ import java.util.Collection;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
@@ -45,14 +46,21 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 	protected VisualSON vNet;
 
-	protected JPanel infoPanel, scenarioItemPanel, nodeItemPanel, selectionPanel;
+	protected JPanel infoPanel, scenarioItemPanel, nodeItemPanel, selectionPanel, granularityPanel;
 	protected JTabbedPane selectionTabbedPane;
 	protected JList<ListItem> scenarioList, nodeList;
 	protected JCheckBox inconsistencyHighLight, unspecifyHighlight;
+	private JRadioButton year_yearButton, hour_minusButton;
+	private ButtonGroup granularityGroup;
 
 	private Color greyoutColor = Color.LIGHT_GRAY;
 	protected Scenario selectedScenario;
 	protected ArrayList<Node> selectedNodes;
+
+	public enum Granularity{
+		YEAR_YEAR,
+		CLOCKHOUR_MINUS;
+	}
 
 	@SuppressWarnings("rawtypes")
 	class ScenarioListRenderer extends JRadioButton implements ListCellRenderer {
@@ -72,6 +80,27 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 			setText(value.toString());
 			return this;
 		}
+	}
+
+	protected void createGranularityButtons(){
+		granularityPanel = new JPanel();
+		granularityPanel.setBorder(BorderFactory.createTitledBorder("Time Granularity"));
+		granularityPanel.setLayout(new FlowLayout());
+
+		year_yearButton = new JRadioButton();
+		year_yearButton.setText("T:year D:year");
+		year_yearButton.setSelected(true);
+
+		hour_minusButton = new JRadioButton();
+		hour_minusButton.setText("T:24-hour clock D:minus");
+
+		granularityGroup = new ButtonGroup();
+		granularityGroup.add(year_yearButton);
+		granularityGroup.add(hour_minusButton);
+
+		granularityPanel.add(year_yearButton);
+		granularityPanel.add(hour_minusButton);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -113,7 +142,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		});
 
 		JScrollPane listScroller = new JScrollPane(scenarioList);
-		listScroller.setPreferredSize(new Dimension(350, 250));
+		listScroller.setPreferredSize(new Dimension(350, 220));
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -172,7 +201,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 		nodeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		JScrollPane listScroller = new JScrollPane(nodeList);
-		listScroller.setPreferredSize(new Dimension(350, 250));
+		listScroller.setPreferredSize(new Dimension(350, 220));
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -306,11 +335,14 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		createSelectionPanel();
 		createSettingPanel();
 		createButtonsPanel();
+		createGranularityButtons();
 
 		JPanel content = new JPanel();
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
 		content.add(Box.createRigidArea(new Dimension(0, 15)));
+		content.add(granularityPanel);
+		content.add(Box.createRigidArea(new Dimension(0, 5)));
 		content.add(selectionPanel);
 		content.add(Box.createRigidArea(new Dimension(0, 5)));
 		content.add(settingPanel);
@@ -374,8 +406,16 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		return selectionTabbedPane.getSelectedIndex();
 	}
 
+	public Granularity getGranularity(){
+		if(year_yearButton.isSelected())
+			return Granularity.YEAR_YEAR;
+		else if(hour_minusButton.isSelected())
+			return Granularity.CLOCKHOUR_MINUS;
+		return null;
+	}
+
 	public TimeConsistencySettings getTimeConsistencySettings(){
 		return new TimeConsistencySettings(inconsistencyHighLight.isSelected(), unspecifyHighlight.isSelected(),
-				getSelectedGroups(), getSelectedScenario(), getSelectedNodes(), getTabIndex());
+				getSelectedGroups(), getSelectedScenario(), getSelectedNodes(), getTabIndex(), getGranularity());
 	}
 }

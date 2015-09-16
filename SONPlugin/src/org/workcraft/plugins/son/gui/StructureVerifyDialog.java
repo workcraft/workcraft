@@ -195,7 +195,7 @@ public class StructureVerifyDialog extends JDialog{
 
 		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		JScrollPane listScroller = new JScrollPane(groupList);
-		listScroller.setPreferredSize(new Dimension(350, 250));
+		listScroller.setPreferredSize(new Dimension(350, 220));
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
