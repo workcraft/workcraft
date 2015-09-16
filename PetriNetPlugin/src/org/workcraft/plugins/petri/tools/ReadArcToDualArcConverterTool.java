@@ -17,7 +17,7 @@ public class ReadArcToDualArcConverterTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Convert selected read-arc to a pair of producer-consumer arcs";
+		return "Convert read-arc to a pair of producer-consumer arcs";
 	}
 
 	@Override

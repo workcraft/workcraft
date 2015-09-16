@@ -15,7 +15,7 @@ public class ExpandReplicaTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Expand replica places";
+		return " Expand replica places";
 	}
 
 	@Override

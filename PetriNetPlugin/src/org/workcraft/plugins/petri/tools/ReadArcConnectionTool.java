@@ -1,22 +1,13 @@
 package org.workcraft.plugins.petri.tools;
 
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.LinkedList;
 
 import javax.swing.Icon;
 
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.plugins.petri.PetriNetUtils;
@@ -25,7 +16,6 @@ import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
 
 public class ReadArcConnectionTool extends ConnectionTool {
 

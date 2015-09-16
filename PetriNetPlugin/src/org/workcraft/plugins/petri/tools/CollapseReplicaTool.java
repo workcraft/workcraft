@@ -14,7 +14,7 @@ public class CollapseReplicaTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Collapse replica places";
+		return " Collapse replica places";
 	}
 
 	@Override

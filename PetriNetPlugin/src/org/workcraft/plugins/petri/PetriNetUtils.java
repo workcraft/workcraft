@@ -12,6 +12,9 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
@@ -34,6 +37,7 @@ public class PetriNetUtils {
 				visualModel.remove(consumingArc);
 				visualModel.remove(producingArc);
 				VisualConnection connection = visualModel.connectUndirected(place, transition);
+				connection.copyShape(consumingArc);
 				if (connection instanceof VisualReadArc) {
 					readArc = (VisualReadArc)connection;
 				}
@@ -58,7 +62,10 @@ public class PetriNetUtils {
 			try {
 				visualModel.remove(readArc);
 				consumingArc = visualModel.connect(place, transition);
+				consumingArc.copyShape(readArc);
 				producingArc = visualModel.connect(transition, place);
+				producingArc.copyShape(readArc);
+				producingArc.inverseShape();
 			} catch (InvalidConnectionException e) {
 			}
 		}
@@ -69,11 +76,16 @@ public class PetriNetUtils {
 		VisualConnection result = null;
 		for (Connection connection: visualModel.getConnections(replica)) {
 			if ((connection instanceof VisualReadArc) && (connection.getFirst() == replica)) {
-				VisualNode transition = ((VisualReadArc)connection).getSecond();
+				VisualReadArc readArc = (VisualReadArc)connection;
+				VisualNode transition = readArc.getSecond();
 				VisualComponent master = replica.getMaster();
+				Point2D replicaPositionInRootSpace = replica.getRootSpacePosition();
+				LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(readArc, replicaPositionInRootSpace);
+				locationsInRootSpace.addFirst(replicaPositionInRootSpace);
 				visualModel.remove(replica);
 				try {
 					result = visualModel.connectUndirected(master, transition);
+					ConnectionHelper.addControlPoints(result, locationsInRootSpace);
 				} catch (InvalidConnectionException e) {
 				}
 			}
@@ -90,11 +102,9 @@ public class PetriNetUtils {
 			VisualTransition transition = (VisualTransition)second;
 			Container container = Hierarchy.getNearestContainer(transition);
 			VisualReplicaPlace replica = visualModel.createVisualReplica(place, container, VisualReplicaPlace.class);
-			Point2D splitPoint = readArc.getSplitPoint();
-			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(readArc);
-			Point2D splitPointInRootSpace = localToRootTransform.transform(splitPoint, null);
+			Point2D splitPointInRootSpace = getReplicaPositionInRootSpace(readArc);
 			replica.setRootSpacePosition(splitPointInRootSpace);
-			LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(readArc, splitPoint);
+			LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(readArc, splitPointInRootSpace);
 			visualModel.remove(readArc);
 			try {
 				result = visualModel.connectUndirected(replica, transition);
@@ -103,6 +113,27 @@ public class PetriNetUtils {
 			}
 		}
 		return result;
+	}
+
+	private static Point2D getReplicaPositionInRootSpace(VisualReadArc readArc) {
+		Point2D positionInRootSpace = null;
+		Point2D positionInLocalSpace = null;
+		ConnectionGraphic graphic = readArc.getGraphic();
+		if (graphic instanceof Polyline) {
+			Polyline polyline = (Polyline)graphic;
+			ControlPoint cp = polyline.getFirstControlPoint();
+			if (cp != null) {
+				positionInLocalSpace = cp.getPosition();
+			}
+		}
+		if (positionInLocalSpace == null) {
+			positionInLocalSpace = readArc.getSplitPoint();
+		}
+		if (positionInLocalSpace != null) {
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(readArc);
+			positionInRootSpace = localToRootTransform.transform(positionInLocalSpace, null);
+		}
+		return positionInRootSpace;
 	}
 
 	public static HashSet<VisualConnection> getVisualConsumingArcs(VisualModel visualModel) {

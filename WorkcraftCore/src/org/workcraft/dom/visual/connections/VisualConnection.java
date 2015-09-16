@@ -27,9 +27,11 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -527,6 +529,22 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		sendNotification(new PropertyChangedEvent(this, PROPERTY_SCALE_MODE));
 	}
 
+	public void inverseShape() {
+		if (getGraphic() instanceof Polyline) {
+			Polyline polyline = (Polyline)getGraphic();
+			LinkedList<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
+			Collections.reverse(controlPoints);
+			polyline.resetControlPoints();
+			for (ControlPoint cp: controlPoints) {
+				polyline.addControlPoint(cp);
+			}
+		} else if (getGraphic() instanceof Bezier) {
+			Bezier bezier = (Bezier)getGraphic();
+			BezierControlPoint[] controlPoints = bezier.getBezierControlPoints();
+			bezier.initControlPoints(controlPoints[1], controlPoints[0]);
+		}
+	}
+
 	@Override
 	public void copyStyle(Stylable src) {
 		super.copyStyle(src);
@@ -548,16 +566,16 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		if (src instanceof VisualConnection) {
 			VisualConnection srcConnection = (VisualConnection)src;
 			setConnectionType(srcConnection.getConnectionType());
-			ConnectionGraphic srcGraphics = srcConnection.getGraphic();
+			ConnectionGraphic srcGraphic = srcConnection.getGraphic();
 
-			if (srcGraphics instanceof Polyline) {
+			if (srcGraphic instanceof Polyline) {
 				Polyline polyline = (Polyline)getGraphic();
 				polyline.resetControlPoints();
-				for (ControlPoint srcControlPoint: srcGraphics.getControlPoints()) {
+				for (ControlPoint srcControlPoint: srcGraphic.getControlPoints()) {
 					polyline.addControlPoint(srcControlPoint.getPosition());
 				}
-			} else if (srcGraphics instanceof Bezier) {
-				BezierControlPoint[] srcControlPoints = ((Bezier)srcGraphics).getBezierControlPoints();
+			} else if (srcGraphic instanceof Bezier) {
+				BezierControlPoint[] srcControlPoints = ((Bezier)srcGraphic).getBezierControlPoints();
 				BezierControlPoint cp1 = new BezierControlPoint();
 				cp1.setPosition(srcControlPoints[0].getPosition());
 				BezierControlPoint cp2 = new BezierControlPoint();
