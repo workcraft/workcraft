@@ -11,11 +11,11 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ExpandReplicaTool extends TransformationTool {
+public class ReplicateReadArcPlaceTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
-		return " Expand replica places";
+		return "Replicate read-arc places";
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ExpandReplicaTool extends TransformationTool {
 		if ( !readArcs.isEmpty() ) {
 			we.saveMemento();
 			for (VisualReadArc readArc: readArcs) {
-				PetriNetUtils.expandReplicaPlace(visualModel, readArc);
+				PetriNetUtils.replicateReadArcPlace(visualModel, readArc);
 			}
 			visualModel.selectNone();
 		}
