@@ -2,9 +2,8 @@ package org.workcraft.plugins.son.elements;
 
 import java.awt.Color;
 
-import org.workcraft.dom.Node;
 
-public interface TransitionNode extends Node{
+public interface TransitionNode extends Time{
 
 	public boolean isFaulty();
 
@@ -21,6 +20,4 @@ public interface TransitionNode extends Node{
 	public void setForegroundColor(Color foregroundColor);
 
 	public Color getForegroundColor();
-
-
 }

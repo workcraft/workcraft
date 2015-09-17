@@ -26,48 +26,50 @@ public class RelationAlgorithm{
 	 * check if a given condition has more than one input events
 	 */
 	public boolean hasPostConflictEvents(Node c){
+		if(getPostConflictEvents(c).isEmpty())
+			return false;
+		else
+			return true;
+	}
+
+	public Collection<TransitionNode> getPostConflictEvents(Node c){
+		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
+
 		if (c instanceof Condition){
-			if(net.getPostset(c).size() > 1){
-				int count = 0;
-				for (SONConnection con : net.getOutputSONConnections(c)){
-					if (con.getSemantics() == Semantics.PNLINE)
-						count++;
-				}
-				if(count > 1){
-					int n = 0;
-						for (Node post : net.getPostset(c))
-							if (post instanceof TransitionNode)
-								n++;
-							if (n > 1)
-								return true;
+			Collection<Node> postset = getPostPNSet(c);
+			if(postset.size() > 1){
+				for(Node post : postset){
+					if(post instanceof TransitionNode)
+						result.add((TransitionNode)post);
 				}
 			}
 		}
-		return false;
+		return result;
 	}
 
 	/**
 	 * check if a given condition has more than one output events
 	 */
 	public boolean hasPreConflictEvents(Node c){
+		if(getPreConflictEvents(c).isEmpty())
+			return false;
+		else
+			return true;
+	}
+
+	public Collection<TransitionNode> getPreConflictEvents(Node c){
+		Collection<TransitionNode> result = new ArrayList<TransitionNode>();
+
 		if (c instanceof Condition){
-			if(net.getPreset(c).size() > 1){
-				int count = 0;
-				for (SONConnection con : net.getInputSONConnections(c)){
-					if (con.getSemantics() == Semantics.PNLINE)
-						count++;
+			Collection<Node> preset = getPrePNSet(c);
+			if(preset.size() > 1){
+				for(Node pre : preset){
+					if(pre instanceof TransitionNode)
+						result.add((TransitionNode)pre);
 				}
-				if(count > 1){
-					int n = 0;
-					for (Node pre : net.getPreset(c))
-						if (pre instanceof TransitionNode)
-								n++;
-						if (n > 1)
-							return true;
-					}
-				}
+			}
 		}
-	return false;
+		return result;
 	}
 
 	/**

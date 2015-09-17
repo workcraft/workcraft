@@ -13,6 +13,8 @@ import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.tools.SONConnectionTool;
 import org.workcraft.plugins.son.tools.SONSimulationTool;
 import org.workcraft.plugins.son.tools.SONSelectionTool;
+import org.workcraft.plugins.son.tools.ScenarioGeneratorTool;
+import org.workcraft.plugins.son.tools.TimeValueSetterTool;
 
 public class SONToolProvider implements CustomToolsProvider{
 
@@ -27,6 +29,9 @@ public class SONToolProvider implements CustomToolsProvider{
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Event.class)));
 		result.add(channelPlaceTool);
 		result.add(new SONSimulationTool());
+		result.add(new ScenarioGeneratorTool());
+		GraphEditorTool TimeSettingTool = new TimeValueSetterTool();
+		result.add(TimeSettingTool);
 
 		return result;
 	}

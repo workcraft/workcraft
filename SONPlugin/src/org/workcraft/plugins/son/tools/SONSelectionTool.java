@@ -66,17 +66,6 @@ public class SONSelectionTool extends SelectionTool {
 		});
 		groupPanel.add(groupButton);
 
-/*		//Create superGroupButton
-		final JButton superGroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/son-super-group.svg"), "Super group selection (Gtrl+V)");
-		superGroupButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectionSupergroup(editor);
-			}
-		});
-		groupPanel.add(superGroupButton);*/
-
 		//Create blockButton
 		JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
 				"images/icons/svg/son-block.svg"), "Group selection into a block (Alt+B)");
@@ -206,9 +195,9 @@ public class SONSelectionTool extends SelectionTool {
 				if (selectedNode instanceof VisualCondition) {
 					VisualCondition vc = (VisualCondition) selectedNode;
 					if (vc.isMarked() == false)
-						vc.setMarked(true);
+						vc.setIsMarked(true);
 					else if (vc.isMarked() == true)
-						vc.setMarked(false);
+						vc.setIsMarked(false);
 				}
 
 				if (selectedNode instanceof VisualEvent) {
@@ -261,14 +250,6 @@ public class SONSelectionTool extends SelectionTool {
 				break;
 			}
 		}
-
-/*		if(e.isCtrlDown() && !e.isAltDown() && !e.isShiftDown()){
-			switch (e.getKeyCode()){
-			case KeyEvent.VK_V:
-				selectionSupergroup(e.getEditor());
-				break;
-			}
-		}*/
 	}
 
 	@Override
@@ -303,11 +284,6 @@ public class SONSelectionTool extends SelectionTool {
 			editor.repaint();
 		}
 	}
-
-/*	private void selectionSupergroup(final GraphEditor editor) {
-		((VisualSON)editor.getModel()).superGroupSelection();
-		editor.repaint();
-	}*/
 
 	private void selectionBlock(final GraphEditor editor) {
 		((VisualSON)editor.getModel()).groupBlockSelection();

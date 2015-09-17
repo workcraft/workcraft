@@ -57,7 +57,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
 		//Causally Precede task result
 			infoMsg("Running block structure tasks...");
-			if(getPathAlg().cycleTask(block.getComponents()).isEmpty()){
+			if(getONCycleAlg().cycleTask(block.getComponents()).isEmpty()){
 				Collection<Node> result3 = CausallyPrecedeTask(block);
 				if(!result3.isEmpty()){
 					relationErrors.addAll(result3);

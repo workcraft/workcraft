@@ -1,11 +1,9 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -13,12 +11,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
-import org.workcraft.plugins.son.exception.InvalidStructureException;
+import org.workcraft.plugins.son.exception.UnboundedException;
 
 public class SimulationAlg extends RelationAlgorithm {
 
@@ -38,18 +37,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
 	}
 
-    public List<TransitionNode> getMinFire(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> fireList, boolean isRev){
-        List<TransitionNode> result = null;
-        if(!isRev){
-        	result = getForwordMinFire(e, sync, fireList);
-        }else{
-        	result = getRevMinFire(e, sync, fireList);
-        }
-
-        return result;
-    }
-
-	//set initial marking
+	//get SON initial marking
 	public Map<PlaceNode, Boolean> getInitialMarking(){
 		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
 		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
@@ -89,15 +77,65 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
+	//get SON final marking
+	public Map<PlaceNode, Boolean> getFinalMarking(){
+		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
+		Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
+
+		for(PlaceNode c : net.getPlaceNodes())
+			result.put(c, false);
+
+		for(ONGroup group : net.getGroups()){
+			if(upperGroups.contains(group))
+				for(Condition c : getFinal(group.getConditions())){
+					result.put(c, true);
+				}
+
+			else if(lowerGroups.contains(group)){
+				for(Condition c : getFinal(group.getConditions())){
+					boolean isFinal = true;
+					Collection<Condition> set = bsonAlg.getUpperConditions(c);
+					for(Condition c2 : set){
+						if(!isInitial(c2)){
+							ONGroup group2 = net.getGroup(c2);
+							if(!set.containsAll(getFinal(group2.getConditions())))
+								isFinal = false;
+						}
+					}
+					if(isFinal)
+						result.put(c, true);
+				}
+			}
+			else{
+				for(Condition c : getFinal(group.getConditions())){
+					result.put(c, true);
+				}
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * return minimal execution set for a given node.
 	 * contain other nodes which have synchronous and PRE- relation with the selected one.
 	 */
-    private List<TransitionNode> getForwordMinFire(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> fireList){
-        List<TransitionNode> result = new ArrayList<TransitionNode>();
-        Collection<TransitionNode> u = new ArrayList<TransitionNode>();
+    public Step getMinFire(TransitionNode e, Collection<Path> sync, Step step, boolean isRev){
+    	Step result = null;
+        if(!isRev){
+        	result = getForwordMinFire(e, sync, step);
+        }else{
+        	result = getRevMinFire(e, sync, step);
+        }
+
+        return result;
+    }
+
+    private Step getForwordMinFire(TransitionNode e, Collection<Path> sync, Step step){
+    	Step result = new Step();
+    	Step u = new Step();
         Stack<TransitionNode> stack = new Stack<TransitionNode>();
-        u.addAll(fireList);
+        u.addAll(step);
 
         if(e!= null){
             stack.push(e);
@@ -115,7 +153,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
                             }
-                            else if(!fireList.contains(e2)){
+                            else if(!step.contains(e2)){
                             	throw new RuntimeException
                             	("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
@@ -135,15 +173,11 @@ public class SimulationAlg extends RelationAlgorithm {
         return result;
     }
 
-	/**
-	 * return maximal execution set for a given node.
-	 * contain other nodes which have synchronous and POST- relation with the selected one.
-	 */
-    private List<TransitionNode> getRevMinFire(TransitionNode e, Collection<Path> sync, Collection<TransitionNode> fireList){
-        List<TransitionNode> result = new ArrayList<TransitionNode>();
-        Collection<TransitionNode> u = new ArrayList<TransitionNode>();
+    private Step getRevMinFire(TransitionNode e, Collection<Path> sync, Step step){
+    	Step result = new Step();
+    	Step u = new Step();
         Stack<TransitionNode> stack = new Stack<TransitionNode>();
-        u.addAll(fireList);
+        u.addAll(step);
 
         if(e!= null){
             stack.push(e);
@@ -161,7 +195,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
                             }
-                            else if(!fireList.contains(e2)){
+                            else if(!step.contains(e2)){
                             	throw new RuntimeException
                             	("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
@@ -180,8 +214,8 @@ public class SimulationAlg extends RelationAlgorithm {
         return result;
     }
 
-	final public List<TransitionNode> getEnabledNodes(Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isRev){
-		List<TransitionNode> result = null;
+	final public Step getEnabledNodes(Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isRev){
+		Step result = null;
 		if(!isRev)
 			result = getEnabled(sync, phases);
 		else
@@ -232,8 +266,8 @@ public class SimulationAlg extends RelationAlgorithm {
 	}
 
 
-	private List<TransitionNode> getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
+	private Step getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
+		Step result = new Step();
 		Collection<Node> del = new HashSet<Node>();
 		Stack<TransitionNode> stack = new Stack<TransitionNode>();
 
@@ -272,8 +306,6 @@ public class SimulationAlg extends RelationAlgorithm {
 	                                continue;
 	            				}
 	            				else if(!result.contains(pre2) || del.contains(pre2)){
-//	                            	e2 = (TransitionNode)pre2;
-//	                            	stack.push(e2);
 	                	            visit.add(e2);
 	                	            del.addAll(visit);
 	                                visit.removeLast();
@@ -305,8 +337,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
-	//reverse simulation
 
+	//reverse simulation
 	private boolean isRevONEnabled (TransitionNode e) {
 		if(net.getPostset	(e).isEmpty())
 			return false;
@@ -347,8 +379,8 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private List<TransitionNode> getRevEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
-		List<TransitionNode> result = new ArrayList<TransitionNode>();
+	private Step getRevEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
+		Step result = new Step();
 		Collection<Node> del = new HashSet<Node>();
 		Stack<TransitionNode> stack = new Stack<TransitionNode>();
 
@@ -420,7 +452,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		return result;
 	}
 
-	public void setMarking(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases, boolean isRev) throws InvalidStructureException{
+	public void setMarking(Step step, Map<Condition, Collection<Phase>> phases, boolean isRev) throws UnboundedException {
 		if(!isRev)
 			fire(step, phases);
 		else
@@ -429,93 +461,114 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	/**
 	 * token setting after forward fire.
+	 * @throws UnboundedException
 	 */
-	private void fire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws InvalidStructureException{
-		//rough checking
-		for(TransitionNode e : step){
-			for(Node post : net.getPostset(e)){
-				if(post instanceof PlaceNode)
-					if(((PlaceNode)post).isMarked())
-						throw new InvalidStructureException("Token amount > 1: "+net.getNodeReference(post));
-			}
-		}
+	private void fire(Step step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
 
+		//marking for ON and CSON
 		for(TransitionNode e : step){
-			for(Node pre : net.getPreset(e)){
-				//if e is upper event, remove marking for every maximal phase of pre{e}.
-				if(bsonAlg.isUpperCondition(pre)){
-					Condition c = (Condition)pre;
-					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
-					for(Condition c2 : maxSet)
-						c2.setMarked(false);
-				}
-			}
 			for(Node post : net.getPostset(e)){
-				//set marking for each post node of step U
 				if((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
-					((PlaceNode)post).setMarked(true);
-				//if e is upper event, set marking for every minimal phase of post{e}.
-				if(bsonAlg.isUpperCondition(post)){
-					Condition c = (Condition)post;
-					Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
-					for(Condition c2 : minSet)
-						c2.setMarked(true);
-				}
+					if(((PlaceNode)post).isMarked())
+						throw new UnboundedException(net.getNodeReference(post));
+					else
+						((PlaceNode)post).setMarked(true);
 			}
 		}
 
 		for(TransitionNode e : step){
-			//remove marking for each pre node of step U
 			for(Node pre : net.getPreset(e)){
 				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
 					((PlaceNode)pre).setMarked(false);
 			}
 		}
-	}
 
+		for(TransitionNode e : step){
+			//marking for BSON
+			for(Node pre : net.getPreset(e)){
+				//if e is upper event, remove marking for maximal phase of pre{e}.
+				if(bsonAlg.isUpperCondition(pre)){
+					Condition c = (Condition)pre;
+					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
+					//backward checking for all upper conditions, if there has no marked condition, remvoe the token
+					boolean hasMarking = false;
+					for(Condition c2 : maxSet){
+						for(Condition c3 : bsonAlg.getUpperConditions(c2)){
+							if(c3.isMarked())
+								hasMarking = true;
+						}
+						if(!hasMarking)
+							c2.setMarked(false);
+					}
+				}
+			}
+
+			for(Node post : net.getPostset(e)){
+				//if e is upper event, set marking for every minimal phase of post{e}.
+				if(bsonAlg.isUpperCondition(post)){
+					Condition c = (Condition)post;
+					Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
+					for(Condition c2 : minSet)
+						if(!c2.isMarked())
+							c2.setMarked(true);
+				}
+			}
+		}
+	}
 
 	/**
 	 * token setting after reverse fire.
+	 * @throws UnboundedException
 	 */
-	private void revFire(Collection<TransitionNode> step, Map<Condition, Collection<Phase>> phases) throws InvalidStructureException{
-		//rough checking
+	private void revFire(Step step, Map<Condition, Collection<Phase>> phases) throws UnboundedException{
+
+		//marking for ON and CSON
 		for(TransitionNode e : step){
 			for(Node pre : net.getPreset(e)){
-				if(pre instanceof PlaceNode)
+				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
 					if(((PlaceNode)pre).isMarked())
-						throw new InvalidStructureException("Token amount > 1: "+net.getNodeReference(pre));
+						throw new UnboundedException(net.getNodeReference(pre));
+					else
+						((PlaceNode)pre).setMarked(true);
 			}
 		}
 
 		for(TransitionNode e : step){
 			for(Node post : net.getPostset(e)){
-				//if e is upper event, remove marking for every minimal phase of pre{e}.
+				if((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
+					((PlaceNode)post).setMarked(false);
+			}
+		}
+
+		for(TransitionNode e : step){
+			//marking for BSON
+			for(Node post : net.getPostset(e)){
+				//if e is upper event, remove marking for maximal phase of pre{e}.
 				if(bsonAlg.isUpperCondition(post)){
 					Condition c = (Condition)post;
 					Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
-					for(Condition c2 : minSet)
-						c2.setMarked(false);
+					//backward checking for all upper conditions, if there has no marked condition, remvoe the token
+					boolean hasMarking = false;
+					for(Condition c2 : minSet){
+						for(Condition c3 : bsonAlg.getUpperConditions(c2)){
+							if(c3.isMarked())
+								hasMarking = true;
+						}
+						if(!hasMarking)
+							c2.setMarked(false);
+					}
 				}
 			}
+
 			for(Node pre : net.getPreset(e)){
-				//set marking for each post node of step U
-				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
-					((PlaceNode)pre).setMarked(true);
 				//if e is upper event, set marking for every minimal phase of post{e}.
 				if(bsonAlg.isUpperCondition(pre)){
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
 					for(Condition c2 : maxSet)
-						c2.setMarked(true);
+						if(!c2.isMarked())
+							c2.setMarked(true);
 				}
-			}
-		}
-
-		for(TransitionNode e : step){
-			//remove marking for each post node of step U
-			for(Node post : net.getPostset(e)){
-				if((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
-					((PlaceNode)post).setMarked(false);
 			}
 		}
 	}

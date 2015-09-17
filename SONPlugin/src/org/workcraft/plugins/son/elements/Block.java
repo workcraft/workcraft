@@ -8,16 +8,26 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
-public class Block extends PageNode implements TransitionNode{
+public class Block extends PageNode implements TransitionNode, Time{
 	private String label="";
-	private Color foregroundColor = SONSettings.getGroupForegroundColor();
-	private Color fillColor  = SONSettings.getBlockFillColor();
+	private Color foregroundColor = CommonVisualSettings.getBorderColor();
+	private Color fillColor  = CommonVisualSettings.getFillColor();
 	private boolean isCollapsed = false;
+
+	private Interval duration = new Interval(0000, 9999);
+	private Interval statTime = new Interval(0000, 9999);
+	private Interval endTime = new Interval(0000, 9999);
+
+	private Color durationColor = Color.BLACK;
 
 	public Collection<Node> getComponents(){
 		ArrayList<Node> result = new ArrayList<Node>();
@@ -28,7 +38,7 @@ public class Block extends PageNode implements TransitionNode{
 
 	public void setIsCollapsed(boolean isCollapsed) {
 		this.isCollapsed = isCollapsed;
-		sendNotification( new PropertyChangedEvent(this, "isCollapsed") );
+		sendNotification( new PropertyChangedEvent(this, "Is collapsed") );
 	}
 
 	public Collection<Condition> getConditions(){
@@ -53,7 +63,7 @@ public class Block extends PageNode implements TransitionNode{
 
 	@Override
 	public boolean isFaulty(){
-		for(Event event : this.getEvents())
+		for(Event event : getEvents())
 			if(event.isFaulty())
 				return true;
 		return false;
@@ -100,4 +110,43 @@ public class Block extends PageNode implements TransitionNode{
 	public void setFaulty(boolean fault) {
 	}
 
+	public void setDuration(Interval duration){
+		this.duration = duration;
+		sendNotification( new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION) );
+	}
+
+	@Override
+	public Interval getDuration(){
+		return duration;
+	}
+
+	public Color getDurationColor(){
+		return durationColor;
+	}
+
+	public void setDurationColor(Color value){
+		this.durationColor = value;
+	}
+
+	@Override
+	public void setStartTime(Interval duration){
+		this.statTime = duration;
+		sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
+	}
+
+	@Override
+	public Interval getStartTime(){
+		return statTime;
+	}
+
+	@Override
+	public void setEndTime(Interval endTime){
+		this.endTime = endTime;
+		sendNotification( new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME) );
+	}
+
+	@Override
+	public Interval getEndTime(){
+		return endTime;
+	}
 }

@@ -17,18 +17,18 @@ public class StructureVerifySettings {
 	}
 
 	public boolean getErrNodesHighlight(){
-		return this.errNodesHighlight;
+		return errNodesHighlight;
 	}
 
 	public boolean getOuputBefore(){
-		return this.outputBefore;
+		return outputBefore;
 	}
 
 	public ArrayList<ONGroup> getSelectedGroups(){
-		return this.selectedGroups;
+		return selectedGroups;
 	}
 
 	public int getType(){
-		return this.type;
+		return type;
 	}
 }

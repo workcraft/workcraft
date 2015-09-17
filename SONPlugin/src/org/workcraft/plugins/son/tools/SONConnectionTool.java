@@ -5,14 +5,18 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.VisualBlock;
 
 public class SONConnectionTool extends ConnectionTool {
 
@@ -71,8 +75,18 @@ public class SONConnectionTool extends ConnectionTool {
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e) {
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
 		VisualSON vson = (VisualSON)e.getModel();
+
 		vson.forceConnectionSemantics(semantic);
+		//forbid to connect with collapsed block (bound).
+		if(currentNode instanceof VisualBlock){
+			JOptionPane.showMessageDialog(mainWindow,
+					"Connect with atomic block is not valid",
+					"Cannot create connection", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
 		super.mousePressed(e);
 	}
 

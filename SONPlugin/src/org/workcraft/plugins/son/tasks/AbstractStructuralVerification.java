@@ -25,10 +25,10 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private RelationAlgorithm relationAlg;
-	private CSONCycleAlg csonPathAlg;
+	private CSONCycleAlg csonCycleAlg;
 	private BSONAlg bsonAlg;
-	private BSONCycleAlg bsonPathAlg;
-	private ONCycleAlg onPathAlg;
+	private BSONCycleAlg bsonCycleAlg;
+	private ONCycleAlg onCycleAlg;
 	private TSONAlg tsonAlg;
 	private Map<Condition, Collection<Phase>> allPhases;
 
@@ -36,11 +36,11 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		this.net = net;
 
 		relationAlg = new RelationAlgorithm(net);
-		csonPathAlg = new CSONCycleAlg(net);
+		csonCycleAlg = new CSONCycleAlg(net);
 		bsonAlg = new BSONAlg(net);
 		allPhases = bsonAlg.getAllPhases();
-		bsonPathAlg = new BSONCycleAlg(net, allPhases);
-		onPathAlg = new ONCycleAlg(net);
+		bsonCycleAlg = new BSONCycleAlg(net, allPhases);
+		onCycleAlg = new ONCycleAlg(net);
 		tsonAlg = new TSONAlg(net);
 	}
 
@@ -100,16 +100,16 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		return this.bsonAlg;
 	}
 
-	public BSONCycleAlg getBSONPathAlg(){
-		return bsonPathAlg;
+	public BSONCycleAlg getBSONCycleAlg(){
+		return bsonCycleAlg;
 	}
 
-	public CSONCycleAlg getCSONPathAlg(){
-		return csonPathAlg;
+	public CSONCycleAlg getCSONCycleAlg(){
+		return csonCycleAlg;
 	}
 
-	public ONCycleAlg getPathAlg(){
-		return onPathAlg;
+	public ONCycleAlg getONCycleAlg(){
+		return onCycleAlg;
 	}
 
 	public TSONAlg getTSONAlg(){

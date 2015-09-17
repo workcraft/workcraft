@@ -28,7 +28,7 @@ public class ONCycleAlg{
 	 * result[3] = <1>
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Integer>[] createGraph(List<Node> nodes){
+	protected List<Integer>[] createGraph(List<Node> nodes){
 		List<Integer>[] result = new List[nodes.size()];
 		LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
 		for(int i = 0; i < nodes.size(); i++){
@@ -75,5 +75,9 @@ public class ONCycleAlg{
 		}
 
 		return result;
+	}
+
+	protected Collection<Path> cycleFliter(Collection<Path> paths){
+		return paths;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Before;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
@@ -30,7 +31,7 @@ public class ReachabilityAlg {
 	}
 
     //get path between a given initial node and a set of final nodes. (recursion)
-    private void dfs(LinkedList<Node> visited, Collection<Node> v,  Collection<TransitionNode[]> before) {
+    private void dfs(LinkedList<Node> visited, Collection<Node> v,  Before before) {
         LinkedList<Node> post = getCausalPreset(visited.getLast(), before);
 
         if (v.contains(visited.getLast())) {
@@ -64,14 +65,14 @@ public class ReachabilityAlg {
     public Collection<Node> getCausalPredecessors (Node s, Collection<Node> v){
     	pathResult.clear();
     	LinkedList<Node> visited = new LinkedList<Node>();
-    	Collection<TransitionNode[]> before = getBeforeRelations();
+    	Before before = getBeforeRelations();
     	visited.add(s);
     	dfs(visited, v, before);
     	return pathResult;
     }
 
-	private Collection<TransitionNode[]> getBeforeRelations(){
-		 Collection<TransitionNode[]>  result = new ArrayList<TransitionNode[]>();
+	private Before getBeforeRelations(){
+		Before  result = new Before();
 
 		for(ONGroup group : upperGroups){
 			for(TransitionNode e : group.getTransitionNodes()){

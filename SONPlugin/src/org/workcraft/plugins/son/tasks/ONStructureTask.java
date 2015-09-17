@@ -115,7 +115,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			//cycle detection result
 			infoMsg("Running cycle detection task...");
 
-			cycleResult = getPathAlg().cycleTask(groupComponents);
+			cycleResult = getONCycleAlg().cycleTask(groupComponents);
 
 			cycleErrors.addAll(cycleResult);
 

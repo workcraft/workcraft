@@ -12,7 +12,12 @@ import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.ErrTracingReset;
 import org.workcraft.plugins.son.tools.ReachabilityTool;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
-import org.workcraft.plugins.son.tools.TokenRefreshTool;
+import org.workcraft.plugins.son.tools.TestTool;
+import org.workcraft.plugins.son.tools.TimeConsistencyChecker;
+import org.workcraft.plugins.son.tools.TimeValueDisable;
+import org.workcraft.plugins.son.tools.TimeValueEstimator;
+import org.workcraft.plugins.son.tools.ClearMarkingTool;
+import org.workcraft.plugins.son.tools.TimeValueSetter;
 
 public class SONModule implements Module{
 
@@ -31,17 +36,21 @@ public class SONModule implements Module{
 
 		pm.registerClass(ModelDescriptor.class, SONDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
-		//pm.registerClass(Tool.class, TestTool.class);
+		pm.registerClass(Tool.class, TestTool.class);
 		//verification
 		pm.registerClass(Tool.class, StructurePropertyChecker.class);
 		pm.registerClass(Tool.class, ReachabilityTool.class);
 		//Custom tools
 		pm.registerClass(Tool.class, ColorResetTool.class);
-		pm.registerClass(Tool.class, TokenRefreshTool.class);
+		pm.registerClass(Tool.class, ClearMarkingTool.class);
 		// Error tracing
 		pm.registerClass(Tool.class, ErrTracingReset.class);
 		pm.registerClass(Tool.class, ErrTracingDisable.class);
-
+		//time analysis
+		pm.registerClass(Tool.class, TimeValueSetter.class);
+		pm.registerClass(Tool.class, TimeValueDisable.class);
+		pm.registerClass(Tool.class, TimeValueEstimator.class);
+		pm.registerClass(Tool.class, TimeConsistencyChecker.class);
 	}
 
 	private void initCompatibilityManager() {

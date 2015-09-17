@@ -5,17 +5,28 @@ import java.awt.Color;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.Interval;
+import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 
-public class PlaceNode extends MathNode {
+public class PlaceNode extends MathNode implements Time{
 
 	private Color foregroundColor=CommonVisualSettings.getBorderColor();
 	private Color fillColor = CommonVisualSettings.getFillColor();
 	private String label = "";
 	private int errors = 0;
+
+	private Interval statTime = new Interval(0000, 9999);
+	private Interval endTime = new Interval(0000, 9999);
+	private Interval duration = new Interval(0000, 9999);
+
+	protected Color durationColor = Color.BLACK;
+
 	private boolean marked = false;
 	private Color tokenColor = CommonVisualSettings.getBorderColor();
 
-	public void setMarked(boolean token) {
+	public void setMarked(boolean token){
 		this.marked=token;
 		sendNotification( new PropertyChangedEvent(this, "marked") );
 	}
@@ -62,6 +73,41 @@ public class PlaceNode extends MathNode {
 
 	public Color getTokenColor() {
 		return tokenColor;
+	}
+
+	public void setStartTime(Interval duration){
+		this.statTime = duration;
+		sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
+	}
+
+	public Interval getStartTime(){
+		return statTime;
+	}
+
+	public void setEndTime(Interval endTime){
+		this.endTime = endTime;
+		sendNotification( new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME) );
+	}
+
+	public Interval getEndTime(){
+		return endTime;
+	}
+
+	public void setDuration(Interval duration){
+		this.duration = duration;
+		sendNotification( new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION) );
+	}
+
+	public Interval getDuration(){
+		return duration;
+	}
+
+	public Color getDurationColor(){
+		return durationColor;
+	}
+
+	public void setDurationColor(Color value){
+		this.durationColor = value;
 	}
 
 	public void setTokenColor(Color tokenColor) {

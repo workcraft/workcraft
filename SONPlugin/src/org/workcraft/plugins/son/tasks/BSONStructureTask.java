@@ -101,7 +101,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 		//BSON cycle task
 		infoMsg("Running cycle detection task...");
-		cycleErrors.addAll(getBSONPathAlg().cycleTask(components));
+		cycleErrors.addAll(getBSONCycleAlg().cycleTask(components));
 
 		if (cycleErrors.isEmpty() )
 			infoMsg("Behavioral-SON is cycle free.");

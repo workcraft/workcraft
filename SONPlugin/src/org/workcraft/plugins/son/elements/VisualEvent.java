@@ -15,6 +15,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 
 
@@ -67,12 +68,6 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 		}
 	}
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
-		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
-	}
-
 	public Event getMathTransitionNode(){
 		return (Event)this.getReferencedComponent();
 	}
@@ -111,6 +106,33 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 		return ((Event)getReferencedComponent()).getFillColor();
 	}
 
+	public void setStartTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Event)getReferencedComponent()).setStartTime(input);
+	}
+
+	public String getStartTime(){
+		return ((Event)getReferencedComponent()).getStartTime().toString();
+	}
+
+	public void setEndTime(String time){
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Event)getReferencedComponent()).setEndTime(input);
+	}
+
+	public String getEndTime(){
+		return ((Event)getReferencedComponent()).getEndTime().toString();
+	}
+
+	public void setDuration(String time) {
+		Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
+		((Event)getReferencedComponent()).setDuration((input));
+	}
+
+	public String getDuration() {
+		return ((Event)getReferencedComponent()).getDuration().toString();
+	}
+
 	@Override
 	public void copyStyle(Stylable src) {
 		super.copyStyle(src);
@@ -119,5 +141,4 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 			setFaulty(srcComponent.isFaulty());
 		}
 	}
-
 }

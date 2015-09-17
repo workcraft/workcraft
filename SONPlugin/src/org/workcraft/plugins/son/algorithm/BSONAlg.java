@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Before;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
@@ -102,7 +103,7 @@ public class BSONAlg extends RelationAlgorithm{
 	}
 
 
-	private Collection<Condition> Max(Node node){
+	private Collection<Condition> forwardSearch(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
 		Stack<Node> stack = new Stack<Node>();
 		Collection<Node> visit = new HashSet<Node>();
@@ -129,7 +130,7 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	private Collection<Condition> Min(Node node){
+	private Collection<Condition> backWardSearch(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
 		Stack<Node> stack = new Stack<Node>();
 		Collection<Node> visit = new HashSet<Node>();
@@ -169,8 +170,8 @@ public class BSONAlg extends RelationAlgorithm{
 				return result;
 		}
 
-		Collection<Condition> min = Min(node);
-		Collection<Condition> max = Max(node);
+		Collection<Condition> min = backWardSearch(node);
+		Collection<Condition> max = forwardSearch(node);
 		for(Condition c : max){
 			if(min.contains(c))
 				result.add(c);
@@ -359,8 +360,8 @@ public class BSONAlg extends RelationAlgorithm{
 	/**
 	 * get before(e) relation for a given upper-level transition node
 	 */
-	public Collection<TransitionNode[]> before(TransitionNode e, Map<Condition, Collection<Phase>> phases){
-		Collection<TransitionNode[]> result = new ArrayList<TransitionNode[]>();
+	public Before before(TransitionNode e, Map<Condition, Collection<Phase>> phases){
+		Before result = new Before();
 
 		Collection<Condition> PRE = getPREset(e);
 		Collection<Condition> POST = getPOSTset(e);
@@ -424,8 +425,8 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Map<TransitionNode, Collection<TransitionNode[]>> getAllBefore(){
-		Map<TransitionNode, Collection<TransitionNode[]>> result = new HashMap<TransitionNode, Collection<TransitionNode[]>>();
+	public Map<TransitionNode, Before> getAllBefore(){
+		Map<TransitionNode, Before> result = new HashMap<TransitionNode, Before>();
 
 		Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
 

@@ -16,6 +16,7 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -24,13 +25,20 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
+
+	ArrayList<Scenario> scenarios = new ArrayList<Scenario>();
 
 	public SON(){
 		this(null, null);
@@ -61,8 +69,8 @@ public class SON extends AbstractMathModel {
 	}
 
 	public SONConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {
-		if (this.getSONConnection(first, second) != null){
-			throw new InvalidConnectionException ("Duplicate Connections");
+		if (getSONConnection(first, second) != null){
+			throw new InvalidConnectionException ("Duplicate Connections" + getNodeReference(first)+" " +getNodeReference(second));
 		}
 
 		SONConnection con = new SONConnection((MathNode)first, (MathNode)second, semantics);
@@ -78,12 +86,31 @@ public class SON extends AbstractMathModel {
 			if(node instanceof PlaceNode || node instanceof Event)
 				result.add(node);
 
-		//remove the nodes in isolate blocks
+		//remove all nodes in collapsed blocks
 		for(Block block : this.getBlocks())
 			if(!this.getSONConnections(block).isEmpty()){
 				result.removeAll(block.getComponents());
 				result.add(block);
 			}
+
+		return result;
+	}
+
+	public Collection<Node> getNodes(){
+		ArrayList<Node> result =  new ArrayList<Node>();
+		result.addAll(getComponents());
+		for(SONConnection con : getSONConnections()){
+			if(con.getSemantics() != Semantics.BHVLINE)
+				result.add(con);
+		}
+
+		return result;
+	}
+
+	public ArrayList<String> getNodeRefs(Collection<? extends Node> nodes){
+		ArrayList<String> result = new ArrayList<String>();
+		for(Node node : nodes)
+			result.add(getNodeReference(node));
 
 		return result;
 	}
@@ -137,22 +164,12 @@ public class SON extends AbstractMathModel {
 		if(n instanceof TransitionNode){
 			((TransitionNode) n).setForegroundColor(nodeColor);
 		}
+		if(n instanceof SONConnection){
+			((SONConnection) n).setColor(nodeColor);
+		}
 		if (n instanceof ONGroup)
 			((ONGroup)n).setForegroundColor(nodeColor);
 
-	}
-
-	public Color getForegroundColor(Node n){
-		if(n instanceof PlaceNode){
-			return ((PlaceNode) n).getForegroundColor();
-		}
-		if(n instanceof TransitionNode){
-			return ((TransitionNode) n).getForegroundColor();
-		}
-		if (n instanceof ONGroup)
-			return ((ONGroup) n).getForegroundColor();
-
-		return null;
 	}
 
 	public void setFillColor(Node n, Color nodeColor){
@@ -164,38 +181,45 @@ public class SON extends AbstractMathModel {
 		}
 	}
 
-	public Color getFillColor(Node n){
-		if(n instanceof PlaceNode){
-			return ((PlaceNode) n).getFillColor();
-		}
-		if(n instanceof TransitionNode){
-			return ((TransitionNode) n).getFillColor();
-		}
-
-		return null;
-	}
-
 	public void refreshColor(){
 		for(Node n:  getComponents()){
 			setFillColor(n,CommonVisualSettings.getFillColor());
 			setForegroundColor(n, CommonVisualSettings.getBorderColor());
+			setTimeColor(n, Color.BLACK);
 		}
 		for (ONGroup group : this.getGroups()){
 			setForegroundColor(group, SONSettings.getGroupForegroundColor());
 		}
 
-		for (SONConnection con : this.getSONConnections())
+		for (SONConnection con : this.getSONConnections()){
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
-
-		for (Block block : this.getBlocks()){
-			if(!block.getIsCollapsed()){
-				this.setFillColor(block, SONSettings.getBlockFillColor());
-				this.setForegroundColor(block,  SONSettings.getGroupForegroundColor());
-			}else{
-				this.setFillColor(block, CommonVisualSettings.getFillColor());
-				this.setForegroundColor(block,  CommonVisualSettings.getBorderColor());
-			}
+			setTimeColor(con, Color.BLACK);
 		}
+		for (Block block : this.getBlocks()){
+			setFillColor(block, CommonVisualSettings.getFillColor());
+			setForegroundColor(block,  CommonVisualSettings.getBorderColor());
+		}
+	}
+
+	public void setTimeColor(Node n, Color color){
+		if(n instanceof PlaceNode){
+			((PlaceNode) n).setDurationColor(color);
+		}
+		if(n instanceof Condition){
+			((Condition) n).setStartTimeColor(color);
+			((Condition) n).setEndTimeColor(color);
+		}
+		if(n instanceof Block){
+			((Block) n).setDurationColor(color);
+		}
+		if(n instanceof SONConnection){
+			((SONConnection) n).setTimeLabelColor(color);
+		}
+	}
+
+	public void clearMarking(){
+		for(PlaceNode p : getPlaceNodes())
+			p.setMarked(false);
 	}
 
 	public void resetErrStates(){
@@ -221,6 +245,22 @@ public class SON extends AbstractMathModel {
 		getRoot().add(newCP);
 		return newCP;
 	}
+
+	// Scenarios
+	final public ScenarioNode createScenarioNode(String name, Scenario scenario) {
+		ScenarioNode s = new ScenarioNode();
+		if (name!=null) {
+			setName(s, name);
+		}
+		getRoot().add(s);
+		s.setTrace(scenario.toString());
+		return s;
+	}
+
+	public Collection<ScenarioNode> getScenarioNodes(){
+		return Hierarchy.getDescendantsOfType(getRoot(), ScenarioNode.class);
+	}
+
 
 	//Connection
 	public Collection<SONConnection> getSONConnections(){
@@ -317,7 +357,56 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
-	//Group based
+	public Collection<SONConnection> getInputPNConnections(Node node){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getInputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				result.add(con);
+		}
+		return result;
+	}
+
+	public Collection<SONConnection> getOutputPNConnections(Node node){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getOutputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				result.add(con);
+		}
+		return result;
+	}
+
+
+	public Collection<SONConnection> getInputScenarioPNConnections(Node node, Scenario s){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getInputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				if(s!=null){
+					if(s.getConnections(this).contains(con))
+						result.add(con);
+				}else
+					result.add(con);
+		}
+		return result;
+	}
+
+	public Collection<SONConnection> getOutputScenarioPNConnections(Node node, Scenario s){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+
+		for(SONConnection con : getOutputSONConnections(node)){
+			if(con.getSemantics() == Semantics.PNLINE)
+				if(s!=null){
+					if(s.getConnections(this).contains(con))
+						result.add(con);
+				}else
+					result.add(con);
+		}
+		return result;
+	}
+
+	//Group based methods
 	public Collection<Block> getBlocks(){
 		return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
 	}
@@ -378,6 +467,33 @@ public class SON extends AbstractMathModel {
 		if(!nodes.isEmpty())
 			result.append(']');
 		return result.toString();
+	}
+
+	//Scenario
+	public ArrayList<Scenario> getScenarioList(){
+		return scenarios;
+	}
+
+	public void setScenarioList(ArrayList<Scenario> scenarios){
+		this.scenarios = scenarios;
+	}
+
+	@Override
+	public ModelProperties getProperties(Node node) {
+		ModelProperties properties = super.getProperties(node);
+		if (node instanceof SONConnection) {
+			SONConnection con = (SONConnection)node;
+			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE)
+				properties.add(new ConnectionTimePropertyDescriptor((SONConnection)node));
+		}
+
+		if (node instanceof Time) {
+			properties.add(new StartTimePropertyDescriptor((Time)node));
+			properties.add(new EndTimePropertyDescriptor((Time)node));
+			properties.add(new DurationPropertyDescriptor((Time)node));
+		}
+
+		return properties;
 	}
 
 }

@@ -2,11 +2,11 @@ package org.workcraft.plugins.son.tools;
 
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TokenRefreshTool implements Tool{
+public class TimeValueDisable implements Tool{
 
 
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -14,17 +14,15 @@ public class TokenRefreshTool implements Tool{
 	}
 
 	public String getSection(){
-		return "Custom tools";
+		return "Time analysis";
 	}
 
 	public String getDisplayName(){
-		return "Reset tokens";
+		return "Enable/Disable time values";
 	}
 
 	public void run(WorkspaceEntry we){
-		SON net=(SON)we.getModelEntry().getMathModel();
-		for(PlaceNode con : net.getPlaceNodes())
-			con.setMarked(false);
+		SONSettings.setTimeVisibility(!SONSettings.getTimeVisibility());;
 	}
 
 }

@@ -3,7 +3,6 @@ package org.workcraft.plugins.son.tasks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
@@ -12,9 +11,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
@@ -25,6 +22,7 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.tools.SONSimulationTool;
+import org.workcraft.plugins.son.tools.ToolManager;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -45,8 +43,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 	public ReachabilityTask(WorkspaceEntry we){
 		this.we = we;
-
 		net = (SON)we.getModelEntry().getMathModel();
+
 		bsonAlg = new BSONAlg(net);
 		reachAlg = new ReachabilityAlg (net);
 
@@ -63,32 +61,21 @@ public class ReachabilityTask implements Task<VerificationResult>{
 	@Override
 	public Result<? extends VerificationResult> run(
 			ProgressMonitor<? super VerificationResult> monitor) {
+
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+
 		if(markingRefs.isEmpty()){
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"Double click on condition/channel place or use property editor"
 					+ " to mark some nodes and check the reachability.",
 					"Marking required", JOptionPane.INFORMATION_MESSAGE);
 			return new Result<VerificationResult>(Outcome.FINISHED);
 		}
 
-		//change connections from block inside to bounding
-		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
-		vnet.connectToBlocks(we);
-
-//		//cycle detection
-//		CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
-//		if(!cycleAlg.cycleTask(net.getComponents()).isEmpty()){
-//			we.cancelMemento();
-//			JOptionPane.showMessageDialog(null,
-//					"Fail to run reachability anaylsis tool, " +
-//					"error due to cyclic structure", "Invalid structure", JOptionPane.WARNING_MESSAGE);
-//			return new Result<VerificationResult>(Outcome.FINISHED);
-//		}
-
 		if(reachabilityTask()){
-			we.cancelMemento();
 			net = (SON)we.getModelEntry().getMathModel();
-			int result = JOptionPane.showConfirmDialog(null,
+			int result = JOptionPane.showConfirmDialog(mainWindow,
 					"The selected marking is REACHABLE from the initial states. \n" +
 					"Select OK to analyze the trace leading to the marking in the simulation tool.",
 					"Reachability task result", JOptionPane.OK_CANCEL_OPTION);
@@ -103,8 +90,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			}
 		}
 		else{
-			we.cancelMemento();
-			JOptionPane.showMessageDialog(null,
+			JOptionPane.showMessageDialog(mainWindow,
 					"The selected marking is UNREACHABLE from the initial states",
 					"Reachability task result", JOptionPane.INFORMATION_MESSAGE);
 		}
@@ -113,22 +99,11 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 	private Map<PlaceNode, Boolean> simulation(){
 		Map<PlaceNode, Boolean> result;
-		final Framework framework = Framework.getInstance();
-		final MainWindow mainWindow = framework.getMainWindow();
-		GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-		if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
-			final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
-			if(editors.size()>0) {
-				currentEditor = editors.get(0);
-				mainWindow.requestFocus(currentEditor);
-			} else {
-				currentEditor = mainWindow.createEditorWindow(we);
-			}
-		}
-		final ToolboxPanel toolbox = currentEditor.getToolBox();
+
+		final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
 		final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
 		toolbox.selectTool(tool);
-		result = tool.ReachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);
+		result = tool.reachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);
 		tool.mergeTrace(tool.getGraphEditor());
 
 		return result;

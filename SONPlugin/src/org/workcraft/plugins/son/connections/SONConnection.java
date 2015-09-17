@@ -1,10 +1,19 @@
 package org.workcraft.plugins.son.connections;
 
+import java.awt.Color;
+
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.son.Interval;
+import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 
 public class SONConnection extends MathConnection{
+
+	private Interval time = new Interval(0000, 9999);
+	private Color timeColor = Color.BLACK;
+	private Color color=CommonVisualSettings.getBorderColor();
 
 	public enum Semantics {
 		PNLINE("Petri net connection"),
@@ -29,6 +38,15 @@ public class SONConnection extends MathConnection{
 	public SONConnection(){
 	}
 
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+		sendNotification(new PropertyChangedEvent(this, "color"));
+	}
+
 	public SONConnection(MathNode first, MathNode second, Semantics semantics) {
 		super(first, second);
 		this.setSemantics(semantics);
@@ -43,4 +61,21 @@ public class SONConnection extends MathConnection{
 		sendNotification(new PropertyChangedEvent(this, "semantics"));
 	}
 
+	public Interval getTime(){
+		return time;
+	}
+
+	public void setTime(Interval time){
+		this.time = time;
+		sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
+	}
+
+
+	public Color getTimeLabelColor() {
+		return timeColor;
+	}
+
+	public void setTimeLabelColor(Color value) {
+		this.timeColor = value;
+	}
 }
