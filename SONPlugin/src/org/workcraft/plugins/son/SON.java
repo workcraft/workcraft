@@ -1,9 +1,12 @@
 package org.workcraft.plugins.son;
 
 import java.awt.Color;
+import java.awt.Window;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
@@ -27,6 +30,7 @@ import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
 import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
@@ -38,7 +42,7 @@ import org.workcraft.util.Hierarchy;
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
 
-	ArrayList<Scenario> scenarios = new ArrayList<Scenario>();
+	ArrayList<ScenarioRef> scenarios = new ArrayList<ScenarioRef>();
 
 	public SON(){
 		this(null, null);
@@ -247,20 +251,48 @@ public class SON extends AbstractMathModel {
 	}
 
 	// Scenarios
-	final public ScenarioNode createScenarioNode(String name, Scenario scenario) {
-		ScenarioNode s = new ScenarioNode();
+	final public Scenario createScenario(String name, ScenarioRef scenario) {
+		Scenario s = new Scenario();
 		if (name!=null) {
 			setName(s, name);
 		}
 		getRoot().add(s);
-		s.setTrace(scenario.toString());
+		s.setScenario(scenario.toString());
 		return s;
 	}
 
-	public Collection<ScenarioNode> getScenarioNodes(){
-		return Hierarchy.getDescendantsOfType(getRoot(), ScenarioNode.class);
+	public Collection<Scenario> getScenarios(){
+		return Hierarchy.getDescendantsOfType(getRoot(), Scenario.class);
 	}
 
+	public ArrayList<ScenarioRef> importScenarios(Window window){
+		ArrayList<ScenarioRef> result = new ArrayList<ScenarioRef>();
+		ArrayList<Scenario> removeList = new ArrayList<Scenario>();
+
+		for(Scenario s : getScenarios()){
+			ScenarioRef ref = new ScenarioRef();
+			try {
+				ref.fromString(s.getScenario(), this);
+			} catch (IncompatibleScenarioException e) {
+				ref=null;
+				removeList.add(s);
+			}
+			if(ref != null)
+				result.add(ref);
+		}
+
+		if(!removeList.isEmpty()){
+			JOptionPane.showMessageDialog(window,
+					"Elements in saved scenarios are incompatible with current model. "
+					+ "Erroneous scenarios have been removed from the list",
+					"Incompatible scenario", JOptionPane.ERROR_MESSAGE);
+		}
+		for (Scenario scenario: removeList) {
+			remove(scenario);
+		}
+
+		return result;
+	}
 
 	//Connection
 	public Collection<SONConnection> getSONConnections(){
@@ -378,7 +410,7 @@ public class SON extends AbstractMathModel {
 	}
 
 
-	public Collection<SONConnection> getInputScenarioPNConnections(Node node, Scenario s){
+	public Collection<SONConnection> getInputScenarioPNConnections(Node node, ScenarioRef s){
 		Collection<SONConnection> result = new ArrayList<SONConnection>();
 
 		for(SONConnection con : getInputSONConnections(node)){
@@ -392,7 +424,7 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
-	public Collection<SONConnection> getOutputScenarioPNConnections(Node node, Scenario s){
+	public Collection<SONConnection> getOutputScenarioPNConnections(Node node, ScenarioRef s){
 		Collection<SONConnection> result = new ArrayList<SONConnection>();
 
 		for(SONConnection con : getOutputSONConnections(node)){
@@ -467,15 +499,6 @@ public class SON extends AbstractMathModel {
 		if(!nodes.isEmpty())
 			result.append(']');
 		return result.toString();
-	}
-
-	//Scenario
-	public ArrayList<Scenario> getScenarioList(){
-		return scenarios;
-	}
-
-	public void setScenarioList(ArrayList<Scenario> scenarios){
-		this.scenarios = scenarios;
 	}
 
 	@Override

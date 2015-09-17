@@ -9,14 +9,14 @@ public class TimeConsistencySettings {
 
 	private boolean inconsistencyHighlight, unspecifyHighlight;
 	private ArrayList<ONGroup> selectedGroups;
-	private Scenario seletedScenario;
+	private ScenarioRef seletedScenario;
 	private ArrayList<Node> seletedNodes;
 	private int tabIndex;
 	private Granularity granularity;
 
 	public TimeConsistencySettings(boolean inconsistencyHighlight,
 			boolean unspecifyHighlight, ArrayList<ONGroup> selectedGroups,
-			Scenario seletedScenario, ArrayList<Node> seletedNodes, int tabIndex,
+			ScenarioRef seletedScenario, ArrayList<Node> seletedNodes, int tabIndex,
 			Granularity granularity){
 		this.inconsistencyHighlight = 	inconsistencyHighlight;
 		this.unspecifyHighlight = unspecifyHighlight;
@@ -39,7 +39,7 @@ public class TimeConsistencySettings {
 		return selectedGroups;
 	}
 
-	public Scenario getSeletedScenario(){
+	public ScenarioRef getSeletedScenario(){
 		return seletedScenario;
 	}
 

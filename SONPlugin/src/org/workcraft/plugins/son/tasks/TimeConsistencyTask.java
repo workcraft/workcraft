@@ -12,7 +12,7 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.Scenario;
+import org.workcraft.plugins.son.ScenarioRef;
 import org.workcraft.plugins.son.TimeConsistencySettings;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
@@ -143,7 +143,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 
-	public ArrayList<String> unspecifiedValueTask(Node node, Collection<ChannelPlace> syncCPs, Scenario s){
+	public ArrayList<String> unspecifiedValueTask(Node node, Collection<ChannelPlace> syncCPs, ScenarioRef s){
 		ArrayList<String> result = new ArrayList<String>();
 
 		//check for unspecified value.
@@ -165,7 +165,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 	}
 
 
-	private ArrayList<String> timeConsistencyTask(Node node, Scenario s){
+	private ArrayList<String> timeConsistencyTask(Node node, ScenarioRef s){
 		ArrayList<String> result = new ArrayList<String>();
 		Collection<String> onResult = new ArrayList<String>();
 		Collection<String> csonResult = new ArrayList<String>();
