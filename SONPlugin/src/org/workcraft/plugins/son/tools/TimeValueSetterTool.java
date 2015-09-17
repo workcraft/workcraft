@@ -126,12 +126,12 @@ public class TimeValueSetterTool extends AbstractTool{
 		timePropertyPanel = new JPanel();
 		timePropertyPanel.setBorder(BorderFactory.createTitledBorder("Time value"));
 		timePropertyPanel.setLayout(new WrapLayout());
-		timePropertyPanel.setPreferredSize(new Dimension(0, 175));
+		timePropertyPanel.setPreferredSize(new Dimension(0, 200));
 
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
-		interfacePanel.add(granularityPanel, BorderLayout.PAGE_START);
-		interfacePanel.add(timePropertyPanel, BorderLayout.PAGE_END);
+		interfacePanel.add(granularityPanel, BorderLayout.NORTH);
+		interfacePanel.add(timePropertyPanel, BorderLayout.CENTER);
 	}
 
 	private void createGranularityButtons(){
