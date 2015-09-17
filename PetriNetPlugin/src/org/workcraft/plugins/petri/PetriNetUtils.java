@@ -4,6 +4,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -24,19 +25,16 @@ public class PetriNetUtils {
 
 	public static VisualReadArc convertDualArcToReadArc(VisualModel visualModel, VisualConnection consumingArc, VisualConnection producingArc) {
 		VisualReadArc readArc = null;
-		VisualPlace place = null;
-		if (consumingArc.getFirst() instanceof VisualPlace) {
-			place = (VisualPlace)consumingArc.getFirst();
-		}
-		VisualTransition transition = null;
-		if (consumingArc.getSecond() instanceof VisualTransition) {
-			transition = (VisualTransition)consumingArc.getSecond();
-		}
-		if ((place != null) && (transition != null)) {
+		VisualNode first = consumingArc.getFirst();
+		VisualNode second = consumingArc.getSecond();
+		if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace)) && (second instanceof VisualTransition)) {
 			try {
+				if (first instanceof VisualReplicaPlace) {
+					first = copyReplicaPlace(visualModel, (VisualReplicaPlace)first);
+				}
 				visualModel.remove(consumingArc);
 				visualModel.remove(producingArc);
-				VisualConnection connection = visualModel.connectUndirected(place, transition);
+				VisualConnection connection = visualModel.connectUndirected(first, second);
 				connection.copyShape(consumingArc);
 				if (connection instanceof VisualReadArc) {
 					readArc = (VisualReadArc)connection;
@@ -48,22 +46,19 @@ public class PetriNetUtils {
 	}
 
 	public static Pair<VisualConnection, VisualConnection> converReadArcTotDualArc(VisualModel visualModel, VisualReadArc readArc) {
-		VisualPlace place = null;
-		if (readArc.getFirst() instanceof VisualPlace) {
-			place = (VisualPlace)readArc.getFirst();
-		}
-		VisualTransition transition = null;
-		if (readArc.getSecond() instanceof VisualTransition) {
-			transition = (VisualTransition)readArc.getSecond();
-		}
+		VisualNode first = readArc.getFirst();
+		VisualNode second = readArc.getSecond();
 		VisualConnection consumingArc = null;
 		VisualConnection producingArc = null;
-		if ((place != null) && (transition != null)) {
+		if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace)) && (second instanceof VisualTransition)) {
 			try {
+				if (first instanceof VisualReplicaPlace) {
+					first = copyReplicaPlace(visualModel, (VisualReplicaPlace)first);
+				}
 				visualModel.remove(readArc);
-				consumingArc = visualModel.connect(place, transition);
+				consumingArc = visualModel.connect(first, second);
 				consumingArc.copyShape(readArc);
-				producingArc = visualModel.connect(transition, place);
+				producingArc = visualModel.connect(second, first);
 				producingArc.copyShape(readArc);
 				producingArc.inverseShape();
 			} catch (InvalidConnectionException e) {
@@ -72,19 +67,39 @@ public class PetriNetUtils {
 		return new Pair<VisualConnection, VisualConnection>(consumingArc, producingArc);
 	}
 
+	private static VisualReplicaPlace copyReplicaPlace(VisualModel visualModel, VisualReplicaPlace replica) {
+		Container container = Hierarchy.getNearestContainer(replica);
+		VisualComponent master = replica.getMaster();
+		VisualReplicaPlace result = visualModel.createVisualReplica(master, container, VisualReplicaPlace.class);
+		result.copyPosition(replica);
+		result.copyStyle(replica);
+		return result;
+	}
+
 	public static VisualConnection collapseReplicaPlace(VisualModel visualModel, VisualReplicaPlace replica) {
 		VisualConnection result = null;
-		for (Connection connection: visualModel.getConnections(replica)) {
-			if ((connection instanceof VisualReadArc) && (connection.getFirst() == replica)) {
-				VisualReadArc readArc = (VisualReadArc)connection;
-				VisualNode transition = readArc.getSecond();
-				VisualComponent master = replica.getMaster();
+		HashSet<Connection> connections = new HashSet<>(visualModel.getConnections(replica));
+		for (Connection c: connections) {
+			if (c instanceof VisualConnection) {
+				VisualConnection vc = (VisualConnection)c;
+				VisualNode first = vc.getFirst();
+				VisualNode second = vc.getSecond();
+				if (replica == first) {
+					first = replica.getMaster();
+				}
+				if (replica == second) {
+					second = replica.getMaster();
+				}
 				Point2D replicaPositionInRootSpace = replica.getRootSpacePosition();
-				LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(readArc, replicaPositionInRootSpace);
+				LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(vc, replicaPositionInRootSpace);
 				locationsInRootSpace.addFirst(replicaPositionInRootSpace);
-				visualModel.remove(replica);
+				visualModel.remove(vc);
 				try {
-					result = visualModel.connectUndirected(master, transition);
+					if (vc instanceof VisualReadArc) {
+						result = visualModel.connectUndirected(first, second);
+					} else {
+						result = visualModel.connect(first, second);
+					}
 					ConnectionHelper.addControlPoints(result, locationsInRootSpace);
 				} catch (InvalidConnectionException e) {
 				}
@@ -93,21 +108,39 @@ public class PetriNetUtils {
 		return result;
 	}
 
-	public static VisualConnection expandReplicaPlace(VisualModel visualModel, VisualReadArc readArc) {
+	public static VisualConnection replicateReadArcPlace(VisualModel visualModel, VisualConnection connection) {
 		VisualConnection result = null;
-		VisualNode first = readArc.getFirst();
-		VisualNode second = readArc.getSecond();
+		VisualNode first = connection.getFirst();
+		VisualNode second = connection.getSecond();
+		VisualPlace place = null;
+		VisualTransition transition = null;
+		boolean reverse = false;
 		if ((first instanceof VisualPlace) && (second instanceof VisualTransition)) {
-			VisualPlace place = (VisualPlace)first;
-			VisualTransition transition = (VisualTransition)second;
+			place = (VisualPlace)first;
+			transition = (VisualTransition)second;
+			reverse = false;
+		} else if ((second instanceof VisualPlace) && (first instanceof VisualTransition)) {
+			place = (VisualPlace)second;
+			transition = (VisualTransition)first;
+			reverse = true;
+		}
+		if ((place != null) && (transition != null)) {
 			Container container = Hierarchy.getNearestContainer(transition);
 			VisualReplicaPlace replica = visualModel.createVisualReplica(place, container, VisualReplicaPlace.class);
-			Point2D splitPointInRootSpace = getReplicaPositionInRootSpace(readArc);
+			Point2D splitPointInRootSpace = getReplicaPositionInRootSpace(connection);
 			replica.setRootSpacePosition(splitPointInRootSpace);
-			LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(readArc, splitPointInRootSpace);
-			visualModel.remove(readArc);
+			LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPointInRootSpace);
+			visualModel.remove(connection);
 			try {
-				result = visualModel.connectUndirected(replica, transition);
+				if (connection instanceof VisualReadArc) {
+					result = visualModel.connectUndirected(replica, transition);
+				} else {
+					if (reverse) {
+						result = visualModel.connect(transition, replica);
+					} else {
+						result = visualModel.connect(replica, transition);
+					}
+				}
 				ConnectionHelper.addControlPoints(result, locationsInRootSpace);
 			} catch (InvalidConnectionException exeption) {
 			}
@@ -115,22 +148,27 @@ public class PetriNetUtils {
 		return result;
 	}
 
-	private static Point2D getReplicaPositionInRootSpace(VisualReadArc readArc) {
+	private static Point2D getReplicaPositionInRootSpace(VisualConnection connection) {
 		Point2D positionInRootSpace = null;
 		Point2D positionInLocalSpace = null;
-		ConnectionGraphic graphic = readArc.getGraphic();
+		ConnectionGraphic graphic = connection.getGraphic();
 		if (graphic instanceof Polyline) {
 			Polyline polyline = (Polyline)graphic;
-			ControlPoint cp = polyline.getFirstControlPoint();
+			ControlPoint cp = null;
+			if (connection.getFirst() instanceof VisualPlace) {
+				cp = polyline.getFirstControlPoint();
+			} else if (connection.getSecond() instanceof VisualPlace) {
+				cp = polyline.getLastControlPoint();
+			}
 			if (cp != null) {
 				positionInLocalSpace = cp.getPosition();
 			}
 		}
 		if (positionInLocalSpace == null) {
-			positionInLocalSpace = readArc.getSplitPoint();
+			positionInLocalSpace = connection.getSplitPoint();
 		}
 		if (positionInLocalSpace != null) {
-			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(readArc);
+			AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
 			positionInRootSpace = localToRootTransform.transform(positionInLocalSpace, null);
 		}
 		return positionInRootSpace;

@@ -23,8 +23,6 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,7 +62,6 @@ import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
@@ -170,14 +167,22 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 	}
 
 	public boolean hasMathConnection(Node first, Node second) {
-		boolean result = false;
-		if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
-			MathNode mathFirst = ((VisualComponent)first).getReferencedComponent();
-			MathNode mathSecond = ((VisualComponent)second).getReferencedComponent();
-			result = getMathModel().hasConnection(mathFirst, mathSecond);
-		}
-		return result;
+		MathNode mFirst = getMathReference(first);
+		MathNode mSecond = getMathReference(second);
+		return getMathModel().hasConnection(mFirst, mSecond);
 	}
+
+
+	public MathNode getMathReference(Node node) {
+		VisualComponent component = null;
+		if (node instanceof VisualComponent) {
+			component = (VisualComponent)node;
+		} else if (node instanceof VisualReplica) {
+			component = ((VisualReplica)node).getMaster();
+		}
+		return ((component == null) ? null : component.getReferencedComponent());
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override

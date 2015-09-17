@@ -105,9 +105,9 @@ public class VisualSTG extends AbstractVisualModel {
 		}
 		if (hasMathConnection(first, second)) {
 			if (hasMathConnection(second, first)) {
-				throw new InvalidConnectionException ("This arc already exists.");
-			} else {
 				throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
+			} else {
+				throw new InvalidConnectionException ("This arc already exists.");
 			}
 		}
 	}
@@ -124,8 +124,8 @@ public class VisualSTG extends AbstractVisualModel {
 				VisualImplicitPlaceArc con = (VisualImplicitPlaceArc)second;
 				VisualPlace place = makeExplicit(con);
 				connection = connect(first, place);
-			} else if (second instanceof VisualPlace) {
-				connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second, mConnection);
+			} else if ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace)) {
+				connection = createSimpleConnection((VisualNode)first, (VisualNode)second, mConnection);
 			}
 		} else if (first instanceof VisualImplicitPlaceArc) {
 			if (second instanceof VisualTransition) {
@@ -133,8 +133,8 @@ public class VisualSTG extends AbstractVisualModel {
 				VisualPlace place = makeExplicit(con);
 				connection = connect(place, second);
 			}
-		} else {
-			connection = createSimpleConnection((VisualComponent)first, (VisualComponent)second, mConnection);
+		} else if ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace)) {
+			connection = createSimpleConnection((VisualNode)first, (VisualNode)second, mConnection);
 		}
 		return connection;
 	}
@@ -155,20 +155,21 @@ public class VisualSTG extends AbstractVisualModel {
 		return connection;
 	}
 
-	private VisualConnection createSimpleConnection(final VisualComponent firstComponent, final VisualComponent secondComponent,
+	private VisualConnection createSimpleConnection(final VisualNode first, final VisualNode second,
 			MathConnection mConnection) throws InvalidConnectionException {
 
 		STG stg = (STG)getMathModel();
 		if (mConnection == null) {
-			MathNode firstRef = firstComponent.getReferencedComponent();
-			MathNode secondRef = secondComponent.getReferencedComponent();
+			MathNode firstRef = getMathReference(first);
+			MathNode secondRef = getMathReference(second);
 			ConnectionResult result = stg.connect(firstRef, secondRef);
 			mConnection = result.getSimpleResult();
 		}
-		VisualConnection connection = new VisualConnection(mConnection, firstComponent, secondComponent);
-		Hierarchy.getNearestContainer(firstComponent, secondComponent).add(connection);
+		VisualConnection connection = new VisualConnection(mConnection, first, second);
+		Hierarchy.getNearestContainer(first, second).add(connection);
 		return connection;
 	}
+
 
 	@Override
 	public void validateUndirectedConnection(Node first, Node second)	throws InvalidConnectionException {

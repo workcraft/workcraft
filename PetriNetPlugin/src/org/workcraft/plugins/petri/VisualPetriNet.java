@@ -98,9 +98,9 @@ public class VisualPetriNet extends AbstractVisualModel {
 		}
 		if (hasMathConnection(first, second)) {
 			if (hasMathConnection(second, first)) {
-				throw new InvalidConnectionException ("This arc already exists.");
-			} else {
 				throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
+			} else {
+				throw new InvalidConnectionException ("This arc already exists.");
 			}
 		}
 	}
@@ -109,16 +109,16 @@ public class VisualPetriNet extends AbstractVisualModel {
 	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 
-		VisualComponent firstComponent = (VisualComponent)first;
-		VisualComponent secondComponent = (VisualComponent)second;
 		if (mConnection == null) {
-			PetriNet petriNet = (PetriNet)getMathModel();
-			MathNode firstRef = firstComponent.getReferencedComponent();
-			MathNode secondRef = secondComponent.getReferencedComponent();
-			mConnection = petriNet.connect(firstRef, secondRef);
+			MathNode firstRef = getMathReference(first);
+			MathNode secondRef = getMathReference(second);
+			if ((firstRef != null) && (secondRef != null)) {
+				PetriNet petriNet = (PetriNet)getMathModel();
+				mConnection = petriNet.connect(firstRef, secondRef);
+			}
 		}
-		VisualConnection connection = new VisualConnection(mConnection, firstComponent, secondComponent);
-		Hierarchy.getNearestContainer(firstComponent, secondComponent).add(connection);
+		VisualConnection connection = new VisualConnection(mConnection, (VisualNode)first, (VisualNode)second);
+		Hierarchy.getNearestContainer(first, second).add(connection);
 		return connection;
 	}
 
