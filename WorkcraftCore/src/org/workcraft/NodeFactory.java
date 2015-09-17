@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.VisualComponentGeneratorAttribute;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
@@ -66,11 +67,11 @@ public class NodeFactory {
 		}
 	}
 
-	public static MathNode createNode(Class<?> cls) throws NodeCreationException {
+	@SuppressWarnings("unchecked")
+	public static <T extends Node> T createNode(Class<T> cls) throws NodeCreationException {
 		try {
 			Constructor<?> ctor = cls.getConstructor();
-			MathNode component = (MathNode)ctor.newInstance();
-			return component;
+			return (T)ctor.newInstance();
 		} catch (ClassCastException ex) {
 			throw new NodeCreationException (ex);
 		}	catch (SecurityException ex) {
@@ -85,14 +86,6 @@ public class NodeFactory {
 			throw new NodeCreationException (ex);
 		} catch (InvocationTargetException ex) {
 			throw new NodeCreationException (ex);
-		}
-	}
-
-	public static MathNode createNode(String className) throws NodeCreationException {
-		try {
-			return createNode (Class.forName(className));
-		} catch (ClassNotFoundException e) {
-			throw new NodeCreationException(e);
 		}
 	}
 

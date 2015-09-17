@@ -1,14 +1,11 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
-import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -16,7 +13,6 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
-import org.workcraft.util.GUI;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
@@ -35,7 +31,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 	}
 
 	@Override
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, "Click to create a component, then right-click on the component to add contacts.");
+	public String getHintMessage() {
+		return "Click to create a component, then right-click on the component to add contacts.";
 	}
+
 }

@@ -22,6 +22,7 @@
 package org.workcraft.dom;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
@@ -58,6 +59,8 @@ public interface Model extends NodeContext {
 	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
 
 	public Container getRoot();
+	public <R> Set<R> getPreset(Node node, Class<R> type);
+	public <R> Set<R> getPostset(Node node, Class<R> type);
 
 	public void add (Node node);
 	public void remove (Node node);

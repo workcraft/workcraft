@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
 public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel>  {
@@ -16,6 +17,7 @@ public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends
 	public TSrcModel getSrcModel();
 	public TDstModel getDstModel();
 	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap();
+	public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap();
 
 	public String convertNodeName(String srcName, Container container);
 	public Container getRefToDstPage(String ref);
@@ -26,6 +28,7 @@ public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends
 
 	public VisualPage convertPage(VisualPage srcPage);
 	public VisualComponent convertComponent(VisualComponent srcComponent);
+	public VisualReplica convertReplica(VisualReplica srcReplica);
 	public VisualGroup convertGroup(VisualGroup srcGroup);
 	public VisualConnection convertConnection(VisualConnection srcConnection);
 

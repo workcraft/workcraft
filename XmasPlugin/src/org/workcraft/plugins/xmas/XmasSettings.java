@@ -13,19 +13,33 @@ public class XmasSettings implements Settings {
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "XmasSettings";
 
+	private static final String keyShowContacts  = prefix + ".showContacts";
 	private static final String keyBorderWidth = prefix + ".borderWidth";
 	private static final String keyWireWidth  = prefix + ".wireWidth";
 	private static final String keyJasonFileName  = prefix + ".jasonFileName";
 
-	private static final double defaultBorderWidth = 0.1;
+	private static final boolean defaultShowContacts = false;
+	private static final double defaultBorderWidth = 0.06;
 	private static final double defaultWireWidth = 0.04;
 	private static final String defaultJasonFileName = "";
 
+	private static boolean showContacts = defaultShowContacts;
 	private static double borderWidth = defaultBorderWidth;
 	private static double wireWidth = defaultWireWidth;
 	private static String jasonFileName = defaultJasonFileName;
 
+
 	public XmasSettings() {
+		properties.add(new PropertyDeclaration<XmasSettings, Boolean>(
+				this, "Show contacts", Boolean.class, true, false, false) {
+			protected void setter(XmasSettings object, Boolean value) {
+				setShowContacts(value);
+			}
+			protected Boolean getter(XmasSettings object) {
+				return getShowContacts();
+			}
+		});
+
 		properties.add(new PropertyDeclaration<XmasSettings, Double>(
 				this, "Border width", Double.class, true, false, false) {
 			protected void setter(XmasSettings object, Double value) {
@@ -64,6 +78,7 @@ public class XmasSettings implements Settings {
 
 	@Override
 	public void load(Config config) {
+		setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
 		setBorderWidth (config.getDouble(keyBorderWidth, defaultBorderWidth));
 		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
 		setJasonFileName(config.getString(keyJasonFileName, defaultJasonFileName));
@@ -71,6 +86,7 @@ public class XmasSettings implements Settings {
 
 	@Override
 	public void save(Config config) {
+		config.setBoolean(keyShowContacts, getShowContacts());
 		config.setDouble(keyBorderWidth, getBorderWidth());
 		config.setDouble(keyWireWidth, getWireWidth());
 		config.set(keyJasonFileName, getJasonFileName());
@@ -84,6 +100,14 @@ public class XmasSettings implements Settings {
 	@Override
 	public String getName() {
 		return "xMAS Circuit";
+	}
+
+	public static boolean getShowContacts() {
+		return showContacts;
+	}
+
+	public static void setShowContacts(boolean value) {
+		showContacts = value;
 	}
 
 	public static double getBorderWidth() {

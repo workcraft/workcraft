@@ -156,9 +156,9 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 				dir = dir.flip();
 			}
 			if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
-				AffineTransform at = new AffineTransform();
-				at.quadrantRotate(-1);
-				bb = BoundingBoxHelper.transform(bb, at);
+				AffineTransform rotateTransform = new AffineTransform();
+				rotateTransform.quadrantRotate(-1);
+				bb = BoundingBoxHelper.transform(bb, rotateTransform);
 			}
 		}
 		return bb;
@@ -200,9 +200,9 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 				dir = dir.flip();
 			}
 			if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
-				AffineTransform at = new AffineTransform();
-				at.quadrantRotate(-1);
-				bb = BoundingBoxHelper.transform(bb, at);
+				AffineTransform rotateTransform = new AffineTransform();
+				rotateTransform.quadrantRotate(-1);
+				bb = BoundingBoxHelper.transform(bb, rotateTransform);
 			}
 		}
 		return bb;
@@ -240,11 +240,11 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 				dir = dir.flip();
 			}
 
-			AffineTransform transform = g.getTransform();
-			AffineTransform at = new AffineTransform();
+			AffineTransform savedTransform = g.getTransform();
 			if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
-				at.quadrantRotate(-1);
-				g.transform(at);
+				AffineTransform rotateTransform = new AffineTransform();
+				rotateTransform.quadrantRotate(-1);
+				g.transform(rotateTransform);
 			}
 
 			double dXArrow = -0.15;
@@ -256,7 +256,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
 			g.translate(offset.getX(), offset.getY());
 			renderingResult.draw(g);
-			g.setTransform(transform);
+			g.setTransform(savedTransform);
 		}
 	}
 

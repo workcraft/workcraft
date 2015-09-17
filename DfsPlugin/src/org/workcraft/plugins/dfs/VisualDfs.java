@@ -161,28 +161,6 @@ public class VisualDfs extends AbstractVisualModel {
 		return ((Dfs)getMathModel()).getName(component.getReferencedComponent());
 	}
 
-	public <R> Set<R> getPreset(Node node, Class<R> type) {
-		Set<R> result = new HashSet<R>();
-		for (Node pred: getPreset(node)) {
-			try {
-				result.add(type.cast(pred));
-			} catch (ClassCastException e) {
-			}
-		}
-		return result;
-	}
-
-	public <R> Set<R> getPostset(Node node, Class<R> type) {
-		Set<R> result = new HashSet<R>();
-		for (Node pred: getPostset(node)) {
-			try {
-				result.add(type.cast(pred));
-			} catch (ClassCastException e) {
-			}
-		}
-		return result;
-	}
-
 	public <R> Set<R> getRPostset(Node node, Class<R> rType) {
 		Set<R> result = new HashSet<R>();
 		Set<Node> visited = new HashSet<Node>();

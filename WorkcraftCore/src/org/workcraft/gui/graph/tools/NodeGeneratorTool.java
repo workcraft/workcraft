@@ -126,8 +126,13 @@ public class NodeGeneratorTool extends AbstractTool {
 		if (warningMessage != null) {
 			GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
 		} else {
-			GUI.drawEditorMessage(editor, g, Color.BLACK, generator.getText());
+			super.drawInScreenSpace(editor, g);
 		}
+	}
+
+	@Override
+	public String getHintMessage() {
+		return generator.getText();
 	}
 
 	@Override

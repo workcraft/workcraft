@@ -22,6 +22,7 @@
 package org.workcraft.plugins.stg;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,19 +47,11 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 	private MathConnection refCon1;
 	private MathConnection refCon2;
 
-	private static Color[] TokenColors = {
-		Color.RED, Color.GREEN, Color.BLUE,
-		Color.RED.brighter(), Color.GREEN.brighter(), Color.BLUE.brighter(),
-		Color.RED.darker(), Color.GREEN.darker(), Color.BLUE.darker() };
-
 	private static double tokenSpaceSize = 0.8;
 	private static double singleTokenSize = tokenSpaceSize / 1.9;
 	private static double multipleTokenSeparation = 0.0125;
 
 	protected Color tokenColor = CommonVisualSettings.getBorderColor();
-	private boolean isTokenColorGenerator = false;
-	private int tokenColorIndex = 0;
-
 
 	public VisualImplicitPlaceArc () {
 		super();
@@ -116,7 +109,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		});
 	}
 
-	public void setImplicitPlaceArcDependencies (MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
+	public void setImplicitPlaceArcDependencies(MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
 		this.refCon1 = refCon1;
 		this.refCon2 = refCon2;
 		this.implicitPlace = implicitPlace;
@@ -129,7 +122,8 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		super.draw(r);
 		int tokens = implicitPlace.getTokens();
 		Point2D p = getPointOnConnection(0.5);
-		r.getGraphics().translate(p.getX(), p.getY());
+		Graphics2D g = r.getGraphics();
+		g.translate(p.getX(), p.getY());
 		VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, tokenColor);
 	}
 
@@ -153,27 +147,6 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 		ret.add(refCon1);
 		ret.add(refCon2);
 		return ret;
-	}
-
-	public boolean isTokenColorGenerator() {
-		return this.isTokenColorGenerator;
-	}
-
-	public void setTokenColorGenerator(boolean value) {
-		this.isTokenColorGenerator = value;
-	}
-
-	public void renewTokenColor(boolean random) {
-		int nextTokenColorIndex = 0;
-		if (!random) {
-			nextTokenColorIndex = (tokenColorIndex+1) % TokenColors.length;
-		} else {
-			do {
-				nextTokenColorIndex = (int)(Math.random() * TokenColors.length);
-			} while (nextTokenColorIndex == tokenColorIndex);
-		}
-		tokenColorIndex = nextTokenColorIndex;
-		setTokenColor(TokenColors[tokenColorIndex]);
 	}
 
 	public Color getTokenColor() {

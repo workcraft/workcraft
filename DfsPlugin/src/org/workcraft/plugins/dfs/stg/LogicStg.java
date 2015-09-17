@@ -26,10 +26,10 @@ public class LogicStg extends NodeStg {
 
 	@Override
 	public List<VisualSignalTransition> getAllTransitions() {
-		Set<VisualSignalTransition> tmp = new HashSet<VisualSignalTransition>();
+		Set<VisualSignalTransition> tmp = new HashSet<>();
 		tmp.addAll(CRs.values());
 		tmp.addAll(CFs.values());
-		List<VisualSignalTransition> result = new ArrayList<VisualSignalTransition>();
+		List<VisualSignalTransition> result = new ArrayList<>();
 		result.addAll(tmp);
 		return result;
 	}
@@ -38,4 +38,5 @@ public class LogicStg extends NodeStg {
 	public List<VisualPlace> getAllPlaces() {
 		return Arrays.asList(C0, C1);
 	}
+
 }

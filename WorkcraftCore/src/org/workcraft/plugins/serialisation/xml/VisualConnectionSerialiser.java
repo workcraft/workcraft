@@ -30,6 +30,7 @@ import org.workcraft.serialisation.xml.NodeSerialiser;
 import org.workcraft.util.XmlUtil;
 
 public class VisualConnectionSerialiser implements CustomXMLSerialiser {
+
 	public void serialise(Element element, Object object,
 			ReferenceProducer internalReferences,
 			ReferenceProducer externalReferences,

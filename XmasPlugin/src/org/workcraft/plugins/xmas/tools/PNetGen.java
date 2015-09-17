@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
@@ -11,16 +12,38 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.workcraft.Tool;
+import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
+import org.workcraft.plugins.xmas.components.FunctionComponent;
+import org.workcraft.plugins.xmas.components.SourceComponent;
+import org.workcraft.plugins.xmas.components.VisualSourceComponent;
+import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.plugins.xmas.XmasSettings;
 
 
 public class PNetGen implements Tool {
 
+	//private final Framework framework;
+
+	//VisualCircuit circuit;
+	//private CheckCircuitTask checkTask;
+
+	//ProgressMonitor<? super MpsatChainResult> monitor;
+
+	/*public CircuitTestTool(Framework framework, Workspace ws) {
+		this.framework = framework;
+//		this.ws = ws;
+	}*/
+
+	private static int syncflag=0;
+	private static int dl=1;
 	private static boolean printoutput=true;
 
 	private static class Ids {
+
 		   String a;
 		   String b;
 
@@ -47,10 +70,17 @@ public class PNetGen implements Tool {
 
 	static List<Info> lst = new ArrayList<Info>();
 	static List<Ids> lst_ = new ArrayList<Ids>();
+	static List<Info> slsti = new ArrayList<Info>();
+	static List<Info> slsto = new ArrayList<Info>();
+	static List<Info> slsto_ = new ArrayList<Info>();
+
 
 	public void initlist() {
 		lst.clear();
 		lst_.clear();
+		slsti.clear();
+		slsto.clear();
+		slsto_.clear();
 	}
 
 	public String getDisplayName() {
@@ -78,9 +108,18 @@ public class PNetGen implements Tool {
 	    String str = "";
 
 	    for(int i=0;i<lst.size();i++) {
-	      //System.out.print("id=" + id + "i" + i + "=" + lst.get(i).a);
-	      //if(id.equals(lst.get(i).a)) System.out.print("found match");
 	      if(id.equals(lst.get(i).a)) str = lst.get(i).c;
+	    }
+	    return str;
+	}
+
+	private static String search_lst_(String id1,String id2) {
+	    String str = "";
+
+	    for(int i=0;i<lst.size();i++) {
+	      if(id2.equals(lst.get(i).a) && id1.equals(lst.get(i).b)) {
+	        str = lst.get(i).c;
+	      }
 	    }
 	    return str;
 	}
@@ -162,6 +201,26 @@ public class PNetGen implements Tool {
 	    return str;
 	}
 
+	private static int search_slsto_(String id) {
+		int i, pos=0;
+
+		for(i=0;i<slsto_.size();i++) {
+			if(id.equals(slsto_.get(i).b)) {
+				pos=i;
+			}
+		}
+		return pos;
+	}
+
+	private static void create_slsto() {  //patch new
+		int i, j, pos=0;
+
+		for(i=0;i<slsti.size();i++) {
+			pos=search_slsto_(slsti.get(i).b);
+			slsto.add(new Info(slsto_.get(pos).a,slsto_.get(pos).b,"",slsto_.get(pos).d));
+		}
+	}
+
 	private static void writeblock(String id, String label, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("p_"+id+label+"0  t_"+id+label+"plus ");
@@ -184,7 +243,36 @@ public class PNetGen implements Tool {
 	    writer.println("t_"+id+label2+"  p_"+id+label1);
 	}
 
+	private static String checkreplacei(String id1,String id) {
+
+	    for(int i=0;i<slsti.size();i++) {
+	      if(slsti.get(i).b.equals(id1)) {
+	        if(slsti.get(i).a.equals(id)) {
+	          return "Qs" + i;
+	        }
+	      }
+	    }
+	    return id1;
+	}
+
+	private static String checkreplaceo(String id1,String id) {
+
+	    for(int i=0;i<slsto.size();i++) {
+	      if(slsto.get(i).b.equals(id1)) {
+	        if(slsto.get(i).a.equals(id)) {
+	          return "Qs" + i;
+	        }
+	      }
+	    }
+	    return id1;
+	}
+
 	private static void writelink(String id, String id1, String label1, String label2, PrintWriter writer) {
+		if(id1.contains("Sync")) {
+		      //id1=checkreplaceo(id1,id); //patch
+			  String s = id1.replace("Sync",""); //new
+		      id1 = "Qs" + s;                    //new
+		}
 		if(printoutput) {
 			System.out.println("p_"+id1+label1+"  t_"+id+label2);
 			System.out.println("t_"+id+label2+"  p_"+id1+label1);
@@ -194,12 +282,22 @@ public class PNetGen implements Tool {
 	}
 
 	private static void writelinkp(String id, String id1, String label1, String label2, String idp, PrintWriter writer) {
-	    if(idp.equals("0")) writelink(id, id1, "a"+label1, label2, writer);
+		if(id1.contains("Sync")) {
+		      //id1=checkreplacei(id1,id); //patch
+			  String s = id1.replace("Sync",""); //new
+		      id1 = "Qs" + s;                    //new
+		}
+		if(idp.equals("0")) writelink(id, id1, "a"+label1, label2, writer);
 	    else if(idp.equals("1")) writelink(id, id1, "b"+label1, label2, writer);
 	    else writelink(id, id1, "i"+label1, label2, writer);
 	}
 
 	private static void writelinki(String id, String id1, String label1, String label2, String idi, PrintWriter writer) {
+		if(id1.contains("Sync")) {
+		      //id1=checkreplaceo(id1,id); //patch
+			  String s = id1.replace("Sync",""); //new
+		      id1 = "Qs" + s;                    //new
+		}
 		if(idi.equals("a")) writelink(id, id1, "a"+label1, label2, writer);
 		else if(idi.equals("b")) writelink(id, id1, "b"+label1, label2, writer);
 		else writelink(id, id1, "o"+label1, label2, writer);
@@ -246,133 +344,117 @@ public class PNetGen implements Tool {
 	    writer.println("priority t_"+id+label+"minus"+n+" "+p);
 	}
 
-	private static void gensource(String id, String id1, String idp, JsonNode y, PrintWriter writer) {
+	private static void gensource(String id, String id1, String idp, JsonNode y, int fieldgr, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("//gensource " + id);
 		}
 	    writer.println("//gensource " + id);
+	    if(fieldgr>0) {
+	    	System.out.println("//gr " + fieldgr);
+		    writer.println("//gr " + fieldgr);
+	    }
 	    writemarking(id, "_oracle", writer);
-	    writepriority(id, "_oracle", 2, writer);
 	    writeblock(id, "_oracle", writer);
 	    writemarking(id, "o_irdy", writer);
-	    writepriority(id, "o_irdy", 3, writer);
 	    writeblock(id, "o_irdy", writer);
-	    //writer.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus1");
-	    //writer.println("t_"+id+"o_irdyplus1  p_"+id+"o_irdy1");
 	    writebidir(id, "_oracle0", "o_irdyminus", writer);
 	    writebidir(id, "_oracle1", "o_irdyplus", writer);
 	    writelinkp(id, id1, "_trdy1", "o_irdyminus", idp, writer);
-	    //if(idp.equals("0")) writelink(id, id1, "a_trdy1", "o_irdyminus", writer);
-	    //else if(idp.equals("1")) writelink(id, id1, "b_trdy1", "o_irdyminus", writer);
-	    //else writelink(id, id1, "i_trdy1", "o_irdyminus", writer);
 	}
 
-	private static void gensink(String id,PrintWriter writer) {
+	private static void gensink(String id, int fieldgr, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("//gensink " + id);
 		}
 	    writer.println("//gensink " + id);
+	    if(fieldgr>0) {
+	    	System.out.println("//gr " + fieldgr);
+		    writer.println("//gr " + fieldgr);
+	    }
 	    writemarking(id, "_oracle", writer);
-	    writepriority(id, "_oracle", 2, writer);
 	    writeblock(id, "_oracle", writer);
 	    writemarking(id, "i_trdy", writer);
-	    writepriority(id, "i_trdy", 3, writer);
 	    writeblock(id, "i_trdy", writer);
-	    //writer.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus1");
-	    //writer.println("t_"+id+"i_trdyplus1  p_"+id+"i_trdy1");
 	    writebidir(id, "_oracle0", "i_trdyminus", writer);
 	    writebidir(id, "_oracle1", "i_trdyplus", writer);
-	    //writebidir(id, "i_irdy0", "i_trdyplus1", writer);
 	    String id2 = searchlist(id);
 	    String id3 = searchlist_(id);
-	    //writelink(id, id2, "o_irdy0", "i_trdyplus1", writer);
-	//printsearchlist();
 	    if(id3.equals("a")) writelink(id, id2, "a_irdy1", "i_trdyminus", writer);
 	    else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "i_trdyminus", writer);
 	    else writelink(id, id2, "o_irdy1", "i_trdyminus", writer);
 	}
 
-	private static void genfunction(String id, String id1, String idp, JsonNode y, PrintWriter writer) {
+	private static void genfunction(String id, String id1, String idp, JsonNode y,  int fieldgr, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("//genfunction " + id);
 		}
 	    writer.println("//genfunction " + id);
+	    if(fieldgr>0) {
+	    	System.out.println("//gr " + fieldgr);
+		    writer.println("//gr " + fieldgr);
+	    }
 	    writemarking(id, "o_irdy", writer);
-	    writepriority(id, "o_irdy", 1, writer);
 	    writeblock(id, "o_irdy", writer);
 	    writemarking(id, "i_trdy", writer);
-	    writepriority(id, "i_trdy", 1, writer);
 	    writeblock(id, "i_trdy", writer);
 	    String id2 = searchlist(id);
 	    String id3 = searchlist_(id);
-	    //writelink(id, id2, "o_irdy0", "o_irdyminus", writer);
 	    if(id3.equals("a")) writelink(id, id2, "a_irdy0", "o_irdyminus", writer);
 	    else if(id3.equals("b")) writelink(id, id2, "b_irdy0", "o_irdyminus", writer);
 	    else writelink(id, id2, "o_irdy0", "o_irdyminus", writer);
-	    //writelink(id, id2, "o_irdy1", "o_irdyplus", writer);
 	    if(id3.equals("a")) writelink(id, id2, "a_irdy1", "o_irdyplus", writer);
 	    else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "o_irdyplus", writer);
 	    else writelink(id, id2, "o_irdy1", "o_irdyplus", writer);
-
-	    //writelink(id, id1, "i_trdy0", "i_trdyminus", writer);
+//writer.println("Function checking id = " + ' ' + id + "id2 = " + ' ' + id2);
 	    writelinkp(id, id1, "_trdy0", "i_trdyminus", idp, writer);
-	    //writelink(id, id1, "i_trdy1", "i_trdyplus", writer);
 	    writelinkp(id, id1, "_trdy1", "i_trdyplus", idp, writer);
+
 	}
 
-	private static void genfork(String id, String id1, String id2, String idp1, String idp2, JsonNode y, PrintWriter writer) {
+	private static void genfork(String id, String id1, String id2, String idp1, String idp2, JsonNode y,  int fieldgr, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("//genfork " + id);
 		}
 	    writer.println("//genfork " + id);
+	    if(fieldgr>0) {
+	    	System.out.println("//gr " + fieldgr);
+		    writer.println("//gr " + fieldgr);
+	    }
 	    writemarking(id, "a_irdy", writer);
-	    writepriority(id, "a_irdy", 1, writer);
 	    writeblock(id, "a_irdy", writer);
-	    writepriority__(id, "a_irdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"a_irdy1  t_"+id+"a_irdyminus1");
 			System.out.println("t_"+id+"a_irdyminus1  p_"+id+"a_irdy0");
 		}
 	    writer.println("p_"+id+"a_irdy1  t_"+id+"a_irdyminus1");
 	    writer.println("t_"+id+"a_irdyminus1  p_"+id+"a_irdy0");
-	    //writeblock(id, "a_trdy", writer);
 	    writemarking(id, "b_irdy", writer);
-	    writepriority(id, "b_irdy", 1, writer);
 	    writeblock(id, "b_irdy", writer);
-	    writepriority__(id, "b_irdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"b_irdy1  t_"+id+"b_irdyminus1");
 			System.out.println("t_"+id+"b_irdyminus1  p_"+id+"b_irdy0");
 		}
 	    writer.println("p_"+id+"b_irdy1  t_"+id+"b_irdyminus1");
 	    writer.println("t_"+id+"b_irdyminus1  p_"+id+"b_irdy0");
-	    //writeblock(id, "b_trdy", writer);
 	    writemarking(id, "i_trdy", writer);
-	    writepriority(id, "i_trdy", 1, writer);
 	    writeblock(id, "i_trdy", writer);
-	    writepriority__(id, "i_trdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus1");
 			System.out.println("t_"+id+"i_trdyminus1  p_"+id+"i_trdy0");
 		}
 	    writer.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus1");
 	    writer.println("t_"+id+"i_trdyminus1  p_"+id+"i_trdy0");
-	    //writeblock(id, "i_irdy", writer);
 	    String id2_ = searchlist(id);
 	    String id3 = searchlist_(id);
-	    //writelink(id, id2_, "o_irdy0", "a_irdyminus1", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "a_irdyminus1", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "a_irdyminus1", writer);
 	    else writelink(id, id2_, "o_irdy0", "a_irdyminus1", writer);
-	    //writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "a_irdyplus", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "a_irdyplus", writer);
 	    else writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
-	    //writelink(id, id2_, "o_irdy0", "b_irdyminus1", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "b_irdyminus1", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "b_irdyminus1", writer);
 	    else writelink(id, id2_, "o_irdy0", "b_irdyminus1", writer);
-	    //writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "b_irdyplus", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "b_irdyplus", writer);
 	    else writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
@@ -384,46 +466,42 @@ public class PNetGen implements Tool {
 	    writelinkp(id, id2, "_trdy1", "i_trdyplus", idp2, writer);
 	    writelinkp(id, id1, "_trdy0", "i_trdyminus", idp1, writer);
 	    writelinkp(id, id2, "_trdy0", "i_trdyminus1", idp2, writer);
+
 	}
 
-	private static void genjoin(String id, String id1, String idp, JsonNode y, PrintWriter writer) {
+	private static void genjoin(String id, String id1, String idp, JsonNode y,  int fieldgr, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("//genjoin " + id);
 		}
 	    writer.println("//genjoin " + id);
+	    if(fieldgr>0) {
+	    	System.out.println("//gr " + fieldgr);
+		    writer.println("//gr " + fieldgr);
+	    }
 	    writemarking(id, "a_trdy", writer);
-	    writepriority(id, "a_trdy", 1, writer);
 	    writeblock(id, "a_trdy", writer);
-	    writepriority__(id, "a_trdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"a_trdy1  t_"+id+"a_trdyminus1");
 			System.out.println("t_"+id+"a_trdyminus1  p_"+id+"a_trdy0");
 		}
 	    writer.println("p_"+id+"a_trdy1  t_"+id+"a_trdyminus1");
 	    writer.println("t_"+id+"a_trdyminus1  p_"+id+"a_trdy0");
-	    //writeblock(id, "a_irdy", writer);
 	    writemarking(id, "b_trdy", writer);
-	    writepriority(id, "b_trdy", 1, writer);
 	    writeblock(id, "b_trdy", writer);
-	    writepriority__(id, "b_trdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"b_trdy1  t_"+id+"b_trdyminus1");
 			System.out.println("t_"+id+"b_trdyminus1  p_"+id+"b_trdy0");
 		}
 	    writer.println("p_"+id+"b_trdy1  t_"+id+"b_trdyminus1");
 	    writer.println("t_"+id+"b_trdyminus1  p_"+id+"b_trdy0");
-	    //writeblock(id, "b_irdy", writer);
 	    writemarking(id, "o_irdy", writer);
-	    writepriority(id, "o_irdy", 1, writer);
 	    writeblock(id, "o_irdy", writer);
-	    writepriority__(id, "o_irdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"o_irdy1  t_"+id+"o_irdyminus1");
 			System.out.println("t_"+id+"o_irdyminus1  p_"+id+"o_irdy0");
 		}
 	    writer.println("p_"+id+"o_irdy1  t_"+id+"o_irdyminus1");
 	    writer.println("t_"+id+"o_irdyminus1  p_"+id+"o_irdy0");
-	    //writeblock(id, "o_trdy", writer);
 	    String id3 = searchlist_first(id);
 	    String id4 = searchlist_second(id);
 	    String id5 = searchlist_first_(id);
@@ -436,52 +514,52 @@ public class PNetGen implements Tool {
 	    writelinki(id, id4, "_irdy1", "o_irdyplus", id6, writer);
 	    writelinki(id, id3, "_irdy0", "o_irdyminus", id5, writer);
 	    writelinki(id, id4, "_irdy0", "o_irdyminus1", id6, writer);
-	//printsearchlist();
 	    writelinkp(id, id1, "_trdy0", "a_trdyminus", idp, writer);
 	    writelinkp(id, id1, "_trdy1", "a_trdyplus", idp, writer);
 	    writelinkp(id, id1, "_trdy0", "b_trdyminus", idp, writer);
 	    writelinkp(id, id1, "_trdy1", "b_trdyplus", idp, writer);
+
 	}
 
-	private static void genswitch(String id, String id1, String id2, String idp1, String idp2, JsonNode y, PrintWriter writer) {
+	private static void genswitch(String id, String id1, String id2, String idp1, String idp2, JsonNode y,  int fieldgr, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("//genswitch " + id);
 		}
 	    writer.println("//genswitch " + id);
+	    if(fieldgr>0) {
+	    	System.out.println("//gr " + fieldgr);
+		    writer.println("//gr " + fieldgr);
+	    }
 	    writemarking(id, "_sw", writer);
-	    writepriority(id, "_sw", 1, writer);
 	    writeblock(id, "_sw", writer);
 	    writemarking(id, "a_irdy", writer);
-	    writepriority(id, "a_irdy", 1, writer);
 	    writeblock(id, "a_irdy", writer);
+writer.println("p_"+id+"a_irdy1  t_"+id+"a_irdyminus1");
+writer.println("t_"+id+"a_irdyminus1  p_"+id+"a_irdy0");
 	    writemarking(id, "b_irdy", writer);
-	    writepriority(id, "b_irdy", 1, writer);
 	    writeblock(id, "b_irdy", writer);
+writer.println("p_"+id+"b_irdy1  t_"+id+"b_irdyminus1");
+writer.println("t_"+id+"b_irdyminus1  p_"+id+"b_irdy0");
 	    writemarking(id, "i_trdy", writer);
-	    writepriority(id, "i_trdy", 1, writer);
 	    writeblock(id, "i_trdy", writer);
-	    writepriority_(id, "i_trdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus1");
 			System.out.println("t_"+id+"i_trdyplus1  p_"+id+"i_trdy1");
 		}
 	    writer.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus1");
 	    writer.println("t_"+id+"i_trdyplus1  p_"+id+"i_trdy1");
-	    writepriority__(id, "i_trdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus1");
 			System.out.println("t_"+id+"i_trdyminus1  p_"+id+"i_trdy0");
 		}
 	    writer.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus1");
 	    writer.println("t_"+id+"i_trdyminus1  p_"+id+"i_trdy0");
-	    writepriority__(id, "i_trdy", 2, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus2");
 			System.out.println("t_"+id+"i_trdyminus2  p_"+id+"i_trdy0");
 		}
 	    writer.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus2");
 	    writer.println("t_"+id+"i_trdyminus2  p_"+id+"i_trdy0");
-	    writepriority__(id, "i_trdy", 3, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus3");
 			System.out.println("t_"+id+"i_trdyminus3  p_"+id+"i_trdy0");
@@ -489,7 +567,9 @@ public class PNetGen implements Tool {
 	    writer.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus3");
 	    writer.println("t_"+id+"i_trdyminus3  p_"+id+"i_trdy0");
 	    writebidir(id, "_sw0", "b_irdyplus", writer);
+writebidir(id, "_sw1", "b_irdyminus1", writer);
 	    writebidir(id, "_sw1", "a_irdyplus", writer);
+writebidir(id, "_sw0", "a_irdyminus1", writer);
 	    writebidir(id, "a_irdy1", "i_trdyplus", writer);
 	    writebidir(id, "b_irdy1", "i_trdyplus1", writer);
 	    writebidir(id, "a_irdy0", "i_trdyminus3", writer);
@@ -498,19 +578,15 @@ public class PNetGen implements Tool {
 	    writebidir(id, "b_irdy0", "i_trdyminus1", writer);
 	    String id2_ = searchlist(id);
 	    String id3 = searchlist_(id);
-	    //writelink(id, id2_, "o_irdy0", "a_irdyminus", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "a_irdyminus", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "a_irdyminus", writer);
 	    else writelink(id, id2_, "o_irdy0", "a_irdyminus", writer);
-	    //writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "a_irdyplus", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "a_irdyplus", writer);
 	    else writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
-	    //writelink(id, id2_, "o_irdy0", "b_irdyminus", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "b_irdyminus", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "b_irdyminus", writer);
 	    else writelink(id, id2_, "o_irdy0", "b_irdyminus", writer);
-	    //writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
 	    if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "b_irdyplus", writer);
 	    else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "b_irdyplus", writer);
 	    else writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
@@ -520,27 +596,28 @@ public class PNetGen implements Tool {
 	    writelinkp(id, id1, "_trdy0", "i_trdyminus1", idp1, writer);
 	    writelinkp(id, id2, "_trdy0", "i_trdyminus", idp2, writer);
 	    writelinkp(id, id2, "_trdy0", "i_trdyminus2", idp2, writer);
+
 	}
 
-	private static void genmerge(String id, String id1, String idp, JsonNode y, PrintWriter writer) {
+	private static void genmerge(String id, String id1, String idp, JsonNode y,  int fieldgr, PrintWriter writer) {
 		if(printoutput) {
 			System.out.println("//genmerge " + id);
 		}
 	    writer.println("//genmerge " + id);
+	    if(fieldgr>0) {
+	    	System.out.println("//gr " + fieldgr);
+		    writer.println("//gr " + fieldgr);
+	    }
 	    writemarking(id, "_u", writer);
-	    writepriority(id, "_u", 1, writer);
 	    writeblock(id, "_u", writer);
 	    writemarking(id, "a_trdy", writer);
-	    writepriority(id, "a_trdy", 1, writer);
 	    writeblock(id, "a_trdy", writer);
-	    writepriority__(id, "a_trdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"a_trdy1  t_"+id+"a_trdyminus1");
 			System.out.println("t_"+id+"a_trdyminus1  p_"+id+"a_trdy0");
 		}
 	    writer.println("p_"+id+"a_trdy1  t_"+id+"a_trdyminus1");
 	    writer.println("t_"+id+"a_trdyminus1  p_"+id+"a_trdy0");
-	    writepriority__(id, "a_trdy", 2, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"a_trdy1  t_"+id+"a_trdyminus2");
 			System.out.println("t_"+id+"a_trdyminus2  p_"+id+"a_trdy0");
@@ -548,16 +625,13 @@ public class PNetGen implements Tool {
 	    writer.println("p_"+id+"a_trdy1  t_"+id+"a_trdyminus2");
 	    writer.println("t_"+id+"a_trdyminus2  p_"+id+"a_trdy0");
 	    writemarking(id, "b_trdy", writer);
-	    writepriority(id, "b_trdy", 1, writer);
 	    writeblock(id, "b_trdy", writer);
-	    writepriority__(id, "b_trdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"b_trdy1  t_"+id+"b_trdyminus1");
 			System.out.println("t_"+id+"b_trdyminus1  p_"+id+"b_trdy0");
 		}
 	    writer.println("p_"+id+"b_trdy1  t_"+id+"b_trdyminus1");
 	    writer.println("t_"+id+"b_trdyminus1  p_"+id+"b_trdy0");
-	    writepriority__(id, "b_trdy", 2, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"b_trdy1  t_"+id+"b_trdyminus2");
 			System.out.println("t_"+id+"b_trdyminus2  p_"+id+"b_trdy0");
@@ -565,9 +639,7 @@ public class PNetGen implements Tool {
 	    writer.println("p_"+id+"b_trdy1  t_"+id+"b_trdyminus2");
 	    writer.println("t_"+id+"b_trdyminus2  p_"+id+"b_trdy0");
 	    writemarking(id, "o_irdy", writer);
-	    writepriority(id, "o_irdy", 1, writer);
 	    writeblock(id, "o_irdy", writer);
-	    writepriority_(id, "o_irdy", 1, 1, writer);
 		if(printoutput) {
 			System.out.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus1");
 			System.out.println("t_"+id+"o_irdyplus1  p_"+id+"o_irdy1");
@@ -598,21 +670,26 @@ public class PNetGen implements Tool {
 	    writelinkp(id, id1, "_trdy1", "b_trdyplus", idp, writer);
 	    writelinkp(id, id1, "_trdy0", "a_trdyminus1", idp, writer);
 	    writelinkp(id, id1, "_trdy0", "b_trdyminus1", idp, writer);
+
 	}
 
-	private static void genqueue(String id, String id1, String idp, JsonNode y, PrintWriter writer) {
+	private static void genqueue(String id, String id1, String idp, JsonNode y, int init, String gpf,  int fieldgr, PrintWriter writer) {
 		if(printoutput) {
-			System.out.println("//genqueue " + id);
+			System.out.println("//genqueue " + id + " " + gpf);
 		}
-	    writer.println("//genqueue " + id);
-	    writemarking(id, "o_irdy", writer);
-	    writepriority(id, "o_irdy", 2, writer);
+	    writer.println("//genqueue " + id + " " + gpf);
+	    if(fieldgr>0) {
+	    	System.out.println("//g " + fieldgr);
+		    writer.println("//g " + fieldgr);
+	    }
+	    if(init==0) writemarking(id, "o_irdy", writer);
+	    else writemarking_(id, "o_irdy", writer);
 	    writeblock(id, "o_irdy", writer);
-	    writemarking_(id, "i_trdy", writer);
-	    writepriority(id, "i_trdy", 2, writer);
+	    if(init==0) writemarking_(id, "i_trdy", writer);
+	    else writemarking(id, "i_trdy", writer);
 	    writeblock(id, "i_trdy", writer);
-	    writemarking(id, "_q", writer);
-	    writepriority(id, "_q", 2, writer);
+	    if(init==0) writemarking(id, "_q", writer);
+	    else writemarking_(id, "_q", writer);
 	    writeblock(id, "_q", writer);
 	    writebidir(id, "_q0", "o_irdyminus", writer);
 	    writebidir(id, "_q0", "i_trdyplus", writer);
@@ -620,29 +697,33 @@ public class PNetGen implements Tool {
 	    writebidir(id, "_q1", "i_trdyminus", writer);
 	    writebidir(id, "o_irdy1", "_qminus", writer);
 	    writebidir(id, "i_trdy1", "_qplus", writer);
-	    //writebidir(id, "i_irdy1", "_qplus", writer);
 	    String id2 = searchlist(id);
 	    String id3 = searchlist_(id);
-	    //writelink(id, id2, "o_irdy1", "_qplus", writer);
 	    if(id3.equals("a")) writelink(id, id2, "a_irdy1", "_qplus", writer);
 	    else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "_qplus", writer);
 	    else writelink(id, id2, "o_irdy1", "_qplus", writer);
-	    //writebidir(id, "o_trdy1", "_qminus", writer);
-	    //writelink(id, id1, "i_trdy1", "_qminus", writer);
 	    writelinkp(id, id1, "_trdy1", "_qminus", idp, writer);
+	    if(dl==1) {
+	        if(!id2.contains("Src") && !id2.contains("Qu") && !id2.contains("Sync")) writelink(id, id2, "_dl1", "_qplus", writer);
+	    }
 	}
 
-	private static void genqueue2p(int size, String id, String id1, String idp, JsonNode y, PrintWriter writer) {
+	private static void genqueue2p(int size, String id, String id1, String idp, JsonNode y, int init, String gpf,  int fieldgr, PrintWriter writer) {
 	    int inc=0;
 		if(printoutput) {
-			System.out.println("//genqueue2p " + id);
+			if(size==2) System.out.println("//genqueue2p " + id + " " + gpf);
+			if(size==3) System.out.println("//genqueue3p " + id + " " + gpf);
 		}
-	    writer.println("//genqueue2p " + id);
-	    writemarking(id, "o_irdy", writer);
-	    writepriority(id, "o_irdy", 2, writer);
+	    if(size==2) writer.println("//genqueue2p " + id + " " + gpf);
+	    if(size==3) writer.println("//genqueue3p " + id + " " + gpf);
+	    if(fieldgr>0) {
+	    	System.out.println("//g " + fieldgr);
+		    writer.println("//g " + fieldgr);
+	    }
+	    if(init>0) writemarking_(id, "o_irdy", writer);
+	    else writemarking(id, "o_irdy", writer);
 	    writeblock(id, "o_irdy", writer);
 	    for(int i=1;i<size;i++) {
-	      writepriority_(id, "o_irdy", i, 2, writer);
 	      if(printoutput) {
 	    	  System.out.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus"+i);
 	    	  System.out.println("t_"+id+"o_irdyplus"+i+" p_"+id+"o_irdy1");
@@ -650,11 +731,10 @@ public class PNetGen implements Tool {
 	      writer.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus"+i);
 	      writer.println("t_"+id+"o_irdyplus"+i+" p_"+id+"o_irdy1");
 	    }
-	    writemarking_(id, "i_trdy", writer);
-	    writepriority(id, "i_trdy", 2, writer);
+	    if(init>=size) writemarking(id, "i_trdy", writer);
+	    else writemarking_(id, "i_trdy", writer);
 	    writeblock(id, "i_trdy", writer);
 	    for(int i=1;i<size;i++) {
-	      writepriority_(id, "i_trdy", i, 2, writer);
 	      if(printoutput) {
 	    	  System.out.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus"+i);
 	    	  System.out.println("t_"+id+"i_trdyplus"+i+" p_"+id+"i_trdy1");
@@ -663,20 +743,21 @@ public class PNetGen implements Tool {
 	      writer.println("t_"+id+"i_trdyplus"+i+" p_"+id+"i_trdy1");
 	    }
 	    for(int i=1;i<=size;i++) {
-	      writemarking(id, "_q"+i, writer);
-	      writepriority(id, "_q"+i, 2, writer);
+	      if(init>=i) writemarking_(id, "_q"+i, writer);
+	      else writemarking(id, "_q"+i, writer);
 	      writeblock(id, "_q"+i, writer);
 	    }
 	    for(int i=1;i<=size;i++) {
-	      if(i==1) writemarking_(id, "_hd"+i, writer);
+	      if(i==init+1) writemarking_(id, "_hd"+i, writer);
 	      else writemarking(id, "_hd"+i, writer);
-	      writepriority(id, "_hd"+i, 1, writer);
 	      writeblock(id, "_hd"+i, writer);
 	    }
 	    for(int i=1;i<=size;i++) {
-	      if(i==size) writemarking(id, "_tl"+i, writer);
+	      if(i==1) {
+	    	  if(init<=0) writemarking(id, "_tl"+i, writer);
+	    	  else writemarking_(id, "_tl"+i, writer);
+	      }
 	      else writemarking(id, "_tl"+i, writer);
-	      writepriority(id, "_tl"+i, 1, writer);
 	      writeblock(id, "_tl"+i, writer);
 	    }
 	    for(int i=1;i<=size;i++) {
@@ -699,7 +780,6 @@ public class PNetGen implements Tool {
 	        writebidir(id, "_q"+i+"0", "_hd"+i+"plus", writer);
 	        writebidir(id, "_q"+i+"1", "_hd"+i+"minus", writer);
 	        if(i==size) inc=1; else inc=i+1;
-	        //writebidir(id, "_q"+i+"0", "_hd"+(inc)+"minus", writer);
 	        writebidir(id, "_q"+i+"1", "_hd"+(inc)+"plus", writer);
 	    }
 	    for(int i=1;i<=size;i++) {
@@ -707,7 +787,6 @@ public class PNetGen implements Tool {
 	        writebidir(id, "_q"+i+"1", "_tl"+i+"plus", writer);
 	        if(i==size) inc=1; else inc=i+1;
 	        writebidir(id, "_q"+i+"0", "_tl"+(inc)+"plus", writer);
-	        //writebidir(id, "_q"+i+"1", "_tl"+(inc)+"minus", writer);
 	    }
 	    for(int i=1;i<=size;i++) {
 	        writebidir(id, "_hd"+i+"1", "_q"+i+"plus", writer);
@@ -724,6 +803,80 @@ public class PNetGen implements Tool {
 	    }
 	    for(int i=1;i<=size;i++) {
 	      writelinkp(id, id1, "_trdy1", "_q"+i+"minus", idp, writer);
+	    }
+	    if(dl==1) {
+	    	for(int i=1;i<=size;i++) {
+	    		if(!id2.contains("Src") && !id2.contains("Qu") && !id2.contains("Sync")) writelink(id, id2, "_dl1", "_q"+i+"plus", writer);
+	    	}
+	    }
+	}
+
+	private static void sync2s_i(int size, String id, String input_id, String output_id, String c, String idp, String gpf1, String gpf2, String styp, PrintWriter writer) {
+	    int inc=0;
+	    writer.println("//gensync2s " + id + " " + gpf1 + " " + gpf2 + " " + styp);
+
+	    String id2 = input_id;
+	    String id3 = c;
+	    String typ1;
+	    String typ2;
+	    if(id3.equals("a")) typ1="a";
+	    else if(id3.equals("b")) typ1="b";
+	    else typ1="o";
+	    if(idp.equals("0")) typ2="a";
+	    else if(idp.equals("1")) typ2="b";
+	    else typ2="i";
+	    if(!id2.contains("Src") && !id2.contains("Qu") && !id2.contains("Sync")) {
+		    writer.println(id2 + " " + typ1 + " " + output_id + " " + typ2 + " " +id2);
+	    }
+	    else {
+		    writer.println(id2 + " " + typ1 + " " + output_id + " " + typ2 + " " + "0");
+	    }
+	}
+
+	static private int syncno=0;
+
+	private static void sync_inf(String id, String id1, String id2, String gpf1, String gpf2, String styp, PrintWriter writer) {
+	    int no=0;
+	    syncflag=1;
+
+	    for(int i=0;i<slsti.size();i++) {
+	      if(slsti.get(i).b.equals(id)) {
+	        no++;
+	      }
+	    }
+	    for(int i=0;i<slsto.size();i++) {
+	      if(slsto.get(i).b.equals(id)) {
+	      }
+	    }
+	    for(int i=0;i<slsti.size();i++) {
+	      if(slsti.get(i).b.equals(id)) {
+	        String searchtypo="";
+	        String searchtypi="";
+	        searchtypo=searchlist__(slsto.get(i).a);
+	        searchtypi=searchlist__(slsti.get(i).a);
+			String s = slsti.get(i).b.replace("Sync","");  //new
+	        String qu = "Qs" + s;                          //new
+
+	        String c="";
+	        if(searchtypi.equals("xfork")) {
+	          c=search_lst_(slsti.get(i).a,slsti.get(i).b);
+	        }
+	        else if(searchtypi.equals("xswitch")) {
+	          c=search_lst_(slsti.get(i).a,slsti.get(i).b);
+	        }
+	        if(searchtypo.equals("join")) {
+	          String p="";
+	          if(slsto.get(i).d.equals("0")) p="1";
+	          else p="0";
+	          sync2s_i(2, qu, slsti.get(i).a, slsto.get(i).a, c, p, gpf1, gpf2, styp, writer);
+	        }
+	        else if(searchtypo.equals("merge")) {
+	          sync2s_i(2, qu, slsti.get(i).a, slsto.get(i).a, c, slsto.get(i).d, gpf1, gpf2, styp, writer);
+	        }
+	        else {
+	          sync2s_i(2, qu, slsti.get(i).a, slsto.get(i).a, c, "", gpf1, gpf2, styp, writer);
+	        }
+	      }
 	    }
 	}
 
@@ -752,6 +905,7 @@ public class PNetGen implements Tool {
 	              String idName = node.get("id").getValueAsText();
 	              String idName1 = "";
 	              String idName2 = "";
+	              String idNamep = "";
 	              String idNamep1 = "";
 	              String idNamep2 = "";
 	              String typeName = node.get("type").getValueAsText();
@@ -767,6 +921,11 @@ public class PNetGen implements Tool {
 	                    if(typeName.equals("xfork")) lst.add(new Info(idName1,idName,"b",idNamep1));
 	                    else if(typeName.equals("xswitch")) lst.add(new Info(idName1,idName,"a",idNamep1));
 	                    else lst.add(new Info(idName1,idName,"",idNamep1));
+	                    if(idName1.contains("Sync")) slsti.add(new Info(idName,idName1,"",idNamep1));   //swapped order slsti slsto
+	                    //add o based on order of i or reverse?
+	                    if(idName.contains("Sync")) {
+	                    	slsto_.add(new Info(idName1,idName,"",idNamep1));
+	                    }
 	                  }
 	                  else if(i==1) {
 	                    idName2 = y.get(i).get("id").getValueAsText();
@@ -774,6 +933,17 @@ public class PNetGen implements Tool {
 	                    if(typeName.equals("xfork")) lst.add(new Info(idName2,idName,"a",idNamep2));
 	                    else if(typeName.equals("xswitch")) lst.add(new Info(idName2,idName,"b",idNamep2));
 	                    else lst.add(new Info(idName2,idName,"",idNamep2));
+	                    if(idName2.contains("Sync")) slsti.add(new Info(idName,idName2,"",idNamep2));
+	                    if(idName.contains("Sync")) {
+	                    	slsto_.add(new Info(idName2,idName,"",idNamep2));
+	                    }
+	                  }
+	                  else {
+	                	idName1 = y.get(i).get("id").getValueAsText();
+	                	idNamep = y.get(i).get("in_port").getValueAsText();
+	                	if(idName.contains("Sync")) {
+	                		slsto_.add(new Info(idName,idName1,"",idNamep));
+	                	}
 	                  }
 	                }
 	               }
@@ -790,22 +960,37 @@ public class PNetGen implements Tool {
 	      }
 	}
 
+	//public Collection<VisualSourceComponent> src_nodes;
+	public Collection<SourceComponent> src_nodes;
+	public Collection<FunctionComponent> fun_nodes;
+
 	public void run(WorkspaceEntry we) {
 		System.out.println("");
-		//VisualCircuit vnet = (VisualCircuit)we.getModelEntry().getVisualModel();
-		//Circuit cnet = (Circuit)we.getModelEntry().getModel();
-		//VisualCircuit vnet = (VisualCircuit)we.getModelEntry().getMathModel();
 		Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
+		VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
+		//src_nodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
+		src_nodes=cnet.getSourceComponents();
+		//fun_nodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
+		fun_nodes=cnet.getFunctionComponents();
 
 		JsonFactory f = new MappingJsonFactory();
-		File file = new File("/home/frank/git/CPNGenFile");
+		File file = new File("/home/frank/work_wk/CPNFile");
+		//File file = new File(XmasSettings.getCPNFileName());
 	    PrintWriter writer = null;
+		File file1 = new File("/home/frank/work_wk/sync");
+	    PrintWriter writer_s = null;
 	    try
 	    {
+
 	    	initlist();
-	    	init_parse("/home/frank/git/JsonExFile");
+	    	//init_parse("/home/frank/work_wk/JsonFile");
+	    	init_parse(XmasSettings.getJasonFileName());
+	    	create_slsto();
+
 	    	writer = new PrintWriter(file);
-	        JsonParser jp = f.createJsonParser(new File("/home/frank/git/JsonExFile"));
+	    	writer_s = new PrintWriter(file1);
+	        //JsonParser jp = f.createJsonParser(new File("/home/frank/work_wk/JsonFile"));
+	        JsonParser jp = f.createJsonParser(new File(XmasSettings.getJasonFileName()));
 	        JsonToken current;
 
 	        current = jp.nextToken();
@@ -848,6 +1033,11 @@ public class PNetGen implements Tool {
 	                  String idNamep1 = "";
 	                  String idNamep2 = "";
 	                  String fieldsize = "";
+	                  String fieldgpf = "";
+	                  String fieldgpf1 = "";
+	                  String styp = "";
+	                  int fieldinit = 0;
+	                  int fieldgr = 0;
 	                  String typeName = node.get("type").getValueAsText();
 
 	                  JsonNode y = node.get("outs");
@@ -897,20 +1087,42 @@ public class PNetGen implements Tool {
 	                      if(y_.get(i).has("size")) {
 	                        fieldsize = y_.get(i).get("size").getValueAsText();
 	                      }
+	                      if(y_.get(i).has("init")) {
+		                    fieldinit = y_.get(i).get("init").getValueAsInt();
+		                  }
+	                      if(y_.get(i).has("gr")) {
+		                    fieldgr = y_.get(i).get("gr").getValueAsInt();
+		                  }
+	                      if(y_.get(i).has("gpf")) {
+	                        fieldgpf = y_.get(i).get("gpf").getValueAsText();
+	                      }
+	                      if(y_.get(i).has("gpf1")) {
+	                        fieldgpf = y_.get(i).get("gpf1").getValueAsText();
+	                      }
+	                      if(y_.get(i).has("gpf2")) {
+	                        fieldgpf1 = y_.get(i).get("gpf2").getValueAsText();
+	                      }
+	                      if(y_.get(i).has("typ")) {
+		                    styp = y_.get(i).get("typ").getValueAsText();
+		                  }
 	                    }
 	                  }
 
-	                  if(typeName.equals("source")) gensource(idName,idName1,idNamep1,y,writer);
-	                  if(typeName.equals("function")) genfunction(idName,idName1,idNamep1,y,writer);
-	                  if(typeName.equals("xfork")) genfork(idName,idName1,idName2,idNamep1,idNamep2,y,writer);
-	                  if(typeName.equals("join")) genjoin(idName,idName1,idNamep1,y,writer);
-	                  if(typeName.equals("xswitch")) genswitch(idName,idName1,idName2,idNamep1,idNamep2,y,writer);
-	                  if(typeName.equals("merge")) genmerge(idName,idName1,idNamep1,y,writer);
+	                  if(typeName.equals("source")) gensource(idName,idName1,idNamep1,y,fieldgr,writer);
+	                  if(typeName.equals("function")) genfunction(idName,idName1,idNamep1,y,fieldgr,writer);
+	                  if(typeName.equals("xfork")) genfork(idName,idName1,idName2,idNamep1,idNamep2,y,fieldgr,writer);
+	                  if(typeName.equals("join")) genjoin(idName,idName1,idNamep1,y,fieldgr,writer);
+	                  if(typeName.equals("xswitch")) genswitch(idName,idName1,idName2,idNamep1,idNamep2,y,fieldgr,writer);
+	                  if(typeName.equals("merge")) genmerge(idName,idName1,idNamep1,y,fieldgr,writer);
 	                  if(typeName.equals("queue")) {
-	                    if(fieldsize.equals("1")) genqueue(idName,idName1,idNamep1,y,writer);
-	                    else genqueue2p(2,idName,idName1,idNamep1,y,writer);
+	                	int size = Integer.parseInt(fieldsize);
+	                    //if(fieldsize.equals("1")) genqueue(idName,idName1,idNamep1,y,fieldinit,writer);
+	                    //else genqueue2p(2,idName,idName1,idNamep1,y,writer);
+	                    if(size<=1) genqueue(idName,idName1,idNamep1,y,fieldinit,fieldgpf,fieldgr,writer);
+	                    else if(size>0) genqueue2p(size,idName,idName1,idNamep1,y,fieldinit,fieldgpf,fieldgr,writer);
 	                  }
-	                  if(typeName.equals("sink")) gensink(idName,writer);
+	                  if(typeName.equals("sink")) gensink(idName,fieldgr,writer);
+	                  if(typeName.equals("sync")) sync_inf(idName,idName1,idName2,fieldgpf,fieldgpf1,styp,writer_s);
 	                  }
 	                } else {
 	                  System.out.println("Error: records should be an array: skipping.");
@@ -931,11 +1143,14 @@ public class PNetGen implements Tool {
 	            if ( writer != null )
 	            {
 	                writer.close();
-	        		System.out.println("CPN created");
-	                PNetConv pnconv = new PNetConv();
+	        		System.out.println("Control CPN created");
+	                PNetExt pnconv = new PNetExt(src_nodes,fun_nodes,syncflag);
+	            }
+	            if ( writer_s != null )
+	            {
+	                writer_s.close();
 	            }
 	    }
 		System.out.println("");
 	}
-
 }

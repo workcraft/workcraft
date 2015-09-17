@@ -23,7 +23,7 @@ package org.workcraft.plugins.serialisation.xml;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
@@ -34,6 +34,7 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 import org.workcraft.util.XmlUtil;
 
 public class VisualConnectionDeserialiser implements CustomXMLDeserialiser {
+
 	@Override
 	public String getClassName() {
 		return VisualConnection.class.getName();
@@ -48,8 +49,8 @@ public class VisualConnectionDeserialiser implements CustomXMLDeserialiser {
 		VisualConnection vcon = (VisualConnection)instance;
 
 		vcon.setVisualConnectionDependencies(
-				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("first")),
-				(VisualComponent)internalReferenceResolver.getObject(element.getAttribute("second")),
+				(VisualNode)internalReferenceResolver.getObject(element.getAttribute("first")),
+				(VisualNode)internalReferenceResolver.getObject(element.getAttribute("second")),
 				(ConnectionGraphic)internalReferenceResolver.getObject(XmlUtil.getChildElement("graphic", element).getAttribute("ref")),
 				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("ref"))
 		);

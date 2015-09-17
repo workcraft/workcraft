@@ -79,20 +79,20 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	public double getX() {
+	public final double getX() {
 		return getLocalToParentTransform().getTranslateX();
 	}
 
 	@NoAutoSerialisation
-	public void setX(double value) {
+	public final void setX(double value) {
 		transformChanging();
 		double dx = value - getLocalToParentTransform().getTranslateX();
-		localToParentTransform.translate(dx, 0);
+		localToParentTransform.translate(dx, 0.0);
 		transformChanged();
 	}
 
 	@NoAutoSerialisation
-	public double getRootSpaceX() {
+	public final double getRootSpaceX() {
 		double result = 0.0;
 		Node node = this;
 		while (node != null) {
@@ -105,7 +105,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	public void setRootSpaceX(double value) {
+	public final void setRootSpaceX(double value) {
 		Node node = getParent();
 		while (node != null) {
 			if (node instanceof VisualTransformableNode) {
@@ -117,20 +117,20 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	public double getY() {
+	public final double getY() {
 		return getLocalToParentTransform().getTranslateY();
 	}
 
 	@NoAutoSerialisation
-	public void setY(double value) {
+	public final void setY(double value) {
 		transformChanging();
 		double dy = value - getLocalToParentTransform().getTranslateY();
-		localToParentTransform.translate(0, dy);
+		localToParentTransform.translate(0.0, dy);
 		transformChanged();
 	}
 
 	@NoAutoSerialisation
-	public double getRootSpaceY() {
+	public final double getRootSpaceY() {
 		double result = 0.0;
 		Node node = this;
 		while (node != null) {
@@ -143,7 +143,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	public void setRootSpaceY(double value) {
+	public final void setRootSpaceY(double value) {
 		Node node = getParent();
 		while (node != null) {
 			if (node instanceof VisualTransformableNode) {
@@ -151,22 +151,32 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 			}
 			node = node.getParent();
 		}
-		setY(value);
+		setX(value);
 	}
 
 	@NoAutoSerialisation
-	public void setRootSpacePosition(Point2D pos) {
-		setRootSpaceX(pos.getX());
-		setRootSpaceY(pos.getY());
+	public final void setRootSpacePosition(Point2D pos) {
+		Node node = getParent();
+		double x = pos.getX();
+		double y = pos.getY();
+		while (node != null) {
+			if (node instanceof VisualTransformableNode) {
+				VisualTransformableNode transferableNode = (VisualTransformableNode)node;
+				x -= transferableNode.getX();
+				y -= transferableNode.getY();
+			}
+			node = node.getParent();
+		}
+		setPosition(new Point2D.Double(x, y));
 	}
 
 	@NoAutoSerialisation
-	public Point2D getRootSpacePosition() {
+	public final Point2D getRootSpacePosition() {
 		return new Point2D.Double(getRootSpaceX(), getRootSpaceY());
 	}
 
 	@NoAutoSerialisation
-	public void setPosition(Point2D pos) {
+	public final void setPosition(Point2D pos) {
 		transformChanging();
 		double dx = pos.getX() - getLocalToParentTransform().getTranslateX();
 		double dy = pos.getY() - getLocalToParentTransform().getTranslateY();
@@ -175,7 +185,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	@NoAutoSerialisation
-	public Point2D getPosition() {
+	public final Point2D getPosition() {
 		return new Point2D.Double(getX(), getY());
 	}
 
@@ -192,7 +202,8 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
 	@Override
 	public boolean hitTest(Point2D point) {
-		return hitTestInLocalSpace(getParentToLocalTransform().transform(point, null));
+		Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
+		return hitTestInLocalSpace(pointInLocalSpace);
 	}
 
 	public abstract Rectangle2D getBoundingBoxInLocalSpace();
@@ -200,10 +211,6 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	@Override
     public final Rectangle2D getBoundingBox() {
     	return transformToParentSpace(getBoundingBoxInLocalSpace());
-    }
-
-    public final Rectangle2D getBoundingBoxInRootSpace() {
-		return BoundingBoxHelper.move(getBoundingBox(), getRootSpacePosition());
     }
 
 	public abstract Point2D getCenterInLocalSpace();
@@ -339,7 +346,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 	}
 
 	public String getLabel() {
-		return "no label";
+		return "";
 	}
 
 }

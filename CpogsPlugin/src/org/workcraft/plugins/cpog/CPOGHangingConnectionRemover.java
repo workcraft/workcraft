@@ -12,8 +12,8 @@ import java.util.HashSet;
 
 public class CPOGHangingConnectionRemover extends DefaultHangingConnectionRemover {
 
-    public CPOGHangingConnectionRemover(NodeContext nct, String id) {
-        super(nct, id);
+    public CPOGHangingConnectionRemover(NodeContext nct) {
+        super(nct);
     }
 
     @SuppressWarnings("serial")

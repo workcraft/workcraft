@@ -48,7 +48,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 
 	public AbstractMathModel(Container root, ReferenceManager man) {
         super((root == null) ? new MathGroup() : root, man);
-        new DefaultHangingConnectionRemover(this, "Math").attach(getRoot());
+        new DefaultHangingConnectionRemover(this).attach(getRoot());
  	}
 
 	@SuppressWarnings("unchecked")
@@ -113,7 +113,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 		if (getReferenceManager() instanceof HierarchicalUniqueNameReferenceManager) {
 			manager = (HierarchicalUniqueNameReferenceManager)getReferenceManager();
 		}
-		if (manager!=null) {
+		if (manager != null) {
 			NamespaceProvider provider = null;
 			if (dstContainer instanceof NamespaceProvider) {
 				provider = (NamespaceProvider)dstContainer;

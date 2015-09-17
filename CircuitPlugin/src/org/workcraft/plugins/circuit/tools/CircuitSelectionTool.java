@@ -140,5 +140,4 @@ public class CircuitSelectionTool extends SelectionTool {
 		super.afterSelectionModification(editor);
 	}
 
-
 }

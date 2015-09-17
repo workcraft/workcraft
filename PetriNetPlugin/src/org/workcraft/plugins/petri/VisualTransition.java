@@ -71,8 +71,9 @@ public class VisualTransition extends VisualComponent {
 		drawNameInLocalSpace(r);
 	}
 
+	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)	{
-		return Math.abs(pointInLocalSpace.getX()) <= size / 2 && Math.abs(pointInLocalSpace.getY()) <= size / 2;
+		return ((Math.abs(pointInLocalSpace.getX()) <= 0.5 * size) && (Math.abs(pointInLocalSpace.getY()) <= 0.5 * size));
 	}
 
 	public ColorGenerator getTokenColorGenerator() {

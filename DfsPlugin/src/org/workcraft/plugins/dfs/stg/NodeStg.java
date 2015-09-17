@@ -26,4 +26,5 @@ public abstract class NodeStg {
 		}
 		return false;
 	}
+
 }

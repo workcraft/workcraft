@@ -42,8 +42,7 @@ class DrawMan
 		this.decorator = decorator;
 	}
 
-	private void transformAndDraw(Decoration decoration, Movable node)
-	{
+	private void transformAndDraw(Decoration decoration, Movable node) {
 		graphics.transform(node.getTransform());
 		simpleDraw(decoration, node);
 	}
@@ -72,8 +71,8 @@ class DrawMan
 	private void simpleDraw(final Decoration decoration, Node node) {
 		AffineTransform oldTransform = graphics.getTransform();
 
-		boolean isCollapsed = node instanceof Collapsible&&((Collapsible)node).getIsCollapsed();
-		boolean isInsideCollapsed = isCollapsed&&((Collapsible)node).isCurrentLevelInside();
+		boolean isCollapsed = (node instanceof Collapsible) && ((Collapsible)node).getIsCollapsed();
+		boolean isInsideCollapsed = isCollapsed && ((Collapsible)node).isCurrentLevelInside();
 
 		if (node instanceof Drawable) {
 			((Drawable)node).draw(new DrawRequest(){
@@ -94,7 +93,7 @@ class DrawMan
 		graphics.setTransform(oldTransform);
 
 		// a collapsed node does not draw its contents, unless we are inside this node
-		if (!isCollapsed || isInsideCollapsed) {
+		if (isInsideCollapsed || !isCollapsed) {
 			// draw nodes
 			for (Node n : node.getChildren()) {
 				if ( !(n instanceof VisualConnection)) {

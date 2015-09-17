@@ -35,7 +35,7 @@ import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.ObservableHierarchyImpl;
 import org.workcraft.util.Hierarchy;
 
-public abstract class AbstractGroup implements ObservableHierarchy, Container {
+public abstract class AbstractGroup implements Container, ObservableHierarchy {
 	private Node parent = null;
 	private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 	private Container groupRef;
@@ -83,19 +83,21 @@ public abstract class AbstractGroup implements ObservableHierarchy, Container {
 	}
 
 	protected void removeInternal(Node node, boolean notify) {
-		if (notify) {
-			observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, node));
-		}
-		if (node.getParent() != groupRef) {
+		Node parent = node.getParent();
+		if (parent == groupRef) {
+			if (notify) {
+				observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, node));
+			}
+			removeInternal(node);
+			node.setParent(null);
+			if (notify) {
+				observableHierarchyImpl.sendNotification (new NodesDeletedEvent(groupRef, node));
+			}
+
+		} else if (parent != null) {
 			throw new RuntimeException(
 					"Failed to remove a node frome a group because it is not a child of that group ("
-					+ node + ", parent is " + node.getParent() + ", expected " + groupRef + ")");
-		}
-		removeInternal(node);
-		node.setParent(null);
-
-		if (notify) {
-			observableHierarchyImpl.sendNotification (new NodesDeletedEvent(groupRef, node));
+					+ node + ", parent is " + parent + ", expected " + groupRef + ")");
 		}
 	}
 

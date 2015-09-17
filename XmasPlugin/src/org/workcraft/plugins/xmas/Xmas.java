@@ -32,6 +32,7 @@ import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.xmas.components.CreditComponent;
 import org.workcraft.plugins.xmas.components.ForkComponent;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.JoinComponent;
@@ -40,6 +41,7 @@ import org.workcraft.plugins.xmas.components.QueueComponent;
 import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
+import org.workcraft.plugins.xmas.components.SyncComponent;
 import org.workcraft.plugins.xmas.components.XmasConnection;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.serialisation.References;
@@ -110,11 +112,17 @@ public class Xmas extends AbstractMathModel {
 		if(node instanceof MergeComponent) result = "merge";
 		if(node instanceof SwitchComponent) result = "switch";
 		if(node instanceof SinkComponent) result = "sink";
+		if(node instanceof CreditComponent) result = "credit";
+	    if(node instanceof SyncComponent) result = "sync";
 		return result;
 	}
 
-	public Collection<SourceComponent> getSourceComponent(){
+	public Collection<SourceComponent> getSourceComponents() {
         return Hierarchy.getDescendantsOfType(getRoot(), SourceComponent.class);
     }
+
+	public Collection<FunctionComponent> getFunctionComponents() {
+		return Hierarchy.getDescendantsOfType(getRoot(), FunctionComponent.class);
+	}
 
 }

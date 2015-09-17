@@ -70,24 +70,24 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		}
 
 		static public AffineTransform getDirectionTransform(Direction dir) {
-			AffineTransform at = new AffineTransform();
+			AffineTransform result = new AffineTransform();
 			if (dir!=null) {
 				switch (dir) {
 				case WEST:
-					at.quadrantRotate(2);
+					result.quadrantRotate(2);
 					break;
 				case NORTH:
-					at.quadrantRotate(3);
+					result.quadrantRotate(3);
 					break;
 				case EAST:
-					at.setToIdentity();
+					result.setToIdentity();
 					break;
 				case SOUTH:
-					at.quadrantRotate(1);
+					result.quadrantRotate(1);
 					break;
 				}
 			}
-			return at;
+			return result;
 		}
 
 		public Direction rotateClockwise() {
@@ -214,12 +214,12 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			fillColor = getFillColor();
 		}
 
-		AffineTransform oldTransform = g.getTransform();
-		AffineTransform at = Direction.getDirectionTransform(getDirection());
+		AffineTransform savedTransform = g.getTransform();
+		AffineTransform rotateTransform = Direction.getDirectionTransform(getDirection());
 		if (isInput()) {
-			at.quadrantRotate(2);
+			rotateTransform.quadrantRotate(2);
 		}
-		g.transform(at);
+		g.transform(rotateTransform);
 
 		if (inSimulationMode || CircuitSettings.getShowContacts() || !(getParent() instanceof VisualCircuitComponent)) {
 			Shape shape = getShape();
@@ -232,14 +232,14 @@ public class VisualContact extends VisualComponent implements StateObserver {
 			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
 			g.fill(VisualJoint.shape);
 		}
-		g.setTransform(oldTransform);
+		g.setTransform(savedTransform);
 
 		if ( !(getParent() instanceof VisualCircuitComponent) ) {
-			at.setToIdentity();
+			rotateTransform.setToIdentity();
 			if (getDirection() == Direction.NORTH || getDirection() == Direction.SOUTH) {
-				at.quadrantRotate(-1);
+				rotateTransform.quadrantRotate(-1);
 			}
-			g.transform(at);
+			g.transform(rotateTransform);
 			drawNameInLocalSpace(r);
 		}
 	}
@@ -267,11 +267,11 @@ public class VisualContact extends VisualComponent implements StateObserver {
 	public Rectangle2D getNameBoundingBox() {
 		Rectangle2D bb = super.getNameBoundingBox();
 		if (bb != null) {
-			AffineTransform at = new AffineTransform();
+			AffineTransform rotateTransform = new AffineTransform();
 			if (getDirection() == Direction.NORTH || getDirection() == Direction.SOUTH) {
-				at.quadrantRotate(-1);
+				rotateTransform.quadrantRotate(-1);
 			}
-			bb = BoundingBoxHelper.transform(bb, at);
+			bb = BoundingBoxHelper.transform(bb, rotateTransform);
 		}
 		return bb;
 	}
@@ -291,26 +291,26 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		Point2D p2 = new Point2D.Double();
 		p2.setLocation(pointInLocalSpace);
 		if (!(getParent() instanceof VisualCircuitComponent)) {
-			AffineTransform at = new AffineTransform();
+			AffineTransform rotateTransform = new AffineTransform();
 			// rotate in the direction opposite to Direction.getDirectionTransform
 			switch (getDirection()) {
 			case WEST:
-				at.quadrantRotate(2);
+				rotateTransform.quadrantRotate(2);
 				break;
 			case NORTH:
-				at.quadrantRotate(1);
+				rotateTransform.quadrantRotate(1);
 				break;
 			case EAST:
-				at.setToIdentity();
+				rotateTransform.setToIdentity();
 				break;
 			case SOUTH:
-				at.quadrantRotate(3);
+				rotateTransform.quadrantRotate(3);
 				break;
 			}
 			if (isInput()) {
-				at.quadrantRotate(2);
+				rotateTransform.quadrantRotate(2);
 			}
-			at.transform(pointInLocalSpace, p2);
+			rotateTransform.transform(pointInLocalSpace, p2);
 		}
 		Shape shape = getShape();
 		if (shape != null) {
@@ -371,9 +371,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
-				AffineTransform at = new AffineTransform();
-				at.quadrantRotate(1);
-				Point2D pos = at.transform(getPosition(), null);
+				AffineTransform rotateTransform = new AffineTransform();
+				rotateTransform.quadrantRotate(1);
+				Point2D pos = rotateTransform.transform(getPosition(), null);
 				setPosition(pos);
 			}
 		}
@@ -386,9 +386,9 @@ public class VisualContact extends VisualComponent implements StateObserver {
 		if (getParent() instanceof VisualCircuitComponent) {
 			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
-				AffineTransform at = new AffineTransform();
-				at.quadrantRotate(-1);
-				Point2D pos = at.transform(getPosition(), null);
+				AffineTransform rotateTransform = new AffineTransform();
+				rotateTransform.quadrantRotate(-1);
+				Point2D pos = rotateTransform.transform(getPosition(), null);
 				setPosition(pos);
 			}
 		}

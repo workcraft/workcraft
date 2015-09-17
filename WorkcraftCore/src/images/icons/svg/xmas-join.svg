@@ -13,8 +13,8 @@
    height="48px"
    id="svg2888"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="new1.svg"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="xmas-join.svg"
    inkscape:export-filename="/home/mech/workspace/Workcraft/images/icons/signal_transition22.png"
    inkscape:export-xdpi="41.25"
    inkscape:export-ydpi="41.25">
@@ -73,32 +73,36 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <g
-       id="g2416"
-       transform="translate(-2.2893027,-5.7236442)" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.2170763px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 23.245983,28.38466 0,14.774691"
-       id="path3064"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.35787821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 41.779774,19.334981 -36.6739469,0"
-       id="path3064-6"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.36008358px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 14.50927,1.841118 0,15.848237"
-       id="path3064-0"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.33129215px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 32.454882,1.8528704 0,15.7921586"
-       id="path3064-0-3"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:3.35787821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 41.780731,26.692213 -36.6739471,0"
-       id="path3064-6-0"
-       inkscape:connector-curvature="0" />
+       id="g3128"
+       transform="matrix(0,-1,1,0,0.97879637,45.907762)">
+      <g
+         transform="translate(-2.2893027,-5.7236442)"
+         id="g2416" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064"
+         d="m 23.245983,28.38466 0,14.774691"
+         style="fill:none;stroke:#000000;stroke-width:3.2170763px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064-6"
+         d="m 41.779774,19.334981 -36.6739469,0"
+         style="fill:none;stroke:#000000;stroke-width:3.35787821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064-0"
+         d="m 10.50927,1.841118 0,15.848237"
+         style="fill:none;stroke:#000000;stroke-width:3.36008358px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064-0-3"
+         d="m 36.454882,1.8528704 0,15.7921586"
+         style="fill:none;stroke:#000000;stroke-width:3.33129215px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3064-6-0"
+         d="m 41.780731,26.692213 -36.6739471,0"
+         style="fill:none;stroke:#000000;stroke-width:3.35787821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
   </g>
 </svg>
