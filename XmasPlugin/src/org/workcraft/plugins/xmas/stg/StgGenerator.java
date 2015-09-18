@@ -3,6 +3,7 @@ package org.workcraft.plugins.xmas.stg;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,21 +33,32 @@ import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.util.Hierarchy;
 
 public class StgGenerator {
-	public static final String nameOirdy	= "_Oirdy";
-	public static final String nameAirdy	= "_Airdy";
-	public static final String nameBirdy	= "_Birdy";
-	public static final String nameItrdy	= "_Itrdy";
-	public static final String nameAtrdy	= "_Atrdy";
-	public static final String nameBtrdy	= "_Btrdy";
-	public static final String nameOracle	= "_oracle";
-	public static final String nameMem 		= "_mem";
-	public static final String nameHead		= "_hd";
-	public static final String nameTail		= "_tl";
-	public static final String name0	 	= "_0";
-	public static final String name1 		= "_1";
+	private static final String _O_IRDY	= "_Oirdy";
+	private static final String _O_IDN  = "_Oidn";
+	private static final String _A_IRDY	= "_Airdy";
+	private static final String _A_IDN  = "_Aidn";
+	private static final String _B_IRDY	= "_Birdy";
+	private static final String _B_IDN  = "_Bidn";
+
+	private static final String _I_TRDY	= "_Itrdy";
+	private static final String _I_TDN  = "_Itdn";
+	private static final String _A_TRDY	= "_Atrdy";
+	private static final String _A_TDN  = "_Atdn";
+	private static final String _B_TRDY	= "_Btrdy";
+	private static final String _B_TDN  = "_Btdn";
+
+	private static final String _ORACLE	= "_oracle";
+	private static final String _MEM 	= "_mem";
+	private static final String _HEAD	= "_hd";
+	private static final String _TAIL	= "_tl";
+	private static final String _DONE  	= "_dn";
+
+	private static final String name0	 	= "_0";
+	private static final String name1 		= "_1";
 	private static final double xScaling = 6;
 	private static final double yScaling = 6;
 
+	private SignalStg clockStg = null;
 	private Map<VisualXmasContact, SignalStg> contactMap = new HashMap<>();
 	private Map<VisualSourceComponent, SourceStg> sourceMap = new HashMap<>();
 	private Map<VisualSinkComponent, SinkStg> sinkMap = new HashMap<>();
@@ -65,6 +77,7 @@ public class StgGenerator {
 
 	private void convert() {
 		try {
+			clockStg = generateClockStg();
 			for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
 				SourceStg sourceStg = generateSourceStg(component);
 				sourceMap.put(component, sourceStg);
@@ -90,6 +103,7 @@ public class StgGenerator {
 				queueMap.put(component, queueStg);
 			}
 
+			connectClockStg();
 			for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
 				connectSourceStg(component);
 			}
@@ -139,6 +153,22 @@ public class StgGenerator {
 			stg.connectUndirected(p, t);
 		}
 	}
+
+	private void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts) throws InvalidConnectionException {
+		if (ts != null) {
+			for (VisualSignalTransition t: ts) {
+				stg.connectUndirected(p, t);
+			}
+		}
+	}
+
+	private void createReadArcsBetweenSignals(SignalStg fromSignal, SignalStg toSignal) throws InvalidConnectionException {
+		if ((fromSignal != null) && (toSignal != null)) {
+			createReadArcs(fromSignal.one, toSignal.riseList);
+			createReadArcs(fromSignal.zero, toSignal.fallList);
+		}
+	}
+
 
 	private void createReplicaReadArc(VisualPlace p, VisualSignalTransition t, Point2D replicaPosition) throws InvalidConnectionException {
 		if (p != null && t != null) {
@@ -293,22 +323,67 @@ public class StgGenerator {
 	}
 
 
+	private SignalStg generateClockStg() throws InvalidConnectionException {
+		String name = "clk";
+		SignalStg clockStg = generateSignalStg(name, 0.0, 0.0, false, Type.INPUT);
+		groupComponentStg(clockStg);
+		return clockStg;
+	}
+
+	private void connectClockStg()  throws InvalidConnectionException {
+		for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
+			SourceStg sourceStg = getSourceStg(component);
+			if (sourceStg != null) {
+				createReadArcsBetweenSignals(sourceStg.dn, clockStg);
+			}
+		}
+		for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
+			SinkStg sinkStg = getSinkStg(component);
+			if (sinkStg != null) {
+				createReadArcsBetweenSignals(sinkStg.dn, clockStg);
+			}
+		}
+		for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
+			FunctionStg funcStg = getFunctionStg(component);
+			if (funcStg != null) {
+				createReadArcsBetweenSignals(funcStg.idn, clockStg);
+				createReadArcsBetweenSignals(funcStg.odn, clockStg);
+			}
+		}
+		for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
+			ForkStg forkStg = getForkStg(component);
+			if (forkStg != null) {
+				createReadArcsBetweenSignals(forkStg.idn, clockStg);
+				createReadArcsBetweenSignals(forkStg.adn, clockStg);
+				createReadArcsBetweenSignals(forkStg.bdn, clockStg);
+			}
+		}
+		for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
+		}
+		for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
+
+		}
+	}
+
+
 	private SourceStg generateSourceStg(VisualSourceComponent component) throws InvalidConnectionException {
 		String name = xmas.getMathName(component);
 		Point2D pos = getComponentPosition(component);
-		SignalStg oracleStg = generateOutputContactStg(name + nameOracle, pos.getX() - 4.0, pos.getY(), false, Type.INPUT, 1, 1);
+		SignalStg oracleStg = generateOutputContactStg(name + _ORACLE, pos.getX() - 4.0, pos.getY(), false, Type.INPUT, 1, 1);
 		SignalStg oStg = null;
+		SignalStg dnStg = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
-				oStg = generateOutputContactStg(name + nameOirdy, pos.getX() + 4.0, pos.getY());
+				oStg = generateOutputContactStg(name + _O_IRDY, pos.getX() + 4.0, pos.getY());
 				contactMap.put(contact, oStg);
+				dnStg = generateOutputContactStg(name + _O_IDN, pos.getX() + 4.0, pos.getY() - 4.0);
 			}
 		}
 		if ((oStg != null) && (oracleStg != null)) {
 			createReadArc(oracleStg.zero, oStg.fallList.get(0));
 			createReadArc(oracleStg.one, oStg.riseList.get(0));
 		}
-		SourceStg sourceStg = new SourceStg(oStg, oracleStg);
+		SourceStg sourceStg = new SourceStg(oStg, oracleStg, dnStg);
 		groupComponentStg(sourceStg);
 		return sourceStg;
 	}
@@ -335,19 +410,21 @@ public class StgGenerator {
 	private SinkStg generateSinkStg(VisualSinkComponent component) throws InvalidConnectionException {
 		String name = xmas.getMathName(component);
 		Point2D pos = getComponentPosition(component);
-		SignalStg oracleStg = generateInputContactStg(name + nameOracle, pos.getX() + 4.0, pos.getY(), false, Type.INPUT, 1, 1);
+		SignalStg oracleStg = generateInputContactStg(name + _ORACLE, pos.getX() + 4.0, pos.getY(), false, Type.INPUT, 1, 1);
 		SignalStg iStg = null;
+		SignalStg dnStg = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				iStg = generateInputContactStg(name + nameItrdy, pos.getX() - 4.0, pos.getY());
+				iStg = generateInputContactStg(name + _I_TRDY, pos.getX() - 4.0, pos.getY());
 				contactMap.put(contact, iStg);
+				dnStg = generateOutputContactStg(name + _I_TDN, pos.getX() + 4.0, pos.getY() + 4.0);
 			}
 		}
 		if ((iStg != null) && (oracleStg != null)) {
 			createReadArc(oracleStg.zero, iStg.fallList.get(0));
 			createReadArc(oracleStg.one, iStg.riseList.get(0));
 		}
-		SinkStg sinkStg = new SinkStg(iStg, oracleStg);
+		SinkStg sinkStg = new SinkStg(iStg, oracleStg, dnStg);
 		groupComponentStg(sinkStg);
 		return sinkStg;
 	}
@@ -378,16 +455,21 @@ public class StgGenerator {
 		Point2D pos = getComponentPosition(component);
 		SignalStg iStg = null;
 		SignalStg oStg = null;
+		SignalStg idnStg = null;
+		SignalStg odnStg = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				iStg = generateInputContactStg(name + nameItrdy, pos.getX(), pos.getY() + 3.0);
+				iStg = generateInputContactStg(name + _I_TRDY, pos.getX(), pos.getY() + 3.0);
 				contactMap.put(contact, iStg);
+				idnStg = generateOutputContactStg(name + _I_TDN, pos.getX(), pos.getY() + 9.0);
 			} else {
-				oStg = generateOutputContactStg(name + nameOirdy, pos.getX(), pos.getY() - 3.0);
+				oStg = generateOutputContactStg(name + _O_IRDY, pos.getX(), pos.getY() - 3.0);
 				contactMap.put(contact, oStg);
+				odnStg = generateOutputContactStg(name + _O_IDN, pos.getX(), pos.getY() - 9.0);
 			}
 		}
-		FunctionStg functionStg = new FunctionStg(iStg, oStg);
+
+		FunctionStg functionStg = new FunctionStg(iStg, oStg, idnStg, odnStg);
 		groupComponentStg(functionStg);
 		return functionStg;
 	}
@@ -432,13 +514,13 @@ public class StgGenerator {
 		SignalStg bStg = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				iStg = generateInputContactStg(name + nameItrdy, pos.getX(), pos.getY(), false, Type.INTERNAL, 2, 1);
+				iStg = generateInputContactStg(name + _I_TRDY, pos.getX(), pos.getY(), false, Type.INTERNAL, 2, 1);
 				contactMap.put(contact, iStg);
 			} else if (aStg == null) {
-				aStg = generateOutputContactStg(name + nameAirdy, pos.getX(), pos.getY() - 5.0, false, Type.INTERNAL, 2, 1);
+				aStg = generateOutputContactStg(name + _A_IRDY, pos.getX(), pos.getY() - 5.0, false, Type.INTERNAL, 2, 1);
 				contactMap.put(contact, aStg);
 			} else {
-				bStg = generateOutputContactStg(name + nameBirdy, pos.getX(), pos.getY() + 5.0, false, Type.INTERNAL, 2, 1);
+				bStg = generateOutputContactStg(name + _B_IRDY, pos.getX(), pos.getY() + 5.0, false, Type.INTERNAL, 2, 1);
 				contactMap.put(contact, bStg);
 			}
 		}
@@ -503,13 +585,13 @@ public class StgGenerator {
 		SignalStg oStg = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
-				oStg = generateOutputContactStg(name + nameOirdy, pos.getX(), pos.getY(), false, Type.INTERNAL, 2, 1);
+				oStg = generateOutputContactStg(name + _O_IRDY, pos.getX(), pos.getY(), false, Type.INTERNAL, 2, 1);
 				contactMap.put(contact, oStg);
 			} else if (aStg == null) {
-				aStg = generateInputContactStg(name + nameAtrdy, pos.getX(), pos.getY() - 5.0, false, Type.INTERNAL, 2, 1);
+				aStg = generateInputContactStg(name + _A_TRDY, pos.getX(), pos.getY() - 5.0, false, Type.INTERNAL, 2, 1);
 				contactMap.put(contact, aStg);
 			} else {
-				bStg = generateInputContactStg(name + nameBtrdy, pos.getX(), pos.getY() + 5.0, false, Type.INTERNAL, 2, 1);
+				bStg = generateInputContactStg(name + _B_TRDY, pos.getX(), pos.getY() + 5.0, false, Type.INTERNAL, 2, 1);
 				contactMap.put(contact, bStg);
 			}
 		}
@@ -578,10 +660,10 @@ public class StgGenerator {
 		double xContact = 5.0 * capacity + 5.0;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
-				oStg = generateOutputContactStg(name + nameOirdy, pos.getX() + xContact, pos.getY() - 5.0, false, Type.INTERNAL, 1, capacity);
+				oStg = generateOutputContactStg(name + _O_IRDY, pos.getX() + xContact, pos.getY() - 5.0, false, Type.INTERNAL, 1, capacity);
 				contactMap.put(contact, oStg);
 			} else {
-				iStg = generateInputContactStg(name + nameItrdy, pos.getX() - xContact, pos.getY() + 5.0, true, Type.INTERNAL, 1, capacity);
+				iStg = generateInputContactStg(name + _I_TRDY, pos.getX() - xContact, pos.getY() + 5.0, true, Type.INTERNAL, 1, capacity);
 				contactMap.put(contact, iStg);
 			}
 		}
@@ -589,9 +671,9 @@ public class StgGenerator {
 			double xSlot = 10.0 * (i - 0.5 * (capacity - 1));
 			char c = (char)i;
 			c += 'A';
-			SignalStg memStg = generateSignalStg(name + nameMem + c, pos.getX() + xSlot, pos.getY(), false, SignalTransition.Type.INPUT);
-			SignalStg headStg = generateSignalStg(name + nameHead + c, pos.getX() + xSlot, pos.getY() - 8.0, (i == 0), SignalTransition.Type.INTERNAL);
-			SignalStg tailStg = generateSignalStg(name + nameTail + c, pos.getX() + xSlot, pos.getY() + 8.0, false, SignalTransition.Type.INTERNAL);
+			SignalStg memStg = generateSignalStg(name + _MEM + c, pos.getX() + xSlot, pos.getY(), false, SignalTransition.Type.INPUT);
+			SignalStg headStg = generateSignalStg(name + _HEAD + c, pos.getX() + xSlot, pos.getY() - 8.0, (i == 0), SignalTransition.Type.INTERNAL);
+			SignalStg tailStg = generateSignalStg(name + _TAIL + c, pos.getX() + xSlot, pos.getY() + 8.0, false, SignalTransition.Type.INTERNAL);
 			memList.add(memStg);
 			headList.add(headStg);
 			tailList.add(tailStg);
