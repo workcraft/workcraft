@@ -9,7 +9,7 @@ import org.workcraft.plugins.son.Before;
 import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.Scenario;
+import org.workcraft.plugins.son.ScenarioRef;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
@@ -104,7 +104,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	private ArrayList<String> alterConsistency(Condition c, Scenario s){
+	private ArrayList<String> alterConsistency(Condition c, ScenarioRef s){
 		ArrayList<String> result = new ArrayList<String>();
 
 		Collection<SONConnection> inputConnections;
@@ -226,7 +226,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> bsonConsistency(TransitionNode t, Map<Condition, Collection<Phase>> phases, Scenario s){
+	public ArrayList<String> bsonConsistency(TransitionNode t, Map<Condition, Collection<Phase>> phases, ScenarioRef s){
 		ArrayList<String> result = new ArrayList<String>();
 		BSONAlg bsonAlg = new BSONAlg(net);
 		Before before = bsonAlg.before(t, phases);
@@ -264,7 +264,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> bsonConsistency2(Condition initialLow, Scenario s){
+	public ArrayList<String> bsonConsistency2(Condition initialLow, ScenarioRef s){
 		ArrayList<String> result = new ArrayList<String>();
 		for(SONConnection con : net.getSONConnections()){
 			if(s != null && !s.getConnections(net).contains(con)){
@@ -285,7 +285,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> bsonConsistency3(Condition finalLow, Scenario s){
+	public ArrayList<String> bsonConsistency3(Condition finalLow, ScenarioRef s){
 		ArrayList<String> result = new ArrayList<String>();
 		for(SONConnection con : net.getSONConnections()){
 			if(s != null && !s.getConnections(net).contains(con)){
@@ -306,7 +306,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> specifiedValueChecking(Node node, boolean isSync, Scenario s) throws InvalidStructureException{
+	public ArrayList<String> specifiedValueChecking(Node node, boolean isSync, ScenarioRef s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 
 		Collection<SONConnection> inputConnections;
@@ -412,7 +412,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> onConsistecy(Node node, Scenario s) throws InvalidStructureException{
+	public ArrayList<String> onConsistecy(Node node, ScenarioRef s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 
 		//ON time consistency checking.
@@ -469,7 +469,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> csonConsistecy(ChannelPlace cp, Collection<ChannelPlace> syncCPs, Scenario s) throws InvalidStructureException{
+	public ArrayList<String> csonConsistecy(ChannelPlace cp, Collection<ChannelPlace> syncCPs, ScenarioRef s) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 		result.addAll(asynConsistency(cp, syncCPs));
 

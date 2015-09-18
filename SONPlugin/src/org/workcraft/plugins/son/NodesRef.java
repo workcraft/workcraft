@@ -2,7 +2,7 @@ package org.workcraft.plugins.son;
 
 import java.util.ArrayList;
 
-public class NodeRefs extends ArrayList<String>{
+public class NodesRef extends ArrayList<String>{
 
 	private static final long serialVersionUID = 1L;
 

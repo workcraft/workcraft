@@ -1,7 +1,7 @@
 package org.workcraft.plugins.son;
 
 @SuppressWarnings("serial")
-public class StepRef extends NodeRefs{
+public class StepRef extends NodesRef{
 
 	public boolean isReverse(){
 		if(this.iterator().next() == ">")

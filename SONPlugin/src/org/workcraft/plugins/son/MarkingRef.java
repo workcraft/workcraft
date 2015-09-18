@@ -1,6 +1,6 @@
 package org.workcraft.plugins.son;
 
 @SuppressWarnings("serial")
-public class MarkingRef extends NodeRefs{
+public class MarkingRef extends NodesRef{
 
 }

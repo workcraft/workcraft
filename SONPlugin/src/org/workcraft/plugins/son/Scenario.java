@@ -1,79 +1,37 @@
+/*
+*
+* Copyright 2008,2009 Newcastle University
+*
+* This file is part of Workcraft.
+*
+* Workcraft is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Workcraft is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Workcraft.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
+
 package org.workcraft.plugins.son;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import org.workcraft.dom.math.MathNode;
 
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.elements.PlaceNode;
-import org.workcraft.plugins.son.elements.TransitionNode;
+public class Scenario extends MathNode {
+	private String elements;
 
-@SuppressWarnings("serial")
-public class Scenario extends ArrayList<String>{
-
-	public Collection<Node> getNodes(SON net){
-		Collection<Node> result = new HashSet<Node>();
-		for(String ref : this){
-			Node node = net.getNodeByReference(ref);
-			if((node instanceof PlaceNode) || (node instanceof TransitionNode) )
-				result.add(node);
-		}
-		return result;
+	public String getScenario() {
+		return elements;
 	}
 
-	public Collection<String> getNodeRefs(SON net){
-		Collection<String> result = new HashSet<String>();
-		for(String ref : this){
-			Node node = net.getNodeByReference(ref);
-			if((node instanceof PlaceNode) || (node instanceof TransitionNode) )
-				result.add(ref);
-		}
-		return result;
+	public void setScenario(String elements) {
+		this.elements = elements;
 	}
 
-	public Collection<SONConnection> getConnections(SON net){
-		Collection<SONConnection> result = new HashSet<SONConnection>();
-		for(String ref : this){
-			Node node = net.getNodeByReference(ref);
-			if(node instanceof SONConnection)
-				result.add((SONConnection)node);
-		}
-		return result;
-	}
-
-	public Collection<SONConnection> runtimeGetConnections(SON net){
-		Collection<SONConnection> result = new ArrayList<SONConnection>();
-		Collection<Node> nodes = getNodes(net);
-		for(Node node : nodes){
-			Collection<SONConnection> connections = net.getSONConnections(node);
-			for(SONConnection con : connections){
-				if(con.getFirst() != node && nodes.contains(con.getFirst())){
-					result.add(con);
-				}else if(con.getSecond() != node && nodes.contains(con.getSecond())){
-					result.add(con);
-				}
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public String toString() {
-		String result = "";
-		for (String s: this) {
-			if (result != "") {
-				result += ", ";
-			}
-			result += s;
-		}
-		return result;
-	}
-
-	public void fromString(String str) {
-		clear();
-		for (String s: str.split("\\s*,\\s*")) {
-			add(s);
-		}
-	}
 }

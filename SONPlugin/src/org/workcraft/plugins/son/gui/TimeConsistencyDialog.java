@@ -34,7 +34,7 @@ import javax.swing.event.ChangeListener;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.Scenario;
+import org.workcraft.plugins.son.ScenarioRef;
 import org.workcraft.plugins.son.TimeConsistencySettings;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.elements.Time;
@@ -54,7 +54,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 	private ButtonGroup granularityGroup;
 
 	private Color greyoutColor = Color.LIGHT_GRAY;
-	protected Scenario selectedScenario;
+	protected ScenarioRef selectedScenario;
 	protected ArrayList<Node> selectedNodes;
 
 	public enum Granularity{
@@ -106,11 +106,11 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 	@SuppressWarnings("unchecked")
 	protected void createScenarioItemPanel(){
 		scenarioItemPanel = new JPanel();
-
+		ArrayList<ScenarioRef> scenarioSavelist = net.importScenarios(owner);
 		DefaultListModel<ListItem> listModel = new DefaultListModel<ListItem>();
 
-		for(int i=0; i<net.getScenarioList().size(); i++){
-			listModel.addElement(new ListItem("Scenario "+(i+1), net.getScenarioList().get(i)));
+		for(int i=0; i<scenarioSavelist.size(); i++){
+			listModel.addElement(new ListItem("Scenario "+(i+1), scenarioSavelist.get(i)));
 		}
 
 		scenarioList = new JList<ListItem> (listModel);
@@ -132,8 +132,8 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 					ListItem item = (ListItem)list.getModel().getElementAt(index);
 					item.setSelected(true);
 					Object obj = item.getListItem();
-					if(obj instanceof Scenario){
-						selectedScenario = (Scenario)obj;
+					if(obj instanceof ScenarioRef){
+						selectedScenario = (ScenarioRef)obj;
 						scenarioColorUpdate();
 					}
 					list.repaint(list.getCellBounds(index, index));
@@ -398,7 +398,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		return selectedGroups;
 	}
 
-	public Scenario getSelectedScenario(){
+	public ScenarioRef getSelectedScenario(){
 		return selectedScenario;
 	}
 
