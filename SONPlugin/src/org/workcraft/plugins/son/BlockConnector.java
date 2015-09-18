@@ -44,7 +44,7 @@ public class BlockConnector {
 					//set input value
 					String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
 					String type = "-"+con.getReferencedSONConnection().getSemantics();
-					String time = "-"+con.getTime().toString();
+					String time = "-"+con.getTime();
 					String value = "";
 					if(((VisualPlaceNode)first).getInterface() == ""){
 						value = "to-"+name+type+time+";";
@@ -59,6 +59,9 @@ public class BlockConnector {
 						try {
 							visualNet.forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
 							visualNet.connect(first, block);
+							VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent)first, (VisualComponent)block).iterator().next();
+							newCon.setTime(con.getTime());
+
 						} catch (InvalidConnectionException e) {
 							e.printStackTrace();
 						}
@@ -87,6 +90,8 @@ public class BlockConnector {
 						try {
 							visualNet.forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
 							visualNet.connect(block, second);
+							VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent)block, (VisualComponent)second).iterator().next();
+							newCon.setTime(con.getTime());
 						}catch (InvalidConnectionException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

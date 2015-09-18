@@ -393,7 +393,7 @@ public class TimeAlg extends RelationAlgorithm{
 				output = (TransitionNode)con.getSecond();
 			}
 
-			if(start == null || end== null || input==null || output == null){
+			if(start == null || end== null){
 				throw new InvalidStructureException("Empty channel place input/output: "+ net.getNodeReference(cp));
 			}
 

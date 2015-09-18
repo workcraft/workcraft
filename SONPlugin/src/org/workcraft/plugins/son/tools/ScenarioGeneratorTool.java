@@ -139,7 +139,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 					start();
 				}else{
 					Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-					setGrayout(step, greyoutColor);
+					setColors(step, greyoutColor);
 					net.clearMarking();
 				}
 			}
@@ -183,9 +183,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 					if(saveList.getPosition() > saveList.size()-1)
 						saveList.decPosition(1);
 					if(!saveList.isEmpty()){
-						scenarioRef.addAll(saveList.get(currentPosition).getNodeRefs(net));
+						scenarioRef.addAll(saveList.get(saveList.getPosition()).getNodeRefs(net));
 					}
-					updateColor();
+					updateGrayoutColor();
 					updateState(editor);
 				}
 			}
@@ -206,7 +206,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 						scenarioRef.clear();
 						scenarioRef.addAll(((ScenarioRef)obj).getNodeRefs(net));
 						updateState(editor);
-						updateColor();
+						updateGrayoutColor();
 					}
 				}
 			}
@@ -275,6 +275,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 
 		if(!saveList.isEmpty()){
 			scenarioRef.addAll(saveList.get(0).getNodeRefs(net));
+			updateGrayoutColor();
 		}
 		updateState(editor);
 	}
@@ -283,6 +284,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 	public void deactivated(final GraphEditor editor) {
 		BlockConnector.blockInternalConnector(visualNet);
 		exportScenarios();
+		saveList.setPosition(0);
 		scenarioRef.clear();
 		net.refreshColor();
 		net.clearMarking();
@@ -293,7 +295,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		for (Scenario scenario: net.getScenarios()) {
 			net.remove(scenario);
 		}
-		int i = 0;
+		int i = 1;
 		for (ScenarioRef s: getSaveList()) {
 			net.createScenario("Scenario" + i++, s);
 		}
@@ -318,7 +320,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		Collection<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(getScenario().getNodes(net));
 		nodes.addAll(getScenario().runtimeGetConnections(net));
-		setGrayout(nodes, Color.BLACK);
+		setColors(nodes, Color.BLACK);
 	}
 
 	@Override
@@ -341,13 +343,13 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		scenarioTable.tableChanged(new TableModelEvent(scenarioTable.getModel()));
 	}
 
-	public void updateColor(){
+	public void updateGrayoutColor(){
 		net.clearMarking();
-		setGrayout(net.getNodes(), greyoutColor);
+		setColors(net.getNodes(), greyoutColor);
 		Collection<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(getScenario().getNodes(net));
 		nodes.addAll(getScenario().runtimeGetConnections(net));
-		setGrayout(nodes, Color.BLACK);
+		setColors(nodes, Color.BLACK);
 	}
 
 	@SuppressWarnings("serial")
@@ -432,7 +434,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		return result;
 	}
 
-	public void setGrayout(Collection<? extends Node> nodes, Color color){
+	private void setColors(Collection<? extends Node> nodes, Color color){
 		for(Node node : nodes){
 			net.setForegroundColor(node, color);
 		}
@@ -441,7 +443,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 	@Override
 	protected void setDecoration(Step enabled){
 		if(startButton.isSelected()){
-			setGrayout(net.getNodes(), greyoutColor);
+			setColors(net.getNodes(), greyoutColor);
 			for(TransitionNode e : enabled){
 				e.setForegroundColor(CommonSimulationSettings.getEnabledForegroundColor());
 			}

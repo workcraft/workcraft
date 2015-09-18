@@ -33,6 +33,13 @@ public class ScenarioRef extends ArrayList<String>{
 		return result;
 	}
 
+	public boolean isNodeRef(String str, SON net){
+		Node node = net.getNodeByReference(str);
+		if((node instanceof PlaceNode) || (node instanceof TransitionNode) )
+			return true;
+		return false;
+	}
+
 	public Collection<SONConnection> getConnections(SON net){
 		Collection<SONConnection> result = new HashSet<SONConnection>();
 		for(String ref : this){

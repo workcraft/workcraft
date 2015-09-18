@@ -3,6 +3,7 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -22,7 +23,13 @@ public class TimeValueDisable implements Tool{
 	}
 
 	public void run(WorkspaceEntry we){
-		SONSettings.setTimeVisibility(!SONSettings.getTimeVisibility());;
+		SON net = (SON)we.getModelEntry().getMathModel();
+		TimeAlg alg = new TimeAlg(net);
+		SONSettings.setTimeVisibility(!SONSettings.getTimeVisibility());
+		if(SONSettings.getTimeVisibility()){
+			alg.setProperties();
+		}else
+			alg.removeProperties();
 	}
 
 }
