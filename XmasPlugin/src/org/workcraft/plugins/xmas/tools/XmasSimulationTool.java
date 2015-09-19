@@ -26,8 +26,8 @@ import org.workcraft.plugins.xmas.components.VisualSinkComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasConnection;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
+import org.workcraft.plugins.xmas.stg.ContactStg;
 import org.workcraft.plugins.xmas.stg.QueueStg;
-import org.workcraft.plugins.xmas.stg.SignalStg;
 import org.workcraft.plugins.xmas.stg.SinkStg;
 import org.workcraft.plugins.xmas.stg.SourceStg;
 import org.workcraft.plugins.xmas.stg.StgGenerator;
@@ -78,7 +78,7 @@ public class XmasSimulationTool extends StgSimulationTool {
 			Point2D posLocal = rootToLocalTransform.transform(posRoot, null);
 			Point2D posNode = ((VisualTransformableNode)node).getParentToLocalTransform().transform(posLocal, null);
 			if (node instanceof VisualXmasContact) {
-				SignalStg contactStg = generator.getContactStg((VisualXmasContact)node);
+				ContactStg contactStg = generator.getContactStg((VisualXmasContact)node);
 				transition = getExcitedTransition(contactStg.getAllTransitions());
 			} else if (node instanceof VisualSourceComponent) {
 				SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
@@ -111,10 +111,10 @@ public class XmasSimulationTool extends StgSimulationTool {
 				final Node traceCurrentNode = getTraceCurrentNode();
 				if (node instanceof VisualXmasContact) {
 					final VisualXmasContact contact = (VisualXmasContact)node;
-					final SignalStg contactStg = generator.getContactStg(contact);
+					final ContactStg contactStg = generator.getContactStg(contact);
 					final boolean isExcited = (getExcitedTransition(contactStg.getAllTransitions()) != null);
 					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-					final boolean isReady = (contactStg.zero.getReferencedPlace().getTokens() == 0);
+					final boolean isReady = (contactStg.rdy.zero.getReferencedPlace().getTokens() == 0);
 
 					return new Decoration() {
 						@Override
@@ -153,10 +153,10 @@ public class XmasSimulationTool extends StgSimulationTool {
 					final VisualXmasConnection connection = (VisualXmasConnection)node;
 					final VisualXmasContact firstContact = (VisualXmasContact)connection.getFirst();
 					final VisualXmasContact secondContact = (VisualXmasContact)connection.getSecond();
-					final SignalStg firstStg = generator.getContactStg(firstContact);
-					final SignalStg secondStg = generator.getContactStg(secondContact);
-					final boolean firstReady = (firstStg.zero.getReferencedPlace().getTokens() == 0);
-					final boolean secondReady = (secondStg.zero.getReferencedPlace().getTokens() == 0);
+					final ContactStg firstStg = generator.getContactStg(firstContact);
+					final ContactStg secondStg = generator.getContactStg(secondContact);
+					final boolean firstReady = (firstStg.rdy.zero.getReferencedPlace().getTokens() == 0);
+					final boolean secondReady = (secondStg.rdy.zero.getReferencedPlace().getTokens() == 0);
 
 					return new Decoration() {
 						@Override

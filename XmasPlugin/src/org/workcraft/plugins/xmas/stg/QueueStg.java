@@ -7,13 +7,13 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class QueueStg extends NodeStg {
-	public final SignalStg i;
-	public final SignalStg o;
+	public final ContactStg i;
+	public final ContactStg o;
 	public final ArrayList<SignalStg> memList = new ArrayList<>();
 	public final ArrayList<SignalStg> headList = new ArrayList<>();
 	public final ArrayList<SignalStg> tailList = new ArrayList<>();
 
-	public QueueStg(SignalStg i, SignalStg o, ArrayList<SignalStg> memList, ArrayList<SignalStg> headList, ArrayList<SignalStg> tailList) {
+	public QueueStg(ContactStg i, ContactStg o, ArrayList<SignalStg> memList, ArrayList<SignalStg> headList, ArrayList<SignalStg> tailList) {
 		this.i = i;
 		this.o = o;
 		this.memList.addAll(memList);

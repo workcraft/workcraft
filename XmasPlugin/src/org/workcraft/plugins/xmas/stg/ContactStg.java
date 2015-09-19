@@ -6,32 +6,28 @@ import java.util.HashSet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
-public class ForkStg extends NodeStg {
-	public final ContactStg i;
-	public final ContactStg a;
-	public final ContactStg b;
+public class ContactStg extends NodeStg {
+	public final SignalStg rdy;
+	public final SignalStg dn;
 
-	public ForkStg(ContactStg i, ContactStg a, ContactStg b) {
-		this.i = i;
-		this.a = a;
-		this.b = b;
+	public ContactStg(SignalStg rdy, SignalStg dn) {
+		this.rdy = rdy;
+		this.dn = dn;
 	}
 
 	@Override
 	public Collection<VisualSignalTransition> getAllTransitions() {
 		HashSet<VisualSignalTransition> result = new HashSet<>();
-		result.addAll(i.getAllTransitions());
-		result.addAll(a.getAllTransitions());
-		result.addAll(b.getAllTransitions());
+		result.addAll(rdy.getAllTransitions());
+		result.addAll(dn.getAllTransitions());
 		return result;
 	}
 
 	@Override
 	public Collection<VisualPlace> getAllPlaces() {
 		HashSet<VisualPlace> result = new HashSet<>();
-		result.addAll(i.getAllPlaces());
-		result.addAll(a.getAllPlaces());
-		result.addAll(b.getAllPlaces());
+		result.addAll(rdy.getAllPlaces());
+		result.addAll(dn.getAllPlaces());
 		return result;
 	}
 
