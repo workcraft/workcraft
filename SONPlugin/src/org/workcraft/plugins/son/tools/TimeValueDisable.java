@@ -24,12 +24,13 @@ public class TimeValueDisable implements Tool{
 
 	public void run(WorkspaceEntry we){
 		SON net = (SON)we.getModelEntry().getMathModel();
-		TimeAlg alg = new TimeAlg(net);
+		TimeAlg timeAlg = new TimeAlg(net);
 		SONSettings.setTimeVisibility(!SONSettings.getTimeVisibility());
 		if(SONSettings.getTimeVisibility()){
-			alg.setProperties();
-		}else
-			alg.removeProperties();
+			timeAlg.setProperties();
+		}else{
+			timeAlg.removeProperties();
+		}
 	}
 
 }

@@ -92,7 +92,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		year_yearButton.setSelected(true);
 
 		hour_minusButton = new JRadioButton();
-		hour_minusButton.setText("T:24-hour clock D:minus");
+		hour_minusButton.setText("T:24-hour D:mins");
 
 		granularityGroup = new ButtonGroup();
 		granularityGroup.add(year_yearButton);

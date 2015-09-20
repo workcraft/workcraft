@@ -34,6 +34,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -62,6 +63,7 @@ public class TimeValueSetterTool extends AbstractTool{
 	private int labelheight = 20;
 	private int labelwidth = 35;
 
+	private boolean visibility;
 	private Color selectedColor = Color.ORANGE;
 	private Font font = new Font("Arial", Font.PLAIN, 12);
 	private String startLabel = "Start time interval: ";
@@ -144,7 +146,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		year_yearButton.setSelected(true);
 
 		hour_minusButton = new JRadioButton();
-		hour_minusButton.setText("T:24-hour clock D:minus");
+		hour_minusButton.setText("T:24-hour D:mins");
 
 		granularityGroup = new ButtonGroup();
 		granularityGroup.add(year_yearButton);
@@ -461,6 +463,10 @@ public class TimeValueSetterTool extends AbstractTool{
 		//set property states for initial and final states
 		timeAlg.removeProperties();
 		timeAlg.setProperties();
+		//save visibility state
+		visibility = SONSettings.getTimeVisibility();
+		//set visibility to true
+		SONSettings.setTimeVisibility(true);
 
 		editor.forceRedraw();
 		editor.getModel().setTemplateNode(null);
@@ -468,8 +474,10 @@ public class TimeValueSetterTool extends AbstractTool{
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
-		timeAlg.removeProperties();
-		//BlockConnector.blockInternalConnector(visualNet);
+		if(!visibility){
+			timeAlg.removeProperties();
+		}
+		SONSettings.setTimeVisibility(visibility);
 		net.refreshColor();
 		net.clearMarking();
 	}

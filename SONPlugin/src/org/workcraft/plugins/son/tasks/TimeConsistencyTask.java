@@ -138,11 +138,9 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 		unspecifyHighlight(settings.getUnspecifyHighlight(), unspecifyResult);
 
 		logger.info("\n\nVerification-Result : "+ totalErrNum + " Error(s).");
-		if(SONSettings.getTimeVisibility()){
-			timeAlg.setProperties();
-		}else
+		if(!SONSettings.getTimeVisibility()){
 			timeAlg.removeProperties();
-
+		}
 		return new Result<VerificationResult>(Outcome.FINISHED);
 	}
 

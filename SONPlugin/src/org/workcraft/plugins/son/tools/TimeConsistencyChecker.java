@@ -47,7 +47,7 @@ public class TimeConsistencyChecker implements Tool{
 			TimeConsistencyTask timeTask = new TimeConsistencyTask(we, dialog.getTimeConsistencySettings());
 			framework.getTaskManager().queue(timeTask, "Verification");
 		}
-		//BlockConnector.blockInternalConnector(visualNet);
+		BlockConnector.blockInternalConnector(visualNet);
 	}
 
 }
