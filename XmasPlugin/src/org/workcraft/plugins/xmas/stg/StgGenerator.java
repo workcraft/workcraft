@@ -307,14 +307,14 @@ public class StgGenerator {
 
 		VisualPlace zero = stg.createPlace(signalName + name0, null);
 		zero.getReferencedPlace().setTokens(1);
-		zero.setNamePositioning(Positioning.BOTTOM);
-		zero.setLabelPositioning(Positioning.TOP);
+		zero.setNamePositioning((ySign > 0) ? Positioning.BOTTOM : Positioning.TOP);
+		zero.setLabelPositioning((ySign > 0) ? Positioning.TOP : Positioning.BOTTOM);
 		setPosition(zero, x + xSign * 4.0, y + ySign * 2.0);
 
 		VisualPlace one = stg.createPlace(signalName + name1, null);
 		one.getReferencedPlace().setTokens(0);
-		one.setNamePositioning(Positioning.TOP);
-		one.setLabelPositioning(Positioning.BOTTOM);
+		one.setNamePositioning((ySign > 0) ? Positioning.TOP : Positioning.BOTTOM);
+		one.setLabelPositioning((ySign > 0) ? Positioning.BOTTOM : Positioning.TOP);
 		setPosition(one, x + xSign * 4.0, y - ySign * 2.0);
 
 		ArrayList<VisualSignalTransition> fallList = new ArrayList<>(fallCount);

@@ -70,6 +70,7 @@ import org.workcraft.dom.visual.FontHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
@@ -88,6 +89,8 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.ColorGenerator;
@@ -897,7 +900,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public Decoration getDecoration(Node node) {
 
-				if(node instanceof VisualTransition) {
+				if (node instanceof VisualTransition) {
 					Transition transition = ((VisualTransition)node).getReferencedTransition();
 					Node currentTraceTransition = getTraceCurrentNode();
 					if (transition == currentTraceTransition) {
@@ -927,7 +930,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					}
 				}
 
-				if (node instanceof VisualPage || node instanceof VisualGroup) {
+				if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
 					final boolean ret = isContainerExcited((Container)node);
 					return new ContainerDecoration() {
 
@@ -948,9 +951,37 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					};
 				}
 
+				if (node instanceof VisualConnection) {
+					if (isArcExcited((VisualConnection)node)) {
+						return new Decoration() {
+
+							@Override
+							public Color getColorisation() {
+								return CommonSimulationSettings.getEnabledForegroundColor();
+							}
+
+							@Override
+							public Color getBackground() {
+								return CommonSimulationSettings.getEnabledBackgroundColor();
+							}
+						};
+					}
+				}
+
 				return null;
 			}
 		};
+	}
+
+	private boolean isArcExcited(VisualConnection connection) {
+		VisualNode first = connection.getFirst();
+		Place place = null;
+		if (first instanceof VisualPlace) {
+			place = ((VisualPlace)first).getReferencedPlace();
+		} else if (first instanceof VisualReplicaPlace) {
+			place = ((VisualReplicaPlace)first).getReferencedPlace();
+		}
+		return ((place != null) && (place.getTokens() > 0));
 	}
 
 	@Override
