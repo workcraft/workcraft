@@ -17,7 +17,7 @@ public class PlaceNode extends MathNode implements Time{
 	private String label = "";
 	private int errors = 0;
 
-	private Interval statTime = new Interval(0000, 9999);
+	private Interval startTime = new Interval(0000, 9999);
 	private Interval endTime = new Interval(0000, 9999);
 	private Interval duration = new Interval(0000, 9999);
 
@@ -75,13 +75,13 @@ public class PlaceNode extends MathNode implements Time{
 		return tokenColor;
 	}
 
-	public void setStartTime(Interval duration){
-		this.statTime = duration;
+	public void setStartTime(Interval startTime){
+		this.startTime = startTime;
 		sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
 	}
 
 	public Interval getStartTime(){
-		return statTime;
+		return startTime;
 	}
 
 	public void setEndTime(Interval endTime){

@@ -5,10 +5,13 @@ import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 
 public interface TimeGranularity {
 
-	public Integer plus(Integer time, Integer duration) throws TimeOutOfBoundsException;
-	public Interval plus(Interval time, Interval duration) throws TimeOutOfBoundsException;
+	public Integer plusTD(int time, int duration) throws TimeOutOfBoundsException;
+	public Interval plusTD(Interval time, Interval duration) throws TimeOutOfBoundsException;
 
-	public Integer subtract(Integer time, Integer duration) throws TimeOutOfBoundsException;
-	public Interval subtract(Interval time, Interval duration) throws TimeOutOfBoundsException;
+	public Integer subtractTD(Integer time, Integer duration) throws TimeOutOfBoundsException;
+	public Interval subtractTD(Interval time, Interval duration) throws TimeOutOfBoundsException;
+
+	public Integer subtractTT(Integer start, Integer end) throws TimeOutOfBoundsException;
+	public Interval subtractTT(Interval start, Interval end) throws TimeOutOfBoundsException;
 
 }

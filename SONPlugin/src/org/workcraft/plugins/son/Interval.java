@@ -5,9 +5,22 @@ public class Interval {
 	private Integer min;
 	private Integer max;
 
+	public Interval() {
+	    this.min = 0;
+	    this.max = 9999;
+	}
+
 	public Interval(Integer start, Integer end) {
 	    this.min = start;
 	    this.max = end;
+	}
+
+	public void setMin(Integer min) {
+		this.min = min;
+	}
+
+	public void setMax(Integer max) {
+		this.max = max;
 	}
 
 	public Integer getMin() {
@@ -20,11 +33,12 @@ public class Interval {
 
 	static public Integer getMin(String value){
 		if(value.length()!=9)return null;
-		Integer result = 0000;
+		Integer result = 0;
 
 		String first = value.substring(0, 4);
 
 		try{
+			//return decimal number
 			result = Integer.parseInt(first);
 		} catch (NumberFormatException e) {
 			  e.printStackTrace();
@@ -40,6 +54,7 @@ public class Interval {
 		String last = value.substring(5, 9);
 
 		try{
+			//return decimal number
 			result = Integer.parseInt(last);
 		} catch (NumberFormatException e) {
 			  e.printStackTrace();
@@ -50,11 +65,11 @@ public class Interval {
 	static public Integer getInteger(String value){
 		if(value.length()!=4)return null;
 
-		Integer result = 0000;
-		String last = value.toString();
+		Integer result = 0;
 
 		try{
-			result = Integer.parseInt(last);
+			//return decimal number
+			result = Integer.parseInt(value);
 		} catch (NumberFormatException e) {
 			  e.printStackTrace();
 		}

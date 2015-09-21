@@ -18,6 +18,11 @@ import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
+import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.granularity.HourMins;
+import org.workcraft.plugins.son.granularity.TimeGranularity;
+import org.workcraft.plugins.son.granularity.YearYear;
+import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 
 public class TimeAlg extends RelationAlgorithm{
 
@@ -28,48 +33,71 @@ public class TimeAlg extends RelationAlgorithm{
 		this.net = net;
 	}
 
-	private ArrayList<String> nodeConsistency (Node node, Interval start, Interval end, Interval dur){
+	private ArrayList<String> nodeConsistency (Node node, Interval start, Interval end, Interval dur, Granularity g){
 		ArrayList<String> result = new ArrayList<String>();
-		int tsl = start.getMin();
-		int tsu = start.getMax();
-		int tfl = end.getMin();
-		int tfu = end.getMax();
-		int dl = dur.getMin();
-		int du = dur.getMax();
+		Integer tsl = start.getMin();
+		Integer tsu = start.getMax();
+		Integer tfl = end.getMin();
+		Integer tfu = end.getMax();
+
+		TimeGranularity granularity = null;
+		if(g == Granularity.YEAR_YEAR){
+			granularity = new YearYear();
+		}else if (g == Granularity.HOUR_MINS){
+			granularity = new HourMins();
+		}
 
 		//Equation 3
 		if(!(tsl <= tfl))
 			result.add("Node inconsistency: minStart"
-					+resultHelper(node)+" > minEnd"+resultHelper(node)+".");
+					+node(node)+value(tsl.toString())+" > minEnd"+node(node)+"="+value(tfl.toString())+".");
 		if(!(tsu <= tfu))
 			result.add("Node inconsistency: maxStart"
-					+resultHelper(node)+" > maxEnd"+resultHelper(node)+".");
+					+node(node)+value(tsu.toString())+" > maxEnd"+node(node)+"="+value(tfu.toString())+".");
 		//Equation 6
-		int lowBound = tsl + dl;
-		int upBound = tsu + du;
-		Interval i = new Interval(lowBound, upBound);
+		Interval i = null;
+		try {
+			i = granularity.plusTD(start, dur);
+		} catch (TimeOutOfBoundsException e) {
+			result.add(e.getMessage());
+			return result;
+		}
 		if(!i.isOverlapping(end))
 			result.add("Node inconsistency: start"
-					+resultHelper(node)+" + duration"+resultHelper(node)
-					+"is not intersected with end"+resultHelper(node)+".");
+					+node(node)+" + duration"+node(node)+value(i.toString())
+					+" is not intersected with end"+node(node)+"="+value(end.toString())+".");
 
 		//Equation 7
-		int lowBound2 = tfl - du;
-		int upBound2 = tfu -dl;
-		Interval i2 = new Interval(lowBound2, upBound2);
+		Interval i2 = null;
+		try {
+			i2 = granularity.subtractTD(end, dur);
+		} catch (TimeOutOfBoundsException e) {
+			result.add(e.getMessage());
+			return result;
+		}
+
 		if(!i2.isOverlapping(start))
 			result.add("Node inconsistency: end"
-					+resultHelper(node)+" - duration"+resultHelper(node)
-					+"is not intersected with start"+resultHelper(node)+".");
+					+node(node)+" - duration"+node(node)+value(i2.toString())
+					+" is not intersected with start"+node(node)+"="+value(start.toString())+".");
 
 		//Equation 8
-		int lowBound3 = Math.max(0, tfl - tsu);
-		int upBound3 = tfu -tsl;
+		int lowBound3;
+		int upBound3;
+		try {
+			lowBound3 = Math.max(0, granularity.subtractTT(tsu, tfl));
+			upBound3 = granularity.subtractTT(tfu, tsl);
+		} catch (TimeOutOfBoundsException e) {
+			result.add(e.getMessage());
+			return result;
+		}
 		Interval i3 = new Interval(lowBound3, upBound3);
+
 		if(!i3.isOverlapping(dur))
 			result.add("Node inconsistency: end"
-					+resultHelper(node)+" - start"+resultHelper(node)
-					+"is not intersected with duration"+resultHelper(node)+".");
+					+node(node)+" - start"+node(node)+value(i3.toString())
+					+" is not intersected with duration"+node(node)+"="+value(dur.toString())+".");
+
 		return result;
 	}
 
@@ -85,7 +113,8 @@ public class TimeAlg extends RelationAlgorithm{
 				Interval time1 = con1.getTime();
 				if(!time.equals(time1)){
 					result.add("Concurrently inconsistency: start"
-							+resultHelper(t)+" != start'"+resultHelper(t)+".");
+							+node(t)+value(time.toString())
+							+" != start'"+node(t)+value(time1.toString())+".");
 				}
 			}
 		}
@@ -97,14 +126,15 @@ public class TimeAlg extends RelationAlgorithm{
 				Interval time1 = con1.getTime();
 				if(!time.equals(time1)){
 					result.add("Concurrently inconsistency: end"
-							+resultHelper(t)+" != end'"+resultHelper(t)+".");
+							+node(t)+value(time.toString())
+							+" != end'"+node(t)+value(time1.toString())+".");
 				}
 			}
 		}
 		return result;
 	}
 
-	private ArrayList<String> alterConsistency(Condition c, ScenarioRef s){
+	private ArrayList<String> alterConsistency(Condition c, ScenarioRef s, Granularity g){
 		ArrayList<String> result = new ArrayList<String>();
 
 		Collection<SONConnection> inputConnections;
@@ -121,12 +151,12 @@ public class TimeAlg extends RelationAlgorithm{
 		boolean isConsisent = false;
 
 		if(c.isInitial() && c.isFinal()){
-			if(nodeConsistency(c, c.getStartTime(), c.getEndTime(), c.getDuration()).isEmpty()){
+			if(nodeConsistency(c, c.getStartTime(), c.getEndTime(), c.getDuration(), g).isEmpty()){
 				isConsisent = true;
 			}
 		}else if(c.isInitial() && !c.isFinal()){
 			for(SONConnection con : outputConnections){
-				if(nodeConsistency(c, c.getStartTime(), con.getTime(), c.getDuration()).isEmpty()){
+				if(nodeConsistency(c, c.getStartTime(), con.getTime(), c.getDuration(), g).isEmpty()){
 					c.setEndTime(con.getTime());
 					isConsisent = true;
 					break;
@@ -134,7 +164,7 @@ public class TimeAlg extends RelationAlgorithm{
 			}
 		}else if(!c.isInitial() && c.isFinal()){
 			for(SONConnection con : inputConnections){
-				if(nodeConsistency(c, con.getTime(), c.getEndTime(), c.getDuration()).isEmpty()){
+				if(nodeConsistency(c, con.getTime(), c.getEndTime(), c.getDuration(), g).isEmpty()){
 					c.setStartTime(con.getTime());
 					isConsisent = true;
 					break;
@@ -143,7 +173,7 @@ public class TimeAlg extends RelationAlgorithm{
 		}else{
 			for(SONConnection con : inputConnections){
 				for(SONConnection con2 : outputConnections){
-					if(nodeConsistency(c, con.getTime(), con2.getTime(), c.getDuration()).isEmpty()){
+					if(nodeConsistency(c, con.getTime(), con2.getTime(), c.getDuration(), g).isEmpty()){
 						c.setStartTime(con.getTime());
 						c.setEndTime(con2.getTime());
 						isConsisent = true;
@@ -155,13 +185,13 @@ public class TimeAlg extends RelationAlgorithm{
 
 		if(!isConsisent){
 			result.add("Alternatively inconsistency: cannot find node consistent scenario " +
-					"for node "+resultHelper(c)+".");
+					"for node "+node(c)+".");
 		}
 
 		return result;
 	}
 
-	private ArrayList<String> asynConsistency(ChannelPlace cp, Collection<ChannelPlace> sync) throws InvalidStructureException{
+	private ArrayList<String> asynConsistency(ChannelPlace cp, Collection<ChannelPlace> sync, Granularity g) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 		//check all transitionNodes first
 		Interval start = null;
@@ -195,32 +225,32 @@ public class TimeAlg extends RelationAlgorithm{
 
 			//Equation 17
 			if(!cp.getStartTime().equals(input.getEndTime())){
-				result.add("Sync inconsistency: start"+resultHelper(cp)
-						+"!= end"+ resultHelper(input)+".");
+				result.add("Sync inconsistency: start"+node(cp)+value(cp.getStartTime().toString())
+						+"!= end"+ node(input)+value(input.getEndTime().toString())+".");
 			}
 			//Equation 17
 			if(!cp.getEndTime().equals(output.getStartTime())){
-				result.add("Sync inconsistency: end"+resultHelper(cp)
-						+"!= start"+ resultHelper(output)+".");
+				result.add("Sync inconsistency: end"+node(cp)+value(cp.getEndTime().toString())
+						+"!= start"+ node(output)+value(output.getStartTime().toString())+".");
 			}
 			if(cp.getDuration().isSpecified() && !cp.getDuration().toString().equals("0000-0000")){
-				result.add("Sync inconsistency: duration"+resultHelper(cp)+" != 0.");
+				result.add("Sync inconsistency: duration"+node(cp)+" != 0.");
 			}
 			//Equation 18
 			if(!(input.getStartTime().equals(output.getStartTime())))
-				result.add("Sync inconsistency: start"+resultHelper(input)
-						+" != start"+resultHelper(output));
+				result.add("Sync inconsistency: start"+node(input)+value(input.getStartTime().toString())
+						+" != start"+node(output)+value(output.getStartTime().toString()));
 			if(!(input.getDuration().equals(output.getDuration()))){
-				result.add("Sync inconsistency: duration"+resultHelper(input)
-						+" != duration"+resultHelper(output));
+				result.add("Sync inconsistency: duration"+node(input)+value(input.getDuration().toString())
+						+" != duration"+node(output)+value(output.getDuration().toString()));
 			}
 			if(!(input.getEndTime().equals(output.getEndTime()))){
-				result.add("Sync inconsistency: end"+resultHelper(input)
-						+" != end"+resultHelper(output));
+				result.add("Sync inconsistency: end"+node(input)+node(input)+value(input.getEndTime().toString())
+						+" != end"+node(output)+value(output.getEndTime().toString()));
 			}
 		}else{
-			if(!nodeConsistency(cp, start, end, cp.getDuration()).isEmpty())
-				result.add("Async inconsistency: "+resultHelper(cp)
+			if(!nodeConsistency(cp, start, end, cp.getDuration(), g).isEmpty())
+				result.add("Async inconsistency: "+node(cp)
 						+"is not node consistency");
 		}
 		return result;
@@ -241,24 +271,24 @@ public class TimeAlg extends RelationAlgorithm{
 
 			//Equation 17
 			if(!v0.getStartTime().isSpecified() || !v1.getStartTime().isSpecified()){
-				result.add("Fail to run behavioural consistency checking: "+ resultHelper(v0) + " or " + resultHelper(v1)
+				result.add("Fail to run behavioural consistency checking: "+ node(v0) + " or " + node(v1)
 						+" is node inconsistency.");
 				continue;
 			}
 
-			int gsl = v0.getStartTime().getMin();
-			int gsu = v0.getStartTime().getMax();
-			int hsl = v1.getStartTime().getMin();
-			int hsu = v1.getStartTime().getMax();
+			Integer gsl = v0.getStartTime().getMin();
+			Integer gsu = v0.getStartTime().getMax();
+			Integer hsl = v1.getStartTime().getMin();
+			Integer hsu = v1.getStartTime().getMax();
 
 			//Equation 20
 			if(!(gsl <= hsl)){
-				result.add("Behavioural inconsistency: minStart"+resultHelper(v0)
-						+" > "+"minStart"+resultHelper(v1)+".");
+				result.add("Behavioural inconsistency: minStart"+node(v0)+value(gsl.toString())
+						+" > "+"minStart"+node(v1)+value(hsl.toString())+".");
 			}
 			else if(!(gsu <= hsu)){
-				result.add("Behavioural inconsistency: maxStart"+resultHelper(v0)
-						+" > "+"maxStart"+resultHelper(v1)+".");
+				result.add("Behavioural inconsistency: maxStart"+node(v0)+value(gsu.toString())
+						+" > "+"maxStart"+node(v1)+value(hsu.toString())+".");
 			}
 		}
 		return result;
@@ -274,12 +304,12 @@ public class TimeAlg extends RelationAlgorithm{
 				Condition c = (Condition)con.getSecond();
 				if(!c.getStartTime().isSpecified() || !initialLow.getStartTime().isSpecified()){
 					result.add("Fail to run behavioural consistency checking: "
-							+ resultHelper(c) + " or " + resultHelper(initialLow)+" is node inconsistency.");
+							+ node(c) + " or " + node(initialLow)+" is node inconsistency.");
 					return result;
 				}
 				if(!initialLow.getStartTime().equals(c.getStartTime()))
-					result.add("Behavioural inconsistency: start"+resultHelper(initialLow)
-							+" != "+"start"+resultHelper(c)+".");
+					result.add("Behavioural inconsistency: start"+node(initialLow)
+							+" != "+"start"+node(c)+".");
 			}
 		}
 		return result;
@@ -295,12 +325,57 @@ public class TimeAlg extends RelationAlgorithm{
 				Condition c = (Condition)con.getSecond();
 				if(!c.getStartTime().isSpecified() || !finalLow.getStartTime().isSpecified()){
 					result.add("Fail to run behavioural consistency checking: "
-							+ resultHelper(c) + " or " + resultHelper(finalLow)+" is node inconsistency.");
+							+ node(c) + " or " + node(finalLow)+" is node inconsistency.");
 					return result;
 				}
 				if(finalLow.getStartTime().equals(c.getStartTime()))
-					result.add("Behavioural inconsistency: end"+resultHelper(finalLow)
-							+" != "+"end"+resultHelper(c)+".");
+					result.add("Behavioural inconsistency: end"+node(finalLow)
+							+" != "+"end"+node(c)+".");
+			}
+		}
+		return result;
+	}
+
+	public ArrayList<String> granularityHourMinsTask(Node node){
+		ArrayList<String> result = new ArrayList<String>();
+		if(node instanceof Time){
+			Time t = (Time)node;
+			Integer value = null;
+			try {
+				value = t.getStartTime().getMin();
+				HourMins.validValue(value);
+			} catch (TimeOutOfBoundsException e) {
+				result.add("Time out of bound: startMin"+node(t)+value(value.toString()) +".");
+			}
+			try {
+				value = t.getStartTime().getMax();
+				HourMins.validValue(value);
+			} catch (TimeOutOfBoundsException e) {
+				result.add("Time out of bound: startMax"+node(t)+value(value.toString()) +".");
+			}
+			try {
+				value= t.getEndTime().getMin();
+				HourMins.validValue(value);
+			} catch (TimeOutOfBoundsException e) {
+				result.add("Time out of bound: endMin"+node(t)+value(value.toString()) +".");
+			}
+			try {
+				value= t.getEndTime().getMax();
+				HourMins.validValue(value);
+			} catch (TimeOutOfBoundsException e) {
+				result.add("Time out of bound: endMax"+node(t)+value(value.toString()) +".");
+			}
+			try {
+				value = t.getDuration().getMin();
+				HourMins.validValue(value);
+			} catch (TimeOutOfBoundsException e) {
+				result.add("Time out of bound: durationMin"+node(t)+value(value.toString()) +".");
+			}
+			try {
+				value=t.getDuration().getMax();
+				HourMins.validValue(value);
+			} catch (TimeOutOfBoundsException e) {
+				result.add("Time out of bound: durationMax"+node(t)+value(value.toString()) +".");
 			}
 		}
 		return result;
@@ -412,7 +487,7 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> onConsistecy(Node node, ScenarioRef s) throws InvalidStructureException{
+	public ArrayList<String> onConsistecy(Node node, ScenarioRef s, Granularity g) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 
 		//ON time consistency checking.
@@ -434,7 +509,7 @@ public class TimeAlg extends RelationAlgorithm{
 				}else
 					throw new InvalidStructureException("Empty event input/output: "+ net.getNodeReference(t));
 
-				nodeResult = nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration());
+				nodeResult = nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
 				result.addAll(nodeResult);
 
 			}else{
@@ -445,7 +520,7 @@ public class TimeAlg extends RelationAlgorithm{
 			Condition c = (Condition)node;
 
 			if(net.getInputPNConnections(c).size() > 1 || net.getOutputPNConnections(c).size() > 1){
-				result.addAll(alterConsistency(c, s));
+				result.addAll(alterConsistency(c, s, g));
 			}else{
 				if(c.isInitial() && !c.isFinal()){
 					SONConnection con = net.getOutputPNConnections(c).iterator().next();
@@ -459,7 +534,7 @@ public class TimeAlg extends RelationAlgorithm{
 					c.setStartTime(con.getTime());
 					c.setEndTime(con2.getTime());
 				}
-				result.addAll(nodeConsistency(c, c.getStartTime(), c.getEndTime(), c.getDuration()));
+				result.addAll(nodeConsistency(c, c.getStartTime(), c.getEndTime(), c.getDuration(), g));
 			}
 		}
 
@@ -469,9 +544,9 @@ public class TimeAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public ArrayList<String> csonConsistecy(ChannelPlace cp, Collection<ChannelPlace> syncCPs, ScenarioRef s) throws InvalidStructureException{
+	public ArrayList<String> csonConsistecy(ChannelPlace cp, Collection<ChannelPlace> syncCPs, ScenarioRef s, Granularity g) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
-		result.addAll(asynConsistency(cp, syncCPs));
+		result.addAll(asynConsistency(cp, syncCPs, g));
 
 		if(!result.isEmpty())
 			setDefaultTime(cp);
@@ -522,7 +597,11 @@ public class TimeAlg extends RelationAlgorithm{
 	}
 
 
-	private String resultHelper(Node node){
+	private String node(Node node){
 		return "("+net.getNodeReference(node)+")";
+	}
+
+	private String value(String value){
+		return "["+value+"]";
 	}
 }

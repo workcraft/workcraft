@@ -46,6 +46,8 @@ import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
+import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -57,7 +59,7 @@ public class TimeValueSetterTool extends AbstractTool{
 	protected TimeAlg timeAlg;
 
 	private JPanel interfacePanel, timePropertyPanel, timeInputPanel, granularityPanel;
-	private JRadioButton year_yearButton, hour_minusButton;
+	private JRadioButton year_yearButton, hour_minsButton;
 	private ButtonGroup granularityGroup;
 
 	private int labelheight = 20;
@@ -145,15 +147,15 @@ public class TimeValueSetterTool extends AbstractTool{
 		year_yearButton.setText("T:year D:year");
 		year_yearButton.setSelected(true);
 
-		hour_minusButton = new JRadioButton();
-		hour_minusButton.setText("T:24-hour D:mins");
+		hour_minsButton = new JRadioButton();
+		hour_minsButton.setText("T:24-hour D:mins");
 
 		granularityGroup = new ButtonGroup();
 		granularityGroup.add(year_yearButton);
-		granularityGroup.add(hour_minusButton);
+		granularityGroup.add(hour_minsButton);
 
 		granularityPanel.add(year_yearButton);
-		granularityPanel.add(hour_minusButton);
+		granularityPanel.add(hour_minsButton);
 
 	}
 
@@ -253,124 +255,206 @@ public class TimeValueSetterTool extends AbstractTool{
 		autoComplete(field);
 
 		if(title.equals(timeLabel)){
-			VisualSONConnection vcon = (VisualSONConnection)node;
-			SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
-
-			Interval value = con.getTime();
-			if(isMin){
-				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-				if(compare(input)){
-					con.setTime(input);
-				}else{
-					con.setTime(value);
-					field.setText(value.minToString());
-				}
-			}else{
-				Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-				if(compare(input)){
-					con.setTime(input);
-				}else{
-					con.setTime(value);
-					field.setText(value.maxToString());
-				}
-			}
+			setTimeLabelValue(node, field, isMin);
 		}
 		else if(title.equals(startLabel)){
-			VisualCondition vc = (VisualCondition)node;
-			Condition c = (Condition)vc.getReferencedComponent();
-
-			Interval value = c.getStartTime();
-			if(isMin){
-				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-				if(compare(input)){
-					c.setStartTime(input);
-				}else{
-					c.setStartTime(value);
-					field.setText(value.minToString());
-				}
-			}else{
-				Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-				if(compare(input)){
-					c.setStartTime(input);
-				}else{
-					c.setStartTime(value);
-					field.setText(value.maxToString());
-				}
-			}
+			setStartLabel(node, field, isMin);
 		}
 		else if(title.equals(durationLabel)){
-			Interval value;
-			if(node instanceof VisualPlaceNode){
-				VisualPlaceNode vc = (VisualPlaceNode)node;
-				PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+			setDurationLabel(node, field, isMin);
+		}
+		else if(title.equals(endLabel)){
+			setEndLabel(node, field, isMin);
+		}
+	}
 
-				value = c.getDuration();
-				if(isMin){
-					Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-					if(compare(input)){
-						c.setDuration(input);
-					}else{
-						c.setDuration(value);
-						field.setText(value.minToString());
-					}
-				}else{
-					Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-					if(compare(input)){
-						c.setDuration(input);
-					}else{
-						c.setDuration(value);
-						field.setText(value.maxToString());
-					}
+	private void setTimeLabelValue(Node node, JTextField field, boolean isMin){
+		VisualSONConnection vcon = (VisualSONConnection)node;
+		SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
+
+		Interval value = con.getTime();
+		if(isMin){
+			int min = Interval.getInteger(field.getText());
+			//24 hour clock granularity checking
+			if(hour_minsButton.isSelected()){
+				try {
+					HourMins.validValue(min);
+				} catch (TimeOutOfBoundsException e) {
+					con.setTime(value);
+					field.setText(value.minToString());
+					return;
 				}
 			}
-			else if(node instanceof VisualBlock){
-				VisualBlock vb = (VisualBlock)node;
-				Block b = (Block)vb.getReferencedComponent();
-				value = b.getDuration();
-
-				if(isMin){
-					Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-					if(compare(input)){
-						b.setDuration(input);
-					}else{
-						b.setDuration(value);
-						field.setText(value.minToString());
-					}
-				}else{
-					Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-					if(compare(input)){
-						b.setDuration(input);
-					}else{
-						b.setDuration(value);
-						field.setText(value.maxToString());
-					}
+			Interval input = new Interval(min, value.getMax());
+			if(isValid(input)){
+				con.setTime(input);
+			}else{
+				con.setTime(value);
+				field.setText(value.minToString());
+			}
+		}else{
+			int max = Interval.getInteger(field.getText());
+			if(hour_minsButton.isSelected()){
+				try {
+					HourMins.validValue(max);
+				} catch (TimeOutOfBoundsException e) {
+					con.setTime(value);
+					field.setText(value.maxToString());
+					return;
 				}
+			}
+			Interval input = new Interval(value.getMin(), max);
+			if(isValid(input)){
+				con.setTime(input);
+			}else{
+				con.setTime(value);
+				field.setText(value.maxToString());
+			}
+		}
+	}
+
+	private void setStartLabel(Node node, JTextField field, boolean isMin){
+		VisualCondition vc = (VisualCondition)node;
+		Condition c = (Condition)vc.getReferencedComponent();
+
+		Interval value = c.getStartTime();
+		if(isMin){
+			int min = Interval.getInteger(field.getText());
+			//24 hour clock granularity checking
+			if(hour_minsButton.isSelected()){
+				try {
+					HourMins.validValue(min);
+				} catch (TimeOutOfBoundsException e) {
+					c.setStartTime(value);
+					field.setText(value.minToString());
+					return;
+				}
+			}
+			Interval input = new Interval(min, value.getMax());
+			if(isValid(input)){
+				c.setStartTime(input);
+			}else{
+				c.setStartTime(value);
+				field.setText(value.minToString());
+			}
+		}else{
+			int max = Interval.getInteger(field.getText());
+			if(hour_minsButton.isSelected()){
+				try {
+					HourMins.validValue(max);
+				} catch (TimeOutOfBoundsException e) {
+					c.setStartTime(value);
+					field.setText(value.maxToString());
+					return;
+				}
+			}
+			Interval input = new Interval(value.getMin(), max);
+			if(isValid(input)){
+				c.setStartTime(input);
+			}else{
+				c.setStartTime(value);
+				field.setText(value.maxToString());
 			}
 		}
 
-		else if(title.equals(endLabel)){
-			VisualCondition vc = (VisualCondition)node;
-			Condition c = (Condition)vc.getReferencedComponent();
+	}
 
-			Interval value = c.getEndTime();
+	private void setEndLabel(Node node, JTextField field, boolean isMin){
+		VisualCondition vc = (VisualCondition)node;
+		Condition c = (Condition)vc.getReferencedComponent();
+
+		Interval value = c.getEndTime();
+		if(isMin){
+			int min = Interval.getInteger(field.getText());
+			//24 hour clock granularity checking
+			if(hour_minsButton.isSelected()){
+				try {
+					HourMins.validValue(min);
+				} catch (TimeOutOfBoundsException e) {
+					c.setEndTime(value);
+					field.setText(value.minToString());
+					return;
+				}
+			}
+			Interval input = new Interval(min, value.getMax());
+			if(isValid(input)){
+				c.setEndTime(input);
+			}else{
+				c.setEndTime(value);
+				field.setText(value.minToString());
+			}
+		}else{
+			int max = Interval.getInteger(field.getText());
+			if(hour_minsButton.isSelected()){
+				try {
+					HourMins.validValue(max);
+				} catch (TimeOutOfBoundsException e) {
+					c.setEndTime(value);
+					field.setText(value.maxToString());
+					return;
+				}
+			}
+			Interval input = new Interval(value.getMin(), max);
+			if(isValid(input)){
+				c.setEndTime(input);
+			}else{
+				c.setEndTime(value);
+				field.setText(value.maxToString());
+			}
+		}
+
+	}
+
+	private void setDurationLabel(Node node, JTextField field, boolean isMin){
+
+		Interval value;
+		if(node instanceof VisualPlaceNode){
+			VisualPlaceNode vc = (VisualPlaceNode)node;
+			PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+
+			value = c.getDuration();
 			if(isMin){
 				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-				if(compare(input)){
-					c.setEndTime(input);
+				if(isValid(input)){
+					c.setDuration(input);
 				}else{
-					c.setEndTime(value);
+					c.setDuration(value);
 					field.setText(value.minToString());
 				}
 			}else{
 				Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-				if(compare(input)){
-					c.setEndTime(input);
+				if(isValid(input)){
+					c.setDuration(input);
 				}else{
-					c.setEndTime(value);
+					c.setDuration(value);
 					field.setText(value.maxToString());
 				}
 			}
 		}
+		else if(node instanceof VisualBlock){
+			VisualBlock vb = (VisualBlock)node;
+			Block b = (Block)vb.getReferencedComponent();
+			value = b.getDuration();
+
+			if(isMin){
+				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
+				if(isValid(input)){
+					b.setDuration(input);
+				}else{
+					b.setDuration(value);
+					field.setText(value.minToString());
+				}
+			}else{
+				Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
+				if(isValid(input)){
+					b.setDuration(input);
+				}else{
+					b.setDuration(value);
+					field.setText(value.maxToString());
+				}
+			}
+		}
+
 	}
 
 	private void autoComplete(JTextField field){
@@ -388,7 +472,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		}
 	}
 
-	private boolean compare(Interval value){
+	private boolean isValid(Interval value){
 		int start = value.getMin();
 		int end = value.getMax();
 

@@ -59,7 +59,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 	public enum Granularity{
 		YEAR_YEAR,
-		CLOCKHOUR_MINUS;
+		HOUR_MINS;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -410,7 +410,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		if(year_yearButton.isSelected())
 			return Granularity.YEAR_YEAR;
 		else if(hour_minusButton.isSelected())
-			return Granularity.CLOCKHOUR_MINUS;
+			return Granularity.HOUR_MINS;
 		return null;
 	}
 

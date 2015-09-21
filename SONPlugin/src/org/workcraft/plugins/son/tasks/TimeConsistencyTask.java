@@ -23,6 +23,7 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
+import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
@@ -57,6 +58,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
 		Collection<Node> checkList = new ArrayList<Node>();
 		Collection<Node> unspecifyResult = new ArrayList<Node>();
+		Collection<Node> outOfBoundResult = new ArrayList<Node>();
 		Collection<Node> inconsistencyResult = new ArrayList<Node>();
 
 		infoMsg("-------------------------Time Consistency Checking Result-------------------------");
@@ -112,20 +114,40 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 			}
 		}
 
-		infoMsg("\nRemove unspecified nodes from checking list...");
+		infoMsg("Remove unspecified nodes from checking list...");
 		checkList.removeAll(unspecifyResult);
 
-		infoMsg("\nRunning time consistency checking task...");
+		infoMsg("Running time granularity checking task...");
+		if(settings.getGranularity() == Granularity.YEAR_YEAR){
+			infoMsg("Time granularity: T:year  D:year");
+		}else if(settings.getGranularity() == Granularity.HOUR_MINS){
+			infoMsg("Time granularity: T:24 hour clock  D:minutes");
+			for(Node node : checkList){
+				ArrayList<String> result = timeAlg.granularityHourMinsTask(node);
+				if(!result.isEmpty()){
+					outOfBoundResult.add(node);
+					infoMsg("Node:" + net.getNodeReference(node));
+					for(String str : result){
+						errMsg("-"+str);
+					}
+				}
+			}
+		}
+
+		infoMsg("Remove invalid time granularity nodes from checking list...");
+		checkList.removeAll(outOfBoundResult);
+
+		infoMsg("Running time consistency checking task...");
 		for(Node node : checkList){
+			infoMsg("Node:" + net.getNodeReference(node));
 			ArrayList<String> result;
 			if(settings.getTabIndex() == 1){
-				result = timeConsistencyTask(node, settings.getSeletedScenario());
+				result = timeConsistencyTask(node, settings.getSeletedScenario(), settings.getGranularity());
 			}else{
-				result = timeConsistencyTask(node, null);
+				result = timeConsistencyTask(node, null, settings.getGranularity());
 			}
 
 			if(!result.isEmpty()){
-				infoMsg("Node:" + net.getNodeReference(node));
 				inconsistencyResult.add(node);
 				for(String str : result){
 					errMsg("-"+str);
@@ -166,7 +188,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 	}
 
 
-	private ArrayList<String> timeConsistencyTask(Node node, ScenarioRef s){
+	private ArrayList<String> timeConsistencyTask(Node node, ScenarioRef s, Granularity g){
 		ArrayList<String> result = new ArrayList<String>();
 		Collection<String> onResult = new ArrayList<String>();
 		Collection<String> csonResult = new ArrayList<String>();
@@ -175,7 +197,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 		if(node instanceof TransitionNode){
 			//ON checking
 			try {
-				onResult.addAll(timeAlg.onConsistecy(node, s));
+				onResult.addAll(timeAlg.onConsistecy(node, s, g));
 			} catch (InvalidStructureException e) {
 				e.printStackTrace();
 			}
@@ -194,7 +216,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 			Condition c = (Condition)node;
 			//ON checking
 			try {
-				onResult.addAll(timeAlg.onConsistecy(c, s));
+				onResult.addAll(timeAlg.onConsistecy(c, s, g));
 			} catch (InvalidStructureException e) {
 				e.printStackTrace();
 			}
@@ -214,7 +236,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 		}else if(node instanceof ChannelPlace){
 			//CSON checking
 			try {
-				csonResult.addAll(timeAlg.csonConsistecy((ChannelPlace)node, syncCPs, s));
+				csonResult.addAll(timeAlg.csonConsistecy((ChannelPlace)node, syncCPs, s, g));
 			} catch (InvalidStructureException e) {
 				e.printStackTrace();
 			}

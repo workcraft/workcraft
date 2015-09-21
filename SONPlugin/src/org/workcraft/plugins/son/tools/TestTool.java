@@ -84,18 +84,6 @@ public class TestTool extends AbstractTool implements Tool{
 		//conditionOutputTest(vnet);
 	}
 
-	private void timeCalculator(){
-		HourMins h = new HourMins();
-		try {
-			h.plus(0001, null);
-			h.plus(0011, null);
-			h.plus(0232, null);
-			h.plus(1432, null);
-		} catch (TimeOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 /*	private void timeTest(SON net){
 		TimeAlg timeAlg = new TimeAlg(net);
