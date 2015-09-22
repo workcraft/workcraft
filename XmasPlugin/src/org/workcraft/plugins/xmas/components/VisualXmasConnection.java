@@ -16,11 +16,11 @@ import org.workcraft.util.Geometry;
 public class VisualXmasConnection extends VisualConnection {
 
 	public VisualXmasConnection() {
-		super();
+		this(null, null, null);
 	}
 
-	public VisualXmasConnection(MathConnection c) {
-		super();
+	public VisualXmasConnection(MathConnection con) {
+		this(con, null, null);
 	}
 
 	public VisualXmasConnection(MathConnection con, VisualComponent c1, VisualComponent c2) {

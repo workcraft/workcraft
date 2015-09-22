@@ -20,7 +20,7 @@ public class XmasSettings implements Settings {
 
 	private static final boolean defaultShowContacts = false;
 	private static final double defaultBorderWidth = 0.06;
-	private static final double defaultWireWidth = 0.04;
+	private static final double defaultWireWidth = 0.06;
 	private static final String defaultJasonFileName = "";
 
 	private static boolean showContacts = defaultShowContacts;

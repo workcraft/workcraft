@@ -46,7 +46,7 @@ public class StgGenerator {
 	private static final String _A_IRDY	= "_aIRdy";
 	private static final String _A_IDN  = "_aIDn";
 	private static final String _B_IRDY	= "_bIRdy";
-	private static final String _B_IDN  = "_bIDdn";
+	private static final String _B_IDN  = "_bIDn";
 
 	private static final String _I_TRDY	= "_iTRdy";
 	private static final String _I_TDN  = "_iTDn";
@@ -906,9 +906,10 @@ public class StgGenerator {
 		ContactStg i = null;
 		ContactStg a = null;
 		ContactStg b = null;
+		SignalStg oracle = generateSignalStg(XmasStgType.IORACLE, name + _ORACLE, pos.getX() + 12.0, pos.getY());
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isInput()) {
-				SignalStg rdy = generateSignalStg(XmasStgType.TRDY, name + _I_TRDY, pos.getX(), pos.getY() - 4.0, 2, 1);
+				SignalStg rdy = generateSignalStg(XmasStgType.TRDY, name + _I_TRDY, pos.getX(), pos.getY() - 4.0, 1, 2);
 				SignalStg dn = generateSignalStg(XmasStgType.TDN, name + _I_TDN, pos.getX(), pos.getY() + 4.0, 1, 3);
 				i = new ContactStg(rdy, dn);
 				contactMap.put(contact, i);
@@ -939,7 +940,19 @@ public class StgGenerator {
 			createReadArc(b.rdy.zero, b.dn.riseList.get(1));
 			createReadArc(b.rdy.one, b.dn.riseList.get(2));
 		}
-		SwitchStg switchStg = new SwitchStg(i, a, b, null);
+		if ((oracle != null) && (a != null) && (b != null)) {
+			createReadArcs(a.rdy.zero, oracle.getAllTransitions());
+			createReadArcs(b.rdy.zero, oracle.getAllTransitions());
+			createReplicaReadArc(oracle.zero, a.rdy.fallList.get(1), -6.0, 0.0);
+			createReplicaReadArc(oracle.zero, a.dn.riseList.get(1), -6.0, 0.0);
+			createReplicaReadArc(oracle.zero, b.rdy.riseList.get(0), -6.0, +1.0);
+			createReplicaReadArc(oracle.zero, b.dn.riseList.get(2), -6.0, -1.0);
+			createReplicaReadArc(oracle.one, a.rdy.riseList.get(0), -6.0, +1.0);
+			createReplicaReadArc(oracle.one, a.dn.riseList.get(2), -6.0, -1.0);
+			createReplicaReadArc(oracle.one, b.rdy.fallList.get(1), -6.0, 0.0);
+			createReplicaReadArc(oracle.one, b.dn.riseList.get(1), -6.0, 0.0);
+		}
+		SwitchStg switchStg = new SwitchStg(i, a, b, oracle);
 		groupComponentStg(switchStg);
 		return switchStg;
 	}
@@ -962,43 +975,35 @@ public class StgGenerator {
 			if (iContact != null) {
 				ContactStg i = getContactStg(iContact);
 				if (i != null) {
-					createReplicaReadArc(i.rdy.zero, switchStg.a.rdy.fallList.get(1), -6.0, 0.0);
-					createReplicaReadArc(i.rdy.zero, switchStg.b.rdy.fallList.get(1), -6.0, 0.0);
+					createReplicaReadArc(i.rdy.zero, switchStg.a.rdy.fallList.get(0), -6.0, 0.0);
 					createReplicaReadArc(i.rdy.one, switchStg.a.rdy.riseList.get(0), -6.0, 0.0);
+					createReplicaReadArc(i.rdy.zero, switchStg.b.rdy.fallList.get(0), -6.0, 0.0);
 					createReplicaReadArc(i.rdy.one, switchStg.b.rdy.riseList.get(0), -6.0, 0.0);
 					createReplicaReadArcBetweenDoneSignals(i.dn, switchStg.a.dn, 0.0);
 					createReplicaReadArcBetweenDoneSignals(i.dn, switchStg.b.dn, 0.0);
-					createReplicaReadArc(i.rdy.zero, switchStg.a.dn.riseList.get(1), -6.0, 0.0);
-					createReplicaReadArc(i.rdy.one, switchStg.a.dn.riseList.get(2), -6.0, -1.0);
-					createReplicaReadArc(i.rdy.zero, switchStg.b.dn.riseList.get(1), -6.0, 0.0);
-					createReplicaReadArc(i.rdy.one, switchStg.b.dn.riseList.get(2), -6.0, -1.0);
+					createReplicaReadArc(i.rdy.zero, switchStg.a.dn.riseList.get(0), -6.0, 0.0);
+					createReplicaReadArc(i.rdy.one, switchStg.a.dn.riseList.get(2), -6.0,  0.0);
+					createReplicaReadArc(i.rdy.zero, switchStg.b.dn.riseList.get(0), -6.0, 0.0);
+					createReplicaReadArc(i.rdy.one, switchStg.b.dn.riseList.get(2), -6.0, 0.0);
 				}
 			}
 			if (aContact != null) {
 				ContactStg a = getContactStg(aContact);
 				if (a != null) {
 					createReplicaReadArc(a.rdy.zero, switchStg.i.rdy.fallList.get(0), +6.0, 0.0);
-					createReplicaReadArc(a.rdy.zero, switchStg.b.rdy.fallList.get(0), -6.0, 0.0);
-					createReplicaReadArc(a.rdy.one, switchStg.i.rdy.riseList.get(0), +6.0, -1.0);
-					createReplicaReadArc(a.rdy.one, switchStg.b.rdy.riseList.get(0), -6.0, +1.0);
+					createReplicaReadArc(a.rdy.one, switchStg.i.rdy.riseList.get(1), +6.0, 0.0);
 					createReplicaReadArcBetweenDoneSignals(a.dn, switchStg.i.dn, -1.0);
-					createReplicaReadArc(a.rdy.zero, switchStg.b.dn.riseList.get(0), -6.0, 0.0);
-					createReplicaReadArc(a.rdy.one, switchStg.b.dn.riseList.get(2), -6.0, 0.0);
 					createReplicaReadArc(a.rdy.zero, switchStg.i.dn.riseList.get(0), +6.0, 0.0);
-					createReplicaReadArc(a.rdy.one, switchStg.i.dn.riseList.get(2), +6.0, 0.0);
+					createReplicaReadArc(a.rdy.one, switchStg.i.dn.riseList.get(1), +6.0, +1.0);
 				}
 			}
 			if (bContact != null) {
 				ContactStg b = getContactStg(bContact);
 				if (b != null) {
-					createReplicaReadArc(b.rdy.zero, switchStg.i.rdy.fallList.get(1), +6.0, 0.0);
-					createReplicaReadArc(b.rdy.zero, switchStg.a.rdy.fallList.get(0), -6.0, 0.0);
+					createReplicaReadArc(b.rdy.zero, switchStg.i.rdy.fallList.get(0), +6.0, +1.0);
 					createReplicaReadArc(b.rdy.one, switchStg.i.rdy.riseList.get(0), +6.0, 0.0);
-					createReplicaReadArc(b.rdy.one, switchStg.a.rdy.riseList.get(0), -6.0, +1.0);
 					createReplicaReadArcBetweenDoneSignals(b.dn, switchStg.i.dn, 0.0);
-					createReplicaReadArc(b.rdy.zero, switchStg.a.dn.riseList.get(0), -6.0, 0.0);
-					createReplicaReadArc(b.rdy.one, switchStg.a.dn.riseList.get(2), -6.0, 0.0);
-					createReplicaReadArc(b.rdy.zero, switchStg.i.dn.riseList.get(1), +6.0, 0.0);
+					createReplicaReadArc(b.rdy.zero, switchStg.i.dn.riseList.get(0), +6.0, +1.0);
 					createReplicaReadArc(b.rdy.one, switchStg.i.dn.riseList.get(2), +6.0, +1.0);
 				}
 			}
@@ -1009,6 +1014,7 @@ public class StgGenerator {
 				createReplicaReadArcsFromClockToCombinational(switchStg.a.rdy);
 				createReplicaReadArcsFromClockToDone(switchStg.b.dn);
 				createReplicaReadArcsFromClockToCombinational(switchStg.b.rdy);
+				createReplicaReadArcsFromClockToSequential(switchStg.oracle);
 			}
 		}
 	}
@@ -1026,7 +1032,7 @@ public class StgGenerator {
 		ContactStg o = null;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
-				SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _O_IRDY, pos.getX(), pos.getY() + 4.0, 2, 1);
+				SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _O_IRDY, pos.getX(), pos.getY() + 4.0, 1, 2);
 				SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _O_IDN, pos.getX(), pos.getY() - 4.0, 1, 3);
 				o = new ContactStg(rdy, dn);
 				contactMap.put(contact, o);
@@ -1080,44 +1086,46 @@ public class StgGenerator {
 			if (aContact != null) {
 				ContactStg a = getContactStg(aContact);
 				if (a != null) {
-					createReplicaReadArc(a.rdy.zero, mergeStg.b.rdy.fallList.get(0), +6.0, 0.0);
-					createReplicaReadArc(a.rdy.zero, mergeStg.o.rdy.fallList.get(1), -6.0, 0.0);
-					createReplicaReadArc(a.rdy.one, mergeStg.b.rdy.riseList.get(0), +6.0, -1.0);
+					createReplicaReadArc(a.rdy.zero, mergeStg.a.rdy.fallList.get(1), +6.0, 0.0);
+					createReplicaReadArc(a.rdy.zero, mergeStg.o.rdy.fallList.get(0), -6.0, -1.0);
+					createReplicaReadArc(a.rdy.one, mergeStg.a.rdy.riseList.get(0), +6.0, 0.0);
 					createReplicaReadArc(a.rdy.one, mergeStg.o.rdy.riseList.get(0), -6.0, 0.0);
+					createReplicaReadArcBetweenDoneSignals(a.dn, mergeStg.a.dn, -1.0);
 					createReplicaReadArcBetweenDoneSignals(a.dn, mergeStg.o.dn, 0.0);
-					createReplicaReadArc(a.rdy.zero, mergeStg.o.dn.riseList.get(1), -6.0, 0.0);
+					createReplicaReadArc(a.rdy.zero, mergeStg.a.dn.riseList.get(1), +6.0, 0.0);
+					createReplicaReadArc(a.rdy.zero, mergeStg.o.dn.riseList.get(0), -6.0, -1.0);
+					createReplicaReadArc(a.rdy.one, mergeStg.a.dn.riseList.get(2), +6.0, +1.0);
 					createReplicaReadArc(a.rdy.one, mergeStg.o.dn.riseList.get(2), -6.0, -1.0);
-					createReplicaReadArc(a.rdy.zero, mergeStg.b.dn.riseList.get(0), +6.0, 0.0);
-					createReplicaReadArc(a.rdy.one, mergeStg.b.dn.riseList.get(2), +6.0, 0.0);
 				}
 			}
 			if (bContact != null) {
 				ContactStg b = getContactStg(bContact);
 				if (b != null) {
-					createReplicaReadArc(b.rdy.zero, mergeStg.a.rdy.fallList.get(1), +6.0, 0.0);
+					createReplicaReadArc(b.rdy.zero, mergeStg.b.rdy.fallList.get(1), +6.0, 0.0);
 					createReplicaReadArc(b.rdy.zero, mergeStg.o.rdy.fallList.get(0), -6.0, 0.0);
-					createReplicaReadArc(b.rdy.one, mergeStg.a.rdy.riseList.get(0), +6.0, 0.0);
-					createReplicaReadArc(b.rdy.one, mergeStg.o.rdy.riseList.get(0), -6.0, +1.0);
+					createReplicaReadArc(b.rdy.one, mergeStg.b.rdy.riseList.get(0), +6.0, 0.0);
+					createReplicaReadArc(b.rdy.one, mergeStg.o.rdy.riseList.get(1), -6.0, 0.0);
+					createReplicaReadArcBetweenDoneSignals(b.dn, mergeStg.b.dn, -1.0);
 					createReplicaReadArcBetweenDoneSignals(b.dn, mergeStg.o.dn, +1.0);
+					createReplicaReadArc(b.rdy.zero, mergeStg.b.dn.riseList.get(1), +6.0, 0.0);
 					createReplicaReadArc(b.rdy.zero, mergeStg.o.dn.riseList.get(0), -6.0, 0.0);
-					createReplicaReadArc(b.rdy.one, mergeStg.o.dn.riseList.get(2), -6.0, 0.0);
-					createReplicaReadArc(b.rdy.zero, mergeStg.a.dn.riseList.get(1), +6.0, 0.0);
-					createReplicaReadArc(b.rdy.one, mergeStg.a.dn.riseList.get(2), +6.0, +1.0);
+					createReplicaReadArc(b.rdy.one, mergeStg.b.dn.riseList.get(2), +6.0, +1.0);
+					createReplicaReadArc(b.rdy.one, mergeStg.o.dn.riseList.get(1), -6.0, -1.0);
 				}
 			}
 			if (oContact != null) {
 				ContactStg o = getContactStg(oContact);
 				if (o != null) {
 					createReplicaReadArc(o.rdy.zero, mergeStg.a.rdy.fallList.get(0), +6.0, 0.0);
-					createReplicaReadArc(o.rdy.zero, mergeStg.b.rdy.fallList.get(1), +6.0, 0.0);
+					createReplicaReadArc(o.rdy.zero, mergeStg.b.rdy.fallList.get(0), +6.0, 0.0);
 					createReplicaReadArc(o.rdy.one, mergeStg.a.rdy.riseList.get(0), +6.0, -1.0);
-					createReplicaReadArc(o.rdy.one, mergeStg.b.rdy.riseList.get(0), +6.0, 0.0);
+					createReplicaReadArc(o.rdy.one, mergeStg.b.rdy.riseList.get(0), +6.0, -1.0);
 					createReplicaReadArcBetweenDoneSignals(o.dn, mergeStg.a.dn, 0.0);
 					createReplicaReadArcBetweenDoneSignals(o.dn, mergeStg.b.dn, 0.0);
 					createReplicaReadArc(o.rdy.zero, mergeStg.a.dn.riseList.get(0), +6.0, 0.0);
+					createReplicaReadArc(o.rdy.zero, mergeStg.b.dn.riseList.get(0), +6.0, 0.0);
 					createReplicaReadArc(o.rdy.one, mergeStg.a.dn.riseList.get(2), +6.0, 0.0);
-					createReplicaReadArc(o.rdy.zero, mergeStg.b.dn.riseList.get(1), +6.0, 0.0);
-					createReplicaReadArc(o.rdy.one, mergeStg.b.dn.riseList.get(2), +6.0, +1.0);
+					createReplicaReadArc(o.rdy.one, mergeStg.b.dn.riseList.get(2), +6.0, 0.0);
 				}
 			}
 		}
