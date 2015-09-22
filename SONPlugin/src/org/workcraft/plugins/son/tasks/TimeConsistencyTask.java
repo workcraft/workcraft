@@ -96,6 +96,26 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
 		}
 
+		if(settings.getGranularity() == Granularity.YEAR_YEAR){
+			infoMsg("Time granularity: T:year  D:year");
+		}else if(settings.getGranularity() == Granularity.HOUR_MINS){
+			infoMsg("Time granularity: T:24 hour clock  D:minutes");
+			infoMsg("Running time granularity checking task...");
+			for(Node node : checkList){
+				ArrayList<String> result = timeAlg.granularityHourMinsTask(node);
+				if(!result.isEmpty()){
+					outOfBoundResult.add(node);
+					infoMsg("Node:" + net.getNodeReference(node));
+					for(String str : result){
+						errMsg("-"+str);
+					}
+				}
+			}
+		}
+
+		infoMsg("Remove invalid time granularity nodes from checking list...");
+		checkList.removeAll(outOfBoundResult);
+
 		infoMsg("Running unspecified value checking task...");
 		for(Node node : checkList){
 			ArrayList<String> result;
@@ -116,26 +136,6 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
 		infoMsg("Remove unspecified nodes from checking list...");
 		checkList.removeAll(unspecifyResult);
-
-		infoMsg("Running time granularity checking task...");
-		if(settings.getGranularity() == Granularity.YEAR_YEAR){
-			infoMsg("Time granularity: T:year  D:year");
-		}else if(settings.getGranularity() == Granularity.HOUR_MINS){
-			infoMsg("Time granularity: T:24 hour clock  D:minutes");
-			for(Node node : checkList){
-				ArrayList<String> result = timeAlg.granularityHourMinsTask(node);
-				if(!result.isEmpty()){
-					outOfBoundResult.add(node);
-					infoMsg("Node:" + net.getNodeReference(node));
-					for(String str : result){
-						errMsg("-"+str);
-					}
-				}
-			}
-		}
-
-		infoMsg("Remove invalid time granularity nodes from checking list...");
-		checkList.removeAll(outOfBoundResult);
 
 		infoMsg("Running time consistency checking task...");
 		for(Node node : checkList){

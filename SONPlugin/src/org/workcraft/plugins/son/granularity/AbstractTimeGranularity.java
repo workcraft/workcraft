@@ -47,8 +47,8 @@ public abstract class AbstractTimeGranularity implements TimeGranularity{
 		int minF = end.getMin();
 		int maxF = end.getMax();
 
-		result.setMin(subtractTD(maxS, maxF));
-		result.setMax(subtractTD(minS, minF));
+		result.setMin(subtractTD(maxS, minF));
+		result.setMax(subtractTD(minS, maxF));
 
 		return result;
 	}
