@@ -50,10 +50,10 @@ public class TimeAlg extends RelationAlgorithm{
 		//Equation 3
 		if(!(tsl <= tfl))
 			result.add("Node inconsistency: minStart"
-					+node(node)+value(tsl.toString())+" > minEnd"+node(node)+"="+value(tfl.toString())+".");
+					+node(node)+value(tsl.toString())+" > minEnd"+node(node)+value(tfl.toString())+".");
 		if(!(tsu <= tfu))
 			result.add("Node inconsistency: maxStart"
-					+node(node)+value(tsu.toString())+" > maxEnd"+node(node)+"="+value(tfu.toString())+".");
+					+node(node)+value(tsu.toString())+" > maxEnd"+node(node)+value(tfu.toString())+".");
 		//Equation 6
 		Interval i = null;
 		try {
@@ -64,8 +64,8 @@ public class TimeAlg extends RelationAlgorithm{
 		}
 		if(!i.isOverlapping(end))
 			result.add("Node inconsistency: start"
-					+node(node)+" + duration"+node(node)+value(i.toString())
-					+" is not intersected with end"+node(node)+"="+value(end.toString())+".");
+					+node(node)+" + duration"+node(node)+"="+value(i.toString())
+					+" is not consistent with end"+node(node)+value(end.toString())+".");
 
 		//Equation 7
 		Interval i2 = null;
@@ -78,15 +78,15 @@ public class TimeAlg extends RelationAlgorithm{
 
 		if(!i2.isOverlapping(start))
 			result.add("Node inconsistency: end"
-					+node(node)+" - duration"+node(node)+value(i2.toString())
-					+" is not intersected with start"+node(node)+"="+value(start.toString())+".");
+					+node(node)+" - duration"+node(node)+"="+value(i2.toString())
+					+" is not consistent with start"+node(node)+value(start.toString())+".");
 
 		//Equation 8
 		int lowBound3;
 		int upBound3;
 		try {
 			lowBound3 = Math.max(0, granularity.subtractTT(tsu, tfl));
-			upBound3 = granularity.subtractTT(tfu, tsl);
+			upBound3 = granularity.subtractTT(tsl, tfu);
 		} catch (TimeOutOfBoundsException e) {
 			result.add(e.getMessage());
 			return result;
@@ -95,8 +95,8 @@ public class TimeAlg extends RelationAlgorithm{
 
 		if(!i3.isOverlapping(dur))
 			result.add("Node inconsistency: end"
-					+node(node)+" - start"+node(node)+value(i3.toString())
-					+" is not intersected with duration"+node(node)+"="+value(dur.toString())+".");
+					+node(node)+" - start"+node(node)+"="+value(i3.toString())
+					+" is not consistent with duration"+node(node)+value(dur.toString())+".");
 
 		return result;
 	}
@@ -194,33 +194,39 @@ public class TimeAlg extends RelationAlgorithm{
 	private ArrayList<String> asynConsistency(ChannelPlace cp, Collection<ChannelPlace> sync, Granularity g) throws InvalidStructureException{
 		ArrayList<String> result = new ArrayList<String>();
 		//check all transitionNodes first
-		Interval start = null;
+		Interval startInput = null;
 		TransitionNode input = null;
 		if(net.getInputSONConnections(cp).size() == 1){
 			SONConnection con = net.getInputSONConnections(cp).iterator().next();
 			input = (TransitionNode)con.getFirst();
-			start = con.getTime();
+			startInput = con.getTime();
 		}
 
-		Interval end = null;
 		TransitionNode output = null;
+		Interval endOutput = null;
 		if(net.getOutputSONConnections(cp).size() == 1){
 			SONConnection con = net.getOutputSONConnections(cp).iterator().next();
 			output = (TransitionNode)con.getSecond();
-			end = con.getTime();
+			endOutput = con.getTime();
 		}
 
-		if(start==null || end==null ||input==null || output == null){
+		if(startInput==null || endOutput==null ||input==null || output == null){
 			throw new InvalidStructureException("Empty channel place input/output: "+ net.getNodeReference(cp));
+		}else if((!input.getStartTime().isSpecified())||!(input.getEndTime().isSpecified())
+				|| !(output.getStartTime().isSpecified())||!(output.getEndTime().isSpecified())){
+			result.add("Fail to run sync consistency checking: "+node(input)+" or "+node(output)+ "is not node consistency.");
+			return result;
 		}
 
-		cp.setStartTime(start);
-		cp.setEndTime(end);
+
+
+		cp.setStartTime(startInput);
+		cp.setEndTime(endOutput);
 
 		if(sync.contains(cp)){
-			if(!start.isSpecified())
+			if(!startInput.isSpecified())
 				cp.setStartTime(input.getEndTime());
-			if(!end.isSpecified())
+			if(!endOutput.isSpecified())
 				cp.setEndTime(output.getStartTime());
 
 			//Equation 17
@@ -249,7 +255,7 @@ public class TimeAlg extends RelationAlgorithm{
 						+" != end"+node(output)+value(output.getEndTime().toString()));
 			}
 		}else{
-			if(!nodeConsistency(cp, start, end, cp.getDuration(), g).isEmpty())
+			if(!nodeConsistency(cp, startInput, endOutput, cp.getDuration(), g).isEmpty())
 				result.add("Async inconsistency: "+node(cp)
 						+"is not node consistency");
 		}
