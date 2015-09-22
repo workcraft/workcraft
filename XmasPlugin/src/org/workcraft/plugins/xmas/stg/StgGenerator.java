@@ -308,6 +308,10 @@ public class StgGenerator {
 	}
 
 	private SignalStg generateBasicSignalStg(String signalName, double x, double y, SignalTransition.Type type) throws InvalidConnectionException {
+		return generateBasicSignalStg(signalName, x, y, type, 1, 1);
+	}
+
+	private SignalStg generateBasicSignalStg(String signalName, double x, double y, SignalTransition.Type type, int fallCount, int riseCount) throws InvalidConnectionException {
 		VisualPlace zero = stg.createPlace(signalName + name0, null);
 		zero.getReferencedPlace().setTokens(1);
 		zero.setNamePositioning(Positioning.BOTTOM);
@@ -1148,14 +1152,14 @@ public class StgGenerator {
 		double xContact = 5.0 * capacity + 5.0;
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
-				SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _O_IRDY, pos.getX() + xContact, pos.getY() - 5.0, 1, capacity);
-				SignalStg dn = null;
+				SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _O_IRDY, pos.getX() + xContact, pos.getY(), 1, capacity);
+				SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _O_IDN, pos.getX() + xContact, pos.getY() - 12.0, 1, capacity + 1);
 				o = new ContactStg(rdy, dn);
 				contactMap.put(contact, o);
 			} else {
-				SignalStg rdy = generateSignalStg(XmasStgType.TRDY, name + _I_TRDY, pos.getX() - xContact, pos.getY() + 5.0, 1, capacity);
+				SignalStg rdy = generateSignalStg(XmasStgType.TRDY, name + _I_TRDY, pos.getX() - xContact, pos.getY(), 1, capacity);
 				setSignalInitialState(rdy, true);
-				SignalStg dn = null;
+				SignalStg dn = generateSignalStg(XmasStgType.TDN, name + _I_TDN, pos.getX() - xContact, pos.getY() + 12.0, 1, capacity + 1);
 				i = new ContactStg(rdy, dn);
 				contactMap.put(contact, i);
 			}
@@ -1167,6 +1171,7 @@ public class StgGenerator {
 			SignalStg memStg = generateBasicSignalStg(name + _MEM + c, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
 			SignalStg headStg = generateBasicSignalStg(name + _HEAD + c, pos.getX() + xSlot, pos.getY() - 8.0, SignalTransition.Type.INTERNAL);
 			SignalStg tailStg = generateBasicSignalStg(name + _TAIL + c, pos.getX() + xSlot, pos.getY() + 8.0, SignalTransition.Type.INTERNAL);
+			SignalStg doneStg = generateBasicSignalStg(name + _DONE + c, pos.getX() + xSlot, pos.getY() + 16.0, SignalTransition.Type.OUTPUT, 1, 4);
 			setSignalInitialState(headStg, (idx == 0));
 			memList.add(memStg);
 			headList.add(headStg);
