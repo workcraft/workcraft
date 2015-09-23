@@ -1,6 +1,7 @@
 package org.workcraft.plugins.xmas.stg;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
@@ -9,16 +10,12 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 public class QueueStg extends NodeStg {
 	public final ContactStg i;
 	public final ContactStg o;
-	public final ArrayList<SignalStg> memList = new ArrayList<>();
-	public final ArrayList<SignalStg> headList = new ArrayList<>();
-	public final ArrayList<SignalStg> tailList = new ArrayList<>();
+	public final ArrayList<SlotStg> slotList = new ArrayList<>();
 
-	public QueueStg(ContactStg i, ContactStg o, ArrayList<SignalStg> memList, ArrayList<SignalStg> headList, ArrayList<SignalStg> tailList) {
+	public QueueStg(ContactStg i, ContactStg o, ArrayList<SlotStg> slotList) {
 		this.i = i;
 		this.o = o;
-		this.memList.addAll(memList);
-		this.headList.addAll(headList);
-		this.tailList.addAll(tailList);
+		this.slotList.addAll(slotList);
 	}
 
 	@Override
@@ -26,68 +23,55 @@ public class QueueStg extends NodeStg {
 		List<VisualSignalTransition> result = new ArrayList<>();
 		result.addAll(i.getAllTransitions());
 		result.addAll(o.getAllTransitions());
-		result.addAll(getMemTransitions());
-		result.addAll(getHeadTransitions());
-		result.addAll(getTailTransitions());
+		result.addAll(getSlotTransitions());
 		return result;
 	}
 
-	public List<VisualSignalTransition> getMemTransitions() {
+	public List<VisualSignalTransition> getSlotTransitions() {
 		List<VisualSignalTransition> result = new ArrayList<>();
-		for (SignalStg mem: memList) {
-			result.addAll(mem.getAllTransitions());
+		for (SlotStg slot: slotList) {
+			result.addAll(slot.getAllTransitions());
 		}
 		return result;
 	}
-
-	public List<VisualSignalTransition> getHeadTransitions() {
-		List<VisualSignalTransition> result = new ArrayList<>();
-		for (SignalStg head: headList) {
-			result.addAll(head.getAllTransitions());
-		}
-		return result;
-	}
-
-	public List<VisualSignalTransition> getTailTransitions() {
-		List<VisualSignalTransition> result = new ArrayList<>();
-		for (SignalStg tail: tailList) {
-			result.addAll(tail.getAllTransitions());
-		}
-		return result;
-	}
-
 
 	@Override
 	public List<VisualPlace> getAllPlaces() {
 		List<VisualPlace> result = new ArrayList<>();
 		result.addAll(i.getAllPlaces());
 		result.addAll(o.getAllPlaces());
-		result.addAll(getMemPlaces());
-		result.addAll(getHeadPlaces());
-		result.addAll(getTailPlaces());
+		result.addAll(getSlotPlaces());
 		return result;
 	}
 
-	public List<VisualPlace> getMemPlaces() {
+	public List<VisualPlace> getSlotPlaces() {
 		List<VisualPlace> result = new ArrayList<>();
-		for (SignalStg mem: memList) {
-			result.addAll(mem.getAllPlaces());
+		for (SlotStg slot: slotList) {
+			result.addAll(slot.getAllPlaces());
 		}
 		return result;
 	}
 
-	public List<VisualPlace> getHeadPlaces() {
-		List<VisualPlace> result = new ArrayList<>();
-		for (SignalStg head: headList) {
-			result.addAll(head.getAllPlaces());
+	public Collection<VisualSignalTransition> getMemTransitions() {
+		List<VisualSignalTransition> result = new ArrayList<>();
+		for (SlotStg slot: slotList) {
+			result.addAll(slot.mem.getAllTransitions());
 		}
 		return result;
 	}
 
-	public List<VisualPlace> getTailPlaces() {
-		List<VisualPlace> result = new ArrayList<>();
-		for (SignalStg tail: tailList) {
-			result.addAll(tail.getAllPlaces());
+	public Collection<VisualSignalTransition> getHeadTransitions() {
+		List<VisualSignalTransition> result = new ArrayList<>();
+		for (SlotStg slot: slotList) {
+			result.addAll(slot.hd.getAllTransitions());
+		}
+		return result;
+	}
+
+	public Collection<VisualSignalTransition> getTailTransitions() {
+		List<VisualSignalTransition> result = new ArrayList<>();
+		for (SlotStg slot: slotList) {
+			result.addAll(slot.tl.getAllTransitions());
 		}
 		return result;
 	}

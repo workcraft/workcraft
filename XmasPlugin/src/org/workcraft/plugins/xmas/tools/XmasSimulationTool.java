@@ -29,6 +29,7 @@ import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.plugins.xmas.stg.ContactStg;
 import org.workcraft.plugins.xmas.stg.QueueStg;
 import org.workcraft.plugins.xmas.stg.SinkStg;
+import org.workcraft.plugins.xmas.stg.SlotStg;
 import org.workcraft.plugins.xmas.stg.SourceStg;
 import org.workcraft.plugins.xmas.stg.StgGenerator;
 import org.workcraft.util.Func;
@@ -249,12 +250,13 @@ public class XmasSimulationTool extends StgSimulationTool {
 							SlotState result = null;
 							int capacity = queue.getReferencedQueueComponent().getCapacity();
 							if ((i >= 0) && (i < capacity)) {
-								boolean isFull = (queueStg.memList.get(i).one.getReferencedPlace().getTokens() != 0);
-								boolean isHead = (queueStg.headList.get(i).one.getReferencedPlace().getTokens() != 0);
-								boolean isTail= (queueStg.tailList.get(i).one.getReferencedPlace().getTokens() != 0);
-								boolean isMemExcited = (getExcitedTransition(queueStg.memList.get(i).getAllTransitions()) != null);
-								boolean isHeadExcited = (getExcitedTransition(queueStg.headList.get(i).getAllTransitions()) != null);
-								boolean isTailExcited = (getExcitedTransition(queueStg.tailList.get(i).getAllTransitions()) != null);
+								SlotStg slot = queueStg.slotList.get(i);
+								boolean isFull = (slot.mem.one.getReferencedPlace().getTokens() != 0);
+								boolean isHead = (slot.hd.one.getReferencedPlace().getTokens() != 0);
+								boolean isTail= (slot.tl.one.getReferencedPlace().getTokens() != 0);
+								boolean isMemExcited = (getExcitedTransition(slot.mem.getAllTransitions()) != null);
+								boolean isHeadExcited = (getExcitedTransition(slot.hd.getAllTransitions()) != null);
+								boolean isTailExcited = (getExcitedTransition(slot.tl.getAllTransitions()) != null);
 								result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
 							}
 							return result;

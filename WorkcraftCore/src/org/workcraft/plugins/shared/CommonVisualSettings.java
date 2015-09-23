@@ -61,7 +61,7 @@ public class CommonVisualSettings implements Settings {
 	private static final Color defaultLabelColor = Color.BLACK;
 	private static final boolean defaultNameVisibility = true;
 	private static final Positioning defaultNamePositioning = Positioning.BOTTOM;
-	private static final Color defaultNameColor = Color.BLUE.darker();
+	private static final Color defaultNameColor = Color.GRAY.darker();
 	private static final Integer defaultRedrawInterval = 20;
 
 	private static double baseSize = defaultBaseSize;

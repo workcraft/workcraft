@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,6 +66,7 @@ public class StgGenerator {
 	private static final String name1 		= "_1";
 	private static final double xScaling = 6;
 	private static final double yScaling = 6;
+	private static final double QUEUE_SLOT_SPACING = 16.0;
 
 	private SignalStg clockStg = null;
 	private Set<SignalStg> clockControlSignals = null;
@@ -207,6 +209,20 @@ public class StgGenerator {
 		createReplicaReadArcs(p, Arrays.asList(t), replicaPosition);
 	}
 
+	private void createReplicaReadArcs(VisualPlace p, List<VisualSignalTransition> ts, double xOffset, double yOffset) throws InvalidConnectionException {
+		if ((p != null) && (ts != null)) {
+			VisualReplicaPlace replicaPlace = null;
+			for (VisualSignalTransition t: ts) {
+				if (replicaPlace == null) {
+					Container container = Hierarchy.getNearestContainer(new HashSet<Node>(ts));
+					replicaPlace = stg.createVisualReplica(p, container, VisualReplicaPlace.class);
+					Point2D pos = new Point2D.Double(t.getRootSpaceX() + xOffset, t.getRootSpaceY() + yOffset);
+					replicaPlace.setRootSpacePosition(pos);
+				}
+				stg.connectUndirected(replicaPlace, t);
+			}
+		}
+	}
 
 	private void createReplicaReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, Point2D replicaPosition) throws InvalidConnectionException {
 		if ((p != null) && (ts != null)) {
@@ -269,10 +285,37 @@ public class StgGenerator {
 			xp += p.getRootSpaceX();
 		}
 		xp /=  dn.getAllPlaces().size();
-		Point2D clk1Pos = getClockReplicaPosition(dn);
+		Point2D clk1Pos = getSignalCenterPosition(dn);
 		Point2D clk0Pos = new Point2D.Double(clk1Pos.getX() + (xt - xp) / 2.0, clk1Pos.getY());
 		createReplicaReadArcs(clockStg.one, dn.fallList, clk1Pos);
 		createReplicaReadArcs(clockStg.zero, dn.riseList, clk0Pos);
+	}
+
+	private void createReplicaReadArcsFromClockToMemDone(SignalStg dn) throws InvalidConnectionException {
+		double y = 0.0;
+		for (VisualPlace p: dn.getAllPlaces()) {
+			y += p.getRootSpaceY();
+		}
+		y /=  dn.getAllPlaces().size();
+
+		{
+			double xFall = 0.0;
+			for (VisualSignalTransition t: dn.fallList) {
+				xFall += t.getRootSpaceX();
+			}
+			xFall /= dn.fallList.size();
+			Point2D clk1Pos = new Point2D.Double(xFall, y + 2.0);
+			createReplicaReadArcs(clockStg.one, dn.fallList, clk1Pos);
+		}
+		{
+			double xRise = 0.0;
+			for (VisualSignalTransition t: dn.riseList) {
+				xRise += t.getRootSpaceX();
+			}
+			xRise /= dn.riseList.size();
+			Point2D clk0Pos = new Point2D.Double(xRise + 4.0, y);
+			createReplicaReadArcs(clockStg.zero, dn.riseList, clk0Pos);
+		}
 	}
 
 	private void createReplicaReadArcFromSignalToOracle(SignalStg signal, SignalStg oracle) throws InvalidConnectionException {
@@ -284,34 +327,44 @@ public class StgGenerator {
 	}
 
 	private void createReplicaReadArcsFromClockToCombinational(SignalStg rdy) throws InvalidConnectionException {
-		createReplicaReadArcs(clockStg.zero, rdy.getAllTransitions(), getClockReplicaPosition(rdy));
+		double xt = 0.0;
+		for (VisualSignalTransition t: rdy.getAllTransitions()) {
+			xt += t.getRootSpaceX();
+		}
+		xt /= rdy.getAllTransitions().size();
+		double xp = 0.0;
+		double yp = 0.0;
+		for (VisualPlace p: rdy.getAllPlaces()) {
+			xp += p.getRootSpaceX();
+			yp += p.getRootSpaceY();
+		}
+		xp /=  rdy.getAllPlaces().size();
+		yp /=  rdy.getAllPlaces().size();
+		Point2D clk0Pos = new Point2D.Double(xt + (xt - xp) / 2.0, yp);
+		createReplicaReadArcs(clockStg.zero, rdy.getAllTransitions(), clk0Pos);
 	}
 
 	private void createReplicaReadArcsFromClockToSequential(SignalStg rdy) throws InvalidConnectionException {
-		createReplicaReadArcs(clockStg.one, rdy.getAllTransitions(), getClockReplicaPosition(rdy));
+		createReplicaReadArcs(clockStg.one, rdy.getAllTransitions(), getSignalCenterPosition(rdy));
 	}
 
-	private Point2D getClockReplicaPosition(SignalStg rdy) {
+	private Point2D getSignalCenterPosition(SignalStg signal) {
 		double x = 0.0;
-		for (VisualSignalTransition t: rdy.getAllTransitions()) {
+		for (VisualSignalTransition t: signal.getAllTransitions()) {
 			x += t.getRootSpaceX();
 		}
-		x /= rdy.getAllTransitions().size();
+		x /= signal.getAllTransitions().size();
 
 		double y = 0.0;
-		for (VisualPlace p: rdy.getAllPlaces()) {
+		for (VisualPlace p: signal.getAllPlaces()) {
 			y += p.getRootSpaceY();
 		}
-		y /= rdy.getAllPlaces().size();
+		y /= signal.getAllPlaces().size();
 
 		return new Point2D.Double(x, y);
 	}
 
 	private SignalStg generateBasicSignalStg(String signalName, double x, double y, SignalTransition.Type type) throws InvalidConnectionException {
-		return generateBasicSignalStg(signalName, x, y, type, 1, 1);
-	}
-
-	private SignalStg generateBasicSignalStg(String signalName, double x, double y, SignalTransition.Type type, int fallCount, int riseCount) throws InvalidConnectionException {
 		VisualPlace zero = stg.createPlace(signalName + name0, null);
 		zero.getReferencedPlace().setTokens(1);
 		zero.setNamePositioning(Positioning.BOTTOM);
@@ -327,14 +380,47 @@ public class StgGenerator {
 		VisualSignalTransition fall = stg.createSignalTransition(signalName, type, SignalTransition.Direction.MINUS, null);
 		createConsumingArc(one, fall);
 		createProducingArc(fall, zero);
-		setPosition(fall, x + 2.0, y + 0.0);
+		setPosition(fall, x + 4.0, y + 0.0);
 
 		VisualSignalTransition rise = stg.createSignalTransition(signalName, type, SignalTransition.Direction.PLUS, null);
 		createConsumingArc(zero, rise);
 		createProducingArc(rise, one);
-		setPosition(rise, x - 2.0, y - 0.0);
+		setPosition(rise, x - 4.0, y - 0.0);
 
 		return new SignalStg(zero, one, fall, rise);
+	}
+
+	private SignalStg generateMemDoneStg(String signalName, double x, double y) throws InvalidConnectionException {
+		VisualPlace zero = stg.createPlace(signalName + name0, null);
+		zero.getReferencedPlace().setTokens(1);
+		zero.setNamePositioning(Positioning.BOTTOM);
+		zero.setLabelPositioning(Positioning.TOP);
+		setPosition(zero, x + 0.0, y + 2.0);
+
+		VisualPlace one = stg.createPlace(signalName + name1, null);
+		one.getReferencedPlace().setTokens(0);
+		one.setNamePositioning(Positioning.TOP);
+		one.setLabelPositioning(Positioning.BOTTOM);
+		setPosition(one, x + 0.0, y - 2.0);
+
+		ArrayList<VisualSignalTransition> fallList = new ArrayList<>(1);
+		{
+			VisualSignalTransition fall = stg.createSignalTransition(signalName, Type.OUTPUT, SignalTransition.Direction.MINUS, null);
+			createConsumingArc(one, fall);
+			createProducingArc(fall, zero);
+			setPosition(fall, x + 4.0, y + 0.0);
+			fallList.add(fall);
+		}
+
+		ArrayList<VisualSignalTransition> riseList = new ArrayList<>(4);
+		for (int i = 0; i < 4; i++) {
+			VisualSignalTransition rise = stg.createSignalTransition(signalName, Type.OUTPUT, SignalTransition.Direction.PLUS, null);
+			createConsumingArc(zero, rise);
+			createProducingArc(rise, one);
+			setPosition(rise, x - 4.0, y - 3.0 + 2.0 * i);
+			riseList.add(rise);
+		}
+		return new SignalStg(zero, one, fallList, riseList);
 	}
 
 	private SignalStg generateSignalStg(XmasStgType xmasSignalType, String signalName, double x, double y) throws InvalidConnectionException {
@@ -346,7 +432,6 @@ public class StgGenerator {
 	}
 
 	private SignalStg generateSignalStg(XmasStgType xmasSignalType, String signalName, Point2D pos, int fallCount, int riseCount) throws InvalidConnectionException {
-
 		double x = pos.getX();
 		double y = pos.getY();
 		int xSign = getXSign(xmasSignalType);
@@ -433,8 +518,8 @@ public class StgGenerator {
 	}
 
 	private void groupComponentStg(NodeStg nodeStg) {
-		stg.select(nodeStg.getAllNodes());
-		stg.groupSelection();
+//		stg.select(nodeStg.getAllNodes());
+//		stg.groupSelection();
 	}
 
 
@@ -483,7 +568,14 @@ public class StgGenerator {
 			}
 		}
 		for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
-
+			QueueStg queueStg = getQueueStg(component);
+			if (queueStg != null) {
+				createReplicaReadArcsFromDoneToClock(queueStg.i.dn);
+				createReplicaReadArcsFromDoneToClock(queueStg.o.dn);
+				for (SlotStg slot: queueStg.slotList) {
+					createReplicaReadArcsFromDoneToClock(slot.dn);
+				}
+			}
 		}
 	}
 
@@ -1146,10 +1238,8 @@ public class StgGenerator {
 		int capacity = component.getReferencedQueueComponent().getCapacity();
 		ContactStg i = null;
 		ContactStg o = null;
-		ArrayList<SignalStg> memList = new ArrayList<>(capacity);
-		ArrayList<SignalStg> headList = new ArrayList<>(capacity);
-		ArrayList<SignalStg> tailList = new ArrayList<>(capacity);
-		double xContact = 5.0 * capacity + 5.0;
+		ArrayList<SlotStg> slotList = new ArrayList<>(capacity);
+		double xContact = 0.5 * QUEUE_SLOT_SPACING * (capacity + 1);
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
 				SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _O_IRDY, pos.getX() + xContact, pos.getY(), 1, capacity);
@@ -1165,44 +1255,63 @@ public class StgGenerator {
 			}
 		}
 		for (int idx = 0; idx < capacity; idx++) {
-			double xSlot = 10.0 * (idx - 0.5 * (capacity - 1));
+			double xSlot = QUEUE_SLOT_SPACING * (idx - 0.5 * (capacity - 1));
 			char c = (char)idx;
 			c += 'A';
-			SignalStg memStg = generateBasicSignalStg(name + _MEM + c, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
-			SignalStg headStg = generateBasicSignalStg(name + _HEAD + c, pos.getX() + xSlot, pos.getY() - 8.0, SignalTransition.Type.INTERNAL);
-			SignalStg tailStg = generateBasicSignalStg(name + _TAIL + c, pos.getX() + xSlot, pos.getY() + 8.0, SignalTransition.Type.INTERNAL);
-			SignalStg doneStg = generateBasicSignalStg(name + _DONE + c, pos.getX() + xSlot, pos.getY() + 16.0, SignalTransition.Type.OUTPUT, 1, 4);
-			setSignalInitialState(headStg, (idx == 0));
-			memList.add(memStg);
-			headList.add(headStg);
-			tailList.add(tailStg);
+			SignalStg mem = generateBasicSignalStg(name + _MEM + c, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
+			SignalStg hd = generateBasicSignalStg(name + _HEAD + c, pos.getX() + xSlot, pos.getY() - 8.0, SignalTransition.Type.INTERNAL);
+			SignalStg tl = generateBasicSignalStg(name + _TAIL + c, pos.getX() + xSlot, pos.getY() + 8.0, SignalTransition.Type.INTERNAL);
+			SignalStg dn = generateMemDoneStg(name + _DONE + c, pos.getX() + xSlot, pos.getY() - 16.0);
+			setSignalInitialState(hd, (idx == 0));
+			SlotStg slot = new SlotStg(mem, hd, tl, dn);
+			slotList.add(slot);
+			// Connections within slot
+			createReplicaReadArcs(slot.tl.zero, Arrays.asList(slot.dn.riseList.get(0), slot.dn.riseList.get(2)), -4.0, 0.0);
+			createReplicaReadArcs(slot.hd.zero, Arrays.asList(slot.dn.riseList.get(1), slot.dn.riseList.get(0)), -4.0, 0.0);
+			createReplicaReadArcs(slot.tl.one, Arrays.asList(slot.dn.riseList.get(2), slot.dn.riseList.get(1)), -4.0, 0.0);
+			createReplicaReadArcs(slot.hd.one, Arrays.asList(slot.dn.riseList.get(3), slot.dn.riseList.get(2)), -4.0, 0.0);
+			// Connections with input and output signals
+			createReplicaReadArc(slot.dn.zero, i.dn.fallList.get(0), +6.0, +idx);
+			createReplicaReadArcs(slot.dn.one, i.dn.riseList, new Point2D.Double(pos.getX() - xContact + 6.0, pos.getY() + 10.0 - idx));
+			createReplicaReadArc(slot.dn.zero, o.dn.fallList.get(0), -6.0, -idx);
+			createReplicaReadArcs(slot.dn.one, o.dn.riseList, new Point2D.Double(pos.getX() + xContact - 6.0, pos.getY() - 10.0 + idx));
 		}
-		// Internal connections
+		// Connections between slots
 		for (int idx = 0; idx < capacity; idx++) {
-			SignalStg mem = memList.get(idx);
-			createReadArc(i.rdy.one, mem.riseList.get(0));
-			createReadArc(o.rdy.one, mem.fallList.get(0));
-			createReadArc(mem.one, i.rdy.fallList.get(0));
-			createReadArc(mem.one, o.rdy.riseList.get(idx));
-			createReadArc(mem.zero, i.rdy.riseList.get(idx));
-			createReadArc(mem.zero, o.rdy.fallList.get(0));
+			SlotStg slot1 = slotList.get(idx);
+			createReplicaReadArc(i.rdy.one, slot1.mem.riseList.get(0), 0.0, +2.0);
+			createReplicaReadArc(o.rdy.one, slot1.mem.fallList.get(0), 0.0, -2.0);
+			createReplicaReadArcs(slot1.mem.one, Arrays.asList(i.rdy.fallList.get(0), i.dn.riseList.get(0)), +6.0, -idx);
+			createReplicaReadArcs(slot1.mem.zero, Arrays.asList(o.rdy.fallList.get(0), o.dn.riseList.get(0)), -6.0, +idx);
+			createReplicaReadArcs(slot1.mem.zero, Arrays.asList(i.rdy.riseList.get(idx), i.dn.riseList.get(capacity - idx)), +6.0, 0.0);
+			createReplicaReadArcs(slot1.mem.one, Arrays.asList(o.rdy.riseList.get(idx), o.dn.riseList.get(capacity - idx)), -6.0, 0.0);
 			for (int j = 0; j < capacity; j++) {
-				SignalStg head = headList.get(j);
-				SignalStg tail = tailList.get(j);
+				SlotStg slot2 = slotList.get(j);
 				if (idx == j) {
-					createReadArc(mem.one, head.fallList.get(0));
-					createReadArc(mem.one, tail.riseList.get(0));
-					createReadArc(mem.zero, head.riseList.get(0));
-					createReadArc(mem.zero, tail.fallList.get(0));
-					createReadArc(head.one, mem.riseList.get(0));
-					createReadArc(tail.one, mem.fallList.get(0));
+					createReadArc(slot1.mem.one, slot2.hd.fallList.get(0));
+					createReadArc(slot1.mem.one, slot2.tl.riseList.get(0));
+					createReadArc(slot1.mem.zero, slot2.hd.riseList.get(0));
+					createReadArc(slot1.mem.zero, slot2.tl.fallList.get(0));
+					createReadArc(slot2.hd.one, slot1.mem.riseList.get(0));
+					createReadArc(slot2.tl.one, slot1.mem.fallList.get(0));
 				} else {
-					createReadArc(mem.one, head.riseList.get(0));
-					createReadArc(mem.zero, tail.riseList.get(0));
+					createReadArc(slot1.mem.one, slot2.hd.riseList.get(0));
+					createReadArc(slot1.mem.zero, slot2.tl.riseList.get(0));
 				}
 			}
 		}
-		QueueStg queueStg = new QueueStg(i, o, memList, headList, tailList);
+		if (i != null) {
+			createReadArc(i.rdy.zero, i.dn.riseList.get(0));
+			createReadArc(i.rdy.one, i.dn.riseList.get(1));
+			createReadArc(i.rdy.one, i.dn.riseList.get(2));
+		}
+		if (o != null) {
+			createReadArc(o.rdy.zero, o.dn.riseList.get(0));
+			createReadArc(o.rdy.one, o.dn.riseList.get(1));
+			createReadArc(o.rdy.one, o.dn.riseList.get(2));
+		}
+
+		QueueStg queueStg = new QueueStg(i, o, slotList);
 		groupComponentStg(queueStg);
 		return queueStg;
 	}
@@ -1222,17 +1331,31 @@ public class StgGenerator {
 			if (iContact != null) {
 				ContactStg i = getContactStg(iContact);
 				if (i != null) {
-					for (SignalStg mem: queueStg.memList) {
-						createReadArc(i.rdy.one, mem.riseList.get(0));
+					for (SlotStg slot: queueStg.slotList) {
+						createReplicaReadArc(i.rdy.one, slot.mem.riseList.get(0), 0.0, -2.0);
 					}
 				}
+				createReplicaReadArcBetweenDoneSignals(i.dn, queueStg.o.dn, +1.0);
 			}
 			if (oContact != null) {
 				ContactStg o = getContactStg(oContact);
 				if (o != null) {
-					for (SignalStg mem: queueStg.memList) {
-						createReadArc(o.rdy.one, mem.fallList.get(0));
+					for (SlotStg slot: queueStg.slotList) {
+						createReplicaReadArc(o.rdy.one, slot.mem.fallList.get(0), 0.0, +2.0);
 					}
+				}
+				createReplicaReadArcBetweenDoneSignals(o.dn, queueStg.i.dn, -1.0);
+			}
+			if (clockStg != null) {
+				createReplicaReadArcsFromClockToDone(queueStg.i.dn);
+				createReplicaReadArcsFromClockToCombinational(queueStg.i.rdy);
+				createReplicaReadArcsFromClockToDone(queueStg.o.dn);
+				createReplicaReadArcsFromClockToCombinational(queueStg.o.rdy);
+				for (SlotStg slot: queueStg.slotList) {
+					createReplicaReadArcsFromClockToSequential(slot.mem);
+					createReplicaReadArcsFromClockToCombinational(slot.hd);
+					createReplicaReadArcsFromClockToCombinational(slot.tl);
+					createReplicaReadArcsFromClockToMemDone(slot.dn);
 				}
 			}
 		}
