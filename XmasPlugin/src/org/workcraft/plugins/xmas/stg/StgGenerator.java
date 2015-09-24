@@ -42,31 +42,39 @@ public class StgGenerator {
 
 	private enum XmasStgType { IORACLE, TORACLE, IRDY, IDN, TRDY, TDN }
 
-	private static final String _O_IRDY	= "_oIRdy";
-	private static final String _O_IDN  = "_oIDn";
-	private static final String _A_IRDY	= "_aIRdy";
-	private static final String _A_IDN  = "_aIDn";
-	private static final String _B_IRDY	= "_bIRdy";
-	private static final String _B_IDN  = "_bIDn";
+	private static final String _INITIATOR  = "I";
+	private static final String _TARGET     = "T";
+	private static final String _RDY	    = "Rdy";
+	private static final String _DN	   	    = "Dn";
+	private static final String _ORACLE		= "_oracle";
+	private static final String _MEM 		= "_mem";
+	private static final String _HEAD		= "_hd";
+	private static final String _TAIL		= "_tl";
+	private static final String _PORT_I		= "_i";
+	private static final String _PORT_O		= "_o";
+	private static final String _PORT_A		= "_a";
+	private static final String _PORT_B		= "_b";
 
-	private static final String _I_TRDY	= "_iTRdy";
-	private static final String _I_TDN  = "_iTDn";
-	private static final String _A_TRDY	= "_aTRdy";
-	private static final String _A_TDN  = "_aTDn";
-	private static final String _B_TRDY	= "_bTRdy";
-	private static final String _B_TDN  = "_bTDn";
+	private static final String _O_IRDY	= _PORT_O + _INITIATOR + _RDY;
+	private static final String _O_IDN  = _PORT_O + _INITIATOR + _DN;
+	private static final String _A_IRDY	= _PORT_A + _INITIATOR + _RDY;
+	private static final String _A_IDN  = _PORT_A + _INITIATOR + _DN;
+	private static final String _B_IRDY	= _PORT_B + _INITIATOR + _RDY;
+	private static final String _B_IDN  = _PORT_B + _INITIATOR + _DN;
 
-	private static final String _ORACLE	= "_oracle";
-	private static final String _MEM 	= "_mem";
-	private static final String _HEAD	= "_hd";
-	private static final String _TAIL	= "_tl";
-	private static final String _DONE  	= "_dn";
+	private static final String _I_TRDY	= _PORT_I + _TARGET + _RDY;
+	private static final String _I_TDN  = _PORT_I + _TARGET + _DN;
+	private static final String _A_TRDY	= _PORT_A + _TARGET + _RDY;
+	private static final String _A_TDN  = _PORT_A + _TARGET + _DN;
+	private static final String _B_TRDY	= _PORT_B + _TARGET + _RDY;
+	private static final String _B_TDN  = _PORT_B + _TARGET + _DN;
+
 
 	private static final String name0	 	= "_0";
 	private static final String name1 		= "_1";
-	private static final double xScaling = 6;
-	private static final double yScaling = 6;
-	private static final double QUEUE_SLOT_SPACING = 16.0;
+	private static final double xScaling = 10;
+	private static final double yScaling = 10;
+	private static final double QUEUE_SLOT_SPACING = 20.0;
 
 	private SignalStg clockStg = null;
 	private Set<SignalStg> clockControlSignals = null;
@@ -285,37 +293,14 @@ public class StgGenerator {
 			xp += p.getRootSpaceX();
 		}
 		xp /=  dn.getAllPlaces().size();
-		Point2D clk1Pos = getSignalCenterPosition(dn);
-		Point2D clk0Pos = new Point2D.Double(clk1Pos.getX() + (xt - xp) / 2.0, clk1Pos.getY());
+		Point2D centerPos = getSignalCenterPosition(dn);
+		Point2D clk1Pos = centerPos;
+		if (dn.fallList.size() > 1) {
+			clk1Pos = new Point2D.Double(centerPos.getX() + (xt - xp), centerPos.getY());
+		}
+		Point2D clk0Pos = new Point2D.Double(centerPos.getX() + (xt - xp) / 2.0, centerPos.getY());
 		createReplicaReadArcs(clockStg.one, dn.fallList, clk1Pos);
 		createReplicaReadArcs(clockStg.zero, dn.riseList, clk0Pos);
-	}
-
-	private void createReplicaReadArcsFromClockToMemDone(SignalStg dn) throws InvalidConnectionException {
-		double y = 0.0;
-		for (VisualPlace p: dn.getAllPlaces()) {
-			y += p.getRootSpaceY();
-		}
-		y /=  dn.getAllPlaces().size();
-
-		{
-			double xFall = 0.0;
-			for (VisualSignalTransition t: dn.fallList) {
-				xFall += t.getRootSpaceX();
-			}
-			xFall /= dn.fallList.size();
-			Point2D clk1Pos = new Point2D.Double(xFall, y + 2.0);
-			createReplicaReadArcs(clockStg.one, dn.fallList, clk1Pos);
-		}
-		{
-			double xRise = 0.0;
-			for (VisualSignalTransition t: dn.riseList) {
-				xRise += t.getRootSpaceX();
-			}
-			xRise /= dn.riseList.size();
-			Point2D clk0Pos = new Point2D.Double(xRise + 4.0, y);
-			createReplicaReadArcs(clockStg.zero, dn.riseList, clk0Pos);
-		}
 	}
 
 	private void createReplicaReadArcFromSignalToOracle(SignalStg signal, SignalStg oracle) throws InvalidConnectionException {
@@ -388,39 +373,6 @@ public class StgGenerator {
 		setPosition(rise, x - 4.0, y - 0.0);
 
 		return new SignalStg(zero, one, fall, rise);
-	}
-
-	private SignalStg generateMemDoneStg(String signalName, double x, double y) throws InvalidConnectionException {
-		VisualPlace zero = stg.createPlace(signalName + name0, null);
-		zero.getReferencedPlace().setTokens(1);
-		zero.setNamePositioning(Positioning.BOTTOM);
-		zero.setLabelPositioning(Positioning.TOP);
-		setPosition(zero, x + 0.0, y + 2.0);
-
-		VisualPlace one = stg.createPlace(signalName + name1, null);
-		one.getReferencedPlace().setTokens(0);
-		one.setNamePositioning(Positioning.TOP);
-		one.setLabelPositioning(Positioning.BOTTOM);
-		setPosition(one, x + 0.0, y - 2.0);
-
-		ArrayList<VisualSignalTransition> fallList = new ArrayList<>(1);
-		{
-			VisualSignalTransition fall = stg.createSignalTransition(signalName, Type.OUTPUT, SignalTransition.Direction.MINUS, null);
-			createConsumingArc(one, fall);
-			createProducingArc(fall, zero);
-			setPosition(fall, x + 4.0, y + 0.0);
-			fallList.add(fall);
-		}
-
-		ArrayList<VisualSignalTransition> riseList = new ArrayList<>(4);
-		for (int i = 0; i < 4; i++) {
-			VisualSignalTransition rise = stg.createSignalTransition(signalName, Type.OUTPUT, SignalTransition.Direction.PLUS, null);
-			createConsumingArc(zero, rise);
-			createProducingArc(rise, one);
-			setPosition(rise, x - 4.0, y - 3.0 + 2.0 * i);
-			riseList.add(rise);
-		}
-		return new SignalStg(zero, one, fallList, riseList);
 	}
 
 	private SignalStg generateSignalStg(XmasStgType xmasSignalType, String signalName, double x, double y) throws InvalidConnectionException {
@@ -572,11 +524,12 @@ public class StgGenerator {
 			if (queueStg != null) {
 				createReplicaReadArcsFromDoneToClock(queueStg.i.dn);
 				createReplicaReadArcsFromDoneToClock(queueStg.o.dn);
-				for (SlotStg slot: queueStg.slotList) {
-					createReplicaReadArcsFromDoneToClock(slot.dn);
-				}
 			}
 		}
+	}
+
+	public SignalStg getClockStg() {
+		return clockStg;
 	}
 
 
@@ -1256,49 +1209,85 @@ public class StgGenerator {
 		}
 		for (int idx = 0; idx < capacity; idx++) {
 			double xSlot = QUEUE_SLOT_SPACING * (idx - 0.5 * (capacity - 1));
-			char c = (char)idx;
-			c += 'A';
-			SignalStg mem = generateBasicSignalStg(name + _MEM + c, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
-			SignalStg hd = generateBasicSignalStg(name + _HEAD + c, pos.getX() + xSlot, pos.getY() - 8.0, SignalTransition.Type.INTERNAL);
-			SignalStg tl = generateBasicSignalStg(name + _TAIL + c, pos.getX() + xSlot, pos.getY() + 8.0, SignalTransition.Type.INTERNAL);
-			SignalStg dn = generateMemDoneStg(name + _DONE + c, pos.getX() + xSlot, pos.getY() - 16.0);
-			setSignalInitialState(hd, (idx == 0));
-			SlotStg slot = new SlotStg(mem, hd, tl, dn);
-			slotList.add(slot);
-			// Connections within slot
-			createReplicaReadArcs(slot.tl.zero, Arrays.asList(slot.dn.riseList.get(0), slot.dn.riseList.get(2)), -4.0, 0.0);
-			createReplicaReadArcs(slot.hd.zero, Arrays.asList(slot.dn.riseList.get(1), slot.dn.riseList.get(0)), -4.0, 0.0);
-			createReplicaReadArcs(slot.tl.one, Arrays.asList(slot.dn.riseList.get(2), slot.dn.riseList.get(1)), -4.0, 0.0);
-			createReplicaReadArcs(slot.hd.one, Arrays.asList(slot.dn.riseList.get(3), slot.dn.riseList.get(2)), -4.0, 0.0);
-			// Connections with input and output signals
-			createReplicaReadArc(slot.dn.zero, i.dn.fallList.get(0), +6.0, +idx);
-			createReplicaReadArcs(slot.dn.one, i.dn.riseList, new Point2D.Double(pos.getX() - xContact + 6.0, pos.getY() + 10.0 - idx));
-			createReplicaReadArc(slot.dn.zero, o.dn.fallList.get(0), -6.0, -idx);
-			createReplicaReadArcs(slot.dn.one, o.dn.riseList, new Point2D.Double(pos.getX() + xContact - 6.0, pos.getY() - 10.0 + idx));
-		}
-		// Connections between slots
-		for (int idx = 0; idx < capacity; idx++) {
-			SlotStg slot1 = slotList.get(idx);
-			createReplicaReadArc(i.rdy.one, slot1.mem.riseList.get(0), 0.0, +2.0);
-			createReplicaReadArc(o.rdy.one, slot1.mem.fallList.get(0), 0.0, -2.0);
-			createReplicaReadArcs(slot1.mem.one, Arrays.asList(i.rdy.fallList.get(0), i.dn.riseList.get(0)), +6.0, -idx);
-			createReplicaReadArcs(slot1.mem.zero, Arrays.asList(o.rdy.fallList.get(0), o.dn.riseList.get(0)), -6.0, +idx);
-			createReplicaReadArcs(slot1.mem.zero, Arrays.asList(i.rdy.riseList.get(idx), i.dn.riseList.get(capacity - idx)), +6.0, 0.0);
-			createReplicaReadArcs(slot1.mem.one, Arrays.asList(o.rdy.riseList.get(idx), o.dn.riseList.get(capacity - idx)), -6.0, 0.0);
-			for (int j = 0; j < capacity; j++) {
-				SlotStg slot2 = slotList.get(j);
-				if (idx == j) {
-					createReadArc(slot1.mem.one, slot2.hd.fallList.get(0));
-					createReadArc(slot1.mem.one, slot2.tl.riseList.get(0));
-					createReadArc(slot1.mem.zero, slot2.hd.riseList.get(0));
-					createReadArc(slot1.mem.zero, slot2.tl.fallList.get(0));
-					createReadArc(slot2.hd.one, slot1.mem.riseList.get(0));
-					createReadArc(slot2.tl.one, slot1.mem.fallList.get(0));
-				} else {
-					createReadArc(slot1.mem.one, slot2.hd.riseList.get(0));
-					createReadArc(slot1.mem.zero, slot2.tl.riseList.get(0));
-				}
+			char suffix = (char)idx;
+			suffix += 'A';
+			SignalStg mem = generateBasicSignalStg(name + _MEM + suffix, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
+			ContactStg hd = null;
+			{
+				SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix +_RDY, pos.getX() + xSlot, pos.getY() - 8.0);
+				SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _HEAD + suffix + _DN, pos.getX() + xSlot, pos.getY() - 16.0, 4, 3);
+				hd = new ContactStg(rdy, dn);
 			}
+			ContactStg tl = null;
+			{
+				SignalStg rdy = generateSignalStg(XmasStgType.TRDY, name + _TAIL + suffix +_RDY, pos.getX() + xSlot, pos.getY() + 8.0);
+				SignalStg dn = generateSignalStg(XmasStgType.TDN, name + _TAIL + suffix + _DN, pos.getX() + xSlot, pos.getY() + 16.0, 4, 3);
+				setSignalInitialState(rdy, (idx == 0));
+				tl = new ContactStg(rdy, dn);
+			}
+			SlotStg slot = new SlotStg(mem, hd, tl);
+			slotList.add(slot);
+			// Connections of head within slot
+			createReplicaReadArc(slot.hd.rdy.one, slot.mem.fallList.get(0), 0.0, -2.0);
+			createReplicaReadArc(slot.mem.zero, slot.hd.rdy.fallList.get(0), -6.0, 0.0);
+			createReplicaReadArc(slot.mem.one, slot.hd.rdy.riseList.get(0), -6.0, 0.0);
+			createReplicaReadArc(slot.mem.zero, slot.hd.dn.fallList.get(1), +6.0, -1.0);
+			createReplicaReadArc(slot.mem.zero, slot.hd.dn.riseList.get(0), -6.0, 0.0);
+			createReplicaReadArcs(slot.mem.one, Arrays.asList(slot.hd.dn.riseList.get(2), slot.hd.dn.riseList.get(1)), -6.0, 0.0);
+			createReplicaReadArc(slot.mem.one, slot.hd.dn.fallList.get(0), -6.0, 0.0);
+			createReplicaReadArc(slot.mem.one, slot.hd.dn.fallList.get(2), -6.0, 0.0);
+			createReadArc(slot.hd.rdy.zero, slot.hd.dn.riseList.get(0));
+			createReadArc(slot.hd.rdy.zero, slot.hd.dn.fallList.get(3));
+			createReadArc(slot.hd.rdy.one, slot.hd.dn.riseList.get(2));
+			createReadArc(slot.hd.rdy.one, slot.hd.dn.fallList.get(2));
+			createReadArc(slot.hd.rdy.one, slot.hd.dn.fallList.get(1));
+			createReadArc(slot.hd.rdy.one, slot.hd.dn.fallList.get(0));
+			// Connection of tail within slot
+			createReplicaReadArc(slot.tl.rdy.one, slot.mem.riseList.get(0), 0.0, +2.0);
+			createReplicaReadArc(slot.mem.zero, slot.tl.rdy.riseList.get(0), +6.0, 0.0);
+			createReplicaReadArc(slot.mem.one, slot.tl.rdy.fallList.get(0), +6.0, 0.0);
+			createReplicaReadArc(slot.mem.one, slot.tl.dn.fallList.get(1), -6.0, +1.0);
+			createReplicaReadArc(slot.mem.one, slot.tl.dn.riseList.get(0), +6.0, 0.0);
+			createReplicaReadArcs(slot.mem.zero, Arrays.asList(slot.tl.dn.riseList.get(2), slot.tl.dn.riseList.get(1)), +6.0, 0.0);
+			createReplicaReadArc(slot.mem.zero, slot.tl.dn.fallList.get(0), +6.0, 0.0);
+			createReplicaReadArc(slot.mem.zero, slot.tl.dn.fallList.get(2), +6.0, 0.0);
+			createReadArc(slot.tl.rdy.zero, slot.tl.dn.riseList.get(0));
+			createReadArc(slot.tl.rdy.zero, slot.tl.dn.fallList.get(3));
+			createReadArc(slot.tl.rdy.one, slot.tl.dn.riseList.get(2));
+			createReadArc(slot.tl.rdy.one, slot.tl.dn.fallList.get(2));
+			createReadArc(slot.tl.rdy.one, slot.tl.dn.fallList.get(1));
+			createReadArc(slot.tl.rdy.one, slot.tl.dn.fallList.get(0));
+		}
+		for (int idx = 0; idx < capacity; idx++) {
+			SlotStg slot = slotList.get(idx);
+			// Connections with input port
+			createReplicaReadArc(i.rdy.one, slot.mem.riseList.get(0), -6.0, -1.0);
+			createReplicaReadArc(i.rdy.one, slot.tl.dn.fallList.get(1), -6.0, 0.0);
+			createReplicaReadArc(i.rdy.zero, slot.tl.dn.fallList.get(2), +6.0, -1.0);
+			createReplicaReadArcs(slot.mem.one, Arrays.asList(i.rdy.fallList.get(0), i.dn.riseList.get(0)), +6.0, -idx);
+			createReplicaReadArcs(slot.mem.zero, Arrays.asList(i.rdy.riseList.get(idx), i.dn.riseList.get(capacity - idx)), +6.0, 0.0);
+			createReplicaReadArcs(slot.hd.dn.zero, i.dn.fallList, -6.0, +1.0 + idx);
+			createReplicaReadArcs(slot.hd.dn.one, i.dn.riseList, -6.0, +1.0 - idx);
+			createReplicaReadArcs(slot.tl.dn.zero, i.dn.fallList, +6.0, +1.0 + idx);
+			createReplicaReadArcs(slot.tl.dn.one, i.dn.riseList, +6.0, +1.0 - idx);
+			// Connections with output port
+			createReplicaReadArc(o.rdy.one, slot.mem.fallList.get(0), +6.0, +1.0);
+			createReplicaReadArc(o.rdy.one, slot.hd.dn.fallList.get(1), +6.0, 0.0);
+			createReplicaReadArc(o.rdy.zero, slot.hd.dn.fallList.get(2), -6.0, 1.0);
+			createReplicaReadArcs(slot.mem.zero, Arrays.asList(o.rdy.fallList.get(0), o.dn.riseList.get(0)), -6.0, +idx);
+			createReplicaReadArcs(slot.mem.one, Arrays.asList(o.rdy.riseList.get(idx), o.dn.riseList.get(capacity - idx)), -6.0, 0.0);
+			createReplicaReadArcs(slot.hd.dn.zero, o.dn.fallList, -6.0, -1.0 - idx);
+			createReplicaReadArcs(slot.hd.dn.one, o.dn.riseList, -6.0, -1.0 + idx);
+			createReplicaReadArcs(slot.tl.dn.zero, o.dn.fallList, +6.0, -1.0 - idx);
+			createReplicaReadArcs(slot.tl.dn.one, o.dn.riseList, +6.0, -1.0 + idx);
+			// Connections with the next slot
+			SlotStg nextSlot = slotList.get((idx + 1) % capacity);
+			createReplicaReadArc(slot.mem.zero, nextSlot.hd.rdy.riseList.get(0), -6.0, +1.0);
+			createReplicaReadArc(slot.mem.zero, nextSlot.hd.dn.riseList.get(2), -6.0, -1.0);
+			createReplicaReadArc(slot.mem.one, nextSlot.hd.dn.riseList.get(1), -6.0, 0.0);
+			createReplicaReadArc(slot.mem.one, nextSlot.tl.rdy.riseList.get(0), +6.0, -1.0);
+			createReplicaReadArc(slot.mem.zero, nextSlot.tl.dn.riseList.get(1), +6.0, 0.0);
+			createReplicaReadArc(slot.mem.one, nextSlot.tl.dn.riseList.get(2), +6.0, +1.0);
 		}
 		if (i != null) {
 			createReadArc(i.rdy.zero, i.dn.riseList.get(0));
@@ -1332,19 +1321,29 @@ public class StgGenerator {
 				ContactStg i = getContactStg(iContact);
 				if (i != null) {
 					for (SlotStg slot: queueStg.slotList) {
-						createReplicaReadArc(i.rdy.one, slot.mem.riseList.get(0), 0.0, -2.0);
+						createReplicaReadArc(i.rdy.one, slot.mem.riseList.get(0), -6.0, -2.0);
 					}
 				}
-				createReplicaReadArcBetweenDoneSignals(i.dn, queueStg.o.dn, +1.0);
+				createReplicaReadArcs(i.dn.zero, queueStg.o.dn.fallList, -6.0, 0.0);
+				createReplicaReadArcs(i.dn.one, queueStg.o.dn.riseList, -6.0, -2.0);
+				for (SlotStg slot: queueStg.slotList) {
+					createReplicaReadArc(i.rdy.zero, slot.tl.dn.fallList.get(0), +6.0, -1.0);
+					createReplicaReadArc(i.rdy.one, slot.tl.dn.fallList.get(1), -6.0, -1.0);
+				}
 			}
 			if (oContact != null) {
 				ContactStg o = getContactStg(oContact);
 				if (o != null) {
 					for (SlotStg slot: queueStg.slotList) {
-						createReplicaReadArc(o.rdy.one, slot.mem.fallList.get(0), 0.0, +2.0);
+						createReplicaReadArc(o.rdy.one, slot.mem.fallList.get(0), +6.0, +2.0);
 					}
 				}
-				createReplicaReadArcBetweenDoneSignals(o.dn, queueStg.i.dn, -1.0);
+				createReplicaReadArcs(o.dn.zero, queueStg.i.dn.fallList, +6.0, 0.0);
+				createReplicaReadArcs(o.dn.one, queueStg.i.dn.riseList, +6.0, +2.0);
+				for (SlotStg slot: queueStg.slotList) {
+					createReplicaReadArc(o.rdy.zero, slot.hd.dn.fallList.get(0), -6.0, +1.0);
+					createReplicaReadArc(o.rdy.one, slot.hd.dn.fallList.get(1), +6.0, +1.0);
+				}
 			}
 			if (clockStg != null) {
 				createReplicaReadArcsFromClockToDone(queueStg.i.dn);
@@ -1353,9 +1352,10 @@ public class StgGenerator {
 				createReplicaReadArcsFromClockToCombinational(queueStg.o.rdy);
 				for (SlotStg slot: queueStg.slotList) {
 					createReplicaReadArcsFromClockToSequential(slot.mem);
-					createReplicaReadArcsFromClockToCombinational(slot.hd);
-					createReplicaReadArcsFromClockToCombinational(slot.tl);
-					createReplicaReadArcsFromClockToMemDone(slot.dn);
+					createReplicaReadArcsFromClockToCombinational(slot.hd.rdy);
+					createReplicaReadArcsFromClockToDone(slot.hd.dn);
+					createReplicaReadArcsFromClockToCombinational(slot.tl.rdy);
+					createReplicaReadArcsFromClockToDone(slot.tl.dn);
 				}
 			}
 		}
@@ -1376,6 +1376,57 @@ public class StgGenerator {
 			nodeStg = getFunctionStg((VisualFunctionComponent)highLevelNode);
 		}
 		return ((nodeStg != null) && nodeStg.contains(node));
+	}
+
+	public Collection<VisualSignalTransition> getDoneTransitions() {
+		HashSet<VisualSignalTransition> result = new HashSet<>();
+		for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
+			SourceStg sourceStg = getSourceStg(component);
+			if (sourceStg != null) {
+				result.addAll(sourceStg.o.dn.getAllTransitions());
+			}
+		}
+		for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
+			SinkStg sinkStg = getSinkStg(component);
+			if (sinkStg != null) {
+				result.addAll(sinkStg.i.dn.getAllTransitions());
+			}
+		}
+		for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
+			FunctionStg funcStg = getFunctionStg(component);
+			if (funcStg != null) {
+				result.addAll(funcStg.i.dn.getAllTransitions());
+				result.addAll(funcStg.o.dn.getAllTransitions());
+			}
+		}
+		for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
+			ForkStg forkStg = getForkStg(component);
+			if (forkStg != null) {
+				result.addAll(forkStg.i.dn.getAllTransitions());
+				result.addAll(forkStg.a.dn.getAllTransitions());
+				result.addAll(forkStg.b.dn.getAllTransitions());
+			}
+		}
+		for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
+			JoinStg joinStg = getJoinStg(component);
+			if (joinStg != null) {
+				result.addAll(joinStg.a.dn.getAllTransitions());
+				result.addAll(joinStg.b.dn.getAllTransitions());
+				result.addAll(joinStg.o.dn.getAllTransitions());
+			}
+		}
+		for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
+			QueueStg queueStg = getQueueStg(component);
+			if (queueStg != null) {
+				result.addAll(queueStg.i.dn.getAllTransitions());
+				result.addAll(queueStg.o.dn.getAllTransitions());
+				for (SlotStg slot: queueStg.slotList) {
+					result.addAll(slot.hd.dn.getAllTransitions());
+					result.addAll(slot.tl.dn.getAllTransitions());
+				}
+			}
+		}
+		return result;
 	}
 
 }

@@ -46,12 +46,12 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
 	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
 
-	private final double slotWidth = 0.35 * size;
-	private final double slotHeight = 0.8 * size;
-	private final double contactLength = 0.5 * size - slotWidth;
-	private final double tokenSize = 0.5 * slotWidth;
-	private final double headSize = 0.15 * size;
-	private final double tailSize = 0.15 * size;
+	public final double slotWidth = 0.35 * size;
+	public final double slotHeight = 1.0 * size;
+	public final double contactLength = 0.5 * size - slotWidth;
+	public final double tokenSize = 0.5 * slotWidth;
+	public final double headSize = 0.15 * size;
+	public final double tailSize = 0.15 * size;
 
 	public Color color = new Color(0, 0, 0, 255);
 

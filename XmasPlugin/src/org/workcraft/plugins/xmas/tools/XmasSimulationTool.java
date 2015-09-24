@@ -1,6 +1,7 @@
 package org.workcraft.plugins.xmas.tools;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import org.workcraft.plugins.xmas.components.SlotState;
 import org.workcraft.plugins.xmas.components.VisualQueueComponent;
 import org.workcraft.plugins.xmas.components.VisualSinkComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
+import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasConnection;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.plugins.xmas.stg.ContactStg;
@@ -32,6 +34,7 @@ import org.workcraft.plugins.xmas.stg.SinkStg;
 import org.workcraft.plugins.xmas.stg.SlotStg;
 import org.workcraft.plugins.xmas.stg.SourceStg;
 import org.workcraft.plugins.xmas.stg.StgGenerator;
+import org.workcraft.plugins.xmas.stg.SwitchStg;
 import org.workcraft.util.Func;
 
 public class XmasSimulationTool extends StgSimulationTool {
@@ -63,45 +66,81 @@ public class XmasSimulationTool extends StgSimulationTool {
 	}
 
 	@Override
-	public void mousePressed(GraphEditorMouseEvent e) {
-		Point2D posRoot = e.getPosition();
-		Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-			new Func<Node, Boolean>() {
-				@Override
-				public Boolean eval(Node node) {
-					return node instanceof VisualTransformableNode;
-				}
-			});
+	public String getHintMessage() {
+		String msg = "Click on the highlighted elements to activate it.";
+		if (getExcitedTransition(generator.getClockStg().fallList) != null) {
+			msg += " Right-click for the next clock tick.";
+		}
+		return msg;
+	}
 
+	@Override
+	public void mousePressed(GraphEditorMouseEvent e) {
 		Transition transition = null;
-		if (node instanceof VisualTransformableNode) {
-			AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);
-			Point2D posLocal = rootToLocalTransform.transform(posRoot, null);
-			Point2D posNode = ((VisualTransformableNode)node).getParentToLocalTransform().transform(posLocal, null);
-			if (node instanceof VisualXmasContact) {
-				ContactStg contactStg = generator.getContactStg((VisualXmasContact)node);
-				transition = getExcitedTransition(contactStg.getAllTransitions());
-			} else if (node instanceof VisualSourceComponent) {
-				SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
-				transition = getExcitedTransition(sourceStg.oracle.getAllTransitions());
-			} else if (node instanceof VisualSinkComponent) {
-				SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent)node);
-				transition = getExcitedTransition(sinkStg.oracle.getAllTransitions());
-			} else if (node instanceof VisualQueueComponent) {
-				QueueStg queueStg = generator.getQueueStg((VisualQueueComponent)node);
-				if (posNode.getY() < -0.3 ) {
-					transition = getExcitedTransition(queueStg.getHeadTransitions());
-				} else if (posNode.getY() > +0.3){
-					transition = getExcitedTransition(queueStg.getTailTransitions());
-				} else {
-					transition = getExcitedTransition(queueStg.getMemTransitions());
-				}
+		if (e.getButton() == MouseEvent.BUTTON3) {
+			transition = getExcitedTransition(generator.getClockStg().fallList);
+		}
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			Point2D posRoot = e.getPosition();
+			Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
+				new Func<Node, Boolean>() {
+					@Override
+					public Boolean eval(Node node) {
+						return node instanceof VisualTransformableNode;
+					}
+				});
+
+			if (node instanceof VisualTransformableNode) {
+				AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);
+				Point2D posLocal = rootToLocalTransform.transform(posRoot, null);
+				Point2D posNode = ((VisualTransformableNode)node).getParentToLocalTransform().transform(posLocal, null);
+				transition = getClickedComponentTransition(node, posNode);
 			}
 		}
-
 		if (transition != null) {
 			executeTransition(e.getEditor(), transition);
+			Collection<VisualSignalTransition> doneTransitions = generator.getDoneTransitions();
+			doneTransitions.addAll(generator.getClockStg().riseList);
+			Transition t = null;
+			while ((t = getExcitedTransition(doneTransitions)) != null) {
+				executeTransition(e.getEditor(), t);
+			}
 		}
+	}
+
+	private Transition getClickedComponentTransition(Node node, Point2D posNode) {
+		Transition result = null;
+		if (node instanceof VisualXmasContact) {
+			ContactStg contactStg = generator.getContactStg((VisualXmasContact)node);
+			result = getExcitedTransition(contactStg.rdy.getAllTransitions());
+		} else if (node instanceof VisualSourceComponent) {
+			SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
+			result = getExcitedTransition(sourceStg.oracle.getAllTransitions());
+		} else if (node instanceof VisualSinkComponent) {
+			SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent)node);
+			result = getExcitedTransition(sinkStg.oracle.getAllTransitions());
+		} else if (node instanceof VisualSwitchComponent) {
+			SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent)node);
+			result = getExcitedTransition(switchStg.oracle.getAllTransitions());
+		} else if (node instanceof VisualQueueComponent) {
+			VisualQueueComponent queue = (VisualQueueComponent)node;
+			QueueStg queueStg = generator.getQueueStg(queue);
+			int capacity = queue.getReferencedQueueComponent().getCapacity();
+			int idx =  (int)Math.floor(0.5 * capacity  + posNode.getX() * queue.slotWidth);
+			if (idx >= capacity) idx = capacity - 1;
+			if (idx < 0) idx = 0;
+			SlotStg slot = queueStg.slotList.get(idx);
+			double headThreshold = 0.5 * queue.slotHeight - queue.headSize;
+			double tailThreshold = 0.5 * queue.slotHeight - queue.tailSize;
+			if (posNode.getY() < -headThreshold) {
+				result = getExcitedTransition(slot.hd.rdy.getAllTransitions());
+			} else if (posNode.getY() > tailThreshold){
+				result = getExcitedTransition(slot.tl.rdy.getAllTransitions());
+			} else {
+				result = getExcitedTransition(slot.mem.getAllTransitions());
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -182,10 +221,14 @@ public class XmasSimulationTool extends StgSimulationTool {
 					final SourceStg sourceStg = generator.getSourceStg(source);
 					final boolean isExcited = (getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null);
 					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
+					final boolean isActive = (sourceStg.oracle.one.getReferencedPlace().getTokens() != 0);
 
 					return new Decoration() {
 						@Override
 						public Color getColorisation() {
+							if (isActive) {
+								return COLOR_IRDY;
+							}
 							if (isExcited) {
 								if (isInTrace) {
 									return CommonSimulationSettings.getEnabledBackgroundColor();
@@ -213,10 +256,14 @@ public class XmasSimulationTool extends StgSimulationTool {
 					final SinkStg sinkStg = generator.getSinkStg(sink);
 					final boolean isExcited = (getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null);
 					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
+					final boolean isActive = (sinkStg.oracle.one.getReferencedPlace().getTokens() != 0);
 
 					return new Decoration() {
 						@Override
 						public Color getColorisation() {
+							if (isActive) {
+								return COLOR_TRDY;
+							}
 							if (isExcited) {
 								if (isInTrace) {
 									return CommonSimulationSettings.getEnabledBackgroundColor();
@@ -252,8 +299,8 @@ public class XmasSimulationTool extends StgSimulationTool {
 							if ((i >= 0) && (i < capacity)) {
 								SlotStg slot = queueStg.slotList.get(i);
 								boolean isFull = (slot.mem.one.getReferencedPlace().getTokens() != 0);
-								boolean isHead = (slot.hd.one.getReferencedPlace().getTokens() != 0);
-								boolean isTail= (slot.tl.one.getReferencedPlace().getTokens() != 0);
+								boolean isHead = (slot.hd.rdy.one.getReferencedPlace().getTokens() != 0);
+								boolean isTail= (slot.tl.rdy.one.getReferencedPlace().getTokens() != 0);
 								boolean isMemExcited = (getExcitedTransition(slot.mem.getAllTransitions()) != null);
 								boolean isHeadExcited = (getExcitedTransition(slot.hd.getAllTransitions()) != null);
 								boolean isTailExcited = (getExcitedTransition(slot.tl.getAllTransitions()) != null);

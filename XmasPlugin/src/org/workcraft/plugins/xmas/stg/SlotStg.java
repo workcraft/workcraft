@@ -8,15 +8,13 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class SlotStg extends NodeStg {
 	public final SignalStg mem;
-	public final SignalStg hd;
-	public final SignalStg tl;
-	public final SignalStg dn;
+	public final ContactStg hd;
+	public final ContactStg tl;
 
-	public SlotStg(SignalStg mem, SignalStg hd, SignalStg tl, SignalStg dn) {
+	public SlotStg(SignalStg mem, ContactStg hd, ContactStg tl) {
 		this.mem = mem;
 		this.hd = hd;
 		this.tl = tl;
-		this.dn = dn;
 	}
 
 	@Override
@@ -25,7 +23,6 @@ public class SlotStg extends NodeStg {
 		result.addAll(mem.getAllTransitions());
 		result.addAll(hd.getAllTransitions());
 		result.addAll(tl.getAllTransitions());
-		result.addAll(dn.getAllTransitions());
 		return result;
 	}
 
@@ -35,7 +32,6 @@ public class SlotStg extends NodeStg {
 		result.addAll(mem.getAllPlaces());
 		result.addAll(hd.getAllPlaces());
 		result.addAll(tl.getAllPlaces());
-		result.addAll(dn.getAllPlaces());
 		return result;
 	}
 
