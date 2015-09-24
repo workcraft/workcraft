@@ -178,7 +178,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 	@Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-		return getTransformedShape().getBounds2D();
+		return transformShape(getShape()).getBounds2D();
     }
 
 	public Rectangle2D getBoundingBoxInLocalSpace() {
@@ -272,12 +272,12 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 	abstract public Shape getShape();
 
-	public Shape getTransformedShape() {
+	public Shape transformShape(Shape shape) {
 		AffineTransform rotateTransform = new AffineTransform();
 		if (orientation != null) {
 			rotateTransform.quadrantRotate(orientation.getQuadrant());
 		}
-		return rotateTransform.createTransformedShape(getShape());
+		return rotateTransform.createTransformedShape(shape);
 	}
 
 	@Override
@@ -287,7 +287,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
 		g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
-		g.draw(getTransformedShape());
+		g.draw(transformShape(getShape()));
 
 		drawNameInLocalSpace(r);
 		drawLabelInLocalSpace(r);

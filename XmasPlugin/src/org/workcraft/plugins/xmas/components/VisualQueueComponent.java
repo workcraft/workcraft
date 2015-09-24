@@ -188,18 +188,22 @@ public class VisualQueueComponent extends VisualXmasComponent {
 			g.setColor(getForegroundColor());
 			for (int i = 0; i < capacity; i++) {
 				SlotState slot = ((QueueDecoration)d).getSlotState(i);
-				g.draw(getSlotShape(i));
+				Shape slotShape = transformShape(getSlotShape(i));
+				g.draw(slotShape);
 				if (!slot.isMemExcited && slot.isFull) {
-					g.draw(getTokenShape(i));
-					g.fill(getTokenShape(i));
+					Shape tokenShape = transformShape(getTokenShape(i));
+					g.draw(tokenShape);
+					g.fill(tokenShape);
 				}
 				if (!slot.isHeadExcited && slot.isHead) {
-					g.draw(getHeadShape(i));
-					g.fill(getHeadShape(i));
+					Shape headShape = transformShape(getHeadShape(i));
+					g.draw(headShape);
+					g.fill(headShape);
 				}
 				if (!slot.isTailExcited && slot.isTail) {
-					g.draw(getTailShape(i));
-					g.fill(getTailShape(i));
+					Shape tailShape = transformShape(getTailShape(i));
+					g.draw(tailShape);
+					g.fill(tailShape);
 				}
 			}
 			// Excited elements
@@ -207,21 +211,24 @@ public class VisualQueueComponent extends VisualXmasComponent {
 			for (int i = 0; i < capacity; i++) {
 				SlotState slot = ((QueueDecoration)d).getSlotState(i);
 				if (slot.isMemExcited) {
-					g.draw(getTokenShape(i));
+					Shape tokenShape = transformShape(getTokenShape(i));
+					g.draw(tokenShape);
 					if (slot.isFull) {
-						g.fill(getTokenShape(i));
+						g.fill(tokenShape);
 					}
 				}
 				if (slot.isHeadExcited) {
-					g.draw(getHeadShape(i));
+					Shape headShape = transformShape(getHeadShape(i));
+					g.draw(headShape);
 					if (slot.isHead) {
-						g.fill(getHeadShape(i));
+						g.fill(headShape);
 					}
 				}
 				if (slot.isTailExcited) {
-					g.draw(getTailShape(i));
+					Shape tailShape = transformShape(getTailShape(i));
+					g.draw(tailShape);
 					if (slot.isTail) {
-						g.fill(getTailShape(i));
+						g.fill(tailShape);
 					}
 				}
 			}

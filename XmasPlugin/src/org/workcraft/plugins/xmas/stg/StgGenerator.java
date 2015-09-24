@@ -519,6 +519,22 @@ public class StgGenerator {
 				createReplicaReadArcsFromDoneToClock(joinStg.o.dn);
 			}
 		}
+		for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSwitchComponent.class)) {
+			SwitchStg switchStg = getSwitchStg(component);
+			if (switchStg != null) {
+				createReplicaReadArcsFromDoneToClock(switchStg.i.dn);
+				createReplicaReadArcsFromDoneToClock(switchStg.a.dn);
+				createReplicaReadArcsFromDoneToClock(switchStg.b.dn);
+			}
+		}
+		for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualMergeComponent.class)) {
+			MergeStg mergeStg = getMergeStg(component);
+			if (mergeStg != null) {
+				createReplicaReadArcsFromDoneToClock(mergeStg.a.dn);
+				createReplicaReadArcsFromDoneToClock(mergeStg.b.dn);
+				createReplicaReadArcsFromDoneToClock(mergeStg.o.dn);
+			}
+		}
 		for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
 			QueueStg queueStg = getQueueStg(component);
 			if (queueStg != null) {
@@ -1376,57 +1392,6 @@ public class StgGenerator {
 			nodeStg = getFunctionStg((VisualFunctionComponent)highLevelNode);
 		}
 		return ((nodeStg != null) && nodeStg.contains(node));
-	}
-
-	public Collection<VisualSignalTransition> getDoneTransitions() {
-		HashSet<VisualSignalTransition> result = new HashSet<>();
-		for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
-			SourceStg sourceStg = getSourceStg(component);
-			if (sourceStg != null) {
-				result.addAll(sourceStg.o.dn.getAllTransitions());
-			}
-		}
-		for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
-			SinkStg sinkStg = getSinkStg(component);
-			if (sinkStg != null) {
-				result.addAll(sinkStg.i.dn.getAllTransitions());
-			}
-		}
-		for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
-			FunctionStg funcStg = getFunctionStg(component);
-			if (funcStg != null) {
-				result.addAll(funcStg.i.dn.getAllTransitions());
-				result.addAll(funcStg.o.dn.getAllTransitions());
-			}
-		}
-		for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
-			ForkStg forkStg = getForkStg(component);
-			if (forkStg != null) {
-				result.addAll(forkStg.i.dn.getAllTransitions());
-				result.addAll(forkStg.a.dn.getAllTransitions());
-				result.addAll(forkStg.b.dn.getAllTransitions());
-			}
-		}
-		for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
-			JoinStg joinStg = getJoinStg(component);
-			if (joinStg != null) {
-				result.addAll(joinStg.a.dn.getAllTransitions());
-				result.addAll(joinStg.b.dn.getAllTransitions());
-				result.addAll(joinStg.o.dn.getAllTransitions());
-			}
-		}
-		for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
-			QueueStg queueStg = getQueueStg(component);
-			if (queueStg != null) {
-				result.addAll(queueStg.i.dn.getAllTransitions());
-				result.addAll(queueStg.o.dn.getAllTransitions());
-				for (SlotStg slot: queueStg.slotList) {
-					result.addAll(slot.hd.dn.getAllTransitions());
-					result.addAll(slot.tl.dn.getAllTransitions());
-				}
-			}
-		}
-		return result;
 	}
 
 }

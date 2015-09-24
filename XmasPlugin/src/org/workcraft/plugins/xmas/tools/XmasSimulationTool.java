@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -22,6 +23,11 @@ import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.components.QueueDecoration;
 import org.workcraft.plugins.xmas.components.SlotState;
+import org.workcraft.plugins.xmas.components.StateDecoration;
+import org.workcraft.plugins.xmas.components.VisualForkComponent;
+import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
+import org.workcraft.plugins.xmas.components.VisualJoinComponent;
+import org.workcraft.plugins.xmas.components.VisualMergeComponent;
 import org.workcraft.plugins.xmas.components.VisualQueueComponent;
 import org.workcraft.plugins.xmas.components.VisualSinkComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
@@ -29,6 +35,10 @@ import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasConnection;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.plugins.xmas.stg.ContactStg;
+import org.workcraft.plugins.xmas.stg.ForkStg;
+import org.workcraft.plugins.xmas.stg.FunctionStg;
+import org.workcraft.plugins.xmas.stg.JoinStg;
+import org.workcraft.plugins.xmas.stg.MergeStg;
 import org.workcraft.plugins.xmas.stg.QueueStg;
 import org.workcraft.plugins.xmas.stg.SinkStg;
 import org.workcraft.plugins.xmas.stg.SlotStg;
@@ -36,6 +46,7 @@ import org.workcraft.plugins.xmas.stg.SourceStg;
 import org.workcraft.plugins.xmas.stg.StgGenerator;
 import org.workcraft.plugins.xmas.stg.SwitchStg;
 import org.workcraft.util.Func;
+import org.workcraft.util.Hierarchy;
 
 public class XmasSimulationTool extends StgSimulationTool {
 	private static final Color COLOR_IRDY = Color.RED;
@@ -46,6 +57,7 @@ public class XmasSimulationTool extends StgSimulationTool {
 	private static final Color COLOR_CONTACT_TRDY = COLOR_TRDY;
 	private static final Color COLOR_CONTACT_NOT_READY = Color.WHITE;
 	private StgGenerator generator;
+	private HashSet<VisualSignalTransition> skipTransitions = null;
 
 	@Override
 	public void activated(GraphEditor editor) {
@@ -62,12 +74,13 @@ public class XmasSimulationTool extends StgSimulationTool {
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		generator = new StgGenerator((VisualXmas)model);
+		skipTransitions = getSkipTransitions((VisualXmas)model);
 		return generator.getStg();
 	}
 
 	@Override
 	public String getHintMessage() {
-		String msg = "Click on the highlighted elements to activate it.";
+		String msg = "Click on the highlighted elements to activate them.";
 		if (getExcitedTransition(generator.getClockStg().fallList) != null) {
 			msg += " Right-click for the next clock tick.";
 		}
@@ -99,10 +112,8 @@ public class XmasSimulationTool extends StgSimulationTool {
 		}
 		if (transition != null) {
 			executeTransition(e.getEditor(), transition);
-			Collection<VisualSignalTransition> doneTransitions = generator.getDoneTransitions();
-			doneTransitions.addAll(generator.getClockStg().riseList);
 			Transition t = null;
-			while ((t = getExcitedTransition(doneTransitions)) != null) {
+			while ((t = getExcitedTransition(skipTransitions)) != null) {
 				executeTransition(e.getEditor(), t);
 			}
 		}
@@ -152,7 +163,7 @@ public class XmasSimulationTool extends StgSimulationTool {
 				if (node instanceof VisualXmasContact) {
 					final VisualXmasContact contact = (VisualXmasContact)node;
 					final ContactStg contactStg = generator.getContactStg(contact);
-					final boolean isExcited = (getExcitedTransition(contactStg.getAllTransitions()) != null);
+					final boolean isExcited = (getExcitedTransition(contactStg.rdy.getAllTransitions()) != null);
 					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
 					final boolean isReady = (contactStg.rdy.zero.getReferencedPlace().getTokens() == 0);
 
@@ -217,18 +228,19 @@ public class XmasSimulationTool extends StgSimulationTool {
 						}
 					};
 				} else if (node instanceof VisualSourceComponent) {
-					final VisualSourceComponent source = (VisualSourceComponent)node;
-					final SourceStg sourceStg = generator.getSourceStg(source);
+					final SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
 					final boolean isExcited = (getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null);
 					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
 					final boolean isActive = (sourceStg.oracle.one.getReferencedPlace().getTokens() != 0);
 
-					return new Decoration() {
+					return new StateDecoration() {
+						@Override
+						public boolean getState() {
+							return isActive;
+						}
+
 						@Override
 						public Color getColorisation() {
-							if (isActive) {
-								return COLOR_IRDY;
-							}
 							if (isExcited) {
 								if (isInTrace) {
 									return CommonSimulationSettings.getEnabledBackgroundColor();
@@ -252,18 +264,55 @@ public class XmasSimulationTool extends StgSimulationTool {
 						}
 					};
 				} else if (node instanceof VisualSinkComponent) {
-					final VisualSinkComponent sink = (VisualSinkComponent)node;
-					final SinkStg sinkStg = generator.getSinkStg(sink);
+					final SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent)node);
 					final boolean isExcited = (getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null);
 					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
 					final boolean isActive = (sinkStg.oracle.one.getReferencedPlace().getTokens() != 0);
 
-					return new Decoration() {
+					return new StateDecoration() {
+						@Override
+						public boolean getState() {
+							return isActive;
+						}
+
 						@Override
 						public Color getColorisation() {
-							if (isActive) {
-								return COLOR_TRDY;
+							if (isExcited) {
+								if (isInTrace) {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								} else {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								}
 							}
+							return null;
+						}
+
+						@Override
+						public Color getBackground() {
+							if (isExcited) {
+								if (isInTrace) {
+									return CommonSimulationSettings.getEnabledForegroundColor();
+								} else {
+									return CommonSimulationSettings.getEnabledBackgroundColor();
+								}
+							}
+							return null;
+						}
+					};
+				} else if (node instanceof VisualSwitchComponent) {
+					final SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent)node);
+					final boolean isExcited = (getExcitedTransition(switchStg.oracle.getAllTransitions()) != null);
+					final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
+					final boolean isActive = (switchStg.oracle.one.getReferencedPlace().getTokens() != 0);
+
+					return new StateDecoration() {
+						@Override
+						public boolean getState() {
+							return isActive;
+						}
+
+						@Override
+						public Color getColorisation() {
 							if (isExcited) {
 								if (isInTrace) {
 									return CommonSimulationSettings.getEnabledBackgroundColor();
@@ -302,8 +351,8 @@ public class XmasSimulationTool extends StgSimulationTool {
 								boolean isHead = (slot.hd.rdy.one.getReferencedPlace().getTokens() != 0);
 								boolean isTail= (slot.tl.rdy.one.getReferencedPlace().getTokens() != 0);
 								boolean isMemExcited = (getExcitedTransition(slot.mem.getAllTransitions()) != null);
-								boolean isHeadExcited = (getExcitedTransition(slot.hd.getAllTransitions()) != null);
-								boolean isTailExcited = (getExcitedTransition(slot.tl.getAllTransitions()) != null);
+								boolean isHeadExcited = (getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null);
+								boolean isTailExcited = (getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null);
 								result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
 							}
 							return result;
@@ -337,6 +386,76 @@ public class XmasSimulationTool extends StgSimulationTool {
 			}
 		}
 		return null;
+	}
+
+	private HashSet<VisualSignalTransition> getSkipTransitions(VisualXmas xmas) {
+		HashSet<VisualSignalTransition> result = new HashSet<>();
+		result.addAll(generator.getClockStg().riseList);
+		for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
+			SourceStg sourceStg = generator.getSourceStg(component);
+			if (sourceStg != null) {
+				result.addAll(sourceStg.o.dn.getAllTransitions());
+			}
+		}
+		for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
+			SinkStg sinkStg = generator.getSinkStg(component);
+			if (sinkStg != null) {
+				result.addAll(sinkStg.i.dn.getAllTransitions());
+			}
+		}
+		for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
+			FunctionStg funcStg = generator.getFunctionStg(component);
+			if (funcStg != null) {
+				result.addAll(funcStg.i.dn.getAllTransitions());
+				result.addAll(funcStg.o.dn.getAllTransitions());
+			}
+		}
+		for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
+			ForkStg forkStg = generator.getForkStg(component);
+			if (forkStg != null) {
+				result.addAll(forkStg.i.dn.getAllTransitions());
+				result.addAll(forkStg.a.dn.getAllTransitions());
+				result.addAll(forkStg.b.dn.getAllTransitions());
+			}
+		}
+		for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
+			JoinStg joinStg = generator.getJoinStg(component);
+			if (joinStg != null) {
+				result.addAll(joinStg.a.dn.getAllTransitions());
+				result.addAll(joinStg.b.dn.getAllTransitions());
+				result.addAll(joinStg.o.dn.getAllTransitions());
+			}
+		}
+		for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSwitchComponent.class)) {
+			SwitchStg switchStg = generator.getSwitchStg(component);
+			if (switchStg != null) {
+				result.addAll(switchStg.i.dn.getAllTransitions());
+				result.addAll(switchStg.a.dn.getAllTransitions());
+				result.addAll(switchStg.b.dn.getAllTransitions());
+			}
+		}
+		for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualMergeComponent.class)) {
+			MergeStg mergeStg = generator.getMergeStg(component);
+			if (mergeStg != null) {
+				result.addAll(mergeStg.a.dn.getAllTransitions());
+				result.addAll(mergeStg.b.dn.getAllTransitions());
+				result.addAll(mergeStg.o.dn.getAllTransitions());
+			}
+		}
+		for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
+			QueueStg queueStg = generator.getQueueStg(component);
+			if (queueStg != null) {
+				result.addAll(queueStg.i.dn.getAllTransitions());
+				result.addAll(queueStg.o.dn.getAllTransitions());
+				for (SlotStg slot: queueStg.slotList) {
+					result.addAll(slot.hd.rdy.getAllTransitions());
+					result.addAll(slot.hd.dn.getAllTransitions());
+					result.addAll(slot.tl.rdy.getAllTransitions());
+					result.addAll(slot.tl.dn.getAllTransitions());
+				}
+			}
+		}
+		return result;
 	}
 
 }
