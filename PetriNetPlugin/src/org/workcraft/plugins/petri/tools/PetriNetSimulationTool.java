@@ -48,6 +48,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
@@ -70,6 +71,7 @@ import org.workcraft.dom.visual.FontHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
@@ -88,6 +90,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.ColorGenerator;
@@ -213,6 +216,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					timer.start();
 				}
 				updateState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -236,6 +240,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					random = true;
 				}
 				updateState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -259,6 +264,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					random = false;
 				}
 				updateState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -266,6 +272,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				clearTraces(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -273,6 +280,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				stepBack(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -280,6 +288,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				step(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -287,6 +296,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				copyState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -294,6 +304,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pasteState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -301,6 +312,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mergeTrace(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -308,6 +320,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveInitState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -341,6 +354,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					}
 				}
 				updateState(editor);
+				editor.requestFocus();
 			}
 
 			@Override
@@ -432,8 +446,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		backwardButton.setEnabled((mainTrace.getPosition() > 0) || (branchTrace.getPosition() > 0));
 		forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
 		traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
-		editor.requestFocus();
 		editor.repaint();
+	}
+
+	public void scrollTraceToBottom() {
+		JScrollBar verticalScrollBar = tracePane.getVerticalScrollBar();
+		verticalScrollBar.setValue(verticalScrollBar.getMaximum());
 	}
 
 	private boolean quietStepBack() {
@@ -786,11 +804,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		if (t == null) return;
 
 		String transitionId = null;
-		// if clicked on the trace event, do the step forward
+		// If clicked on the trace event, do the step forward.
 		if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.getPosition() < mainTrace.size())) {
 			transitionId = mainTrace.get(mainTrace.getPosition());
 		}
-		// otherwise form/use the branch trace
+		// Otherwise form/use the branch trace.
 		if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
 			transitionId = branchTrace.get(branchTrace.getPosition());
 		}
@@ -806,7 +824,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 		}
 		branchTrace.add(net.getNodeReference(t));
 		step(editor);
-		return;
+		scrollTraceToBottom();
 	}
 
 	@Override
@@ -897,7 +915,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 			@Override
 			public Decoration getDecoration(Node node) {
 
-				if(node instanceof VisualTransition) {
+				if (node instanceof VisualTransition) {
 					Transition transition = ((VisualTransition)node).getReferencedTransition();
 					Node currentTraceTransition = getTraceCurrentNode();
 					if (transition == currentTraceTransition) {
@@ -927,7 +945,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					}
 				}
 
-				if (node instanceof VisualPage || node instanceof VisualGroup) {
+				if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
 					final boolean ret = isContainerExcited((Container)node);
 					return new ContainerDecoration() {
 
@@ -948,9 +966,37 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 					};
 				}
 
+				if (node instanceof VisualConnection) {
+					if (isArcExcited((VisualConnection)node)) {
+						return new Decoration() {
+
+							@Override
+							public Color getColorisation() {
+								return CommonSimulationSettings.getEnabledForegroundColor();
+							}
+
+							@Override
+							public Color getBackground() {
+								return CommonSimulationSettings.getEnabledBackgroundColor();
+							}
+						};
+					}
+				}
+
 				return null;
 			}
 		};
+	}
+
+	private boolean isArcExcited(VisualConnection connection) {
+		VisualNode first = connection.getFirst();
+		Place place = null;
+		if (first instanceof VisualPlace) {
+			place = ((VisualPlace)first).getReferencedPlace();
+		} else if (first instanceof VisualReplicaPlace) {
+			place = ((VisualReplicaPlace)first).getReferencedPlace();
+		}
+		return ((place != null) && (place.getTokens() > 0));
 	}
 
 	@Override

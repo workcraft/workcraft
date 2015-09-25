@@ -5,13 +5,14 @@ import java.util.HashSet;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.generator.NodeStg;
 
 public class ForkStg extends NodeStg {
-	public final SignalStg i;
-	public final SignalStg a;
-	public final SignalStg b;
+	public final ContactStg i;
+	public final ContactStg a;
+	public final ContactStg b;
 
-	public ForkStg(SignalStg i, SignalStg a, SignalStg b) {
+	public ForkStg(ContactStg i, ContactStg a, ContactStg b) {
 		this.i = i;
 		this.a = a;
 		this.b = b;

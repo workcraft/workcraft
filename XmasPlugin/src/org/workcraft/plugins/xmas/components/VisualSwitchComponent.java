@@ -21,17 +21,26 @@
 
 package org.workcraft.plugins.xmas.components;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.plugins.xmas.XmasSettings;
 
 
 @DisplayName("Switch")
 @SVGIcon("images/icons/svg/xmas-switch.svg")
 public class VisualSwitchComponent extends VisualXmasComponent {
+
+	public final double pointerSize = 0.20 * size;
 
 	public VisualSwitchComponent(SwitchComponent component) {
 		super(component);
@@ -44,6 +53,44 @@ public class VisualSwitchComponent extends VisualXmasComponent {
 
 	public SwitchComponent getReferencedSwitchComponent() {
 		return (SwitchComponent)getReferencedComponent();
+	}
+
+	public Shape getUpPointerShape() {
+		Path2D shape = new Path2D.Double();
+		shape.moveTo(+0.50 * size, -0.28 * size);
+		shape.lineTo(+0.50 * size + 0.7 * pointerSize, -0.28 * size + pointerSize);
+		shape.lineTo(+0.50 * size - 0.7 * pointerSize, -0.28 * size + pointerSize);
+		shape.closePath();
+		return shape;
+	}
+
+	public Shape getDownPointerShape() {
+		Path2D shape = new Path2D.Double();
+		shape.moveTo(+0.50 * size, +0.28 * size);
+		shape.lineTo(+0.50 * size + 0.7 * pointerSize, +0.28 * size - pointerSize);
+		shape.lineTo(+0.50 * size - 0.7 * pointerSize, +0.28 * size - pointerSize);
+		shape.closePath();
+		return shape;
+	}
+
+	@Override
+	public void draw(DrawRequest r) {
+		super.draw(r);
+		Graphics2D g = r.getGraphics();
+		Decoration d = r.getDecoration();
+		if (d instanceof StateDecoration) {
+			g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+			if (((StateDecoration)d).getState()) {
+				Shape shape = transformShape(getUpPointerShape());
+				g.fill(shape);
+				g.draw(shape);
+			} else {
+				Shape shape = transformShape(getDownPointerShape());
+				g.fill(shape);
+				g.draw(shape);
+			}
+		}
 	}
 
 	@Override

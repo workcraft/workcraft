@@ -43,7 +43,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 		final Framework framework = Framework.getInstance();
 		try {
 			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
-			STGModel model = (STGModel)generator.getStg().getMathModel();
+			STGModel model = (STGModel)generator.getStgModel().getMathModel();
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 			if (exporter == null) {
 				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

@@ -16,17 +16,17 @@ public class XmasSettings implements Settings {
 	private static final String keyShowContacts  = prefix + ".showContacts";
 	private static final String keyBorderWidth = prefix + ".borderWidth";
 	private static final String keyWireWidth  = prefix + ".wireWidth";
-	private static final String keyJasonFileName  = prefix + ".jasonFileName";
+	private static final String keyVxmDirectory  = prefix + ".vxmDirectory";
 
 	private static final boolean defaultShowContacts = false;
 	private static final double defaultBorderWidth = 0.06;
-	private static final double defaultWireWidth = 0.04;
-	private static final String defaultJasonFileName = "";
+	private static final double defaultWireWidth = 0.06;
+	private static final String defaultVxmDirectory = "tools/vxm/";
 
 	private static boolean showContacts = defaultShowContacts;
 	private static double borderWidth = defaultBorderWidth;
 	private static double wireWidth = defaultWireWidth;
-	private static String jasonFileName = defaultJasonFileName;
+	private static String vxmDirectory = defaultVxmDirectory;
 
 
 	public XmasSettings() {
@@ -61,12 +61,12 @@ public class XmasSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<XmasSettings, String>(
-				this, "JSON conversion file", String.class, true, false, false) {
+				this, "VXM working directory", String.class, true, false, false) {
 			protected void setter(XmasSettings object, String value) {
-				XmasSettings.setJasonFileName(value);
+				XmasSettings.setVxmDirectory(value);
 			}
 			protected String getter(XmasSettings object) {
-				return XmasSettings.getJasonFileName();
+				return XmasSettings.getVxmDirectory();
 			}
 		});
 	}
@@ -81,7 +81,7 @@ public class XmasSettings implements Settings {
 		setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
 		setBorderWidth (config.getDouble(keyBorderWidth, defaultBorderWidth));
 		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
-		setJasonFileName(config.getString(keyJasonFileName, defaultJasonFileName));
+		setVxmDirectory(config.getString(keyVxmDirectory, defaultVxmDirectory));
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class XmasSettings implements Settings {
 		config.setBoolean(keyShowContacts, getShowContacts());
 		config.setDouble(keyBorderWidth, getBorderWidth());
 		config.setDouble(keyWireWidth, getWireWidth());
-		config.set(keyJasonFileName, getJasonFileName());
+		config.set(keyVxmDirectory, getVxmDirectory());
 	}
 
 	@Override
@@ -126,12 +126,12 @@ public class XmasSettings implements Settings {
 		wireWidth = value;
 	}
 
-	public static String getJasonFileName() {
-		return jasonFileName;
+	public static String getVxmDirectory() {
+		return vxmDirectory;
 	}
 
-	public static void setJasonFileName(String value) {
-		jasonFileName = value;
+	public static void setVxmDirectory(String value) {
+		vxmDirectory = value;
 	}
 
 }

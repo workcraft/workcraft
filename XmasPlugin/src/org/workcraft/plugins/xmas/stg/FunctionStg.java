@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.generator.NodeStg;
 
 public class FunctionStg extends NodeStg {
-	public final SignalStg i;
-	public final SignalStg o;
+	public final ContactStg i;
+	public final ContactStg o;
 
-	public FunctionStg(SignalStg i, SignalStg o) {
+	public FunctionStg(ContactStg i, ContactStg o) {
 		this.i = i;
 		this.o = o;
 	}

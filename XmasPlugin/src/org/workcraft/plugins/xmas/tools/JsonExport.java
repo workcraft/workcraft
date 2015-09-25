@@ -187,7 +187,7 @@ public class JsonExport implements Tool {
 			num_nodes++;
 		}
 		//GEN JSON
-		File file = new File(XmasSettings.getJasonFileName());
+		File file = new File(XmasSettings.getVxmDirectory(), "JsonFile");
 	    PrintWriter writer = null;
 		try
 		{

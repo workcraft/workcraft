@@ -215,6 +215,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					timer = null;
 				}
 				updateState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -248,6 +249,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 				setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 				excitedContainers.clear();
 				updateState(editor);
+				editor.requestFocus();
 			}
 		});
 
@@ -320,6 +322,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 					}
 				}
 				updateState(editor);
+				editor.requestFocus();
 			}
 
 			@Override
@@ -360,6 +363,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			net.resetConditionErrStates();
 		}
 		updateState(editor);
+		editor.requestFocus();
 		editor.forceRedraw();
 		editor.getModel().setTemplateNode(null);
 	}
@@ -418,8 +422,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"));
 			reverseButton.setToolTipText("Switch to forward simulation");
 		}
-
-		editor.requestFocus();
 		editor.repaint();
 	}
 

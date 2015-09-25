@@ -1,36 +1,38 @@
 package org.workcraft.plugins.xmas.stg;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.NodeStg;
-import org.workcraft.plugins.stg.generator.SignalStg;
 
-public class SourceStg extends NodeStg {
+public class MergeStg extends NodeStg {
+	public final ContactStg a;
+	public final ContactStg b;
 	public final ContactStg o;
-	public final SignalStg oracle;
 
-	public SourceStg(ContactStg o, SignalStg oracle) {
+	public MergeStg(ContactStg a, ContactStg b, ContactStg o) {
+		this.a = a;
+		this.b = b;
 		this.o = o;
-		this.oracle = oracle;
 	}
 
 	@Override
 	public Collection<VisualSignalTransition> getAllTransitions() {
-		List<VisualSignalTransition> result = new ArrayList<>();
+		HashSet<VisualSignalTransition> result = new HashSet<>();
+		result.addAll(a.getAllTransitions());
+		result.addAll(b.getAllTransitions());
 		result.addAll(o.getAllTransitions());
-		result.addAll(oracle.getAllTransitions());
 		return result;
 	}
 
 	@Override
 	public Collection<VisualPlace> getAllPlaces() {
-		List<VisualPlace> result = new ArrayList<>();
+		HashSet<VisualPlace> result = new HashSet<>();
+		result.addAll(a.getAllPlaces());
+		result.addAll(b.getAllPlaces());
 		result.addAll(o.getAllPlaces());
-		result.addAll(oracle.getAllPlaces());
 		return result;
 	}
 
