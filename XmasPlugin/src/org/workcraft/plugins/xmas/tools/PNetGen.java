@@ -974,23 +974,21 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 		fun_nodes=cnet.getFunctionComponents();
 
 		JsonFactory f = new MappingJsonFactory();
-		File file = new File("/home/frank/work_wk/CPNFile");
-		//File file = new File(XmasSettings.getCPNFileName());
+		File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
 	    PrintWriter writer = null;
-		File file1 = new File("/home/frank/work_wk/sync");
+		File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
 	    PrintWriter writer_s = null;
 	    try
 	    {
 
 	    	initlist();
-	    	//init_parse("/home/frank/work_wk/JsonFile");
-	    	init_parse(XmasSettings.getJasonFileName());
+	    	File jsonFile = new File(XmasSettings.getVxmDirectory(), "JsonFile");
+	    	init_parse(jsonFile.getAbsolutePath());
 	    	create_slsto();
 
-	    	writer = new PrintWriter(file);
-	    	writer_s = new PrintWriter(file1);
-	        //JsonParser jp = f.createJsonParser(new File("/home/frank/work_wk/JsonFile"));
-	        JsonParser jp = f.createJsonParser(new File(XmasSettings.getJasonFileName()));
+	    	writer = new PrintWriter(cpnFile);
+	    	writer_s = new PrintWriter(syncFile);
+	        JsonParser jp = f.createJsonParser(jsonFile);
 	        JsonToken current;
 
 	        current = jp.nextToken();

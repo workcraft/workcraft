@@ -155,7 +155,7 @@ public class StgGenerator {
 		return stg;
 	}
 
-	static void setPosition(Movable node, double x, double y) {
+	private void setPosition(Movable node, double x, double y) {
 		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));
 	}
 

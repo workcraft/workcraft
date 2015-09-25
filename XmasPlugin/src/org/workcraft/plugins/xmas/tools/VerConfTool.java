@@ -114,10 +114,10 @@ public class VerConfTool implements Tool {
 	public List<String> slist=new ArrayList<String>();
 
 	private void init_settings() {
-		String file="/home/frank/work_wk/vsettings";
-		Scanner sc=null;
+		Scanner sc = null;
 		try {
-			sc=new Scanner(new File(file));
+			File vsettingsFile = new File(XmasSettings.getVxmDirectory(), "vsettings");
+			sc=new Scanner(vsettingsFile);
 		} catch (FileNotFoundException e) {
 			System.err.println("Error: " + e.getMessage());
 		}
@@ -158,29 +158,23 @@ public class VerConfTool implements Tool {
 		String hlname = (String)hlcombob.getSelectedItem();
 		String slname = (String)slcombob.getSelectedItem();
 
-		File file = new File("/home/frank/work_wk/vsettings");
 	    PrintWriter writer = null;
 		try
 		{
-			writer = new PrintWriter(file);
+			File vsettingsFile = new File(XmasSettings.getVxmDirectory(), "vsettings");
+			writer = new PrintWriter(vsettingsFile);
 			writer.println("trace " + trname);
 			writer.println("level " + lvname);
 			writer.println("highlight " + hlname);
 			writer.println("display " + dyname);
 			writer.println("soln " + slname);
-		}
-		catch (Exception e)
-	    {
+		} catch (Exception e) {
 	        e.printStackTrace();
+	    } finally {
+            if (writer != null) {
+            	writer.close();
+	        }
 	    }
-	    finally
-	    {
-	            if ( writer != null )
-	            {
-	                writer.close();
-	            }
-	    }
-
 	}
 
 	int loaded = 0;

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
+import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 
@@ -163,15 +164,13 @@ public class PNetExt {
 	public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, int syncflag) {
 
 		initlist();
-		//PrintWriter writer = new PrintWriter("c.ll_net", "UTF-8");
-		//File file = new File(XmasSettings.getPNConvFileName());
-		File file = new File("/home/frank/work_wk/PNCFile");
+		File pncFile = new File(XmasSettings.getVxmDirectory(), "PNCFile");
 	    PrintWriter writer = null;
 	    try
 	    {
-	    	writer = new PrintWriter(file);
-	    	ReadFile("/home/frank/work_wk/CPNFile",syncflag);
-	    	//ReadFile(XmasSettings.getCPNFileName());
+	    	writer = new PrintWriter(pncFile);
+	    	File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
+	    	ReadFile(cpnFile.getAbsolutePath(), syncflag);
 	    	WriteNet(writer,src_nodes,fun_nodes);
 	    }
 	    catch (Exception e)

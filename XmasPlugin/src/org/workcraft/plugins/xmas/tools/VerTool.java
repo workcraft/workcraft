@@ -22,6 +22,7 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
+import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.QueueComponent;
 import org.workcraft.plugins.xmas.components.SyncComponent;
 import org.workcraft.plugins.xmas.components.VisualQueueComponent;
@@ -354,15 +355,26 @@ public class VerTool extends AbstractTool implements Tool {
         VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
 
         try {
-            Process p1 = Runtime.getRuntime().exec("cp /home/frank/work_wk/CPNFile /home/frank/work_wk/in");
-            p1.waitFor();
-            String arg = ProcessArg("/home/frank/work_wk/vsettings");
-            System.out.println("arg = " + arg);
-            String command = "vxm " + arg;
+        	File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
+        	File inFile = new File(XmasSettings.getVxmDirectory(), "in");
+        	ArrayList<String> cpCommand = new ArrayList<>();
+        	cpCommand.add("cp");
+        	cpCommand.add(cpnFile.getAbsolutePath());
+        	cpCommand.add(inFile.getAbsolutePath());
+            Process cpProcess = Runtime.getRuntime().exec(cpCommand.toArray(new String[cpCommand.size()]));
+            cpProcess.waitFor();
 
-            Process p = Runtime.getRuntime().exec(command);
+            File vsettingsFile = new File(XmasSettings.getVxmDirectory(), "vsettings");
+            String arg = ProcessArg(vsettingsFile.getAbsolutePath());
+            System.out.println("arg = " + arg);
+            ArrayList<String> vxmCommand = new ArrayList<>();
+            vxmCommand.add("vxm");
+            vxmCommand.add(arg);
+            Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
+
             String s, str="";
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
+			BufferedReader stdInput = new BufferedReader(inputStreamReader);
             int n=0;
             int test=0;
             init_highlight(xnet,vnet);
@@ -374,12 +386,16 @@ public class VerTool extends AbstractTool implements Tool {
             }
             if(level.equals("advanced")) {
             	System.out.println("LEVEL IS ADVANCED ");
-            	process_qsl("/home/frank/work_wk/qsl");
-            	str = process_eq("/home/frank/work_wk/equ");
+            	File qslFile = new File(XmasSettings.getVxmDirectory(), "qsl");
+            	process_qsl(qslFile.getAbsolutePath());
+
+            	File equFile = new File(XmasSettings.getVxmDirectory(), "equ");
+            	str = process_eq(equFile.getAbsolutePath());
             }
             else if(level.equals("normal") && test==2) {
             	System.out.println("LEVEL IS NORMAL ");
-    			str = process_loc("/home/frank/work_wk/loc");
+            	File locFile = new File(XmasSettings.getVxmDirectory(), "loc");
+    			str = process_loc(locFile.getAbsolutePath());
             }
             if(test>0) {
         		if(display.equals("popup")) {

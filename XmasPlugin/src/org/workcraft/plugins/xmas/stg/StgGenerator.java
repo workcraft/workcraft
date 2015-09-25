@@ -16,6 +16,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
@@ -97,6 +98,8 @@ public class StgGenerator {
 	}
 
 	private void convert() {
+		HashSet<VisualXmasComponent> remainingComponents = new HashSet<>();
+		remainingComponents.addAll(Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualXmasComponent.class));
 		try {
 			{
 				clockStg = generateClockStg();
@@ -105,34 +108,42 @@ public class StgGenerator {
 			for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
 				SourceStg sourceStg = generateSourceStg(component);
 				sourceMap.put(component, sourceStg);
+				remainingComponents.remove(component);
 			}
 			for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
 				SinkStg sinkStg = generateSinkStg(component);
 				sinkMap.put(component, sinkStg);
+				remainingComponents.remove(component);
 			}
 			for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
 				FunctionStg functionStg = generateFunctionStg(component);
 				functionMap.put(component, functionStg);
+				remainingComponents.remove(component);
 			}
 			for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
 				ForkStg forkStg = generateForkStg(component);
 				forkMap.put(component, forkStg);
+				remainingComponents.remove(component);
 			}
 			for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
 				JoinStg joinStg = generateJoinStg(component);
 				joinMap.put(component, joinStg);
+				remainingComponents.remove(component);
 			}
 			for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSwitchComponent.class)) {
 				SwitchStg switchStg = generateSwitchStg(component);
 				switchMap.put(component, switchStg);
+				remainingComponents.remove(component);
 			}
 			for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualMergeComponent.class)) {
 				MergeStg mergeStg = generateMergeStg(component);
 				mergeMap.put(component, mergeStg);
+				remainingComponents.remove(component);
 			}
 			for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
 				QueueStg queueStg = generateQueueStg(component);
 				queueMap.put(component, queueStg);
+				remainingComponents.remove(component);
 			}
 
 			connectClockStg();
@@ -163,6 +174,10 @@ public class StgGenerator {
 		} catch (InvalidConnectionException e) {
 			throw new RuntimeException(e);
 		}
+		for (VisualComponent component: remainingComponents) {
+			String name = xmas.getNodeMathReference(component);
+			System.out.println("ERROR: Cannot derive an STG for xMAS component '" + name +"' of type " + component.getClass().getName());
+		}
 		stg.selectNone();
 	}
 
@@ -170,7 +185,7 @@ public class StgGenerator {
 		return stg;
 	}
 
-	static void setPosition(Movable node, double x, double y) {
+	private void setPosition(Movable node, double x, double y) {
 		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));
 	}
 

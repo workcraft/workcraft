@@ -40,8 +40,8 @@ public class XmasToolsProvider implements CustomToolsProvider {
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(JoinComponent.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SwitchComponent.class)));
 		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(MergeComponent.class)));
-//		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CreditComponent.class)));
-//		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SyncComponent.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CreditComponent.class)));
+		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SyncComponent.class)));
 		result.add(new XmasSimulationTool());
 
 		return result;

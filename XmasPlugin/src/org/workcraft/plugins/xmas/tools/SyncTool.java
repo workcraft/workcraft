@@ -277,11 +277,11 @@ public class SyncTool implements Tool {
 			num_nodes++;
 		}
 		//GEN JSON
-		File file = new File(XmasSettings.getJasonFileName());
+		File jsonFile = new File(XmasSettings.getVxmDirectory(), "JsonFile");
 	    PrintWriter writer = null;
 		try
 		{
-	    writer = new PrintWriter(file);
+	    writer = new PrintWriter(jsonFile);
 		int cnt_nodes=0;
 		int num_outputs=0;
 		List<VisualGroup> groups = new ArrayList<VisualGroup>();

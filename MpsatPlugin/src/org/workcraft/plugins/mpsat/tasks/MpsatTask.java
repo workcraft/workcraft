@@ -34,7 +34,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
-		ArrayList<String> command = new ArrayList<String>();
+		ArrayList<String> command = new ArrayList<>();
 		// Name of the executable
 		command.add(MpsatUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix(tryPnml));
 		// Built-in arguments
