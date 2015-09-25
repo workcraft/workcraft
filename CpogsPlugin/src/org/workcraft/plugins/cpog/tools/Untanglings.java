@@ -19,6 +19,7 @@ import org.jbpt.petri.untangling.IProcess;
 import org.jbpt.petri.untangling.ReductionBasedRepresentativeUntangling;
 import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
+import org.workcraft.plugins.cpog.PnToCpogSettings;
 
 
 public class Untanglings {
@@ -30,17 +31,28 @@ public class Untanglings {
 	private ReductionBasedRepresentativeUntangling untangling;
 	private ArrayList<String> partialOrders;
 
-	public Untanglings(){
+	public Untanglings(PnToCpogSettings settings){
 		this.sys = new NetSystem();
 		this.p = new LinkedList<Place>();
 		this.t = new LinkedList<Transition>();
 		this.setup = new UntanglingSetup();
 		this.partialOrders = new ArrayList<String>();
 
-		// settings that might be tuned
-		this.setup.ISOMORPHISM_REDUCTION = false;
-		this.setup.REDUCE = false;
-		this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
+		// settings
+		this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();
+		this.setup.REDUCE = settings.isReduce();
+		switch(settings.getSignificance()){
+			case 0 :
+				this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
+				break;
+			case 1 :
+				this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.HASHMAP_BASED;
+				break;
+			case 2 :
+				this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.TREE_OF_RUNS;
+				break;
+		}
+
 	}
 
 	/** adds place inside the conversion system **/

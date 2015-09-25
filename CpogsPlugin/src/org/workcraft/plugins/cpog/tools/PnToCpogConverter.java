@@ -8,6 +8,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.cpog.CPOG;
+import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.petri.PetriNet;
@@ -30,10 +31,11 @@ public class PnToCpogConverter {
 		this.xRightmostVertex = -1;
 	}
 
-	/** function which performs the conversion **/
-	public VisualCPOG run(){
+	/** function which performs the conversion
+	 * @param settings **/
+	public VisualCPOG run(PnToCpogSettings settings){
 
-		Untanglings untangling = new Untanglings();
+		Untanglings untangling = new Untanglings(settings);
 
 		/*****************************************************
 		 * Unpack Petri net and stream it into the converter *

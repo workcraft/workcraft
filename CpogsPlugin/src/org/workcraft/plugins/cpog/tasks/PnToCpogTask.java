@@ -3,6 +3,7 @@ package org.workcraft.plugins.cpog.tasks;
 import org.workcraft.Framework;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.cpog.CpogDescriptor;
+import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.tools.PnToCpogConverter;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -21,10 +22,12 @@ public class PnToCpogTask implements Task<PnToCpogResult>{
 
 	// conversion-related variables
 	private VisualPetriNet pn;
+	private PnToCpogSettings settings;
 	private VisualCPOG cpog;
 
-	public PnToCpogTask(WorkspaceEntry we) {
+	public PnToCpogTask(WorkspaceEntry we, PnToCpogSettings settings) {
 		this.we = we;
+		this.settings = settings;
 	}
 
 
@@ -42,7 +45,7 @@ public class PnToCpogTask implements Task<PnToCpogResult>{
 		PnToCpogConverter converter = new PnToCpogConverter(pn);
 
 		// get the partial orders from the Petri net introduced
-		cpog = converter.run();
+		cpog = converter.run(settings);
 
 		// checking that conversion process terminated correctly
 		if (cpog == null){
