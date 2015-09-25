@@ -16,6 +16,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.Movable;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -41,6 +42,7 @@ import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.generator.SignalStg;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.TwoWayMap;
@@ -53,12 +55,12 @@ public class CircuitToStgConverter {
 
 	private static final double SCALE_X = 4.0;
 	private static final double SCALE_Y = 4.0;
-	private static final Point2D OFFSET_P1 = new Point2D.Double(0.0, -1.0);
-	private static final Point2D OFFSET_P0 = new Point2D.Double(0.0, 1.0);
-	private static final Point2D OFFSET_INIT_PLUS = new Point2D.Double(0.0, -1.0);
-	private static final Point2D OFFSET_INIT_MINUS = new Point2D.Double(0.0, 1.0);
-	private static final Point2D OFFSET_INC_PLUS = new Point2D.Double(0.0, -2.0);
-	private static final Point2D OFFSET_INC_MINUS = new Point2D.Double(0.0, 2.0);
+	private static final Point2D OFFSET_P1 = new Point2D.Double(0.0, -2.0);
+	private static final Point2D OFFSET_P0 = new Point2D.Double(0.0, +2.0);
+	private static final Point2D OFFSET_INIT_PLUS = new Point2D.Double(0.0, -2.0);
+	private static final Point2D OFFSET_INIT_MINUS = new Point2D.Double(0.0, +2.0);
+	private static final Point2D OFFSET_INC_PLUS = new Point2D.Double(0.0, -1.0);
+	private static final Point2D OFFSET_INC_MINUS = new Point2D.Double(0.0, +1.0);
 
 	private final VisualCircuit circuit;
 	private final VisualSTG stg;
@@ -176,13 +178,15 @@ public class CircuitToStgConverter {
 			String signalName = CircuitUtils.getSignalName(circuit, signal);
 
 			VisualPlace zeroPlace = stg.createPlace(signalName + NAME_SUFFIX_0, container);
-			zeroPlace.setLabel(signalName + LABEL_SUFFIX_0);
+			zeroPlace.setNamePositioning(Positioning.TOP);
+			zeroPlace.setLabelPositioning(Positioning.BOTTOM);
 			if (!signal.getReferencedContact().getInitToOne()) {
 				zeroPlace.getReferencedPlace().setTokens(1);
 			}
 
 			VisualPlace onePlace = stg.createPlace(signalName + NAME_SUFFIX_1, container);
-			onePlace.setLabel(signalName + LABEL_SUFFIX_1);
+			onePlace.setNamePositioning(Positioning.BOTTOM);
+			onePlace.setLabelPositioning(Positioning.TOP);
 			if (signal.getReferencedContact().getInitToOne()) {
 				onePlace.getReferencedPlace().setTokens(1);
 			}
@@ -217,9 +221,9 @@ public class CircuitToStgConverter {
 
 	private void createSignalStgTransitions(VisualContact driver, Dnf dnf, Direction direction) {
 		SignalStg driverStg = driverToStgMap.getValue(driver);
-		VisualPlace predPlace = (direction == Direction.PLUS ? driverStg.P0 : driverStg.P1);
-		VisualPlace succPlace = (direction == Direction.PLUS ? driverStg.P1 : driverStg.P0);
-		HashSet<VisualSignalTransition> transitions = (direction == Direction.PLUS ? driverStg.Rs : driverStg.Fs);
+		VisualPlace predPlace = (direction == Direction.PLUS ? driverStg.zero : driverStg.one);
+		VisualPlace succPlace = (direction == Direction.PLUS ? driverStg.one : driverStg.zero);
+		Collection<VisualSignalTransition> transitions = (direction == Direction.PLUS ? driverStg.riseList : driverStg.fallList);
 
 		TreeSet<DnfClause> clauses = new TreeSet<DnfClause>(
 				new Comparator<DnfClause>() {
@@ -258,7 +262,7 @@ public class CircuitToStgConverter {
 				if (sourceDriverStg == null) {
 					throw new RuntimeException("No source for '" + circuit.getMathName(sourceContact) + "' while generating '" + signalName + "'.");
 				}
-				VisualPlace place = literal.getNegation() ? sourceDriverStg.P0 : sourceDriverStg.P1;
+				VisualPlace place = literal.getNegation() ? sourceDriverStg.zero : sourceDriverStg.one;
 				placesToRead.add(place);
 			}
 
@@ -267,14 +271,8 @@ public class CircuitToStgConverter {
 			}
 
 			for (VisualPlace place : placesToRead) {
-				// FIXME: Why duplicate arcs would be created in the first place?
 				try {
-					if(stg.getConnection(place, transition) == null) {
-						stg.connect(place, transition);
-					}
-					if(stg.getConnection(transition, place) == null) {
-						stg.connect(transition, place);
-					}
+					stg.connectUndirected(place, transition);
 				} catch (InvalidConnectionException e) {
 					throw new RuntimeException(e);
 				}
@@ -333,17 +331,15 @@ public class CircuitToStgConverter {
 			}
 
 			if ((zeroPlace != null) && (onePlace != null)) {
-				zeroPlace.setLabel(signalName + LABEL_SUFFIX_0);
-				onePlace.setLabel(signalName + LABEL_SUFFIX_1);
 				SignalStg signalStg = new SignalStg(zeroPlace, onePlace);
 				result.put(driver, signalStg);
 				for (VisualSignalTransition transition: stg.getVisualSignalTransitions()) {
 					if (signalName.equals(transition.getSignalName())) {
 						if (transition.getDirection() == Direction.PLUS) {
-							signalStg.Rs.add(transition);
+							signalStg.riseList.add(transition);
 						}
 						if (transition.getDirection() == Direction.MINUS) {
-							signalStg.Fs.add(transition);
+							signalStg.fallList.add(transition);
 						}
 					}
 				}
@@ -358,8 +354,8 @@ public class CircuitToStgConverter {
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
-				signalStg.Rs.removeAll(redundantTransitions);
-				signalStg.Fs.removeAll(redundantTransitions);
+				signalStg.riseList.removeAll(redundantTransitions);
+				signalStg.fallList.removeAll(redundantTransitions);
 			}
 		}
 		stg.remove(redundantTransitions);
@@ -370,8 +366,8 @@ public class CircuitToStgConverter {
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
-				HashSet<Node> deadPostset = new HashSet<Node>(stg.getPostset(signalStg.P0));
-				deadPostset.retainAll(stg.getPostset(signalStg.P1));
+				HashSet<Node> deadPostset = new HashSet<Node>(stg.getPostset(signalStg.zero));
+				deadPostset.retainAll(stg.getPostset(signalStg.one));
 				result.addAll(deadPostset);
 			}
 		}
@@ -383,14 +379,14 @@ public class CircuitToStgConverter {
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
-				result.addAll(getDuplicates(signalStg.Rs));
-				result.addAll(getDuplicates(signalStg.Fs));
+				result.addAll(getDuplicates(signalStg.riseList));
+				result.addAll(getDuplicates(signalStg.fallList));
 			}
 		}
 		return result;
 	}
 
-	private HashSet<Node> getDuplicates(HashSet<VisualSignalTransition> transitions) {
+	private HashSet<Node> getDuplicates(Collection<VisualSignalTransition> transitions) {
 		HashSet<Node> result = new HashSet<>();
 		for (VisualSignalTransition t1: transitions) {
 			if (result.contains(t1)) continue;
@@ -414,18 +410,18 @@ public class CircuitToStgConverter {
 			if (signalStg != null) {
 				VisualContact signal = CircuitUtils.findSignal(circuit, driver);
 				Point2D centerPosition = getPosition(signal);
-				setPosition(signalStg.P0, Geometry.add(centerPosition, OFFSET_P0));
-				setPosition(signalStg.P1, Geometry.add(centerPosition, OFFSET_P1));
+				setPosition(signalStg.zero, Geometry.add(centerPosition, OFFSET_P0));
+				setPosition(signalStg.one, Geometry.add(centerPosition, OFFSET_P1));
 
 				centerPosition = Geometry.add(centerPosition, getDirectionOffset(signal));
 				Point2D plusPosition = Geometry.add(centerPosition, OFFSET_INIT_PLUS);
-				for (VisualSignalTransition transition: signalStg.Rs) {
+				for (VisualSignalTransition transition: signalStg.riseList) {
 					setPosition(transition, plusPosition);
 					plusPosition = Geometry.add(plusPosition, OFFSET_INC_PLUS);
 				}
 
 				Point2D minusPosition = Geometry.add(centerPosition, OFFSET_INIT_MINUS);
-				for (VisualSignalTransition transition: signalStg.Fs) {
+				for (VisualSignalTransition transition: signalStg.fallList) {
 					setPosition(transition, minusPosition);
 					minusPosition = Geometry.add(minusPosition, OFFSET_INC_MINUS);
 				}
@@ -465,10 +461,7 @@ public class CircuitToStgConverter {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
 				Collection<Node> nodesToGroup = new LinkedList<Node>();
-				nodesToGroup.add(signalStg.P1);
-				nodesToGroup.add(signalStg.P0);
-				nodesToGroup.addAll(signalStg.Rs);
-				nodesToGroup.addAll(signalStg.Fs);
+				nodesToGroup.addAll(signalStg.getAllNodes());
 
 				Container currentLevel = null;
 				Container oldLevel = stg.getCurrentLevel();

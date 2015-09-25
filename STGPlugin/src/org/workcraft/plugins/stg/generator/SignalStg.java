@@ -15,6 +15,11 @@ public class SignalStg extends NodeStg {
 	public final ArrayList<VisualSignalTransition> fallList = new ArrayList<>();
 	public final ArrayList<VisualSignalTransition> riseList = new ArrayList<>();
 
+	public SignalStg(VisualPlace zero, VisualPlace one) {
+		this.zero = zero;
+		this.one = one;
+	}
+
 	public SignalStg(VisualPlace zero, VisualPlace one, VisualSignalTransition fall, VisualSignalTransition rise) {
 		this.zero = zero;
 		this.one = one;

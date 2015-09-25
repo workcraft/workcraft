@@ -22,12 +22,12 @@ public abstract class NodeStg {
 	public boolean contains(Node n) {
 		if (n != null) {
 			for (VisualPlace p: getAllPlaces()) {
-				if (n == p || (p != null && n == p.getReferencedPlace())) {
+				if ((n == p) || ((p != null) && (n == p.getReferencedPlace()))) {
 					return true;
 				}
 			}
 			for (VisualSignalTransition t: getAllTransitions()) {
-				if (n == t || (t != null && n == t.getReferencedTransition())) {
+				if ((n == t) || ((t != null) && (n == t.getReferencedTransition()))) {
 					return true;
 				}
 			}

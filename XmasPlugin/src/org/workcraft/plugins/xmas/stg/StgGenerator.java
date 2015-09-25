@@ -92,45 +92,54 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			{
 				clockStg = generateClockStg();
 				clockControlSignals = new HashSet<>();
+				groupComponentStg(clockStg);
 			}
 			for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
-				SourceStg sourceStg = generateSourceStg(component);
-				putSourceStg(component, sourceStg);
+				SourceStg stg = generateSourceStg(component);
+				groupComponentStg(stg);
+				putSourceStg(component, stg);
 				remainingComponents.remove(component);
 			}
 			for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSinkComponent.class)) {
-				SinkStg sinkStg = generateSinkStg(component);
-				putSinkStg(component, sinkStg);
+				SinkStg stg = generateSinkStg(component);
+				groupComponentStg(stg);
+				putSinkStg(component, stg);
 				remainingComponents.remove(component);
 			}
 			for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualFunctionComponent.class)) {
-				FunctionStg functionStg = generateFunctionStg(component);
-				putFunctionStg(component, functionStg);
+				FunctionStg stg = generateFunctionStg(component);
+				groupComponentStg(stg);
+				putFunctionStg(component, stg);
 				remainingComponents.remove(component);
 			}
 			for(VisualForkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualForkComponent.class)) {
-				ForkStg forkStg = generateForkStg(component);
-				putForkStg(component, forkStg);
+				ForkStg stg = generateForkStg(component);
+				groupComponentStg(stg);
+				putForkStg(component, stg);
 				remainingComponents.remove(component);
 			}
 			for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualJoinComponent.class)) {
-				JoinStg joinStg = generateJoinStg(component);
-				putJoinStg(component, joinStg);
+				JoinStg stg = generateJoinStg(component);
+				groupComponentStg(stg);
+				putJoinStg(component, stg);
 				remainingComponents.remove(component);
 			}
 			for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSwitchComponent.class)) {
-				SwitchStg switchStg = generateSwitchStg(component);
-				putSwitchStg(component, switchStg);
+				SwitchStg stg = generateSwitchStg(component);
+				groupComponentStg(stg);
+				putSwitchStg(component, stg);
 				remainingComponents.remove(component);
 			}
 			for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualMergeComponent.class)) {
-				MergeStg mergeStg = generateMergeStg(component);
-				putMergeStg(component, mergeStg);
+				MergeStg stg = generateMergeStg(component);
+				groupComponentStg(stg);
+				putMergeStg(component, stg);
 				remainingComponents.remove(component);
 			}
 			for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualQueueComponent.class)) {
-				QueueStg queueStg = generateQueueStg(component);
-				putQueueStg(component, queueStg);
+				QueueStg stg = generateQueueStg(component);
+				groupComponentStg(stg);
+				putQueueStg(component, stg);
 				remainingComponents.remove(component);
 			}
 
@@ -306,7 +315,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		String name = "clk";
 		SignalStg clockStg = generateBasicSignalStg(name, 60.0, 25.0, Type.INPUT);
 		setSignalInitialState(clockStg, true);
-		groupComponentStg(clockStg);
 		return clockStg;
 	}
 
@@ -399,9 +407,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReadArc(o.rdy.zero, o.dn.riseList.get(0));
 			createReadArc(o.rdy.one, o.dn.riseList.get(1));
 		}
-		SourceStg sourceStg = new SourceStg(o, oracle);
-		groupComponentStg(sourceStg);
-		return sourceStg;
+		return new SourceStg(o, oracle);
 	}
 
 	private void connectSourceStg(VisualSourceComponent component) throws InvalidConnectionException {
@@ -431,11 +437,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((sourceMap == null) ? null : sourceMap.get(component));
 	}
 
-	public void putSourceStg(VisualSourceComponent component, SourceStg s) {
+	public void putSourceStg(VisualSourceComponent component, SourceStg stg) {
 		if (sourceMap == null) {
 			sourceMap = new HashMap<>();
 		}
-		sourceMap.put(component, s);
+		sourceMap.put(component, stg);
 	}
 
 
@@ -462,9 +468,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReadArc(i.rdy.zero, i.dn.riseList.get(0));
 			createReadArc(i.rdy.one, i.dn.riseList.get(1));
 		}
-		SinkStg sinkStg = new SinkStg(i, oracle);
-		groupComponentStg(sinkStg);
-		return sinkStg;
+		return new SinkStg(i, oracle);
 	}
 
 	private void connectSinkStg(VisualSinkComponent component) throws InvalidConnectionException {
@@ -494,11 +498,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((sinkMap == null) ? null : sinkMap.get(component));
 	}
 
-	public void putSinkStg(VisualSinkComponent component, SinkStg s) {
+	public void putSinkStg(VisualSinkComponent component, SinkStg stg) {
 		if (sinkMap == null) {
 			sinkMap = new HashMap<>();
 		}
-		sinkMap.put(component, s);
+		sinkMap.put(component, stg);
 	}
 
 
@@ -528,9 +532,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReadArc(o.rdy.zero, o.dn.riseList.get(0));
 			createReadArc(o.rdy.one, o.dn.riseList.get(1));
 		}
-		FunctionStg functionStg = new FunctionStg(i, o);
-		groupComponentStg(functionStg);
-		return functionStg;
+		return new FunctionStg(i, o);
 	}
 
 	private void connectFunctionStg(VisualFunctionComponent component) throws InvalidConnectionException {
@@ -577,11 +579,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((functionMap == null) ? null : functionMap.get(component));
 	}
 
-	public void putFunctionStg(VisualFunctionComponent component, FunctionStg s) {
+	public void putFunctionStg(VisualFunctionComponent component, FunctionStg stg) {
 		if (functionMap == null) {
 			functionMap = new HashMap<>();
 		}
-		functionMap.put(component, s);
+		functionMap.put(component, stg);
 	}
 
 
@@ -624,9 +626,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReadArc(b.rdy.zero, b.dn.riseList.get(1));
 			createReadArc(b.rdy.one, b.dn.riseList.get(2));
 		}
-		ForkStg forkStg = new ForkStg(i, a, b);
-		groupComponentStg(forkStg);
-		return forkStg;
+		return new ForkStg(i, a, b);
 	}
 
 	private void connectForkStg(VisualForkComponent component) throws InvalidConnectionException {
@@ -702,11 +702,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((forkMap == null) ? null : forkMap.get(component));
 	}
 
-	public void putForkStg(VisualForkComponent component, ForkStg s) {
+	public void putForkStg(VisualForkComponent component, ForkStg stg) {
 		if (forkMap == null) {
 			forkMap = new HashMap<>();
 		}
-		forkMap.put(component, s);
+		forkMap.put(component, stg);
 	}
 
 
@@ -749,9 +749,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReadArc(o.rdy.zero, o.dn.riseList.get(1));
 			createReadArc(o.rdy.one, o.dn.riseList.get(2));
 		}
-		JoinStg joinStg = new JoinStg(a, b, o);
-		groupComponentStg(joinStg);
-		return joinStg;
+		return new JoinStg(a, b, o);
 	}
 
 	private void connectJoinStg(VisualJoinComponent component) throws InvalidConnectionException {
@@ -819,11 +817,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((joinMap == null) ? null : joinMap.get(component));
 	}
 
-	public void putJoinStg(VisualJoinComponent component, JoinStg s) {
+	public void putJoinStg(VisualJoinComponent component, JoinStg stg) {
 		if (joinMap == null) {
 			joinMap = new HashMap<>();
 		}
-		joinMap.put(component, s);
+		joinMap.put(component, stg);
 	}
 
 
@@ -879,9 +877,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReplicaReadArc(oracle.one, b.rdy.fallList.get(1), -6.0, 0.0);
 			createReplicaReadArc(oracle.one, b.dn.riseList.get(1), -6.0, 0.0);
 		}
-		SwitchStg switchStg = new SwitchStg(i, a, b, oracle);
-		groupComponentStg(switchStg);
-		return switchStg;
+		return new SwitchStg(i, a, b, oracle);
 	}
 
 	private void connectSwitchStg(VisualSwitchComponent component) throws InvalidConnectionException {
@@ -950,11 +946,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((switchMap == null) ? null : switchMap.get(component));
 	}
 
-	public void putSwitchStg(VisualSwitchComponent component, SwitchStg s) {
+	public void putSwitchStg(VisualSwitchComponent component, SwitchStg stg) {
 		if (switchMap == null) {
 			switchMap = new HashMap<>();
 		}
-		switchMap.put(component, s);
+		switchMap.put(component, stg);
 	}
 
 
@@ -997,9 +993,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReadArc(o.rdy.one, o.dn.riseList.get(1));
 			createReadArc(o.rdy.one, o.dn.riseList.get(2));
 		}
-		MergeStg mergeStg = new MergeStg(a, b, o);
-		groupComponentStg(mergeStg);
-		return mergeStg;
+		return new MergeStg(a, b, o);
 	}
 
 	private void connectMergeStg(VisualMergeComponent component) throws InvalidConnectionException {
@@ -1069,11 +1063,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((mergeMap == null) ? null : mergeMap.get(component));
 	}
 
-	public void putMergeStg(VisualMergeComponent component, MergeStg s) {
+	public void putMergeStg(VisualMergeComponent component, MergeStg stg) {
 		if (mergeMap == null) {
 			mergeMap = new HashMap<>();
 		}
-		mergeMap.put(component, s);
+		mergeMap.put(component, stg);
 	}
 
 
@@ -1192,9 +1186,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReadArc(o.rdy.one, o.dn.riseList.get(2));
 		}
 
-		QueueStg queueStg = new QueueStg(i, o, slotList);
-		groupComponentStg(queueStg);
-		return queueStg;
+		return new QueueStg(i, o, slotList);
 	}
 
 	private void connectQueueStg(VisualQueueComponent component) throws InvalidConnectionException {
@@ -1257,11 +1249,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		return ((queueMap == null) ? null : queueMap.get(component));
 	}
 
-	public void putQueueStg(VisualQueueComponent component, QueueStg s) {
+	public void putQueueStg(VisualQueueComponent component, QueueStg stg) {
 		if (queueMap == null) {
 			queueMap = new HashMap<>();
 		}
-		queueMap.put(component, s);
+		queueMap.put(component, stg);
 	}
 
 

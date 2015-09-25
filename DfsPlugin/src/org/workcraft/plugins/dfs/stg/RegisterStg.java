@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.generator.NodeStg;
 
 public class RegisterStg extends NodeStg {
 	public final VisualPlace M0;			// M=0

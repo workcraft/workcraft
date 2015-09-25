@@ -64,7 +64,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 	@Override
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		generator = new StgGenerator((VisualDfs)model);
-		return generator.getStg();
+		return generator.getStgModel();
 	}
 
 	private VisualPlace getVisualPlace(Place place) {

@@ -15,6 +15,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
@@ -54,22 +55,57 @@ abstract public class StgGenerator {
 		TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));
 	}
 
-	public void createConsumingArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+
+	public VisualConnection createConsumingArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+		VisualConnection connection = null;
 		if (p != null && t != null) {
-			stg.connect(p, t);
+			connection = stg.connect(p, t);
 		}
+		return connection;
 	}
 
-	public void createProducingArc(VisualSignalTransition t, VisualPlace p) throws InvalidConnectionException {
+	public VisualConnection createConsumingArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
+		VisualConnection connection = null;
 		if (p != null && t != null) {
-			stg.connect(t, p);
+			connection = stg.connect(p, t);
+			connection.setTokenColorPropagator(propagateTokenColor);
 		}
+		return connection;
 	}
 
-	public void createReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+
+	public VisualConnection createProducingArc(VisualSignalTransition t, VisualPlace p) throws InvalidConnectionException {
+		VisualConnection connection = null;
 		if (p != null && t != null) {
-			stg.connectUndirected(p, t);
+			connection = stg.connect(t, p);
 		}
+		return connection;
+	}
+
+	public VisualConnection createProducingArc(VisualSignalTransition t, VisualPlace p, boolean propagateTokenColor) throws InvalidConnectionException {
+		VisualConnection connection = null;
+		if (p != null && t != null) {
+			connection = stg.connect(t, p);
+			connection.setTokenColorPropagator(propagateTokenColor);
+		}
+		return connection;
+	}
+
+	public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+		VisualConnection connection = null;
+		if (p != null && t != null) {
+			connection = stg.connectUndirected(p, t);
+		}
+		return connection;
+	}
+
+	public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
+		VisualConnection connection = null;
+		if (p != null && t != null) {
+			connection = stg.connectUndirected(p, t);
+			connection.setTokenColorPropagator(propagateTokenColor);
+		}
+		return connection;
 	}
 
 	public void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts) throws InvalidConnectionException {
@@ -77,6 +113,12 @@ abstract public class StgGenerator {
 			for (VisualSignalTransition t: ts) {
 				stg.connectUndirected(p, t);
 			}
+		}
+	}
+
+	public void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, boolean propagateTokenColor) throws InvalidConnectionException {
+		for (VisualSignalTransition t : new HashSet<VisualSignalTransition>(ts)) {
+			createReadArc(p, t, propagateTokenColor);
 		}
 	}
 

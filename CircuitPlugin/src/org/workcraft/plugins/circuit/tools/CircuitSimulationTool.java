@@ -27,13 +27,13 @@ import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.circuit.stg.SignalStg;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.generator.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
 
@@ -149,7 +149,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 		if ((converter != null) && contact.isDriver()) {
 			SignalStg signalStg = converter.getSignalStg(contact);
 			if (signalStg != null) {
-				for (VisualSignalTransition transition : signalStg.getAllVisualTransitions()) {
+				for (VisualSignalTransition transition : signalStg.getAllTransitions()) {
 					if (net.isEnabled(transition.getReferencedTransition())) {
 						result = transition.getReferencedTransition();
 						break;
@@ -209,10 +209,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
 					SignalStg signalStg = converter.getSignalStg(contact);
 					if (signalStg != null) {
 						Node traceCurrentNode = getTraceCurrentNode();
-						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
-						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
+						final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1);
+						final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1);
 						final boolean isExcited = (getContactExcitedTransition(contact) != null);
-						final boolean isInTrace = (signalStg.containsDirectlyOrByReference(traceCurrentNode));
+						final boolean isInTrace = (signalStg.contains(traceCurrentNode));
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
@@ -248,8 +248,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
 				} else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
 					SignalStg signalStg = converter.getSignalStg((VisualNode)node);
 					if (signalStg != null) {
-						final boolean isOne = (signalStg.P1.getReferencedPlace().getTokens() == 1);
-						final boolean isZero = (signalStg.P0.getReferencedPlace().getTokens() == 1);
+						final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1);
+						final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1);
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
