@@ -992,7 +992,7 @@ public class StgGenerator {
 		}
 		if (i != null) {
 			createReadArc(i.rdy.zero, i.dn.riseList.get(0));
-			createReadArc(i.rdy.zero, i.dn.riseList.get(1));
+			createReadArc(i.rdy.one, i.dn.riseList.get(1));
 			createReadArc(i.rdy.one, i.dn.riseList.get(2));
 		}
 		if (a != null) {
@@ -1125,7 +1125,7 @@ public class StgGenerator {
 		}
 		if (o != null) {
 			createReadArc(o.rdy.zero, o.dn.riseList.get(0));
-			createReadArc(o.rdy.zero, o.dn.riseList.get(1));
+			createReadArc(o.rdy.one, o.dn.riseList.get(1));
 			createReadArc(o.rdy.one, o.dn.riseList.get(2));
 		}
 		MergeStg mergeStg = new MergeStg(a, b, o);
