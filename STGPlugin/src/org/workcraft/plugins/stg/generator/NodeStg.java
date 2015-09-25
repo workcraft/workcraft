@@ -1,4 +1,4 @@
-package org.workcraft.plugins.xmas.stg;
+package org.workcraft.plugins.stg.generator;
 
 import java.util.Collection;
 import java.util.HashSet;

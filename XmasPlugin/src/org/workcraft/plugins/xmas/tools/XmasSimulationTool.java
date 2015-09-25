@@ -75,7 +75,7 @@ public class XmasSimulationTool extends StgSimulationTool {
 	public VisualModel getUnderlyingModel(VisualModel model) {
 		generator = new StgGenerator((VisualXmas)model);
 		skipTransitions = getSkipTransitions((VisualXmas)model);
-		return generator.getStg();
+		return generator.getStgModel();
 	}
 
 	@Override

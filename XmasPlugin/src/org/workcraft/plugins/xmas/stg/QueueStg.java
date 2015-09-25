@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.generator.NodeStg;
 
 public class QueueStg extends NodeStg {
 	public final ContactStg i;

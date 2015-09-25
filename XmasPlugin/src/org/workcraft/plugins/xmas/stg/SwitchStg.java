@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.generator.NodeStg;
+import org.workcraft.plugins.stg.generator.SignalStg;
 
 public class SwitchStg extends NodeStg {
 	public final ContactStg i;
