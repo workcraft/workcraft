@@ -10,7 +10,7 @@ public class HourMins extends AbstractTimeGranularity{
 		Integer mins = getMins(time);
 
 		int addMins= duration + mins;
-		hour = Math.floorDiv(addMins, 60) + hour;
+		hour = floorDiv(addMins, 60) + hour;
 		hour = hour%24;
     	mins = addMins%60;
 
@@ -28,7 +28,7 @@ public class HourMins extends AbstractTimeGranularity{
 		Integer hour = getHour(time);
 		Integer mins = getMins(time);
 
-		int minusHour = Math.floorDiv(duration, 60);
+		int minusHour = floorDiv(duration, 60);
 		int minusMins = duration%60;
 
 		hour = hour - minusHour;
@@ -168,6 +168,15 @@ public class HourMins extends AbstractTimeGranularity{
 		}
 		return text;
 	}
+
+	private static int floorDiv(int x, int y) {
+        int r = x / y;
+        // if the signs are different and modulo not zero, round down
+        if ((x ^ y) < 0 && (r * y != x)) {
+            r--;
+        }
+        return r;
+    }
 
 //    public static void main(String[] args) {
 //

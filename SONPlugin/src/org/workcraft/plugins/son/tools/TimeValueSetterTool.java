@@ -36,7 +36,7 @@ import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
+import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -56,7 +56,7 @@ public class TimeValueSetterTool extends AbstractTool{
 
 	protected SON net;
 	protected VisualSON visualNet;
-	protected TimeAlg timeAlg;
+	protected ConsistencyAlg timeAlg;
 
 	private JPanel interfacePanel, timePropertyPanel, timeInputPanel, granularityPanel;
 	private JRadioButton year_yearButton, hour_minsButton;
@@ -538,7 +538,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
 		WorkspaceEntry we = editor.getWorkspaceEntry();
-		timeAlg = new TimeAlg(net);
+		timeAlg = new ConsistencyAlg(net);
 		we.setCanSelect(false);
 
 		net.refreshColor();

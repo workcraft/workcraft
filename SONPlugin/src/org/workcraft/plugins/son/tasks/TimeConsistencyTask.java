@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
+import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
@@ -35,7 +35,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 	private SON net;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private TimeAlg timeAlg;
+	private ConsistencyAlg timeAlg;
 	private BSONAlg bsonAlg;
 	private TimeConsistencySettings settings;
 	private Collection<Condition> lowerConditions;
@@ -249,7 +249,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 	}
 
 	protected void initialise(){
-		timeAlg = new TimeAlg(net);
+		timeAlg = new ConsistencyAlg(net);
 		timeAlg.removeProperties();
 		timeAlg.setProperties();
 
