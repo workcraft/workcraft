@@ -35,9 +35,12 @@ public class TimeConsistencyChecker implements Tool{
 	public void run(WorkspaceEntry we) {
 		final Framework framework = Framework.getInstance();
 		final MainWindow mainWindow = framework.getMainWindow();
+
 		VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
+		SON net = (SON)we.getModelEntry().getMathModel();
 
 		BlockConnector.blockBoundingConnector(visualNet);
+		net.refreshColor();
 		TimeConsistencyDialog dialog = new TimeConsistencyDialog(mainWindow, we);
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
@@ -47,6 +50,11 @@ public class TimeConsistencyChecker implements Tool{
 			TimeConsistencyTask timeTask = new TimeConsistencyTask(we, dialog.getTimeConsistencySettings());
 			framework.getTaskManager().queue(timeTask, "Verification");
 		}
+
+		if(dialog.getTabIndex() !=1){
+			net.refreshColor();
+		}
+
 		BlockConnector.blockInternalConnector(visualNet);
 	}
 
