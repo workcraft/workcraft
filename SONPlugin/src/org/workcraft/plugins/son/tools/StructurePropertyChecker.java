@@ -30,10 +30,12 @@ public class StructurePropertyChecker implements Tool {
 	public void run(WorkspaceEntry we){
 
 		VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
+		SON net = (SON)we.getModelEntry().getMathModel();
 
 		final Framework framework = Framework.getInstance();
 		final MainWindow mainWindow = framework.getMainWindow();
 
+		net.refreshColor();
 		StructureVerifyDialog dialog = new StructureVerifyDialog(mainWindow, we);
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
@@ -44,5 +46,6 @@ public class StructurePropertyChecker implements Tool {
 			SONMainTask sonTask = new SONMainTask(dialog.getSettings(), we);
 			framework.getTaskManager().queue(sonTask, "Verification");
 		}
+		net.refreshColor();
 	}
 }

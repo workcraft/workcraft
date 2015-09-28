@@ -279,7 +279,6 @@ public class StructureVerifyDialog extends JDialog{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				run = 1;
-				net.refreshColor();
 				setVisible(false);
 			}
 		});
@@ -290,7 +289,6 @@ public class StructureVerifyDialog extends JDialog{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				run = 2;
-				net.refreshColor();
 				setVisible(false);
 			}
 		});
