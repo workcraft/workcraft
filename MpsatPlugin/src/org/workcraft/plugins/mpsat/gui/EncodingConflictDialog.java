@@ -30,7 +30,7 @@ import info.clearthought.layout.TableLayout;
 @SuppressWarnings("serial")
 public class EncodingConflictDialog extends JDialog {
 
-	private final ColorGenerator coreColorGenerator = new ColorGenerator(CieColorUtils.getLabPalette(5, 5, 5, 0.75f, 1.0f));
+	private final ColorGenerator coreColorGenerator = new ColorGenerator(CieColorUtils.getLabPalette(3, 5, 5, 0.7f, 0.9f));
 
 	private JPanel contents;
 	private JPanel solutionsPanel;

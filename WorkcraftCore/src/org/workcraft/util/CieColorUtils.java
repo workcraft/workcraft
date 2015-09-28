@@ -69,7 +69,7 @@ public class CieColorUtils {
     }
 
     public static Color[] getLabPalette(int LCount, int aCount, int bCount, float minL, float maxL) {
-    	ArrayList<Color> palette = new ArrayList<Color>();
+    	ArrayList<Color> palette = new ArrayList<>();
     	if ((maxL > minL) && (LCount > 0) && (aCount > 0) && (bCount > 0)) {
     		float dL = (maxL - minL) / LCount;
     		float da = 1.0f / aCount;
@@ -87,7 +87,7 @@ public class CieColorUtils {
 	}
 
     public static Color[] getLabHeightmapPalette(int LCount, float minL, float maxL, float a, float b) {
-    	ArrayList<Color> palette = new ArrayList<Color>();
+    	ArrayList<Color> palette = new ArrayList<>();
     	if ((maxL > minL) && (LCount > 0)) {
     		float dL = (maxL - minL) / LCount;
     		for (float L = maxL; L >= minL; L -= dL) {

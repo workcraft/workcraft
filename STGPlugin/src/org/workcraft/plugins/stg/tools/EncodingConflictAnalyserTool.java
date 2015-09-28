@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.swing.Icon;
@@ -30,7 +31,6 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualSTG;
-import org.workcraft.util.CieColorUtils;
 import org.workcraft.util.GUI;
 
 public class EncodingConflictAnalyserTool extends AbstractTool {
@@ -41,7 +41,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	private VisualSTG stg;
 	private ArrayList<Core> cores;
 	private Core selectedCore = null;
-	private Color[] heightmap;
+	private Color[] heightmapColors;
+	private HashMap<String, Integer> heightmap;
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
@@ -93,7 +94,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 		});
 		infoPanel = new JScrollPane();
 		infoPanel.setViewportView(coreTable);
-		infoPanel.setMinimumSize(new Dimension(1, 50));
+		//infoPanel.setMinimumSize(new Dimension(1, 50));
 
 		heightmapTable = new JTable(new HeightmapTableModel());
 		heightmapTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -120,7 +121,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 		statusPanel = new JPanel();
 		statusPanel.setLayout(new BorderLayout());
 		statusPanel.add(heightmapTable, BorderLayout.CENTER);
-		statusPanel.setMinimumSize(new Dimension(1, 50));
+		//statusPanel.setMinimumSize(new Dimension(1, 50));
 
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
@@ -170,6 +171,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 					VisualNamedTransition t = (VisualNamedTransition)node;
 					String name = stg.getNodeMathReference(node);
 					if (selectedCore == null) {
+						final Color color = ((heightmap != null) && heightmap.containsKey(name)) ? heightmapColors[heightmap.get(name)-1] : null;
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -177,7 +179,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 							}
 							@Override
 							public Color getBackground() {
-								return null;
+								return color;
 							}
 						};
 					} else if (selectedCore.contains(name)) {
@@ -200,7 +202,22 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
 	public void setCores(ArrayList<Core> cores) {
 		this.cores = cores;
-		heightmap = CieColorUtils.getLabHeightmapPalette(cores.size(), 0.5f, 1.0f, 0.5f, 0.0f);
+    	ArrayList<Color> palette = new ArrayList<Color>();
+		heightmap = new HashMap<>();
+		float hue = 0.1f;
+		float saturation = 0.5f;
+		float brightness = 0.5f;
+		for (Core core: cores) {
+			Color color = Color.getHSBColor(hue, saturation, brightness);
+			brightness +=  0.5 / cores.size();
+			palette.add(color);
+			for (String name: core) {
+				int height = (heightmap.containsKey(name) ? heightmap.get(name) : 0);
+				height++;
+				heightmap.put(name, height);
+			}
+		}
+		heightmapColors = palette.toArray(new Color[palette.size()]);
 	}
 
 	@SuppressWarnings("serial")
@@ -308,9 +325,9 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 				boolean isSelected, boolean hasFocus, int row, int col) {
 			JLabel result = null;
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
-			if ((heightmap != null) && (col >= 0) && (col < heightmap.length)) {
+			if ((heightmapColors != null) && (col >= 0) && (col < heightmapColors.length)) {
 				label.setText((String) value);
-				label.setBackground(heightmap[col]);
+				label.setBackground(heightmapColors[col]);
 				label.setHorizontalAlignment(SwingConstants.CENTER);
 				result = label;
 			}

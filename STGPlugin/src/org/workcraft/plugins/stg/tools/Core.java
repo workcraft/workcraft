@@ -8,7 +8,7 @@ import org.workcraft.util.CieColorUtils;
 
 @SuppressWarnings("serial")
 public class Core extends HashSet<String> {
-	private Color color = CieColorUtils.getLabColor(0.95f, (float)Math.random(), (float)Math.random());
+	private Color color = CieColorUtils.getLabColor(0.99f, (float)Math.random(), (float)Math.random());
 
 	public Core(Collection<String> s) {
 		this(s, null);
