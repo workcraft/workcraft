@@ -110,7 +110,7 @@ public class PnToCpogConverter {
 		// looping over partial orders
 		for(int i = 0; i < partialOrders.size(); i++){
 
-			// move the verically every partial order
+			// move the vertically every partial order
 			xPos = 0;
 			yPos = i * 10;
 
@@ -210,7 +210,7 @@ public class PnToCpogConverter {
 			}
 
 			// if last vertex has got more than one pre vertices
-			// it must be placed on the right of the mostright
+			// it must be placed on the right of the rightmost
 			// pre vertex
 			if(numberPreConnections > 1){
 				xPos = xRightmostVertex;
@@ -250,7 +250,7 @@ public class PnToCpogConverter {
 				// set the position to current vertex
 				vertex.setPosition(new Double(x,y));
 
-				// increment orizontal position
+				// increment horizontal position
 				x = x + 5;
 
 				// if more post vertices exist, modify the vertical
