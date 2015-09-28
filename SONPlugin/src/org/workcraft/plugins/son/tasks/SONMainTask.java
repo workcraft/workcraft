@@ -192,7 +192,7 @@ public class SONMainTask implements Task<VerificationResult>{
 		}else{
 			BSONAlg bsonAlg = new BSONAlg(net);
 			logger.info("\nOutput BSON causal dependencies:");
-			Map<TransitionNode, Before> before = bsonAlg.getAllBefore();
+			Map<TransitionNode, Before> before = bsonAlg.getBeforeMap();
 
 			for(TransitionNode e : before.keySet()){
 				logger.info("before("+ net.getNodeReference(e)+"): ");

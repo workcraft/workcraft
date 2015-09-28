@@ -559,29 +559,6 @@ public class ConsistencyAlg extends TimeAlg{
 		return result;
 	}
 
-	private void setDefaultTime(Node node){
-		Interval input = new Interval(0000,9999);
-		if(node instanceof Condition){
-			Condition c = (Condition)node;
-			if(c.isInitial() && !c.isFinal()){
-				c.setEndTime(input);
-				return;
-			}else if(c.isFinal() && !c.isInitial()){
-				c.setStartTime(input);
-				return;
-			}else if(!c.isFinal() && !c.isInitial()){
-				c.setStartTime(input);
-				c.setEndTime(input);
-			}else{
-				return;
-			}
-		}else if(node instanceof Time){
-			((Time)node).setStartTime(input);
-			((Time)node).setEndTime(input);
-		}
-	}
-
-
 	private String node(Node node){
 		return "("+net.getNodeReference(node)+")";
 	}

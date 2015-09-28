@@ -16,7 +16,6 @@ import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.ReachabilityAlg;
-import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
@@ -111,7 +110,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 
 	private boolean reachabilityTask(){
-		Collection<Node> initial = new HashSet<Node>();
+		//Collection<Node> initial = new HashSet<Node>();
 		Collection<Node> sync= new HashSet<Node>();
 		for(Path path : getSyncCycles())
 			sync.addAll(path);
@@ -125,20 +124,20 @@ public class ReachabilityTask implements Task<VerificationResult>{
 					return false;
 				}
 		}
-		SimulationAlg simuAlg = new SimulationAlg(net);
-		Map<PlaceNode, Boolean> initialMarking = simuAlg.getInitialMarking();
+//		SimulationAlg simuAlg = new SimulationAlg(net);
+//		Map<PlaceNode, Boolean> initialMarking = simuAlg.getInitialMarking();
 
-		for(Node c : initialMarking.keySet()){
-			if(initialMarking.get(c)){
-				initial.add(c);
-			}
-		}
+//		for(Node c : initialMarking.keySet()){
+//			if(initialMarking.get(c)){
+//				initial.add(c);
+//			}
+//		}
 		causalPredecessors = new HashSet<Node>();
 
 		//get CausalPredecessors for each marking
 		for(String ref : markingRefs){
 			Node node = net.getNodeByReference(ref);
-			causalPredecessors.addAll(reachAlg.getCausalPredecessors(node, initial));
+			causalPredecessors.addAll(reachAlg.getCausalPredecessors(node));
 		}
 
 		Collection<Node> consume = new HashSet<Node>();
@@ -152,18 +151,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 				}
 			}
 		}
-//		//test
-//		for(Node n : causalPredecessors){
-//			System.out.print(" " + net.getNodeReference(n));
-//			net.setForegroundColor(n, Color.RED);
-//		}
-//		System.out.println();
-//		System.out.println();
-//		System.out.println("consume:");
-//		for(Node n : consume){
-//			System.out.print(" " + net.getNodeReference(n));
-//		}
-//		System.out.println();
 
 		// marking is reachable if
 		//1. none of the marked conditions is consumed by causalPredecessors.
@@ -172,8 +159,8 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			Node node = net.getNodeByReference(ref);
 			if(consume.contains(node))
 				return false;
-			Collection<Condition> c = bsonAlg.getUpperConditions(node);
-			if(!c.isEmpty() && consume.containsAll(c))
+			Collection<Condition> upper = bsonAlg.getUpperConditions(node);
+			if(!upper.isEmpty() && consume.containsAll(upper))
 				return false;
 		}
 

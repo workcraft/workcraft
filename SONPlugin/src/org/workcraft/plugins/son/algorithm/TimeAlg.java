@@ -1,8 +1,11 @@
 package org.workcraft.plugins.son.algorithm;
 
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.elements.Time;
 
 public class TimeAlg extends RelationAlgorithm{
 
@@ -33,4 +36,25 @@ public class TimeAlg extends RelationAlgorithm{
 		}
 	}
 
+	public void setDefaultTime(Node node){
+		Interval input = new Interval(0000,9999);
+		if(node instanceof Condition){
+			Condition c = (Condition)node;
+			if(c.isInitial() && !c.isFinal()){
+				c.setEndTime(input);
+				return;
+			}else if(c.isFinal() && !c.isInitial()){
+				c.setStartTime(input);
+				return;
+			}else if(!c.isFinal() && !c.isInitial()){
+				c.setStartTime(input);
+				c.setEndTime(input);
+			}else{
+				return;
+			}
+		}else if(node instanceof Time){
+			((Time)node).setStartTime(input);
+			((Time)node).setEndTime(input);
+		}
+	}
 }

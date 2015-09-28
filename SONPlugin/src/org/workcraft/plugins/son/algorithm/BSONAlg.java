@@ -425,17 +425,31 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Map<TransitionNode, Before> getAllBefore(){
+	public Map<TransitionNode, Before> getBeforeMap(){
 		Map<TransitionNode, Before> result = new HashMap<TransitionNode, Before>();
 
+		Map<Condition, Collection<Phase>> phases = getAllPhases();
 		Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
 
 		for(ONGroup group : upperGroups)
 			for(TransitionNode e : group.getTransitionNodes()){
-				result.put(e, before(e, getAllPhases()));
+				result.put(e, before(e, phases));
 		}
 
 		return result;
 	}
 
+	public Before getBeforeList(){
+		Before result = new Before();
+
+		Map<Condition, Collection<Phase>> phases = getAllPhases();
+		Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
+
+		for(ONGroup group : upperGroups){
+			for(TransitionNode e : group.getTransitionNodes()){
+				result.addAll(before(e, phases));
+			}
+		}
+		return result;
+	}
 }

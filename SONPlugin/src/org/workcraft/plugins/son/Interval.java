@@ -91,23 +91,45 @@ public class Interval {
 	        ((this.min == null) || (other.max == null) || (this.min.intValue() <= other.max.intValue())));
 	}
 
-	public boolean isInInterval(Integer number, Interval interval) {
-	    if (number != null && interval != null) {
-	        if(interval.getMin() == null && interval.getMax() != null) {
-	            return number.intValue() <= interval.getMax().intValue();
+	public Interval getOverlapping(Interval other){
+		if (other == null) return this;
+
+		if(isOverlapping(other)){
+			return new Interval(Math.max(this.getMin(), other.getMin()), Math.min(this.getMax(), other.getMax()));
+		}
+		else
+			return null;
+	}
+
+	public boolean isInInterval(Integer number, Interval other) {
+	    if (number != null && other != null) {
+	        if(other.getMin() == null && other.getMax() != null) {
+	            return number.intValue() <= other.getMax().intValue();
 	        }
-	        if(interval.getMin() != null && interval.getMax() == null) {
-	            return number.intValue() >= interval.getMax().intValue();
+	        if(other.getMin() != null && other.getMax() == null) {
+	            return number.intValue() >= other.getMax().intValue();
 	        }
-	        if(interval.getMin() == null && interval.getMax() == null) {
+	        if(other.getMin() == null && other.getMax() == null) {
 	            return true;
 	        }
-	        return interval.getMin() <= number && number <= interval.getMax();
+	        return other.getMin() <= number && number <= other.getMax();
 	    }
-	    else if(number == null && interval != null) {
-	        return interval.getMin() == null && interval.getMax() == null;
+	    else if(number == null && other != null) {
+	        return other.getMin() == null && other.getMax() == null;
 	    }
 	    return false;
+	}
+
+	public Interval add(Interval other){
+		int min = getMin() + other.getMin();
+		int max = getMax() + other.getMax();
+
+		if(min>=9999)
+			min = 9999;
+		if(max>=9999)
+			max = 9999;
+
+		return new Interval(min,max);
 	}
 
 	public String minToString(){
