@@ -86,4 +86,15 @@ public class CieColorUtils {
     	return palette.toArray(new Color[palette.size()]);
 	}
 
+    public static Color[] getLabHeightmapPalette(int LCount, float minL, float maxL, float a, float b) {
+    	ArrayList<Color> palette = new ArrayList<Color>();
+    	if ((maxL > minL) && (LCount > 0)) {
+    		float dL = (maxL - minL) / LCount;
+    		for (float L = maxL; L >= minL; L -= dL) {
+    			palette.add(CieColorUtils.getLabColor(L, a, b));
+    		}
+    	}
+    	return palette.toArray(new Color[palette.size()]);
+	}
+
 }

@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat.gui;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.workcraft.Trace;
@@ -42,6 +43,21 @@ public class Solution {
 			}
 		}
 		return result;
+	}
+
+	public HashSet<String> getCore() {
+		HashSet<String> core = new HashSet<>();
+		HashSet<String> outside = new HashSet<>();
+		if (mainTrace != null) {
+			core.addAll(mainTrace);
+			outside.addAll(mainTrace);
+		}
+		if (branchTrace != null) {
+			core.addAll(branchTrace);
+			outside.retainAll(branchTrace);
+		}
+		core.removeAll(outside);
+		return core;
 	}
 
 }

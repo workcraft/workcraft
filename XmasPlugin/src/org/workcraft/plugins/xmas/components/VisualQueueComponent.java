@@ -72,9 +72,6 @@ public class VisualQueueComponent extends VisualXmasComponent {
 				if (value < 1) {
 					throw new ArgumentException("Negative or zero capacity is not allowed.");
 				}
-				if (value > 5) {
-					throw new ArgumentException("The capacity above 5 is not allowed due to verification limitations.");
-				}
 				double scale = (double)value / (double) object.getReferencedQueueComponent().getCapacity();
 				for (VisualXmasContact contact: getContacts()) {
 					double x = scaleContactCoord(contact.getX(), scale);
