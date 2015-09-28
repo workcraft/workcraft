@@ -34,6 +34,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -68,6 +69,12 @@ public class VisualQueueComponent extends VisualXmasComponent {
 		addPropertyDeclaration(new PropertyDeclaration<VisualQueueComponent, Integer>(
 				this, QueueComponent.PROPERTY_CAPACITY, Integer.class, true, true, true) {
 			public void setter(VisualQueueComponent object, Integer value) {
+				if (value < 1) {
+					throw new ArgumentException("Negative or zero capacity is not allowed.");
+				}
+				if (value > 5) {
+					throw new ArgumentException("The capacity above 5 is not allowed due to verification limitations.");
+				}
 				double scale = (double)value / (double) object.getReferencedQueueComponent().getCapacity();
 				for (VisualXmasContact contact: getContacts()) {
 					double x = scaleContactCoord(contact.getX(), scale);
