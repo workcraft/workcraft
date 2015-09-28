@@ -232,7 +232,7 @@ public class Untanglings {
 		});
 	}
 
-	/** Rename with a " ' " the transitions with the same name but different *
+	/** Rename with a " _n " the transitions with same names but different *
 	 *  id, in order to be coherent with partial order notation            **/
 	private void renameTransitions(ArrayList<UntanglingNode> transitions) {
 
