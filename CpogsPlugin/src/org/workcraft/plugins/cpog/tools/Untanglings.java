@@ -69,6 +69,10 @@ public class Untanglings {
 		for(Place place : p){
 			if (place.getLabel().equals(placeName)){
 				sys.putTokens(place, tokens);
+
+				// debug printing: tokens inserted inside the place
+				// System.out.println(place.getLabel() + " = " + tokens);
+
 				return true;
 			}
 		}

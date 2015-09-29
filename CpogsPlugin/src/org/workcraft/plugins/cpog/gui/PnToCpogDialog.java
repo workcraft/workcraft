@@ -38,7 +38,7 @@ public class PnToCpogDialog extends JDialog {
 	protected int modalResult;
 
 	public PnToCpogDialog(Window owner, PnToCpogSettings settings,WorkspaceEntry we) {
-		super(owner, "Petri net to Cpog converter", ModalityType.APPLICATION_MODAL);
+		super(owner, "Petri net to Cpog converter [Untanglings]", ModalityType.APPLICATION_MODAL);
 		modalResult = 0;
 
 		createSettingPanel();

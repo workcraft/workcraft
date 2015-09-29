@@ -26,7 +26,7 @@ public class PnToCpogTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Conditional Partial Order Graph";
+		return "Conditional Partial Order Graph [Untanglings]";
 	}
 
 	@Override
