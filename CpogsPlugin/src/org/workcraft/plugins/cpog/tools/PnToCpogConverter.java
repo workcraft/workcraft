@@ -77,6 +77,16 @@ public class PnToCpogConverter {
 			}
 		}
 
+		// insert tokens
+		for(Place p : pn.getPlaces()){
+			if(p.getTokens() > 0){
+				if(untangling.insertTokens(pn.getNodeReference(p), p.getTokens()) == false){
+					System.out.println("Place with this name not found. Tokens not inserted");
+					return null;
+				}
+			}
+		}
+
 		/*****************************************************
 		 * Convert the Petri net into a Cpog                 *
 		 *****************************************************/

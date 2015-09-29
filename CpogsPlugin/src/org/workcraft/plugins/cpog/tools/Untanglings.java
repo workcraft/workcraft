@@ -63,6 +63,19 @@ public class Untanglings {
 		return false;
 	}
 
+	/** adds token inside a place inside the conversion system **/
+	public boolean insertTokens(String placeName, int tokens){
+
+		for(Place place : p){
+			if (place.getLabel().equals(placeName)){
+				sys.putTokens(place, tokens);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/** adds transition inside the conversion system **/
 	public boolean addTransition(String transitionName){
 		if(t.add(new Transition(transitionName))){
@@ -134,9 +147,6 @@ public class Untanglings {
 	/** converts the Petri net introduced into multiple *
 	 *  processes which compose the untangling         **/
 	public boolean startConversion(){
-
-		// loading Petri net
-		sys.loadNaturalMarking();
 
 		// starting conversion
 		untangling = new ReductionBasedRepresentativeUntangling(sys,setup);
