@@ -5,7 +5,7 @@ import java.awt.color.ColorSpace;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class CieColorUtils {
+public class ColorUtils {
 
     public static float[] convertFromRgbToXyz(float[] value) {
         return ColorSpace.getInstance(ColorSpace.CS_CIEXYZ).fromRGB(value);
@@ -68,16 +68,16 @@ public class CieColorUtils {
     	return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
-    public static Color[] getLabPalette(int LCount, int aCount, int bCount, float minL, float maxL) {
+    public static Color[] getLabPalette(int LCount, int aCount, int bCount, float LMin, float LMax) {
     	ArrayList<Color> palette = new ArrayList<>();
-    	if ((maxL > minL) && (LCount > 0) && (aCount > 0) && (bCount > 0)) {
-    		float dL = (maxL - minL) / LCount;
+    	if ((LMax > LMin) && (LCount > 0) && (aCount > 0) && (bCount > 0)) {
+    		float dL = (LMax - LMin) / LCount;
     		float da = 1.0f / aCount;
     		float db = 1.0f / bCount;
-    		for (float L = maxL; L >= minL; L -= dL) {
+    		for (float L = LMax; L >= LMin; L -= dL) {
     			for (float a = 0.0f; a <= 1.0f; a += da) {
     				for (float b = 0.0f; b <= 1.0f; b += db) {
-    					palette.add(CieColorUtils.getLabColor(L, a, b));
+    					palette.add(ColorUtils.getLabColor(L, a, b));
     				}
     			}
     		}
@@ -86,13 +86,15 @@ public class CieColorUtils {
     	return palette.toArray(new Color[palette.size()]);
 	}
 
-    public static Color[] getLabHeightmapPalette(int LCount, float minL, float maxL, float a, float b) {
+    public static Color[] getHsbPalette(float[] hs, float[] ss, float[] bs) {
     	ArrayList<Color> palette = new ArrayList<>();
-    	if ((maxL > minL) && (LCount > 0)) {
-    		float dL = (maxL - minL) / LCount;
-    		for (float L = maxL; L >= minL; L -= dL) {
-    			palette.add(CieColorUtils.getLabColor(L, a, b));
-    		}
+    	for (float b: bs){
+        	for (float s: ss){
+            	for (float h: hs){
+            		Color color = Color.getHSBColor(h, s, b);
+            		palette.add(color);
+            	}
+        	}
     	}
     	return palette.toArray(new Color[palette.size()]);
 	}

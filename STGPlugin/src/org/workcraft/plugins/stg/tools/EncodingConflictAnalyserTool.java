@@ -5,22 +5,25 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.FontHelper;
@@ -31,6 +34,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.util.GUI;
 
 public class EncodingConflictAnalyserTool extends AbstractTool {
@@ -40,95 +44,90 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
 	private VisualSTG stg;
 	private ArrayList<Core> cores;
-	private Core selectedCore = null;
+	private HashSet<Core> selectedCores;
 	private Color[] heightmapColors;
 	private HashMap<String, Integer> heightmap;
 
-	protected JPanel interfacePanel;
-	protected JPanel controlPanel;
-	protected JScrollPane infoPanel;
-	protected JPanel statusPanel;
-	private JTable coreTable;
+	private JPanel interfacePanel;
+	private JPanel controlPanel;
+	private JPanel infoPanel;
+	private JPanel statusPanel;
+	private JRadioButton coresRadio;
+	private JTable coresTable;
+	private JRadioButton heightmapRadio;
 	private JTable heightmapTable;
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		controlPanel = new JPanel();
 
-		coreTable = new JTable(new CoreTableModel());
-		TableColumnModel columnModel = coreTable.getColumnModel();
-		columnModel.getColumn(COLUMN_COLOR).setPreferredWidth(100);
-		columnModel.getColumn(COLUMN_CORE).setPreferredWidth(400);
-		coreTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		coreTable.setRowHeight(FontHelper.getFontSizeInPixels(coreTable.getFont()));
-		coreTable.setDefaultRenderer(Object.class, new CoreTableCellRendererImplementation());
-		coreTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		coreTable.setAutoCreateColumnsFromModel(false);
-		coreTable.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) {
-				int selectedRow = coreTable.getSelectedRow();
-				if ((cores != null) && (selectedRow >= 0) && (selectedRow < cores.size())) {
-					Core curCore = cores.get(selectedRow);
-					if (selectedCore != curCore) {
-						selectedCore = curCore;
-					} else {
-						selectedCore = null;
-						coreTable.clearSelection();
-					}
-					editor.repaint();
-					editor.requestFocus();
+		coresRadio = new JRadioButton("Show selected cores");
+		coresRadio.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					coresTable.selectAll();
+					coresTable.setEnabled(true);
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+					coresTable.clearSelection();
+					coresTable.setEnabled(false);
+					selectedCores = null;
 				}
-			}
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-			}
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-			}
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
+				editor.repaint();
+				editor.requestFocus();
 			}
 		});
-		infoPanel = new JScrollPane();
-		infoPanel.setViewportView(coreTable);
-		//infoPanel.setMinimumSize(new Dimension(1, 50));
+		coresTable = new JTable(new CoreTableModel());
+		coresTable.getColumnModel().getColumn(COLUMN_COLOR).setPreferredWidth(50);
+		coresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		coresTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
+		coresTable.setDefaultRenderer(Object.class, new CoreTableCellRendererImplementation());
+		coresTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
+		ListSelectionModel coreSelectionModel = coresTable.getSelectionModel();
+		coreSelectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		coreSelectionModel.addListSelectionListener(new ListSelectionListener() {
+	    	@Override
+	    	public void valueChanged(ListSelectionEvent e) {
+	    		selectedCores = new HashSet<>();
+	    		for (int rowIdx: coresTable.getSelectedRows()) {
+	    			Core core = cores.get(rowIdx);
+	    			selectedCores.add(core);
+	    		}
+	    		editor.repaint();
+	    		editor.requestFocus();
+	    	}
+	    });
+		JScrollPane coresScroll = new JScrollPane();
+		coresScroll.setViewportView(coresTable);
+		infoPanel = new JPanel(new BorderLayout());
+		infoPanel.add(coresRadio, BorderLayout.NORTH);
+		infoPanel.add(coresScroll, BorderLayout.CENTER);
+
+		heightmapRadio = new JRadioButton("Show core density map");
 		heightmapTable = new JTable(new HeightmapTableModel());
 		heightmapTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		heightmapTable.setRowHeight(FontHelper.getFontSizeInPixels(coreTable.getFont()));
+		heightmapTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
 		heightmapTable.setDefaultRenderer(Object.class, new HeightmapTableCellRendererImplementation());
 		heightmapTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		heightmapTable.setAutoCreateColumnsFromModel(false);
-		heightmapTable.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) {
-			}
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-			}
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-			}
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-			}
-		});
+		heightmapTable.setToolTipText("Core density colors");
 		statusPanel = new JPanel();
 		statusPanel.setLayout(new BorderLayout());
-		statusPanel.add(heightmapTable, BorderLayout.CENTER);
-		//statusPanel.setMinimumSize(new Dimension(1, 50));
+		statusPanel.add(heightmapRadio, BorderLayout.NORTH);
+		statusPanel.add(heightmapTable, BorderLayout.SOUTH);
 
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
-		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
+		interfacePanel.add(controlPanel, BorderLayout.NORTH);
 		interfacePanel.add(infoPanel, BorderLayout.CENTER);
-		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
+		interfacePanel.add(statusPanel, BorderLayout.SOUTH);
 		interfacePanel.setPreferredSize(new Dimension(0, 0));
+
+		ButtonGroup radioGroup = new ButtonGroup();
+		radioGroup.add(coresRadio);
+		radioGroup.add(heightmapRadio);
+		coresRadio.setSelected(true);
+		heightmapRadio.setSelected(true);
 	}
 
 	@Override
@@ -139,17 +138,14 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	@Override
 	public void activated(final GraphEditor editor) {
 		stg = (VisualSTG)editor.getModel();
-		coreTable.clearSelection();
-		selectedCore = null;
 		super.activated(editor);
 		editor.getWorkspaceEntry().setCanModify(false);
 	}
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
-		selectedCore = null;
 		stg = null;
-		coreTable.clearSelection();
+		coresTable.clearSelection();
 	}
 
 	@Override
@@ -158,8 +154,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	}
 
 	@Override
-	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/tool-csc_analysis.svg");
+	public boolean requiresButton() {
+		return false;
 	}
 
 	@Override
@@ -169,8 +165,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 			public Decoration getDecoration(Node node) {
 				if (node instanceof VisualNamedTransition) {
 					VisualNamedTransition t = (VisualNamedTransition)node;
-					String name = stg.getNodeMathReference(node);
-					if (selectedCore == null) {
+					final String name = stg.getNodeMathReference(node);
+					if (selectedCores == null) {
 						final Color color = ((heightmap != null) && heightmap.containsKey(name)) ? heightmapColors[heightmap.get(name)-1] : null;
 						return new Decoration(){
 							@Override
@@ -182,15 +178,25 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 								return color;
 							}
 						};
-					} else if (selectedCore.contains(name)) {
-						return new Decoration(){
+					} else {
+						final ArrayList<Color> palette = new ArrayList<>();
+						for (Core core: selectedCores) {
+							if (core.contains(name)) {
+								palette.add(core.getColor());
+							}
+						}
+						return new CoreDecoration(){
 							@Override
 							public Color getColorisation() {
 								return null;
 							}
 							@Override
 							public Color getBackground() {
-								return selectedCore.getColor();
+								return null;
+							}
+							@Override
+							public Color[] getColorisationPalette() {
+								return palette.toArray(new Color[palette.size()]);
 							}
 						};
 					}
@@ -202,22 +208,26 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
 	public void setCores(ArrayList<Core> cores) {
 		this.cores = cores;
-    	ArrayList<Color> palette = new ArrayList<Color>();
+		selectedCores = null;
+
 		heightmap = new HashMap<>();
-		float hue = 0.1f;
-		float saturation = 0.5f;
-		float brightness = 0.5f;
 		for (Core core: cores) {
-			Color color = Color.getHSBColor(hue, saturation, brightness);
-			brightness +=  0.5 / cores.size();
-			palette.add(color);
 			for (String name: core) {
 				int height = (heightmap.containsKey(name) ? heightmap.get(name) : 0);
 				height++;
 				heightmap.put(name, height);
 			}
 		}
-		heightmapColors = palette.toArray(new Color[palette.size()]);
+
+		float[] bs = new float[cores.size()];
+		float b = 0.5f;
+		for (int i = 0; i < cores.size(); i++) {
+			b +=  0.5 / cores.size();
+			bs[i] = b;
+		}
+		heightmapColors = ColorUtils.getHsbPalette(new float[]{0.05f}, new float[]{0.4f}, bs);
+		heightmapTable.setModel(new HeightmapTableModel());
+		heightmapRadio.setSelected(true);
 	}
 
 	@SuppressWarnings("serial")
@@ -238,7 +248,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
 			if ((cores != null) && (row >= 0) && (row < cores.size())) {
 				Core core = cores.get(row);
-				label.setText((String) value);
+				label.setToolTipText(core.toString());
+				label.setText((String)value);
 				if (column == COLUMN_COLOR) {
 					label.setBackground(core.getColor());
 				} else {

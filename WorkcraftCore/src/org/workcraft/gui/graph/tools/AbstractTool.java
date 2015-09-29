@@ -135,4 +135,9 @@ public abstract class AbstractTool implements GraphEditorTool {
 		return null;
 	}
 
+	@Override
+	public boolean requiresButton() {
+		return true;
+	}
+
 }

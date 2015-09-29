@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -53,7 +54,6 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 
 @SuppressWarnings("serial")
 public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
-
 
 	class ToolTracker {
 		ArrayList<GraphEditorTool> tools = new ArrayList<GraphEditorTool>();
@@ -92,17 +92,37 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
 	private GraphEditorTool selectedTool;
 
-	private HashMap<GraphEditorTool, JToggleButton> buttons = new HashMap<GraphEditorTool, JToggleButton>();
-	private HashMap<Integer, ToolTracker> hotkeyMap = new HashMap<Integer, ToolTracker>();
+	private HashSet<GraphEditorTool> tools = new HashSet<>();
+	private HashMap<GraphEditorTool, JToggleButton> buttons = new HashMap<>();
+	private HashMap<Integer, ToolTracker> hotkeyMap = new HashMap<>();
 
 	private final GraphEditorPanel editor;
 
-	public void addTool (final GraphEditorTool tool, boolean selected) {
+	public void addTool(final GraphEditorTool tool, boolean selected) {
+		tools.add(tool);
+		int hotKeyCode = tool.getHotKeyCode();
+		if (hotKeyCode != -1) {
+			ToolTracker tracker = hotkeyMap.get(hotKeyCode);
+			if (tracker == null) {
+				tracker = new ToolTracker();
+				hotkeyMap.put(hotKeyCode, tracker);
+			}
+			tracker.addTool(tool);
+		}
+		if (tool.requiresButton()) {
+			JToggleButton button = createToolButton(tool);
+			buttons.put(tool, button);
+		}
+		if (selected) {
+			selectTool(tool);
+		}
+	}
+
+	public JToggleButton createToolButton(final GraphEditorTool tool) {
 		JToggleButton button = new JToggleButton();
 
 		button.setFocusable(false);
 		button.setHorizontalAlignment(SwingConstants.LEFT);
-		button.setSelected(selected);
 		button.setMargin(new Insets(0,0,0,0));
 
 		Insets insets = button.getInsets();
@@ -133,27 +153,13 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 				selectTool(tool);
 			}
 		});
-
-		buttons.put(tool, button);
-
-		if (hotKeyCode != -1) {
-			ToolTracker tracker = hotkeyMap.get(hotKeyCode);
-			if (tracker == null) {
-				tracker = new ToolTracker();
-				hotkeyMap.put(hotKeyCode, tracker);
-			}
-			tracker.addTool(tool);
-		}
-
 		this.add(button);
-		if (selected) {
-			selectTool(tool);
-		}
+		return button;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends GraphEditorTool> T getToolInstance (Class<T> cls) {
-		for (GraphEditorTool tool : buttons.keySet()) {
+		for (GraphEditorTool tool : tools) {
 			if (cls.isInstance(tool)) {
 				return (T)tool;
 			}
@@ -168,7 +174,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 				oldTracker.reset();
 			}
 			selectedTool.deactivated(editor);
-			buttons.get(selectedTool).setSelected(false);
+			setToolButtonSelected(selectedTool, false);
 		}
 
 		ToolTracker tracker = hotkeyMap.get(tool.getHotKeyCode());
@@ -182,7 +188,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 		selectedTool = tool;
 
 		controlPanel.setTool(selectedTool, editor);
-		buttons.get(selectedTool).setSelected(true);
+		setToolButtonSelected(selectedTool, true);
 		selectedTool.activated(editor);
 		editor.updatePropertyView();
 		editor.repaint();

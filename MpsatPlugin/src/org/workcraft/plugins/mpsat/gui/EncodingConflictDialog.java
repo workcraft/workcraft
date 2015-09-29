@@ -20,7 +20,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
-import org.workcraft.util.CieColorUtils;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -30,7 +30,10 @@ import info.clearthought.layout.TableLayout;
 @SuppressWarnings("serial")
 public class EncodingConflictDialog extends JDialog {
 
-	private final ColorGenerator coreColorGenerator = new ColorGenerator(CieColorUtils.getLabPalette(3, 5, 5, 0.7f, 0.9f));
+	private final ColorGenerator coreColorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
+					new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
+					new float[]{0.30f},  new float[]{0.9f, 0.7f, 0.5f}));
+
 
 	private JPanel contents;
 	private JPanel solutionsPanel;
@@ -103,6 +106,7 @@ public class EncodingConflictDialog extends JDialog {
 		setMinimumSize(new Dimension(450, 200));
 		setSize(new Dimension(500, 300));
 		this.setModal(true);
+		getRootPane().setDefaultButton(analyseButton);
 	}
 
 	private ArrayList<Core> convertSolutionsToCores(List<Solution> solutions) {

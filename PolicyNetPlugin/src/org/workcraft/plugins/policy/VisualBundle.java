@@ -43,7 +43,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.util.CieColorUtils;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.util.Pair;
 
 @DisplayName ("Bundle")
@@ -52,7 +52,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
 
 	private Bundle bundle;
 	protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
-	private Color color = CieColorUtils.getLabColor(0.7f, (float)Math.random(), (float)Math.random());
+	private Color color = ColorUtils.getLabColor(0.7f, (float)Math.random(), (float)Math.random());
 	private Collection<Line2D> spanningTree = null;
 
 	public VisualBundle(Bundle bundle) {

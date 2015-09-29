@@ -24,6 +24,8 @@ package org.workcraft.gui.propertyeditor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -211,8 +213,8 @@ public class SettingsEditorDialog extends JDialog {
 		okButton = new JButton();
 		okButton.setPreferredSize(new Dimension(100, 20));
 		okButton.setText("OK");
-		okButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				ok();
 			}
 		});

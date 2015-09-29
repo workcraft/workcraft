@@ -46,7 +46,7 @@ import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescr
 import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundlesOfTransitionPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.TransitionsOfBundlePropertyDescriptor;
-import org.workcraft.util.CieColorUtils;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Hierarchy;
 
@@ -54,7 +54,9 @@ import org.workcraft.util.Hierarchy;
 @ShortName("policy")
 @CustomTools ( PolicyNetToolProvider.class )
 public class VisualPolicyNet extends VisualPetriNet {
-	private final ColorGenerator bundleColorGenerator = new ColorGenerator(CieColorUtils.getLabPalette(5, 5, 5, 0.5f, 1.0f));
+	private final ColorGenerator bundleColorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
+			new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
+			new float[]{0.50f},  new float[]{0.9f, 0.7f, 0.5f}));
 
 	public VisualPolicyNet(PolicyNet model) throws VisualModelInstantiationException {
 		this(model, null);

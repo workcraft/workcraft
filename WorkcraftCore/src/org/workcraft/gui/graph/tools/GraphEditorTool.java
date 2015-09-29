@@ -45,5 +45,6 @@ public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMous
 	public Icon getIcon();
 	public int getHotKeyCode();
 	public String getHintMessage();
+	public boolean requiresButton();
 
 }
