@@ -1,9 +1,12 @@
 package org.workcraft.plugins.mpsat.gui;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import org.workcraft.Trace;
+import org.workcraft.util.MultiSet;
+import org.workcraft.util.SetUtils;
 
 public class Solution {
 	final private Trace mainTrace;
@@ -46,18 +49,19 @@ public class Solution {
 	}
 
 	public HashSet<String> getCore() {
-		HashSet<String> core = new HashSet<>();
-		HashSet<String> outside = new HashSet<>();
+		MultiSet<String> union = new MultiSet<>();
+		MultiSet<String> intersection = new MultiSet<>();
 		if (mainTrace != null) {
-			core.addAll(mainTrace);
-			outside.addAll(mainTrace);
+			union.addAll(mainTrace);
+			intersection.addAll(mainTrace);
 		}
 		if (branchTrace != null) {
-			core.addAll(branchTrace);
-			outside.retainAll(branchTrace);
+			union.addAll(branchTrace);
+			intersection.retainAll(branchTrace);
 		}
-		core.removeAll(outside);
-		return core;
+		union.removeAll(intersection);
+		union.removeAll(intersection);
+		return new HashSet<>(union);
 	}
 
 }

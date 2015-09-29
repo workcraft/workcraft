@@ -103,8 +103,8 @@ public class EncodingConflictDialog extends JDialog {
 
 		this.setTitle(title);
 		this.setContentPane(contents);
-		setMinimumSize(new Dimension(450, 200));
-		setSize(new Dimension(500, 300));
+		setMinimumSize(new Dimension(500, 300));
+		setSize(new Dimension(800, 600));
 		this.setModal(true);
 		getRootPane().setDefaultButton(analyseButton);
 	}

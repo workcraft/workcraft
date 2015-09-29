@@ -32,7 +32,8 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
 		if (Solution.hasTraces(solutions)) {
 			String extendedMessage = "<html><br>&#160;" + message +  "<br><br>&#160;Pairs of traces leading to the entrance and exit of the encoding conflict cores(s):<br><br></html>";
 			final EncodingConflictDialog dialog = new EncodingConflictDialog(task, title, extendedMessage, solutions);
-			GUI.centerToParent(dialog, Framework.getInstance().getMainWindow());
+			Framework framework = Framework.getInstance();
+			GUI.centerToParent(dialog, framework.getMainWindow());
 			dialog.setVisible(true);
 		} else {
 			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
