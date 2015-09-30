@@ -8,7 +8,6 @@ import java.awt.Graphics;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.swing.ButtonGroup;
@@ -33,18 +32,16 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualSTG;
-import org.workcraft.util.ColorUtils;
 
 public class EncodingConflictAnalyserTool extends AbstractTool {
 
-	final private int COLUMN_COLOR = 0;
-	final private int COLUMN_CORE = 1;
+	final static private int COLUMN_COLOR = 0;
+	final static private int COLUMN_CORE = 1;
 
 	private VisualSTG stg;
 	private ArrayList<Core> cores;
 	private ArrayList<Core> selectedCores;
-	private Color[] heightmapColors;
-	private HashMap<String, Integer> heightmap;
+	private Heightmap heightmap;
 
 	private JPanel interfacePanel;
 	private JPanel controlPanel;
@@ -165,7 +162,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 					VisualNamedTransition t = (VisualNamedTransition)node;
 					final String name = stg.getNodeMathReference(node);
 					if (selectedCores == null) {
-						final Color color = ((heightmap != null) && heightmap.containsKey(name)) ? heightmapColors[heightmap.get(name)-1] : null;
+						final Color color = ((heightmap == null) ? null : heightmap.getColor(name));
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -207,24 +204,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	public void setCores(ArrayList<Core> cores) {
 		this.cores = cores;
 		selectedCores = null;
-		int maxHeight = 0;
-		heightmap = new HashMap<>();
-		for (Core core: cores) {
-			for (String name: core) {
-				int height = (heightmap.containsKey(name) ? heightmap.get(name) : 0);
-				height++;
-				heightmap.put(name, height);
-				if (height > maxHeight) {
-					maxHeight = height;
-				}
-			}
-		}
-
-		float[] bs = new float[maxHeight];
-		for (int i = 0; i < maxHeight; i++) {
-			bs[i] = 0.5f + (float)i * 0.5f / maxHeight;
-		}
-		heightmapColors = ColorUtils.getHsbPalette(new float[]{0.05f}, new float[]{0.4f}, bs);
+		heightmap = new Heightmap(cores);
 		heightmapTable.setModel(new HeightmapTableModel());
 		heightmapRadio.setSelected(true);
 	}
@@ -335,9 +315,10 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 				boolean isSelected, boolean hasFocus, int row, int column) {
 			JLabel result = null;
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
-			if ((heightmapColors != null) && (column >= 0) && (column < heightmapColors.length)) {
+			if (heightmap != null) {
 				label.setText((String) value);
-				label.setBackground(heightmapColors[column]);
+				int height = heightmap.getMinHeight() + column;
+				label.setBackground(heightmap.getColor(height));
 				label.setHorizontalAlignment(SwingConstants.CENTER);
 				result = label;
 			}
@@ -349,7 +330,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	private final class HeightmapTableModel extends AbstractTableModel {
 		@Override
 		public int getColumnCount() {
-			return ((heightmapColors == null) ? 0 : heightmapColors.length);
+			return ((heightmap == null) ? 0 : heightmap.getPaletteSize());
 		}
 
 		@Override
@@ -359,7 +340,11 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
 		@Override
 		public Object getValueAt(int row, int col) {
-			return Integer.toString(col + 1);
+			String s = Integer.toString(heightmap.getMinHeight() + col);
+			if ((col == 0) && heightmap.isReduced()) {
+				s = "<" + s;
+			}
+			return s;
 		}
 	}
 

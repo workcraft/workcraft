@@ -20,8 +20,8 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
-import org.workcraft.util.ColorUtils;
 import org.workcraft.util.ColorGenerator;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;

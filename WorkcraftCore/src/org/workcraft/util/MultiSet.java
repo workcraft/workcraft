@@ -24,25 +24,30 @@ package org.workcraft.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 public class MultiSet<T> implements Set<T> {
-	HashMap<T, Integer> map = new HashMap<>();
+	private final HashMap<T, Integer> map = new HashMap<>();
 
 	@Override
 	public int size() {
-		return map.size();
+		int result = 0;
+		for (T o: map.keySet()) {
+			result += count(o);
+		}
+		return result;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return map.isEmpty();
+		return (size() == 0);
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		return map.containsKey(o);
+		return (count(o) > 0);
 	}
 
 	@Override
@@ -61,16 +66,17 @@ public class MultiSet<T> implements Set<T> {
 		return result.toArray(new Object[result.size()]);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <R> R[] toArray(R[] a) {
-		ArrayList<T> result = new ArrayList<>();
+		int idx = 0;
 		for (T o: map.keySet()) {
 			for (int i = 0; i < count(o); i++) {
-				result.add(o);
+				if (idx > a.length)
+				a[idx] = (R)o;
 			}
 		}
-		toArray(a);
-		return result.toArray(a);
+		return a;
 	}
 
 	@Override
@@ -120,19 +126,23 @@ public class MultiSet<T> implements Set<T> {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		boolean result = false;
-		MultiSet<Object> other = new MultiSet<>();
-		other.addAll(c);
-		for (T o: this) {
-			int otherCount = other.count(o);
+		HashSet<Object> keys = new HashSet<>();
+		keys.addAll(map.keySet());
+		keys.addAll(c);
+		MultiSet<Object> otherMultiset = new MultiSet<>();
+		otherMultiset.addAll(c);
+		for (Object o: keys) {
+			int otherCount = otherMultiset.count(o);
 			int thisCount = count(o);
-			if (thisCount > otherCount) {
-				map.put(o, otherCount);
-				result = true;
-			} else if (otherCount == 0) {
+			if (otherCount == 0) {
 				map.remove(o);
+				result = true;
+			} else if (thisCount > otherCount) {
+				map.put((T)o, otherCount);
 				result = true;
 			}
 		}

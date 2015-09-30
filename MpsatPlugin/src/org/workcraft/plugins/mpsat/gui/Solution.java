@@ -1,12 +1,10 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import org.workcraft.Trace;
 import org.workcraft.util.MultiSet;
-import org.workcraft.util.SetUtils;
 
 public class Solution {
 	final private Trace mainTrace;
