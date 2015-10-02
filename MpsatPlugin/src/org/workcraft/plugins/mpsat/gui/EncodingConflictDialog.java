@@ -34,7 +34,6 @@ public class EncodingConflictDialog extends JDialog {
 					new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
 					new float[]{0.30f},  new float[]{0.9f, 0.7f, 0.5f}));
 
-
 	private JPanel contents;
 	private JPanel solutionsPanel;
 	private JPanel buttonsPanel;
@@ -112,7 +111,7 @@ public class EncodingConflictDialog extends JDialog {
 	private ArrayList<Core> convertSolutionsToCores(List<Solution> solutions) {
 		ArrayList<Core> cores = new ArrayList<>();
 		for (Solution solution: solutions) {
-			Core core = new Core(solution.getCore());
+			Core core = new Core(solution.getMainTrace(), solution.getBranchTrace());
 			core.setColor(coreColorGenerator.updateColor());
 			cores.add(core);
 		}

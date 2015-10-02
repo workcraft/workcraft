@@ -227,7 +227,9 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
 			if ((cores != null) && (row >= 0) && (row < cores.size())) {
 				Core core = cores.get(row);
-				label.setToolTipText(core.toString());
+				if ((core.getCut1() != null) && (core.getCut2() != null)) {
+					label.setToolTipText("<html><b>cut1:</b> " + core.getCut1() + "<br><b>cut2:</b> " + core.getCut2() + "</html>");
+				}
 				label.setText((String)value);
 				if (column == COLUMN_COLOR) {
 					label.setBackground(core.getColor());
@@ -317,8 +319,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
 			if (heightmap != null) {
 				label.setText((String) value);
-				int height = heightmap.getMinHeight() + column;
-				label.setBackground(heightmap.getColor(height));
+				Color color = heightmap.getLevelColor(column);
+				label.setBackground(color);
 				label.setHorizontalAlignment(SwingConstants.CENTER);
 				result = label;
 			}
@@ -340,11 +342,13 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
 		@Override
 		public Object getValueAt(int row, int col) {
-			String s = Integer.toString(heightmap.getMinHeight() + col);
+			String result;
 			if ((col == 0) && heightmap.isReduced()) {
-				s = "<" + s;
+				result = "<" + Integer.toString(heightmap.getLevelDensity(col));
+			} else {
+				result = Integer.toString(heightmap.getLevelDensity(col));
 			}
-			return s;
+			return result;
 		}
 	}
 

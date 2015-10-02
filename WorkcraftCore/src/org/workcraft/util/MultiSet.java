@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class MultiSet<T> implements Set<T> {
+
 	private final HashMap<T, Integer> map = new HashMap<>();
 
 	@Override
@@ -52,7 +53,35 @@ public class MultiSet<T> implements Set<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return map.keySet().iterator();
+		return new Iterator<T>() {
+            private Iterator<T> cursor = map.keySet().iterator();
+            private T current = null;
+            private int currentIdx = 0;
+
+            @Override
+            public boolean hasNext() {
+            	boolean result = cursor.hasNext();
+            	if ( !result && (current != null)) {
+            		result = (count(current) > currentIdx);
+            	}
+                return result;
+            }
+
+            @Override
+            public T next() {
+            	if (currentIdx  >= count(current)) {
+            		current = cursor.next();
+            		currentIdx = 0;
+            	}
+            	currentIdx++;
+            	return current;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
 	}
 
 	@Override
@@ -81,25 +110,37 @@ public class MultiSet<T> implements Set<T> {
 
 	@Override
 	public boolean add(T e) {
-		Integer count = 0;
-		if (map.containsKey(e)) {
-			count = map.get(e);
+		return add(e, 1);
+	}
+
+	public boolean add(T e, int n) {
+		boolean result = false;
+		if (n > 0) {
+			Integer count = 0;
+			if (map.containsKey(e)) {
+				count = map.get(e);
+			}
+			count += n;
+			map.put(e, count);
+			result = true;
 		}
-		count++;
-		map.put(e, count);
-		return true;
+		return result;
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		return remove(o, 1);
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public boolean remove(Object o) {
+	public boolean remove(Object o, int n) {
 		boolean result = false;
 		Integer count = 0;
 		if (map.containsKey(o)) {
 			count = map.get(o);
 		}
-		if (count > 1) {
-			count--;
+		if (count > n) {
+			count -= n;
 			map.put((T)o, count);
 			result = true;
 		} else {
@@ -120,8 +161,15 @@ public class MultiSet<T> implements Set<T> {
 	@Override
 	public boolean addAll(Collection<? extends T> c) {
 		boolean result = false;
-		for (T o: c) {
-			result |= add(o);
+		if (c instanceof MultiSet<?>) {
+			MultiSet<? extends T> otherMultiSet = (MultiSet<? extends T>)c;
+			for (T o: otherMultiSet.map.keySet()) {
+				result |= add(o, otherMultiSet.count(o));
+			}
+		} else {
+			for (T o: c) {
+				result |= add(o);
+			}
 		}
 		return result;
 	}
@@ -130,11 +178,19 @@ public class MultiSet<T> implements Set<T> {
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		boolean result = false;
+
 		HashSet<Object> keys = new HashSet<>();
 		keys.addAll(map.keySet());
 		keys.addAll(c);
-		MultiSet<Object> otherMultiset = new MultiSet<>();
-		otherMultiset.addAll(c);
+
+		MultiSet<Object> otherMultiset = null;
+		if (c instanceof MultiSet<?>) {
+			otherMultiset = (MultiSet<Object>)c;
+		} else {
+			otherMultiset = new MultiSet<>();
+			otherMultiset.addAll(c);
+		}
+
 		for (Object o: keys) {
 			int otherCount = otherMultiset.count(o);
 			int thisCount = count(o);
@@ -152,8 +208,15 @@ public class MultiSet<T> implements Set<T> {
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		boolean result = false;
-		for (Object o: c) {
-			result |= remove(o);
+		if (c instanceof MultiSet<?>) {
+			MultiSet<?> otherMultiSet = (MultiSet<?>)c;
+			for (Object o: otherMultiSet.map.keySet()) {
+				result |= remove(o, otherMultiSet.count(o));
+			}
+		} else {
+			for (Object o: c) {
+				result |= remove(o);
+			}
 		}
 		return result;
 	}
