@@ -954,23 +954,30 @@ public class CpogSelectionTool extends SelectionTool {
 
     	}
 
-    	double pos = vertexMap.values().size();
-    	pos = pos*2.5;
-    	pos = 0 - pos/2;
+    	double xPos = vertexMap.values().size();
+    	xPos = xPos*2.5;
+    	xPos = 0 - xPos/2;
+
+
+    	PageNode pageNode = new PageNode();
+        visualCpog.getMathModel().add(pageNode);
+        VisualScenarioPage page = new VisualScenarioPage(pageNode);
+        visualCpog.getCurrentLevel().add(page);
+        page.setLabel("t" + i);
+
+        Container container = visualCpog.getCurrentLevel();
+        HashSet<Node> nodes = new HashSet<>();
+
 
     	visualCpog.selectNone();
     	for (VisualVertex v : vertexMap.values()) {
-    		v.setPosition(new Point2D.Double(pos, yPos));
-    		pos = pos + 2.5;
-    		//visualCpog.addToSelection(v);
+    		v.setPosition(new Point2D.Double(xPos, yPos));
+    		xPos = xPos + 2.5;
+    		nodes.add(v);
     	}
 
-    	//VisualPage page = visualCpog.groupPageSelection();
-
-    	//visualCpog.groupSelection("t" + i);
-
-    	//page.setLabel("t" + i);
-
+    	visualCpog.reparent(page, visualCpog, container, nodes);
+    	includeArcsInPage(visualCpog);
 
 
     }
