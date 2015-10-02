@@ -5,172 +5,357 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Before;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.TransitionNode;
-import org.workcraft.plugins.son.exception.InconsistentTimeException;
+import org.workcraft.plugins.son.exception.TimeEstimationException;
+import org.workcraft.plugins.son.exception.TimeEstimationValueException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.granularity.TimeGranularity;
 import org.workcraft.plugins.son.granularity.YearYear;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
+import org.workcraft.plugins.son.util.Before;
+import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.plugins.son.util.ScenarioRef;
 
 public class EstimationAlg extends TimeAlg{
 
 	private SON net;
 	//interval[0] is first found specified time interval, interval[1] is the accumulated durations
-	private Collection<Interval[]> timeDuation =new ArrayList<Interval[]>();
+	private Collection<Interval[]> resultTimeAndDuration =new ArrayList<Interval[]>();
+
 	//default duration provided by user
 	private final Interval defaultDuration;
 	private TimeGranularity granularity = null;
+	private ScenarioRef scenario;
+	private Before before;
 
-	public EstimationAlg(SON net, Interval defaultDuration, Granularity g) {
+	public EstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s) {
 		super(net);
 		this.net = net;
-		this.defaultDuration = defaultDuration;
+		this.defaultDuration = d;
+		this.scenario = s;
 
 		if(g == Granularity.YEAR_YEAR){
 			granularity = new YearYear();
 		}else if (g == Granularity.HOUR_MINS){
 			granularity = new HourMins();
 		}
+
+		BSONAlg bsonAlg = new BSONAlg(net);
+		before  =  bsonAlg.getBeforeList();
 	}
 
-	public Interval EstimateStartTime(Node n, Before before) throws InconsistentTimeException, TimeOutOfBoundsException{
-		Interval result = new Interval();
+	public void setEstimatedEndTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
+		Interval end = null;
+		clearSets();
 
-		timeDuation.clear();
-    	BSONAlg bsonAlg = new BSONAlg(net);
-    	if(before == null)
-    		before =  bsonAlg.getBeforeList();
+		if(n instanceof Condition){
+			Condition c = (Condition)n;
+			Collection<SONConnection> cons = net.getOutputPNConnections(c);
+			Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(c, scenario);
+			//p is final
+			if(cons.isEmpty() && cons2.isEmpty()){
+				end = getEstimatedEndTime(n);
+				//set estimated start time
+				if(end != null){
+					c.setEndTime(end);
+					throw new TimeEstimationValueException("Estimated end time = "+ end.toString() +", from "+intervals(resultTimeAndDuration));
+				}
+			//p is final state of the scenario, but not the final state of ON
+			}else if(!cons.isEmpty() && cons2.isEmpty()){
+					if(cons.size() == 1){
+						SONConnection con = cons.iterator().next();
+						c.setEndTime(con.getTime());
+						throw new TimeEstimationValueException("End time = "+ con.getTime().toString());
+					}else{
+						throw new TimeEstimationException(
+						"node has more than one possible end times (forward)");
+					}
+			//p is not final state
+			}else if(!cons.isEmpty() && !cons2.isEmpty()){
+				SONConnection con = null;
+				if(cons2.size()==1)
+					con = cons2.iterator().next();
+				if(con==null) throw new RuntimeException("output connection != 1" + net.getNodeReference(n));
+				//set estimated value
+				if(!con.getTime().isSpecified()){
+					end = getEstimatedEndTime(n);
+					if(end != null){
+						c.setEndTime(end);
+						throw new TimeEstimationValueException("Estimated end time = "+ end.toString() +", from "+intervals(resultTimeAndDuration));
+					}
+				//set value from output connection
+				}else{
+					c.setEndTime(con.getTime());
+					throw new TimeEstimationValueException("End time = "+ con.getTime().toString());
+				}
+			}
+		}else if(n instanceof TransitionNode){
+			TransitionNode t = (TransitionNode)n;
+			Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(t, scenario);
+
+			Collection<SONConnection> specifiedConnections = new ArrayList<SONConnection>();
+			for(SONConnection con : cons2)
+				if(con.getTime().isSpecified())
+					specifiedConnections.add(con);
+
+			//some or all of the connections have specified values
+			if(!specifiedConnections.isEmpty()){
+				if(concurConsistency(specifiedConnections)){
+					end =  specifiedConnections.iterator().next().getTime();
+					if(end != null){
+						t.setEndTime(end);
+						throw new TimeEstimationValueException("End time = "+ end.toString());
+					}
+				}else{
+					throw new TimeEstimationException(
+							"node is concurrently inconsistency (forward)");
+				}
+			//none of the connections has specified value.
+			}else{
+				end = getEstimatedEndTime(n);
+				if(end != null){
+					t.setEndTime(end);
+					throw new TimeEstimationValueException("Estimated end time = "+ end.toString() +", from "+intervals(resultTimeAndDuration));
+				}
+			}
+		}else if(n instanceof ChannelPlace){
+			ChannelPlace cp = (ChannelPlace)n;
+			end = getEstimatedEndTime(n);
+			if(end != null){
+				cp.setEndTime(end);
+				throw new TimeEstimationValueException("Estimated end time = "+ end.toString() +", from "+intervals(resultTimeAndDuration));
+			}
+		}
+	}
+
+	public void setEstimatedStartTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
+		Interval start = null;
+		clearSets();
+
+		if(n instanceof Condition){
+			Condition c = (Condition)n;
+			Collection<SONConnection> cons = net.getInputScenarioPNConnections(c, scenario);
+			//p is initial
+			if(cons.isEmpty()){
+				start = getEstimatedStartTime(n);
+				//set estimated start time
+				if(start != null){
+					c.setStartTime(start);
+					throw new TimeEstimationValueException("Estimated start time = "+ start.toString() +", from "+intervals(resultTimeAndDuration));
+				}
+			}else{
+				SONConnection con = null;
+				if(cons.size()==1)
+					con = cons.iterator().next();
+				if(con==null) throw new RuntimeException(
+						"input connection != 1" + net.getNodeReference(n));
+				//set estimated start time
+				if(!con.getTime().isSpecified()){
+					start = getEstimatedStartTime(n);
+					if(start != null){
+						c.setStartTime(start);
+						throw new TimeEstimationValueException("Estimated start time = "+ start.toString() +", from "+intervals(resultTimeAndDuration));
+					}
+				//set start time from connection
+				}else{
+					c.setStartTime(con.getTime());
+					throw new TimeEstimationValueException("Start time = "+ con.getTime().toString());
+				}
+			}
+		}else if(n instanceof TransitionNode){
+			TransitionNode t = (TransitionNode)n;
+			Collection<SONConnection> cons2 = net.getInputScenarioPNConnections(t, scenario);
+
+			Collection<SONConnection> specifiedConnections = new ArrayList<SONConnection>();
+			for(SONConnection con : cons2)
+				if(con.getTime().isSpecified())
+					specifiedConnections.add(con);
+
+			//some or all of the connections have specified values
+			if(!specifiedConnections.isEmpty()){
+				if(concurConsistency(specifiedConnections)){
+					start =  specifiedConnections.iterator().next().getTime();
+					if(start != null){
+						t.setStartTime(start);
+						throw new TimeEstimationValueException("Start time = "+ start.toString());
+					}
+				}else{
+					throw new TimeEstimationException(
+							"node is concurrently inconsistency (backward)");
+				}
+			//none of the connections has specified value.
+			}else{
+				start = getEstimatedStartTime(n);
+				if(start != null){
+					t.setStartTime(start);
+					throw new TimeEstimationValueException("Estimated start time = "+ start.toString() +", from "+intervals(resultTimeAndDuration));
+				}
+			}
+		}else if(n instanceof ChannelPlace){
+			ChannelPlace cp = (ChannelPlace)n;
+			start = getEstimatedStartTime(n);
+			if(start != null){
+				cp.setStartTime(start);
+				throw new TimeEstimationValueException("Estimated start time = "+ start.toString() +", from "+intervals(resultTimeAndDuration));
+			}
+		}
+	}
+
+	private boolean concurConsistency(Collection<SONConnection> cons){
+		SONConnection con = cons.iterator().next();
+		Interval time = con.getTime();
+		for(SONConnection con1 : cons){
+			Interval time1 = con1.getTime();
+			if(!time.equals(time1)){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private Interval getEstimatedStartTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
+		Interval result = new Interval();
 
     	LinkedList<Time> visited = new LinkedList<Time>();
     	visited.add((Time)n);
 
-    	backwardDFS(visited, before, net.getComponents());
-
+    	backwardDFS(visited, scenario.getNodes(net));
 		Collection<Interval> possibleTimes = new ArrayList<Interval>();
-		for(Interval[] interval : timeDuation){
+		for(Interval[] interval : resultTimeAndDuration){
 			possibleTimes.add(granularity.plusTD(interval[0], interval[1]));
     	}
+		if(!possibleTimes.isEmpty())
+			result = Interval.getOverlapping(possibleTimes);
 
-		for(Interval interval : possibleTimes){
-			result = result.getOverlapping(interval);
-		}
-
-		if(result != null)
-			return result;
-		else
-			throw new InconsistentTimeException("");
+		if(result != null){
+			if(!result.isSpecified()){
+				throw new TimeEstimationException(
+						"cannot find causally time value (backward).");
+			}else
+				return result;
+		}else
+			throw new TimeEstimationException("intervals"+
+		intervals(resultTimeAndDuration)+"are not consistent (backward).");
 	}
 
-	public Interval EstimateEndTime(Node n, Before before) throws InconsistentTimeException, TimeOutOfBoundsException{
+	private Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
 		Interval result = new Interval();
-
-		timeDuation.clear();
-    	BSONAlg bsonAlg = new BSONAlg(net);
-    	if(before == null)
-    		before =  bsonAlg.getBeforeList();
 
     	LinkedList<Time> visited = new LinkedList<Time>();
     	visited.add((Time)n);
 
-    	forwardDFS(visited, before, net.getComponents());
+    	forwardDFS(visited, scenario.getNodes(net));
 
 		Collection<Interval> possibleTimes = new ArrayList<Interval>();
-		for(Interval[] interval : timeDuation){
+
+		for(Interval[] interval : resultTimeAndDuration){
 			possibleTimes.add(granularity.subtractTD(interval[0], interval[1]));
     	}
 
-		for(Interval interval : possibleTimes){
-			result = result.getOverlapping(interval);
-		}
+		if(!possibleTimes.isEmpty())
+			result = Interval.getOverlapping(possibleTimes);
 
-		if(result != null)
-			return result;
-		else
-			throw new InconsistentTimeException("");
+		if(result != null){
+			if(!result.isSpecified()){
+				throw new TimeEstimationException(
+						"cannot find causally time value (forward).");
+			}else
+				return result;
+		}else
+			throw new TimeEstimationException(
+					"intervals"+
+			intervals(resultTimeAndDuration)+"are not consistent (forward).");
 
 	}
 
-    private void forwardDFS(LinkedList<Time> visited, Before before, Collection<Node> nodes)  {
-        LinkedList<Time> neighbours = getCausalPostset(visited.getLast(), before, nodes);
+    private void forwardDFS(LinkedList<Time> visited, Collection<Node> nodes)  {
+        LinkedList<Time> neighbours = getCausalPostset(visited.getLast(), nodes);
 
         if (visited.getLast().getEndTime().isSpecified()) {
         	Interval[] result = new Interval[2];
         	result[0] = visited.getLast().getEndTime();
-        	result[1] = durationAccumulator(visited);
-            timeDuation.add(result);
+        	result[1] = durationAccumulator1(visited);
+            resultTimeAndDuration.add(result);
         }
 
         // examine post nodes
         for (Time node : neighbours) {
-        	SONConnection con = net.getSONConnection(node, visited.getLast());
+        	SONConnection con = net.getSONConnection(visited.getLast(), node);
             if (visited.contains(node)) {
                 continue;
             }
-            if (con.getTime().isSpecified()) {
+            if (visited.getLast().getEndTime().isSpecified()) {
+                break;
+            }else if (con!=null && con.getTime().isSpecified()) {
             	Interval[] result = new Interval[2];
             	result[0] = con.getTime();
-            	result[1] = durationAccumulator(visited);
-                timeDuation.add(result);
-                break;
+            	result[1] = durationAccumulator1(visited);
+                resultTimeAndDuration.add(result);
+
             }
         }
         // in depth-first, recursion needs to come after visiting post nodes
         for (Time node : neighbours) {
-        	SONConnection con = net.getSONConnection(node, visited.getLast());
-            if (visited.contains(node) || con.getTime().isSpecified()) {
+        	SONConnection con = net.getSONConnection(visited.getLast(), node);
+            if (visited.contains(node) || visited.getLast().getEndTime().isSpecified()) {
                 continue;
-            }
+            }else if(con!=null && con.getTime().isSpecified())
+                continue;
             visited.addLast(node);
-            forwardDFS(visited, before, nodes);
+            forwardDFS(visited, nodes);
             visited.removeLast();
         }
     }
 
-    private void backwardDFS(LinkedList<Time> visited, Before before, Collection<Node> nodes) {
-        LinkedList<Time> neighbours = getCausalPreset(visited.getLast(), before, nodes);
+    private void backwardDFS(LinkedList<Time> visited, Collection<Node> nodes) {
+        LinkedList<Time> neighbours = getCausalPreset(visited.getLast(), nodes);
 
         if (visited.getLast().getStartTime().isSpecified()) {
         	Interval[] result = new Interval[2];
         	result[0] = visited.getLast().getStartTime();
-        	result[1] = durationAccumulator(visited);
-            timeDuation.add(result);
+        	result[1] = durationAccumulator1(visited);
+
+            resultTimeAndDuration.add(result);
         }
 
         // examine post nodes
         for (Time node : neighbours) {
-        	SONConnection con = net.getSONConnection(visited.getLast(), node);
+        	SONConnection con = net.getSONConnection(node, visited.getLast());
             if (visited.contains(node)) {
                 continue;
             }
-            if (con.getTime().isSpecified()) {
+            if (visited.getLast().getStartTime().isSpecified()) {
+                break;
+            }else if (con!=null && con.getTime().isSpecified()) {
             	Interval[] result = new Interval[2];
             	result[0] = con.getTime();
-            	result[1] = durationAccumulator(visited);
-                timeDuation.add(result);
-                break;
+            	result[1] = durationAccumulator1(visited);
+                resultTimeAndDuration.add(result);
             }
         }
         // in depth-first, recursion needs to come after visiting post nodes
         for (Time node : neighbours) {
-        	SONConnection con = net.getSONConnection(visited.getLast(), node);
-            if (visited.contains(node) || con.getTime().isSpecified()) {
+        	SONConnection con = net.getSONConnection(node, visited.getLast());
+            if (visited.contains(node) || visited.getLast().getStartTime().isSpecified()) {
+                continue;
+            }else if(con!=null && con.getTime().isSpecified()){
                 continue;
             }
             visited.addLast(node);
-            backwardDFS(visited, before, nodes);
+            backwardDFS(visited, nodes);
             visited.removeLast();
 
         }
     }
 
-    private Interval durationAccumulator (LinkedList<Time> visited){
+    private Interval durationAccumulator1 (LinkedList<Time> visited){
     	Interval result = new Interval(0000, 0000);
     	Time first = visited.getFirst();
     	for(Time time : visited){
@@ -185,13 +370,25 @@ public class EstimationAlg extends TimeAlg{
     	return result;
     }
 
-    private LinkedList<Time> getCausalPreset(Time n, Before before, Collection<Node> nodes){
+//    private Interval durationAccumulator2 (LinkedList<Time> visited){
+//    	Interval result = new Interval(0000, 0000);
+//    	Time first = visited.getFirst();
+//    	Time last =  visited.getLast();
+//    	for(Time time : visited){
+//    		if(time != first || time != last){
+//	    		if (time.getDuration().isSpecified())
+//	    			result = result.add(time.getDuration());
+//	    		else{
+//	    			result = result.add(defaultDuration);
+//	    		}
+//    		}
+//    	}
+//    	return result;
+//    }
+
+    private LinkedList<Time> getCausalPreset(Time n, Collection<Node> nodes){
     	LinkedList<Time> preSet = new LinkedList<Time>();
     	LinkedList<Time> result = new LinkedList<Time>();
-
-    	if(isInitial(n) && (n instanceof Condition)){
-    		preSet.addAll(getPostBhvSet((Condition)n));
-    	}
 
     	for(TransitionNode[] pre : before){
     		if(pre[1] == n)
@@ -202,9 +399,26 @@ public class EstimationAlg extends TimeAlg{
     		if(node instanceof Time)
     			preSet.add((Time)node);
     	}
-
-    	if(n instanceof TransitionNode){
-    		preSet.addAll(getPreASynEvents((TransitionNode)n));
+    	if(isInitial(n) && (n instanceof Condition)){
+    		preSet.addAll(getPostBhvSet((Condition)n));
+    	}else if(n instanceof TransitionNode){
+    		for(SONConnection con : net.getSONConnections(n)){
+    			if(con.getSemantics() == Semantics.SYNCLINE){
+    				if(con.getFirst() == n)
+    					preSet.add((Time)con.getSecond());
+    				else
+    					preSet.add((Time)con.getFirst());
+    			}else if(con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
+  					preSet.add((Time)con.getFirst());
+    		}
+    	}else if(n instanceof ChannelPlace){
+    		Node input = net.getPreset(n).iterator().next();
+    		preSet.add((Time)input);
+    		Collection<Semantics> semantics = net.getSONConnectionTypes(n);
+    		if(semantics.iterator().next() == Semantics.SYNCLINE){
+        		Node output = net.getPostset(n).iterator().next();
+        		preSet.add((Time)output);
+    		}
     	}
 
     	for(Time node : preSet){
@@ -215,13 +429,9 @@ public class EstimationAlg extends TimeAlg{
     	return result;
     }
 
-    private LinkedList<Time> getCausalPostset(Time n, Before before, Collection<Node> nodes){
+    private LinkedList<Time> getCausalPostset(Time n, Collection<Node> nodes){
     	LinkedList<Time> postSet = new LinkedList<Time>();
     	LinkedList<Time> result = new LinkedList<Time>();
-
-    	if(isFinal(n) && (n instanceof Condition)){
-    		postSet.addAll(getPostBhvSet((Condition)n));
-    	}
 
     	for(TransitionNode[] post : before){
     		if(post[0] == n)
@@ -233,8 +443,27 @@ public class EstimationAlg extends TimeAlg{
     			postSet.add((Time)node);
     	}
 
-    	if(n instanceof TransitionNode){
-    		postSet.addAll(getPostASynEvents((TransitionNode)n));
+    	if(isFinal(n) && (n instanceof Condition)){
+    		postSet.addAll(getPostBhvSet((Condition)n));
+    	}else if(n instanceof TransitionNode){
+    		for(SONConnection con : net.getSONConnections(n)){
+    			if(con.getSemantics() == Semantics.SYNCLINE){
+    				if(con.getFirst() == n)
+    					postSet.add((Time)con.getSecond());
+    				else
+    					postSet.add((Time)con.getFirst());
+    			}else if(con.getSemantics() == Semantics.ASYNLINE && con.getFirst() == n)
+    				postSet.add((Time)con.getSecond());
+    		}
+
+    	}else if(n instanceof ChannelPlace){
+    		Node output = net.getPostset(n).iterator().next();
+    		postSet.add((Time)output);
+    		Collection<Semantics> semantics = net.getSONConnectionTypes(n);
+    		if(semantics.iterator().next() == Semantics.SYNCLINE){
+        		Node input = net.getPreset(n).iterator().next();
+        		postSet.add((Time)input);
+    		}
     	}
 
     	for(Time node : postSet){
@@ -244,4 +473,20 @@ public class EstimationAlg extends TimeAlg{
 
     	return result;
     }
+
+	public String intervals(Collection<Interval[]> intervals){
+		ArrayList<String> strs = new ArrayList<String>();
+		for(Interval[] interval : intervals){
+			strs.add(interval[0].toString());
+		}
+		return "("+strs.toString()+")";
+	}
+
+	public Collection<Interval[]> getResultTimeAndDuration() {
+		return resultTimeAndDuration;
+	}
+
+	public void clearSets(){
+		resultTimeAndDuration.clear();
+	}
 }

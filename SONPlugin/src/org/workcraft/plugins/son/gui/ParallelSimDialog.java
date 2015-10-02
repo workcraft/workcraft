@@ -33,10 +33,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.util.Step;
 
 @SuppressWarnings("rawtypes")
 public class ParallelSimDialog  extends JDialog{

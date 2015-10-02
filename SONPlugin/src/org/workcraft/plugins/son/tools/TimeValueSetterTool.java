@@ -19,10 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -32,7 +28,6 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
@@ -48,6 +43,8 @@ import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
+import org.workcraft.plugins.son.gui.TimeInputFilter;
+import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -72,55 +69,6 @@ public class TimeValueSetterTool extends AbstractTool{
 	private String endLabel = "End time interval: ";
 	private String durationLabel = "Duration interval: ";
 	private String timeLabel = "Time interval: ";
-
-	//Set limit integers to JTextField
-	class InputFilter extends DocumentFilter {
-
-        private int maxLength;
-
-        public InputFilter() {
-            maxLength = 4; // The number of characters allowed
-        }
-
-        private boolean isInteger(String text) {
-            try {
-               Integer.parseInt(text);
-               return true;
-            } catch (NumberFormatException e) {
-               return false;
-            }
-         }
-
-        @Override
-        public void insertString(FilterBypass fb, int offset, String string,
-                AttributeSet attr) throws BadLocationException {
-
-            Document doc = fb.getDocument();
-            StringBuilder sb = new StringBuilder();
-            sb.append(doc.getText(0, doc.getLength()));
-            sb.insert(offset, string);
-
-            if (doc.getLength() + string.length() <= maxLength
-                    	&& isInteger(string)) {
-                fb.insertString(offset, string, attr);
-            }
-        }
-
-        @Override
-        public void replace(FilterBypass fb, int offset, int length,
-                String text, AttributeSet attrs) throws BadLocationException {
-
-            Document doc = fb.getDocument();
-            StringBuilder sb = new StringBuilder();
-            sb.append(doc.getText(0, doc.getLength()));
-            sb.replace(offset, offset + length, text);
-
-            if (isInteger(sb.toString())
-            		&& (doc.getLength() + text.length() - length) <= maxLength) {
-                super.replace(fb, offset, length, text, attrs);
-             }
-        }
-    }
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
@@ -172,7 +120,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		final JTextField min = new JTextField();
 		min.setPreferredSize(new Dimension(labelwidth, labelheight));
 		min.setText(value.minToString());
-		((AbstractDocument) min.getDocument()).setDocumentFilter(new InputFilter());
+		((AbstractDocument) min.getDocument()).setDocumentFilter(new TimeInputFilter());
 
 		JLabel dash = new JLabel();
 		dash.setText("-");
@@ -180,7 +128,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		final JTextField max = new JTextField();
 		max.setText(value.maxToString());
 		max.setPreferredSize(new Dimension(labelwidth, labelheight));
-		((AbstractDocument) max.getDocument()).setDocumentFilter(new InputFilter());
+		((AbstractDocument) max.getDocument()).setDocumentFilter(new TimeInputFilter());
 
 
 		timeInputPanel.add(label);
@@ -454,7 +402,6 @@ public class TimeValueSetterTool extends AbstractTool{
 				}
 			}
 		}
-
 	}
 
 	private void autoComplete(JTextField field){
@@ -573,7 +520,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
 		if( node instanceof VisualSONConnection){
 			VisualSONConnection con = (VisualSONConnection)node;
-			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
+			if(con.getSemantics()==Semantics.PNLINE){
 				((VisualSONConnection) node).setColor(selectedColor);
 				updateTimePanel(e.getEditor(), node);
 				return;

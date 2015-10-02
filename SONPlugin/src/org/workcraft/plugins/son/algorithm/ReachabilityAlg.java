@@ -5,10 +5,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Before;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.util.Before;
 
 public class ReachabilityAlg extends RelationAlgorithm{
 
@@ -88,8 +91,26 @@ public class ReachabilityAlg extends RelationAlgorithm{
 
     	result.addAll(getPrePNSet(n));
 
-    	if(n instanceof TransitionNode){
-    		result.addAll(getPreASynEvents((TransitionNode)n));
+    	if(isInitial(n) && (n instanceof Condition)){
+    		result.addAll(getPostBhvSet((Condition)n));
+    	}else if(n instanceof TransitionNode){
+    		for(SONConnection con : net.getSONConnections(n)){
+    			if(con.getSemantics() == Semantics.SYNCLINE){
+    				if(con.getFirst() == n)
+    					result.add(con.getSecond());
+    				else
+    					result.add(con.getFirst());
+    			}else if(con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
+    				result.add(con.getFirst());
+    		}
+    	}else if(n instanceof ChannelPlace){
+    		Node input = net.getPreset(n).iterator().next();
+    		result.add(input);
+    		Collection<Semantics> semantics = net.getSONConnectionTypes(n);
+    		if(semantics.iterator().next() == Semantics.SYNCLINE){
+        		Node output = net.getPostset(n).iterator().next();
+        		result.add(output);
+    		}
     	}
 
     	return result;

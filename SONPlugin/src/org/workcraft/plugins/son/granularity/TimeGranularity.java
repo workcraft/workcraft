@@ -1,7 +1,7 @@
 package org.workcraft.plugins.son.granularity;
 
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.util.Interval;
 
 public interface TimeGranularity {
 

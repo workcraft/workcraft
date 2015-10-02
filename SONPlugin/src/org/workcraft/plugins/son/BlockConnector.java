@@ -17,6 +17,7 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
+import org.workcraft.plugins.son.util.Interval;
 
 public class BlockConnector {
 

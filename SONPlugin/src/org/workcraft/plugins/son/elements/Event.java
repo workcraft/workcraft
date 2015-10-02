@@ -6,10 +6,10 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
+import org.workcraft.plugins.son.util.Interval;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
 public class Event extends Transition implements TransitionNode, Time{

@@ -27,6 +27,8 @@ public class YearYear extends AbstractTimeGranularity{
 	public Integer subtractTT(Integer start, Integer end)
 			throws TimeOutOfBoundsException {
 		int result = end - start;
+			if(result < 0000)
+				return 0000;
 		return result;
 	}
 

@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.TitledBorder;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -51,6 +52,7 @@ public class StructureVerifyDialog extends JDialog{
 	protected ArrayList<ONGroup> selectedGroups;
 	protected Font font = new Font("Arial", Font.PLAIN, 12);
 	protected Dimension buttonSize = new Dimension(100, 25);
+	protected Dimension listScrollerSize = new Dimension(350, 220);
 	protected int run = 0;
 	protected Window owner;
 
@@ -123,7 +125,7 @@ public class StructureVerifyDialog extends JDialog{
 	protected void createSelectionPanel(){
 
 		groupSelectionPanel = new JPanel(new FlowLayout());
-		groupSelectionPanel.setBorder(BorderFactory.createTitledBorder(groupPanelTitle()));
+		groupSelectionPanel.setBorder(createTitileBorder(groupPanelTitle()));
 
 		createGroupItemsPanel();
 		createSelectionButtonsPanel();
@@ -194,14 +196,19 @@ public class StructureVerifyDialog extends JDialog{
 		});
 
 		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		JScrollPane listScroller = new JScrollPane(groupList);
-		listScroller.setPreferredSize(new Dimension(350, 220));
+		groupItemPanel.add(createJScrollPane(groupList));
+	}
+
+	protected JScrollPane createJScrollPane(JList list){
+		JScrollPane listScroller = new JScrollPane(list);
+		listScroller.setPreferredSize(getListScrollerSize());
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		listScroller.getVerticalScrollBar().setPreferredSize(new Dimension(12, 0));
 		listScroller.getHorizontalScrollBar().setPreferredSize(new Dimension(12, 0));
-		groupItemPanel.add(listScroller);
+
+		return listScroller;
 	}
 
 	protected void createSelectionButtonsPanel(){
@@ -255,7 +262,7 @@ public class StructureVerifyDialog extends JDialog{
 		JPanel leftColumn = new JPanel();
 		leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
 
-		settingPanel.setBorder(BorderFactory.createTitledBorder("Setting"));
+		settingPanel.setBorder(createTitileBorder("Setting"));
 		highLight = new JCheckBox("Highlight erroneous nodes");
 		highLight.setFont(font);
 		highLight.setSelected(true);
@@ -328,6 +335,12 @@ public class StructureVerifyDialog extends JDialog{
 		createInterface();
 	}
 
+	protected TitledBorder createTitileBorder(String title){
+		TitledBorder titledBorder = BorderFactory.createTitledBorder(title);
+		titledBorder.setTitleColor(Color.BLUE.darker());
+		return titledBorder;
+	}
+
 	public StructureVerifyDialog (Window owner, WorkspaceEntry we){
 		this(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL, we);
 	}
@@ -355,6 +368,10 @@ public class StructureVerifyDialog extends JDialog{
 
 	public int getRun(){
 		return run;
+	}
+
+	public Dimension getListScrollerSize(){
+		return listScrollerSize;
 	}
 
 	public Font getPlainFont(){

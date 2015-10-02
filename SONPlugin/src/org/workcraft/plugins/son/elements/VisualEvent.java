@@ -15,8 +15,8 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
+import org.workcraft.plugins.son.util.Interval;
 
 
 @Hotkey(KeyEvent.VK_E)

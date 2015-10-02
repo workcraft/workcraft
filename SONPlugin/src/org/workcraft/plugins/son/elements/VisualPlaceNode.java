@@ -20,10 +20,10 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
+import org.workcraft.plugins.son.util.Interval;
 
 
 public class VisualPlaceNode extends VisualComponent{

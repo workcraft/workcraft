@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.util.Phase;
 
 public interface StructuralVerification {
 

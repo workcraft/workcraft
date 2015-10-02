@@ -1,11 +1,12 @@
 package org.workcraft.plugins.son.algorithm;
 
+
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
+import org.workcraft.plugins.son.util.Interval;
 
 public class TimeAlg extends RelationAlgorithm{
 

@@ -98,7 +98,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
 	private Map<PlaceNode, Boolean> simulation(){
 		Map<PlaceNode, Boolean> result;
-
 		final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
 		final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
 		toolbox.selectTool(tool);

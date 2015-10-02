@@ -35,6 +35,8 @@ import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.util.Scenario;
+import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -190,6 +192,7 @@ public class SON extends AbstractMathModel {
 			setFillColor(n,CommonVisualSettings.getFillColor());
 			setForegroundColor(n, CommonVisualSettings.getBorderColor());
 			setTimeColor(n, Color.BLACK);
+			setTokenColor(n, Color.BLACK);
 		}
 		for (ONGroup group : this.getGroups()){
 			setForegroundColor(group, SONSettings.getGroupForegroundColor());
@@ -218,6 +221,12 @@ public class SON extends AbstractMathModel {
 		}
 		if(n instanceof SONConnection){
 			((SONConnection) n).setTimeLabelColor(color);
+		}
+	}
+
+	public void setTokenColor(Node n, Color color){
+		if(n instanceof PlaceNode){
+			((PlaceNode) n).setTokenColor(color);
 		}
 	}
 
