@@ -154,17 +154,21 @@ public class CpogParsingTool {
         Node current;
         ArrayList<Node> children;
         int index = 0;
+        HashSet<Node> visitedNodes = new HashSet<>();
         while (!q.isEmpty()) {
             current = q.remove();
-            index = findVertex(outer, current);
-            if ((current.getParent() instanceof VisualScenarioPage) | (current.getParent() instanceof VisualPage)) {
-                VisualPage vp = (VisualPage) current.getParent();
-                pages.add(vp);
-            }
-            children = getChildren(visualCpog, current);
-            for (Node child : children) {
-                q.add(child);
-                addNode(child, index + 1, outer);
+            if (!visitedNodes.contains(current)) {
+            	visitedNodes.add(current);
+	            index = findVertex(outer, current);
+	            if ((current.getParent() instanceof VisualScenarioPage) | (current.getParent() instanceof VisualPage)) {
+	                VisualPage vp = (VisualPage) current.getParent();
+	                pages.add(vp);
+	            }
+	            children = getChildren(visualCpog, current);
+	            for (Node child : children) {
+	                q.add(child);
+	                addNode(child, index + 1, outer);
+	            }
             }
         }
     }
@@ -578,46 +582,55 @@ public class CpogParsingTool {
          ArrayList<Node> children = new ArrayList<>();
 		 Node current = null;
 		 boolean transitiveFound = false;
+		 HashSet<Node> visitedNodes = new HashSet<>();
 
 
 		 for(Node root: roots)
 		 {
-			 q.add(root);
+			 if (!visitedNodes.contains(root)) {
+				 q.add(root);
+			 }
 			 while(!q.isEmpty())
 			 {
 				current = (Node) q.remove();
-				children = getChildren(visualCpog, current);
-				for (Node child : children)
+				if (!visitedNodes.contains(current))
 				{
-					q.add(child);
-				}
-				for(Node target : children)
-				{
-					for (Node c : children)
+					visitedNodes.add(current);
+					children = getChildren(visualCpog, current);
+					for (Node child : children)
 					{
-						if (!c.equals(target))
-						{
-							allChildren.add(c);
+						if (!visitedNodes.contains(child)) {
+							q.add(child);
 						}
 					}
+					for(Node target : children)
+					{
+						for (Node c : children)
+						{
+							if (!c.equals(target))
+							{
+								allChildren.add(c);
+							}
+						}
 
-					while((!allChildren.isEmpty()) && (!transitiveFound))
-					{
-						if (allChildren.contains(target))
+						while((!allChildren.isEmpty()) && (!transitiveFound))
 						{
-							transitiveFound = true;
-						} else
-						{
-							allChildren.addAll(getChildren(visualCpog, allChildren.remove(0)));
+							if (allChildren.contains(target))
+							{
+								transitiveFound = true;
+							} else
+							{
+								allChildren.addAll(getChildren(visualCpog, allChildren.remove(0)));
+							}
 						}
+						if (transitiveFound)
+						{
+							transitives.add((VisualArc) visualCpog.getConnection(current, target));
+							transitiveFound = false;
+						}
+						allChildren.clear();
 					}
-					if (transitiveFound)
-					{
-						transitives.add((VisualArc) visualCpog.getConnection(current, target));
-						transitiveFound = false;
-					}
-					allChildren.clear();
-				}
+			 }
 			 }
 		 }
 
@@ -625,18 +638,13 @@ public class CpogParsingTool {
 		 return transitives;
 	 }
 
-	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots, String text, boolean forceRemoval) {
+	 public void removeTransitives(VisualCPOG visualCpog,  HashSet<Node> roots, String text) {
 		 HashSet<VisualArc> transitives = findTransitives(visualCpog, roots);
 		 for (VisualArc t : transitives) {
-			 if (!forceRemoval) {
-				 String arc = ((VisualVertex)t.getFirst()).getLabel() + " -> " + ((VisualVertex)t.getSecond()).getLabel();
-             	if (!(text.contains(" " + arc + " ")) && !(text.endsWith(" " + arc)) && !(text.contains("(" + arc + " ")) && !(text.contains("(" + arc + ")")) && !(text.contains(" " + arc + ")"))) {
-            	 	visualCpog.remove(t);
-             	}
-			 } else
-			 {
-				 visualCpog.remove(t);
-			 }
+			String arc = ((VisualVertex)t.getFirst()).getLabel() + " -> " + ((VisualVertex)t.getSecond()).getLabel();
+         	if (!(text.contains(" " + arc + " ")) && !(text.endsWith(" " + arc)) && !(text.contains("(" + arc + " ")) && !(text.contains("(" + arc + ")")) && !(text.contains(" " + arc + ")"))) {
+        	 	visualCpog.remove(t);
+         	}
          }
          transitives.clear();
 	 }

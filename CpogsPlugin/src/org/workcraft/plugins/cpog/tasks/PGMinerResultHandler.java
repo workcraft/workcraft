@@ -90,7 +90,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 								final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
 								final ToolboxPanel toolbox = editor.getToolBox();
 								final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-								tool.insertExpression(line, false, false, true, false);
+								tool.insertExpression(line, false, false, false);
 								line = "";
 							}
 							else {

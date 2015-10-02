@@ -137,14 +137,14 @@ public class CpogSelectionTool extends SelectionTool {
 							exp = exp + " " + s;
 						} else {
 							if (exp.compareTo("") != 0) {
-								insertExpression(exp, false, false, false, true);
+								insertExpression(exp, false, false, true);
 								exp = "";
 							}
 							exp = s;
 						}
 					}
 					if (exp.compareTo("") != 0) {
-						insertExpression(exp, false, false, false, true);
+						insertExpression(exp, false, false, true);
 					}
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
@@ -181,7 +181,7 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                 while (fileIn.hasNextLine()) {
                     equation = fileIn.nextLine();
-                    insertExpression(equation, true, false, false, true);
+                    insertExpression(equation, true, false, true);
                 }
             }
 
@@ -208,7 +208,7 @@ public class CpogSelectionTool extends SelectionTool {
 	}
 
 	public HashMap<String, VisualVertex> insertExpression(String text,
-			final boolean createDuplicates, boolean getVertList, boolean forceTransitiveRemoval, boolean zoomFit) {
+			final boolean createDuplicates, boolean getVertList, boolean zoomFit) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
         we.captureMemento();
@@ -370,6 +370,7 @@ public class CpogSelectionTool extends SelectionTool {
             return null;
         }
 
+
         if (getVertList) {
             for (VisualVertex v :vertexMap.values()) {
                 visualCpog.removeWithoutNotify(v);
@@ -380,6 +381,7 @@ public class CpogSelectionTool extends SelectionTool {
         visualCpog.selectNone();
         int n = vertexMap.size();
         int i = 0;
+
         for (VisualVertex v : vertexMap.values()) {
             visualCpog.addToSelection(v);
         }
@@ -395,7 +397,7 @@ public class CpogSelectionTool extends SelectionTool {
             LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());//new LinkedHashSet<Node>();
 
             if (!insertTransitives.getState()) {
-                parsingTool.removeTransitives(visualCpog, roots, text, forceTransitiveRemoval);
+                parsingTool.removeTransitives(visualCpog, roots, text);
             }
 
             ArrayList<Node> prevSelection = new ArrayList<>();
@@ -448,6 +450,8 @@ public class CpogSelectionTool extends SelectionTool {
         we.saveMemento();
 
         visualCpog.selectNone();
+
+
 
         editor.requestFocus();
 
@@ -885,7 +889,7 @@ public class CpogSelectionTool extends SelectionTool {
             eqLocation = newExpression.indexOf('=');
             g.updateNormalForm(newExpression.substring(eqLocation + 1));
 
-            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, false, true).clone();
+            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, true).clone();
             for (VisualVertex v : vertMap.values()) {
                 Point2D.Double newPosition = new Point2D.Double(g.getVertMap().get(v.getLabel()).getX(), g.getVertMap().get(v.getLabel()).getY());
                 v.setPosition(newPosition);
@@ -907,6 +911,68 @@ public class CpogSelectionTool extends SelectionTool {
             }
         }
         visualCpog.addToSelection(arcs);
+    }
+
+    public void insertEventLog(VisualCPOG visualCpog, int i, String[] events, double yPos) {
+
+    	final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
+    	VisualVertex vertex1 , vertex2;
+
+    	for (int c = 0; c < events.length - 2; c++) {
+    		String first = "";
+    		String second = "";
+
+    		first = events[c];
+    		second = events[c+1];
+
+    		if (vertexMap.containsKey(first)) {
+    			vertex1 = vertexMap.get(first);
+    		} else {
+    			vertex1 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+                vertex1.setLabel(first);
+                vertexMap.put(first, vertex1);
+    		}
+
+
+    		if (vertexMap.containsKey(second)) {
+    			int d = 1;
+    			while (vertexMap.containsKey(second + "_" + d)) {
+    				d++;
+    			}
+    			vertex2 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+                vertex2.setLabel(second + "_" + d);
+                vertexMap.put(second + "_" + d, vertex2);
+
+                events[c+1] = second + "_" + d;
+    		} else {
+    			vertex2 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+                vertex2.setLabel(second);
+                vertexMap.put(second, vertex2);
+    		}
+
+    		visualCpog.connect(vertex1, vertex2);
+
+    	}
+
+    	double pos = vertexMap.values().size();
+    	pos = pos*2.5;
+    	pos = 0 - pos/2;
+
+    	visualCpog.selectNone();
+    	for (VisualVertex v : vertexMap.values()) {
+    		v.setPosition(new Point2D.Double(pos, yPos));
+    		pos = pos + 2.5;
+    		//visualCpog.addToSelection(v);
+    	}
+
+    	//VisualPage page = visualCpog.groupPageSelection();
+
+    	//visualCpog.groupSelection("t" + i);
+
+    	//page.setLabel("t" + i);
+
+
+
     }
 
 
