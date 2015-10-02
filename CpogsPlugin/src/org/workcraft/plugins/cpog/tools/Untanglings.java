@@ -152,9 +152,15 @@ public class Untanglings {
 	 *  processes which compose the untangling         **/
 	public boolean startConversion(){
 
+
 		// starting conversion
 		untangling = new ReductionBasedRepresentativeUntangling(sys,setup);
 
+		// if Petri Net is not safe, stop the conversion
+		if(untangling.isSafe() == false){
+			System.out.println("Untangling cannot be constructed because the Petri Net is not safe.");
+			return false;
+		}
 		// checking correct execution of conversion
 		for(IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()){
 
