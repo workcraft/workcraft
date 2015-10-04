@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog.tasks;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -74,28 +75,33 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 					}
 					}
 					byte[] output = result.getReturnValue().getOutputFile("output.1.cpog");
+					String text = new String(output);
 					String line = "";
+					boolean finished = false;
 
 					System.out.println("\nResulting Parameterised Graph Equations");
-					for (byte b : output) {
-						if ((char)b != '\n') {
-							line = line + (char)b;
+					while (!finished) {
+						if (text.contains("\n")) {
+							line = text.substring(0, text.indexOf("\n"));
+							text = text.substring(text.indexOf("\n") + 1, text.length()-1);
 						} else {
-							line = line.replaceAll("\r", "");
-							System.out.println(line);
-							while (line.endsWith(" ")) {
-								line = line.substring(0, line.length() - 1);
-							}
-							if (!(line.endsWith("="))) {
-								final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-								final ToolboxPanel toolbox = editor.getToolBox();
-								final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-								tool.insertExpression(line, false, false, false);
-								line = "";
-							}
-							else {
-								JOptionPane.showMessageDialog(mainWindow, "PGMiner finished with no result", "No concurrency", JOptionPane.ERROR_MESSAGE);
-							}
+							line = text;
+							finished = true;
+						}
+						line = line.replaceAll("\r", "");
+//						System.out.println(line);
+						while (line.endsWith(" ")) {
+							line = line.substring(0, line.length() - 1);
+						}
+						if (!(line.endsWith("="))) {
+							final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+							final ToolboxPanel toolbox = editor.getToolBox();
+							final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
+							tool.insertExpression(line, false, false, false);
+							line = "";
+						}
+						else {
+							JOptionPane.showMessageDialog(mainWindow, "PGMiner finished with no result", "No concurrency", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 					System.out.println();
