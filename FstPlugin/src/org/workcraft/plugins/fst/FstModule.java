@@ -10,6 +10,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.cpog.tools.PnToCpogTool;
 import org.workcraft.plugins.fst.interop.DotGExporter;
 import org.workcraft.plugins.fst.interop.DotGImporter;
 import org.workcraft.plugins.fst.serialisation.DotGSerialiser;
@@ -69,6 +70,13 @@ public class FstModule  implements Module {
 			@Override
 			public Tool create() {
 				return new FstToFsmConverterTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new PnToCpogTool();
 			}
 		});
 	}

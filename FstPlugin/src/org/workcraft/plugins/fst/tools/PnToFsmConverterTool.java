@@ -22,7 +22,7 @@ public class PnToFsmConverterTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Finate State Machine [Petrify]";
+		return "Finite State Machine [Petrify]";
 	}
 
 	@Override

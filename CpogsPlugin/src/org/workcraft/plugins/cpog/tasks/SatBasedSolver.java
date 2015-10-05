@@ -34,7 +34,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class SatBasedSolver {
 
 	private EncoderSettings settings;
-	private Double minArea;
 	private ScencoExecutionSupport cpogBuilder;
 
 	// SETTING PARAMETERS FOR CALLING SCENCO

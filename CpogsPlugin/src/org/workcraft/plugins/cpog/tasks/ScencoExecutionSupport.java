@@ -376,6 +376,7 @@ public class ScencoExecutionSupport {
 										"Op-code " + enc[k] + " not allowed.",
 										"Custom encoding error",
 										JOptionPane.ERROR_MESSAGE);
+								Output1.close();
 								return -1;
 
 							}
@@ -420,7 +421,6 @@ public class ScencoExecutionSupport {
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);
 		String line;
-		boolean finish = false;
 		while ( (line = br.readLine()) != null){
 			if(settings.isVerboseMode())
 				System.out.println(line);

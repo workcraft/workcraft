@@ -8,5 +8,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GraphPlugin"/>
+	<classpathentry kind="lib" path="/ThirdParty/jbpt-0.2.429.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,5 +1,7 @@
 package org.workcraft.plugins.cpog.gui;
 
+import info.clearthought.layout.TableLayout;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -35,8 +37,6 @@ import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.IntDocument;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class ScencoSatBasedDialog extends JDialog {

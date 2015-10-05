@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/FsmPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CpogsPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
