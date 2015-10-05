@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.workcraft.plugins.stg.STGSettings;
 import org.workcraft.util.ColorUtils;
 
 public class Heightmap {
 	final static private float HEIGHTMAP_BRIGHTNESS_TOP = 0.5f;
 	final static private float HEIGHTMAP_BRIGHTNESS_BOTTOM = 1.0f;
-	final static private int HEIGHTMAP_RANGE_LIMIT = 5;
 
 	private final HashMap<String, Integer> nameToDensity;
 	private final HashMap<Integer, Color> densityToColor;
@@ -48,12 +48,16 @@ public class Heightmap {
 			int density = densityPalette.get(level);
 			densityToLevel.put(density, level);
 		}
-		int levelCount = ((densitySet.size() < HEIGHTMAP_RANGE_LIMIT) ? densitySet.size() : HEIGHTMAP_RANGE_LIMIT);
+		int levelLimit = STGSettings.getHeightmapLevelLimit();
+		int levelCount = ((densitySet.size() < levelLimit) ? densitySet.size() : levelLimit);
 		float[] bs = getBrightnessLevels(levelCount);
 		Color[] palette = ColorUtils.getHsbPalette(new float[]{0.05f}, new float[]{0.4f}, bs);
 		for (String name: heightmap.keySet()) {
 			int density = heightmap.get(name);
-			int level = densityToLevel.get(density);
+			int level = 0;
+			if (densityToLevel.containsKey(density)) {
+				level = densityToLevel.get(density);
+			}
 			Color color = palette[level];
 			result.put(density, color);
 		}
@@ -76,7 +80,8 @@ public class Heightmap {
 	private ArrayList<Integer> buidDensityPalette(Set<Integer> densitySet) {
 		ArrayList<Integer> densityList = new ArrayList<>(densitySet);
 		Collections.sort(densityList);
-		int fromIndex = ((densityList.size() < HEIGHTMAP_RANGE_LIMIT) ? 0 : densityList.size() - HEIGHTMAP_RANGE_LIMIT);
+		int levelLimit = STGSettings.getHeightmapLevelLimit();
+		int fromIndex = ((densityList.size() < levelLimit) ? 0 : densityList.size() - levelLimit);
 		return new ArrayList<>(densityList.subList(fromIndex, densityList.size()));
 	}
 

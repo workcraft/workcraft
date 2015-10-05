@@ -121,6 +121,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	    });
 		JScrollPane coresScroll = new JScrollPane();
 		coresScroll.setViewportView(coresTable);
+
 		infoPanel = new JPanel(new BorderLayout());
 		infoPanel.add(coresRadio, BorderLayout.NORTH);
 		infoPanel.add(coresScroll, BorderLayout.CENTER);
@@ -395,7 +396,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 		public Object getValueAt(int row, int col) {
 			String result;
 			if ((col == 0) && heightmap.isReduced()) {
-				result = "<" + Integer.toString(heightmap.getLevelDensity(col));
+				result = "<" + Integer.toString(heightmap.getLevelDensity(col) + 1);
 			} else {
 				result = Integer.toString(heightmap.getLevelDensity(col));
 			}
