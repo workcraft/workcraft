@@ -11,7 +11,6 @@ public class ComplexResult implements ConnectionResult {
 		this.implicitPlace = place;
 		this.con1 = con1;
 		this.con2 = con2;
-
 	}
 
 	@Override

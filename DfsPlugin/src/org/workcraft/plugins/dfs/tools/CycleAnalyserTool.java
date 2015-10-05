@@ -254,7 +254,7 @@ public class CycleAnalyserTool extends AbstractTool {
 		};
 	}
 
-	public ArrayList<Cycle> findCycles() {
+	private ArrayList<Cycle> findCycles() {
 		ArrayList<Cycle> result = new ArrayList<Cycle>();
 		// Update global min and max delay values
 		Collection<VisualDelayComponent> allComponents = Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualDelayComponent.class);

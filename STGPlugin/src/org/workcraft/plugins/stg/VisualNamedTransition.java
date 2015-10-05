@@ -36,6 +36,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
@@ -76,11 +77,26 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		Decoration d = r.getDecoration();
-		Color background = d.getBackground();
-		if (background != null) {
-			Rectangle2D shape = getBoundingBoxInLocalSpace();
-			g.setColor(background);
-			g.fill(shape);
+		if (d instanceof CoreDecoration) {
+			Color[] palette = ((CoreDecoration)d).getColorisationPalette();
+			Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
+			double x = expandedShape.getX();
+			double y = expandedShape.getY();
+			double w = expandedShape.getWidth() / palette.length;
+			double h = expandedShape.getHeight();
+			for (Color color: palette) {
+				g.setColor(color);
+				Rectangle2D shape = new Rectangle2D.Double(x, y, w, h);
+				g.fill(shape);
+				x += w;
+			}
+		} else {
+			Color background = d.getBackground();
+			if (background != null) {
+				g.setColor(background);
+				Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
+				g.fill(expandedShape);
+			}
 		}
 		g.setColor(Coloriser.colorise(getColor(), d.getColorisation()));
 		renderedText.draw(g);

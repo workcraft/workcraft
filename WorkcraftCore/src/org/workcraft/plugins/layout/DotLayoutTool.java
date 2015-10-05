@@ -34,8 +34,6 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.Movable;
-import org.workcraft.dom.visual.MovableHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
@@ -125,10 +123,10 @@ public class DotLayoutTool extends AbstractLayoutTool {
 						if (posStr!=null) {
 							String [] posParts = posStr.split(",");
 							if(posParts.length==2) {
-								m.setRootSpaceX(Double.parseDouble(posParts[0])*1.0/72);
-								m.setRootSpaceY(-Double.parseDouble(posParts[1])*1.0/72);
-//								double x = Double.parseDouble(posParts[0])*1.0/72;
-//								double y = -Double.parseDouble(posParts[1])*1.0/72;
+								// FIXME: MovableHelper.translate does not work with groups and pages. setRootSpacePosition may be a solution.
+								double x = Double.parseDouble(posParts[0])*1.0/72;
+								double y = -Double.parseDouble(posParts[1])*1.0/72;
+								m.setRootSpacePosition(new Point2D.Double(x, y));
 //								MovableHelper.resetTransform(m);
 //								MovableHelper.translate(m, x, y);
 							} else {

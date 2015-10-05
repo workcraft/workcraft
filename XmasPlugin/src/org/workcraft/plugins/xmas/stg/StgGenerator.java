@@ -1082,13 +1082,13 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		for (VisualXmasContact contact: component.getContacts()) {
 			if (contact.isOutput()) {
 				SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _O_IRDY, pos.getX() + xContact, pos.getY(), 1, capacity);
-				SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _O_IDN, pos.getX() + xContact, pos.getY() - 12.0, 1, capacity + 1);
+				SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _O_IDN, pos.getX() + xContact, pos.getY() - 16.0, 1, capacity + 1);
 				o = new ContactStg(rdy, dn);
 				putContactStg(contact, o);
 			} else {
 				SignalStg rdy = generateSignalStg(XmasStgType.TRDY, name + _I_TRDY, pos.getX() - xContact, pos.getY(), 1, capacity);
 				setSignalInitialState(rdy, true);
-				SignalStg dn = generateSignalStg(XmasStgType.TDN, name + _I_TDN, pos.getX() - xContact, pos.getY() + 12.0, 1, capacity + 1);
+				SignalStg dn = generateSignalStg(XmasStgType.TDN, name + _I_TDN, pos.getX() - xContact, pos.getY() + 16.0, 1, capacity + 1);
 				i = new ContactStg(rdy, dn);
 				putContactStg(contact, i);
 			}
@@ -1167,23 +1167,32 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 			createReplicaReadArcs(slot.tl.dn.zero, o.dn.fallList, +6.0, -1.0 - idx);
 			createReplicaReadArcs(slot.tl.dn.one, o.dn.riseList, +6.0, -1.0 + idx);
 			// Connections with the next slot
-			SlotStg nextSlot = slotList.get((idx + 1) % capacity);
-			createReplicaReadArc(slot.mem.zero, nextSlot.hd.rdy.riseList.get(0), -6.0, +1.0);
-			createReplicaReadArc(slot.mem.zero, nextSlot.hd.dn.riseList.get(2), -6.0, -1.0);
-			createReplicaReadArc(slot.mem.one, nextSlot.hd.dn.riseList.get(1), -6.0, 0.0);
-			createReplicaReadArc(slot.mem.one, nextSlot.tl.rdy.riseList.get(0), +6.0, -1.0);
-			createReplicaReadArc(slot.mem.zero, nextSlot.tl.dn.riseList.get(1), +6.0, 0.0);
-			createReplicaReadArc(slot.mem.one, nextSlot.tl.dn.riseList.get(2), +6.0, +1.0);
+			int nextIdx = (idx + 1) % capacity;
+			if (nextIdx != idx) {
+				SlotStg nextSlot = slotList.get(nextIdx);
+				createReplicaReadArc(slot.mem.zero, nextSlot.hd.rdy.riseList.get(0), -6.0, +1.0);
+				createReplicaReadArc(slot.mem.zero, nextSlot.hd.dn.riseList.get(2), -6.0, -1.0);
+				createReplicaReadArc(slot.mem.one, nextSlot.hd.dn.riseList.get(1), -6.0, 0.0);
+				createReplicaReadArc(slot.mem.one, nextSlot.tl.rdy.riseList.get(0), +6.0, -1.0);
+				createReplicaReadArc(slot.mem.zero, nextSlot.tl.dn.riseList.get(1), +6.0, 0.0);
+				createReplicaReadArc(slot.mem.one, nextSlot.tl.dn.riseList.get(2), +6.0, +1.0);
+			}
 		}
 		if (i != null) {
-			createReadArc(i.rdy.zero, i.dn.riseList.get(0));
-			createReadArc(i.rdy.one, i.dn.riseList.get(1));
-			createReadArc(i.rdy.one, i.dn.riseList.get(2));
+			boolean first = true;
+			for (VisualSignalTransition t: i.dn.riseList) {
+				VisualPlace p = ((first) ? i.rdy.zero : i.rdy.one);
+				createReadArc(p, t);
+				first = false;
+			}
 		}
 		if (o != null) {
-			createReadArc(o.rdy.zero, o.dn.riseList.get(0));
-			createReadArc(o.rdy.one, o.dn.riseList.get(1));
-			createReadArc(o.rdy.one, o.dn.riseList.get(2));
+			boolean first = true;
+			for (VisualSignalTransition t: o.dn.riseList) {
+				VisualPlace p = ((first) ? o.rdy.zero : o.rdy.one);
+				createReadArc(p, t);
+				first = false;
+			}
 		}
 
 		return new QueueStg(i, o, slotList);

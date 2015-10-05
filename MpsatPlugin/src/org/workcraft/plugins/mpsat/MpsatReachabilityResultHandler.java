@@ -6,19 +6,19 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat.gui.Solution;
-import org.workcraft.plugins.mpsat.gui.SolutionsDialog;
+import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 
 
-final class MpsatStgReachabilityResultHandler implements Runnable {
+final class MpsatReachabilityResultHandler implements Runnable {
 
 	private final Result<? extends MpsatChainResult> result;
 	private final MpsatChainTask task;
 
-	MpsatStgReachabilityResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
+	MpsatReachabilityResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
 		this.task = task;
 		this.result = result;
 	}
@@ -48,9 +48,9 @@ final class MpsatStgReachabilityResultHandler implements Runnable {
 		String message = getMessage(!solutions.isEmpty());
 		if (Solution.hasTraces(solutions)) {
 			String extendedMessage = "<html><br>&#160;" + message +  "<br><br>&#160;Trace(s) leading to the problematic state(s):<br><br></html>";
-			final SolutionsDialog solutionsDialog = new SolutionsDialog(task, title, extendedMessage, solutions);
-			GUI.centerToParent(solutionsDialog, Framework.getInstance().getMainWindow());
-			solutionsDialog.setVisible(true);
+			final ReachibilityDialog dialog = new ReachibilityDialog(task, title, extendedMessage, solutions);
+			GUI.centerToParent(dialog, Framework.getInstance().getMainWindow());
+			dialog.setVisible(true);
 		} else {
 			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 		}

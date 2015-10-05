@@ -30,7 +30,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.NodeStg;
-import org.workcraft.util.CieColorUtils;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Hierarchy;
 
@@ -151,7 +151,9 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		ColorGenerator result = null;
 		if (required) {
 			if (tokenColors == null) {
-				tokenColors = CieColorUtils.getLabPalette(5, 5, 5, 0.2f, 0.7f);
+				tokenColors = ColorUtils.getHsbPalette(
+						new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
+						new float[]{0.50f},  new float[]{0.9f, 0.7f, 0.5f});
 			}
 			result = new ColorGenerator(tokenColors);
 		}

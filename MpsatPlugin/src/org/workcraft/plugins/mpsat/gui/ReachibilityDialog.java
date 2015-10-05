@@ -18,12 +18,12 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 
 
 @SuppressWarnings("serial")
-public class SolutionsDialog extends JDialog {
+public class ReachibilityDialog extends JDialog {
 	private JPanel contents;
 	private JPanel solutionsPanel;
 	private JPanel buttonsPanel;
 
-	public SolutionsDialog(MpsatChainTask task, String title, String message, List<Solution> solutions) {
+	public ReachibilityDialog(MpsatChainTask task, String title, String message, List<Solution> solutions) {
 
 		double sizes[][] = {
 				{ TableLayout.FILL },
@@ -37,20 +37,20 @@ public class SolutionsDialog extends JDialog {
 			solutionsPanel.add(new SolutionPanel(task, solution, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					SolutionsDialog.this.setVisible(false);
+					ReachibilityDialog.this.setVisible(false);
 				}
 			}));
 		}
 
 		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-		JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
+		JButton closeButton = new JButton("Close");
+		closeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SolutionsDialog.this.setVisible(false);
+				ReachibilityDialog.this.setVisible(false);
 			}
 		});
-		buttonsPanel.add(okButton);
+		buttonsPanel.add(closeButton);
 
 		contents = new JPanel(new TableLayout(sizes));
 		contents.add(new JLabel(message), "0 0");

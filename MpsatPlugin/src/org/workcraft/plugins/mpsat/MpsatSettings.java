@@ -273,7 +273,7 @@ public class MpsatSettings {
 			break;
 		case ALL:
 			int solutionNumberLimit = getSolutionNumberLimit();
-			if (solutionNumberLimit>0) {
+			if (solutionNumberLimit > 0) {
 				args.add("-a" + Integer.toString(solutionNumberLimit));
 			} else {
 				args.add("-a");

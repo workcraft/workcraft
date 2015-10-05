@@ -39,18 +39,21 @@ public class STGSettings implements Settings {
 	private static final String keyInternalColor = prefix + ".internalColor";
 	private static final String keyDummyColor = prefix + ".dummyColor";
 	private static final String keyShowToggle = prefix + ".showToggle";
+	private static final String keyHeightmapLevelLimit = prefix + ".heightmapLevelLimit";
 
 	private static final Color defaultInputColor = Color.RED.darker();
 	private static final Color defaultOutputColor = Color.BLUE.darker();
 	private static final Color defaultInternalColor = Color.GREEN.darker();
 	private static final Color defaultDummyColor = Color.BLACK.darker();
 	private static final boolean defaultShowToggle = false;
+	private static final Integer defaultHeightmapLevelLimit = 5;
 
 	private static Color inputColor = defaultInputColor;
 	private static Color outputColor = defaultOutputColor;
 	private static Color internalColor = defaultInternalColor;
 	private static Color dummyColor = defaultDummyColor;
 	private static boolean showToggle = defaultShowToggle;
+	private static Integer heightmapLevelLimit = defaultHeightmapLevelLimit;
 
 	public STGSettings() {
 		properties.add(new PropertyDeclaration<STGSettings, Color>(
@@ -102,6 +105,16 @@ public class STGSettings implements Settings {
 				return getShowToggle();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<STGSettings, Integer>(
+				this, "Maximum number of heightmap levels", Integer.class, true, false, false) {
+			protected void setter(STGSettings object, Integer value) {
+				setHeightmapLevelLimit(value);
+			}
+			protected Integer getter(STGSettings object) {
+				return getHeightmapLevelLimit();
+			}
+		});
 	}
 
 	@Override
@@ -116,6 +129,7 @@ public class STGSettings implements Settings {
 		setInternalColor(config.getColor(keyInternalColor, defaultInternalColor));
 		setDummyColor(config.getColor(keyDummyColor, defaultDummyColor));
 		setShowToggle(config.getBoolean(keyShowToggle, defaultShowToggle));
+		setHeightmapLevelLimit(config.getInt(keyHeightmapLevelLimit, defaultHeightmapLevelLimit));
 	}
 
 	@Override
@@ -125,6 +139,7 @@ public class STGSettings implements Settings {
 		config.setColor(keyInternalColor, getInternalColor());
 		config.setColor(keyDummyColor, getDummyColor());
 		config.setBoolean(keyShowToggle, getShowToggle());
+		config.setInt(keyHeightmapLevelLimit, getHeightmapLevelLimit());
 	}
 
 	@Override
@@ -175,6 +190,14 @@ public class STGSettings implements Settings {
 
 	public static void setShowToggle(Boolean value) {
 		showToggle = value;
+	}
+
+	public static Integer getHeightmapLevelLimit() {
+		return heightmapLevelLimit;
+	}
+
+	public static void setHeightmapLevelLimit(Integer value) {
+		heightmapLevelLimit = value;
 	}
 
 }

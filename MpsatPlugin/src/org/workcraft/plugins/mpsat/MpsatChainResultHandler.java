@@ -31,10 +31,12 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				break;
 			case REACHABILITY:
 			case STG_REACHABILITY:
+			case NORMALCY:
+				SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(task, result));
+				break;
 			case CSC_CONFLICT_DETECTION:
 			case USC_CONFLICT_DETECTION:
-			case NORMALCY:
-				SwingUtilities.invokeLater(new MpsatStgReachabilityResultHandler(task, result));
+				SwingUtilities.invokeLater(new MpsatEncodingConflictResultHandler(task, result));
 				break;
 			case DEADLOCK:
 				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(task, result));
