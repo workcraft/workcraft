@@ -578,7 +578,7 @@ public class CpogParsingTool {
 	 {
 		 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 		 HashSet<VisualArc> transitives = new HashSet<VisualArc>();
-		 ArrayList<Node>  allChildren = new ArrayList<Node>();
+		 HashSet<Node>  allChildren = new HashSet<Node>();
          ArrayList<Node> children = new ArrayList<>();
 		 Node current = null;
 		 boolean transitiveFound = false;
@@ -593,45 +593,50 @@ public class CpogParsingTool {
 			 while(!q.isEmpty())
 			 {
 				current = (Node) q.remove();
-				if (!visitedNodes.contains(current))
-				{
+
+				if (!visitedNodes.contains(current)) {
+
 					visitedNodes.add(current);
 					children = getChildren(visualCpog, current);
-					for (Node child : children)
-					{
+
+					for (Node child : children) {
 						if (!visitedNodes.contains(child)) {
 							q.add(child);
 						}
 					}
-					for(Node target : children)
-					{
-						for (Node c : children)
-						{
-							if (!c.equals(target))
-							{
-								allChildren.add(c);
-							}
-						}
 
-						while((!allChildren.isEmpty()) && (!transitiveFound))
-						{
-							if (allChildren.contains(target))
-							{
+					for(Node target : children) {
+
+						HashSet<Node> visitedChildren = new HashSet<>();
+
+
+						allChildren.addAll(children);
+
+						allChildren.remove(target);
+
+
+						while((!allChildren.isEmpty()) && (!transitiveFound)) {
+							if (allChildren.contains(target)) {
 								transitiveFound = true;
-							} else
-							{
-								allChildren.addAll(getChildren(visualCpog, allChildren.remove(0)));
+							} else {
+								HashSet<Node> temp = new HashSet<>();
+								for (Node n : allChildren) {
+									temp.addAll(getChildren(visualCpog, n));
+								}
+								visitedChildren.addAll(allChildren);
+								temp.removeAll(visitedChildren);
+								allChildren = temp;
+
 							}
 						}
-						if (transitiveFound)
-						{
+						if (transitiveFound) {
 							transitives.add((VisualArc) visualCpog.getConnection(current, target));
 							transitiveFound = false;
 						}
 						allChildren.clear();
 					}
-			 }
-			 }
+				}
+			}
 		 }
 
 

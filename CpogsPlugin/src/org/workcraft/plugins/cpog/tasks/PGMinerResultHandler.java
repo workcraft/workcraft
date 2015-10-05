@@ -83,13 +83,16 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 					while (!finished) {
 						if (text.contains("\n")) {
 							line = text.substring(0, text.indexOf("\n"));
-							text = text.substring(text.indexOf("\n") + 1, text.length()-1);
-						} else {
-							line = text;
+							text = text.substring(text.indexOf("\n") + 1, text.length());
+						}
+						if (text.compareTo("") == 0) {
 							finished = true;
 						}
 						line = line.replaceAll("\r", "");
-//						System.out.println(line);
+						while (line.endsWith(" ")) {
+							line = line.substring(0, line.length() - 1);
+						}
+						System.out.println(line);
 						while (line.endsWith(" ")) {
 							line = line.substring(0, line.length() - 1);
 						}
@@ -97,7 +100,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 							final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
 							final ToolboxPanel toolbox = editor.getToolBox();
 							final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-							tool.insertExpression(line, false, false, false);
+							tool.insertExpression(line, false, false, false, true);
 							line = "";
 						}
 						else {

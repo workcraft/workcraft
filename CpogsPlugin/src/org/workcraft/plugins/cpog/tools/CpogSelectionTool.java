@@ -137,14 +137,14 @@ public class CpogSelectionTool extends SelectionTool {
 							exp = exp + " " + s;
 						} else {
 							if (exp.compareTo("") != 0) {
-								insertExpression(exp, false, false, true);
+								insertExpression(exp, false, false, true, false);
 								exp = "";
 							}
 							exp = s;
 						}
 					}
 					if (exp.compareTo("") != 0) {
-						insertExpression(exp, false, false, true);
+						insertExpression(exp, false, false, true, false);
 					}
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
@@ -181,7 +181,7 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                 while (fileIn.hasNextLine()) {
                     equation = fileIn.nextLine();
-                    insertExpression(equation, true, false, true);
+                    insertExpression(equation, true, false, true, false);
                 }
             }
 
@@ -208,7 +208,7 @@ public class CpogSelectionTool extends SelectionTool {
 	}
 
 	public HashMap<String, VisualVertex> insertExpression(String text,
-			final boolean createDuplicates, boolean getVertList, boolean zoomFit) {
+			final boolean createDuplicates, boolean getVertList, boolean zoomFit, boolean blockTransitiveRemoval) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
         we.captureMemento();
@@ -396,7 +396,7 @@ public class CpogSelectionTool extends SelectionTool {
 
             LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());//new LinkedHashSet<Node>();
 
-            if (!insertTransitives.getState()) {
+            if (!((insertTransitives.getState()) || (blockTransitiveRemoval))) {
                 parsingTool.removeTransitives(visualCpog, roots, text);
             }
 
@@ -889,7 +889,7 @@ public class CpogSelectionTool extends SelectionTool {
             eqLocation = newExpression.indexOf('=');
             g.updateNormalForm(newExpression.substring(eqLocation + 1));
 
-            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, true).clone();
+            HashMap<String, VisualVertex> vertMap = (HashMap<String, VisualVertex>) insertExpression(newExpression, true, true, true, false).clone();
             for (VisualVertex v : vertMap.values()) {
                 Point2D.Double newPosition = new Point2D.Double(g.getVertMap().get(v.getLabel()).getX(), g.getVertMap().get(v.getLabel()).getY());
                 v.setPosition(newPosition);
