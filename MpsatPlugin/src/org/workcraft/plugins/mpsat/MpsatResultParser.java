@@ -15,10 +15,19 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 public class MpsatResultParser {
 	private String mpsatOutput;
 	private LinkedList<Solution> solutions;
-	final static private Pattern patternReachability0 = Pattern.compile("SOLUTION .+\ntotal cost of all paths:", Pattern.UNIX_LINES);
-	final static private Pattern patternReachability1 = Pattern.compile("SOLUTION .+\n(.*)\npath cost:", Pattern.UNIX_LINES);
-	final static private Pattern patternReachability2 = Pattern.compile("SOLUTION .+\n(.*)\n(.*)\ntotal cost of all paths:", Pattern.UNIX_LINES);
-	final static private Pattern patternNormalcy1 = Pattern.compile("SOLUTION .+\n(.*)\ntriggers:", Pattern.UNIX_LINES);
+
+	final static private Pattern patternReachability0 =
+			Pattern.compile("SOLUTION .+\ntotal cost of all paths: .+\n", Pattern.UNIX_LINES);
+
+	final static private Pattern patternReachability1 =
+			Pattern.compile("SOLUTION .+\n(.*)\npath cost: .+\n", Pattern.UNIX_LINES);
+
+	final static private Pattern patternReachability2 =
+			Pattern.compile("SOLUTION .+\n(.*)\n(.*)\ntotal cost of all paths: .+\n(\nConflict for signal (.+)\n)?", Pattern.UNIX_LINES);
+
+	final static private Pattern patternNormalcy1 =
+			Pattern.compile("SOLUTION .+\n(.*)\ntriggers: .+\n", Pattern.UNIX_LINES);
+
 
 	public MpsatResultParser(ExternalProcessResult result) {
 		try {
@@ -28,29 +37,38 @@ public class MpsatResultParser {
 		}
 
 		solutions = new LinkedList<Solution>();
-		Matcher matcherReachability0 = patternReachability0.matcher(mpsatOutput);
-		while (matcherReachability0.find()) {
-			Solution solution = new Solution(null, null);
-			solutions.add(solution);
+		{
+			Matcher matcherReachability0 = patternReachability0.matcher(mpsatOutput);
+			while (matcherReachability0.find()) {
+				Solution solution = new Solution(null, null);
+				solutions.add(solution);
+			}
 		}
-		Matcher matcherReachability1 = patternReachability1.matcher(mpsatOutput);
-		while (matcherReachability1.find()) {
-			Trace trace = getTrace(matcherReachability1.group(1));
-			Solution solution = new Solution(trace, null);
-			solutions.add(solution);
+		{
+			Matcher matcherReachability1 = patternReachability1.matcher(mpsatOutput);
+			while (matcherReachability1.find()) {
+				Trace trace = getTrace(matcherReachability1.group(1));
+				Solution solution = new Solution(trace, null);
+				solutions.add(solution);
+			}
 		}
-		Matcher matcherRreachability2 = patternReachability2.matcher(mpsatOutput);
-		while (matcherRreachability2.find()) {
-			Trace mainTrace = getTrace(matcherRreachability2.group(1));
-			Trace branchTrace = getTrace(matcherRreachability2.group(2));
-			Solution solution = new Solution(mainTrace, branchTrace);
-			solutions.add(solution);
+		{
+			Matcher matcherRreachability2 = patternReachability2.matcher(mpsatOutput);
+			while (matcherRreachability2.find()) {
+				Trace mainTrace = getTrace(matcherRreachability2.group(1));
+				Trace branchTrace = getTrace(matcherRreachability2.group(2));
+				String signalName = matcherRreachability2.group(4);
+				Solution solution = new Solution(mainTrace, branchTrace, signalName);
+				solutions.add(solution);
+			}
 		}
-		Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatOutput);
-		while (matcherNormalcy.find()) {
-			Trace trace = getTrace(matcherNormalcy.group(1));
-			Solution solution = new Solution(trace, null);
-			solutions.add(solution);
+		{
+			Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatOutput);
+			while (matcherNormalcy.find()) {
+				Trace trace = getTrace(matcherNormalcy.group(1));
+				Solution solution = new Solution(trace, null);
+				solutions.add(solution);
+			}
 		}
 	}
 

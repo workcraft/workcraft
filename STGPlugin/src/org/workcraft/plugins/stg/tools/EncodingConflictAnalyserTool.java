@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -78,6 +80,30 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 		coresTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
 		coresTable.setDefaultRenderer(Object.class, new CoreTableCellRendererImplementation());
 		coresTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		coresTable.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if ( !coresRadio.isSelected() ) {
+					coresRadio.setSelected(true);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
 
 		ListSelectionModel coreSelectionModel = coresTable.getSelectionModel();
 		coreSelectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -106,6 +132,31 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 		heightmapTable.setDefaultRenderer(Object.class, new HeightmapTableCellRendererImplementation());
 		heightmapTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		heightmapTable.setToolTipText("Core density colors");
+		heightmapTable.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if ( !heightmapRadio.isSelected() ) {
+					heightmapRadio.setSelected(true);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
+
 		statusPanel = new JPanel();
 		statusPanel.setLayout(new BorderLayout());
 		statusPanel.add(heightmapRadio, BorderLayout.NORTH);
@@ -228,7 +279,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 			if ((cores != null) && (row >= 0) && (row < cores.size())) {
 				Core core = cores.get(row);
 				if ((core.getCut1() != null) && (core.getCut2() != null)) {
-					label.setToolTipText("<html><b>cut1:</b> " + core.getCut1() + "<br><b>cut2:</b> " + core.getCut2() + "</html>");
+					label.setToolTipText("<html><b>Config.1:</b> " + core.getCut1() + "<br><b>Config.2:</b> " + core.getCut2() + "</html>");
 				}
 				label.setText((String)value);
 				if (column == COLUMN_COLOR) {

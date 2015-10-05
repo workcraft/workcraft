@@ -7,10 +7,16 @@ import org.workcraft.Trace;
 public class Solution {
 	final private Trace mainTrace;
 	final private Trace branchTrace;
+	final private String comment;
 
 	public Solution(Trace mainTrace, Trace branchTrace) {
+		this(mainTrace, branchTrace, null);
+	}
+
+	public Solution(Trace mainTrace, Trace branchTrace, String comment) {
 		this.mainTrace = mainTrace;
 		this.branchTrace = branchTrace;
+		this.comment = comment;
 	}
 
 	public Trace getMainTrace() {
@@ -19,6 +25,10 @@ public class Solution {
 
 	public Trace getBranchTrace() {
 		return branchTrace;
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 	public String toString() {
