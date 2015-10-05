@@ -174,7 +174,6 @@ public class SON extends AbstractMathModel {
 		}
 		if (n instanceof ONGroup)
 			((ONGroup)n).setForegroundColor(nodeColor);
-
 	}
 
 	public void setFillColor(Node n, Color nodeColor){

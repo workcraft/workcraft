@@ -86,6 +86,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		//workcraft invoke this method before activate method
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
+		net.refreshColor();
 
 		startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-start.svg"), "Generate");
 		resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-reset.svg"), "Reset");
@@ -157,7 +158,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 					//add scenario nodes
 					cache.addAll(scenarioRef);
 					//add scenario connections
-					for(SONConnection con : scenarioRef.runtimeGetConnections(net)){
+					for(SONConnection con : scenarioRef.getRuntimeConnections(net)){
 						cache.add(net.getNodeReference(con));
 					}
 					saveList.add(cache);
@@ -180,7 +181,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 					if(!saveList.isEmpty()){
 						scenarioRef.addAll(saveList.get(saveList.getPosition()).getNodeRefs(net));
 					}
-					scenarioTable.updateGrayoutColor();
+					scenarioTable.runtimeUpdateColor();
 					updateState(editor);
 				}
 			}
@@ -201,7 +202,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 						scenarioRef.clear();
 						scenarioRef.addAll(((ScenarioRef)obj).getNodeRefs(net));
 						updateState(editor);
-						scenarioTable.updateGrayoutColor();
+						scenarioTable.runtimeUpdateColor();
 					}
 				}
 			}
@@ -251,7 +252,6 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		BlockConnector.blockBoundingConnector(visualNet);
 		we.setCanSelect(false);
 
-		net.refreshColor();
 		net.clearMarking();
 		initialise();
 
@@ -271,7 +271,6 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 	public void deactivated(final GraphEditor editor) {
 		BlockConnector.blockInternalConnector(visualNet);
 		exportScenarios();
-		saveList.setPosition(0);
 		scenarioRef.clear();
 		net.refreshColor();
 		net.clearMarking();
@@ -306,7 +305,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		autoSimulationTask(editor);
 		Collection<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(scenarioRef.getNodes(net));
-		nodes.addAll(scenarioRef.runtimeGetConnections(net));
+		nodes.addAll(scenarioRef.getRuntimeConnections(net));
 		setColors(nodes, Color.BLACK);
 	}
 

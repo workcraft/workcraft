@@ -29,23 +29,29 @@ public class ScenarioTable extends JTable{
 
 	protected SON net;
 	protected ScenarioRef scenarioRef = new ScenarioRef();
+	protected ScenarioRef scenarioNodeRef = new ScenarioRef();
 
-	private boolean isCellColor = true;
+	private boolean isCellColorized = true;
 	private Color greyoutColor = Color.LIGHT_GRAY;
 
 
 	public ScenarioTable(ScenarioSaveList saveList, GraphEditor editor) {
-		this(saveList, editor, null);
+		this(saveList, editor, null, null);
 	}
 
 	public ScenarioTable(ScenarioSaveList saveList, GraphEditor editor, TableModel model) {
+		this(saveList, editor, model, null);
+	}
+
+	public ScenarioTable(ScenarioSaveList saveList, GraphEditor editor, TableModel model, Node selection) {
 		this.editor = editor;
 		this.saveList = saveList;
 		net = (SON)editor.getModel().getMathModel();
 
 		if(!saveList.isEmpty()){
-			scenarioRef.addAll(saveList.get(0).getNodeRefs(net));
-			updateGrayoutColor();
+			//get scenario node refs without connection refs
+			scenarioRef.addAll(saveList.get(0));
+			updateColor(selection);
 		}
 
 		if(model == null)
@@ -55,7 +61,6 @@ public class ScenarioTable extends JTable{
 
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setDefaultRenderer(Object.class,new ScenarioTableCellRendererImplementation());
-
 	}
 
 
@@ -82,7 +87,7 @@ public class ScenarioTable extends JTable{
 			else
 				return null;
 
-			if (row == saveList.getPosition() && column == 0 && !saveList.isEmpty() && isCellColor) {
+			if (row == saveList.getPosition() && column == 0 && !saveList.isEmpty() && isCellColorized) {
 				label.setBackground(Color.PINK);
 			}else {
 				label.setBackground(Color.WHITE);
@@ -107,7 +112,7 @@ public class ScenarioTable extends JTable{
 
 		@Override
 		public int getRowCount() {
-			return Math.max(saveList.size(), scenarioRef.size());
+			return Math.max(saveList.size(), getScenarioNodeRef().size());
 		}
 
 		@Override
@@ -117,8 +122,9 @@ public class ScenarioTable extends JTable{
 					return saveList.get(row);
 				}
 			} else {
-				if (!scenarioRef.isEmpty() && (row < scenarioRef.size())) {
-					return scenarioRef.get(row);
+				ArrayList<String> nodes = getScenarioNodeRef();
+				if (!nodes.isEmpty() && (row < nodes.size())) {
+					return nodes.get(row);
 					}
 				}
 			return "";
@@ -129,12 +135,30 @@ public class ScenarioTable extends JTable{
 		tableChanged(new TableModelEvent(getModel()));
 	}
 
-	public void updateGrayoutColor(){
+	public void updateColor(){
 		net.clearMarking();
 		setColors(net.getNodes(), greyoutColor);
 		Collection<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(getScenarioRef().getNodes(net));
-		nodes.addAll(getScenarioRef().runtimeGetConnections(net));
+		nodes.addAll(getScenarioRef().getConnections(net));
+		setColors(nodes, Color.BLACK);
+	}
+
+	public void updateColor(Node exclude){
+		net.clearMarking();
+		setColors(net.getNodes(), exclude, greyoutColor);
+		Collection<Node> nodes = new ArrayList<Node>();
+		nodes.addAll(getScenarioRef().getNodes(net));
+		nodes.addAll(getScenarioRef().getConnections(net));
+		setColors(nodes, exclude, Color.BLACK);
+	}
+
+	public void runtimeUpdateColor(){
+		net.clearMarking();
+		setColors(net.getNodes(), greyoutColor);
+		Collection<Node> nodes = new ArrayList<Node>();
+		nodes.addAll(getScenarioRef().getNodes(net));
+		nodes.addAll(getScenarioRef().getRuntimeConnections(net));
 		setColors(nodes, Color.BLACK);
 	}
 
@@ -144,13 +168,27 @@ public class ScenarioTable extends JTable{
 		}
 	}
 
+	private void setColors(Collection<? extends Node> nodes, Node exclude, Color color){
+		for(Node node : nodes){
+			if(node != exclude)
+				net.setForegroundColor(node, color);
+		}
+	}
+
 	public ScenarioRef getScenarioRef() {
 		return scenarioRef;
 	}
 
-
 	public void setScenarioRef(ScenarioRef scenarioRef) {
 		this.scenarioRef = scenarioRef;
+	}
+
+	public ArrayList<String> getScenarioNodeRef() {
+		ArrayList<String> result = new ArrayList<String>();
+		for(String str : scenarioRef.getNodeRefs(net)){
+			result.add(str);
+		}
+		return result;
 	}
 
 	public ScenarioSaveList getSaveList() {
@@ -162,10 +200,10 @@ public class ScenarioTable extends JTable{
 	}
 
 	public boolean isCellColor() {
-		return isCellColor;
+		return isCellColorized;
 	}
 
 	public void setIsCellColor(boolean setCellColor) {
-		this.isCellColor = setCellColor;
+		this.isCellColorized = setCellColor;
 	}
 }

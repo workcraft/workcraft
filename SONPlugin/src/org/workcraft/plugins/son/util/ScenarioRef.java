@@ -51,8 +51,8 @@ public class ScenarioRef extends ArrayList<String>{
 		return result;
 	}
 
-	public Collection<SONConnection> runtimeGetConnections(SON net){
-		Collection<SONConnection> result = new ArrayList<SONConnection>();
+	public Collection<SONConnection> getRuntimeConnections(SON net){
+		Collection<SONConnection> result = new HashSet<SONConnection>();
 		Collection<Node> nodes = getNodes(net);
 		for(Node node : nodes){
 			Collection<SONConnection> connections = net.getSONConnections(node);

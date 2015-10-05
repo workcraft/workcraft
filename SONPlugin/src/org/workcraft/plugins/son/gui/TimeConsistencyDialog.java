@@ -55,7 +55,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 	protected JCheckBox inconsistencyHighLight, unspecifyHighlight, causalHighlight, causalConsistency;
 
 	private Color greyoutColor = Color.LIGHT_GRAY;
-	protected ScenarioRef selectedScenario;
+	protected ScenarioRef selectedScenario = new ScenarioRef();
 	protected ArrayList<Node> selectedNodes;
 
 	public enum Granularity{
@@ -108,20 +108,25 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 						item = (ListItem)list.getModel().getElementAt(i);
 						if(item != null)item.setSelected(false);
 					}
-
-					ListItem item = (ListItem)list.getModel().getElementAt(index);
-					item.setSelected(true);
-					Object obj = item.getListItem();
-					if(obj instanceof ScenarioRef){
-						selectedScenario = (ScenarioRef)obj;
-						scenarioColorUpdate();
-					}
-					list.repaint(list.getCellBounds(index, index));
+					setScenarioFromList(index);
+					updateScenarioColor();
 				}catch (ArrayIndexOutOfBoundsException e){}
 			}
 		});
 
 		scenarioItemPanel.add(createJScrollPane(scenarioList));
+	}
+
+	private void setScenarioFromList(int index){
+		Object obj = null;
+		ListItem item = scenarioList.getModel().getElementAt(index);
+		if(item != null){
+			item.setSelected(true);
+			obj = item.getListItem();
+			if(obj instanceof ScenarioRef){
+				selectedScenario = (ScenarioRef)obj;
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,6 +150,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 		nodeList = new JList<ListItem> (listModel);
 		nodeList.setCellRenderer(new ItemListRenderer());
+		nodeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 		nodeList.addMouseListener(new MouseAdapter()
 		{
@@ -170,8 +176,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 				}catch (ArrayIndexOutOfBoundsException e){}
 			}
 		});
-
-		nodeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		nodeItemPanel.add(createJScrollPane(nodeList));
 	}
 
@@ -224,8 +228,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		    		 addAllButton.setEnabled(false);
 		    	     removeAllButton.setEnabled(false);
 		    	     updateCausalConsistencyPanel(true);
-		    	     if(selectedScenario != null)
-		    	    	 scenarioColorUpdate();
+		    	     updateScenarioColor();
 
 		    	 }else if(index == 2){
 		    		 updateCausalConsistencyPanel(false);
@@ -429,7 +432,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		super(owner, "Time Anayalsis Setting",  ModalityType.APPLICATION_MODAL, we);
 	}
 
-	protected void scenarioColorUpdate(){
+	protected void updateScenarioColor(){
 		net.clearMarking();
 		setGrayout(net.getNodes(), greyoutColor);
 		Collection<Node> nodes = new ArrayList<Node>();

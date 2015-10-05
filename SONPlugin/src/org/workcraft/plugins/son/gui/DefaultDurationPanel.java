@@ -28,8 +28,10 @@ public class DefaultDurationPanel extends JPanel{
 	protected Font font = new Font("Arial", Font.PLAIN, 12);
 
 	public DefaultDurationPanel(){
+		this(new Interval(0000, 0000));
+	}
 
-		Interval duration = new Interval(0000,0000);
+	public DefaultDurationPanel(Interval duration){
 
 		durationLabel = new JLabel();
 		durationLabel.setText("Default duration:");
@@ -155,7 +157,6 @@ public class DefaultDurationPanel extends JPanel{
 		int maxValue = Interval.getInteger(max.getText());
 		return new Interval(minValue, maxValue);
 	}
-
 
 	public boolean isValidDuration() {
 		return validDuration;

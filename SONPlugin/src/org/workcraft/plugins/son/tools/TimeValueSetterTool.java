@@ -18,7 +18,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 
@@ -33,6 +32,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -50,6 +50,7 @@ import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.gui.GranularityPanel;
 import org.workcraft.plugins.son.gui.TimeInputFilter;
+import org.workcraft.plugins.son.gui.TimeEstimatorDialog;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -69,8 +70,10 @@ public class TimeValueSetterTool extends AbstractTool{
 	private int labelheight = 20;
 	private int labelwidth = 35;
 	protected Dimension buttonSize = new Dimension(100, 25);
+	private TimeEstimatorSettings settings;
 
-	private Node selection;
+	private Node selection = null ;
+	private Node visualSelection = null ;
 	private boolean visibility;
 	private Color selectedColor = Color.ORANGE;
 	private Font font = new Font("Arial", Font.PLAIN, 12);
@@ -115,6 +118,7 @@ public class TimeValueSetterTool extends AbstractTool{
 	private void createButtonPanel(){
 		estimatorButton = new JButton("Estimate...");
 		estimatorButton.setPreferredSize(buttonSize);
+		estimatorButton.setEnabled(false);
 
 		clearButton = new JButton("Clear");
 		clearButton.setPreferredSize(buttonSize);
@@ -124,28 +128,36 @@ public class TimeValueSetterTool extends AbstractTool{
 		buttonPanel.add(estimatorButton);
 		buttonPanel.add(clearButton);
 
+		estimatorButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				editor.requestFocus();
+				TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection);
+				visualNet.setForegroundColor(selection, selectedColor);
+				GUI.centerToParent(estimator, editor.getMainWindow());
+				estimator.setVisible(true);
+			}
+		});
+
 
 		clearButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Interval interval = new Interval();
-				System.out.println("out");
-				if(selection!=null){
-					Node node = null;
-					if(selection instanceof VisualComponent){
-						node = ((VisualComponent)selection).getReferencedComponent();
-
-						if((node instanceof Time) && !(node instanceof Event)){
-							Time time = (Time)node;
+				if(visualSelection!=null){
+					if(visualSelection instanceof VisualComponent){
+						if((selection instanceof Time) && !(selection instanceof Event)){
+							Time time = (Time)selection;
 							time.setDuration(interval);
 							time.setStartTime(interval);
 							time.setEndTime(interval);
 						}
 					}
-					else if(selection instanceof VisualSONConnection){
-						SONConnection con = ((VisualSONConnection) selection).getReferencedSONConnection();
-						((SONConnection) con).setTime(interval);
+					else if(visualSelection instanceof VisualSONConnection){
+						((SONConnection) selection).setTime(interval);
 					}
+					updateTimePanel(editor, visualSelection);
 				}
 			}
 		});
@@ -531,8 +543,9 @@ public class TimeValueSetterTool extends AbstractTool{
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
 		WorkspaceEntry we = editor.getWorkspaceEntry();
-		timeAlg = new ConsistencyAlg(net);
 		we.setCanSelect(false);
+		timeAlg = new ConsistencyAlg(net);
+		settings = new TimeEstimatorSettings();
 
 		net.refreshColor();
 		net.clearMarking();
@@ -565,8 +578,10 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
 		if( node instanceof VisualSONConnection){
-			selection = node;
+			estimatorButton.setEnabled(true);
 			VisualSONConnection con = (VisualSONConnection)node;
+			selection = con.getReferencedConnection();
+			visualSelection = node;
 			if(con.getSemantics()==Semantics.PNLINE){
 				((VisualSONConnection) node).setColor(selectedColor);
 				updateTimePanel(e.getEditor(), node);
@@ -576,8 +591,10 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		Node node2 = HitMan.hitFirstNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualBlock.class);
 		if(node2 != null){
+			selection = ((VisualBlock)node2).getReferencedComponent();
+			visualSelection = node2;
 			if(((VisualBlock)node2).getIsCollapsed()){
-				selection = node2;
+				estimatorButton.setEnabled(true);
 				((VisualBlock) node2).setForegroundColor(selectedColor);
 				updateTimePanel(e.getEditor(), node2);
 				return;
@@ -592,8 +609,10 @@ public class TimeValueSetterTool extends AbstractTool{
 					}
 				});
 			if (node3 instanceof VisualPlaceNode) {
-				selection = node3;
-				((VisualPlaceNode) node).setForegroundColor(selectedColor);
+				estimatorButton.setEnabled(true);
+				selection = ((VisualPlaceNode) node3).getReferencedComponent();
+				visualSelection = node3;
+				((VisualPlaceNode) node3).setForegroundColor(selectedColor);
 				updateTimePanel(e.getEditor(), node3);
 			}
 	}

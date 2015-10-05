@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
+import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.util.Hierarchy;
 
 
@@ -568,5 +570,19 @@ public class VisualSON extends AbstractVisualModel {
 
 	public void forceConnectionSemantics(Semantics currentSemantics) {
 		this.currentConnectonSemantics = currentSemantics;
+	}
+
+	public void setForegroundColor(Node n, Color nodeColor){
+		if(n instanceof VisualPlaceNode){
+			((VisualPlaceNode) n).setForegroundColor(nodeColor);
+		}
+		if(n instanceof VisualTransitionNode){
+			((VisualTransitionNode) n).setForegroundColor(nodeColor);
+		}
+		if(n instanceof VisualSONConnection){
+			((VisualSONConnection) n).setColor(nodeColor);
+		}
+		if (n instanceof VisualONGroup)
+			((VisualONGroup)n).setForegroundColor(nodeColor);
 	}
 }
