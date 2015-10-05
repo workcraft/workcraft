@@ -99,7 +99,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
-	protected JScrollPane infoPanel;
+	protected JScrollPane tabelPanel;
 	protected JPanel statusPanel;
 	protected JTable traceTable;
 
@@ -176,14 +176,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		traceTable = new JTable(new TraceTableModel());
 		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		infoPanel = new JScrollPane(traceTable);
-		infoPanel.setPreferredSize(new Dimension(1, 1));
+		tabelPanel = new JScrollPane(traceTable);
+		tabelPanel.setPreferredSize(new Dimension(1, 1));
 
 		statusPanel = new JPanel();
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
 		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
-		interfacePanel.add(infoPanel, BorderLayout.CENTER);
+		interfacePanel.add(tabelPanel, BorderLayout.CENTER);
 		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
 
 		speedSlider.addChangeListener(new ChangeListener() {

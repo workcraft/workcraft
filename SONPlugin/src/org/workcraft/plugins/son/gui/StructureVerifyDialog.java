@@ -123,13 +123,11 @@ public class StructureVerifyDialog extends JDialog{
 	}
 
 	protected void createSelectionPanel(){
-
-		groupSelectionPanel = new JPanel(new FlowLayout());
-		groupSelectionPanel.setBorder(createTitileBorder(groupPanelTitle()));
-
 		createGroupItemsPanel();
 		createSelectionButtonsPanel();
 
+		groupSelectionPanel = new JPanel(new FlowLayout());
+		groupSelectionPanel.setBorder(createTitileBorder(groupPanelTitle()));
 		groupSelectionPanel.add(groupItemPanel);
 		groupSelectionPanel.add(selectionButtonPanel);
 
@@ -137,8 +135,6 @@ public class StructureVerifyDialog extends JDialog{
 
 	@SuppressWarnings("unchecked")
 	protected void createTypePanel(){
-		typePanel = new JPanel();
-
 		typeCombo = new JComboBox();
 		typeCombo.addItem(new typeMode(0, "Structured Occurrence Nets"));
 		typeCombo.addItem(new typeMode(1, "Occurrence Net (Group)"));
@@ -146,13 +142,13 @@ public class StructureVerifyDialog extends JDialog{
 		typeCombo.addItem(new typeMode(3, "Behavioural Structured Occurrence Nets"));
 		typeCombo.addItem(new typeMode(4, "Temporal Structured Occurrence Nets"));
 
+		typePanel = new JPanel();
 		typePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
 
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void createGroupItemsPanel(){
-		groupItemPanel = new JPanel();
 		selectedGroups = new ArrayList<ONGroup>();
 
 		DefaultListModel listModel = new DefaultListModel();
@@ -168,7 +164,7 @@ public class StructureVerifyDialog extends JDialog{
 
 		groupList = new JList (listModel);
 		groupList.setCellRenderer(new ItemListRenderer());
-
+		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		groupList.addMouseListener(new MouseAdapter()
 		{
 			public void mousePressed(MouseEvent event)
@@ -195,7 +191,7 @@ public class StructureVerifyDialog extends JDialog{
 			}
 		});
 
-		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		groupItemPanel = new JPanel();
 		groupItemPanel.add(createJScrollPane(groupList));
 	}
 
@@ -236,7 +232,6 @@ public class StructureVerifyDialog extends JDialog{
 		removeAllButton.setMaximumSize(buttonSize);
 		removeAllButton.setFont(this.getFont());
 
-
 		removeAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -251,7 +246,6 @@ public class StructureVerifyDialog extends JDialog{
 
 		selectionButtonPanel = new JPanel();
 		selectionButtonPanel.setLayout(new BoxLayout(selectionButtonPanel, BoxLayout.Y_AXIS));
-
 		selectionButtonPanel.add(addAllButton);
 		selectionButtonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		selectionButtonPanel.add(removeAllButton);
@@ -259,10 +253,8 @@ public class StructureVerifyDialog extends JDialog{
 
 	protected void createSettingPanel(){
 		settingPanel = new JPanel(new BorderLayout());
-		JPanel leftColumn = new JPanel();
-		leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
-
 		settingPanel.setBorder(createTitileBorder("Setting"));
+
 		highLight = new JCheckBox("Highlight erroneous nodes");
 		highLight.setFont(font);
 		highLight.setSelected(true);
@@ -271,6 +263,8 @@ public class StructureVerifyDialog extends JDialog{
 		outputBefore.setFont(font);
 		outputBefore.setSelected(false);
 
+		JPanel leftColumn = new JPanel();
+		leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
 		leftColumn.add(highLight);
 		leftColumn.add(outputBefore);
 
@@ -278,8 +272,6 @@ public class StructureVerifyDialog extends JDialog{
 	}
 
 	protected void createButtonsPanel() {
-		confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-
 		runButton = new JButton ("Run");
 		runButton.setPreferredSize(buttonSize);
 		runButton.addActionListener(new ActionListener() {
@@ -300,6 +292,7 @@ public class StructureVerifyDialog extends JDialog{
 			}
 		});
 
+		confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 		confirmButtonsPanel.add(cancelButton);
 		confirmButtonsPanel.add(runButton);
 	}

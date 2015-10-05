@@ -37,14 +37,13 @@ import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescr
 import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
 import org.workcraft.plugins.son.util.Scenario;
 import org.workcraft.plugins.son.util.ScenarioRef;
+import org.workcraft.plugins.son.util.ScenarioSaveList;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
-
-	ArrayList<ScenarioRef> scenarios = new ArrayList<ScenarioRef>();
 
 	public SON(){
 		this(null, null);
@@ -274,8 +273,8 @@ public class SON extends AbstractMathModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), Scenario.class);
 	}
 
-	public ArrayList<ScenarioRef> importScenarios(Window window){
-		ArrayList<ScenarioRef> result = new ArrayList<ScenarioRef>();
+	public ScenarioSaveList importScenarios(Window window){
+		ScenarioSaveList result = new ScenarioSaveList();
 		ArrayList<Scenario> removeList = new ArrayList<Scenario>();
 
 		for(Scenario s : getScenarios()){
@@ -527,5 +526,4 @@ public class SON extends AbstractMathModel {
 
 		return properties;
 	}
-
 }

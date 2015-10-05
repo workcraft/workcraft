@@ -9,33 +9,26 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.AbstractDocument;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
@@ -53,17 +46,13 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 	protected VisualSON vNet;
 
-	protected JPanel scenarioItemPanel, nodeItemPanel, selectionPanel, granularityPanel, causalConsistencyPanel, durationInputPanel;
+	protected JPanel scenarioItemPanel, nodeItemPanel, selectionPanel, causalConsistencyPanel;
+	protected DefaultDurationPanel defaultDurationPanel;
+	protected GranularityPanel granularityPanel;
 	protected JPanel leftPanel, rightPanel;
 	protected JTabbedPane selectionTabbedPane;
 	protected JList<ListItem> scenarioList, nodeList;
 	protected JCheckBox inconsistencyHighLight, unspecifyHighlight, causalHighlight, causalConsistency;
-	private JRadioButton year_yearButton, hour_minusButton;
-	private ButtonGroup granularityGroup;
-
-	private JTextField min, max;
-	private JLabel durationLabel;
-	private boolean validDuration = true;
 
 	private Color greyoutColor = Color.LIGHT_GRAY;
 	protected ScenarioRef selectedScenario;
@@ -92,27 +81,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 			setText(value.toString());
 			return this;
 		}
-	}
-
-	protected void createGranularityButtons(){
-		granularityPanel = new JPanel();
-		granularityPanel.setBorder(createTitileBorder("Time Granularity"));
-		granularityPanel.setLayout(new BoxLayout(granularityPanel, BoxLayout.Y_AXIS));
-
-		year_yearButton = new JRadioButton();
-		year_yearButton.setText("T:year D:year");
-		year_yearButton.setSelected(true);
-
-		hour_minusButton = new JRadioButton();
-		hour_minusButton.setText("T:24-hour D:mins");
-
-		granularityGroup = new ButtonGroup();
-		granularityGroup.add(year_yearButton);
-		granularityGroup.add(hour_minusButton);
-
-		granularityPanel.add(year_yearButton);
-		granularityPanel.add(hour_minusButton);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -316,31 +284,29 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 	@Override
 	protected void createSelectionPanel(){
-		selectionPanel = new JPanel(new FlowLayout());
-		selectionPanel.setBorder(createTitileBorder("Selection"));
-
 		createSelectionButtonsPanel();
 		createSelectionPane();
 
+		selectionPanel = new JPanel(new FlowLayout());
+		selectionPanel.setBorder(createTitileBorder("Selection"));
 		selectionPanel.add(selectionTabbedPane);
 		selectionPanel.add(selectionButtonPanel);
 	}
 
 	protected void createCausalConsistencyPanel(){
+		causalConsistency = new JCheckBox("Check for causal consistency");
+		causalConsistency.setSelected(true);
+		causalConsistency.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		defaultDurationPanel = new DefaultDurationPanel();
+		defaultDurationPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		causalConsistencyPanel = new JPanel();
 		causalConsistencyPanel.setLayout(new BoxLayout(causalConsistencyPanel, BoxLayout.Y_AXIS));
 		causalConsistencyPanel.setPreferredSize(new Dimension(0, 200));
 		causalConsistencyPanel.setBorder(createTitileBorder("Causal Consistency (Scenario)"));
-
-		causalConsistency = new JCheckBox("Check for causal consistency");
-		causalConsistency.setSelected(true);
-		causalConsistency.setAlignmentX(Component.LEFT_ALIGNMENT);
 		causalConsistencyPanel.add(causalConsistency);
-
-		createDurationInputPanel();
-		durationInputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		causalConsistencyPanel.add(durationInputPanel);
+		causalConsistencyPanel.add(defaultDurationPanel);
 
 		causalConsistency.addActionListener(new ActionListener(){
 
@@ -348,144 +314,24 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 			public void actionPerformed(ActionEvent e) {
 
 				boolean b = causalConsistency.isSelected();
-				min.setEnabled(b);
-				max.setEnabled(b);
-				durationLabel.setEnabled(b);
+				defaultDurationPanel.getMin().setEnabled(b);
+				defaultDurationPanel.getMax().setEnabled(b);
+				defaultDurationPanel.getDurationLabel().setEnabled(b);
 			}
 		});
 
-	}
-
-	protected void createDurationInputPanel(){
-
-		durationInputPanel = new JPanel();
-
-		Interval duration = new Interval(0000,0000);
-
-		durationLabel = new JLabel();
-		durationLabel.setText("Default duration:");
-		durationLabel.setFont(font);
-
-		min = new JTextField();
-		min.setText(duration.minToString());
-		((AbstractDocument) min.getDocument()).setDocumentFilter(new TimeInputFilter());
-
-		JLabel dash = new JLabel();
-		dash.setText("-");
-
-		max = new JTextField();
-		max.setText(duration.maxToString());
-		((AbstractDocument) max.getDocument()).setDocumentFilter(new TimeInputFilter());
-
-		durationInputPanel.add(durationLabel);
-		durationInputPanel.add(min);
-		durationInputPanel.add(dash);
-		durationInputPanel.add(max);
-
-		min.addFocusListener(new FocusListener() {
-			@Override
-	        public void focusLost(FocusEvent e) {
-				autoComplete(min);
-				if(!isValid(getDefaultDuration()))
-					validDuration = false;
-				else
-					validDuration = true;
-	        }
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-	      });
-
-		min.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode()==KeyEvent.VK_ENTER){
-					durationInputPanel.requestFocus();
-			    }
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
-		});
-
-		max.addFocusListener(new FocusListener() {
-			@Override
-	        public void focusLost(FocusEvent e) {
-				autoComplete(max);
-				if(!isValid(getDefaultDuration()))
-					validDuration = false;
-				else
-					validDuration = true;
-	        }
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-	      });
-
-		max.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode()==KeyEvent.VK_ENTER){
-					durationInputPanel.requestFocus();
-			    }
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
-		});
-	}
-
-	private void autoComplete(JTextField field){
-		String text = field.getText();
-		int length = text.length();
-
-		if(length < 4){
-		   while (length < 4) {
-		    StringBuffer sb = new StringBuffer();
-		    sb.append("0").append(text);
-		    text = sb.toString();
-		    field.setText(text);
-		    length = text.length();
-		   }
-		}
-	}
-
-	private boolean isValid(Interval value){
-		int start = value.getMin();
-		int end = value.getMax();
-
-		if(start <= end){
-			return true;
-		}
-		return false;
 	}
 
 	private void updateCausalConsistencyPanel(boolean b){
 		causalConsistency.setEnabled(b);
-		min.setEnabled(b);
-		max.setEnabled(b);
-		durationLabel.setEnabled(b);
+		defaultDurationPanel.getMin().setEnabled(b);
+		defaultDurationPanel.getMax().setEnabled(b);
+		defaultDurationPanel.getDurationLabel().setEnabled(b);
 	}
 
 	private Interval getDefaultDuration(){
-		int minValue = Interval.getInteger(min.getText());
-		int maxValue = Interval.getInteger(max.getText());
+		int minValue = Interval.getInteger(defaultDurationPanel.getMin().getText());
+		int maxValue = Interval.getInteger(defaultDurationPanel.getMax().getText());
 		return new Interval(minValue, maxValue);
 	}
 
@@ -519,20 +365,17 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 	@Override
 	protected void createButtonsPanel() {
-
-		confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-
 		runButton = new JButton ("Run");
 		runButton.setPreferredSize(buttonSize);
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(validDuration){
+				if(defaultDurationPanel.isValidDuration()){
 					run = 1;
 					setVisible(false);
 				}else{
-					min.setForeground(Color.RED);
-					max.setForeground(Color.RED);
+					defaultDurationPanel.getMin().setForeground(Color.RED);
+					defaultDurationPanel.getMax().setForeground(Color.RED);
 				}
 			}
 		});
@@ -547,6 +390,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 			}
 		});
 
+		confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 		confirmButtonsPanel.add(cancelButton);
 		confirmButtonsPanel.add(runButton);
 
@@ -557,23 +401,22 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		createSelectionPanel();
 		createSettingPanel();
 		createButtonsPanel();
-		createGranularityButtons();
 		createCausalConsistencyPanel();
+		granularityPanel = new GranularityPanel(BorderFactory.createTitledBorder("Time Granularity"));
 
 		leftPanel = new JPanel(new BorderLayout());
+		leftPanel.add(granularityPanel, BorderLayout.PAGE_START);
+		leftPanel.add(selectionPanel, BorderLayout.PAGE_END);
+
 		rightPanel = new JPanel(new BorderLayout());
+		rightPanel.add(causalConsistencyPanel, BorderLayout.PAGE_START);
+		rightPanel.add(settingPanel, BorderLayout.CENTER);
+		rightPanel.add(confirmButtonsPanel, BorderLayout.PAGE_END);
 
 		JPanel content = new JPanel();
 		content.setLayout(new FlowLayout());
 		content.add(leftPanel);
 		content.add(rightPanel);
-
-		leftPanel.add(granularityPanel, BorderLayout.PAGE_START);
-		leftPanel.add(selectionPanel, BorderLayout.PAGE_END);
-
-		rightPanel.add(causalConsistencyPanel, BorderLayout.PAGE_START);
-		rightPanel.add(settingPanel, BorderLayout.CENTER);
-		rightPanel.add(confirmButtonsPanel, BorderLayout.PAGE_END);
 
 		updateCausalConsistencyPanel(false);
 
@@ -634,17 +477,10 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 		return selectionTabbedPane.getSelectedIndex();
 	}
 
-	public Granularity getGranularity(){
-		if(year_yearButton.isSelected())
-			return Granularity.YEAR_YEAR;
-		else if(hour_minusButton.isSelected())
-			return Granularity.HOUR_MINS;
-		return null;
-	}
 
 	public TimeConsistencySettings getTimeConsistencySettings(){
 		return new TimeConsistencySettings(inconsistencyHighLight.isSelected(), unspecifyHighlight.isSelected(),
-				getSelectedGroups(), getSelectedScenario(), getSelectedNodes(), getTabIndex(), getGranularity(),
+				getSelectedGroups(), getSelectedScenario(), getSelectedNodes(), getTabIndex(), granularityPanel.getSelection(),
 				causalConsistency.isSelected(), getDefaultDuration(), causalHighlight.isSelected());
 	}
 }
