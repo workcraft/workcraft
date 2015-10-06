@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.algorithm;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -8,10 +9,13 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
 import org.workcraft.plugins.son.exception.TimeEstimationValueException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
@@ -34,12 +38,15 @@ public class EstimationAlg extends TimeAlg{
 	private TimeGranularity granularity = null;
 	private ScenarioRef scenario;
 	private Before before;
+	private boolean isTwoDir;
+	private Color color =Color.ORANGE;
 
-	public EstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s) {
+	public EstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean isTwoDir) {
 		super(net);
 		this.net = net;
 		this.defaultDuration = d;
 		this.scenario = s;
+		this.isTwoDir = isTwoDir;
 
 		if(g == Granularity.YEAR_YEAR){
 			granularity = new YearYear();
@@ -51,6 +58,135 @@ public class EstimationAlg extends TimeAlg{
 		before  =  bsonAlg.getBeforeList();
 	}
 
+	public void twoDirEstimation(Node n) throws AlternativeStructureException, TimeEstimationException, TimeOutOfBoundsException{
+		ConsistencyAlg alg = new ConsistencyAlg(net);
+		Time node = null;
+
+		if(hasConflict() && scenario == null)
+			throw new AlternativeStructureException("select a scenario for "+net.getNodeReference(n) + " first.");
+
+		boolean specifiedDur = alg.hasSpecifiedDur(n, false, scenario);
+		boolean specifiedStart = alg.hasSpecifiedStart(n, scenario);
+		boolean specifiedEnd = alg.hasSpecifiedEnd(n, scenario);
+
+		if(n instanceof Time)
+			node = (Time)n;
+		else return;
+
+		//set default duration
+		if(!specifiedDur){
+			node.setDuration(defaultDuration);
+			if(n instanceof PlaceNode){
+				((PlaceNode)n).setDurationColor(color);
+			}else if(n instanceof Block){
+				((Block)n).setDurationColor(color);
+			}
+		}
+
+		if(!specifiedStart && specifiedEnd){
+			Collection<Interval> end = getSpecifiedEndTime(n);
+			if(end.size() == 1){
+				if(n instanceof Condition){
+					Condition c = (Condition)n;
+					Interval result = granularity.subtractTD(end.iterator().next(), c.getDuration());
+
+					Collection<SONConnection> cons = net.getInputScenarioPNConnections(c, scenario);
+					if(cons.size() == 1){
+						cons.iterator().next().setTime(result);
+					}else{
+						c.setStartTime(result);
+					}
+				}
+			}else{
+				throw new RuntimeException("output > 1");
+			}
+
+		}else if(specifiedStart && !specifiedEnd){
+			Collection<Interval> start = getSpecifiedStartTime(n);
+			if(start.size() == 1){
+				if(n instanceof Condition){
+					Condition c = (Condition)n;
+					Interval result = granularity.plusTD(start.iterator().next(), c.getDuration());
+
+					Collection<SONConnection> cons = net.getOutputScenarioPNConnections(c, scenario);
+					if(cons.size() == 1){
+						cons.iterator().next().setTime(result);
+					}else{
+						c.setEndTime(result);
+					}
+				}
+			}else{
+				throw new RuntimeException("input > 1");
+			}
+
+		}else if(!specifiedStart && !specifiedEnd){
+
+		}
+
+	}
+
+	private boolean hasConflict(){
+		RelationAlgorithm alg = new RelationAlgorithm(net);
+		for(Condition c : net.getConditions()){
+			if(alg.hasPostConflictEvents(c))
+				return true;
+			else if(alg.hasPreConflictEvents(c))
+				return true;
+		}
+		return false;
+	}
+
+	private Collection<Interval> getSpecifiedEndTime(Node n){
+		Collection<Interval> result = new ArrayList<Interval>();
+
+		if(n instanceof Condition){
+			Condition c = (Condition)n;
+			Collection<SONConnection> cons = net.getOutputPNConnections(c);
+			Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(c, scenario);
+
+			//c is final
+			if(cons.isEmpty() && cons2.isEmpty()){
+				result.add(c.getEndTime());
+			//c is final state of the scenario, but not the final state of ON
+			}else if(!cons.isEmpty() && cons2.isEmpty()){
+				if(cons.size() == 1){
+					SONConnection con = cons.iterator().next();
+					result.add(con.getTime());
+				}
+			//c is not final state
+			}else if(!cons.isEmpty() && !cons2.isEmpty()){
+				SONConnection con = null;
+				if(cons2.size()==1)
+					con = cons2.iterator().next();
+				if(con==null) throw new RuntimeException("output connection != 1" + net.getNodeReference(n));
+				result.add(con.getTime());
+			}
+		}
+		return result;
+	}
+
+	private Collection<Interval> getSpecifiedStartTime(Node n){
+		Collection<Interval> result = new ArrayList<Interval>();
+
+		if(n instanceof Condition){
+			Condition c = (Condition)n;
+			Collection<SONConnection> cons = net.getInputScenarioPNConnections(c, scenario);
+			//p is initial
+			if(cons.isEmpty()){
+				result.add(c.getStartTime());
+			}else{
+				SONConnection con = null;
+				if(cons.size()==1)
+					con = cons.iterator().next();
+				if(con==null) throw new RuntimeException(
+						"input connection != 1" + net.getNodeReference(n));
+				//set estimated start time
+				result.add(con.getTime());
+			}
+		}
+		return result;
+	}
+
 	public void setEstimatedEndTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
 		Interval end = null;
 		clearSets();
@@ -59,7 +195,7 @@ public class EstimationAlg extends TimeAlg{
 			Condition c = (Condition)n;
 			Collection<SONConnection> cons = net.getOutputPNConnections(c);
 			Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(c, scenario);
-			//p is final
+			//c is final
 			if(cons.isEmpty() && cons2.isEmpty()){
 				end = getEstimatedEndTime(n);
 				//set estimated start time
@@ -67,7 +203,7 @@ public class EstimationAlg extends TimeAlg{
 					c.setEndTime(end);
 					throw new TimeEstimationValueException("Estimated end time = "+ end.toString() +", from "+intervals(resultTimeAndDuration));
 				}
-			//p is final state of the scenario, but not the final state of ON
+			//c is final state of the scenario, but not the final state of ON
 			}else if(!cons.isEmpty() && cons2.isEmpty()){
 					if(cons.size() == 1){
 						SONConnection con = cons.iterator().next();
@@ -77,7 +213,7 @@ public class EstimationAlg extends TimeAlg{
 						throw new TimeEstimationException(
 						"node has more than one possible end times (forward)");
 					}
-			//p is not final state
+			//c is not final state
 			}else if(!cons.isEmpty() && !cons2.isEmpty()){
 				SONConnection con = null;
 				if(cons2.size()==1)
@@ -226,7 +362,9 @@ public class EstimationAlg extends TimeAlg{
     	LinkedList<Time> visited = new LinkedList<Time>();
     	visited.add((Time)n);
 
-    	backwardDFS(visited, scenario.getNodes(net));
+    	if(scenario != null)
+    		backwardDFS(visited, scenario.getNodes(net));
+
 		Collection<Interval> possibleTimes = new ArrayList<Interval>();
 		for(Interval[] interval : resultTimeAndDuration){
 			possibleTimes.add(granularity.plusTD(interval[0], interval[1]));
@@ -251,7 +389,8 @@ public class EstimationAlg extends TimeAlg{
     	LinkedList<Time> visited = new LinkedList<Time>();
     	visited.add((Time)n);
 
-    	forwardDFS(visited, scenario.getNodes(net));
+    	if(scenario != null)
+    		forwardDFS(visited, scenario.getNodes(net));
 
 		Collection<Interval> possibleTimes = new ArrayList<Interval>();
 

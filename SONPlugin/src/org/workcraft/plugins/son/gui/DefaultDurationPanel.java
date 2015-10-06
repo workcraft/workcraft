@@ -173,4 +173,9 @@ public class DefaultDurationPanel extends JPanel{
 	public JLabel getDurationLabel() {
 		return durationLabel;
 	}
+
+	public void setIsEnable(boolean b){
+		min.setEnabled(b);
+		max.setEnabled(b);
+	}
 }

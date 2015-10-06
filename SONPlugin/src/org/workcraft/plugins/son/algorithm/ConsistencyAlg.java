@@ -376,7 +376,7 @@ public class ConsistencyAlg extends TimeAlg{
 		return result;
 	}
 
-	public boolean isSpecifiedDur(Node node, boolean isSync, ScenarioRef s){
+	public boolean hasSpecifiedDur(Node node, boolean isSync, ScenarioRef s){
 
 		if ((node instanceof Time) && !((Time)node).getDuration().isSpecified() && !isSync){
 			return false;
@@ -385,7 +385,7 @@ public class ConsistencyAlg extends TimeAlg{
 		return true;
 	}
 
-	public boolean isSpecifiedStart(Node node, ScenarioRef s){
+	public boolean hasSpecifiedStart(Node node, ScenarioRef s){
 
 		Collection<SONConnection> inputConnections;
 
@@ -426,7 +426,7 @@ public class ConsistencyAlg extends TimeAlg{
 	}
 
 
-	public boolean isSpecifiedEnd(Node node, ScenarioRef s){
+	public boolean hasSpecifiedEnd(Node node, ScenarioRef s){
 
 		Collection<SONConnection> outputConnections;
 
@@ -464,7 +464,7 @@ public class ConsistencyAlg extends TimeAlg{
 		return true;
 	}
 
-	public String isSpecifiedCP(Node node, boolean isSync, ScenarioRef s) {
+	public String hasSpecifiedCP(Node node, boolean isSync, ScenarioRef s) {
 		ChannelPlace cp = null;
 		if(node instanceof ChannelPlace)
 			cp = (ChannelPlace)node;
@@ -494,21 +494,21 @@ public class ConsistencyAlg extends TimeAlg{
 		}
 
 		if(isSync){
-			if(!isSpecifiedStart(input, s)
-					&& !isSpecifiedEnd(input, s)
-					&&!isSpecifiedStart(output, s)
-					&& !isSpecifiedEnd(output, s))
+			if(!hasSpecifiedStart(input, s)
+					&& !hasSpecifiedEnd(input, s)
+					&&!hasSpecifiedStart(output, s)
+					&& !hasSpecifiedEnd(output, s))
 				return "connected events";
-			else if(!isSpecifiedStart(input, s)
-					|| !isSpecifiedEnd(input, s)
-					||!isSpecifiedStart(output, s)
-					|| !isSpecifiedEnd(output, s)){
+			else if(!hasSpecifiedStart(input, s)
+					|| !hasSpecifiedEnd(input, s)
+					||!hasSpecifiedStart(output, s)
+					|| !hasSpecifiedEnd(output, s)){
 				return "partial";
 			}
 		}else{
-			if(!isSpecifiedEnd(input, s) && !isSpecifiedStart(output, s))
+			if(!hasSpecifiedEnd(input, s) && !hasSpecifiedStart(output, s))
 				return "connected events";
-			else if(!isSpecifiedEnd(input, s) || !isSpecifiedStart(output, s)){
+			else if(!hasSpecifiedEnd(input, s) || !hasSpecifiedStart(output, s)){
 				return "partial";
 			}
 		}

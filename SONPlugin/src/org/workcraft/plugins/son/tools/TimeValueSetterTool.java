@@ -45,12 +45,14 @@ import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.VisualBlock;
 import org.workcraft.plugins.son.elements.VisualCondition;
+import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.gui.GranularityPanel;
 import org.workcraft.plugins.son.gui.TimeInputFilter;
 import org.workcraft.plugins.son.gui.TimeEstimatorDialog;
+import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -133,10 +135,13 @@ public class TimeValueSetterTool extends AbstractTool{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				editor.requestFocus();
-				TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection);
+				Granularity g = granularityPanel.getSelection();
+				TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
 				visualNet.setForegroundColor(selection, selectedColor);
 				GUI.centerToParent(estimator, editor.getMainWindow());
 				estimator.setVisible(true);
+				if(estimator.getRun() == 1)
+					updateTimePanel(editor, visualSelection);
 			}
 		});
 
@@ -578,7 +583,7 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
 		if( node instanceof VisualSONConnection){
-			estimatorButton.setEnabled(true);
+			estimatorButton.setEnabled(false);
 			VisualSONConnection con = (VisualSONConnection)node;
 			selection = con.getReferencedConnection();
 			visualSelection = node;
@@ -605,14 +610,14 @@ public class TimeValueSetterTool extends AbstractTool{
 				new Func<Node, Boolean>() {
 					@Override
 					public Boolean eval(Node node) {
-						return node instanceof VisualPlaceNode;
+						return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
 					}
 				});
-			if (node3 instanceof VisualPlaceNode) {
+			if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
 				estimatorButton.setEnabled(true);
-				selection = ((VisualPlaceNode) node3).getReferencedComponent();
+				selection = ((VisualComponent) node3).getReferencedComponent();
 				visualSelection = node3;
-				((VisualPlaceNode) node3).setForegroundColor(selectedColor);
+				((VisualComponent) node3).setForegroundColor(selectedColor);
 				updateTimePanel(e.getEditor(), node3);
 			}
 	}

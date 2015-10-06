@@ -148,24 +148,24 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 			if(settings.getTabIndex() == 1){
 				ScenarioRef s = settings.getSeletedScenario();
 
-				startResult =  consistencyAlg.isSpecifiedStart(node, s);
-				endResult =  consistencyAlg.isSpecifiedEnd(node, s);
+				startResult =  consistencyAlg.hasSpecifiedStart(node, s);
+				endResult =  consistencyAlg.hasSpecifiedEnd(node, s);
 				if(syncCPs.contains(node)){
-					cpResult = consistencyAlg.isSpecifiedCP(node, true, s);
-					durResult =  consistencyAlg.isSpecifiedDur(node, true, s);
+					cpResult = consistencyAlg.hasSpecifiedCP(node, true, s);
+					durResult =  consistencyAlg.hasSpecifiedDur(node, true, s);
 				}else{
-					cpResult = consistencyAlg.isSpecifiedCP(node, false, s);
-					durResult =  consistencyAlg.isSpecifiedDur(node, false, s);
+					cpResult = consistencyAlg.hasSpecifiedCP(node, false, s);
+					durResult =  consistencyAlg.hasSpecifiedDur(node, false, s);
 				}
 			}else{
-				startResult =  consistencyAlg.isSpecifiedStart(node, null);
-				endResult =  consistencyAlg.isSpecifiedEnd(node, null);
+				startResult =  consistencyAlg.hasSpecifiedStart(node, null);
+				endResult =  consistencyAlg.hasSpecifiedEnd(node, null);
 				if(syncCPs.contains(node)){
-					cpResult = consistencyAlg.isSpecifiedCP(node, true, null);
-					durResult =  consistencyAlg.isSpecifiedDur(node, true, null);
+					cpResult = consistencyAlg.hasSpecifiedCP(node, true, null);
+					durResult =  consistencyAlg.hasSpecifiedDur(node, true, null);
 				}else{
-					cpResult = consistencyAlg.isSpecifiedCP(node, false, null);
-					durResult =  consistencyAlg.isSpecifiedDur(node, false, null);
+					cpResult = consistencyAlg.hasSpecifiedCP(node, false, null);
+					durResult =  consistencyAlg.hasSpecifiedDur(node, false, null);
 				}
 			}
 
@@ -378,7 +378,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 		consistencyAlg.removeProperties();
 		consistencyAlg.setProperties();
 
-		estimationAlg = new EstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario());
+		estimationAlg = new EstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario(), false);
 
 		syncCPs = getSyncCPs();
 
