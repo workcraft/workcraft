@@ -396,8 +396,11 @@ public class CpogSelectionTool extends SelectionTool {
 
             LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());//new LinkedHashSet<Node>();
 
-            if (!((insertTransitives.getState()) || (blockTransitiveRemoval))) {
-                parsingTool.removeTransitives(visualCpog, roots, text);
+            if (!(insertTransitives.getState())) {
+            	boolean[][] c = parsingTool.convertToTransitiveClosure(vertexMap.values(), visualCpog);
+            	parsingTool.removeSelfLoops(c, vertexMap.values());
+            	parsingTool.reduceTransitives(c, vertexMap.values());
+            	parsingTool.convertFromTransitiveClosure(c, vertexMap.values(), visualCpog);
             }
 
             ArrayList<Node> prevSelection = new ArrayList<>();

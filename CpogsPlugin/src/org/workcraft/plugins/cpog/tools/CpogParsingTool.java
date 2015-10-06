@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCPOG;
@@ -654,6 +656,92 @@ public class CpogParsingTool {
          transitives.clear();
 	 }
 
+	 public boolean[][] convertToTransitiveClosure(Collection<VisualVertex> vertices, VisualCPOG visualCpog) {
+
+		 boolean[][] c = new boolean[vertices.size()][vertices.size()];
+
+		 int i = 0, j = 0;
+		 System.out.println("Existing:");
+		 for (VisualVertex n1 : vertices) {
+			 j = 0;
+			 for (VisualVertex n2 : vertices) {
+				 if (visualCpog.hasConnection(n1, n2)) {
+					 c[i][j] = true;
+					 System.out.println(n1.getLabel() + " -> " + n2.getLabel());
+				 } else {
+					 c[i][j] = false;
+				 }
+				 j++;
+			 }
+			 i++;
+		 }
+		 System.out.println("Added:");
+		 ArrayList<VisualVertex> a = new ArrayList<>();
+		 a.addAll(vertices);
+
+		 for (i = 0; i < vertices.size(); i++) {
+			 for (j = 0; j < vertices.size(); j++) {
+				 for (int k = 0; k < vertices.size(); k++) {
+					 if (c[i][j] && c[j][k] && !c[i][k]) {
+						 c[i][k] = true;
+						 System.out.println(a.get(i).getLabel() + " -> " + a.get(k).getLabel());
+					 }
+				 }
+			 }
+		 }
+
+		 return c;
+	 }
+
+	 public void reduceTransitives(boolean[][] c, Collection<VisualVertex> vertices) {
+		 System.out.println("removed:");
+		 ArrayList<VisualVertex> a = new ArrayList<>();
+		 a.addAll(vertices);
+		 for (int i = 0; i < c.length; i++) {
+			 for (int j = 0; j < c.length; j++) {
+				 for (int k = 0; k < c.length; k++) {
+					 if (c[i][j] && c[j][k] && c[i][k]) {
+						 c[i][k] = false;
+						 System.out.println(a.get(i).getLabel() + " -> " + a.get(k).getLabel());
+					 }
+				 }
+			 }
+		 }
+	 }
+
+	 public void convertFromTransitiveClosure(boolean[][] c, Collection<VisualVertex> vertices, VisualCPOG visualCpog) {
+
+		 System.out.println("Final:");
+		 int i = 0, j = 0;
+		 for (VisualVertex n1 : vertices) {
+			 j = 0;
+			 for (VisualVertex n2 : vertices) {
+				 if (c[i][j]) {
+					 System.out.println(n1.getLabel() + " -> " + n2.getLabel());
+				 }
+				 if (!(c[i][j]) && (visualCpog.hasConnection(n1, n2))) {
+					 while (visualCpog.hasConnection(n1, n2)) {
+						 visualCpog.remove(visualCpog.getConnection(n1, n2));
+					 }
+				 }
+				 j++;
+			 }
+			 i++;
+		 }
+	 }
+
+	 public void removeSelfLoops(boolean[][]c, Collection<VisualVertex> vertices) {
+		 ArrayList<VisualVertex> a = new ArrayList<>();
+		 a.addAll(vertices);
+		 System.out.println("removed:");
+		 for (int i = 0; i < c.length; i++) {
+			 if (c[i][i]) {
+				 c[i][i] = false;
+				 System.out.println(a.get(i).getLabel() + " -> " + a.get(i).getLabel());
+			 }
+		 }
+	 }
+
 	 public String replaceReferences(String text)
 	 {
 		 usedReferences = new ArrayList<>();
@@ -912,12 +1000,6 @@ public class CpogParsingTool {
 		return (getScenarios(cpog).size() > 1);
 	}
 
-/*    public void combineConditions(String old, String newCond, final VisualCPOG visualCpog) throws ParseException {
-        if (!old.contains(newCond)) {
-            parseBool()
-        }
-
-    }*/
 
 
 }
