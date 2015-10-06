@@ -125,6 +125,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		clearButton = new JButton("Clear");
 		clearButton.setPreferredSize(buttonSize);
 
+
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
 		buttonPanel.add(estimatorButton);

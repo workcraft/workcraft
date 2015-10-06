@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -12,7 +13,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
@@ -22,9 +25,9 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.algorithm.EstimationAlg;
-import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
+import org.workcraft.plugins.son.exception.TimeInconsistencyException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
@@ -34,20 +37,21 @@ import org.workcraft.plugins.son.util.ScenarioSaveList;
 public class TimeEstimatorDialog extends JDialog{
 
 	private static final long serialVersionUID = 1L;
-	private SON net;
-	private GraphEditor editor;
-	private TimeEstimatorSettings settings;
-	private Node selection;
-	private Granularity granularity;
+	protected SON net;
+	protected GraphEditor editor;
+	protected TimeEstimatorSettings settings;
+	protected Node selection;
+	protected Granularity granularity;
 
-	private DefaultDurationPanel defaultDurationPanel;
-	private JScrollPane tabelPanel;
-	private ScenarioTable scenarioTable;
+	protected DefaultDurationPanel defaultDurationPanel;
+	protected JScrollPane tabelPanel;
+	protected ScenarioTable scenarioTable;
 
-	private JPanel buttonsPanel;
-	private JButton runButton, cancelButton;
+	protected JPanel buttonsPanel, durationPanel;
+	protected JButton runButton, cancelButton;
+	protected JCheckBox setDuration;
 	protected Dimension buttonSize = new Dimension(80, 25);
-	private int run = 0;
+	protected int run = 0;
 
 	public TimeEstimatorDialog (GraphEditor editor, TimeEstimatorSettings settings, Node selection, Granularity g){
 		super(editor.getMainWindow(), "Estimator Setting", ModalityType.TOOLKIT_MODAL);
@@ -57,16 +61,12 @@ public class TimeEstimatorDialog extends JDialog{
 		this.selection = selection;
 		this.granularity = g;
 
-		defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
+		createDurationPanel();
 		createScenarioTable();
 		createButtonsPanel();
 
-		if(selection instanceof Event){
-			defaultDurationPanel.setIsEnable(false);
-		}
-
 		setLayout(new BorderLayout(10, 10));
-		add(defaultDurationPanel, BorderLayout.NORTH);
+		add(durationPanel, BorderLayout.NORTH);
 		add(tabelPanel, BorderLayout.CENTER);
 		add(buttonsPanel, BorderLayout.SOUTH);
 
@@ -81,7 +81,22 @@ public class TimeEstimatorDialog extends JDialog{
 		pack();
 	}
 
-	private void createScenarioTable(){
+	protected void createDurationPanel(){
+		setDuration = new JCheckBox("Set default value for all unspecifed nodes");
+		setDuration.setSelected(false);
+		setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+		defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
+		defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+		durationPanel = new JPanel();
+		//durationPanel.setBorder(BorderFactory.createTitledBorder("Default Duration Setting"));
+		durationPanel.setLayout(new GridLayout(2,0));
+		durationPanel.add(defaultDurationPanel);
+		durationPanel.add(setDuration);
+	}
+
+	protected void createScenarioTable(){
 
 		ScenarioSaveList saveList = saveListFilter(net.importScenarios(editor.getMainWindow()), selection);
 		scenarioTable = new ScenarioTable(saveList, editor, new ScenarioListTableModel(), selection);
@@ -140,7 +155,7 @@ public class TimeEstimatorDialog extends JDialog{
 		return result;
 	}
 
-	private void createButtonsPanel() {
+	protected void createButtonsPanel() {
 		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 
 		runButton = new JButton ("Run");
@@ -151,19 +166,23 @@ public class TimeEstimatorDialog extends JDialog{
 				setParameters();
 				if(defaultDurationPanel.isValidDuration()){
 					run = 1;
-					EstimationAlg alg = new EstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), true);
+					EstimationAlg alg = new EstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
+					setVisible(false);
+
+					if(setDuration.isSelected())
+						alg.setDefaultDuration();
+
 					try {
 						alg.twoDirEstimation(selection);
 					} catch (AlternativeStructureException e1) {
-						e1.printStackTrace();
+						errMsg(e1.getMessage());
 					} catch (TimeEstimationException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						errMsg(e1.getMessage());
 					} catch (TimeOutOfBoundsException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						errMsg(e1.getMessage());
+					} catch (TimeInconsistencyException e1) {
+						errMsg(e1.getMessage());
 					}
-					setVisible(false);
 				}else{
 					defaultDurationPanel.getMin().setForeground(Color.RED);
 					defaultDurationPanel.getMax().setForeground(Color.RED);
@@ -214,10 +233,13 @@ public class TimeEstimatorDialog extends JDialog{
 		}
 	};
 
-	private void setParameters(){
+	protected void errMsg(String msg){
+		JOptionPane.showMessageDialog(editor.getMainWindow(), msg, "Time estimation error", JOptionPane.ERROR_MESSAGE);
+	}
+
+	protected void setParameters(){
 		settings.setPosition(scenarioTable.getSaveList().getPosition());
 		settings.setDuration(defaultDurationPanel.getDefaultDuration());
-
 	}
 
 	public Interval getDefaultDuration(){

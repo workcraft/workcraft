@@ -18,6 +18,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
 import org.workcraft.plugins.son.exception.TimeEstimationValueException;
+import org.workcraft.plugins.son.exception.TimeInconsistencyException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.granularity.TimeGranularity;
@@ -38,15 +39,15 @@ public class EstimationAlg extends TimeAlg{
 	private TimeGranularity granularity = null;
 	private ScenarioRef scenario;
 	private Before before;
-	private boolean isTwoDir;
+	private Granularity g;
 	private Color color =Color.ORANGE;
 
-	public EstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean isTwoDir) {
+	public EstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s) {
 		super(net);
 		this.net = net;
 		this.defaultDuration = d;
 		this.scenario = s;
-		this.isTwoDir = isTwoDir;
+		this.g = g;
 
 		if(g == Granularity.YEAR_YEAR){
 			granularity = new YearYear();
@@ -58,16 +59,46 @@ public class EstimationAlg extends TimeAlg{
 		before  =  bsonAlg.getBeforeList();
 	}
 
-	public void twoDirEstimation(Node n) throws AlternativeStructureException, TimeEstimationException, TimeOutOfBoundsException{
+	public void setDefaultDuration(){
+		if(!hasConflict() && scenario == null){
+			scenario = getUnalterSON();
+		}
+		for(Node n : scenario.getNodes(net)){
+			if(n instanceof PlaceNode || n instanceof Block){
+				Time node = (Time)n;
+				if(!node.getDuration().isSpecified())
+					node.setDuration(defaultDuration);
+			}
+		}
+	}
+
+	public ScenarioRef getUnalterSON(){
+		ScenarioRef scenario = new ScenarioRef();
+		for(Node node2 : net.getComponents()){
+			scenario.add(net.getNodeReference(node2));
+		}
+		for(SONConnection con : net.getSONConnections()){
+			scenario.add(net.getNodeReference(con));
+		}
+		return scenario;
+	}
+
+	public void twoDirEstimation(Node n) throws AlternativeStructureException, TimeEstimationException, TimeOutOfBoundsException, TimeInconsistencyException{
 		ConsistencyAlg alg = new ConsistencyAlg(net);
 		Time node = null;
 
 		if(hasConflict() && scenario == null)
 			throw new AlternativeStructureException("select a scenario for "+net.getNodeReference(n) + " first.");
+		else if(!hasConflict() && scenario == null){
+			scenario = getUnalterSON();
+		}
 
 		boolean specifiedDur = alg.hasSpecifiedDur(n, false, scenario);
 		boolean specifiedStart = alg.hasSpecifiedStart(n, scenario);
 		boolean specifiedEnd = alg.hasSpecifiedEnd(n, scenario);
+
+		Collection<SONConnection> iCons = net.getInputScenarioPNConnections(n, scenario);
+		Collection<SONConnection> oCons = net.getOutputScenarioPNConnections(n, scenario);
 
 		if(n instanceof Time)
 			node = (Time)n;
@@ -82,47 +113,145 @@ public class EstimationAlg extends TimeAlg{
 				((Block)n).setDurationColor(color);
 			}
 		}
-
+		//n has unspecified start and specified end
 		if(!specifiedStart && specifiedEnd){
-			Collection<Interval> end = getSpecifiedEndTime(n);
-			if(end.size() == 1){
-				if(n instanceof Condition){
-					Condition c = (Condition)n;
-					Interval result = granularity.subtractTD(end.iterator().next(), c.getDuration());
+			Interval end = getSpecifiedEndTime(node);
 
-					Collection<SONConnection> cons = net.getInputScenarioPNConnections(c, scenario);
-					if(cons.size() == 1){
-						cons.iterator().next().setTime(result);
-					}else{
-						c.setStartTime(result);
-					}
+			if(node instanceof Condition){
+				Interval result = granularity.subtractTD(end, node.getDuration());
+
+				if(iCons.size() == 1){
+					iCons.iterator().next().setTime(result);
+				}else{
+					node.setStartTime(result);
+					((Condition) node).setStartTimeColor(color);
 				}
-			}else{
-				throw new RuntimeException("output > 1");
-			}
+			}else if(node instanceof TransitionNode){
+				Interval result = granularity.subtractTD(end, node.getDuration());
 
+				for(SONConnection con : iCons){
+					con.setTime(result);
+					con.setTimeLabelColor(color);
+				}
+			}
+		//n has specified start and unspecified end
 		}else if(specifiedStart && !specifiedEnd){
-			Collection<Interval> start = getSpecifiedStartTime(n);
-			if(start.size() == 1){
-				if(n instanceof Condition){
-					Condition c = (Condition)n;
-					Interval result = granularity.plusTD(start.iterator().next(), c.getDuration());
+			Interval start = getSpecifiedStartTime(n);
 
-					Collection<SONConnection> cons = net.getOutputScenarioPNConnections(c, scenario);
-					if(cons.size() == 1){
-						cons.iterator().next().setTime(result);
+			if(node instanceof Condition){
+				Interval result = granularity.plusTD(start, node.getDuration());
+
+				if(oCons.size() == 1){
+					oCons.iterator().next().setTime(result);
+				}else{
+					node.setEndTime(result);
+					((Condition) node).setEndTimeColor(color);
+				}
+
+			}else if(node instanceof TransitionNode){
+				Interval result = granularity.plusTD(start, node.getDuration());
+
+				for(SONConnection con : oCons){
+					con.setTime(result);
+					con.setTimeLabelColor(color);
+				}
+			}
+		//n has unspecified start and unspecified end
+		}else if(!specifiedStart && !specifiedEnd){
+			boolean setStart = false;
+			boolean setEnd = false;
+
+			if(node instanceof TransitionNode){
+				//set partial specified values
+				Collection<SONConnection> iSpec = new ArrayList<SONConnection>();
+				for(SONConnection con : iCons){
+					if(con.getTime().isSpecified())
+						iSpec.add(con);
+				}
+
+				Collection<SONConnection> oSpec = new ArrayList<SONConnection>();
+				for(SONConnection con : oCons){
+					if(con.getTime().isSpecified())
+						oSpec.add(con);
+				}
+
+				if(!iSpec.isEmpty()){
+					if(concurConsistency(iSpec)){
+						for(SONConnection con : iCons){
+							con.setTime(iSpec.iterator().next().getTime());
+							con.setTimeLabelColor(color);
+						}
+						setStart = true;
 					}else{
-						c.setEndTime(result);
+						throw new TimeEstimationException("start times are concurrently inconsistency.");
 					}
 				}
-			}else{
-				throw new RuntimeException("input > 1");
+
+				if(!oSpec.isEmpty()){
+					if(concurConsistency(oSpec)){
+						for(SONConnection con : oCons){
+							con.setTime(oSpec.iterator().next().getTime());
+							con.setTimeLabelColor(color);
+						}
+						setEnd = true;
+					}else{
+						throw new TimeEstimationException("end times are concurrently inconsistency.");
+					}
+				}
 			}
 
-		}else if(!specifiedStart && !specifiedEnd){
+			//unspec values for all connections
+			Interval start = null;
+			Interval end = null;
+			if(!setStart)
+				try{
+					clearSets();
+					start = getEstimatedStartTime(node);
+					//System.out.println("start" + start!=null?start.toString():"null");
+				}catch(TimeEstimationException e){}
+			if(!setEnd)
+				try{
+					clearSets();
+					end = getEstimatedEndTime(node);
+					//System.out.println("end" + end!=null?end.toString():"null");
+				}catch(TimeEstimationException e){}
 
+			if(start == null && end != null){
+				start = granularity.subtractTD(end, node.getDuration());
+			}else if(start != null && end == null){
+				end = granularity.plusTD(start, node.getDuration());
+			}else if(start == null && end == null){
+				throw new TimeEstimationException("cannot find causally time values.");
+			}
+
+			for(SONConnection con : iCons){
+				con.setTime(start);
+				con.setTimeLabelColor(color);
+			}
+
+			for(SONConnection con : oCons){
+				con.setTime(end);
+				con.setTimeLabelColor(color);
+			}
+
+			if(iCons.size() == 0){
+				node.setStartTime(start);
+				if(node instanceof Condition){
+					((Condition) node).setStartTimeColor(color);
+				}
+			}
+
+			if(oCons.size() == 0){
+				node.setEndTime(end);
+				if(node instanceof Condition){
+					((Condition) node).setEndTimeColor(color);
+				}
+			}
+
+			if(!alg.nodeConsistency(node, start, end, node.getDuration(), g).isEmpty()){
+				throw new TimeInconsistencyException("Warning: Estimated start and end times are inconsistent.");
+			}
 		}
-
 	}
 
 	private boolean hasConflict(){
@@ -136,8 +265,7 @@ public class EstimationAlg extends TimeAlg{
 		return false;
 	}
 
-	private Collection<Interval> getSpecifiedEndTime(Node n){
-		Collection<Interval> result = new ArrayList<Interval>();
+	private Interval getSpecifiedEndTime(Node n) throws TimeEstimationException{
 
 		if(n instanceof Condition){
 			Condition c = (Condition)n;
@@ -146,12 +274,12 @@ public class EstimationAlg extends TimeAlg{
 
 			//c is final
 			if(cons.isEmpty() && cons2.isEmpty()){
-				result.add(c.getEndTime());
+				return c.getEndTime();
 			//c is final state of the scenario, but not the final state of ON
 			}else if(!cons.isEmpty() && cons2.isEmpty()){
 				if(cons.size() == 1){
 					SONConnection con = cons.iterator().next();
-					result.add(con.getTime());
+					return con.getTime();
 				}
 			//c is not final state
 			}else if(!cons.isEmpty() && !cons2.isEmpty()){
@@ -159,21 +287,29 @@ public class EstimationAlg extends TimeAlg{
 				if(cons2.size()==1)
 					con = cons2.iterator().next();
 				if(con==null) throw new RuntimeException("output connection != 1" + net.getNodeReference(n));
-				result.add(con.getTime());
+				return con.getTime();
 			}
+		}else if(n instanceof TransitionNode){
+			TransitionNode t = (TransitionNode)n;
+			Collection<SONConnection> cons = net.getOutputScenarioPNConnections(t, scenario);
+			if(concurConsistency(cons)){
+				return cons.iterator().next().getTime();
+			}else{
+				throw new TimeEstimationException("end times are concurrently inconsistency.");
+			}
+
 		}
-		return result;
+		throw new TimeEstimationException("cannot find specified end time.");
 	}
 
-	private Collection<Interval> getSpecifiedStartTime(Node n){
-		Collection<Interval> result = new ArrayList<Interval>();
+	private Interval getSpecifiedStartTime(Node n) throws TimeEstimationException{
 
 		if(n instanceof Condition){
 			Condition c = (Condition)n;
 			Collection<SONConnection> cons = net.getInputScenarioPNConnections(c, scenario);
 			//p is initial
 			if(cons.isEmpty()){
-				result.add(c.getStartTime());
+				return c.getStartTime();
 			}else{
 				SONConnection con = null;
 				if(cons.size()==1)
@@ -181,10 +317,18 @@ public class EstimationAlg extends TimeAlg{
 				if(con==null) throw new RuntimeException(
 						"input connection != 1" + net.getNodeReference(n));
 				//set estimated start time
-				result.add(con.getTime());
+				return con.getTime();
+			}
+		}else if(n instanceof TransitionNode){
+			TransitionNode t = (TransitionNode)n;
+			Collection<SONConnection> cons = net.getInputScenarioPNConnections(t, scenario);
+			if(concurConsistency(cons)){
+				return cons.iterator().next().getTime();
+			}else{
+				throw new TimeEstimationException("start times are concurrently inconsistency.");
 			}
 		}
-		return result;
+		throw new TimeEstimationException("cannot find specified start time.");
 	}
 
 	public void setEstimatedEndTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
@@ -236,22 +380,22 @@ public class EstimationAlg extends TimeAlg{
 			TransitionNode t = (TransitionNode)n;
 			Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(t, scenario);
 
-			Collection<SONConnection> specifiedConnections = new ArrayList<SONConnection>();
+			Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
 			for(SONConnection con : cons2)
 				if(con.getTime().isSpecified())
-					specifiedConnections.add(con);
+					specifiedCons.add(con);
 
 			//some or all of the connections have specified values
-			if(!specifiedConnections.isEmpty()){
-				if(concurConsistency(specifiedConnections)){
-					end =  specifiedConnections.iterator().next().getTime();
+			if(!specifiedCons.isEmpty()){
+				if(concurConsistency(specifiedCons)){
+					end =  specifiedCons.iterator().next().getTime();
 					if(end != null){
 						t.setEndTime(end);
 						throw new TimeEstimationValueException("End time = "+ end.toString());
 					}
 				}else{
 					throw new TimeEstimationException(
-							"node is concurrently inconsistency (forward)");
+							"start times are concurrently inconsistency.");
 				}
 			//none of the connections has specified value.
 			}else{
@@ -309,22 +453,22 @@ public class EstimationAlg extends TimeAlg{
 			TransitionNode t = (TransitionNode)n;
 			Collection<SONConnection> cons2 = net.getInputScenarioPNConnections(t, scenario);
 
-			Collection<SONConnection> specifiedConnections = new ArrayList<SONConnection>();
+			Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
 			for(SONConnection con : cons2)
 				if(con.getTime().isSpecified())
-					specifiedConnections.add(con);
+					specifiedCons.add(con);
 
 			//some or all of the connections have specified values
-			if(!specifiedConnections.isEmpty()){
-				if(concurConsistency(specifiedConnections)){
-					start =  specifiedConnections.iterator().next().getTime();
+			if(!specifiedCons.isEmpty()){
+				if(concurConsistency(specifiedCons)){
+					start =  specifiedCons.iterator().next().getTime();
 					if(start != null){
 						t.setStartTime(start);
 						throw new TimeEstimationValueException("Start time = "+ start.toString());
 					}
 				}else{
 					throw new TimeEstimationException(
-							"node is concurrently inconsistency (backward)");
+							"end times are concurrently inconsistency.");
 				}
 			//none of the connections has specified value.
 			}else{
@@ -384,7 +528,7 @@ public class EstimationAlg extends TimeAlg{
 	}
 
 	private Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
-		Interval result = new Interval();
+		Interval result = null;
 
     	LinkedList<Time> visited = new LinkedList<Time>();
     	visited.add((Time)n);

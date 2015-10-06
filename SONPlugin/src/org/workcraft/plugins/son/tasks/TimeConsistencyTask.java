@@ -378,7 +378,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 		consistencyAlg.removeProperties();
 		consistencyAlg.setProperties();
 
-		estimationAlg = new EstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario(), false);
+		estimationAlg = new EstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario());
 
 		syncCPs = getSyncCPs();
 
