@@ -44,6 +44,7 @@ import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.VisualBlock;
+import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
 import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
@@ -124,7 +125,6 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		clearButton = new JButton("Clear");
 		clearButton.setPreferredSize(buttonSize);
-
 
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
@@ -615,7 +615,9 @@ public class TimeValueSetterTool extends AbstractTool{
 					}
 				});
 			if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
-				estimatorButton.setEnabled(true);
+				if(!(node3 instanceof VisualChannelPlace))
+					estimatorButton.setEnabled(true);
+
 				selection = ((VisualComponent) node3).getReferencedComponent();
 				visualSelection = node3;
 				((VisualComponent) node3).setForegroundColor(selectedColor);

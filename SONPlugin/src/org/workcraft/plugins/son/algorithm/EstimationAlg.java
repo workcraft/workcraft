@@ -115,73 +115,98 @@ public class EstimationAlg extends TimeAlg{
 		}
 		//n has unspecified start and specified end
 		if(!specifiedStart && specifiedEnd){
-			Interval end = getSpecifiedEndTime(node);
+			Interval start = null;
+			Interval end = null;
 
 			if(node instanceof Condition){
-				Interval result = granularity.subtractTD(end, node.getDuration());
+				end = getSpecifiedEndTime(node);
+				start = granularity.subtractTD(end, node.getDuration());
 
 				if(iCons.size() == 1){
-					iCons.iterator().next().setTime(result);
+					iCons.iterator().next().setTime(start);
 				}else{
-					node.setStartTime(result);
+					node.setStartTime(start);
 					((Condition) node).setStartTimeColor(color);
 				}
 			}else if(node instanceof TransitionNode){
-				Interval result = granularity.subtractTD(end, node.getDuration());
+				Collection<SONConnection> iSpec = getSpecifiedConnections(iCons);
 
+				if(!iSpec.isEmpty()){
+					if(concurConsistency(iSpec)){
+						end = iSpec.iterator().next().getTime();
+						start = getSpecifiedEndTime(node);
+					}else{
+						throw new TimeEstimationException("start times are concurrently inconsistency.");
+					}
+				}else{
+					start = getSpecifiedEndTime(node);
+					end = granularity.subtractTD(start, node.getDuration());
+				}
+				iCons.removeAll(iSpec);
 				for(SONConnection con : iCons){
-					con.setTime(result);
+					con.setTime(end);
 					con.setTimeLabelColor(color);
 				}
 			}
+			if(!alg.nodeConsistency(node, start, end, node.getDuration(), g).isEmpty()){
+				throw new TimeInconsistencyException("Warning: Estimated start and end times are inconsistent.");
+			}
+			return;
 		//n has specified start and unspecified end
 		}else if(specifiedStart && !specifiedEnd){
-			Interval start = getSpecifiedStartTime(n);
+			Interval start = null;
+			Interval end = null;
 
 			if(node instanceof Condition){
-				Interval result = granularity.plusTD(start, node.getDuration());
+				start = getSpecifiedStartTime(n);
+				end = granularity.plusTD(start, node.getDuration());
 
 				if(oCons.size() == 1){
-					oCons.iterator().next().setTime(result);
+					oCons.iterator().next().setTime(end);
 				}else{
-					node.setEndTime(result);
+					node.setEndTime(end);
 					((Condition) node).setEndTimeColor(color);
 				}
 
 			}else if(node instanceof TransitionNode){
-				Interval result = granularity.plusTD(start, node.getDuration());
+				Collection<SONConnection> oSpec = getSpecifiedConnections(oCons);
 
+				if(!oSpec.isEmpty()){
+					if(concurConsistency(oSpec)){
+						end = oSpec.iterator().next().getTime();
+						start = getSpecifiedStartTime(n);
+					}else{
+						throw new TimeEstimationException("end times are concurrently inconsistency.");
+					}
+				}else{
+					start = getSpecifiedStartTime(n);
+					end = granularity.plusTD(start, node.getDuration());
+				}
+
+				oCons.removeAll(oSpec);
 				for(SONConnection con : oCons){
-					con.setTime(result);
+					con.setTime(end);
 					con.setTimeLabelColor(color);
 				}
 			}
+			if(!alg.nodeConsistency(node, start, end, node.getDuration(), g).isEmpty()){
+				throw new TimeInconsistencyException("Warning: Estimated start and end times are inconsistent.");
+			}
+			return;
 		//n has unspecified start and unspecified end
 		}else if(!specifiedStart && !specifiedEnd){
-			boolean setStart = false;
-			boolean setEnd = false;
+			Interval start = null;
+			Interval end = null;
+
+			//set partial specified values
+			Collection<SONConnection> iSpec = getSpecifiedConnections(iCons);
+			Collection<SONConnection> oSpec = getSpecifiedConnections(oCons);
 
 			if(node instanceof TransitionNode){
-				//set partial specified values
-				Collection<SONConnection> iSpec = new ArrayList<SONConnection>();
-				for(SONConnection con : iCons){
-					if(con.getTime().isSpecified())
-						iSpec.add(con);
-				}
-
-				Collection<SONConnection> oSpec = new ArrayList<SONConnection>();
-				for(SONConnection con : oCons){
-					if(con.getTime().isSpecified())
-						oSpec.add(con);
-				}
 
 				if(!iSpec.isEmpty()){
 					if(concurConsistency(iSpec)){
-						for(SONConnection con : iCons){
-							con.setTime(iSpec.iterator().next().getTime());
-							con.setTimeLabelColor(color);
-						}
-						setStart = true;
+						start = iSpec.iterator().next().getTime();
 					}else{
 						throw new TimeEstimationException("start times are concurrently inconsistency.");
 					}
@@ -189,11 +214,7 @@ public class EstimationAlg extends TimeAlg{
 
 				if(!oSpec.isEmpty()){
 					if(concurConsistency(oSpec)){
-						for(SONConnection con : oCons){
-							con.setTime(oSpec.iterator().next().getTime());
-							con.setTimeLabelColor(color);
-						}
-						setEnd = true;
+						end = oSpec.iterator().next().getTime();
 					}else{
 						throw new TimeEstimationException("end times are concurrently inconsistency.");
 					}
@@ -201,15 +222,13 @@ public class EstimationAlg extends TimeAlg{
 			}
 
 			//unspec values for all connections
-			Interval start = null;
-			Interval end = null;
-			if(!setStart)
+			if(start == null)
 				try{
 					clearSets();
 					start = getEstimatedStartTime(node);
 					//System.out.println("start" + start!=null?start.toString():"null");
 				}catch(TimeEstimationException e){}
-			if(!setEnd)
+			if(end == null)
 				try{
 					clearSets();
 					end = getEstimatedEndTime(node);
@@ -222,16 +241,6 @@ public class EstimationAlg extends TimeAlg{
 				end = granularity.plusTD(start, node.getDuration());
 			}else if(start == null && end == null){
 				throw new TimeEstimationException("cannot find causally time values.");
-			}
-
-			for(SONConnection con : iCons){
-				con.setTime(start);
-				con.setTimeLabelColor(color);
-			}
-
-			for(SONConnection con : oCons){
-				con.setTime(end);
-				con.setTimeLabelColor(color);
 			}
 
 			if(iCons.size() == 0){
@@ -248,11 +257,23 @@ public class EstimationAlg extends TimeAlg{
 				}
 			}
 
+			iCons.removeAll(iSpec);
+			for(SONConnection con : iCons){
+				con.setTime(start);
+				con.setTimeLabelColor(color);
+			}
+
+			oCons.removeAll(oSpec);
+			for(SONConnection con : oCons){
+				con.setTime(end);
+				con.setTimeLabelColor(color);
+			}
 			if(!alg.nodeConsistency(node, start, end, node.getDuration(), g).isEmpty()){
 				throw new TimeInconsistencyException("Warning: Estimated start and end times are inconsistent.");
 			}
 		}
 	}
+
 
 	private boolean hasConflict(){
 		RelationAlgorithm alg = new RelationAlgorithm(net);
@@ -263,6 +284,15 @@ public class EstimationAlg extends TimeAlg{
 				return true;
 		}
 		return false;
+	}
+
+	private Collection<SONConnection> getSpecifiedConnections(Collection<SONConnection> cons){
+		Collection<SONConnection> result = new ArrayList<SONConnection>();
+		for(SONConnection con : cons){
+			if(con.getTime().isSpecified())
+				result.add(con);
+		}
+		return result;
 	}
 
 	private Interval getSpecifiedEndTime(Node n) throws TimeEstimationException{
