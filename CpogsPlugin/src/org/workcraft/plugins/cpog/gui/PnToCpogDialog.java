@@ -29,8 +29,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class PnToCpogDialog extends JDialog {
 
-	private JLabel reduceLabel, isomorphismLabel, significanceLabel;
-	private JCheckBox reduceCheck, isomorphismCheck;
+	// labels
+	private JLabel reduceLabel;
+	private JLabel isomorphismLabel;
+	private JLabel significanceLabel;
+	private JLabel removeNodesLabel;
+
+	// check boxes
+	private JCheckBox reduceCheck;
+	private JCheckBox isomorphismCheck;
+	private JCheckBox removeNodesCheck;
+
+	//other elements
 	private JComboBox<String> significanceBox;
 	private JButton closeButton, runButton;
 	private TableLayout layout;
@@ -46,7 +56,7 @@ public class PnToCpogDialog extends JDialog {
 
 		double size[][] = new double[][] {
 				{TableLayout.FILL},
-				{85, TableLayout.FILL}
+				{106, TableLayout.FILL}
 		};
 
 		layout = new TableLayout(size);
@@ -70,7 +80,7 @@ public class PnToCpogDialog extends JDialog {
 	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(560, 177, 200, 100);
+		sizeWindow(560, 190, 200, 100);
 	}
 
 	/** creates the panel containing the settings of the converter **/
@@ -100,8 +110,8 @@ public class PnToCpogDialog extends JDialog {
 		    }
 		});
 
-		// Algorithm for checking significance property of a run, combo box
-		significanceLabel = new JLabel(PnToCpogDialogSupport.significanceLabel);
+		// algorithm for checking significance property of a run, combo box
+		significanceLabel = new JLabel(PnToCpogDialogSupport.textSignificanceLabel);
 		significanceBox = new JComboBox<String>();
 		significanceBox.setEditable(false);
 		significanceBox.setPreferredSize(PnToCpogDialogSupport.significanceSize);
@@ -110,6 +120,17 @@ public class PnToCpogDialog extends JDialog {
 		significanceBox.addItem(PnToCpogDialogSupport.significanceItems[2]);
 		significanceBox.setSelectedIndex(0);
 		significanceBox.setBackground(Color.WHITE);
+
+		// remove condition nodes check box
+		removeNodesCheck = new JCheckBox("", false);
+		removeNodesLabel = new JLabel(PnToCpogDialogSupport.textRemoveNodeLabel);
+		removeNodesLabel.addMouseListener(new MouseAdapter()
+		{
+		    public void mouseClicked(MouseEvent e)
+		    {
+		    	removeNodesCheck.setSelected(removeNodesCheck.isSelected() ? false : true);
+		    }
+		});
 
 		// adding everything into the panel
 		settingPanel.add(significanceLabel);
@@ -120,6 +141,9 @@ public class PnToCpogDialog extends JDialog {
 		settingPanel.add(new SimpleFlowLayout.LineBreak());
 		settingPanel.add(isomorphismCheck);
 		settingPanel.add(isomorphismLabel);
+		settingPanel.add(new SimpleFlowLayout.LineBreak());
+		settingPanel.add(removeNodesCheck);
+		settingPanel.add(removeNodesLabel);
 
 	}
 
@@ -138,6 +162,7 @@ public class PnToCpogDialog extends JDialog {
 				settings.setReduce(reduceCheck.isSelected() ? true : false);
 				settings.setIsomorphism(isomorphismCheck.isSelected() ? true : false);
 				settings.setSignificance(significanceBox.getSelectedIndex());
+				settings.setRemoveNodes(removeNodesCheck.isSelected() ? true : false);
 
 				modalResult = 1;
 			}

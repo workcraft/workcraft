@@ -177,45 +177,88 @@ public class Untanglings {
 	}
 
 	/** converts the set of processes that compose the *
-	 *  untangling into a set of partial order graph  **/
-	public ArrayList<String> getPartialOrders(){
+	 *  untangling into a set of partial order graph
+	 * @param settings **/
+	public ArrayList<String> getPartialOrders(PnToCpogSettings settings){
 
 		for(IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()){
 
 			String process = new String();
 			ArrayList<UntanglingNode> transitions = new ArrayList<UntanglingNode>();
+			ArrayList<UntanglingNode> places = new ArrayList<UntanglingNode>();
 
 			// adding transitions into a list
 			for(Flow edge : pi.getOccurrenceNet().getEdges()){
 
 				if (edge.getSource() instanceof Transition){
 
-					addTransition(edge.getSource(), transitions);
+					addNode(edge.getSource(), transitions);
 
 				}
 			}
 
-			// sorting the list
-			sortTransitions(transitions);
+			// adding places into a list
+			if (settings.isRemoveNodes() == false){
+				for(Flow edge : pi.getOccurrenceNet().getEdges()){
+
+					if (edge.getSource() instanceof Place){
+
+						addNode(edge.getSource(), places);
+
+					}
+
+					if (edge.getTarget() instanceof Place){
+
+						addNode(edge.getTarget(), places);
+
+					}
+				}
+			}
+
+			// sorting the lists
+			sortList(transitions);
+			if (settings.isRemoveNodes() == false){
+				sortList(places);
+			}
 
 			// renaming transitions showing up with same name but different id
-			renameTransitions(transitions);
+			renamelist(transitions);
+			if (settings.isRemoveNodes() == false){
+				renamelist(places);
+			}
 
 			// connecting transitions while skipping the places
-			for(Flow edge1 : pi.getOccurrenceNet().getEdges()){
+			if(settings.isRemoveNodes() == true){
+				for(Flow edge1 : pi.getOccurrenceNet().getEdges()){
 
-				if (edge1.getSource() instanceof Transition){
+					if (edge1.getSource() instanceof Transition){
 
-					for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
+						for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
 
-						if(edge2.getSource().getLabel().equals(edge1.getTarget().getLabel())){
+							if(edge2.getSource().getLabel().equals(edge1.getTarget().getLabel())){
 
-							process = process.concat(connectVertices(transitions, edge1.getSource(), edge2.getTarget(), process));
+								process = process.concat(connectTransitions(transitions, edge1.getSource(), edge2.getTarget(), process));
 
+							}
 						}
 					}
 				}
 			}
+			// nodes need to be present
+			else{
+				for(Flow edge : pi.getOccurrenceNet().getEdges()){
+
+					if(edge.getSource() instanceof Place){
+						// place to transition connection
+						process = process.concat(connectPlaceAndTransition(places, transitions, edge.getSource(), edge.getTarget(), process));
+					}else{
+						// transition to place connection
+						process = process.concat(connectPlaceAndTransition(transitions, places, edge.getSource(), edge.getTarget(), process));
+					}
+
+				}
+			}
+
 			partialOrders.add(process);
 		}
 
@@ -223,26 +266,26 @@ public class Untanglings {
 
 	}
 
-	/** Adds a transition of the untangling's process  *
+	/** Adds a node of the untangling's process        *
 	 *  separating label and id into a unsorted list. **/
-	private void addTransition(Node source, ArrayList<UntanglingNode> transitions) {
+	private void addNode(Node source, ArrayList<UntanglingNode> list) {
 
 		boolean add = true;
 		UntanglingNode nodeToAdd = new UntanglingNode(Integer.parseInt(source.getLabel().replaceAll(".*-", "")), source.getLabel().replaceAll("-.*", ""));
-		for(int i = 0; i < transitions.size() && add; i++){
-			if(transitions.get(i).getId() == nodeToAdd.getId()){
+		for(int i = 0; i < list.size() && add; i++){
+			if(list.get(i).getId() == nodeToAdd.getId()){
 				add = false;
 			}
 		}
 		if(add){
-			transitions.add(nodeToAdd);
+			list.add(nodeToAdd);
 		}
 	}
 
 	/** Sort the list of the untangling's vertices by the id **/
 	@SuppressWarnings("unchecked")
-	private void sortTransitions(ArrayList<UntanglingNode> transitions) {
-		Collections.sort(transitions, new Comparator() {
+	private void sortList(ArrayList<UntanglingNode> list) {
+		Collections.sort(list, new Comparator() {
 
 			@Override
 			public int compare(Object node1, Object node2) {
@@ -254,16 +297,16 @@ public class Untanglings {
 
 	/** Rename with a " _n " the transitions with same names but different *
 	 *  id, in order to be coherent with partial order notation            **/
-	private void renameTransitions(ArrayList<UntanglingNode> transitions) {
+	private void renamelist(ArrayList<UntanglingNode> list) {
 
-		for(int i = 0; i < transitions.size(); i++){
+		for(int i = 0; i < list.size(); i++){
 			int k = 1;
-			for(int j = i+1; j < transitions.size(); j++){
-				if(transitions.get(i).getLabel().equals(transitions.get(j).getLabel())){
-					String replaceName = new String(transitions.get(j).getLabel());
+			for(int j = i+1; j < list.size(); j++){
+				if(list.get(i).getLabel().equals(list.get(j).getLabel())){
+					String replaceName = new String(list.get(j).getLabel());
 					replaceName = replaceName.concat("_" + (k+1));
 					k++;
-					transitions.get(j).setLabel(replaceName);
+					list.get(j).setLabel(replaceName);
 				}
 			}
 		}
@@ -273,7 +316,7 @@ public class Untanglings {
 	/** Connect two transitions by looking at the name  *
 	 *  contained inside the list "transitions", where  *
 	 *  each transitions has a different name          **/
-	private String connectVertices(ArrayList<UntanglingNode> transitions,
+	private String connectTransitions(ArrayList<UntanglingNode> transitions,
 			Node source, Node target, String process) {
 
 		int sourceId = Integer.parseInt(source.getLabel().replaceAll(".*-", ""));
@@ -287,6 +330,33 @@ public class Untanglings {
 			}
 			if (transitions.get(i).getId() == targetId){
 				targetName = transitions.get(i).getLabel();
+			}
+		}
+
+		return (sourceName + "," + targetName + ";");
+
+	}
+
+	/** Connect places and transitions by looking at the *
+	 *  name contained inside two lists, where           *
+	 *  transitions and places have different names     **/
+	private String connectPlaceAndTransition(ArrayList<UntanglingNode> listSource,
+			ArrayList<UntanglingNode> listTarget, Node source, Node target,
+			String process) {
+
+		int sourceId = Integer.parseInt(source.getLabel().replaceAll(".*-", ""));
+		int targetId = Integer.parseInt(target.getLabel().replaceAll(".*-", ""));
+		String sourceName = new String();
+		String targetName = new String();
+
+		for(int i = 0; i < listSource.size(); i++){
+			if (listSource.get(i).getId() == sourceId){
+				sourceName = listSource.get(i).getLabel();
+			}
+		}
+		for(int i = 0; i < listTarget.size(); i++){
+			if (listTarget.get(i).getId() == targetId){
+				targetName = listTarget.get(i).getLabel();
 			}
 		}
 
