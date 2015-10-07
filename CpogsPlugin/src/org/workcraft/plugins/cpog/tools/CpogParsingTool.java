@@ -212,6 +212,7 @@ public class CpogParsingTool {
 		 ArrayList<VisualTransformableNode> groups = new ArrayList<>();
 		 ArrayList<Node> vertices = new ArrayList<Node>();
 		 ArrayList<String> expression = new ArrayList<String>();
+		 String total = "";
 
          groups = getScenarios(visualCpog);
          originalSelection = copySelected(visualCpog);
@@ -232,6 +233,7 @@ public class CpogParsingTool {
 				 HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
 				 HashSet<Connection> visitedConnections = new HashSet<Connection>();
 				 ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
+
 				 while(i.hasNext())
 				 {
 				   q.add(i.next());
@@ -239,9 +241,17 @@ public class CpogParsingTool {
 					   connections.clear();
 					   current = (VisualVertex) q.remove();
 
+					   visitedVertices.add(current);
+
+					   for (Node n : getChildren(visualCpog, current)) {
+						   if (!visitedVertices.contains(n)) {
+							   q.add(n);
+						   }
+					   }
+
 					   totalConnections = visualCpog.getConnections(current);
 
-					   describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog, q);
+					   describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog);
 
 					   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
 					   {
@@ -296,9 +306,15 @@ public class CpogParsingTool {
 				   connections.clear();
 				   current = (VisualVertex) q.remove();
 
+				   for (Node n : getChildren(visualCpog, current)) {
+					   if (!visitedVertices.contains(n)) {
+						   q.add(n);
+					   }
+				   }
+
 				   totalConnections = visualCpog.getConnections(current);
 
-                   describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog, q);
+                   describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog);
 
 				   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
 				   {
@@ -314,19 +330,33 @@ public class CpogParsingTool {
 
 		 }
 
-		 String total = "";
 
          if (expression.get(expression.size() - 1).compareTo("+") == 0) {
              expression.remove(expression.size() - 1);
          }
 
-		 for (String ex : expression)
-		 {
-			 	 if ((total.endsWith("\n")) || (total.equals(""))) {
-			 		 total = total + ex;
-			 	 } else
-			 		 total = total + " " + ex;
+		 for (String ex : expression) {
+			 if (ex.contains("=")) {
+				 total = total + ex;
+			 } else if (ex.equals("\n")) {
+				 while(total.endsWith(" ") || total.endsWith("+")) {
+					 total = total.substring(0, total.length() - 1);
+				 }
+				 total = total + ex;
+			 } else if (((ex.contains(" ")) || (ex.equals("+"))) || (!(total.contains(" " + ex + " ")) && !(total.startsWith(ex + " ")) && !(total.endsWith(" " + ex))))
+			 {
+				 if (!(ex.equals("+") && total.endsWith("+"))) {
+					 if ((total.endsWith("\n")) || (total.equals(""))) {
+						 total = total + ex;
+					 } else {
+						 total = total + " " + ex;
+					 }
+				 }
+			 }
 		 }
+
+
+
 
          return total;
 
@@ -334,7 +364,7 @@ public class CpogParsingTool {
 
 
     public static void describeArcs(ArrayList<String> expression, Set<Connection> totalConnections, HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections,
-    			VisualVertex current, ArrayList<Node> vertices, VisualCPOG visualCpog, ConcurrentLinkedQueue<Node> q) {
+    			VisualVertex current, ArrayList<Node> vertices, VisualCPOG visualCpog) {
     	ArrayList<Connection> connections = new ArrayList<>();
     	for (Connection c : totalConnections) {
     		if ((!visitedConnections.contains(c)) && (!c.getSecond().equals(current)) && (vertices.contains(c.getSecond()))) {
