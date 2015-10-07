@@ -56,7 +56,7 @@ public class PnToCpogDialog extends JDialog {
 
 		double size[][] = new double[][] {
 				{TableLayout.FILL},
-				{106, TableLayout.FILL}
+				{110, TableLayout.FILL}
 		};
 
 		layout = new TableLayout(size);
@@ -80,7 +80,7 @@ public class PnToCpogDialog extends JDialog {
 	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
 	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		sizeWindow(560, 190, 200, 100);
+		sizeWindow(560, 200, 200, 100);
 	}
 
 	/** creates the panel containing the settings of the converter **/
