@@ -454,8 +454,6 @@ public class CpogSelectionTool extends SelectionTool {
 
         visualCpog.selectNone();
 
-
-
         editor.requestFocus();
 
         editor.forceRedraw();

@@ -234,7 +234,7 @@ public abstract class AbstractModel implements Model {
 
 	public Connection getConnection(Node first, Node second) {
 		for(Connection connection : getConnections(first)) {
-			if (connection.getSecond() == second) return connection;
+			if ((connection.getFirst() == first) && (connection.getSecond() == second)) return connection;
 		}
 		return null;
 	}
