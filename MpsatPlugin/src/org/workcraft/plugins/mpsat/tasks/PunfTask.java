@@ -16,16 +16,14 @@ public class PunfTask implements Task<ExternalProcessResult> {
 	private String outputPath;
 	private boolean tryPnml;
 
-	public PunfTask(String inputPath, String outputPath, boolean tryPnml)
-	{
+	public PunfTask(String inputPath, String outputPath, boolean tryPnml) {
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
 		this.tryPnml = tryPnml;
 	}
 
 	@Override
-	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor)
-	{
+	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 		ArrayList<String> command = new ArrayList<String>();
 		command.add(PunfUtilitySettings.getCommand() + MpsatUtilitySettings.getCommandSuffix(tryPnml));
 
@@ -51,4 +49,5 @@ public class PunfTask implements Task<ExternalProcessResult> {
 			return Result.failed(retVal);
 		}
 	}
+
 }

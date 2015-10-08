@@ -65,7 +65,6 @@ public class MpsatConformationTask extends MpsatChainTask {
 				throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
 			}
 			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
-			monitor.progressUpdate(0.20);
 
 			// Generating .g for the model
 			File devStgFile =  new File(directory, "dev.g");
