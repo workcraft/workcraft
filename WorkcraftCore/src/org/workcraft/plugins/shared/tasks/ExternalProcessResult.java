@@ -32,8 +32,7 @@ public class ExternalProcessResult {
 		return returnCode;
 	}
 
-	public byte[] getOutputFile(String name)
-	{
+	public byte[] getOutputFile(String name) {
 		return outputFiles.get(name);
 	}
 }

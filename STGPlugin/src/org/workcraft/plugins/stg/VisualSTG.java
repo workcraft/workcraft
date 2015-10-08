@@ -45,6 +45,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -103,12 +104,14 @@ public class VisualSTG extends AbstractVisualModel {
 		  && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
 			throw new InvalidConnectionException ("Arcs between places are not allowed.");
 		}
-		if (hasMathConnection(first, second)) {
-			if (hasMathConnection(second, first)) {
-				throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
-			} else {
-				throw new InvalidConnectionException ("This arc already exists.");
-			}
+		if (PetriNetUtils.hasReadArcConnection(this, first, second) || PetriNetUtils.hasReadArcConnection(this, second, first)) {
+			throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
+		}
+		if (PetriNetUtils.hasProducingArcConnection(this, first, second)) {
+			throw new InvalidConnectionException ("This producing arc already exists.");
+		}
+		if (PetriNetUtils.hasConsumingArcConnection(this, first, second)) {
+			throw new InvalidConnectionException ("This consuming arc already exists.");
 		}
 	}
 
@@ -183,8 +186,13 @@ public class VisualSTG extends AbstractVisualModel {
 		if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
 			throw new InvalidConnectionException ("Read-arcs between transitions are not allowed.");
 		}
-		if (hasMathConnection(first, second) || (hasMathConnection(second, first))) {
-			throw new InvalidConnectionException ("Nodes are already connected.");
+		if ( PetriNetUtils.hasReadArcConnection(this, first, second)
+		  || PetriNetUtils.hasReadArcConnection(this, second, first)
+		  || PetriNetUtils.hasProducingArcConnection(this, first, second)
+		  || PetriNetUtils.hasProducingArcConnection(this, second, first)
+		  || PetriNetUtils.hasConsumingArcConnection(this, first, second)
+		  || PetriNetUtils.hasConsumingArcConnection(this, second, first) ) {
+				throw new InvalidConnectionException ("Nodes are already connected.");
 		}
 	}
 

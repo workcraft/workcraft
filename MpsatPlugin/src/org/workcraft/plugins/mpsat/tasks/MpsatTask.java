@@ -50,7 +50,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		// Input file argument
 		command.add(inputFileName);
 
-		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command);
+		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, directory);
 		Result<? extends ExternalProcessResult> res = externalProcessTask.run(monitor);
 		if(res.getOutcome() == Outcome.CANCELLED) {
 			return res;
@@ -58,11 +58,6 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
 		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 		try {
-			String unfoldingFileName = "mpsat" + MpsatUtilitySettings.getUnfoldingExtension(tryPnml);
-			File unfoldingFile = new File(directory, unfoldingFileName);
-			if(unfoldingFile.exists()) {
-				outputFiles.put(unfoldingFileName, FileUtils.readAllBytes(unfoldingFile));
-			}
 			File g = new File(directory, "mpsat.g");
 			if(g.exists()) {
 				outputFiles.put("mpsat.g", FileUtils.readAllBytes(g));

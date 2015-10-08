@@ -84,5 +84,4 @@ public interface VisualModel extends Model, ObservableState {
 	public VisualNode getTemplateNode();
 	public AbstractLayoutTool getBestLayoutTool();
 
-
 }

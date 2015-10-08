@@ -203,7 +203,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 			args.add(layout.getAbsolutePath());
 			args.add(original.getAbsolutePath());
 
-			Task<ExternalProcessResult> task = new ExternalProcessTask(args);
+			Task<ExternalProcessResult> task = new ExternalProcessTask(args, directory);
 			final Framework framework = Framework.getInstance();
 			Result<? extends ExternalProcessResult> res = framework.getTaskManager().execute(task, "Laying out the graph...");
 

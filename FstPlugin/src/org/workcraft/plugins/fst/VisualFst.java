@@ -4,6 +4,7 @@ import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -26,7 +27,7 @@ public class VisualFst extends VisualFsm {
 	}
 
 	@Override
-	public VisualConnection connect(Node first, Node second) throws InvalidConnectionException {
+	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
 		validateConnection(first, second);
 
 		VisualState vState1 = (VisualState)first;
@@ -34,9 +35,11 @@ public class VisualFst extends VisualFsm {
 		State mState1 = vState1.getReferencedState();
 		State mState2 = vState2.getReferencedState();
 
-		Signal signal = ((Fst)getMathModel()).createSignal(null, Type.DUMMY);
-		SignalEvent mEvent = ((Fst)getMathModel()).createSignalEvent(mState1, mState2, signal);
-		VisualSignalEvent vEvent = new VisualSignalEvent(mEvent, vState1, vState2);
+		if (mConnection == null) {
+			Signal signal = ((Fst)getMathModel()).createSignal(null, Type.DUMMY);
+			mConnection = ((Fst)getMathModel()).createSignalEvent(mState1, mState2, signal);
+		}
+		VisualSignalEvent vEvent = new VisualSignalEvent((SignalEvent)mConnection, vState1, vState2);
 
 		Container container = Hierarchy.getNearestContainer(vState1, vState2);
 		container.add(vEvent);

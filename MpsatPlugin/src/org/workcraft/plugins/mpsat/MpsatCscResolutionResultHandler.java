@@ -11,6 +11,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.interop.DotGImporter;
@@ -31,7 +32,8 @@ public class MpsatCscResolutionResultHandler implements Runnable {
 	}
 
 	public STGModel getResolvedStg() {
-		final byte[] output = result.getReturnValue().getMpsatResult().getReturnValue().getOutputFile("mpsat.g");
+		Result<? extends ExternalProcessResult> mpsatResult = result.getReturnValue().getMpsatResult();
+		final byte[] output = mpsatResult.getReturnValue().getOutputFile("mpsat.g");
 		if(output == null) {
 			return null;
 		}
