@@ -61,7 +61,6 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.plugins.layout.DotLayoutTool;
-import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;

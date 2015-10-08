@@ -4,11 +4,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
@@ -172,6 +174,93 @@ public class PetriNetUtils {
 			positionInRootSpace = localToRootTransform.transform(positionInLocalSpace, null);
 		}
 		return positionInRootSpace;
+	}
+
+	public static boolean hasReadArcConnection(AbstractVisualModel visualModel, Node first, Node second) {
+		boolean found = false;
+		VisualPlace place = null;
+		VisualTransition transition = null;
+		if (first instanceof VisualPlace) {
+			place = (VisualPlace)first;
+		} else if (first instanceof VisualReplicaPlace) {
+			VisualReplicaPlace r = (VisualReplicaPlace)first;
+			place = (VisualPlace)r.getMaster();
+		}
+		if (second instanceof VisualTransition) {
+			transition = (VisualTransition)second;
+		}
+		if ((place != null) && (transition != null)) {
+			for (Replica replica: place.getReplicas()) {
+				if (replica instanceof VisualReplicaPlace) {
+					VisualReplicaPlace replicaPlace = (VisualReplicaPlace)replica;
+					Connection connection = visualModel.getConnection(replicaPlace, transition);
+					found = (connection instanceof VisualReadArc);
+				}
+			}
+			if ( !found ) {
+				Connection connection = visualModel.getConnection(place, transition);
+				found = (connection instanceof VisualReadArc);
+			}
+		}
+		return found;
+	}
+
+	public static boolean hasProducingArcConnection(AbstractVisualModel visualModel, Node first, Node second) {
+		boolean found = false;
+		VisualPlace place = null;
+		VisualTransition transition = null;
+		if (first instanceof VisualTransition) {
+			transition = (VisualTransition)first;
+		}
+		if (second instanceof VisualPlace) {
+			place = (VisualPlace)second;
+		} else if (second instanceof VisualReplicaPlace) {
+			VisualReplicaPlace r = (VisualReplicaPlace)second;
+			place = (VisualPlace)r.getMaster();
+		}
+		if ((transition != null) && (place != null)) {
+			for (Replica replica: place.getReplicas()) {
+				if (replica instanceof VisualReplicaPlace) {
+					VisualReplicaPlace replicaPlace = (VisualReplicaPlace)replica;
+					Connection connection = visualModel.getConnection(transition, replicaPlace);
+					found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+				}
+			}
+			if ( !found ) {
+				Connection connection = visualModel.getConnection(transition, place);
+				found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+			}
+		}
+		return found;
+	}
+
+	public static boolean hasConsumingArcConnection(AbstractVisualModel visualModel, Node first, Node second) {
+		boolean found = false;
+		VisualPlace place = null;
+		VisualTransition transition = null;
+		if (first instanceof VisualPlace) {
+			place = (VisualPlace)first;
+		} else if (first instanceof VisualReplicaPlace) {
+			VisualReplicaPlace r = (VisualReplicaPlace)first;
+			place = (VisualPlace)r.getMaster();
+		}
+		if (second instanceof VisualTransition) {
+			transition = (VisualTransition)second;
+		}
+		if ((place != null) && (transition != null)) {
+			for (Replica replica: place.getReplicas()) {
+				if (replica instanceof VisualReplicaPlace) {
+					VisualReplicaPlace replicaPlace = (VisualReplicaPlace)replica;
+					Connection connection = visualModel.getConnection(replicaPlace, transition);
+					found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+				}
+			}
+			if ( !found ) {
+				Connection connection = visualModel.getConnection(place, transition);
+				found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+			}
+		}
+		return found;
 	}
 
 	public static HashSet<VisualConnection> getVisualConsumingArcs(VisualModel visualModel) {
