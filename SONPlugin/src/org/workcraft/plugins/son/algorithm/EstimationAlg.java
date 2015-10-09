@@ -558,7 +558,7 @@ public class EstimationAlg extends TimeAlg{
 	}
 
 	private Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
-		Interval result = null;
+		Interval result = new Interval();
 
     	LinkedList<Time> visited = new LinkedList<Time>();
     	visited.add((Time)n);
@@ -611,7 +611,6 @@ public class EstimationAlg extends TimeAlg{
             	result[0] = con.getTime();
             	result[1] = durationAccumulator1(visited);
                 resultTimeAndDuration.add(result);
-
             }
         }
         // in depth-first, recursion needs to come after visiting post nodes
