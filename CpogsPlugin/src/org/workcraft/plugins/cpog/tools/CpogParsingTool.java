@@ -645,10 +645,10 @@ public class CpogParsingTool {
 
 	 public void computeTransitiveClosure(boolean[][] c) {
 
-		 for (int i = 0; i < c.length; i++) {
-			 for (int j = 0; j < c.length; j++) {
+		 for (int j = 0; j < c.length; j++) {
+			 for (int i = 0; i < c.length; i++) {
 				 for (int k = 0; k < c.length; k++) {
-					 if (c[i][j] && c[j][k] && !c[i][k]) {
+					 if (c[i][j] && c[j][k]) {
 						 c[i][k] = true;
 					 }
 				 }
@@ -657,26 +657,28 @@ public class CpogParsingTool {
 
 	 }
 
-	 public void reduceTransitives(boolean[][] c) {
+	 public boolean[][] findTransitives(boolean[][] c) {
+		 boolean[][] t = new boolean[c.length][c.length];
 		 for (int i = 0; i < c.length; i++) {
 			 for (int j = 0; j < c.length; j++) {
 				 for (int k = 0; k < c.length; k++) {
-					 if (c[i][j] && c[j][k] && c[i][k]) {
-						 c[i][k] = false;
+					 if (c[i][j] && c[j][k]) {
+						 t[i][k] = true;
 					 }
 				 }
 			 }
 		 }
+		 return t;
 	 }
 
-	 public void convertFromArrayForm(boolean[][] c, Collection<VisualVertex> vertices, VisualCPOG visualCpog) {
+	 public void convertFromArrayForm(boolean[][] t, Collection<VisualVertex> vertices, VisualCPOG visualCpog) {
 
 		 int i = 0, j = 0;
 		 for (VisualVertex n1 : vertices) {
 			 j = 0;
 			 for (VisualVertex n2 : vertices) {
-				 if (!(c[i][j]) && (visualCpog.hasConnection(n1, n2))) {
-					 while (visualCpog.hasConnection(n1, n2)) {
+				 if ((t[i][j]) && (visualCpog.hasConnection(n1, n2))) {
+					 if (visualCpog.hasConnection(n1, n2)) {
 						 visualCpog.remove(visualCpog.getConnection(n1, n2));
 					 }
 				 }
@@ -686,13 +688,14 @@ public class CpogParsingTool {
 		 }
 	 }
 
-	 public void removeSelfLoops(boolean[][]c) {
+	 public boolean hasSelfLoops(boolean[][]c) {
 
 		 for (int i = 0; i < c.length; i++) {
 			 if (c[i][i]) {
-				 c[i][i] = false;
+				 return true;
 			 }
 		 }
+		 return false;
 	 }
 
 	 public String replaceReferences(String text)
@@ -951,6 +954,16 @@ public class CpogParsingTool {
 	public static boolean hasEnoughScenarios(WorkspaceEntry we) {
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
 		return (getScenarios(cpog).size() > 1);
+	}
+
+	public boolean[][] copyArray(boolean[][] c) {
+		boolean[][] t = new boolean[c.length][c.length];
+		for (int i =0; i < c.length; i++) {
+			for (int j = 0; j < c.length; j++) {
+				t[i][j] = c[i][j];
+			}
+		}
+		return t;
 	}
 
 

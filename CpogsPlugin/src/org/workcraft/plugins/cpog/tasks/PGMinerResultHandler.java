@@ -92,7 +92,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 						while (line.endsWith(" ")) {
 							line = line.substring(0, line.length() - 1);
 						}
-						System.out.println(line);
+//						System.out.println(line);
 						while (line.endsWith(" ")) {
 							line = line.substring(0, line.length() - 1);
 						}

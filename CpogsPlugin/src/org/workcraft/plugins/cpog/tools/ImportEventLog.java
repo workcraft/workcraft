@@ -56,7 +56,6 @@ public class ImportEventLog extends PGMinerTool {
 
 			try {
 				File eventLog = getInputFile(we);
-				VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 
 				final Framework framework = Framework.getInstance();
 				final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
