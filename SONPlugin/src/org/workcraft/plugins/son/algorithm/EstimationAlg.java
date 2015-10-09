@@ -711,9 +711,8 @@ public class EstimationAlg extends TimeAlg{
     		if(node instanceof Time)
     			preSet.add((Time)node);
     	}
-    	if(isInitial(n) && (n instanceof Condition)){
-    		preSet.addAll(getPostBhvSet((Condition)n));
-    	}else if(n instanceof TransitionNode){
+
+    	if(n instanceof TransitionNode){
     		for(SONConnection con : net.getSONConnections(n)){
     			if(con.getSemantics() == Semantics.SYNCLINE){
     				if(con.getFirst() == n)
@@ -755,9 +754,7 @@ public class EstimationAlg extends TimeAlg{
     			postSet.add((Time)node);
     	}
 
-    	if(isFinal(n) && (n instanceof Condition)){
-    		postSet.addAll(getPostBhvSet((Condition)n));
-    	}else if(n instanceof TransitionNode){
+    	if(n instanceof TransitionNode){
     		for(SONConnection con : net.getSONConnections(n)){
     			if(con.getSemantics() == Semantics.SYNCLINE){
     				if(con.getFirst() == n)
