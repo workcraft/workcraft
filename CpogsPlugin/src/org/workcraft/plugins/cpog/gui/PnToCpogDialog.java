@@ -89,7 +89,7 @@ public class PnToCpogDialog extends JDialog {
 		settingPanel = new JPanel(new SimpleFlowLayout());
 
 		// reduction of maximal significant runs, check box
-		reduceCheck = new JCheckBox("", false);
+		reduceCheck = new JCheckBox("", true);
 		reduceLabel = new JLabel(PnToCpogDialogSupport.textReduceLabel);
 		reduceLabel.addMouseListener(new MouseAdapter()
 		{
@@ -100,7 +100,7 @@ public class PnToCpogDialog extends JDialog {
 		});
 
 		// reduce isomorphic processes, check box
-		isomorphismCheck = new JCheckBox("", false);
+		isomorphismCheck = new JCheckBox("", true);
 		isomorphismLabel = new JLabel(PnToCpogDialogSupport.textIsomorphismLabel);
 		isomorphismLabel.addMouseListener(new MouseAdapter()
 		{
@@ -185,6 +185,7 @@ public class PnToCpogDialog extends JDialog {
 	private void sizeWindow(int width, int height, int row1, int row2){
 		setMinimumSize(new Dimension(width,height));
 		//setPreferredSize(new Dimension(width,height));
+		setResizable(false);
 		pack();
 	}
 
