@@ -65,12 +65,12 @@ public class ImportEventLog extends PGMinerTool {
 				Scanner k;
 
 				k = new Scanner(eventLog);
-				System.out.println("Event log input");
+//				System.out.println("Event log input");
 				int i = 0;
 				double yPos = 0;
 				while (k.hasNext()) {
 					String line = k.nextLine();
-					System.out.println("t" + i + " = " + line);
+//					System.out.println("t" + i + " = " + line);
 
 					tool.insertEventLog((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel(), i++, line.split(" "), yPos);
 

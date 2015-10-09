@@ -921,7 +921,7 @@ public class CpogSelectionTool extends SelectionTool {
     	final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
     	VisualVertex vertex1 , vertex2;
 
-    	for (int c = 0; c < events.length - 2; c++) {
+    	for (int c = 0; c < events.length - 1; c++) {
     		String first = "";
     		String second = "";
 

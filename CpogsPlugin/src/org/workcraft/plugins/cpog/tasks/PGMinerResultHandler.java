@@ -76,38 +76,25 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 					}
 					byte[] output = result.getReturnValue().getOutputFile("output.1.cpog");
 					String text = new String(output);
-					String line = "";
-					boolean finished = false;
+					String line[] = text.split("\r\n");
 
-					System.out.println("\nResulting Parameterised Graph Equations");
-					while (!finished) {
-						if (text.contains("\n")) {
-							line = text.substring(0, text.indexOf("\n"));
-							text = text.substring(text.indexOf("\n") + 1, text.length());
+					for (int i = 0; i < line.length; i++) {
+
+
+						while (line[i].endsWith(" ")) {
+							line[i] = line[i].substring(0, line[i].length() - 1);
 						}
-						if (text.compareTo("") == 0) {
-							finished = true;
-						}
-						line = line.replaceAll("\r", "");
-						while (line.endsWith(" ")) {
-							line = line.substring(0, line.length() - 1);
-						}
-//						System.out.println(line);
-						while (line.endsWith(" ")) {
-							line = line.substring(0, line.length() - 1);
-						}
-						if (!(line.endsWith("="))) {
+
+						if (!(line[i].endsWith("="))) {
 							final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
 							final ToolboxPanel toolbox = editor.getToolBox();
 							final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-							tool.insertExpression(line, false, false, false, true);
-							line = "";
+							tool.insertExpression(line[i], false, false, false, true);
 						}
 						else {
 							JOptionPane.showMessageDialog(mainWindow, "PGMiner finished with no result", "No concurrency", JOptionPane.ERROR_MESSAGE);
 						}
 					}
-					System.out.println();
 				}
 				}
 			});

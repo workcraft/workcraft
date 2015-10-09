@@ -2,6 +2,9 @@ package org.workcraft.plugins.cpog.tools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -23,7 +26,9 @@ public class ImportAndMineEventLog extends PGMinerTool {
 
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 
-	        File eventLog;
+
+	        File inputFile = new File("");
+	        File eventLog = new File("");
 
 	        //chooser.showOpenDialog(null);
 	        eventLog = chooser.getSelectedFile();
@@ -42,19 +47,66 @@ public class ImportAndMineEventLog extends PGMinerTool {
 
 	        Scanner k;
 			try {
+				inputFile = File.createTempFile("input", ".tr");
+				int c = 0;
 				k = new Scanner(eventLog);
-				System.out.println("\nEvent log data:");
+				while(k.hasNextLine()) {
+					c++;
+					k.nextLine();
+				}
+				k = new Scanner(eventLog);
+				String[] lines = new String[c];
+
+//				System.out.println("\nEvent log data:");
+				c = 0;
 				while (k.hasNext()) {
-					String line = k.nextLine();
-					System.out.println(line);
+					lines[c] = k.nextLine();
+//					System.out.println(lines[c]);
+					c++;
 				}
 				k.close();
+				HashSet<String> visitedEvents;
+				int i = 0;
+				String[] newLines = new String[lines.length];
+				for (String line : lines) {
+					String[] events = line.split(" ");
+					line = "";
+					visitedEvents = new HashSet<>();
+					for (String event : events) {
+						if (visitedEvents.contains(event)) {
+							int d = 1;
+							while (visitedEvents.contains(event + "_" + d)){
+								d++;
+							}
+							event = event + "_" + d;
+						}
+						if (!line.isEmpty()) {
+							line = line + " ";
+						}
+						line = line + event;
+						visitedEvents.add(event);
+					}
+					newLines[i] = line;
+					i++;
+				}
+
+
+				PrintStream expressions = new PrintStream(inputFile);
+
+				for (String line : newLines) {
+					expressions.println(line);
+				}
+				expressions.close();
+
 			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			importAndExtract = true;
-			return eventLog;
+			return inputFile;
 
 		} else {
 			throw new OperationCancelledException("Open operation cancelled by user.");
