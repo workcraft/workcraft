@@ -97,7 +97,7 @@ public class PnToCpogConverter {
 		}
 
 		// getting the partial orders from the untangling
-		ArrayList<String> partialOrders = untangling.getPartialOrders();
+		ArrayList<String> partialOrders = untangling.getPartialOrders(settings);
 
 		// building the cpog from the partial orders
 		buildCpog(partialOrders);

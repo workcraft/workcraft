@@ -4,6 +4,7 @@ public class PnToCpogSettings {
 
 	private boolean reduce;
 	private boolean isomorphism;
+	private boolean removeNodes;
 	private int significance;
 
 	public enum SignificanceCheckType {
@@ -15,6 +16,7 @@ public class PnToCpogSettings {
 	public PnToCpogSettings(){
 		this.reduce = false;
 		this.isomorphism = false;
+		this.removeNodes = false;
 		this.significance = 0;
 	}
 
@@ -54,6 +56,14 @@ public class PnToCpogSettings {
 				significance = 2;
 				break;
 		}
+	}
+
+	public boolean isRemoveNodes() {
+		return removeNodes;
+	}
+
+	public void setRemoveNodes(boolean removeNodes) {
+		this.removeNodes = removeNodes;
 	}
 
 }
