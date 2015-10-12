@@ -4,6 +4,7 @@ package org.workcraft.plugins.cpog.tools;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.jbpt.petri.Flow;
@@ -25,16 +26,16 @@ import org.workcraft.plugins.cpog.PnToCpogSettings;
 public class Untanglings {
 
 	private NetSystem sys;
-	private LinkedList<Place> p;
-	private LinkedList<Transition> t;
+	private LinkedList<Place> places;
+	private LinkedList<Transition> transitions;
 	private UntanglingSetup setup;
 	private ReductionBasedRepresentativeUntangling untangling;
 	private ArrayList<String> partialOrders;
 
 	public Untanglings(PnToCpogSettings settings){
 		this.sys = new NetSystem();
-		this.p = new LinkedList<Place>();
-		this.t = new LinkedList<Transition>();
+		this.places = new LinkedList<Place>();
+		this.transitions = new LinkedList<Transition>();
 		this.setup = new UntanglingSetup();
 		this.partialOrders = new ArrayList<String>();
 
@@ -57,7 +58,7 @@ public class Untanglings {
 
 	/** adds place inside the conversion system **/
 	public boolean addPlace(String placeName){
-		if(p.add(new Place(placeName))){
+		if(places.add(new Place(placeName))){
 			return true;
 		}
 		return false;
@@ -66,7 +67,7 @@ public class Untanglings {
 	/** adds token inside a place inside the conversion system **/
 	public boolean insertTokens(String placeName, int tokens){
 
-		for(Place place : p){
+		for(Place place : places){
 			if (place.getLabel().equals(placeName)){
 				sys.putTokens(place, tokens);
 
@@ -82,7 +83,7 @@ public class Untanglings {
 
 	/** adds transition inside the conversion system **/
 	public boolean addTransition(String transitionName){
-		if(t.add(new Transition(transitionName))){
+		if(transitions.add(new Transition(transitionName))){
 			return true;
 		}
 		return false;
@@ -91,13 +92,13 @@ public class Untanglings {
 	/** adds a connection from a place to a transition **/
 	public boolean placeToTransition(String node1, String node2){
 
-		for(Place place : p){
+		for(Place place : places){
 
 			// checking existence of the place
 			if(place.getName().equals(node1)){
 
 				// checking existence of the transition
-				for (Transition transition : t){
+				for (Transition transition : transitions){
 
 					if(transition.getName().equals(node2)){
 
@@ -121,13 +122,13 @@ public class Untanglings {
 	/** adds a connection from a transition to a place  **/
 	public boolean transitionToPlace(String node1, String node2){
 
-		for(Transition transition : t){
+		for(Transition transition : transitions){
 
 			// checking existence of the place
 			if(transition.getName().equals(node1)){
 
 				// checking existence of the transition
-				for (Place place : p){
+				for (Place place : places){
 
 					if(place.getName().equals(node2)){
 
@@ -189,28 +190,19 @@ public class Untanglings {
 
 			// adding transitions into a list
 			for(Flow edge : pi.getOccurrenceNet().getEdges()){
-
 				if (edge.getSource() instanceof Transition){
-
 					addNode(edge.getSource(), transitions);
-
 				}
 			}
 
 			// adding places into a list
 			if (settings.isRemoveNodes() == false){
 				for(Flow edge : pi.getOccurrenceNet().getEdges()){
-
 					if (edge.getSource() instanceof Place){
-
 						addNode(edge.getSource(), places);
-
 					}
-
 					if (edge.getTarget() instanceof Place){
-
 						addNode(edge.getTarget(), places);
-
 					}
 				}
 			}
@@ -222,32 +214,25 @@ public class Untanglings {
 			}
 
 			// renaming transitions showing up with same name but different id
-			renamelist(transitions);
+			renameList(transitions);
 			if (settings.isRemoveNodes() == false){
-				renamelist(places);
+				renameList(places);
 			}
 
 			// connecting transitions while skipping the places
 			if(settings.isRemoveNodes() == true){
 				for(Flow edge1 : pi.getOccurrenceNet().getEdges()){
-
 					if (edge1.getSource() instanceof Transition){
-
 						for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
-
 							if(edge2.getSource().getLabel().equals(edge1.getTarget().getLabel())){
-
 								process = process.concat(connectTransitions(transitions, edge1.getSource(), edge2.getTarget(), process));
-
 							}
 						}
 					}
 				}
-			}
-			// nodes need to be present
-			else{
+			} else {
+				// nodes need to be present
 				for(Flow edge : pi.getOccurrenceNet().getEdges()){
-
 					if(edge.getSource() instanceof Place){
 						// place to transition connection
 						process = process.concat(connectPlaceAndTransition(places, transitions, edge.getSource(), edge.getTarget(), process));
@@ -255,15 +240,11 @@ public class Untanglings {
 						// transition to place connection
 						process = process.concat(connectPlaceAndTransition(transitions, places, edge.getSource(), edge.getTarget(), process));
 					}
-
 				}
 			}
-
 			partialOrders.add(process);
 		}
-
 		return partialOrders;
-
 	}
 
 	/** Adds a node of the untangling's process        *
@@ -297,7 +278,7 @@ public class Untanglings {
 
 	/** Rename with a " _n " the transitions with same names but different *
 	 *  id, in order to be coherent with partial order notation            **/
-	private void renamelist(ArrayList<UntanglingNode> list) {
+	private void renameList(ArrayList<UntanglingNode> list) {
 
 		for(int i = 0; i < list.size(); i++){
 			int k = 1;
@@ -363,4 +344,21 @@ public class Untanglings {
 		return (sourceName + "," + targetName + ";");
 
 	}
+
+	public HashSet<String> getPlaceNames() {
+		HashSet<String> result = new HashSet<>();
+		for (Place place: places) {
+			result.add(place.getLabel());
+		}
+		return result;
+	}
+
+	public HashSet<String> getTransitionNames() {
+		HashSet<String> result = new HashSet<>();
+		for (Transition transition: transitions) {
+			result.add(transition.getLabel());
+		}
+		return result;
+	}
+
 }

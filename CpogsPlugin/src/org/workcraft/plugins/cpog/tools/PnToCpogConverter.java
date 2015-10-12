@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog.tools;
 
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import org.workcraft.dom.Connection;
@@ -11,12 +12,16 @@ import org.workcraft.plugins.cpog.CPOG;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
+import org.workcraft.plugins.cpog.VisualVertex.RenderType;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 
 public class PnToCpogConverter {
+
+	private static final String DELIM_EDGES = ";";
+	private static final String DELIM_NODES = ",";
 
 	private PetriNet pn;
 	private CPOG cpog;
@@ -98,9 +103,11 @@ public class PnToCpogConverter {
 
 		// getting the partial orders from the untangling
 		ArrayList<String> partialOrders = untangling.getPartialOrders(settings);
+		HashSet<String> placeNames = untangling.getPlaceNames();
+		HashSet<String> transitionNames = untangling.getTransitionNames();
 
 		// building the cpog from the partial orders
-		buildCpog(partialOrders);
+		buildCpog(partialOrders, placeNames, transitionNames);
 
 		return visualCpog;
 
@@ -108,11 +115,7 @@ public class PnToCpogConverter {
 
 	/** building the cpog model from the string partial orders **/
 	@SuppressWarnings("deprecation")
-	private void buildCpog(ArrayList<String> partialOrders) {
-
-		String delimEdges = new String(";");
-		String delimNodes = new String(",");
-
+	private void buildCpog(ArrayList<String> partialOrders, HashSet<String> placeNames, HashSet<String> transitionNames) {
 		// Positions inside the workspace
 		int xPos = 0;
 		int yPos = 0;
@@ -132,11 +135,11 @@ public class PnToCpogConverter {
 			visualCpog.selectNone();
 
 			// splitting various edges that compose the partial order
-			String[] edges = partialOrders.get(i).split(delimEdges);
+			String[] edges = partialOrders.get(i).split(DELIM_EDGES);
 			for(int j = 0; j < edges.length; j++){
 
 				// reading source and target vertices
-				String[] vertices = edges[j].split(delimNodes);
+				String[] vertices = edges[j].split(DELIM_NODES);
 				String sourceName = new String(vertices[0]);
 				String targetName = new String(vertices[1]);
 
@@ -145,6 +148,16 @@ public class PnToCpogConverter {
 				VisualVertex target = visualCpog.createVisualVertex(container);
 				source.setLabel(sourceName);
 				target.setLabel(targetName);
+				if (placeNames.contains(sourceName)) {
+					source.setRenderType(RenderType.CIRCLE);
+				} else {
+					source.setRenderType(RenderType.SQUARE);
+				}
+				if (placeNames.contains(targetName)) {
+					target.setRenderType(RenderType.CIRCLE);
+				} else {
+					target.setRenderType(RenderType.SQUARE);
+				}
 
 				// checking if they are already present
 				// if so do not create a new one but connect

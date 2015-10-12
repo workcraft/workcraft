@@ -38,9 +38,11 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.expressions.CpogFormulaVariable;
 import org.workcraft.plugins.cpog.expressions.CpogVisitor;
@@ -53,9 +55,28 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 @DisplayName("Vertex")
 @SVGIcon("images/icons/svg/vertex.svg")
 public class VisualVertex extends VisualComponent implements CpogFormulaVariable {
+
+	public enum RenderType {
+		CIRCLE("Circle"),
+		SQUARE("Square");
+
+		private final String name;
+
+		private RenderType(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+	}
+
 	public static final String PROPERTY_CONDITION = "Condition";
+	public static final String PROPERTY_RENDER_TYPE = "Render type";
 	public static Font conditionFont;
 	private RenderedFormula conditionRenderedFormula = new RenderedFormula("", One.instance(), conditionFont, getLabelPositioning(), getLabelOffset());
+	private RenderType renderType = RenderType.CIRCLE;
 
 	static {
 		try {
@@ -70,8 +91,42 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	public VisualVertex(Vertex vertex) {
 		super(vertex);
+		addPropertyDeclarations();
 		removePropertyDeclarationByName("Name positioning");
 		removePropertyDeclarationByName("Name color");
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualVertex, RenderType>(
+				this, PROPERTY_RENDER_TYPE, RenderType.class, true, true, true) {
+			protected void setter(VisualVertex object, RenderType value) {
+				object.setRenderType(value);
+			}
+
+			protected RenderType getter(VisualVertex object) {
+				return object.getRenderType();
+			}
+		});
+	}
+
+	public Shape getShape() {
+		double xy = -size / 2 + strokeWidth / 2;
+		double wh = size - strokeWidth;
+		Shape shape = new Ellipse2D.Double(xy, xy, wh, wh);
+		if (getRenderType() != null) {
+			switch (getRenderType()) {
+			case CIRCLE:
+				shape = new Ellipse2D.Double(xy, xy, wh, wh);
+				break;
+			case SQUARE:
+				shape = new Rectangle2D.Double(xy, xy, wh, wh);
+				break;
+			default:
+				shape = new Ellipse2D.Double(xy, xy, wh, wh);
+				break;
+			}
+		}
+		return shape;
 	}
 
 	@Override
@@ -79,10 +134,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 		Graphics2D g = r.getGraphics();
 		Color colorisation = r.getDecoration().getColorisation();
 		Color background = r.getDecoration().getBackground();
-		Shape shape = new Ellipse2D.Double(
-				-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
-				size - strokeWidth, size - strokeWidth);
-
+		Shape shape = getShape();
 		BooleanFormula value = evaluate();
 		g.setColor(Coloriser.colorise(getFillColor(), background));
 		g.fill(shape);
@@ -145,6 +197,11 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	}
 
 	@Override
+    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+		return getShape().getBounds2D();
+    }
+
+	@Override
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 		if (getLabelVisibility() && (conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {
@@ -156,6 +213,26 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+	}
+
+	public RenderType getRenderType() {
+		return renderType;
+	}
+
+	public void setRenderType(RenderType renderType) {
+		if (this.renderType != renderType) {
+			this.renderType = renderType;
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
+		}
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualVertex) {
+			VisualVertex srcComponent = (VisualVertex)src;
+			setRenderType(srcComponent.getRenderType());
+		}
 	}
 
 }
