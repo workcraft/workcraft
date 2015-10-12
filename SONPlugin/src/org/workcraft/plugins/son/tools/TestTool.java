@@ -18,6 +18,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.AlterONAlg;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.EstimationAlg;
@@ -37,9 +38,11 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.TimeInconsistencyException;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.plugins.son.util.MarkingRef;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
@@ -68,6 +71,7 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
+		reachableMarkingsTest(net);
 		//esitmationTest(net);
 		//timeTest(net);
 		//bhvTimeTest(net);
@@ -88,6 +92,19 @@ public class TestTool extends AbstractTool implements Tool{
 		//conditionOutputTest(vnet);
 	}
 
+	private void reachableMarkingsTest(SON net){
+		AlterONAlg alg = new AlterONAlg(net);
+		for(ONGroup group : net.getGroups()){
+			try {
+				Collection<MarkingRef> markings = alg.getReachableMarkings(group);
+				for(MarkingRef ref : markings){
+					System.out.println(ref.toString());
+				}
+			} catch (UnboundedException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+	}
 
 //	private void esitmationTest(SON net){
 //		EstimationAlg timeAlg = new EstimationAlg(net, new Interval(10, 10), Granularity.YEAR_YEAR);
@@ -181,8 +198,8 @@ public class TestTool extends AbstractTool implements Tool{
 	private void dfsTest(SON net){
 		PathAlgorithm alg = new PathAlgorithm(net);
 		RelationAlgorithm alg2 = new RelationAlgorithm(net);
-		Collection<Path> result = alg.dfs3(alg2.getInitial(net.getGroups().iterator().next().getComponents()).iterator().next(),
-				alg2.getFinal(net.getGroups().iterator().next().getComponents()).iterator().next(),
+		Collection<Path> result = alg.dfs3(alg2.getONInitial(net.getGroups().iterator().next().getComponents()).iterator().next(),
+				alg2.getONFinal(net.getGroups().iterator().next().getComponents()).iterator().next(),
 				net.getGroups().iterator().next().getComponents());
 
 		for(Path path : result){

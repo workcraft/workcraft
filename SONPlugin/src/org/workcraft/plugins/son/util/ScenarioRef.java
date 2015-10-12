@@ -16,6 +16,7 @@ public class ScenarioRef extends ArrayList<String>{
 
 	public Collection<Node> getNodes(SON net){
 		Collection<Node> result = new HashSet<Node>();
+
 		for(String ref : this){
 			Node node = net.getNodeByReference(ref);
 			if((node instanceof PlaceNode) || (node instanceof TransitionNode) )

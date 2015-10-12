@@ -48,19 +48,19 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for(ONGroup group : net.getGroups()){
 			if(upperGroups.contains(group))
-				for(Condition c : getInitial(group.getConditions())){
+				for(Condition c : getONInitial(group.getConditions())){
 					result.put(c, true);
 				}
 			//an initial state of a lower group is the initial state of SON
 			//if all of its upper conditions are the initial states.
 			else if(lowerGroups.contains(group)){
-				for(Condition c : getInitial(group.getConditions())){
+				for(Condition c : getONInitial(group.getConditions())){
 					boolean isInitial = true;
 					Collection<Condition> set = bsonAlg.getUpperConditions(c);
 					for(Condition c2 : set){
 						if(!isInitial(c2)){
 							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getInitial(group2.getConditions())))
+							if(!set.containsAll(getONInitial(group2.getConditions())))
 								isInitial = false;
 						}
 					}
@@ -69,7 +69,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 			else{
-				for(Condition c : getInitial(group.getConditions())){
+				for(Condition c : getONInitial(group.getConditions())){
 					result.put(c, true);
 				}
 			}
@@ -88,18 +88,18 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for(ONGroup group : net.getGroups()){
 			if(upperGroups.contains(group))
-				for(Condition c : getFinal(group.getConditions())){
+				for(Condition c : getONFinal(group.getConditions())){
 					result.put(c, true);
 				}
 
 			else if(lowerGroups.contains(group)){
-				for(Condition c : getFinal(group.getConditions())){
+				for(Condition c : getONFinal(group.getConditions())){
 					boolean isFinal = true;
 					Collection<Condition> set = bsonAlg.getUpperConditions(c);
 					for(Condition c2 : set){
 						if(!isInitial(c2)){
 							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getFinal(group2.getConditions())))
+							if(!set.containsAll(getONFinal(group2.getConditions())))
 								isFinal = false;
 						}
 					}
@@ -108,7 +108,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 			else{
-				for(Condition c : getFinal(group.getConditions())){
+				for(Condition c : getONFinal(group.getConditions())){
 					result.put(c, true);
 				}
 			}

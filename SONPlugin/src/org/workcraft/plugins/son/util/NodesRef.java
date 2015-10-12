@@ -1,10 +1,32 @@
 package org.workcraft.plugins.son.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.SON;
 
 public class NodesRef extends ArrayList<String>{
 
 	private static final long serialVersionUID = 1L;
+
+	public Collection<Node> getNodes(SON net){
+		Collection<Node> result = new HashSet<Node>();
+
+		for(String ref : this){
+			Node node = net.getNodeByReference(ref);
+			result.add(node);
+		}
+
+		return result;
+	}
+
+	public boolean containsNode(Node n, SON net){
+		if(this.contains(net.getNodeReference(n)))
+			return true;
+		return false;
+	}
 
 	public String toString() {
 		StringBuffer result = new StringBuffer("");
@@ -43,5 +65,21 @@ public class NodesRef extends ArrayList<String>{
 				add(s.trim());
 			first = false;
 		}
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if (!(o instanceof NodesRef)) return false;
+
+		NodesRef ref = (NodesRef)o;
+		if(ref.size() != size()) return false;
+
+		for(String str : ref){
+			if(!this.contains(str))
+				return false;
+		}
+
+		return true;
+
 	}
 }

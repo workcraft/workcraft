@@ -282,11 +282,11 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 						boolean containFinal = false;
 
 
-						if(!min.containsAll(getRelationAlg().getInitial(lowGroup.getConditions()))){
+						if(!min.containsAll(getRelationAlg().getONInitial(lowGroup.getConditions()))){
 							match = false;
 						}
 						for(ONGroup group : getBSONAlg().getLowerGroups(pre)){
-							if(maxSet.containsAll(getRelationAlg().getFinal(group.getConditions()))){
+							if(maxSet.containsAll(getRelationAlg().getONFinal(group.getConditions()))){
 								containFinal = true;
 								break;
 							}
@@ -358,8 +358,8 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		List<Path> result = new ArrayList<Path>();
 		PathAlgorithm alg = new PathAlgorithm(net);
 
-		for(Node start : getRelationAlg().getInitial(group.getConditions()))
-			for(Node end : getRelationAlg().getFinal(group.getConditions())){
+		for(Node start : getRelationAlg().getONInitial(group.getConditions()))
+			for(Node end : getRelationAlg().getONFinal(group.getConditions())){
 				result.addAll(alg.getPaths(start, end, group.getComponents()));
 			}
 

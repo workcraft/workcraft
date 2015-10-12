@@ -16,7 +16,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class RelationAlgorithm{
 
-	private SON net;
+	protected SON net;
 
 	public RelationAlgorithm(SON net) {
 		this.net = net;
@@ -143,7 +143,7 @@ public class RelationAlgorithm{
 	/**
 	 * get all initial states of a given node set
 	 */
-	public Collection<Condition> getInitial(Collection<? extends Node> nodes){
+	public Collection<Condition> getONInitial(Collection<? extends Node> nodes){
 		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for (Node node : nodes)
 			if (isInitial(node) && (node instanceof Condition))
@@ -154,7 +154,7 @@ public class RelationAlgorithm{
 	/**
 	 * get all final states of a given node set
 	 */
-	public Collection<Condition> getFinal(Collection<? extends Node> nodes){
+	public Collection<Condition> getONFinal(Collection<? extends Node> nodes){
 		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for (Node node : nodes)
 			if (isFinal(node) && (node instanceof Condition))
