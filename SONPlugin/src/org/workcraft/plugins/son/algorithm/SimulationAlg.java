@@ -9,15 +9,15 @@ import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
+import org.workcraft.plugins.son.util.Phase;
+import org.workcraft.plugins.son.util.Step;
 
 public class SimulationAlg extends RelationAlgorithm {
 

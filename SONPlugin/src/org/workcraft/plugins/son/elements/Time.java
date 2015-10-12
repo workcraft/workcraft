@@ -2,7 +2,7 @@ package org.workcraft.plugins.son.elements;
 
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Interval;
+import org.workcraft.plugins.son.util.Interval;
 
 public interface Time extends Node{
 	public void setStartTime (Interval value);

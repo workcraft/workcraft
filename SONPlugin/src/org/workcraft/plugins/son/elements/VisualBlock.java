@@ -24,10 +24,10 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.tools.ErrTracingDisable;
+import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Hierarchy;
 
 @Hotkey(KeyEvent.VK_B)

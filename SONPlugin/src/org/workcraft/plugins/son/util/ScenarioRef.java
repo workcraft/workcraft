@@ -1,10 +1,11 @@
-package org.workcraft.plugins.son;
+package org.workcraft.plugins.son.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
@@ -33,6 +34,13 @@ public class ScenarioRef extends ArrayList<String>{
 		return result;
 	}
 
+	public boolean isNodeRef(String str, SON net){
+		Node node = net.getNodeByReference(str);
+		if((node instanceof PlaceNode) || (node instanceof TransitionNode) )
+			return true;
+		return false;
+	}
+
 	public Collection<SONConnection> getConnections(SON net){
 		Collection<SONConnection> result = new HashSet<SONConnection>();
 		for(String ref : this){
@@ -43,8 +51,8 @@ public class ScenarioRef extends ArrayList<String>{
 		return result;
 	}
 
-	public Collection<SONConnection> runtimeGetConnections(SON net){
-		Collection<SONConnection> result = new ArrayList<SONConnection>();
+	public Collection<SONConnection> getRuntimeConnections(SON net){
+		Collection<SONConnection> result = new HashSet<SONConnection>();
 		Collection<Node> nodes = getNodes(net);
 		for(Node node : nodes){
 			Collection<SONConnection> connections = net.getSONConnections(node);

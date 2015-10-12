@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.elements.Time;
+import org.workcraft.plugins.son.util.Interval;
 
 public class DurationPropertyDescriptor implements PropertyDescriptor{
 

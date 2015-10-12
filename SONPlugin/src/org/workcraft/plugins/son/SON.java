@@ -35,14 +35,15 @@ import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.util.Scenario;
+import org.workcraft.plugins.son.util.ScenarioRef;
+import org.workcraft.plugins.son.util.ScenarioSaveList;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
-
-	ArrayList<ScenarioRef> scenarios = new ArrayList<ScenarioRef>();
 
 	public SON(){
 		this(null, null);
@@ -173,7 +174,6 @@ public class SON extends AbstractMathModel {
 		}
 		if (n instanceof ONGroup)
 			((ONGroup)n).setForegroundColor(nodeColor);
-
 	}
 
 	public void setFillColor(Node n, Color nodeColor){
@@ -190,6 +190,7 @@ public class SON extends AbstractMathModel {
 			setFillColor(n,CommonVisualSettings.getFillColor());
 			setForegroundColor(n, CommonVisualSettings.getBorderColor());
 			setTimeColor(n, Color.BLACK);
+			setTokenColor(n, Color.BLACK);
 		}
 		for (ONGroup group : this.getGroups()){
 			setForegroundColor(group, SONSettings.getGroupForegroundColor());
@@ -218,6 +219,12 @@ public class SON extends AbstractMathModel {
 		}
 		if(n instanceof SONConnection){
 			((SONConnection) n).setTimeLabelColor(color);
+		}
+	}
+
+	public void setTokenColor(Node n, Color color){
+		if(n instanceof PlaceNode){
+			((PlaceNode) n).setTokenColor(color);
 		}
 	}
 
@@ -265,8 +272,8 @@ public class SON extends AbstractMathModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), Scenario.class);
 	}
 
-	public ArrayList<ScenarioRef> importScenarios(Window window){
-		ArrayList<ScenarioRef> result = new ArrayList<ScenarioRef>();
+	public ScenarioSaveList importScenarios(Window window){
+		ScenarioSaveList result = new ScenarioSaveList();
 		ArrayList<Scenario> removeList = new ArrayList<Scenario>();
 
 		for(Scenario s : getScenarios()){
@@ -518,5 +525,4 @@ public class SON extends AbstractMathModel {
 
 		return properties;
 	}
-
 }

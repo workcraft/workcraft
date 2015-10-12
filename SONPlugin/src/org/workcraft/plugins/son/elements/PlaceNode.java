@@ -5,10 +5,10 @@ import java.awt.Color;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
+import org.workcraft.plugins.son.util.Interval;
 
 public class PlaceNode extends MathNode implements Time{
 
@@ -17,7 +17,7 @@ public class PlaceNode extends MathNode implements Time{
 	private String label = "";
 	private int errors = 0;
 
-	private Interval statTime = new Interval(0000, 9999);
+	private Interval startTime = new Interval(0000, 9999);
 	private Interval endTime = new Interval(0000, 9999);
 	private Interval duration = new Interval(0000, 9999);
 
@@ -75,13 +75,18 @@ public class PlaceNode extends MathNode implements Time{
 		return tokenColor;
 	}
 
-	public void setStartTime(Interval duration){
-		this.statTime = duration;
+	public void setTokenColor(Color tokenColor) {
+		this.tokenColor = tokenColor;
+		sendNotification(new PropertyChangedEvent(this, "tokenColor"));
+	}
+
+	public void setStartTime(Interval startTime){
+		this.startTime = startTime;
 		sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
 	}
 
 	public Interval getStartTime(){
-		return statTime;
+		return startTime;
 	}
 
 	public void setEndTime(Interval endTime){
@@ -108,10 +113,5 @@ public class PlaceNode extends MathNode implements Time{
 
 	public void setDurationColor(Color value){
 		this.durationColor = value;
-	}
-
-	public void setTokenColor(Color tokenColor) {
-		this.tokenColor = tokenColor;
-		sendNotification(new PropertyChangedEvent(this, "tokenColor"));
 	}
 }

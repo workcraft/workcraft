@@ -1,93 +1,87 @@
-package org.workcraft.plugins.son.algorithm;
+	package org.workcraft.plugins.son.algorithm;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Before;
-import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.util.Before;
 
-public class ReachabilityAlg {
+public class ReachabilityAlg extends RelationAlgorithm{
 
-	private BSONAlg bsonAlg;
-	private RelationAlgorithm relationAlg;
-	private Collection<ONGroup> upperGroups;
-	private Map<Condition, Collection<Phase>> phases;
-
-	private static Collection<Node> pathResult =new ArrayList<Node>();
+	private static Collection<Node> predecessors =new HashSet<Node>();
+	private SON net;
 
 	public ReachabilityAlg(SON net) {
-		bsonAlg = new BSONAlg(net);
-		relationAlg = new RelationAlgorithm(net);
-
-		upperGroups = bsonAlg.getUpperGroups(net.getGroups());
-		phases = bsonAlg.getAllPhases();
+		super(net);
+		this.net = net;
 	}
 
     //get path between a given initial node and a set of final nodes. (recursion)
-    private void dfs(LinkedList<Node> visited, Collection<Node> v,  Before before) {
-        LinkedList<Node> post = getCausalPreset(visited.getLast(), before);
+//    private void dfs(LinkedList<Node> visited, Collection<Node> v,  Before before) {
+//        LinkedList<Node> post = getCausalPreset(visited.getLast(), before);
+//
+//        if (v.contains(visited.getLast())) {
+//            pathResult.addAll(visited);
+//        }
+//
+//        // examine post nodes
+//        for (Node node : post) {
+//            if (visited.contains(node)) {
+//                continue;
+//            }
+//            if (v.contains(node)) {
+//                visited.add(node);
+//                pathResult.addAll(visited);
+//                visited.removeLast();
+//                break;
+//            }
+//        }
+//        // in depth-first, recursion needs to come after visiting post nodes
+//        for (Node node : post) {
+//            if (visited.contains(node) || node.equals(v)) {
+//                continue;
+//            }
+//            visited.addLast(node);
+//            dfs(visited, v, before);
+//            visited.removeLast();
+//
+//        }
+//    }
 
-        if (v.contains(visited.getLast())) {
-            pathResult.addAll(visited);
-        }
+    private void CausalPredecessors(LinkedList<Node> visited, Node n, Before before){
+    	predecessors.add(n);
+ 		visited.add(n);
 
-        // examine post nodes
-        for (Node node : post) {
-            if (visited.contains(node)) {
-                continue;
-            }
-            if (v.contains(node)) {
-                visited.add(node);
-                pathResult.addAll(visited);
-                visited.removeLast();
-                break;
-            }
-        }
-        // in depth-first, recursion needs to come after visiting post nodes
-        for (Node node : post) {
-            if (visited.contains(node) || node.equals(v)) {
-                continue;
-            }
-            visited.addLast(node);
-            dfs(visited, v, before);
-            visited.removeLast();
-
-        }
+    	for(Node n2 : getCausalPreset(n, before)){
+    		if(!visited.contains(n2))
+    			CausalPredecessors(visited, n2, before);
+    	}
     }
 
-    public Collection<Node> getCausalPredecessors (Node s, Collection<Node> v){
-    	pathResult.clear();
+    public Collection<Node> getCausalPredecessors (Node s){
+    	predecessors.clear();
     	LinkedList<Node> visited = new LinkedList<Node>();
-    	Before before = getBeforeRelations();
+    	BSONAlg bsonAlg = new BSONAlg(net);
+    	Before before =  bsonAlg.getBeforeList();
     	visited.add(s);
-    	dfs(visited, v, before);
-    	return pathResult;
+    	//dfs(visited, v, before);
+    	CausalPredecessors(visited, s, before);
+    	return predecessors;
     }
 
-	private Before getBeforeRelations(){
-		Before  result = new Before();
 
-		for(ONGroup group : upperGroups){
-			for(TransitionNode e : group.getTransitionNodes()){
-				result.addAll( bsonAlg.before(e, phases));
-			}
-		}
-
-		return result;
-	}
-
-    private LinkedList<Node> getCausalPreset(Node n, Collection<TransitionNode[]> before){
+    private LinkedList<Node> getCausalPreset(Node n, Before before){
     	LinkedList<Node> result = new LinkedList<Node>();
 
-    	if(relationAlg.isInitial(n) && (n instanceof Condition)){
-    		result.addAll(relationAlg.getPostBhvSet((Condition)n));
+    	if(isInitial(n) && (n instanceof Condition)){
+    		result.addAll(getPostBhvSet((Condition)n));
     	}
 
     	for(TransitionNode[] pre : before){
@@ -95,10 +89,28 @@ public class ReachabilityAlg {
     			result.add(pre[0]);
     	}
 
-    	result.addAll(relationAlg.getPrePNSet(n));
+    	result.addAll(getPrePNSet(n));
 
-    	if(n instanceof TransitionNode){
-    		result.addAll(relationAlg.getPreASynEvents((TransitionNode)n));
+    	if(isInitial(n) && (n instanceof Condition)){
+    		result.addAll(getPostBhvSet((Condition)n));
+    	}else if(n instanceof TransitionNode){
+    		for(SONConnection con : net.getSONConnections(n)){
+    			if(con.getSemantics() == Semantics.SYNCLINE){
+    				if(con.getFirst() == n)
+    					result.add(con.getSecond());
+    				else
+    					result.add(con.getFirst());
+    			}else if(con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
+    				result.add(con.getFirst());
+    		}
+    	}else if(n instanceof ChannelPlace){
+    		Node input = net.getPreset(n).iterator().next();
+    		result.add(input);
+    		Collection<Semantics> semantics = net.getSONConnectionTypes(n);
+    		if(semantics.iterator().next() == Semantics.SYNCLINE){
+        		Node output = net.getPostset(n).iterator().next();
+        		result.add(output);
+    		}
     	}
 
     	return result;

@@ -117,7 +117,7 @@ public class PathAlgorithm{
     			list.add(post);
     	return list;
     }
-	//get nodes between two given nodes. (iteration)
+	//get nodes between two given node sets. (iteration)
 	public static Collection<Node> dfs2 (Collection<Node> s, Collection<Node> v, SON net){
 		Collection<Node> result = new HashSet<Node>();
 		RelationAlgorithm relation = new RelationAlgorithm(net);

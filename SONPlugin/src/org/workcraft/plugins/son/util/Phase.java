@@ -1,7 +1,8 @@
-package org.workcraft.plugins.son;
+package org.workcraft.plugins.son.util;
 
 import java.util.HashSet;
 
+import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
 
 @SuppressWarnings("serial")

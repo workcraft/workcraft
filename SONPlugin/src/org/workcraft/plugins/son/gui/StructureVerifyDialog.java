@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.TitledBorder;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -51,6 +52,7 @@ public class StructureVerifyDialog extends JDialog{
 	protected ArrayList<ONGroup> selectedGroups;
 	protected Font font = new Font("Arial", Font.PLAIN, 12);
 	protected Dimension buttonSize = new Dimension(100, 25);
+	protected Dimension listScrollerSize = new Dimension(350, 220);
 	protected int run = 0;
 	protected Window owner;
 
@@ -121,13 +123,11 @@ public class StructureVerifyDialog extends JDialog{
 	}
 
 	protected void createSelectionPanel(){
-
-		groupSelectionPanel = new JPanel(new FlowLayout());
-		groupSelectionPanel.setBorder(BorderFactory.createTitledBorder(groupPanelTitle()));
-
 		createGroupItemsPanel();
 		createSelectionButtonsPanel();
 
+		groupSelectionPanel = new JPanel(new FlowLayout());
+		groupSelectionPanel.setBorder(createTitileBorder(groupPanelTitle()));
 		groupSelectionPanel.add(groupItemPanel);
 		groupSelectionPanel.add(selectionButtonPanel);
 
@@ -135,8 +135,6 @@ public class StructureVerifyDialog extends JDialog{
 
 	@SuppressWarnings("unchecked")
 	protected void createTypePanel(){
-		typePanel = new JPanel();
-
 		typeCombo = new JComboBox();
 		typeCombo.addItem(new typeMode(0, "Structured Occurrence Nets"));
 		typeCombo.addItem(new typeMode(1, "Occurrence Net (Group)"));
@@ -144,13 +142,13 @@ public class StructureVerifyDialog extends JDialog{
 		typeCombo.addItem(new typeMode(3, "Behavioural Structured Occurrence Nets"));
 		typeCombo.addItem(new typeMode(4, "Temporal Structured Occurrence Nets"));
 
+		typePanel = new JPanel();
 		typePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));
 
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void createGroupItemsPanel(){
-		groupItemPanel = new JPanel();
 		selectedGroups = new ArrayList<ONGroup>();
 
 		DefaultListModel listModel = new DefaultListModel();
@@ -166,7 +164,7 @@ public class StructureVerifyDialog extends JDialog{
 
 		groupList = new JList (listModel);
 		groupList.setCellRenderer(new ItemListRenderer());
-
+		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		groupList.addMouseListener(new MouseAdapter()
 		{
 			public void mousePressed(MouseEvent event)
@@ -193,15 +191,20 @@ public class StructureVerifyDialog extends JDialog{
 			}
 		});
 
-		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		JScrollPane listScroller = new JScrollPane(groupList);
-		listScroller.setPreferredSize(new Dimension(350, 220));
+		groupItemPanel = new JPanel();
+		groupItemPanel.add(createJScrollPane(groupList));
+	}
+
+	protected JScrollPane createJScrollPane(JList list){
+		JScrollPane listScroller = new JScrollPane(list);
+		listScroller.setPreferredSize(getListScrollerSize());
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		listScroller.getVerticalScrollBar().setPreferredSize(new Dimension(12, 0));
 		listScroller.getHorizontalScrollBar().setPreferredSize(new Dimension(12, 0));
-		groupItemPanel.add(listScroller);
+
+		return listScroller;
 	}
 
 	protected void createSelectionButtonsPanel(){
@@ -229,7 +232,6 @@ public class StructureVerifyDialog extends JDialog{
 		removeAllButton.setMaximumSize(buttonSize);
 		removeAllButton.setFont(this.getFont());
 
-
 		removeAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -244,7 +246,6 @@ public class StructureVerifyDialog extends JDialog{
 
 		selectionButtonPanel = new JPanel();
 		selectionButtonPanel.setLayout(new BoxLayout(selectionButtonPanel, BoxLayout.Y_AXIS));
-
 		selectionButtonPanel.add(addAllButton);
 		selectionButtonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		selectionButtonPanel.add(removeAllButton);
@@ -252,10 +253,8 @@ public class StructureVerifyDialog extends JDialog{
 
 	protected void createSettingPanel(){
 		settingPanel = new JPanel(new BorderLayout());
-		JPanel leftColumn = new JPanel();
-		leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
+		settingPanel.setBorder(createTitileBorder("Setting"));
 
-		settingPanel.setBorder(BorderFactory.createTitledBorder("Setting"));
 		highLight = new JCheckBox("Highlight erroneous nodes");
 		highLight.setFont(font);
 		highLight.setSelected(true);
@@ -264,6 +263,8 @@ public class StructureVerifyDialog extends JDialog{
 		outputBefore.setFont(font);
 		outputBefore.setSelected(false);
 
+		JPanel leftColumn = new JPanel();
+		leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
 		leftColumn.add(highLight);
 		leftColumn.add(outputBefore);
 
@@ -271,15 +272,12 @@ public class StructureVerifyDialog extends JDialog{
 	}
 
 	protected void createButtonsPanel() {
-		confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-
 		runButton = new JButton ("Run");
 		runButton.setPreferredSize(buttonSize);
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				run = 1;
-				net.refreshColor();
 				setVisible(false);
 			}
 		});
@@ -290,11 +288,11 @@ public class StructureVerifyDialog extends JDialog{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				run = 2;
-				net.refreshColor();
 				setVisible(false);
 			}
 		});
 
+		confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 		confirmButtonsPanel.add(cancelButton);
 		confirmButtonsPanel.add(runButton);
 	}
@@ -330,6 +328,12 @@ public class StructureVerifyDialog extends JDialog{
 		createInterface();
 	}
 
+	protected TitledBorder createTitileBorder(String title){
+		TitledBorder titledBorder = BorderFactory.createTitledBorder(title);
+		titledBorder.setTitleColor(Color.BLUE.darker());
+		return titledBorder;
+	}
+
 	public StructureVerifyDialog (Window owner, WorkspaceEntry we){
 		this(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL, we);
 	}
@@ -357,6 +361,10 @@ public class StructureVerifyDialog extends JDialog{
 
 	public int getRun(){
 		return run;
+	}
+
+	public Dimension getListScrollerSize(){
+		return listScrollerSize;
 	}
 
 	public Font getPlainFont(){

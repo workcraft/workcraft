@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.BSONCycleAlg;
@@ -17,6 +16,7 @@ import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.util.Phase;
 
 abstract class AbstractStructuralVerification implements StructuralVerification{
 

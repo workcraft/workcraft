@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.util.Phase;
 
 public class SONCycleAlg extends BSONCycleAlg{
 

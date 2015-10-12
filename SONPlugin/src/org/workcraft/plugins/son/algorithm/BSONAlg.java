@@ -8,14 +8,14 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.son.Before;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.util.Before;
+import org.workcraft.plugins.son.util.Phase;
 
 public class BSONAlg extends RelationAlgorithm{
 
@@ -425,17 +425,31 @@ public class BSONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	public Map<TransitionNode, Before> getAllBefore(){
+	public Map<TransitionNode, Before> getBeforeMap(){
 		Map<TransitionNode, Before> result = new HashMap<TransitionNode, Before>();
 
+		Map<Condition, Collection<Phase>> phases = getAllPhases();
 		Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
 
 		for(ONGroup group : upperGroups)
 			for(TransitionNode e : group.getTransitionNodes()){
-				result.put(e, before(e, getAllPhases()));
+				result.put(e, before(e, phases));
 		}
 
 		return result;
 	}
 
+	public Before getBeforeList(){
+		Before result = new Before();
+
+		Map<Condition, Collection<Phase>> phases = getAllPhases();
+		Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
+
+		for(ONGroup group : upperGroups){
+			for(TransitionNode e : group.getTransitionNodes()){
+				result.addAll(before(e, phases));
+			}
+		}
+		return result;
+	}
 }

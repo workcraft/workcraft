@@ -4,8 +4,10 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.OutputRedirect;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog;
 import org.workcraft.plugins.son.tasks.TimeConsistencyTask;
 import org.workcraft.util.GUI;
@@ -34,6 +36,11 @@ public class TimeConsistencyChecker implements Tool{
 		final Framework framework = Framework.getInstance();
 		final MainWindow mainWindow = framework.getMainWindow();
 
+		VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
+		SON net = (SON)we.getModelEntry().getMathModel();
+
+		BlockConnector.blockBoundingConnector(visualNet);
+		net.refreshColor();
 		TimeConsistencyDialog dialog = new TimeConsistencyDialog(mainWindow, we);
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
@@ -43,6 +50,12 @@ public class TimeConsistencyChecker implements Tool{
 			TimeConsistencyTask timeTask = new TimeConsistencyTask(we, dialog.getTimeConsistencySettings());
 			framework.getTaskManager().queue(timeTask, "Verification");
 		}
+
+		if(dialog.getTabIndex() !=1){
+			net.refreshColor();
+		}
+
+		BlockConnector.blockInternalConnector(visualNet);
 	}
 
 }

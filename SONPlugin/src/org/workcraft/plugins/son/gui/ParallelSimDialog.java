@@ -33,10 +33,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.Step;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.util.Step;
 
 @SuppressWarnings("rawtypes")
 public class ParallelSimDialog  extends JDialog{
@@ -55,6 +55,8 @@ public class ParallelSimDialog  extends JDialog{
 	protected JScrollPane infoPanel;
 	private JList eventList;
 	Collection<Path> sync;
+
+	protected Dimension buttonSize = new Dimension(80, 25);
 
 	private HashSet<TransitionNode> selectedEvents = new HashSet<TransitionNode>();
 
@@ -213,7 +215,7 @@ public class ParallelSimDialog  extends JDialog{
 		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 
 		runButton = new JButton ("Run");
-		runButton.setSize(30, 20);
+		runButton.setPreferredSize(buttonSize);
 		runButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -224,7 +226,7 @@ public class ParallelSimDialog  extends JDialog{
 		});
 
 		cancelButton = new JButton ("Cancel");
-		cancelButton.setSize(30, 20);
+		cancelButton.setPreferredSize(buttonSize);
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -240,7 +242,6 @@ public class ParallelSimDialog  extends JDialog{
 
 	private void createEventInfoPanel(){
 		eventInfoPanel = new JPanel();
-		eventInfoPanel.setLayout(new BoxLayout(eventInfoPanel, BoxLayout.Y_AXIS));
 
 		String colNames[] = {"Name", "Label"};
 
@@ -249,9 +250,9 @@ public class ParallelSimDialog  extends JDialog{
 		TableColumn firsetColumn = table.getColumnModel().getColumn(0);
 		firsetColumn.setPreferredWidth(12);
 
-		eventInfoPanel.add(table);
+		eventInfoPanel.setLayout(new BoxLayout(eventInfoPanel, BoxLayout.Y_AXIS));
 		eventInfoPanel.setBorder(BorderFactory.createTitledBorder("Parallel execution:"));
-
+		eventInfoPanel.add(table);
 	}
 
 	private String[][] createData(){
@@ -271,7 +272,7 @@ public class ParallelSimDialog  extends JDialog{
 
 	}
 
-	public  ParallelSimDialog (Window owner, SON net,
+	public ParallelSimDialog (Window owner, SON net,
 			Step possibleFire, Step minFire,
 			TransitionNode event, boolean isRev,
 			Collection<Path> sync){

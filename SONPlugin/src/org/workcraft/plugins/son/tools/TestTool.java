@@ -16,16 +16,16 @@ import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
+import org.workcraft.plugins.son.algorithm.EstimationAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
+import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
@@ -34,8 +34,13 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
-import org.workcraft.plugins.son.exception.InconsistencyTimeException;
+import org.workcraft.plugins.son.exception.TimeInconsistencyException;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
+import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.granularity.HourMins;
+import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
+import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -63,6 +68,7 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
+		//esitmationTest(net);
 		//timeTest(net);
 		//bhvTimeTest(net);
 		//getScenario(net);
@@ -81,6 +87,22 @@ public class TestTool extends AbstractTool implements Tool{
 		//relation(net, vnet);
 		//conditionOutputTest(vnet);
 	}
+
+
+//	private void esitmationTest(SON net){
+//		EstimationAlg timeAlg = new EstimationAlg(net, new Interval(10, 10), Granularity.YEAR_YEAR);
+//		BSONAlg bsonAlg = new BSONAlg(net);
+//		try {
+//			Interval result = timeAlg.EstimateEndTime(bsonAlg.getInitial(net.getComponents()).iterator().next(), null);
+//		  	System.out.println("result" + result);
+//		} catch (InconsistentTimeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (TimeOutOfBoundsException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 /*	private void timeTest(SON net){
 		TimeAlg timeAlg = new TimeAlg(net);

@@ -1,6 +1,7 @@
-package org.workcraft.plugins.son;
+package org.workcraft.plugins.son.util;
 
 import java.util.ArrayList;
+
 
 @SuppressWarnings("serial")
 public class Trace extends ArrayList<StepRef>{

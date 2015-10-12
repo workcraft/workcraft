@@ -1,13 +1,28 @@
-package org.workcraft.plugins.son;
+package org.workcraft.plugins.son.util;
+
+import java.util.Collection;
 
 public class Interval {
 
 	private Integer min;
 	private Integer max;
 
+	public Interval() {
+	    this.min = 0;
+	    this.max = 9999;
+	}
+
 	public Interval(Integer start, Integer end) {
 	    this.min = start;
 	    this.max = end;
+	}
+
+	public void setMin(Integer min) {
+		this.min = min;
+	}
+
+	public void setMax(Integer max) {
+		this.max = max;
 	}
 
 	public Integer getMin() {
@@ -20,11 +35,12 @@ public class Interval {
 
 	static public Integer getMin(String value){
 		if(value.length()!=9)return null;
-		Integer result = 0000;
+		Integer result = 0;
 
 		String first = value.substring(0, 4);
 
 		try{
+			//return decimal number
 			result = Integer.parseInt(first);
 		} catch (NumberFormatException e) {
 			  e.printStackTrace();
@@ -40,6 +56,7 @@ public class Interval {
 		String last = value.substring(5, 9);
 
 		try{
+			//return decimal number
 			result = Integer.parseInt(last);
 		} catch (NumberFormatException e) {
 			  e.printStackTrace();
@@ -50,11 +67,11 @@ public class Interval {
 	static public Integer getInteger(String value){
 		if(value.length()!=4)return null;
 
-		Integer result = 0000;
-		String last = value.toString();
+		Integer result = 0;
 
 		try{
-			result = Integer.parseInt(last);
+			//return decimal number
+			result = Integer.parseInt(value);
 		} catch (NumberFormatException e) {
 			  e.printStackTrace();
 		}
@@ -76,23 +93,51 @@ public class Interval {
 	        ((this.min == null) || (other.max == null) || (this.min.intValue() <= other.max.intValue())));
 	}
 
-	public boolean isInInterval(Integer number, Interval interval) {
-	    if (number != null && interval != null) {
-	        if(interval.getMin() == null && interval.getMax() != null) {
-	            return number.intValue() <= interval.getMax().intValue();
+	public static Interval getOverlapping(Collection<Interval> intervals){
+		Interval result = null;
+
+		Interval first = intervals.iterator().next();
+		for(Interval interval : intervals){
+			if(first.isOverlapping(interval)){
+				result = new Interval(Math.max(first.getMin(), interval.getMin()), Math.min(first.getMax(), interval.getMax()));
+			}else{
+				return null;
+			}
+			first = result;
+		}
+
+		return result;
+	}
+
+	public boolean isInInterval(Integer number, Interval other) {
+	    if (number != null && other != null) {
+	        if(other.getMin() == null && other.getMax() != null) {
+	            return number.intValue() <= other.getMax().intValue();
 	        }
-	        if(interval.getMin() != null && interval.getMax() == null) {
-	            return number.intValue() >= interval.getMax().intValue();
+	        if(other.getMin() != null && other.getMax() == null) {
+	            return number.intValue() >= other.getMax().intValue();
 	        }
-	        if(interval.getMin() == null && interval.getMax() == null) {
+	        if(other.getMin() == null && other.getMax() == null) {
 	            return true;
 	        }
-	        return interval.getMin() <= number && number <= interval.getMax();
+	        return other.getMin() <= number && number <= other.getMax();
 	    }
-	    else if(number == null && interval != null) {
-	        return interval.getMin() == null && interval.getMax() == null;
+	    else if(number == null && other != null) {
+	        return other.getMin() == null && other.getMax() == null;
 	    }
 	    return false;
+	}
+
+	public Interval add(Interval other){
+		int min = getMin() + other.getMin();
+		int max = getMax() + other.getMax();
+
+		if(min>=9999)
+			min = 9999;
+		if(max>=9999)
+			max = 9999;
+
+		return new Interval(min,max);
 	}
 
 	public String minToString(){

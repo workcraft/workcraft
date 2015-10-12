@@ -6,45 +6,55 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.plugins.son.Interval;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.SONSettings;
+import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
+import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
+import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.VisualBlock;
+import org.workcraft.plugins.son.elements.VisualChannelPlace;
 import org.workcraft.plugins.son.elements.VisualCondition;
+import org.workcraft.plugins.son.elements.VisualEvent;
 import org.workcraft.plugins.son.elements.VisualPlaceNode;
+import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.granularity.HourMins;
+import org.workcraft.plugins.son.gui.GranularityPanel;
+import org.workcraft.plugins.son.gui.TimeInputFilter;
+import org.workcraft.plugins.son.gui.TimeEstimatorDialog;
+import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
+import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -52,16 +62,22 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class TimeValueSetterTool extends AbstractTool{
 
 	protected SON net;
+	protected GraphEditor editor;
 	protected VisualSON visualNet;
-	protected TimeAlg timeAlg;
+	protected ConsistencyAlg timeAlg;
 
-	private JPanel interfacePanel, timePropertyPanel, timeInputPanel, granularityPanel;
-	private JRadioButton year_yearButton, hour_minusButton;
-	private ButtonGroup granularityGroup;
+	private JPanel interfacePanel,timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
+	private GranularityPanel granularityPanel;
+	private JButton estimatorButton, clearButton;
 
 	private int labelheight = 20;
 	private int labelwidth = 35;
+	protected Dimension buttonSize = new Dimension(100, 25);
+	private TimeEstimatorSettings settings;
 
+	private Node selection = null ;
+	private Node visualSelection = null ;
+	private boolean visibility;
 	private Color selectedColor = Color.ORANGE;
 	private Font font = new Font("Arial", Font.PLAIN, 12);
 	private String startLabel = "Start time interval: ";
@@ -69,90 +85,88 @@ public class TimeValueSetterTool extends AbstractTool{
 	private String durationLabel = "Duration interval: ";
 	private String timeLabel = "Time interval: ";
 
-	//Set limit integers to JTextField
-	class InputFilter extends DocumentFilter {
-
-        private int maxLength;
-
-        public InputFilter() {
-            maxLength = 4; // The number of characters allowed
-        }
-
-        private boolean isInteger(String text) {
-            try {
-               Integer.parseInt(text);
-               return true;
-            } catch (NumberFormatException e) {
-               return false;
-            }
-         }
-
-        @Override
-        public void insertString(FilterBypass fb, int offset, String string,
-                AttributeSet attr) throws BadLocationException {
-
-            Document doc = fb.getDocument();
-            StringBuilder sb = new StringBuilder();
-            sb.append(doc.getText(0, doc.getLength()));
-            sb.insert(offset, string);
-
-            if (doc.getLength() + string.length() <= maxLength
-                    	&& isInteger(string)) {
-                fb.insertString(offset, string, attr);
-            }
-        }
-
-        @Override
-        public void replace(FilterBypass fb, int offset, int length,
-                String text, AttributeSet attrs) throws BadLocationException {
-
-            Document doc = fb.getDocument();
-            StringBuilder sb = new StringBuilder();
-            sb.append(doc.getText(0, doc.getLength()));
-            sb.replace(offset, offset + length, text);
-
-            if (isInteger(sb.toString())
-            		&& (doc.getLength() + text.length() - length) <= maxLength) {
-                super.replace(fb, offset, length, text, attrs);
-             }
-        }
-    }
-
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
 		super.createInterfacePanel(editor);
-		createGranularityButtons();
+
+		//workcraft invoke this method before activate method
+		visualNet = (VisualSON)editor.getModel();
+		net = (SON)visualNet.getMathModel();
+		this.editor = editor;
+
+		createTimeSetterPanel();
+
+		interfacePanel = new JPanel();
+		interfacePanel.setLayout(new BorderLayout());
+		interfacePanel.add(timeSetterPanel);
+	}
+
+	private void createTimeSetterPanel(){
+		granularityPanel = new GranularityPanel(BorderFactory.createTitledBorder("Time Granularity"));
 
 		timePropertyPanel = new JPanel();
 		timePropertyPanel.setBorder(BorderFactory.createTitledBorder("Time value"));
 		timePropertyPanel.setLayout(new WrapLayout());
-		timePropertyPanel.setPreferredSize(new Dimension(0, 200));
+		timePropertyPanel.setPreferredSize(new Dimension(1, labelheight * 6));
 
-		interfacePanel = new JPanel();
-		interfacePanel.setLayout(new BorderLayout());
-		interfacePanel.add(granularityPanel, BorderLayout.NORTH);
-		interfacePanel.add(timePropertyPanel, BorderLayout.CENTER);
+		createButtonPanel();
+
+		timeSetterPanel = new JPanel();
+		timeSetterPanel.setLayout(new BorderLayout());
+		timeSetterPanel.add(granularityPanel, BorderLayout.NORTH);
+		timeSetterPanel.add(timePropertyPanel, BorderLayout.CENTER);
+		timeSetterPanel.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
-	private void createGranularityButtons(){
-		granularityPanel = new JPanel();
-		granularityPanel.setBorder(BorderFactory.createTitledBorder("Time Granularity"));
-		granularityPanel.setLayout(new FlowLayout());
+	private void createButtonPanel(){
+		estimatorButton = new JButton("Estimate...");
+		estimatorButton.setPreferredSize(buttonSize);
+		estimatorButton.setEnabled(false);
 
-		year_yearButton = new JRadioButton();
-		year_yearButton.setText("T:year D:year");
-		year_yearButton.setSelected(true);
+		clearButton = new JButton("Clear");
+		clearButton.setPreferredSize(buttonSize);
 
-		hour_minusButton = new JRadioButton();
-		hour_minusButton.setText("T:24-hour clock D:minus");
+		buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout());
+		buttonPanel.add(estimatorButton);
+		buttonPanel.add(clearButton);
 
-		granularityGroup = new ButtonGroup();
-		granularityGroup.add(year_yearButton);
-		granularityGroup.add(hour_minusButton);
+		estimatorButton.addActionListener(new ActionListener() {
 
-		granularityPanel.add(year_yearButton);
-		granularityPanel.add(hour_minusButton);
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				editor.requestFocus();
+				Granularity g = granularityPanel.getSelection();
+				TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
+				visualNet.setForegroundColor(selection, selectedColor);
+				GUI.centerToParent(estimator, editor.getMainWindow());
+				estimator.setVisible(true);
+				if(estimator.getRun() == 1)
+					updateTimePanel(editor, visualSelection);
+			}
+		});
 
+
+		clearButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Interval interval = new Interval();
+				if(visualSelection!=null){
+					if(visualSelection instanceof VisualComponent){
+						if((selection instanceof Time) && !(selection instanceof Event)){
+							Time time = (Time)selection;
+							time.setDuration(interval);
+							time.setStartTime(interval);
+							time.setEndTime(interval);
+						}
+					}
+					else if(visualSelection instanceof VisualSONConnection){
+						((SONConnection) selection).setTime(interval);
+					}
+					updateTimePanel(editor, visualSelection);
+				}
+			}
+		});
 	}
 
 	private JPanel createTimeInputPanel(final String title, final Interval value, final Node node){
@@ -168,7 +182,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		final JTextField min = new JTextField();
 		min.setPreferredSize(new Dimension(labelwidth, labelheight));
 		min.setText(value.minToString());
-		((AbstractDocument) min.getDocument()).setDocumentFilter(new InputFilter());
+		((AbstractDocument) min.getDocument()).setDocumentFilter(new TimeInputFilter());
 
 		JLabel dash = new JLabel();
 		dash.setText("-");
@@ -176,7 +190,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		final JTextField max = new JTextField();
 		max.setText(value.maxToString());
 		max.setPreferredSize(new Dimension(labelwidth, labelheight));
-		((AbstractDocument) max.getDocument()).setDocumentFilter(new InputFilter());
+		((AbstractDocument) max.getDocument()).setDocumentFilter(new TimeInputFilter());
 
 
 		timeInputPanel.add(label);
@@ -192,6 +206,7 @@ public class TimeValueSetterTool extends AbstractTool{
 
 			@Override
 			public void focusGained(FocusEvent e) {
+				min.selectAll();
 			}
 	      });
 
@@ -222,6 +237,7 @@ public class TimeValueSetterTool extends AbstractTool{
 
 			@Override
 			public void focusGained(FocusEvent e) {
+				max.selectAll();
 			}
 	      });
 
@@ -251,120 +267,201 @@ public class TimeValueSetterTool extends AbstractTool{
 		autoComplete(field);
 
 		if(title.equals(timeLabel)){
-			VisualSONConnection vcon = (VisualSONConnection)node;
-			SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
-
-			Interval value = con.getTime();
-			if(isMin){
-				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-				if(compare(input)){
-					con.setTime(input);
-				}else{
-					con.setTime(value);
-					field.setText(value.minToString());
-				}
-			}else{
-				Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-				if(compare(input)){
-					con.setTime(input);
-				}else{
-					con.setTime(value);
-					field.setText(value.maxToString());
-				}
-			}
+			setTimeLabelValue(node, field, isMin);
 		}
 		else if(title.equals(startLabel)){
-			VisualCondition vc = (VisualCondition)node;
-			Condition c = (Condition)vc.getReferencedComponent();
+			setStartLabel(node, field, isMin);
+		}
+		else if(title.equals(durationLabel)){
+			setDurationLabel(node, field, isMin);
+		}
+		else if(title.equals(endLabel)){
+			setEndLabel(node, field, isMin);
+		}
+	}
 
-			Interval value = c.getStartTime();
+	private void setTimeLabelValue(Node node, JTextField field, boolean isMin){
+		VisualSONConnection vcon = (VisualSONConnection)node;
+		SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
+
+		Interval value = con.getTime();
+		if(isMin){
+			int min = Interval.getInteger(field.getText());
+			//24 hour clock granularity checking
+			if(granularityPanel.getHourMinsButton().isSelected()){
+				try {
+					HourMins.validValue(min);
+				} catch (TimeOutOfBoundsException e) {
+					con.setTime(value);
+					field.setText(value.minToString());
+					return;
+				}
+			}
+			Interval input = new Interval(min, value.getMax());
+			if(isValid(input)){
+				con.setTime(input);
+			}else{
+				con.setTime(value);
+				field.setText(value.minToString());
+			}
+		}else{
+			int max = Interval.getInteger(field.getText());
+			if(granularityPanel.getHourMinsButton().isSelected()){
+				try {
+					HourMins.validValue(max);
+				} catch (TimeOutOfBoundsException e) {
+					con.setTime(value);
+					field.setText(value.maxToString());
+					return;
+				}
+			}
+			Interval input = new Interval(value.getMin(), max);
+			if(isValid(input)){
+				con.setTime(input);
+			}else{
+				con.setTime(value);
+				field.setText(value.maxToString());
+			}
+		}
+	}
+
+	private void setStartLabel(Node node, JTextField field, boolean isMin){
+		VisualCondition vc = (VisualCondition)node;
+		Condition c = (Condition)vc.getReferencedComponent();
+
+		Interval value = c.getStartTime();
+		if(isMin){
+			int min = Interval.getInteger(field.getText());
+			//24 hour clock granularity checking
+			if(granularityPanel.getHourMinsButton().isSelected()){
+				try {
+					HourMins.validValue(min);
+				} catch (TimeOutOfBoundsException e) {
+					c.setStartTime(value);
+					field.setText(value.minToString());
+					return;
+				}
+			}
+			Interval input = new Interval(min, value.getMax());
+			if(isValid(input)){
+				c.setStartTime(input);
+			}else{
+				c.setStartTime(value);
+				field.setText(value.minToString());
+			}
+		}else{
+			int max = Interval.getInteger(field.getText());
+			if(granularityPanel.getHourMinsButton().isSelected()){
+				try {
+					HourMins.validValue(max);
+				} catch (TimeOutOfBoundsException e) {
+					c.setStartTime(value);
+					field.setText(value.maxToString());
+					return;
+				}
+			}
+			Interval input = new Interval(value.getMin(), max);
+			if(isValid(input)){
+				c.setStartTime(input);
+			}else{
+				c.setStartTime(value);
+				field.setText(value.maxToString());
+			}
+		}
+
+	}
+
+	private void setEndLabel(Node node, JTextField field, boolean isMin){
+		VisualCondition vc = (VisualCondition)node;
+		Condition c = (Condition)vc.getReferencedComponent();
+
+		Interval value = c.getEndTime();
+		if(isMin){
+			int min = Interval.getInteger(field.getText());
+			//24 hour clock granularity checking
+			if(granularityPanel.getHourMinsButton().isSelected()){
+				try {
+					HourMins.validValue(min);
+				} catch (TimeOutOfBoundsException e) {
+					c.setEndTime(value);
+					field.setText(value.minToString());
+					return;
+				}
+			}
+			Interval input = new Interval(min, value.getMax());
+			if(isValid(input)){
+				c.setEndTime(input);
+			}else{
+				c.setEndTime(value);
+				field.setText(value.minToString());
+			}
+		}else{
+			int max = Interval.getInteger(field.getText());
+			if(granularityPanel.getHourMinsButton().isSelected()){
+				try {
+					HourMins.validValue(max);
+				} catch (TimeOutOfBoundsException e) {
+					c.setEndTime(value);
+					field.setText(value.maxToString());
+					return;
+				}
+			}
+			Interval input = new Interval(value.getMin(), max);
+			if(isValid(input)){
+				c.setEndTime(input);
+			}else{
+				c.setEndTime(value);
+				field.setText(value.maxToString());
+			}
+		}
+
+	}
+
+	private void setDurationLabel(Node node, JTextField field, boolean isMin){
+
+		Interval value;
+		if(node instanceof VisualPlaceNode){
+			VisualPlaceNode vc = (VisualPlaceNode)node;
+			PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+
+			value = c.getDuration();
 			if(isMin){
 				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-				if(compare(input)){
-					c.setStartTime(input);
+				if(isValid(input)){
+					c.setDuration(input);
 				}else{
-					c.setStartTime(value);
+					c.setDuration(value);
 					field.setText(value.minToString());
 				}
 			}else{
 				Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-				if(compare(input)){
-					c.setStartTime(input);
+				if(isValid(input)){
+					c.setDuration(input);
 				}else{
-					c.setStartTime(value);
+					c.setDuration(value);
 					field.setText(value.maxToString());
 				}
 			}
 		}
-		else if(title.equals(durationLabel)){
-			Interval value;
-			if(node instanceof VisualPlaceNode){
-				VisualPlaceNode vc = (VisualPlaceNode)node;
-				PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+		else if(node instanceof VisualBlock){
+			VisualBlock vb = (VisualBlock)node;
+			Block b = (Block)vb.getReferencedComponent();
+			value = b.getDuration();
 
-				value = c.getDuration();
-				if(isMin){
-					Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-					if(compare(input)){
-						c.setDuration(input);
-					}else{
-						c.setDuration(value);
-						field.setText(value.minToString());
-					}
-				}else{
-					Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-					if(compare(input)){
-						c.setDuration(input);
-					}else{
-						c.setDuration(value);
-						field.setText(value.maxToString());
-					}
-				}
-			}
-			else if(node instanceof VisualBlock){
-				VisualBlock vb = (VisualBlock)node;
-				Block b = (Block)vb.getReferencedComponent();
-				value = b.getDuration();
-
-				if(isMin){
-					Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-					if(compare(input)){
-						b.setDuration(input);
-					}else{
-						b.setDuration(value);
-						field.setText(value.minToString());
-					}
-				}else{
-					Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-					if(compare(input)){
-						b.setDuration(input);
-					}else{
-						b.setDuration(value);
-						field.setText(value.maxToString());
-					}
-				}
-			}
-		}
-
-		else if(title.equals(endLabel)){
-			VisualCondition vc = (VisualCondition)node;
-			Condition c = (Condition)vc.getReferencedComponent();
-
-			Interval value = c.getEndTime();
 			if(isMin){
 				Interval input = new Interval(Interval.getInteger(field.getText()), value.getMax());
-				if(compare(input)){
-					c.setEndTime(input);
+				if(isValid(input)){
+					b.setDuration(input);
 				}else{
-					c.setEndTime(value);
+					b.setDuration(value);
 					field.setText(value.minToString());
 				}
 			}else{
 				Interval input = new Interval(value.getMin(), Interval.getInteger(field.getText()));
-				if(compare(input)){
-					c.setEndTime(input);
+				if(isValid(input)){
+					b.setDuration(input);
 				}else{
-					c.setEndTime(value);
+					b.setDuration(value);
 					field.setText(value.maxToString());
 				}
 			}
@@ -386,7 +483,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		}
 	}
 
-	private boolean compare(Interval value){
+	private boolean isValid(Interval value){
 		int start = value.getMin();
 		int end = value.getMax();
 
@@ -452,8 +549,9 @@ public class TimeValueSetterTool extends AbstractTool{
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
 		WorkspaceEntry we = editor.getWorkspaceEntry();
-		timeAlg = new TimeAlg(net);
 		we.setCanSelect(false);
+		timeAlg = new ConsistencyAlg(net);
+		settings = new TimeEstimatorSettings();
 
 		net.refreshColor();
 		net.clearMarking();
@@ -461,6 +559,10 @@ public class TimeValueSetterTool extends AbstractTool{
 		//set property states for initial and final states
 		timeAlg.removeProperties();
 		timeAlg.setProperties();
+		//save visibility state
+		visibility = SONSettings.getTimeVisibility();
+		//set visibility to true
+		SONSettings.setTimeVisibility(true);
 
 		editor.forceRedraw();
 		editor.getModel().setTemplateNode(null);
@@ -468,8 +570,10 @@ public class TimeValueSetterTool extends AbstractTool{
 
 	@Override
 	public void deactivated(final GraphEditor editor) {
-		timeAlg.removeProperties();
-		//BlockConnector.blockInternalConnector(visualNet);
+		if(!visibility){
+			timeAlg.removeProperties();
+		}
+		SONSettings.setTimeVisibility(visibility);
 		net.refreshColor();
 		net.clearMarking();
 	}
@@ -480,8 +584,11 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
 		if( node instanceof VisualSONConnection){
+			estimatorButton.setEnabled(false);
 			VisualSONConnection con = (VisualSONConnection)node;
-			if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
+			selection = con.getReferencedConnection();
+			visualSelection = node;
+			if(con.getSemantics()==Semantics.PNLINE){
 				((VisualSONConnection) node).setColor(selectedColor);
 				updateTimePanel(e.getEditor(), node);
 				return;
@@ -490,7 +597,10 @@ public class TimeValueSetterTool extends AbstractTool{
 
 		Node node2 = HitMan.hitFirstNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualBlock.class);
 		if(node2 != null){
+			selection = ((VisualBlock)node2).getReferencedComponent();
+			visualSelection = node2;
 			if(((VisualBlock)node2).getIsCollapsed()){
+				estimatorButton.setEnabled(true);
 				((VisualBlock) node2).setForegroundColor(selectedColor);
 				updateTimePanel(e.getEditor(), node2);
 				return;
@@ -501,11 +611,16 @@ public class TimeValueSetterTool extends AbstractTool{
 				new Func<Node, Boolean>() {
 					@Override
 					public Boolean eval(Node node) {
-						return node instanceof VisualPlaceNode;
+						return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
 					}
 				});
-			if (node3 instanceof VisualPlaceNode) {
-				((VisualPlaceNode) node).setForegroundColor(selectedColor);
+			if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
+				if(!(node3 instanceof VisualChannelPlace))
+					estimatorButton.setEnabled(true);
+
+				selection = ((VisualComponent) node3).getReferencedComponent();
+				visualSelection = node3;
+				((VisualComponent) node3).setForegroundColor(selectedColor);
 				updateTimePanel(e.getEditor(), node3);
 			}
 	}

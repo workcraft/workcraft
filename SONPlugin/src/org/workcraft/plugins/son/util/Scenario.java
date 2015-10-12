@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.son;
+package org.workcraft.plugins.son.util;
 
 import org.workcraft.dom.math.MathNode;
 

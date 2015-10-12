@@ -56,11 +56,7 @@ import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.BlockConnector;
-import org.workcraft.plugins.son.Phase;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.StepRef;
-import org.workcraft.plugins.son.Step;
-import org.workcraft.plugins.son.Trace;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
@@ -78,6 +74,10 @@ import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.gui.ParallelSimDialog;
 import org.workcraft.plugins.son.gui.SONGUI;
+import org.workcraft.plugins.son.util.Phase;
+import org.workcraft.plugins.son.util.Step;
+import org.workcraft.plugins.son.util.StepRef;
+import org.workcraft.plugins.son.util.Trace;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -99,7 +99,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 	protected JPanel interfacePanel;
 	protected JPanel controlPanel;
-	protected JScrollPane infoPanel;
+	protected JScrollPane tabelPanel;
 	protected JPanel statusPanel;
 	protected JTable traceTable;
 
@@ -176,14 +176,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		traceTable = new JTable(new TraceTableModel());
 		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		infoPanel = new JScrollPane(traceTable);
-		infoPanel.setPreferredSize(new Dimension(1, 1));
+		tabelPanel = new JScrollPane(traceTable);
+		tabelPanel.setPreferredSize(new Dimension(1, 1));
 
 		statusPanel = new JPanel();
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
 		interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
-		interfacePanel.add(infoPanel, BorderLayout.CENTER);
+		interfacePanel.add(tabelPanel, BorderLayout.CENTER);
 		interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
 
 		speedSlider.addChangeListener(new ChangeListener() {
