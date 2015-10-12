@@ -44,9 +44,9 @@ import org.workcraft.gui.SmartFlowLayout;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskMonitor;
-import org.workcraft.tasks.Result.Outcome;
 
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
@@ -162,15 +162,23 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 		scroll.setViewportView(content);
 		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-		Border lineBorder = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
+		Border insideBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+		Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
 		setBorder(lineBorder);
 
 		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().addObserver(this);
 
-		JButton comp = new JButton("Queue test task");
+		// Do we really need this "Queue test task" button? Probably not.
+		// addQueueTestTasksButton(framework);
 
-		comp.addActionListener(new ActionListener() {
+	}
+
+	private void addQueueTestTasksButton(final Framework framework) {
+		JButton testTaskButton = new JButton("Queue test task");
+
+		testTaskButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				framework.getTaskManager().queue(new Task<Object>(){
@@ -192,8 +200,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
 						@Override
 						public void finished(Result<? extends Object> result, final String description) {
-							if (result.getOutcome() == Outcome.FINISHED )
-							{
+							if (result.getOutcome() == Outcome.FINISHED ) {
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
@@ -207,7 +214,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 			}
 		});
 
-		content.add (comp);
+		content.add (testTaskButton);
 	}
 
 	public void removeTaskControl (TaskControl taskControl) {

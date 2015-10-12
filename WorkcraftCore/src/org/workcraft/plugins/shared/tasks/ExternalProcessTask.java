@@ -65,9 +65,9 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 			}
 		}
 
-		if (userCancelled)
+		if (userCancelled) {
 			return Result.cancelled();
-
+		}
 		ExternalProcessResult result = new ExternalProcessResult(returnCode, stdoutAccum.getData(), stderrAccum.getData(), Collections.<String, byte[]>emptyMap());
 
 		return Result.finished(result);
@@ -111,4 +111,5 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		this.returnCode = returnCode;
 		this.finished = true;
 	}
+
 }
