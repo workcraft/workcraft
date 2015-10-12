@@ -7,7 +7,9 @@ import java.util.HashSet;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
+import org.workcraft.plugins.son.algorithm.TSONAlg;
 import org.workcraft.plugins.son.elements.Block;
 
 public class TSONStructureTask extends AbstractStructuralVerification{
@@ -18,12 +20,18 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 	private Collection<Path> cycleErrors = new ArrayList<Path>();
 
+	private TSONAlg tsonAlg;
+	private ONCycleAlg onCycleAlg;
+
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
 	public TSONStructureTask(SON net){
 		super(net);
 		this.net = net;
+
+		onCycleAlg = new ONCycleAlg(net);
+		tsonAlg = new TSONAlg(net);
 	}
 
 	@Override
@@ -57,7 +65,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
 		//Causally Precede task result
 			infoMsg("Running block structure tasks...");
-			if(getONCycleAlg().cycleTask(block.getComponents()).isEmpty()){
+			if(onCycleAlg.cycleTask(block.getComponents()).isEmpty()){
 				Collection<Node> result3 = CausallyPrecedeTask(block);
 				if(!result3.isEmpty()){
 					relationErrors.addAll(result3);
@@ -89,6 +97,10 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 				result.add(input);
 		}
 		return result;
+	}
+
+	public TSONAlg getTSONAlg(){
+		return tsonAlg;
 	}
 
 	@Override

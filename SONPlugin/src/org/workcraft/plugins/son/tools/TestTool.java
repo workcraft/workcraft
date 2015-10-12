@@ -18,7 +18,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.AlterONAlg;
+import org.workcraft.plugins.son.algorithm.ASONAlg;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.EstimationAlg;
@@ -93,7 +93,7 @@ public class TestTool extends AbstractTool implements Tool{
 	}
 
 	private void reachableMarkingsTest(SON net){
-		AlterONAlg alg = new AlterONAlg(net);
+		ASONAlg alg = new ASONAlg(net);
 		for(ONGroup group : net.getGroups()){
 			try {
 				Collection<MarkingRef> markings = alg.getReachableMarkings(group);

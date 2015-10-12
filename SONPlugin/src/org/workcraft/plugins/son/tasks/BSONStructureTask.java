@@ -10,6 +10,8 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
+import org.workcraft.plugins.son.algorithm.BSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -26,12 +28,20 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	private Collection<Path> cycleErrors = new ArrayList<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
+	private BSONAlg bsonAlg;
+	private BSONCycleAlg bsonCycleAlg;
+	private Map<Condition, Collection<Phase>> allPhases;
+
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
 	public BSONStructureTask(SON net){
 		super(net);
 		this.net = net;
+
+		bsonAlg = new BSONAlg(net);
+		allPhases = bsonAlg.getAllPhases();
+		bsonCycleAlg = new BSONCycleAlg(net, allPhases);
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -377,6 +387,18 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		}
 
 		return result;
+	}
+
+	public BSONAlg getBSONAlg(){
+		return this.bsonAlg;
+	}
+
+	public BSONCycleAlg getBSONCycleAlg(){
+		return bsonCycleAlg;
+	}
+
+	public Map<Condition, Collection<Phase>> getAllPhases(){
+		return allPhases;
 	}
 
 	@Override

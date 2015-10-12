@@ -75,10 +75,10 @@ public class NodesRef extends ArrayList<String>{
 		if(ref.size() != size()) return false;
 
 		for(String str : ref){
-			if(!this.contains(str))
+			if(!this.contains(str)){
 				return false;
+			}
 		}
-
 		return true;
 
 	}

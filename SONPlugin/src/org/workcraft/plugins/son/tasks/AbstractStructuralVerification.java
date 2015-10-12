@@ -2,21 +2,13 @@ package org.workcraft.plugins.son.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.algorithm.BSONAlg;
-import org.workcraft.plugins.son.algorithm.BSONCycleAlg;
-import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
-import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
-import org.workcraft.plugins.son.algorithm.TSONAlg;
-import org.workcraft.plugins.son.elements.Condition;
-import org.workcraft.plugins.son.util.Phase;
 
 abstract class AbstractStructuralVerification implements StructuralVerification{
 
@@ -25,23 +17,11 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	private RelationAlgorithm relationAlg;
-	private CSONCycleAlg csonCycleAlg;
-	private BSONAlg bsonAlg;
-	private BSONCycleAlg bsonCycleAlg;
-	private ONCycleAlg onCycleAlg;
-	private TSONAlg tsonAlg;
-	private Map<Condition, Collection<Phase>> allPhases;
 
 	public AbstractStructuralVerification(SON net){
 		this.net = net;
 
 		relationAlg = new RelationAlgorithm(net);
-		csonCycleAlg = new CSONCycleAlg(net);
-		bsonAlg = new BSONAlg(net);
-		allPhases = bsonAlg.getAllPhases();
-		bsonCycleAlg = new BSONCycleAlg(net, allPhases);
-		onCycleAlg = new ONCycleAlg(net);
-		tsonAlg = new TSONAlg(net);
 	}
 
 	public abstract void task(Collection<ONGroup> groups);
@@ -72,10 +52,6 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 		return result;
 	}
 
-	public Map<Condition, Collection<Phase>> getAllPhases(){
-		return allPhases;
-	}
-
 	public void infoMsg(String msg){
 		logger.info(msg);
 	}
@@ -94,25 +70,5 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 
 	public RelationAlgorithm getRelationAlg(){
 		return this.relationAlg;
-	}
-
-	public BSONAlg getBSONAlg(){
-		return this.bsonAlg;
-	}
-
-	public BSONCycleAlg getBSONCycleAlg(){
-		return bsonCycleAlg;
-	}
-
-	public CSONCycleAlg getCSONCycleAlg(){
-		return csonCycleAlg;
-	}
-
-	public ONCycleAlg getONCycleAlg(){
-		return onCycleAlg;
-	}
-
-	public TSONAlg getTSONAlg(){
-		return tsonAlg;
 	}
 }

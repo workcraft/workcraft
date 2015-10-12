@@ -470,7 +470,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			for(Node post : net.getPostset(e)){
 				if((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
 					if(((PlaceNode)post).isMarked())
-						throw new UnboundedException(net.getNodeReference(post));
+						throw new UnboundedException(net.getNodeReference(post), post);
 					else
 						((PlaceNode)post).setMarked(true);
 			}
@@ -527,7 +527,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			for(Node pre : net.getPreset(e)){
 				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
 					if(((PlaceNode)pre).isMarked())
-						throw new UnboundedException(net.getNodeReference(pre));
+						throw new UnboundedException(net.getNodeReference(pre), pre);
 					else
 						((PlaceNode)pre).setMarked(true);
 			}

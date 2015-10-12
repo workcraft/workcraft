@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -14,9 +13,9 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.MarkingRef;
 
-public class AlterONAlg extends RelationAlgorithm{
+public class ASONAlg extends RelationAlgorithm{
 
-	public AlterONAlg(SON net) {
+	public ASONAlg(SON net) {
 		super(net);
 	}
 
@@ -36,7 +35,7 @@ public class AlterONAlg extends RelationAlgorithm{
 
 		for(Node n : getPostPNSet(t)){
 			if(nodes.contains(n))
-				throw new UnboundedException(net.getNodeReference(n)+ marking.toString());
+				throw new UnboundedException(net.getNodeReference(n), n);
 			else
 				result.add(net.getNodeReference(n));
 		}
@@ -49,36 +48,49 @@ public class AlterONAlg extends RelationAlgorithm{
 		return result;
 	}
 
+	@SuppressWarnings("serial")
 	public Collection<MarkingRef> getReachableMarkings(ONGroup group) throws UnboundedException{
 		Collection<MarkingRef> result = new ArrayList<MarkingRef>();
+		Collection<MarkingRef> search = new ArrayList<MarkingRef>();
 
-		Map<TransitionNode, MarkingRef> visited = new HashMap<TransitionNode, MarkingRef>();
+		Map<TransitionNode, ArrayList<MarkingRef>> visited = new HashMap<TransitionNode, ArrayList<MarkingRef>>();
 
 		MarkingRef initial = new MarkingRef();
 		for(Condition c : getONInitial(group.getConditions())){
 			initial.add(net.getNodeReference(c));
 		}
+
 		result.add(initial);
+		search.add(initial);
 
     	boolean hasEnabled = true;
         while(hasEnabled){
     		Collection<MarkingRef> newMarkings = new ArrayList<MarkingRef>();
-    		for(MarkingRef marking : result){
+
+    		for(MarkingRef marking : search){
     	        for(TransitionNode t : group.getTransitionNodes()){
-        	        if(!visited(visited, t, marking)){
-        	        	if(visited.containsKey(t) && !visited.get(t).equals(marking))
-        	        		System.out.println(net.getNodeReference(t)+"1"+ visited.get(t) +visited.get(t).equals(marking)+ marking);
-    	        		if(isEnabled(marking, t)){
-	    	        		newMarkings.add(fire(marking, t));
-    	        		}
+        	        if(!visited(visited, t, marking) && isEnabled(marking, t)){
+        	        	MarkingRef newMarking = fire(marking, t);
+        	        	if(!contains(result, newMarking) && !contains(newMarkings, newMarking))
+        	        		newMarkings.add(newMarking);
     	        	}
-	        		visited.put(t, marking);
+        	        if(visited.containsKey(t)){
+        	        	 ArrayList<MarkingRef> markings = visited.get(t);
+        	        	 markings.add(marking);
+        	        	 visited.put(t, markings);
+        	        }else{
+        	        	visited.put(t, new ArrayList<MarkingRef>(){
+						{
+        	        		add(marking);
+        	        	}});
+        	        }
     	        }
     		}
 
     		if(newMarkings.isEmpty()){
     			hasEnabled = false;
     		}else{
+    			search = newMarkings;
     			result.addAll(newMarkings);
     		}
         }
@@ -86,15 +98,21 @@ public class AlterONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	private boolean visited(Map<TransitionNode, MarkingRef> visited, TransitionNode t, MarkingRef marking){
-		for(TransitionNode key : visited.keySet()){
-			if(key == t)
-				if(visited.get(key).equals(marking)){
-					System.out.println("visited");
-					return true;
-				}
+	private boolean contains(Collection<MarkingRef> result, MarkingRef marking){
+		for(MarkingRef ref : result){
+			if(ref.equals(marking)){
+				return true;
+			}
 		}
 		return false;
 	}
-
+	private boolean visited(Map<TransitionNode, ArrayList<MarkingRef>> visited, TransitionNode t, MarkingRef marking){
+		if(visited.containsKey(t))
+			for(MarkingRef ref : visited.get(t)){
+				if(ref.equals(marking))
+					return true;
+			}
+		return false;
 	}
+
+}
