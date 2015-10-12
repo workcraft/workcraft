@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cpog.tools;
+package org.workcraft.plugins.cpog.untangling;
 
 public class UntanglingNode {
 

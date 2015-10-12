@@ -11,10 +11,14 @@ import org.workcraft.plugins.cpog.CPOG;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
+import org.workcraft.plugins.cpog.untangling.Edge;
+import org.workcraft.plugins.cpog.untangling.PartialOrder;
+import org.workcraft.plugins.cpog.untangling.Untanglings;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
+
 
 public class PnToCpogConverter {
 
@@ -97,7 +101,7 @@ public class PnToCpogConverter {
 		}
 
 		// getting the partial orders from the untangling
-		ArrayList<String> partialOrders = untangling.getPartialOrders(settings);
+		ArrayList<PartialOrder> partialOrders = untangling.getPartialOrders(settings);
 
 		// building the cpog from the partial orders
 		buildCpog(partialOrders);
@@ -108,17 +112,16 @@ public class PnToCpogConverter {
 
 	/** building the cpog model from the string partial orders **/
 	@SuppressWarnings("deprecation")
-	private void buildCpog(ArrayList<String> partialOrders) {
-
-		String delimEdges = new String(";");
-		String delimNodes = new String(",");
+	private void buildCpog(ArrayList<PartialOrder> partialOrders) {
 
 		// Positions inside the workspace
 		int xPos = 0;
 		int yPos = 0;
 
+		int i = 0;
 		// looping over partial orders
-		for(int i = 0; i < partialOrders.size(); i++){
+		for(PartialOrder po : partialOrders){
+			i++;
 
 			// move the vertically every partial order
 			xPos = 0;
@@ -132,13 +135,13 @@ public class PnToCpogConverter {
 			visualCpog.selectNone();
 
 			// splitting various edges that compose the partial order
-			String[] edges = partialOrders.get(i).split(delimEdges);
-			for(int j = 0; j < edges.length; j++){
+			//String[] edges = partialOrders.get(i).split(delimEdges);
+			for(Edge edge : po){
 
 				// reading source and target vertices
-				String[] vertices = edges[j].split(delimNodes);
-				String sourceName = new String(vertices[0]);
-				String targetName = new String(vertices[1]);
+				//String[] vertices = edges[j].split(delimNodes);
+				String sourceName = new String(edge.getFirst().getLabel());
+				String targetName = new String(edge.getSecond().getLabel());
 
 				// creating new vertices
 				VisualVertex source = visualCpog.createVisualVertex(container);

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cpog.tools;
+package org.workcraft.plugins.cpog.untangling;
 
 
 import java.util.ArrayList;
@@ -20,6 +20,8 @@ import org.jbpt.petri.untangling.ReductionBasedRepresentativeUntangling;
 import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
+import org.workcraft.plugins.cpog.untangling.Node.Type;
+
 
 
 public class Untanglings {
@@ -29,14 +31,15 @@ public class Untanglings {
 	private LinkedList<Transition> t;
 	private UntanglingSetup setup;
 	private ReductionBasedRepresentativeUntangling untangling;
-	private ArrayList<String> partialOrders;
+	private ArrayList<PartialOrder> partialOrders;
 
 	public Untanglings(PnToCpogSettings settings){
 		this.sys = new NetSystem();
 		this.p = new LinkedList<Place>();
 		this.t = new LinkedList<Transition>();
 		this.setup = new UntanglingSetup();
-		this.partialOrders = new ArrayList<String>();
+		//this.partialOrders = new ArrayList<String>();
+		this.partialOrders = new ArrayList<PartialOrder>();
 
 		// settings
 		this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();
@@ -179,38 +182,29 @@ public class Untanglings {
 	/** converts the set of processes that compose the *
 	 *  untangling into a set of partial order graph
 	 * @param settings **/
-	public ArrayList<String> getPartialOrders(PnToCpogSettings settings){
+	public ArrayList<PartialOrder> getPartialOrders(PnToCpogSettings settings){
 
 		for(IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()){
 
-			String process = new String();
+			PartialOrder process = new PartialOrder();
 			ArrayList<UntanglingNode> transitions = new ArrayList<UntanglingNode>();
 			ArrayList<UntanglingNode> places = new ArrayList<UntanglingNode>();
 
 			// adding transitions into a list
 			for(Flow edge : pi.getOccurrenceNet().getEdges()){
-
 				if (edge.getSource() instanceof Transition){
-
 					addNode(edge.getSource(), transitions);
-
 				}
 			}
 
 			// adding places into a list
 			if (settings.isRemoveNodes() == false){
 				for(Flow edge : pi.getOccurrenceNet().getEdges()){
-
 					if (edge.getSource() instanceof Place){
-
 						addNode(edge.getSource(), places);
-
 					}
-
 					if (edge.getTarget() instanceof Place){
-
 						addNode(edge.getTarget(), places);
-
 					}
 				}
 			}
@@ -222,38 +216,33 @@ public class Untanglings {
 			}
 
 			// renaming transitions showing up with same name but different id
-			renamelist(transitions);
+			renameList(transitions);
 			if (settings.isRemoveNodes() == false){
-				renamelist(places);
+				renameList(places);
 			}
 
 			// connecting transitions while skipping the places
 			if(settings.isRemoveNodes() == true){
 				for(Flow edge1 : pi.getOccurrenceNet().getEdges()){
-
 					if (edge1.getSource() instanceof Transition){
-
 						for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
-
 							if(edge2.getSource().getLabel().equals(edge1.getTarget().getLabel())){
-
-								process = process.concat(connectTransitions(transitions, edge1.getSource(), edge2.getTarget(), process));
-
+								process.add(connectTransitions(transitions, edge1.getSource(), edge2.getTarget()));
 							}
 						}
 					}
 				}
 			}
+
 			// nodes need to be present
 			else{
 				for(Flow edge : pi.getOccurrenceNet().getEdges()){
-
 					if(edge.getSource() instanceof Place){
 						// place to transition connection
-						process = process.concat(connectPlaceAndTransition(places, transitions, edge.getSource(), edge.getTarget(), process));
+						process.add(connectPlaceAndTransition(places, transitions, edge.getSource(), edge.getTarget(), true));
 					}else{
 						// transition to place connection
-						process = process.concat(connectPlaceAndTransition(transitions, places, edge.getSource(), edge.getTarget(), process));
+						process.add(connectPlaceAndTransition(transitions, places, edge.getSource(), edge.getTarget(), false));
 					}
 
 				}
@@ -297,7 +286,7 @@ public class Untanglings {
 
 	/** Rename with a " _n " the transitions with same names but different *
 	 *  id, in order to be coherent with partial order notation            **/
-	private void renamelist(ArrayList<UntanglingNode> list) {
+	private void renameList(ArrayList<UntanglingNode> list) {
 
 		for(int i = 0; i < list.size(); i++){
 			int k = 1;
@@ -316,8 +305,8 @@ public class Untanglings {
 	/** Connect two transitions by looking at the name  *
 	 *  contained inside the list "transitions", where  *
 	 *  each transitions has a different name          **/
-	private String connectTransitions(ArrayList<UntanglingNode> transitions,
-			Node source, Node target, String process) {
+	private Edge connectTransitions(ArrayList<UntanglingNode> transitions,
+			Node source, Node target) {
 
 		int sourceId = Integer.parseInt(source.getLabel().replaceAll(".*-", ""));
 		int targetId = Integer.parseInt(target.getLabel().replaceAll(".*-", ""));
@@ -333,16 +322,19 @@ public class Untanglings {
 			}
 		}
 
-		return (sourceName + "," + targetName + ";");
+		org.workcraft.plugins.cpog.untangling.Node first = new org.workcraft.plugins.cpog.untangling.Node(sourceName, Type.TRANSITION);
+		org.workcraft.plugins.cpog.untangling.Node second = new org.workcraft.plugins.cpog.untangling.Node(targetName, Type.TRANSITION);
+
+		return new Edge(first, second);
 
 	}
 
 	/** Connect places and transitions by looking at the *
 	 *  name contained inside two lists, where           *
 	 *  transitions and places have different names     **/
-	private String connectPlaceAndTransition(ArrayList<UntanglingNode> listSource,
+	private Edge connectPlaceAndTransition(ArrayList<UntanglingNode> listSource,
 			ArrayList<UntanglingNode> listTarget, Node source, Node target,
-			String process) {
+			boolean placeFirst) {
 
 		int sourceId = Integer.parseInt(source.getLabel().replaceAll(".*-", ""));
 		int targetId = Integer.parseInt(target.getLabel().replaceAll(".*-", ""));
@@ -360,7 +352,16 @@ public class Untanglings {
 			}
 		}
 
-		return (sourceName + "," + targetName + ";");
+		org.workcraft.plugins.cpog.untangling.Node first;
+		org.workcraft.plugins.cpog.untangling.Node second;
+		if(placeFirst){
+			first = new org.workcraft.plugins.cpog.untangling.Node(sourceName, Type.PLACE);
+			second = new org.workcraft.plugins.cpog.untangling.Node(targetName, Type.TRANSITION);
+		}else{
+			first = new org.workcraft.plugins.cpog.untangling.Node(sourceName, Type.TRANSITION);
+			second = new org.workcraft.plugins.cpog.untangling.Node(targetName, Type.PLACE);
+		}
 
+		return new Edge(first, second);
 	}
 }
