@@ -38,7 +38,6 @@ public class Untanglings {
 		this.p = new LinkedList<Place>();
 		this.t = new LinkedList<Transition>();
 		this.setup = new UntanglingSetup();
-		//this.partialOrders = new ArrayList<String>();
 		this.partialOrders = new ArrayList<PartialOrder>();
 
 		// settings
@@ -98,12 +97,9 @@ public class Untanglings {
 
 			// checking existence of the place
 			if(place.getName().equals(node1)){
-
 				// checking existence of the transition
 				for (Transition transition : t){
-
 					if(transition.getName().equals(node2)){
-
 						// adding arc to the system
 						sys.addFlow(place, transition);
 
@@ -125,15 +121,11 @@ public class Untanglings {
 	public boolean transitionToPlace(String node1, String node2){
 
 		for(Transition transition : t){
-
 			// checking existence of the place
 			if(transition.getName().equals(node1)){
-
 				// checking existence of the transition
 				for (Place place : p){
-
 					if(place.getName().equals(node2)){
-
 						// adding arc to the system
 						sys.addFlow(transition, place);
 

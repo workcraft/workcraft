@@ -117,8 +117,8 @@ public class PnToCpogConverter {
 		// Positions inside the workspace
 		int xPos = 0;
 		int yPos = 0;
-
 		int i = 0;
+
 		// looping over partial orders
 		for(PartialOrder po : partialOrders){
 			i++;
@@ -134,12 +134,10 @@ public class PnToCpogConverter {
 			Container container = visualCpog.getCurrentLevel();
 			visualCpog.selectNone();
 
-			// splitting various edges that compose the partial order
-			//String[] edges = partialOrders.get(i).split(delimEdges);
+			// looping over the edges
 			for(Edge edge : po){
 
 				// reading source and target vertices
-				//String[] vertices = edges[j].split(delimNodes);
 				String sourceName = new String(edge.getFirst().getLabel());
 				String targetName = new String(edge.getSecond().getLabel());
 
