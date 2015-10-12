@@ -151,7 +151,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 					MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
 					MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
-			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
+			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
 					unfoldingFile.getCanonicalPath(), directory, true);
 			Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 					mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);

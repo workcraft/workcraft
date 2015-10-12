@@ -12,6 +12,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.serialisation.Format;
@@ -28,35 +29,37 @@ public class CircuitStgUtils {
 		CircuitToStgConverter generator = new CircuitToStgConverter(circuit);
 		File envFile = circuit.getEnvironmentFile();
 		if ((envFile != null) && envFile.exists()) {
-			VisualSTG devStg = generator.getStg();
-			VisualSTG systemStg = composeDevStgWithEvnFile(devStg, envFile, circuit.getTitle());
+			STG devStg = (STG)generator.getStg().getMathModel();
+			STG systemStg = composeDevStgWithEvnFile(devStg, envFile, circuit.getTitle());
 			if (systemStg != null) {
-				generator = new CircuitToStgConverter(circuit, systemStg);
+				generator = new CircuitToStgConverter(circuit, new VisualSTG(systemStg));
 			}
 		}
 		return generator;
 	}
 
-	public static VisualSTG composeDevStgWithEvnFile(VisualSTG devStg, File envFile, String title) {
-		VisualSTG resultStg = null;
-		Framework framework = Framework.getInstance();
+	public static STG composeDevStgWithEvnFile(STG devStg, File envFile, String title) {
+		STG systemStg = null;
 		String prefix = FileUtils.getTempPrefix(title);
 		File directory = FileUtils.createTempDirectory(prefix);
 		try {
 			File devStgFile = exportDevStg(devStg, directory);
 			File envStgFile = exportEnvStg(envFile, directory);
-			File stgFile = composeDevStgWithEnvStg(devStgFile, envStgFile, directory);
-			if (stgFile != null) {
-				WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-				STG stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
-				resultStg = new VisualSTG(stg);
+			File systemStgFile = composeDevStgWithEnvStg(devStgFile, envStgFile, directory);
+			if (systemStgFile != null) {
+				Framework framework = Framework.getInstance();
+				WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(systemStgFile, true);
+				systemStg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+				for (String inputName: devStg.getSignalNames(Type.INPUT, null)) {
+					systemStg.setSignalType(inputName, Type.INPUT, null);
+				}
 				framework.getWorkspace().close(stgWorkspaceEntry);
 			}
 		} catch (Throwable e) {
 		} finally {
 			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
-		return resultStg;
+		return systemStg;
 	}
 
 	private static File composeDevStgWithEnvStg(File devStgFile, File envStgFile, File directory) throws IOException {
@@ -99,10 +102,9 @@ public class CircuitStgUtils {
 		return envStgFile;
 	}
 
-	private static File exportDevStg(VisualSTG visualStg, File directory) throws IOException {
+	private static File exportDevStg(STG devStg, File directory) throws IOException {
 		Framework framework = Framework.getInstance();
 
-		STG devStg = (STG)visualStg.getMathModel();
 		Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
 		if (devStgExporter == null) {
 			throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to .g format.");

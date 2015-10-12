@@ -77,7 +77,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			monitor.progressUpdate(0.66);
 
 			// Run MPSat on the generated unfolding
-			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(),
+			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
 					unfoldingFile.getCanonicalPath(), directory, tryPnml);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running mpsat model-checking", subtaskMonitor);

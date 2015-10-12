@@ -67,6 +67,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
 		try {
 			if (directory == null) {
 				listFile = File.createTempFile("places_", ".list");
+				listFile.deleteOnExit();
 			} else {
 				listFile = new File(directory, "places.list");
 			}

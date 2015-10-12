@@ -14,6 +14,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat.tasks.PunfTask;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
@@ -22,6 +23,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -46,7 +48,11 @@ public class CheckDataflowTask extends MpsatChainTask {
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		final Framework framework = Framework.getInstance();
+		File directory = null;
 		try {
+			String prefix = FileUtils.getTempPrefix(we.getTitle());
+			directory = FileUtils.createTempDirectory(prefix);
+
 			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
 			STGModel model = (STGModel)generator.getStgModel().getMathModel();
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
@@ -55,14 +61,13 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.10);
 
-			File netFile = File.createTempFile("net", exporter.getExtenstion());
+			File netFile = new File(directory, "net" + exporter.getExtenstion());
 			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends Object> exportResult = framework.getTaskManager().execute(
 					exportTask, "Exporting .g", mon);
 
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
-				netFile.delete();
 				if (exportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
@@ -71,14 +76,12 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.20);
 
-			File unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(directory, "unfolding" + MpsatUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", mon);
 
-			netFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				unfoldingFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
@@ -87,7 +90,8 @@ public class CheckDataflowTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.40);
 
-			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath(), null, true);
+			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
+					unfoldingFile.getCanonicalPath(), directory, true);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -102,13 +106,13 @@ public class CheckDataflowTask extends MpsatChainTask {
 
 			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
-				unfoldingFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, deadlockSettings, "Dataflow has a deadlock"));
 			}
 			monitor.progressUpdate(0.70);
 
-			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(), unfoldingFile.getCanonicalPath(), null, true);
+			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
+					unfoldingFile.getCanonicalPath(), directory, true);
 			mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
@@ -121,18 +125,18 @@ public class CheckDataflowTask extends MpsatChainTask {
 
 			mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
-				unfoldingFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, hazardSettings, "Dataflow has hazard(s)"));
 			}
 			monitor.progressUpdate(1.0);
 
-			unfoldingFile.delete();
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
 					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, hazardSettings, "Dataflow is deadlock-free and hazard-free"));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
+		} finally {
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

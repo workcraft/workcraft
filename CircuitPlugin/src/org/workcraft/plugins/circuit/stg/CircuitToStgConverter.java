@@ -242,17 +242,10 @@ public class CircuitToStgConverter {
 		String signalName = CircuitUtils.getSignalName(circuit, signal);
 		SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, signal);
 		for(DnfClause clause : clauses) {
-			VisualSignalTransition transition = stg.createSignalTransition(signalName, signalType, direction, container);
-			transition.setLabel(FormulaToString.toString(clause));
-			transitions.add(transition);
-
-			try {
-				stg.connect(predPlace, transition);
-				stg.connect(transition, succPlace);
-			} catch (InvalidConnectionException e) {
-				throw new RuntimeException(e);
-			}
-
+			// In self-looped signals the read-arcs will clash with producing/consuming arcs:
+			// 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
+			// 2) a read-arc from a postset place makes the transition dead.
+			boolean isDeadTransition = false;
 			HashSet<VisualPlace> placesToRead = new HashSet<VisualPlace>();
 			for (Literal literal : clause.getLiterals()) {
 				BooleanVariable variable = literal.getVariable();
@@ -263,16 +256,33 @@ public class CircuitToStgConverter {
 					throw new RuntimeException("No source for '" + circuit.getMathName(sourceContact) + "' while generating '" + signalName + "'.");
 				}
 				VisualPlace place = literal.getNegation() ? sourceDriverStg.zero : sourceDriverStg.one;
-				placesToRead.add(place);
+				if (place != predPlace) {
+					// 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
+					placesToRead.add(place);
+				}
+
+				if (place == succPlace) {
+					// 2) a read-arc from a postset place makes the transition dead.
+					isDeadTransition = true;
+				}
 			}
 
-			if (placesToRead.remove(predPlace)) {
-				System.out.println("Warning: signal '" + signalName + "' depends on itself.");
-			}
-
-			for (VisualPlace place : placesToRead) {
+			if ( !isDeadTransition ) {
+				VisualSignalTransition transition = stg.createSignalTransition(signalName, signalType, direction, container);
+				transition.setLabel(FormulaToString.toString(clause));
+				transitions.add(transition);
+				// Create read-arcs.
+				for (VisualPlace place : placesToRead) {
+					try {
+						stg.connectUndirected(place, transition);
+					} catch (InvalidConnectionException e) {
+						throw new RuntimeException(e);
+					}
+				}
+				// Create producing/consuming arcs.
 				try {
-					stg.connectUndirected(place, transition);
+					stg.connect(predPlace, transition);
+					stg.connect(transition, succPlace);
 				} catch (InvalidConnectionException e) {
 					throw new RuntimeException(e);
 				}

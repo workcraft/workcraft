@@ -27,6 +27,7 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
@@ -139,9 +140,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 		} catch (Throwable e) {
 			return new Result<WriteSgConversionResult>(e);
 		} finally {
-			if ((pnFile != null) && !CommonDebugSettings.getKeepTemporaryFiles() ) {
-				pnFile.delete();
-			}
+			FileUtils.deleteFile(pnFile, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 
