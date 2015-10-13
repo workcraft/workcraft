@@ -173,8 +173,7 @@ public class Untanglings {
 	}
 
 	/** converts the set of processes that compose the *
-	 *  untangling into a set of partial order graph
-	 * @param settings **/
+	 *  untangling into a set of partial order graph  **/
 	public ArrayList<PartialOrder> getPartialOrders(PnToCpogSettings settings){
 
 		for(IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()){
@@ -210,10 +209,8 @@ public class Untanglings {
 			// connecting transitions while skipping the places
 			if (settings.isRemoveNodes()){
 				connectTransitionsOnly(pi, process, idToTransitionsMap);
-			}
-
-			// nodes need to be present
-			else {
+			} else {
+				// places need to be present
 				connectTransitionsAndPlaces(pi, process, idToPlacesMap, idToTransitionsMap);
 			}
 			partialOrders.add(process);
@@ -237,13 +234,13 @@ public class Untanglings {
 				UntanglingEdge connection = connectNodes(source, target,
 						idToPlacesMap, idToTransitionsMap);
 				process.add(connection);
-			}else{
+			} else {
 				// transition to place connection
 				UntanglingEdge connection = connectNodes(source, target,
 						idToTransitionsMap, idToPlacesMap);
 
 				// debug printing : connection
-				//System.out.println(connection.getFirst().getLabel() + " -> " + connection.getSecond().getLabel());
+				// System.out.println(connection.getFirst().getLabel() + " -> " + connection.getSecond().getLabel());
 
 				process.add(connection);
 			}
@@ -271,7 +268,7 @@ public class Untanglings {
 						idToTransitionMap, idToTransitionMap);
 
 				// debug printing : connection
-				System.out.println(connection.getFirst().getLabel() + " -> " + connection.getSecond().getLabel());
+				// System.out.println(connection.getFirst().getLabel() + " -> " + connection.getSecond().getLabel());
 
 				process.add(connection);
 			}
