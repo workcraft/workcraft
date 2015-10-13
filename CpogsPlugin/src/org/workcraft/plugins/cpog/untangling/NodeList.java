@@ -3,6 +3,7 @@ package org.workcraft.plugins.cpog.untangling;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import org.jbpt.petri.Node;
 import org.jbpt.petri.Place;
@@ -10,34 +11,32 @@ import org.workcraft.plugins.cpog.untangling.UntanglingNode.NodeType;
 
 public class NodeList extends ArrayList<UntanglingNode> {
 
+	HashMap<Node, UntanglingNode> nodeToUntanglingNodMap = new HashMap<>();
+
 	/** Adds a node of the untangling's process        *
 	 *  separating label and id into a unsorted list. **/
-	void addNode(Node source) {
+	UntanglingNode addNode(Node node) {
+		// check if the node is already present
+		UntanglingNode result = nodeToUntanglingNodMap.get(node);
 
-		boolean add = true;
-		int id = Integer.parseInt(source.getLabel().replaceAll(".*-", ""));
-		String label = source.getLabel().replaceAll("-.*", "");
-		UntanglingNode nodeToAdd = null;
+		if (result == null) {
+			int id = Integer.parseInt(node.getLabel().replaceAll(".*-", ""));
+			String label = node.getLabel().replaceAll("-.*", "");
 
-		if (source instanceof Place){
-			nodeToAdd = new UntanglingNode(id, label, NodeType.PLACE);
-		} else{
-			nodeToAdd = new UntanglingNode(id, label, NodeType.TRANSITION);
-		}
-
-		for(int i = 0; i < this.size() && add; i++){
-			if(this.get(i).getId() == nodeToAdd.getId()){
-				add = false;
+			if (node instanceof Place){
+				result = new UntanglingNode(id, label, NodeType.PLACE);
+			} else{
+				result = new UntanglingNode(id, label, NodeType.TRANSITION);
 			}
+			nodeToUntanglingNodMap.put(node, result);
+			this.add(result);
 		}
-		if(add){
-			this.add(nodeToAdd);
-		}
+		return result;
 	}
 
 	/** Sort the list of the untangling's vertices by the id **/
 	@SuppressWarnings("unchecked")
-	void sortList() {
+	void sort() {
 		Collections.sort(this, new Comparator() {
 
 			@Override
@@ -48,15 +47,23 @@ public class NodeList extends ArrayList<UntanglingNode> {
 		});
 	}
 
-	/** Rename with a " _n " the transitions with same names but different *
-	 *  id, in order to be coherent with partial order notation            **/
-	void renameList() {
+	/** Rename with a " _n " the node with same names but different *
+	 *  id, in order to be coherent with partial order notation    **/
+	void rename() {
 
 		for(int i = 0; i < this.size(); i++){
 			int k = 1;
 			for(int j = i+1; j < this.size(); j++){
-				if(this.get(i).getLabel().equals(this.get(j).getLabel())){
-					String replaceName = new String(this.get(j).getLabel());
+
+				// get names of the nodes
+				String formerNodeName = this.get(i).getLabel();
+				String latterNodeName = this.get(j).getLabel();
+
+				if(formerNodeName.equals(latterNodeName)){
+
+					// append a number at the end representing
+					// the number of times that node occurs
+					String replaceName = new String(latterNodeName);
 					replaceName = replaceName.concat("_" + (k+1));
 					k++;
 					this.get(j).setLabel(replaceName);

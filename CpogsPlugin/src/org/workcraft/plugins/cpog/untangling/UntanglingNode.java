@@ -7,7 +7,6 @@ public class UntanglingNode {
 		TRANSITION
 	};
 
-
 	private final int id;
 	private String label;
 	private final NodeType type;
