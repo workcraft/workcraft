@@ -94,19 +94,20 @@ public class Untanglings {
 		for(Place place : p){
 
 			// checking existence of the place
-			if(place.getName().equals(node1)){
-				// checking existence of the transition
-				for (Transition transition : t){
-					if(transition.getName().equals(node2)){
-						// adding arc to the system
-						sys.addFlow(place, transition);
+			if(!place.getName().equals(node1)) continue;
 
-						// debug: printing connection added
-						// System.out.println(place.getName() + " -> " + transition.getName());
+			// checking existence of the transition
+			for (Transition transition : t){
 
-						return true;
-					}
-				}
+				if(!transition.getName().equals(node2)) continue;
+
+				// adding arc to the system
+				sys.addFlow(place, transition);
+
+				// debug: printing connection added
+				// System.out.println(place.getName() + " -> " + transition.getName());
+
+				return true;
 			}
 		}
 
@@ -119,20 +120,22 @@ public class Untanglings {
 	public boolean transitionToPlace(String node1, String node2){
 
 		for(Transition transition : t){
+
 			// checking existence of the place
-			if(transition.getName().equals(node1)){
-				// checking existence of the transition
-				for (Place place : p){
-					if(place.getName().equals(node2)){
-						// adding arc to the system
-						sys.addFlow(transition, place);
+			if(!transition.getName().equals(node1)) continue;
 
-						// debug: printing connection added
-						// System.out.println(transition.getName() + " -> " + place.getName());
+			// checking existence of the transition
+			for (Place place : p){
+				if(!place.getName().equals(node2)) continue;
 
-						return true;
-					}
-				}
+				// adding arc to the system
+				sys.addFlow(transition, place);
+
+				// debug: printing connection added
+				// System.out.println(transition.getName() + " -> " + place.getName());
+
+				return true;
+
 			}
 		}
 
@@ -206,12 +209,12 @@ public class Untanglings {
 
 			// connecting transitions while skipping the places
 			if (settings.isRemoveNodes()){
-				connectTransitionsOnly(pi, process, transitions, idToTransitionsMap);
+				connectTransitionsOnly(pi, process, idToTransitionsMap);
 			}
 
 			// nodes need to be present
 			else {
-				connectTransitionsAndPlaces(pi, process, places, transitions, idToPlacesMap, idToTransitionsMap);
+				connectTransitionsAndPlaces(pi, process, idToPlacesMap, idToTransitionsMap);
 			}
 			partialOrders.add(process);
 		}
@@ -220,13 +223,10 @@ public class Untanglings {
 
 	}
 
-	/** Connects nodes and transitions in order to build the partial order
-	 * @param idToTransitionsMap
-	 * @param transitions **/
+	/** Connects nodes and transitions in order to build the partial order **/
 	private void connectTransitionsAndPlaces(
 			IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi,
-			PartialOrder process, NodeList places, NodeList transitions,
-			HashMap<Integer, UntanglingNode> idToPlacesMap, HashMap<Integer,
+			PartialOrder process, HashMap<Integer, UntanglingNode> idToPlacesMap, HashMap<Integer,
 			UntanglingNode> idToTransitionsMap) {
 
 		for(Flow edge : pi.getOccurrenceNet().getEdges()){
@@ -234,50 +234,54 @@ public class Untanglings {
 			Node target = edge.getTarget();
 			if(edge.getSource() instanceof Place){
 				// place to transition connection
-				UntanglingEdge connection = connectNodes(places, transitions, source, target,
+				UntanglingEdge connection = connectNodes(source, target,
 						idToPlacesMap, idToTransitionsMap);
 				process.add(connection);
 			}else{
 				// transition to place connection
-				UntanglingEdge connection = connectNodes(transitions, places, source, target,
+				UntanglingEdge connection = connectNodes(source, target,
 						idToTransitionsMap, idToPlacesMap);
+
+				// debug printing : connection
+				//System.out.println(connection.getFirst().getLabel() + " -> " + connection.getSecond().getLabel());
+
 				process.add(connection);
 			}
 
 		}
 	}
 
-	/** Connect transitions in order to build a partial order. Places are skipped
-	 * @param idToNodeMap **/
+	/** Connect transitions in order to build a partial order. Places are skipped **/
 	private void connectTransitionsOnly(
 			IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi,
-			PartialOrder process, NodeList transitions, HashMap<Integer, UntanglingNode> idToransitionMap) {
+			PartialOrder process, HashMap<Integer, UntanglingNode> idToTransitionMap) {
 
 		for(Flow edge1 : pi.getOccurrenceNet().getEdges()){
-			if (edge1.getSource() instanceof Transition){
-				for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
-					if(edge2.getSource().getLabel().equals(edge1.getTarget().getLabel())){
-						Node source = edge1.getSource();
-						Node target = edge2.getTarget();
-						UntanglingEdge connection = connectNodes(transitions, transitions, source, target,
-								idToransitionMap, idToransitionMap);
+			if ( !(edge1.getSource() instanceof Transition) ) continue;
+			for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
 
-						// debug printing : connection
-						//System.out.println(connection.getFirst().getLabel() + " -> " + connection.getSecond().getLabel());
+				String sourceName = edge2.getSource().getLabel();
+				String targetName = edge1.getTarget().getLabel();
 
-						process.add(connection);
-					}
-				}
+				if (!sourceName.equals(targetName)) continue;
+
+				Node source = edge1.getSource();
+				Node target = edge2.getTarget();
+				UntanglingEdge connection = connectNodes(source, target,
+						idToTransitionMap, idToTransitionMap);
+
+				// debug printing : connection
+				System.out.println(connection.getFirst().getLabel() + " -> " + connection.getSecond().getLabel());
+
+				process.add(connection);
 			}
 		}
 	}
 
-	/** Connect two nodes
-	 * @param transitions
-	 * @param idToNodeMap
-	 * @param idToTransitionsMap **/
-	private UntanglingEdge connectNodes(NodeList firstList, NodeList secondList, Node source, Node target,
-			HashMap<Integer, UntanglingNode> idToFirstListMap, HashMap<Integer, UntanglingNode> idToSecondListMap) {
+	/** Connect two nodes  **/
+	private UntanglingEdge connectNodes(Node source, Node target,
+			HashMap<Integer, UntanglingNode> idToFirstListMap,
+			HashMap<Integer, UntanglingNode> idToSecondListMap) {
 
 		int sourceId = Integer.parseInt(source.getLabel().replaceAll(".*-", ""));
 		int targetId = Integer.parseInt(target.getLabel().replaceAll(".*-", ""));
