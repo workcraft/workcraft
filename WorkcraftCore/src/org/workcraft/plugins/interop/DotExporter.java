@@ -46,7 +46,7 @@ public class DotExporter implements Exporter {
 
 		out.println("digraph work {");
 //		out.println("graph [nodesep=\"0.5\", overlap=\"false\", splines=\"ortho\"];");
-		out.println("graph [nodesep=\"0.5\", overlap=\"false\", splines=\"true\"];");
+		out.println("graph [nodesep=\"0.5\", overlap=\"false\", splines=\"true\", ranksep=\"2.0\"];");
 		out.println("node [shape=box];");
 
 		for (ExportNode node : nodes) {

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.PetriNetDescriptor;
@@ -13,16 +13,11 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class StgToPetriNetConverterTool implements Tool {
+public class StgToPetriNetConverterTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Petri Net";
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
 	}
 
 	@Override

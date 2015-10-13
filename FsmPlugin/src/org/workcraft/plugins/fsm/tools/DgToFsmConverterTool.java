@@ -1,7 +1,7 @@
 package org.workcraft.plugins.fsm.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;
@@ -13,16 +13,11 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DgToFsmConverterTool implements Tool {
+public class DgToFsmConverterTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Finite State Machine";
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
 	}
 
 	@Override

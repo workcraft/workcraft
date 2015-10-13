@@ -1,7 +1,7 @@
 package org.workcraft.plugins.policy.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.policy.PolicyNet;
@@ -11,16 +11,11 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetriNetGeneratorTool implements Tool {
+public class PetriNetGeneratorTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Generate Petri net";
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
 	}
 
 	@Override

@@ -75,8 +75,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 			}
 		});
 		coresTable = new JTable(new CoreTableModel());
-		coresTable.getColumnModel().getColumn(COLUMN_COLOR).setPreferredWidth(50);
 		coresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		coresTable.getColumnModel().getColumn(COLUMN_COLOR).setMaxWidth(50);
 		coresTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
 		coresTable.setDefaultRenderer(Object.class, new CoreTableCellRendererImplementation());
 		coresTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
@@ -279,13 +279,14 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
 			if ((cores != null) && (row >= 0) && (row < cores.size())) {
 				Core core = cores.get(row);
-				if ((core.getCut1() != null) && (core.getCut2() != null)) {
-					label.setToolTipText("<html><b>Configuration 1:</b> " + core.getCut1() + "<br><b>Configuration 2:</b> " + core.getCut2() + "</html>");
-				}
 				label.setText((String)value);
 				if (column == COLUMN_COLOR) {
 					label.setBackground(core.getColor());
 				} else {
+					String signalName = core.getComment();
+					if (signalName != null) {
+						label.setToolTipText("Conflict core for signal '" + signalName + "'");
+					}
 					if (isSelected) {
 						label.setForeground(table.getSelectionForeground());
 						label.setBackground(table.getSelectionBackground());

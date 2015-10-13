@@ -37,7 +37,7 @@ public class CommonDebugSettings implements Settings {
 	private static final String keyVerboseImport = prefix + ".verboseImport";
 
 	private static final boolean defaultCopyModelOnChange = false;
-	private static final Boolean defaultKeepTemporaryFiles = false;
+	private static final Boolean defaultKeepTemporaryFiles = true;
 	private static final Boolean defaultVerboseImport = false;
 
 	private static boolean copyModelOnChange = defaultCopyModelOnChange;

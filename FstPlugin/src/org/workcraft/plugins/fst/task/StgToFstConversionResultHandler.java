@@ -1,27 +1,39 @@
 package org.workcraft.plugins.fst.task;
 
+import java.awt.Color;
 import java.io.File;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
+import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.ColorGenerator;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteSgConversionResult> {
+
+	private final ColorGenerator colorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
+            new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
+            new float[]{0.30f},  new float[]{0.9f, 0.7f, 0.5f}));
+
 	private final WriteSgConversionTask task;
 
 	public StgToFstConversionResultHandler(WriteSgConversionTask task) {
@@ -46,6 +58,10 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
 					final ModelEntry me = new ModelEntry(new FstDescriptor() , model);
 					boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 					workspace.add(directory, name, me, true, openInEditor);
+					VisualModel visualModel = me.getVisualModel();
+					if (visualModel instanceof VisualFst) {
+						highlightCscConflicts((VisualFst)visualModel);
+					}
 				} else if (result.getOutcome() != Outcome.CANCELLED) {
 					MainWindow mainWindow = framework.getMainWindow();
 					if (result.getCause() == null) {
@@ -59,5 +75,28 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
 				}
 			}
 		});
+	}
+
+	protected void highlightCscConflicts(VisualFst visualFst) {
+		HashMap<String, Color> codeToColorMap = new HashMap<>();
+		for (VisualState state: visualFst.getVisualStates()) {
+			String name = visualFst.getMathName(state);
+			if (name.endsWith("_csc")) {
+				String code = null;
+				String[] nameParts = name.split("_");
+				if (nameParts.length == 3) {
+					code = name.split("_")[1];
+				}
+				if (code != null) {
+					Color color = codeToColorMap.get(code);
+					if (color == null) {
+						color = colorGenerator.updateColor();
+						codeToColorMap.put(code,  color);
+					}
+					state.setFillColor(color);
+				}
+			}
+		}
+
 	}
 }

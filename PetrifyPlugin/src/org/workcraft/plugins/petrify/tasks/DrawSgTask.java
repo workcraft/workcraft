@@ -54,7 +54,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
 	final Pattern hugeSgPattern = Pattern.compile("with ([0-9]+) states");
 
 	private final WorkspaceEntry we;
-	private boolean binary;
+	private final boolean binary;
 
 	public DrawSgTask(WorkspaceEntry we, boolean binary) {
 		this.we = we;

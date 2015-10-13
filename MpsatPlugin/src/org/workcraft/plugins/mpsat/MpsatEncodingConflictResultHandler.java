@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -22,7 +23,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatEncodingConflictResultHandler implements Runnable {
 
-    private final ColorGenerator coreColorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
+    private final ColorGenerator colorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
             new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
             new float[]{0.30f},  new float[]{0.9f, 0.7f, 0.5f}));
 
@@ -46,9 +47,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
             final ToolboxPanel toolbox = currentEditor.getToolBox();
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);
             toolbox.selectTool(tool);
-//            HashSet<Core> coreSet = new HashSet<>(convertSolutionsToCores(solutions));
-//            tool.setCores(new ArrayList<>(coreSet));
-            ArrayList<Core> cores = convertSolutionsToCores(solutions);
+            ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
             tool.setCores(cores);
 		}
 	}
@@ -69,22 +68,24 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
 		return currentEditor;
 	}
 
-    private ArrayList<Core> convertSolutionsToCores(List<Solution> solutions) {
-        ArrayList<Core> cores = new ArrayList<>();
+    private LinkedHashSet<Core> convertSolutionsToCores(List<Solution> solutions) {
+        LinkedHashSet<Core> cores = new LinkedHashSet<>();
         for (Solution solution: solutions) {
-            Core core = new Core(solution.getMainTrace(), solution.getBranchTrace());
-            core.setColor(coreColorGenerator.updateColor());
-            cores.add(core);
+            Core core = new Core(solution.getMainTrace(), solution.getBranchTrace(), solution.getComment());
+            boolean isDuplicateCore = cores.contains(core);
             if (solution.getComment() == null) {
             	System.out.println("Encoding conflict:");
             } else {
-            	System.out.println("Encoding conflict for signal " + solution.getComment() + ":");
+            	System.out.println("Encoding conflict for signal '" + solution.getComment() + "':");
             }
             System.out.println("    Configuration 1: " + solution.getMainTrace());
             System.out.println("    Configuration 2: " + solution.getBranchTrace());
-            System.out.println("    Conflict core: " + core);
+            System.out.println("    Conflict core" + (isDuplicateCore ? " (duplicate)" : "") + ": " + core);
             System.out.println();
-
+            if ( !isDuplicateCore ) {
+            	core.setColor(colorGenerator.updateColor());
+            	cores.add(core);
+            }
         }
         return cores;
     }
