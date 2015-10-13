@@ -5,7 +5,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.tools.PnToCpogConverter;
+import org.workcraft.plugins.cpog.untangling.PnToCpogConverter;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.ProgressMonitor;

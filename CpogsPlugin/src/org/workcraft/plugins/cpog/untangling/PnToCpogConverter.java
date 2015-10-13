@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cpog.tools;
+package org.workcraft.plugins.cpog.untangling;
 
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
@@ -11,9 +11,6 @@ import org.workcraft.plugins.cpog.CPOG;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.untangling.Edge;
-import org.workcraft.plugins.cpog.untangling.PartialOrder;
-import org.workcraft.plugins.cpog.untangling.Untanglings;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -135,7 +132,7 @@ public class PnToCpogConverter {
 			visualCpog.selectNone();
 
 			// looping over the edges
-			for(Edge edge : po){
+			for(UntanglingEdge edge : po){
 
 				// reading source and target vertices
 				String sourceName = new String(edge.getFirst().getLabel());
