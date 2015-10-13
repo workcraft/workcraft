@@ -2,7 +2,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -113,62 +113,69 @@ public class ConnectionHelper {
 		return locations;
 	}
 
-	static public void filterControlPointsByDistance(Polyline polyline, double threshold) {
-		ArrayList<Point2D> locations = new ArrayList<>();
+	static public void filterControlPoints(Polyline polyline, double distanceThreshold, double gradientThreshold) {
 		PartialCurveInfo curveInfo = polyline.getCurveInfo();
-		Point2D startPoint = polyline.getPointOnCurve(curveInfo.tStart);
-		Point2D endPoint = polyline.getPointOnCurve(curveInfo.tEnd);
-
-		Point2D predPoint = startPoint;
-		for (ControlPoint cp:  polyline.getControlPoints()) {
-			Point2D curPoint = cp.getPosition();
-			if (curPoint.distanceSq(predPoint) > threshold) {
-				locations.add(curPoint);
-				predPoint = curPoint;
-			}
+		Point2D startPos = polyline.getPointOnCurve(curveInfo.tStart);
+		Point2D endPos = polyline.getPointOnCurve(curveInfo.tEnd);
+		{
+			// Forward filtering by distance
+			List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
+			filterControlPointsByDistance(polyline, startPos, controlPoints, distanceThreshold);
 		}
-
-		if ( !locations.isEmpty() ) {
-			if (predPoint.distanceSq(endPoint) < threshold) {
-				int lastIdx = locations.size() - 1;
-				locations.remove(lastIdx);
-			}
+		{
+			// Backward filtering by distance
+			List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
+			Collections.reverse(controlPoints);
+			filterControlPointsByDistance(polyline, endPos, controlPoints, distanceThreshold);
 		}
-
-		polyline.resetControlPoints();
-		for (Point2D location: locations) {
-			polyline.addControlPoint(location);
+		{
+			// Filtering by gradient
+			int i = 0;
+			while (i < polyline.getControlPointCount()) {
+				Point2D predPos = startPos;
+				if (i > 0) {
+					ControlPoint pred = polyline.getControlPoint(i-1);
+					predPos = pred.getPosition();
+				}
+				Point2D succPos = endPos;
+				if (i < polyline.getControlPointCount() - 1) {
+					ControlPoint succ = polyline.getControlPoint(i+1);
+					succPos = succ.getPosition();
+				}
+				ControlPoint cur = polyline.getControlPoint(i);
+				Point2D curPos = cur.getPosition();
+				if (Math.abs(clacGradient(predPos, curPos, succPos)) < gradientThreshold) {
+					polyline.remove(cur);
+				} else {
+					i++;
+				}
+			}
 		}
 	}
 
-	static public void filterControlPointsByGradient(Polyline polyline, double threshold) {
-		ArrayList<Point2D> locations = new ArrayList<>();
-		PartialCurveInfo curveInfo = polyline.getCurveInfo();
-		Point2D startPoint = polyline.getPointOnCurve(curveInfo.tStart);
-		Point2D endPoint = polyline.getPointOnCurve(curveInfo.tEnd);
+	private static void filterControlPointsByDistance(Polyline polyline, Point2D startPos,
+			List<ControlPoint> controlPoints, double threshold) {
 
-		Point2D predPoint = startPoint;
-		Point2D succPoint = null;
-		for (ControlPoint cp:  polyline.getControlPoints()) {
-			Point2D curPoint = cp.getPosition();
-			if (succPoint != null) {
-				locations.add(curPoint);
-				predPoint = curPoint;
-			}
-			predPoint = curPoint;
-		}
-
-		if ( !locations.isEmpty() ) {
-			if (predPoint.distanceSq(endPoint) < threshold){
-				int lastIdx = locations.size() - 1;
-				locations.remove(lastIdx);
+		Point2D predPos = startPos;
+		for (ControlPoint cp:  controlPoints) {
+			Point2D curPos = cp.getPosition();
+			if (curPos.distanceSq(predPos) < threshold) {
+				polyline.remove(cp);
+			} else {
+				predPos = curPos;
 			}
 		}
+	}
 
-		polyline.resetControlPoints();
-		for (Point2D location: locations) {
-			polyline.addControlPoint(location);
-		}
+	static private double clacGradient(Point2D p1, Point2D p2, Point2D p3) {
+		double p1x = p1.getX();
+		double p1y = p1.getY();
+		double p2x = p2.getX();
+		double p2y = p2.getY();
+		double p3x = p3.getX();
+		double p3y = p3.getY();
+		double result = (p1x * (p2y - p3y) + p2x * (p3y - p1y) + p3x * (p1y - p2y));
+		return result;
 	}
 
 }

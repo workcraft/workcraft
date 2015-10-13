@@ -168,7 +168,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}
-							ConnectionHelper.filterControlPointsByDistance(poly, 1.0);
+							ConnectionHelper.filterControlPoints(poly, 1.0, 1.0);
 						} else {
 							System.err.println(String.format("Unable to find a connection from %s to %s", from, to));
 						}
