@@ -20,6 +20,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationTask implements Task<TransformationResult>{
@@ -91,9 +92,7 @@ public class TransformationTask implements Task<TransformationResult>{
 		} catch (Throwable e) {
 			return Result.exception(e);
 		} finally {
-			if ((modelFile != null) && !CommonDebugSettings.getKeepTemporaryFiles() ) {
-				modelFile.delete();
-			}
+			FileUtils.deleteFile(modelFile, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.Framework;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
@@ -21,20 +21,15 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat.tasks.PunfTask;
-import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgUtils;
-import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -83,20 +78,9 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
 			STG devStg = (STG)generator.getStg().getMathModel();
-			Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
-			if (devStgExporter == null) {
-				throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to .g format.");
-			}
-			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
-			monitor.progressUpdate(0.10);
-
-			// Generating .g for the circuit
 			String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
 			File devStgFile =  new File(directory, devStgName);
-			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
-			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
-					devExportTask, "Exporting circuit .g", subtaskMonitor);
-
+			Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
 			if (devExportResult.getOutcome() != Outcome.FINISHED) {
 				if (devExportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
@@ -104,27 +88,23 @@ public class CheckCircuitTask extends MpsatChainTask {
 				return new Result<MpsatChainResult>(Outcome.FAILED,
 						new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
 			}
-			monitor.progressUpdate(0.20);
+			monitor.progressUpdate(0.10);
 
 			// Generating .g for the environment
-			STG stg;
-			File stgFile = null;
+			STG sysStg;
+			File sysStgFile = null;
 			Result<? extends ExternalProcessResult>  pcompResult = null;
 			if ( !hasEnvironment ) {
-				 stgFile = devStgFile;
-				 stg = devStg;
+				 sysStgFile = devStgFile;
+				 sysStg = devStg;
 			} else {
 				File envStgFile = null;
 				if (envFile.getName().endsWith(StgUtils.ASTG_FILE_EXT)) {
 					envStgFile = envFile;
 				} else {
 					STG envStg = (STG)framework.loadFile(envFile).getMathModel();
-					Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
 					envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-					ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
-					Result<? extends Object> envExportResult = framework.getTaskManager().execute(
-							envExportTask, "Exporting environment .g", subtaskMonitor);
-
+					Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
 					if (envExportResult.getOutcome() != Outcome.FINISHED) {
 						if (envExportResult.getOutcome() == Outcome.CANCELLED) {
 							return new Result<MpsatChainResult>(Outcome.CANCELLED);
@@ -133,14 +113,10 @@ public class CheckCircuitTask extends MpsatChainTask {
 								new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
 					}
 				}
-				monitor.progressUpdate(0.25);
+				monitor.progressUpdate(0.20);
 
 				// Generating .g for the whole system (circuit and environment)
-				stgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-				PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, directory);
-				pcompResult = framework.getTaskManager().execute(
-						pcompTask, "Running pcomp", subtaskMonitor);
-
+				pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
 				if (pcompResult.getOutcome() != Outcome.FINISHED) {
 					if (pcompResult.getOutcome() == Outcome.CANCELLED) {
 						return new Result<MpsatChainResult>(Outcome.CANCELLED);
@@ -148,18 +124,32 @@ public class CheckCircuitTask extends MpsatChainTask {
 					return new Result<MpsatChainResult>(Outcome.FAILED,
 							new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
 				}
-				FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
-				WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-				stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
-				framework.getWorkspace().close(stgWorkspaceEntry);
+				File compStgFile = new File(directory, StgUtils.COMPOSITION_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+				FileUtils.writeAllText(compStgFile, new String(pcompResult.getReturnValue().getOutput()));
+				monitor.progressUpdate(0.25);
+
+				// Restore input signals of the composed STG (these can be converted to outputs by PComp)
+				sysStg = CircuitStgUtils.importStg(compStgFile);
+				Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
+				CircuitStgUtils.restoreInputSignals(sysStg, inputSignalNames);
+				sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+				Result<? extends Object> sysExportResult = CircuitStgUtils.exportStg(sysStg, sysStgFile, directory, monitor);
+				if (sysExportResult.getOutcome() != Outcome.FINISHED) {
+					if (sysExportResult.getOutcome() == Outcome.CANCELLED) {
+						return new Result<MpsatChainResult>(Outcome.CANCELLED);
+					}
+					return new Result<MpsatChainResult>(Outcome.FAILED,
+							new MpsatChainResult(sysExportResult, null, null, null, toolchainPreparationSettings));
+				}
 			}
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
 			File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + MpsatUtilitySettings.getUnfoldingExtension(true));
-			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
+			PunfTask punfTask = new PunfTask(sysStgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
+			SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<Object>(monitor);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
-					punfTask, "Unfolding .g", subtaskMonitor);
+					punfTask, "Unfolding .g", punfMonitor);
 
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
@@ -174,8 +164,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			if (hasEnvironment && checkConformation) {
 				Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
 				Set<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
-//				String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
-				String reachConformation = MpsatSettings.genReachConformationDetail(stg, devOutputNames, devPlaceNames);
+				String reachConformation = MpsatSettings.genReachConformationDetail(sysStg, devOutputNames, devPlaceNames);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the interface conformation property:");
 					System.out.println(reachConformation);
@@ -184,10 +173,11 @@ public class CheckCircuitTask extends MpsatChainTask {
 						MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
 						MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
-				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(),
+				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
 						unfoldingFile.getCanonicalPath(), directory, true);
+				SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
 				Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
-						mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
+						mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);
 
 				if (mpsatConformationResult.getOutcome() != Outcome.FINISHED) {
 					if (mpsatConformationResult.getOutcome() == Outcome.CANCELLED) {
@@ -209,10 +199,11 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			// Check for deadlock
 			if (checkDeadlock) {
-				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(),
+				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
 						unfoldingFile.getCanonicalPath(), directory, true);
+				SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
 				Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
-						mpsatDeadlockTask, "Running deadlock check [MPSat]", subtaskMonitor);
+						mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
 
 				if (mpsatDeadlockResult.getOutcome() != Outcome.FINISHED) {
 					if (mpsatDeadlockResult.getOutcome() == Outcome.CANCELLED) {
@@ -234,14 +225,15 @@ public class CheckCircuitTask extends MpsatChainTask {
 
 			// Check for hazards
 			if (checkHazard) {
-				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(),
+				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
 						unfoldingFile.getCanonicalPath(), directory, true);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the hazard property:");
 					System.out.println(hazardSettings.getReach());
 				}
+				SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
 				Result<? extends ExternalProcessResult>  mpsatHazardResult = framework.getTaskManager().execute(
-						mpsatHazardTask, "Running hazard check [MPSat]", subtaskMonitor);
+						mpsatHazardTask, "Running hazard check [MPSat]", mpsatMonitor);
 
 				if (mpsatHazardResult.getOutcome() != Outcome.FINISHED) {
 					if (mpsatHazardResult.getOutcome() == Outcome.CANCELLED) {

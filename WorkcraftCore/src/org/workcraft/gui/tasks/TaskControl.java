@@ -40,7 +40,6 @@ public class TaskControl extends JPanel {
 	JLabel label;
 	JProgressBar progressBar;
 	JButton btnCancel;
-	JButton btnLog;
 
 	volatile boolean cancelRequested;
 
@@ -50,7 +49,9 @@ public class TaskControl extends JPanel {
 				{20, 20, 20}
 		};
 
-		Border lineBorder = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
+		Border insideBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
+		Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
 
 		setBorder(lineBorder);
 
@@ -71,7 +72,6 @@ public class TaskControl extends JPanel {
 		progressBar.setMinimumSize(new Dimension (100,20));
 		progressBar.setPreferredSize(new Dimension (300,20));
 
-		btnLog = new JButton("Show log");
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
@@ -82,7 +82,6 @@ public class TaskControl extends JPanel {
 
 		add(label, "0,0,2,0");
 		add(progressBar, "0,1,2,1" );
-		add(btnLog, "1,2");
 		add(btnCancel, "2,2");
 	}
 

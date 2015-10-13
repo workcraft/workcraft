@@ -15,6 +15,7 @@ import org.workcraft.plugins.mpsat.tasks.PunfTask;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PetriNetGenerator;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -22,6 +23,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -40,7 +42,11 @@ public class CheckDeadlockTask extends MpsatChainTask {
 	@Override
 	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
 		final Framework framework = Framework.getInstance();
+		File directory = null;
 		try {
+			String prefix = FileUtils.getTempPrefix(we.getTitle());
+			directory = FileUtils.createTempDirectory(prefix);
+
 			PetriNetGenerator generator = new PetriNetGenerator((VisualPolicyNet)we.getModelEntry().getVisualModel());
 			PetriNet model = (PetriNet)generator.getPetriNet().getMathModel();
 			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
@@ -49,14 +55,13 @@ public class CheckDeadlockTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.10);
 
-			File netFile = File.createTempFile("net", exporter.getExtenstion());
+			File netFile = new File(directory, "net" + exporter.getExtenstion());
 			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends Object> exportResult = framework.getTaskManager().execute(
 					exportTask, "Exporting .g", mon);
 
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
-				netFile.delete();
 				if (exportResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
@@ -65,14 +70,12 @@ public class CheckDeadlockTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.20);
 
-			File unfoldingFile = File.createTempFile("unfolding", MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(directory, "unfolding" + MpsatUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", mon);
 
-			netFile.delete();
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				unfoldingFile.delete();
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
 					return new Result<MpsatChainResult>(Outcome.CANCELLED);
 				}
@@ -81,7 +84,8 @@ public class CheckDeadlockTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.70);
 
-			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(), unfoldingFile.getCanonicalPath(), null, true);
+			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
+					unfoldingFile.getCanonicalPath(), directory, true);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -97,18 +101,18 @@ public class CheckDeadlockTask extends MpsatChainTask {
 
 			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
 			if (!mdp.getSolutions().isEmpty()) {
-				unfoldingFile.delete();
 				return new Result<MpsatChainResult>(Outcome.FINISHED,
 						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Policy net has a deadlock"));
 			}
 			monitor.progressUpdate(1.0);
 
-			unfoldingFile.delete();
 			return new Result<MpsatChainResult>(Outcome.FINISHED,
 					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Policy net is deadlock-free"));
 
 		} catch (Throwable e) {
 			return new Result<MpsatChainResult>(e);
+		} finally {
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 

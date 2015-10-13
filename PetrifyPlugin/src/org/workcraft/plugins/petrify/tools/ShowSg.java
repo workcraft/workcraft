@@ -24,19 +24,24 @@ public class ShowSg implements Tool {
 
 	@Override
 	public String getSection() {
-		return "State graph";
+		return "External visualiser";
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Show state graph [Petrify]";
+		return "Basic state graph [write_sg + draw_astg]";
+	}
+
+	public boolean isBinaryEncodded() {
+		return false;
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		DrawSgTask task = new DrawSgTask(WorkspaceUtils.getAs(we, PetriNetModel.class));
+		DrawSgTask task = new DrawSgTask(we, isBinaryEncodded());
 		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Show state graph", new ProgressMonitor<DrawSgResult>() {
+
+		ProgressMonitor<DrawSgResult> monitor = new ProgressMonitor<DrawSgResult>() {
 			@Override
 			public void progressUpdate(double completion) {
 			}
@@ -56,28 +61,28 @@ public class ShowSg implements Tool {
 
 			@Override
 			public void finished(Result<? extends DrawSgResult> result, String description) {
-
 				if (result.getOutcome() == Outcome.FINISHED) {
 					SystemOpen.open(result.getReturnValue().getPsFile());
 				} else  if (result.getOutcome() != Outcome.CANCELLED) {
-						String errorMessage = "Petrify tool chain execution failed :-(";
-						Throwable cause = result.getCause();
-						if (cause != null) {
-							errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
-						} else {
-							errorMessage += "\n\nFailure caused by: \n" + result.getReturnValue().getErrorMessages();
-						}
-
-						final String err = errorMessage;
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								JOptionPane.showMessageDialog(null, err, "Oops..", JOptionPane.ERROR_MESSAGE);
-							}
-						});
+					String errorMessage = "Petrify tool chain execution failed :-(";
+					Throwable cause = result.getCause();
+					if (cause != null) {
+						errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
+					} else {
+						errorMessage += "\n\nFailure caused by: \n" + result.getReturnValue().getErrorMessages();
 					}
+					final String err = errorMessage;
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							JOptionPane.showMessageDialog(null, err, "Oops..", JOptionPane.ERROR_MESSAGE);
+						}
+					});
+				}
 			}
-		});
+		};
+
+		framework.getTaskManager().queue(task, "Show state graph", monitor);
 	}
 
 }

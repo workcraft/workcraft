@@ -28,12 +28,15 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<String>();
 		command.add(PetrifyUtilitySettings.getDrawAstgCommand());
 
-		for (String arg : PetrifyUtilitySettings.getDrawAstgArgs().split(" "))
-			if (!arg.isEmpty())
+		for (String arg : PetrifyUtilitySettings.getDrawAstgArgs().split(" ")) {
+			if (!arg.isEmpty()) {
 				command.add(arg);
+			}
+		}
 
-		for (String arg : options)
+		for (String arg : options) {
 			command.add(arg);
+		}
 
 		command.add(inputPath);
 		command.add("-o");

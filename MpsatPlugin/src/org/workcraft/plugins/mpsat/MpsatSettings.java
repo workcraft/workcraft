@@ -244,7 +244,7 @@ public class MpsatSettings {
 		return inversePredicate;
 	}
 
-	public String[] getMpsatArguments() {
+	public String[] getMpsatArguments(File workingDirectory) {
 		ArrayList<String> args = new ArrayList<String>();
 		for (String option: getMode().getArgument().split("\\s")) {
 			args.add(option);
@@ -252,12 +252,16 @@ public class MpsatSettings {
 
 		if (getMode().hasReach()) {
 			try {
-				File reachFile = File.createTempFile("reach", null);
-				reachFile.deleteOnExit();
-//				FileUtils.dumpString(reach, getFlatReach());
+				File reachFile = null;
+				if (workingDirectory == null) {
+					reachFile = File.createTempFile("reach", ".txt");
+					reachFile.deleteOnExit();
+				} else {
+					reachFile = new File(workingDirectory, "reach.txt");
+				}
 				FileUtils.dumpString(reachFile, getReach());
 				args.add("-d");
-				args.add("@"+reachFile.getCanonicalPath());
+				args.add("@" + reachFile.getCanonicalPath());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

@@ -11,6 +11,8 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
+import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -19,6 +21,9 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.FileUtils;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class DrawSgTask implements Task<DrawSgResult> {
 
@@ -47,19 +52,25 @@ public class DrawSgTask implements Task<DrawSgResult> {
 	}
 
 	final Pattern hugeSgPattern = Pattern.compile("with ([0-9]+) states");
-	private final Model model;
 
-	public DrawSgTask(Model model) {
-		this.model = model;
+	private final WorkspaceEntry we;
+	private boolean binary;
+
+	public DrawSgTask(WorkspaceEntry we, boolean binary) {
+		this.we = we;
+		this.binary = binary;
 	}
 
 	@Override
 	public Result<? extends DrawSgResult> run(ProgressMonitor<? super DrawSgResult> monitor) {
 		final Framework framework = Framework.getInstance();
-		try	{
-			File dotG = File.createTempFile("workcraft", ".g");
-			dotG.deleteOnExit();
+		File directory = null;
+		try {
+			String prefix = FileUtils.getTempPrefix(we.getTitle());
+			directory = FileUtils.createTempDirectory(prefix);
 
+			File dotG = new File(directory, "model.g");
+			Model model = WorkspaceUtils.getAs(we, PetriNetModel.class);
 			ExportTask exportTask = Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager());
 			final Result<? extends Object> dotGResult = framework.getTaskManager().execute(exportTask, "Exporting to .g" );
 
@@ -74,10 +85,11 @@ public class DrawSgTask implements Task<DrawSgResult> {
 				return Result.cancelled();
 			}
 
-			File sg = File.createTempFile("workcraft", ".g");
-			sg.deleteOnExit();
-
+			File sg = new File(directory, "model.sg");
 			List<String> writeSgOptions = new ArrayList<String>();
+			if (binary) {
+				writeSgOptions.add("-bin");
+			}
 			while (true) {
 				WriteSgTask writeSgTask = new WriteSgTask(dotG.getAbsolutePath(), sg.getAbsolutePath(), writeSgOptions);
 				Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
@@ -108,10 +120,12 @@ public class DrawSgTask implements Task<DrawSgResult> {
 					}
 				}
 			}
-			File ps = File.createTempFile("workcraft", ".ps");
-			ps.deleteOnExit();
-
-			DrawAstgTask drawAstgTask = new DrawAstgTask(sg.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>());
+			File ps = new File(directory, "model.ps");
+			ArrayList<String> drawAstgOptions = new ArrayList<String>();
+			if (binary) {
+				drawAstgOptions.add("-bin");
+			}
+			DrawAstgTask drawAstgTask = new DrawAstgTask(sg.getAbsolutePath(), ps.getAbsolutePath(), drawAstgOptions);
 			final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(drawAstgTask, "Running draw_astg");
 
 			if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
@@ -125,13 +139,11 @@ public class DrawSgTask implements Task<DrawSgResult> {
 				}
 				return Result.cancelled();
 			}
-
-			dotG.delete();
-			sg.delete();
 			return Result.finished(new DrawSgResult(ps, "No errors"));
 		} catch (Throwable e) {
-			e.printStackTrace();
 			return Result.exception(e);
+		} finally {
+			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 
