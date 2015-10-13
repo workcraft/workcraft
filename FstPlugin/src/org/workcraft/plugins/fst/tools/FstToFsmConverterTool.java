@@ -1,7 +1,7 @@
 package org.workcraft.plugins.fst.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
@@ -14,16 +14,11 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class FstToFsmConverterTool implements Tool {
+public class FstToFsmConverterTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Finite State Machine";
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
 	}
 
 	@Override

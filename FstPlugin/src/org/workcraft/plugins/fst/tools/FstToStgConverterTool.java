@@ -1,7 +1,7 @@
 package org.workcraft.plugins.fst.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
@@ -13,16 +13,11 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class FstToStgConverterTool implements Tool {
+public class FstToStgConverterTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Signal Transition Graph";
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public class VisualEvent extends VisualConnection {
 	}
 
 	public boolean getLabelVisibility() {
-		return CommonVisualSettings.getNameVisibility();
+		return true;
 	}
 
 	protected void cacheLabelRenderedText(DrawRequest r) {

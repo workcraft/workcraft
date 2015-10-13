@@ -1,7 +1,6 @@
 package org.workcraft.plugins.stg.tools;
 
 import java.awt.Color;
-import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Trace;
@@ -12,11 +11,14 @@ public class Core extends HashSet<String> {
 	private Color color = Color.getHSBColor((float)Math.random(), 0.3f, 0.7f);
 	private final Trace cut1;
 	private final Trace cut2;
+	private final String comment;
 
-	public Core(Trace cut1, Trace cut2) {
+	public Core(Trace cut1, Trace cut2, String comment) {
 		super();
 		this.cut1 = cut1;
 		this.cut2 = cut2;
+		this.comment = comment;
+
 		MultiSet<String> union = new MultiSet<>();
 		MultiSet<String> intersection = new MultiSet<>();
 		if (cut1 != null) {
@@ -30,12 +32,6 @@ public class Core extends HashSet<String> {
 		union.removeAll(intersection);
 		union.removeAll(intersection);
 		addAll(union);
-	}
-
-	public Core(Collection<String> core) {
-		super(core);
-		this.cut1 = null;
-		this.cut2 = null;
 	}
 
 	public Color getColor() {
@@ -52,6 +48,10 @@ public class Core extends HashSet<String> {
 
 	public Trace getCut2() {
 		return cut2;
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 	@Override

@@ -57,11 +57,13 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 		}
 	}
 
-	final private WorkspaceEntry we;
-	final private Pattern hugeSgPattern = Pattern.compile("Do you really want to dump a state graph with ([0-9]+) states ?");
+	private final WorkspaceEntry we;
+	private final boolean binary;
+	private final Pattern hugeSgPattern = Pattern.compile("Do you really want to dump a state graph with ([0-9]+) states ?");
 
-	public WriteSgConversionTask(WorkspaceEntry we) {
+	public WriteSgConversionTask(WorkspaceEntry we, boolean binary) {
 		this.we = we;
+		this.binary = binary;
 	}
 
 	public WorkspaceEntry getWorkspaceEntry() {
@@ -100,6 +102,10 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
 			// Generate State Graph
 			List<String> writeSgOptions = new ArrayList<String>();
+			if (binary) {
+				writeSgOptions.add("-bin");
+			}
+
 			while (true) {
 				WriteSgTask writeSgTask = new WriteSgTask(pnFile.getCanonicalPath(), null, writeSgOptions);
 				Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(

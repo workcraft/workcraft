@@ -1,7 +1,7 @@
 package org.workcraft.plugins.fsm.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
@@ -14,16 +14,11 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class FsmToPnConverterTool implements Tool {
+public class FsmToPnConverterTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Petri Net";
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
 	}
 
 	@Override

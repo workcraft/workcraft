@@ -1,7 +1,7 @@
 package org.workcraft.plugins.cpog.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.gui.PnToCpogDialog;
@@ -12,16 +12,11 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PnToCpogTool implements Tool {
+public class PnToCpogTool extends ConversionTool {
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, PetriNet.class);
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
 	}
 
 	@Override

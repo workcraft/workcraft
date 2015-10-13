@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petrify.tools;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
@@ -9,21 +9,16 @@ import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyNetSynthesisWithEr implements Tool {
-
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return ( WorkspaceUtils.canHas(we, PetriNetModel.class) || WorkspaceUtils.canHas(we, Fsm.class));
-	}
-
-	@Override
-	public String getSection() {
-		return "Conversion";
-	}
+public class PetrifyNetSynthesisWithEr extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
 		return "Net synthesis [Petrify with -er option]";
+	}
+
+	@Override
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return ( WorkspaceUtils.canHas(we, PetriNetModel.class) || WorkspaceUtils.canHas(we, Fsm.class));
 	}
 
 	@Override

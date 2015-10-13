@@ -11,11 +11,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class PetrifyCscConflictResolution implements Tool {
 
 	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
-
-	@Override
 	public String getSection() {
 		return "Encoding conflicts";
 	}
@@ -23,6 +18,11 @@ public class PetrifyCscConflictResolution implements Tool {
 	@Override
 	public String getDisplayName() {
 		return "Resolve CSC conflicts [Petrify]";
+	}
+
+	@Override
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, STGModel.class);
 	}
 
 	@Override
