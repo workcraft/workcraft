@@ -26,6 +26,7 @@ public class SONSettings implements Settings {
 	private static final Color defaultGroupForegroundColor = Color.GRAY;
 
 	private static final boolean defaultTimeVisibility = false;
+	private static final boolean defaultErrorTracing = false;
 
 	private static Color relationErrColor = defaultRelationErrColor;
 	private static Color cyclePathColor = defaultCyclePathColor;
@@ -33,6 +34,7 @@ public class SONSettings implements Settings {
 	private static Color errLabelColor = defaultErrLabelColor;
 	private static Color groupForegroundColor = defaultGroupForegroundColor;
 	private static boolean timeVisibility = defaultTimeVisibility;
+	private static boolean errorTracing = defaultErrorTracing;
 
 	public SONSettings(){
 		properties.add(new PropertyDeclaration<SONSettings, Color>(
@@ -173,5 +175,13 @@ public class SONSettings implements Settings {
 
 	public static void setTimeVisibility(Boolean value) {
 		timeVisibility = value;
+	}
+
+	public static boolean isErrorTracing() {
+		return errorTracing;
+	}
+
+	public static void setErrorTracing(boolean value) {
+		errorTracing = value;
 	}
 }

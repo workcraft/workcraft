@@ -57,6 +57,7 @@ import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
@@ -104,7 +105,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	protected JTable traceTable;
 
 	protected JSlider speedSlider;
-	protected JButton playButton, stopButton, backwardButton, forwardButton, reverseButton;
+	protected JButton playButton, stopButton, backwardButton, forwardButton, reverseButton, errorButton;
 	protected JButton copyStateButton, pasteStateButton, mergeTraceButton;
 	protected JToggleButton autoSimuButton;
 
@@ -129,7 +130,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
 		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
 		reverseButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"), "Switch to reverse simulation");
-		autoSimuButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-auto-simulation.svg"), "Automatic simulation (maximum parallelism)");
+		autoSimuButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-auto-simulation.svg"), "Automatic simulation");
+		errorButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-error-tracing.svg"), "Enable/Disable error tracing");
 
 		speedSlider = new JSlider(-1000, 1000, 0);
 		speedSlider.setToolTipText("Simulation playback speed");
@@ -140,7 +142,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
 		int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
 		int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
-		Dimension panelSize = new Dimension(buttonWidth * 6, buttonHeight);
+		Dimension panelSize = new Dimension(buttonWidth * 7, buttonHeight);
 
 		JPanel simulationControl = new JPanel();
 		simulationControl.setLayout(new FlowLayout());
@@ -152,6 +154,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		simulationControl.add(forwardButton);
 		simulationControl.add(reverseButton);
 		simulationControl.add(autoSimuButton);
+		simulationControl.add(errorButton);
 
 		JPanel speedControl = new JPanel();
 		speedControl.setLayout(new BorderLayout());
@@ -269,6 +272,15 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			}
 		});
 
+		errorButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SONSettings.setErrorTracing(!SONSettings.isErrorTracing());
+				editor.repaint();
+			}
+		});
+
 		copyStateButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -356,7 +368,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 		reset(editor);
 		setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 
-		if (ErrTracingDisable.showErrorTracing()) {
+		if (SONSettings.isErrorTracing()) {
 			net.resetConditionErrStates();
 		}
 		updateState(editor);
@@ -642,7 +654,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	private void setErrNum(Step step, boolean isRev){
-		if (ErrTracingDisable.showErrorTracing()){
+		if (SONSettings.isErrorTracing()){
 			Collection<TransitionNode> upperEvents = new ArrayList<TransitionNode>();
 
 			//get high level events

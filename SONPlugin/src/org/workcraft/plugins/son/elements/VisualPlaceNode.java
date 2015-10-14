@@ -21,7 +21,6 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.plugins.son.tools.ErrTracingDisable;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.util.Interval;
 
@@ -146,7 +145,7 @@ public class VisualPlaceNode extends VisualComponent{
 	}
 
 	protected void drawErrorInLocalSpace(DrawRequest r) {
-		if (ErrTracingDisable.showErrorTracing()) {
+		if (SONSettings.isErrorTracing()) {
 			cahceErrorRenderedText(r);
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
@@ -191,7 +190,7 @@ public class VisualPlaceNode extends VisualComponent{
 	public Rectangle2D getBoundingBoxInLocalSpace() {
 		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-		if (ErrTracingDisable.showErrorTracing()) {
+		if (SONSettings.isErrorTracing()) {
 			bb = BoundingBoxHelper.union(bb, errorRenderedText.getBoundingBox());
 		}
 		if (SONSettings.getTimeVisibility() && ((PlaceNode)getReferencedComponent()).getDuration().isSpecified()) {

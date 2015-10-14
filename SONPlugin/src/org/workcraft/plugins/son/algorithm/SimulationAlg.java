@@ -245,24 +245,11 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPrePNSet(e)){
 					Condition c = (Condition)pre;
-					Map<ONGroup, ArrayList<Phase>> map = getPhaseMap(phases.get(c));
-					for(ONGroup lGroup : map.keySet()){
-						ArrayList<Phase> list= map.get(lGroup);
-						int phaseSize = list.size();
-						int noMark = 0;
-						if(phaseSize > 0){
-							for(Phase phase : list){
-								Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
-								for(Condition c2 : max)
-									if(!c2.isMarked()){
-										noMark++;
-										break;
-									}
-							}
-						}
-						if(noMark == phaseSize)
+					Collection<Phase> phase = getActivatedPhases(phases.get(c));
+					Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
+					for(Condition c2 : max)
+						if(!c2.isMarked())
 							return false;
-					}
 				}
 			return true;
 			}
@@ -279,20 +266,18 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
-	private Map<ONGroup, ArrayList<Phase>> getPhaseMap(Collection<Phase> phases){
-		Map<ONGroup, ArrayList<Phase>> result = new HashMap<ONGroup, ArrayList<Phase>>();
-		for(ONGroup group : lowerGroups){
-			ArrayList<Phase> subR = new ArrayList<Phase>();
-			for(Phase phase : phases){
-				if(bsonAlg.getLowerGroup(phase) == group)
-					subR.add(phase);
+	protected ArrayList<Phase> getActivatedPhases(Collection<Phase> phases){
+		ArrayList<Phase> result = new ArrayList<Phase>();
+		for(Phase phase : phases){
+			for(Condition c : phase){
+				if(c.isMarked()){
+					result.add(phase);
+					break;
+				}
 			}
-			if(!subR.isEmpty())
-				result.put(group, subR);
 		}
 		return result;
 	}
-
 
 	private Step getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
 		Step result = new Step();
@@ -386,25 +371,11 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Node post : getPostPNSet(e)){
 					Condition c = (Condition)post;
-					Map<ONGroup, ArrayList<Phase>> map = getPhaseMap(phases.get(c));
-					for(ONGroup lGroup : map.keySet()){
-						ArrayList<Phase> list= map.get(lGroup);
-						int phaseSize = list.size();
-						int noMark = 0;
-						if(phaseSize > 0){
-							for(Phase phase : list){
-								Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
-								for(Condition c2 : min)
-									if(!c2.isMarked()){
-										noMark++;
-										break;
-									}
-							}
-						}
-						if(noMark == phaseSize)
-							return false;
-					}
-				}
+					Collection<Phase> phase = getActivatedPhases(phases.get(c));
+					Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
+					for(Condition c2 : min)
+						if(!c2.isMarked())
+							return false;				}
 			return true;
 			}
 		}
@@ -608,7 +579,7 @@ public class SimulationAlg extends RelationAlgorithm {
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
 					for(Condition max : maxSet){
-						if(isInitial(max) && !max.isMarked())
+						if(isFinal(max) && !max.isMarked())
 							max.setMarked(true);
 					}
 				}
