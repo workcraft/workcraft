@@ -47,13 +47,13 @@ public class SONMainTask implements Task<VerificationResult>{
 
 		if(settings.getType() == 0){
 
-			StructuralVerification onSTask = new ONStructureTask(net);
+			ONStructureTask onSTask = new ONStructureTask(net);
 			onSTask.task(settings.getSelectedGroups());
 
 			StructuralVerification csonSTask = new CSONStructureTask(net);
 			csonSTask.task(settings.getSelectedGroups());
 
-			StructuralVerification bsonSTask = new BSONStructureTask(net);
+			StructuralVerification bsonSTask = new BSONStructureTask(net, onSTask.getReachableMarkings());
 			bsonSTask.task(settings.getSelectedGroups());
 
 			groupErrors.addAll(onSTask.getGroupErrors());
@@ -112,7 +112,7 @@ public class SONMainTask implements Task<VerificationResult>{
 
 		//BSON structure tasks
 		if(settings.getType() == 3){
-			BSONStructureTask bsonSTask = new BSONStructureTask(net);
+			BSONStructureTask bsonSTask = new BSONStructureTask(net, null);
 			bsonSTask.task(settings.getSelectedGroups());
 
 			groupErrors.addAll(bsonSTask.getGroupErrors());

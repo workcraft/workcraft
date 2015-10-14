@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
@@ -14,7 +15,7 @@ import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
-import org.workcraft.plugins.son.util.MarkingRef;
+import org.workcraft.plugins.son.util.Marking;
 
 
 public class ONStructureTask extends AbstractStructuralVerification{
@@ -28,7 +29,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private ONCycleAlg onCycleAlg;
 	private ASONAlg asonAlg;
 
-	private Map<ONGroup, Collection<MarkingRef>> reachableMarkings;
+	private Map<ONGroup, List<Marking>> reachableMarkings;
 
 	private int errNumber = 0;
 	private int warningNumber = 0;
@@ -39,7 +40,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 		onCycleAlg = new ONCycleAlg(net);
 		asonAlg = new ASONAlg(net);
-		reachableMarkings = new HashMap<ONGroup, Collection<MarkingRef>>();
+		reachableMarkings = new HashMap<ONGroup, List<Marking>>();
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -157,7 +158,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	}
 
 	private Node safenessTask(ONGroup group){
-		Collection<MarkingRef> markings = null;
+		List<Marking> markings = null;
 
 		try {
 			markings =asonAlg.getReachableMarkings(group);
@@ -165,7 +166,9 @@ public class ONStructureTask extends AbstractStructuralVerification{
 			infoMsg("ERROR : "+e.getMessage());
 			return e.getNode();
 		}
-		reachableMarkings.put(group, markings);
+
+		if(markings != null)
+			reachableMarkings.put(group, markings);
 		return null;
 	}
 
@@ -186,6 +189,10 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	@Override
 	public Collection<String> getGroupErrors() {
 		return getGroupErrorsSetRefs(groupErrors);
+	}
+
+	public Map<ONGroup, List<Marking>> getReachableMarkings() {
+		return reachableMarkings;
 	}
 
 	@Override

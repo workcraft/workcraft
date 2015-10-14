@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.util.Marking;
 
 public class PathAlgorithm{
 
@@ -17,54 +18,6 @@ public class PathAlgorithm{
 	public PathAlgorithm(SON net) {
 		this.net = net;
 	}
-
-	//get path between two given nodes. (iteration)
-    public Collection<Path> dfs3(Node s, Node v, Collection<Node> nodes){
-    	Collection<Path> result =new ArrayList<Path>();
-        Stack<Node> stack = new Stack<Node>();
-        LinkedList<Node> visit = new LinkedList<Node>();
-
-        stack.push(s);
-
-        while(!stack.isEmpty()){
-        	s = stack.peek();
-            visit.add(s);
-
-            Node n = null;
-        	for(Node post : getPostset(s, nodes)){
-                if (visit.contains(post)) {
-                    continue;
-                }
-                else if (post.equals(v)) {
-                	n = post;
-                	stack.push(post);
-                	visit.add(post);
-                    Path path = new Path();
-
-                    path.addAll(visit);
-                    result.add(path);
-                    visit.removeLast();
-                    break;
-                }
-                else if(!visit.contains(post)){
-                	n = post;
-                	stack.push(n);
-                }
-        	}
-        	if(n == null){
-    			while(!stack.isEmpty()){
-    				s = stack.peek();
-    				if(!visit.isEmpty() && s==visit.peekLast()){
-    					stack.pop();
-    					visit.removeLast();
-    				}else{
-    					break;
-    				}
-    			}
-    		}
-        }
-        return result;
-    }
 
     private void dfs(Collection<Node> nodes , LinkedList<Node> visited, Node v) {
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
@@ -118,7 +71,7 @@ public class PathAlgorithm{
     	return list;
     }
 	//get nodes between two given node sets. (iteration)
-	public static Collection<Node> dfs2 (Collection<Node> s, Collection<Node> v, SON net){
+	public static Collection<Node> dfs2 (Marking s, Marking v, SON net){
 		Collection<Node> result = new HashSet<Node>();
 		RelationAlgorithm relation = new RelationAlgorithm(net);
         Stack<Node> stack = new Stack<Node>();
@@ -141,8 +94,8 @@ public class PathAlgorithm{
     					result.add(s1);
     				}
     				if(!visit.contains(n)){
-    					post = n;
-    					break;
+	    				post = n;
+	    				break;
     				}
     			}
 
@@ -156,5 +109,6 @@ public class PathAlgorithm{
 		}
 		return result;
 	}
+
 }
 

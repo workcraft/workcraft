@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.algorithm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,19 +49,19 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for(ONGroup group : net.getGroups()){
 			if(upperGroups.contains(group))
-				for(Condition c : getONInitial(group.getConditions())){
+				for(Condition c : getInitial(group)){
 					result.put(c, true);
 				}
 			//an initial state of a lower group is the initial state of SON
 			//if all of its upper conditions are the initial states.
 			else if(lowerGroups.contains(group)){
-				for(Condition c : getONInitial(group.getConditions())){
+				for(Condition c : getInitial(group)){
 					boolean isInitial = true;
 					Collection<Condition> set = bsonAlg.getUpperConditions(c);
 					for(Condition c2 : set){
 						if(!isInitial(c2)){
 							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getONInitial(group2.getConditions())))
+							if(!set.containsAll(getInitial(group2)))
 								isInitial = false;
 						}
 					}
@@ -69,7 +70,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 			else{
-				for(Condition c : getONInitial(group.getConditions())){
+				for(Condition c : getInitial(group)){
 					result.put(c, true);
 				}
 			}
@@ -88,18 +89,18 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for(ONGroup group : net.getGroups()){
 			if(upperGroups.contains(group))
-				for(Condition c : getONFinal(group.getConditions())){
+				for(Condition c : getFinal(group)){
 					result.put(c, true);
 				}
 
 			else if(lowerGroups.contains(group)){
-				for(Condition c : getONFinal(group.getConditions())){
+				for(Condition c : getFinal(group)){
 					boolean isFinal = true;
 					Collection<Condition> set = bsonAlg.getUpperConditions(c);
 					for(Condition c2 : set){
 						if(!isInitial(c2)){
 							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getONFinal(group2.getConditions())))
+							if(!set.containsAll(getFinal(group2)))
 								isFinal = false;
 						}
 					}
@@ -108,7 +109,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 			else{
-				for(Condition c : getONFinal(group.getConditions())){
+				for(Condition c : getFinal(group)){
 					result.put(c, true);
 				}
 			}
@@ -244,11 +245,24 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPrePNSet(e)){
 					Condition c = (Condition)pre;
-					Collection<Phase> phase = phases.get(c);
-					Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
-					for(Condition c2 : max)
-						if(!c2.isMarked())
+					Map<ONGroup, ArrayList<Phase>> map = getPhaseMap(phases.get(c));
+					for(ONGroup lGroup : map.keySet()){
+						ArrayList<Phase> list= map.get(lGroup);
+						int phaseSize = list.size();
+						int noMark = 0;
+						if(phaseSize > 0){
+							for(Phase phase : list){
+								Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
+								for(Condition c2 : max)
+									if(!c2.isMarked()){
+										noMark++;
+										break;
+									}
+							}
+						}
+						if(noMark == phaseSize)
 							return false;
+					}
 				}
 			return true;
 			}
@@ -263,6 +277,20 @@ public class SimulationAlg extends RelationAlgorithm {
 			}
 		}
 		return true;
+	}
+
+	private Map<ONGroup, ArrayList<Phase>> getPhaseMap(Collection<Phase> phases){
+		Map<ONGroup, ArrayList<Phase>> result = new HashMap<ONGroup, ArrayList<Phase>>();
+		for(ONGroup group : lowerGroups){
+			ArrayList<Phase> subR = new ArrayList<Phase>();
+			for(Phase phase : phases){
+				if(bsonAlg.getLowerGroup(phase) == group)
+					subR.add(phase);
+			}
+			if(!subR.isEmpty())
+				result.put(group, subR);
+		}
+		return result;
 	}
 
 
@@ -358,11 +386,24 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Node post : getPostPNSet(e)){
 					Condition c = (Condition)post;
-					Collection<Phase> phase = phases.get(c);
-					Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
-					for(Condition c2 : min)
-						if(!c2.isMarked())
+					Map<ONGroup, ArrayList<Phase>> map = getPhaseMap(phases.get(c));
+					for(ONGroup lGroup : map.keySet()){
+						ArrayList<Phase> list= map.get(lGroup);
+						int phaseSize = list.size();
+						int noMark = 0;
+						if(phaseSize > 0){
+							for(Phase phase : list){
+								Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
+								for(Condition c2 : min)
+									if(!c2.isMarked()){
+										noMark++;
+										break;
+									}
+							}
+						}
+						if(noMark == phaseSize)
 							return false;
+					}
 				}
 			return true;
 			}
@@ -490,7 +531,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				if(bsonAlg.isUpperCondition(pre)){
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
-					//backward checking for all upper conditions, if there has no marked condition, remvoe the token
+					//backward checking for all upper conditions, if there has no marked condition, remove the token
 					boolean hasMarking = false;
 					for(Condition c2 : maxSet){
 						for(Condition c3 : bsonAlg.getUpperConditions(c2)){
@@ -508,9 +549,10 @@ public class SimulationAlg extends RelationAlgorithm {
 				if(bsonAlg.isUpperCondition(post)){
 					Condition c = (Condition)post;
 					Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
-					for(Condition c2 : minSet)
-						if(!c2.isMarked())
-							c2.setMarked(true);
+					for(Condition min : minSet){
+						if(isInitial(min) && !min.isMarked())
+							min.setMarked(true);
+					}
 				}
 			}
 		}
@@ -565,9 +607,10 @@ public class SimulationAlg extends RelationAlgorithm {
 				if(bsonAlg.isUpperCondition(pre)){
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
-					for(Condition c2 : maxSet)
-						if(!c2.isMarked())
-							c2.setMarked(true);
+					for(Condition max : maxSet){
+						if(isInitial(max) && !max.isMarked())
+							max.setMarked(true);
+					}
 				}
 			}
 		}

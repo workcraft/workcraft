@@ -80,6 +80,5 @@ public class NodesRef extends ArrayList<String>{
 			}
 		}
 		return true;
-
 	}
 }

@@ -3,15 +3,17 @@ package org.workcraft.plugins.son.algorithm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
-import org.workcraft.plugins.son.util.MarkingRef;
+import org.workcraft.plugins.son.util.Marking;
 
 public class ASONAlg extends RelationAlgorithm{
 
@@ -19,45 +21,43 @@ public class ASONAlg extends RelationAlgorithm{
 		super(net);
 	}
 
-	public boolean isEnabled (MarkingRef marking, TransitionNode t) {
+	public boolean isEnabled (Marking marking, TransitionNode t) {
 		// gather number of connections for each pre-condition
 		for (Node n : getPrePNSet(t)) {
-			if (!marking.containsNode(n, net)) {
+			if (!marking.contains(n)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public MarkingRef fire(MarkingRef marking, TransitionNode t) throws UnboundedException{
-		MarkingRef result = new MarkingRef();
-		Collection<Node> nodes = marking.getNodes(net);
+	public Marking fire(Marking marking, TransitionNode t) throws UnboundedException{
+		Marking result = new Marking();
 
 		for(Node n : getPostPNSet(t)){
-			if(nodes.contains(n))
+			if(marking.contains(n))
 				throw new UnboundedException(net.getNodeReference(n), n);
 			else
-				result.add(net.getNodeReference(n));
+				result.add((PlaceNode)n);
 		}
 
-		for(Node n : nodes){
+		for(Node n : marking){
 			if(!getPrePNSet(t).contains(n))
-				result.add(net.getNodeReference(n));
+				result.add((PlaceNode)n);
 		}
 
 		return result;
 	}
 
-	@SuppressWarnings("serial")
-	public Collection<MarkingRef> getReachableMarkings(ONGroup group) throws UnboundedException{
-		Collection<MarkingRef> result = new ArrayList<MarkingRef>();
-		Collection<MarkingRef> search = new ArrayList<MarkingRef>();
+	public List<Marking> getReachableMarkings(ONGroup group) throws UnboundedException{
+		List<Marking> result = new ArrayList<Marking>();
+		Collection<Marking> search = new ArrayList<Marking>();
 
-		Map<TransitionNode, ArrayList<MarkingRef>> visited = new HashMap<TransitionNode, ArrayList<MarkingRef>>();
+		Map<TransitionNode, ArrayList<Marking>> visited = new HashMap<TransitionNode, ArrayList<Marking>>();
 
-		MarkingRef initial = new MarkingRef();
-		for(Condition c : getONInitial(group.getConditions())){
-			initial.add(net.getNodeReference(c));
+		Marking initial = new Marking();
+		for(Condition c : getInitial(group)){
+			initial.add(c);
 		}
 
 		result.add(initial);
@@ -65,24 +65,23 @@ public class ASONAlg extends RelationAlgorithm{
 
     	boolean hasEnabled = true;
         while(hasEnabled){
-    		Collection<MarkingRef> newMarkings = new ArrayList<MarkingRef>();
+    		Collection<Marking> newMarkings = new ArrayList<Marking>();
 
-    		for(MarkingRef marking : search){
+    		for(Marking marking : search){
     	        for(TransitionNode t : group.getTransitionNodes()){
         	        if(!visited(visited, t, marking) && isEnabled(marking, t)){
-        	        	MarkingRef newMarking = fire(marking, t);
+        	        	Marking newMarking = fire(marking, t);
         	        	if(!contains(result, newMarking) && !contains(newMarkings, newMarking))
         	        		newMarkings.add(newMarking);
     	        	}
         	        if(visited.containsKey(t)){
-        	        	 ArrayList<MarkingRef> markings = visited.get(t);
+        	        	 ArrayList<Marking> markings = visited.get(t);
         	        	 markings.add(marking);
         	        	 visited.put(t, markings);
         	        }else{
-        	        	visited.put(t, new ArrayList<MarkingRef>(){
-						{
-        	        		add(marking);
-        	        	}});
+        	        	ArrayList<Marking> markings = new ArrayList<Marking>();
+        	        	markings.add(marking);
+        	        	visited.put(t, markings);
         	        }
     	        }
     		}
@@ -98,17 +97,17 @@ public class ASONAlg extends RelationAlgorithm{
 		return result;
 	}
 
-	private boolean contains(Collection<MarkingRef> result, MarkingRef marking){
-		for(MarkingRef ref : result){
+	public boolean contains(Collection<Marking> result, Marking marking){
+		for(Marking ref : result){
 			if(ref.equals(marking)){
 				return true;
 			}
 		}
 		return false;
 	}
-	private boolean visited(Map<TransitionNode, ArrayList<MarkingRef>> visited, TransitionNode t, MarkingRef marking){
+	private boolean visited(Map<TransitionNode, ArrayList<Marking>> visited, TransitionNode t, Marking marking){
 		if(visited.containsKey(t))
-			for(MarkingRef ref : visited.get(t)){
+			for(Marking ref : visited.get(t)){
 				if(ref.equals(marking))
 					return true;
 			}
