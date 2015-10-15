@@ -1,8 +1,7 @@
-package org.workcraft.plugins.cpog.tools;
+package org.workcraft.plugins.cpog.untangling;
 
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import org.workcraft.dom.Connection;
@@ -13,15 +12,14 @@ import org.workcraft.plugins.cpog.PnToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.VisualVertex.RenderType;
+import org.workcraft.plugins.cpog.untangling.UntanglingNode.NodeType;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 
-public class PnToCpogConverter {
 
-	private static final String DELIM_EDGES = ";";
-	private static final String DELIM_NODES = ",";
+public class PnToCpogConverter {
 
 	private PetriNet pn;
 	private CPOG cpog;
@@ -102,12 +100,10 @@ public class PnToCpogConverter {
 		}
 
 		// getting the partial orders from the untangling
-		ArrayList<String> partialOrders = untangling.getPartialOrders(settings);
-		HashSet<String> placeNames = untangling.getPlaceNames();
-		HashSet<String> transitionNames = untangling.getTransitionNames();
+		ArrayList<PartialOrder> partialOrders = untangling.getPartialOrders(settings);
 
 		// building the cpog from the partial orders
-		buildCpog(partialOrders, placeNames, transitionNames);
+		buildCpog(partialOrders);
 
 		return visualCpog;
 
@@ -115,13 +111,16 @@ public class PnToCpogConverter {
 
 	/** building the cpog model from the string partial orders **/
 	@SuppressWarnings("deprecation")
-	private void buildCpog(ArrayList<String> partialOrders, HashSet<String> placeNames, HashSet<String> transitionNames) {
+	private void buildCpog(ArrayList<PartialOrder> partialOrders) {
+
 		// Positions inside the workspace
 		int xPos = 0;
 		int yPos = 0;
+		int i = 0;
 
 		// looping over partial orders
-		for(int i = 0; i < partialOrders.size(); i++){
+		for(PartialOrder po : partialOrders){
+			i++;
 
 			// move the vertically every partial order
 			xPos = 0;
@@ -134,52 +133,52 @@ public class PnToCpogConverter {
 			Container container = visualCpog.getCurrentLevel();
 			visualCpog.selectNone();
 
-			// splitting various edges that compose the partial order
-			String[] edges = partialOrders.get(i).split(DELIM_EDGES);
-			for(int j = 0; j < edges.length; j++){
+			// looping over the edges
+			for(UntanglingEdge edge : po){
 
-				// reading source and target vertices
-				String[] vertices = edges[j].split(DELIM_NODES);
-				String sourceName = new String(vertices[0]);
-				String targetName = new String(vertices[1]);
+				// creating source vertex
+				UntanglingNode sourceNode = edge.getFirst();
+				VisualVertex sourceVertex = visualCpog.createVisualVertex(container);
+				String sourceName = sourceNode.getLabel();
+				sourceVertex.setLabel(sourceName);
+				if (sourceNode.getType() == NodeType.PLACE) {
+					sourceVertex.setRenderType(RenderType.CIRCLE);
+				} else {
+					sourceVertex.setRenderType(RenderType.SQUARE);
+				}
 
-				// creating new vertices
-				VisualVertex source = visualCpog.createVisualVertex(container);
-				VisualVertex target = visualCpog.createVisualVertex(container);
-				source.setLabel(sourceName);
-				target.setLabel(targetName);
-				if (placeNames.contains(sourceName)) {
-					source.setRenderType(RenderType.CIRCLE);
-				} else {
-					source.setRenderType(RenderType.SQUARE);
-				}
-				if (placeNames.contains(targetName)) {
-					target.setRenderType(RenderType.CIRCLE);
-				} else {
-					target.setRenderType(RenderType.SQUARE);
-				}
+				// creating target vertex
+				UntanglingNode targetNode = edge.getSecond();
+				VisualVertex targetVertex = visualCpog.createVisualVertex(container);
+				String targetName = targetNode.getLabel();
+				targetVertex.setLabel(targetName);
+				if (targetNode.getType() == NodeType.PLACE) {
+					targetVertex.setRenderType(RenderType.CIRCLE);
+                } else {
+                	targetVertex.setRenderType(RenderType.SQUARE);
+                }
 
 				// checking if they are already present
 				// if so do not create a new one but connect
 				// the one already available
 				if(nodes.containsKey(sourceName) == false){
-					source.setPosition(new Double(xPos, yPos));
+					sourceVertex.setPosition(new Double(xPos, yPos));
 					xPos = xPos + 5;
-					nodes.put(sourceName, source);
+					nodes.put(sourceName, sourceVertex);
 				}else{
-					source = nodes.get(sourceName);
+					sourceVertex = nodes.get(sourceName);
 				}
 
 				if(nodes.containsKey(targetName) == false){
-					target.setPosition(new Double(xPos, yPos));
+					targetVertex.setPosition(new Double(xPos, yPos));
 					xPos = xPos + 5;
-					nodes.put(targetName, target);
+					nodes.put(targetName, targetVertex);
 				}else{
-					target = nodes.get(targetName);
+					targetVertex = nodes.get(targetName);
 				}
 
 				// connection
-				visualCpog.connect(source, target);
+				visualCpog.connect(sourceVertex, targetVertex);
 
 				// debug: printing partial order
 				// System.out.println(source.getLabel() + " -> " + target.getLabel());
