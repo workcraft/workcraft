@@ -45,6 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -60,16 +61,14 @@ public class CreateWorkDialog extends JDialog {
 	private JPanel contentPane;
 	private JPanel optionsPane;
 	private JPanel buttonsPane;
-
+	private JSplitPane splitPane;
 	private JList modelList;
-
 	private JButton okButton;
 	private JButton cancelButton;
 	private JScrollPane modelScroll ;
 	private JCheckBox chkVisual;
 	private JCheckBox chkOpen;
 	private JTextField txtTitle;
-
 	private int modalResult = 0;
 
 	public CreateWorkDialog(MainWindow owner) {
@@ -161,10 +160,14 @@ public class CreateWorkDialog extends JDialog {
 
 		modelScroll.setViewportView(modelList);
 		modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
+		modelScroll.setMinimumSize(new Dimension(150,0));
+		modelScroll.setPreferredSize(new Dimension(250,0));
 
 		optionsPane = new JPanel();
 		optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
 		optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
+		optionsPane.setMinimumSize(new Dimension(150,0));
+		optionsPane.setPreferredSize(new Dimension(250,0));
 
 		chkVisual = new JCheckBox("create visual model");
 
@@ -181,10 +184,14 @@ public class CreateWorkDialog extends JDialog {
 		optionsPane.add(txtTitle);
 
 		JPanel dummy = new JPanel();
-		dummy.setPreferredSize(new Dimension(200,1000));
-		dummy.setMaximumSize(new Dimension(200,1000));
-
+		dummy.setPreferredSize(new Dimension(200, 1000));
+		dummy.setMaximumSize(new Dimension(200, 1000));
 		optionsPane.add(dummy);
+
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPane, modelScroll);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(250);
+		splitPane.setResizeWeight(0.1);
 
 		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
@@ -210,8 +217,7 @@ public class CreateWorkDialog extends JDialog {
 		buttonsPane.add(okButton);
 		buttonsPane.add(cancelButton);
 
-		contentPane.add(modelScroll, BorderLayout.CENTER);
-		contentPane.add(optionsPane, BorderLayout.WEST);
+		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
 
 	    getRootPane().registerKeyboardAction(new ActionListener() {

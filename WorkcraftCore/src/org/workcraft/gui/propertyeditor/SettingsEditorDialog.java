@@ -35,6 +35,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -51,19 +52,16 @@ import org.workcraft.plugins.PluginInfo;
 public class SettingsEditorDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JPanel propertiesPane;
+	private JScrollPane sectionPane;
+	private JScrollPane propertiesPane;
+	private JSplitPane splitPane;
 	private JPanel buttonsPane;
-
 	private JButton okButton;
-	private JScrollPane sectionScroll;
-
 	private DefaultMutableTreeNode sectionRoot;
 	private JTree sectionTree;
-
 	private final PropertyEditorTable propertiesTable;
 
-	static class SettingsPageNode
-	{
+	static class SettingsPageNode {
 		private Settings page;
 
 		public SettingsPageNode(Settings page) {
@@ -96,7 +94,7 @@ public class SettingsEditorDialog extends JDialog {
 			}
 		});
 
-		Dimension minSize = new Dimension(640, 480);
+		Dimension minSize = new Dimension(500, 200);
 		setMinimumSize(minSize);
 		Dimension mySize = new Dimension(900, 600);
 		setSize(mySize);
@@ -179,9 +177,7 @@ public class SettingsEditorDialog extends JDialog {
 	private void initComponents() {
 		contentPane = new JPanel(new BorderLayout());
 		setContentPane(contentPane);
-
-		sectionScroll = new JScrollPane();
-
+		sectionPane = new JScrollPane();
 		sectionRoot = new DefaultMutableTreeNode("root");
 
 		sectionTree = new JTree();
@@ -200,15 +196,21 @@ public class SettingsEditorDialog extends JDialog {
 			}
 		});
 
-		sectionScroll.setViewportView(sectionTree);
-		sectionScroll.setMinimumSize(new Dimension (200,0));
-		sectionScroll.setPreferredSize(new Dimension (250,0));
-		sectionScroll.setBorder(BorderFactory.createTitledBorder("Section"));
+		sectionPane.setViewportView(sectionTree);
+		sectionPane.setMinimumSize(new Dimension(50,0));
+		sectionPane.setPreferredSize(new Dimension(250,0));
+		sectionPane.setBorder(BorderFactory.createTitledBorder("Section"));
 
-		propertiesPane = new JPanel();
+		propertiesPane = new JScrollPane();
+		propertiesPane.setMinimumSize(new Dimension(250,0));
+		propertiesPane.setPreferredSize(new Dimension(450,0));
 		propertiesPane.setBorder(BorderFactory.createTitledBorder("Selection properties"));
-		propertiesPane.setLayout(new BorderLayout());
-		propertiesPane.add(propertiesTable);
+		propertiesPane.setViewportView(propertiesTable);
+
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPane, propertiesPane);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(250);
+		splitPane.setResizeWeight(0.1);
 
 		okButton = new JButton();
 		okButton.setPreferredSize(new Dimension(100, 20));
@@ -221,8 +223,7 @@ public class SettingsEditorDialog extends JDialog {
 
 		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 		buttonsPane.add(okButton);
-		contentPane.add(sectionScroll, BorderLayout.WEST);
-		contentPane.add(propertiesPane, BorderLayout.CENTER);
+		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
 		getRootPane().setDefaultButton(okButton);
 	}

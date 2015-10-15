@@ -43,7 +43,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	private VisualSTG stg;
 	private ArrayList<Core> cores;
 	private ArrayList<Core> selectedCores;
-	private Heightmap heightmap;
+	private CoreDensityMap density;
 
 	private JPanel interfacePanel;
 	private JPanel controlPanel;
@@ -51,8 +51,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	private JPanel statusPanel;
 	private JRadioButton coresRadio;
 	private JTable coresTable;
-	private JRadioButton heightmapRadio;
-	private JTable heightmapTable;
+	private JRadioButton densityRadio;
+	private JTable densityTable;
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
@@ -126,18 +126,18 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 		infoPanel.add(coresRadio, BorderLayout.NORTH);
 		infoPanel.add(coresScroll, BorderLayout.CENTER);
 
-		heightmapRadio = new JRadioButton("Show core density map");
-		heightmapTable = new JTable(new HeightmapTableModel());
-		heightmapTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		heightmapTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
-		heightmapTable.setDefaultRenderer(Object.class, new HeightmapTableCellRendererImplementation());
-		heightmapTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		heightmapTable.setToolTipText("Core density colors");
-		heightmapTable.addMouseListener(new MouseListener() {
+		densityRadio = new JRadioButton("Show core density map");
+		densityTable = new JTable(new HeightmapTableModel());
+		densityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		densityTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
+		densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRendererImplementation());
+		densityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		densityTable.setToolTipText("Core density colors");
+		densityTable.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if ( !heightmapRadio.isSelected() ) {
-					heightmapRadio.setSelected(true);
+				if ( !densityRadio.isSelected() ) {
+					densityRadio.setSelected(true);
 				}
 			}
 
@@ -160,8 +160,8 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
 		statusPanel = new JPanel();
 		statusPanel.setLayout(new BorderLayout());
-		statusPanel.add(heightmapRadio, BorderLayout.NORTH);
-		statusPanel.add(heightmapTable, BorderLayout.SOUTH);
+		statusPanel.add(densityRadio, BorderLayout.NORTH);
+		statusPanel.add(densityTable, BorderLayout.SOUTH);
 
 		interfacePanel = new JPanel();
 		interfacePanel.setLayout(new BorderLayout());
@@ -172,9 +172,9 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
 		ButtonGroup radioGroup = new ButtonGroup();
 		radioGroup.add(coresRadio);
-		radioGroup.add(heightmapRadio);
+		radioGroup.add(densityRadio);
 		coresRadio.setSelected(true);
-		heightmapRadio.setSelected(true);
+		densityRadio.setSelected(true);
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 					VisualNamedTransition t = (VisualNamedTransition)node;
 					final String name = stg.getNodeMathReference(node);
 					if (selectedCores == null) {
-						final Color color = ((heightmap == null) ? null : heightmap.getColor(name));
+						final Color color = ((density == null) ? null : density.getColor(name));
 						return new Decoration(){
 							@Override
 							public Color getColorisation() {
@@ -256,9 +256,9 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	public void setCores(ArrayList<Core> cores) {
 		this.cores = cores;
 		selectedCores = null;
-		heightmap = new Heightmap(cores);
-		heightmapTable.setModel(new HeightmapTableModel());
-		heightmapRadio.setSelected(true);
+		density = new CoreDensityMap(cores);
+		densityTable.setModel(new HeightmapTableModel());
+		densityRadio.setSelected(true);
 	}
 
 	@SuppressWarnings("serial")
@@ -370,9 +370,9 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 				boolean isSelected, boolean hasFocus, int row, int column) {
 			JLabel result = null;
 			label.setBorder(PropertyEditorTable.BORDER_RENDER);
-			if (heightmap != null) {
+			if (density != null) {
 				label.setText((String) value);
-				Color color = heightmap.getLevelColor(column);
+				Color color = density.getLevelColor(column);
 				label.setBackground(color);
 				label.setHorizontalAlignment(SwingConstants.CENTER);
 				result = label;
@@ -385,7 +385,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 	private final class HeightmapTableModel extends AbstractTableModel {
 		@Override
 		public int getColumnCount() {
-			return ((heightmap == null) ? 0 : heightmap.getPaletteSize());
+			return ((density == null) ? 0 : density.getPaletteSize());
 		}
 
 		@Override
@@ -396,10 +396,10 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 		@Override
 		public Object getValueAt(int row, int col) {
 			String result;
-			if ((col == 0) && heightmap.isReduced()) {
-				result = "<" + Integer.toString(heightmap.getLevelDensity(col) + 1);
+			if ((col == 0) && density.isReduced()) {
+				result = "<" + Integer.toString(density.getLevelDensity(col) + 1);
 			} else {
-				result = Integer.toString(heightmap.getLevelDensity(col));
+				result = Integer.toString(density.getLevelDensity(col));
 			}
 			return result;
 		}

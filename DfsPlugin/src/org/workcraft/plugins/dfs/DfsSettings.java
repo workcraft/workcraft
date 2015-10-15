@@ -50,7 +50,7 @@ public class DfsSettings implements Settings {
 		RGBYMC("6-color palette (RGBYMC)", new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA, Color.CYAN}),
 		RGB("3-color palette (RGB)", new Color[]{Color.RED, Color.GREEN, Color.BLUE}),
 		NONE("Empty palette", new Color[]{Color.BLACK}),
-		RANDOM("Large Lab palette", null);
+		GENERATED("Generated palette", null);
 
 		private final String name;
 		private final Color[] colors;

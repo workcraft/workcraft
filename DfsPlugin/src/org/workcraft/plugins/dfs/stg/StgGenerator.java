@@ -16,6 +16,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.DfsSettings;
+import org.workcraft.plugins.dfs.DfsSettings.Palette;
 import org.workcraft.plugins.dfs.VisualBinaryRegister;
 import org.workcraft.plugins.dfs.VisualControlConnection;
 import org.workcraft.plugins.dfs.VisualControlRegister;
@@ -146,14 +147,20 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		}
 	}
 
-	static Color[] tokenColors = DfsSettings.getTokenPalette().getColors();
+	private Color[] tokenColors;;
+
 	private ColorGenerator createColorGenerator(boolean required) {
 		ColorGenerator result = null;
 		if (required) {
 			if (tokenColors == null) {
-				tokenColors = ColorUtils.getHsbPalette(
-						new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
-						new float[]{0.50f},  new float[]{0.9f, 0.7f, 0.5f});
+				Palette palette = DfsSettings.getTokenPalette();
+				if (palette == Palette.GENERATED) {
+					tokenColors = ColorUtils.getHsbPalette(
+							new float[]{0.05f, 0.45f, 0.85f, 0.25f, 0.65f, 0.15f, 0.55f, 0.95f, 0.35f, 0.75f},
+							new float[]{0.50f},  new float[]{0.7f, 0.5f, 0.3f});
+				} else {
+					tokenColors = palette.getColors();
+				}
 			}
 			result = new ColorGenerator(tokenColors);
 		}

@@ -11,16 +11,16 @@ import java.util.Set;
 import org.workcraft.plugins.stg.STGSettings;
 import org.workcraft.util.ColorUtils;
 
-public class Heightmap {
-	final static private float HEIGHTMAP_BRIGHTNESS_TOP = 0.5f;
-	final static private float HEIGHTMAP_BRIGHTNESS_BOTTOM = 1.0f;
+public class CoreDensityMap {
+	final static private float DENSITY_MAP_BRIGHTNESS_TOP = 0.5f;
+	final static private float DENSITY_MAP_BRIGHTNESS_BOTTOM = 1.0f;
 
 	private final HashMap<String, Integer> nameToDensity;
 	private final HashMap<Integer, Color> densityToColor;
 	private final ArrayList<Integer> densityPalette;
 	private final boolean isReduced;
 
-	public Heightmap(Collection<Core> cores) {
+	public CoreDensityMap(Collection<Core> cores) {
 		nameToDensity = buildNameToDensityMap(cores);
 		densityToColor = buildDensityToColorMap(nameToDensity);
 		densityPalette = buidDensityPalette(densityToColor.keySet());
@@ -39,21 +39,21 @@ public class Heightmap {
 		return result;
 	}
 
-	private HashMap<Integer, Color> buildDensityToColorMap(HashMap<String, Integer> heightmap) {
+	private HashMap<Integer, Color> buildDensityToColorMap(HashMap<String, Integer> densityMap) {
 		HashMap<Integer, Color> result = new HashMap<>();
-		HashSet<Integer> densitySet = new HashSet<>(heightmap.values());
+		HashSet<Integer> densitySet = new HashSet<>(densityMap.values());
 		ArrayList<Integer> densityPalette = buidDensityPalette(densitySet);
 		HashMap<Integer, Integer> densityToLevel = new HashMap<>();
 		for (int level = 0; level < densityPalette.size(); level++) {
 			int density = densityPalette.get(level);
 			densityToLevel.put(density, level);
 		}
-		int levelLimit = STGSettings.getHeightmapLevelLimit();
+		int levelLimit = STGSettings.getDensityMapLevelLimit();
 		int levelCount = ((densitySet.size() < levelLimit) ? densitySet.size() : levelLimit);
 		float[] bs = getBrightnessLevels(levelCount);
 		Color[] palette = ColorUtils.getHsbPalette(new float[]{0.05f}, new float[]{0.4f}, bs);
-		for (String name: heightmap.keySet()) {
-			int density = heightmap.get(name);
+		for (String name: densityMap.keySet()) {
+			int density = densityMap.get(name);
 			int level = 0;
 			if (densityToLevel.containsKey(density)) {
 				level = densityToLevel.get(density);
@@ -64,14 +64,14 @@ public class Heightmap {
 		return result;
 	}
 
-	private float[] getBrightnessLevels(int heightmapGradeCount) {
-		float[] result = new float[heightmapGradeCount];
-		if (heightmapGradeCount == 1) {
-			result[0] = HEIGHTMAP_BRIGHTNESS_TOP;
+	private float[] getBrightnessLevels(int densityMapGradeCount) {
+		float[] result = new float[densityMapGradeCount];
+		if (densityMapGradeCount == 1) {
+			result[0] = DENSITY_MAP_BRIGHTNESS_TOP;
 		} else {
-			float bDelta = (HEIGHTMAP_BRIGHTNESS_TOP - HEIGHTMAP_BRIGHTNESS_BOTTOM) / (heightmapGradeCount - 1);
-			for (int i = 0; i < heightmapGradeCount; i++) {
-				result[i] = HEIGHTMAP_BRIGHTNESS_BOTTOM + i * bDelta;
+			float bDelta = (DENSITY_MAP_BRIGHTNESS_TOP - DENSITY_MAP_BRIGHTNESS_BOTTOM) / (densityMapGradeCount - 1);
+			for (int i = 0; i < densityMapGradeCount; i++) {
+				result[i] = DENSITY_MAP_BRIGHTNESS_BOTTOM + i * bDelta;
 			}
 		}
 		return result;
@@ -80,7 +80,7 @@ public class Heightmap {
 	private ArrayList<Integer> buidDensityPalette(Set<Integer> densitySet) {
 		ArrayList<Integer> densityList = new ArrayList<>(densitySet);
 		Collections.sort(densityList);
-		int levelLimit = STGSettings.getHeightmapLevelLimit();
+		int levelLimit = STGSettings.getDensityMapLevelLimit();
 		int fromIndex = ((densityList.size() < levelLimit) ? 0 : densityList.size() - levelLimit);
 		return new ArrayList<>(densityList.subList(fromIndex, densityList.size()));
 	}
