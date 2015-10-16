@@ -147,7 +147,7 @@ public class PetrifyUtilitySettings implements Settings {
 
 	@Override
 	public String getName() {
-		return "Petrify";
+		return "Petrify toolset";
 	}
 
 	public static String getPetrifyCommand() {

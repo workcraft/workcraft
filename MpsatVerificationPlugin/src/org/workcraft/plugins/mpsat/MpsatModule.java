@@ -1,0 +1,41 @@
+package org.workcraft.plugins.mpsat;
+
+import org.workcraft.Framework;
+import org.workcraft.Module;
+import org.workcraft.PluginManager;
+import org.workcraft.Tool;
+import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.plugins.mpsat.tools.CscResolutionTool;
+import org.workcraft.plugins.mpsat.tools.MpsatConformationChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatConsistencyChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatCscChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatCustomPropertyChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatDeadlockChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatNormalcyChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatPersistencyChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatUscChecker;
+
+public class MpsatModule implements Module {
+
+	@Override
+	public void init() {
+		final Framework framework = Framework.getInstance();
+		PluginManager pm = framework.getPluginManager();
+
+		pm.registerClass(Tool.class, CscResolutionTool.class);
+		pm.registerClass(Tool.class, MpsatDeadlockChecker.class);
+		pm.registerClass(Tool.class, MpsatConsistencyChecker.class);
+		pm.registerClass(Tool.class, MpsatPersistencyChecker.class);
+		pm.registerClass(Tool.class, MpsatNormalcyChecker.class);
+		pm.registerClass(Tool.class, MpsatCscChecker.class);
+		pm.registerClass(Tool.class, MpsatUscChecker.class);
+		pm.registerClass(Tool.class, MpsatConformationChecker.class);
+		pm.registerClass(Tool.class, MpsatCustomPropertyChecker.class);
+		pm.registerClass(Settings.class, MpsatUtilitySettings.class);
+	}
+
+	@Override
+	public String getDescription() {
+		return "MPSat verification support";
+	}
+}

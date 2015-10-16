@@ -28,6 +28,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -46,6 +50,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 
@@ -145,25 +150,58 @@ public class SettingsEditorDialog extends JDialog {
 		}
 	}
 
-	private void addItem (String section, Settings item) {
+	private void addItem(String section, Settings item) {
 		DefaultMutableTreeNode sectionNode = getSectionNode(sectionRoot, section);
 		sectionNode.add(new DefaultMutableTreeNode(new SettingsPageNode(item)));
 	}
 
 	private void loadSections() {
 		final Framework framework = Framework.getInstance();
-		for (PluginInfo<? extends Settings> info : framework.getPluginManager().getPlugins(Settings.class)) {
-			Settings e = info.getSingleton();
-			addItem (e.getSection(), e);
+		PluginManager pm = framework.getPluginManager();
+		ArrayList<Settings> settings = getSortedPluginSettings(pm.getPlugins(Settings.class));
+
+		// Add settings to the tree
+		for (Settings s: settings) {
+			addItem(s.getSection(), s);
 		}
 
 		sectionTree.setModel(new DefaultTreeModel(sectionRoot));
 
-		// expand all tree branches
-		for(int i=0;i<sectionTree.getRowCount();i++) {
+		// Expand all tree branches
+		for(int i=0; i < sectionTree.getRowCount(); i++) {
 			final TreePath treePath = sectionTree.getPathForRow(i);
 			sectionTree.expandPath(treePath);
 		}
+	}
+
+	private ArrayList<Settings> getSortedPluginSettings(Collection<PluginInfo<? extends Settings>> plugins) {
+		ArrayList<Settings> settings = new ArrayList<>();
+		for (PluginInfo<? extends Settings> info : plugins) {
+			settings.add(info.getSingleton());
+		}
+
+		// Sort settings by (Sections + Name) strings
+		Collections.sort(settings, new Comparator<Settings>() {
+			@Override
+			public int compare(Settings o1, Settings o2) {
+				if (o1 == o2) return 0;
+				if (o1 == null) return -1;
+				if (o2 == null) return 1;
+				String s1 = o1.getSection();
+				String s2 = o2.getSection();
+				if (s1 == null) return -1;
+				if (s2 == null) return 1;
+				if (s1.equals(s2)) {
+					String n1 = o1.getName();
+					String n2 = o2.getName();
+					if (n1 == null) return -1;
+					if (n2 == null) return 1;
+					return n1.compareTo(n2);
+				}
+				return s1.compareTo(s2);
+			}
+		});
+		return settings;
 	}
 
 	private void setObject(Settings p) {

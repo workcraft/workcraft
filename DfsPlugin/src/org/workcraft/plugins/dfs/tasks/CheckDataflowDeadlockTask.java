@@ -13,7 +13,8 @@ import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.mpsat.tasks.PunfTask;
+import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
@@ -71,7 +72,7 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
 			}
 			monitor.progressUpdate(0.20);
 
-			File unfoldingFile = new File(directory, "unfolding" + MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", mon);
