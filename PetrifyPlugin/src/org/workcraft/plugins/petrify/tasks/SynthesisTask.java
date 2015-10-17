@@ -77,7 +77,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 			command.add(stgFile.getCanonicalPath());
 
 			// Call petrify on command line.
-			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, directory);
+			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, null);
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends ExternalProcessResult> res = externalProcessTask.run(mon);
 
@@ -91,9 +91,9 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 					outcome = Outcome.FAILED;
 				}
 
-				String equations = FileUtils.readAllText(equationsFile);
-				String verilog = FileUtils.readAllText(verilogFile);
-				String log = FileUtils.readAllText(logFile);
+				String equations = (equationsFile.exists() ? FileUtils.readAllText(equationsFile) : "");
+				String verilog = (verilogFile.exists() ? FileUtils.readAllText(verilogFile) : "");
+				String log = (logFile.exists() ? FileUtils.readAllText(logFile) : "");
 				String stdout = new String(res.getReturnValue().getOutput());
 				String stderr = new String(res.getReturnValue().getErrors());
 				SynthesisResult result = new SynthesisResult(equations, verilog, log, stdout, stderr);

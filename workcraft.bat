@@ -37,10 +37,13 @@ set CLASSPATH=^
 %WORKCRAFT_HOME%\FsmPlugin\bin;^
 %WORKCRAFT_HOME%\FstPlugin\bin;^
 %WORKCRAFT_HOME%\GraphPlugin\bin;^
-%WORKCRAFT_HOME%\MpsatPlugin\bin;^
+%WORKCRAFT_HOME%\MpsatSynthesisPlugin\bin;^
+%WORKCRAFT_HOME%\MpsatVerificationPlugin\bin;^
+%WORKCRAFT_HOME%\PcompPlugin\bin;^
 %WORKCRAFT_HOME%\PetriNetPlugin\bin;^
 %WORKCRAFT_HOME%\PetrifyPlugin\bin;^
 %WORKCRAFT_HOME%\PolicyNetPlugin\bin;^
+%WORKCRAFT_HOME%\PunfPlugin\bin;^
 %WORKCRAFT_HOME%\SONPlugin\bin;^
 %WORKCRAFT_HOME%\STGPlugin\bin;^
 %WORKCRAFT_HOME%\ThirdParty;^

@@ -4,10 +4,10 @@
 package org.workcraft.plugins.mpsat;
 
 public enum MpsatSynthesisMode {
-	COMPLEX_GATE_IMPLEMENTATION ("-E", "Derive complex-gate implementation", true),
-	GENERALISED_CELEMENT_IMPLEMENTATION ("-G", "Derive gC-elements implementation", true),
-	STANDARD_CELEMENT_IMPLEMENTATION ("-S", "Derive standard-C implementation", true),
-	TECH_MAPPING ("-T", "Logic decomposition and technology mapping (not finished yet)", false);
+	COMPLEX_GATE_IMPLEMENTATION ("-E -!", "Derive complex-gate implementation", true),
+	GENERALISED_CELEMENT_IMPLEMENTATION ("-G -!", "Derive gC-elements implementation", true),
+	STANDARD_CELEMENT_IMPLEMENTATION ("-S -!", "Derive standard-C implementation", true),
+	TECH_MAPPING ("-T -f -p2 -cl -!", "Logic decomposition and technology mapping (not finished yet)", true);
 
 	private String argument;
 	private String description;

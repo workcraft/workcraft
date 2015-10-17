@@ -16,8 +16,8 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
@@ -28,16 +28,16 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatChainResult> {
+public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynthesisChainResult> {
 	private String errorMessage;
-	private final MpsatChainTask task;
+	private final MpsatSynthesisChainTask task;
 
-	public MpsatSynthesisResultHandler(MpsatChainTask task) {
+	public MpsatSynthesisResultHandler(MpsatSynthesisChainTask task) {
 		this.task = task;
 	}
 
 	@Override
-	public void finished(final Result<? extends MpsatChainResult> result, String description) {
+	public void finished(final Result<? extends MpsatSynthesisChainResult> result, String description) {
 		if (result.getOutcome() == Outcome.FINISHED) {
 			final MpsatSynthesisMode mpsatMode = result.getReturnValue().getMpsatSettings().getMode();
 			switch (mpsatMode) {
@@ -92,7 +92,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatChain
 				// Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
 				errorMessage += "\n\nFailure caused by: " + genericCause.toString() + "\nPlease see the \"Problems\" tab for more details.";
 			} else {
-				MpsatChainResult returnValue = result.getReturnValue();
+				MpsatSynthesisChainResult returnValue = result.getReturnValue();
 				Result<? extends Object> exportResult = returnValue.getExportResult();
 				Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
 				Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();

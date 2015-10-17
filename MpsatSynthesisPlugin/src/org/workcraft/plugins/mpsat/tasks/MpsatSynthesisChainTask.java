@@ -22,17 +22,17 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatChainTask implements Task<MpsatChainResult> {
+public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> {
 	private final WorkspaceEntry we;
 	private final MpsatSynthesisSettings settings;
 
-	public MpsatChainTask(WorkspaceEntry we, MpsatSynthesisSettings settings) {
+	public MpsatSynthesisChainTask(WorkspaceEntry we, MpsatSynthesisSettings settings) {
 		this.we = we;
 		this.settings = settings;
 	}
 
 	@Override
-	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+	public Result<? extends MpsatSynthesisChainResult> run(ProgressMonitor<? super MpsatSynthesisChainResult> monitor) {
 		Framework framework = Framework.getInstance();
 		File directory = null;
 		try {
@@ -55,10 +55,10 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 			if (exportResult.getOutcome() != Outcome.FINISHED) {
 				if (exportResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatChainResult>(Outcome.CANCELLED);
+					return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, null, null, settings));
+				return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+						new MpsatSynthesisChainResult(exportResult, null, null, null, settings));
 			}
 			monitor.progressUpdate(0.33);
 
@@ -70,32 +70,32 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
 				if (punfResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatChainResult>(Outcome.CANCELLED);
+					return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, punfResult, null, settings));
+				return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+						new MpsatSynthesisChainResult(exportResult, null, punfResult, null, settings));
 			}
 			monitor.progressUpdate(0.66);
 
 			// Run MPSat on the generated unfolding
-			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
+			MpsatSynthesisTask mpsatTask = new MpsatSynthesisTask(settings.getMpsatArguments(directory),
 					unfoldingFile.getCanonicalPath(), directory, tryPnml);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running mpsat model-checking", subtaskMonitor);
 
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatChainResult>(Outcome.CANCELLED);
+					return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
 				}
-				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
+				return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+						new MpsatSynthesisChainResult(exportResult, null, punfResult, mpsatResult, settings));
 			}
 			monitor.progressUpdate(1.0);
 
-			return new Result<MpsatChainResult>(Outcome.FINISHED,
-					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
+			return new Result<MpsatSynthesisChainResult>(Outcome.FINISHED,
+					new MpsatSynthesisChainResult(exportResult, null, punfResult, mpsatResult, settings));
 		} catch (Throwable e) {
-			return new Result<MpsatChainResult>(e);
+			return new Result<MpsatSynthesisChainResult>(e);
 		}
 		// Clean up
 		finally {
