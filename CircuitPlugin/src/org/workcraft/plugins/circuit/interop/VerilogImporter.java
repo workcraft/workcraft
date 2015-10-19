@@ -21,11 +21,13 @@
 
 package org.workcraft.plugins.circuit.interop;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,13 +53,17 @@ import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.expression.Expression;
+import org.workcraft.plugins.circuit.expression.Literal;
 import org.workcraft.plugins.circuit.genlib.Function;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.javacc.ExpressionParser;
 import org.workcraft.plugins.circuit.javacc.GenlibParser;
 import org.workcraft.plugins.circuit.javacc.ParseException;
 import org.workcraft.plugins.circuit.javacc.VerilogParser;
+import org.workcraft.plugins.circuit.verilog.Assign;
 import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
@@ -70,6 +76,18 @@ import org.workcraft.workspace.ModelEntry;
 
 
 public class VerilogImporter implements Importer {
+
+	class AssignInstance {
+		public final Function setFunction;
+		public final Function resetFunction;
+		public final List<Pin> connections;
+
+		public AssignInstance(Function setFunction, Function resetFunction, List<Pin> connections) {
+			this.setFunction = setFunction;
+			this.resetFunction = resetFunction;
+			this.connections = connections;
+		}
+	}
 
 	private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
 	private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
@@ -127,7 +145,7 @@ public class VerilogImporter implements Importer {
 	private HashSet<Module> getTopModule(HashMap<String, Module> modules) {
 		HashSet<Module> result = new HashSet<>(modules.values());
 		for (Module module: modules.values()) {
-			if (module.instances.isEmpty()) {
+			if (module.isEmpty()) {
 				result.remove(module);
 			}
 			for (Instance instance: module.instances) {
@@ -151,6 +169,10 @@ public class VerilogImporter implements Importer {
 			firstPort = false;
 		}
 		System.out.println(");");
+
+		for (Assign assign: module.assigns) {
+			System.out.println("    assign " + assign.name + " = " + assign.formula + ";");
+		}
 
 		for (Instance instance: module.instances) {
 			System.out.print("    " + instance.moduleName);
@@ -181,6 +203,10 @@ public class VerilogImporter implements Importer {
 		HashMap<Instance, FunctionComponent> instanceComponentMap = new HashMap<>();
 		Library library = readGenlib();
 		HashMap<String, Wire> wires = createPorts(circuit, topModule);
+		test();
+		for (Assign assign: topModule.assigns) {
+			createAssignBox(circuit, assign, wires);
+		}
 		for (Instance verilogInstance: topModule.instances) {
 			Gate gate = createPrimitiveGate(verilogInstance);
 			if (gate == null) {
@@ -200,6 +226,111 @@ public class VerilogImporter implements Importer {
 		setInitialState(circuit, wires, topModule.highSignals);
 		mergeGroups(circuit, topModule.groups, instanceComponentMap);
 		return circuit;
+	}
+
+	private FunctionComponent createAssignBox(Circuit circuit, Assign assign, HashMap<String, Wire> wires) {
+		final FunctionComponent component = new FunctionComponent();
+		circuit.add(component);
+		try {
+			circuit.setName(component, assign.name);
+		} catch (ArgumentException e) {
+			System.out.println("Warning: cannot set name '" + assign.name +"' for component '" + circuit.getName(component) + "'.");
+		}
+
+		AssignInstance assignInstance = createAssignInstance(assign);
+		boolean isFirstPin = true;
+		FunctionContact outContact = null;
+		for (Pin verilogPin: assignInstance.connections) {
+			Wire wire = wires.get(verilogPin.netName);
+			if (wire == null) {
+				wire = new Wire();
+				wires.put(verilogPin.netName, wire);
+			}
+			FunctionContact contact = new FunctionContact();
+			if ( !isFirstPin ) {
+				contact.setIOType(IOType.INPUT);
+				wire.sinks.add(contact);
+			} else {
+				contact.setIOType(IOType.OUTPUT);
+				outContact = contact;
+				wire.source = contact;
+			}
+			isFirstPin = false;
+			component.add(contact);
+			if (verilogPin.name != null) {
+				circuit.setName(contact, verilogPin.name);
+			}
+		}
+
+		if (outContact != null) {
+			try {
+				BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, assignInstance.setFunction.formula);
+				outContact.setSetFunction(setFormula);
+				BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, assignInstance.resetFunction.formula);
+				outContact.setSetFunction(resetFormula);
+			} catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return component;
+	}
+
+	private void test() {
+		InputStream is = new ByteArrayInputStream("(a + c)*(b + d)".getBytes());
+		ExpressionParser parser = new ExpressionParser(is);
+		Expression formula = null;
+		try {
+			formula = parser.parseExpression();
+		} catch (ParseException e1) {
+		}
+		System.out.println("f = " + formula);
+		HashMap<String, Boolean> assignments = new HashMap<>();
+		assignments.put("a", true);
+		assignments.put("b", false);
+		Expression eval = formula.eval(assignments);
+		System.out.println("f = " + eval);
+	}
+
+	private AssignInstance createAssignInstance(Assign assign) {
+		InputStream expressionStream = new ByteArrayInputStream(assign.formula.getBytes());
+		ExpressionParser parser = new ExpressionParser(expressionStream);
+		Expression formula = null;
+		try {
+			formula = parser.parseExpression();
+		} catch (ParseException e1) {
+			System.out.println("Warning: could not parse assign expression '" + assign.formula + "'.");
+		}
+		LinkedList<Pin> pins = new LinkedList<>();
+		HashMap<String, Boolean> setAssignments = new HashMap<>();
+		setAssignments.put(assign.name, true);
+		Expression setFormula = formula.eval(setAssignments);
+
+		HashMap<String, Boolean> resetAssignments = new HashMap<>();
+		resetAssignments.put(assign.name, false);
+		Expression resetFormula = formula.eval(resetAssignments);
+
+		int index = 0;
+		String outName = getPrimitiveGatePinName(0);
+		LinkedList<Literal> literals = new LinkedList<>();
+		literals.addAll(setFormula.getLiterals());
+		literals.addAll(resetFormula.getLiterals());
+		Collections.reverse(literals);
+		HashMap<String, String> netToPortMap = new HashMap<>();
+		for (Literal literal: literals) {
+			String netName = literal.name;
+			String name = netToPortMap.get(netName);
+			if (name == null) {
+				name = getPrimitiveGatePinName(++index);
+				netToPortMap.put(netName, name);
+			}
+			literal.name = name;
+			Pin pin = new Pin(name, netName);
+			pins.add(pin);
+		}
+
+		Function setFunction = new Function(outName, setFormula.toString());
+		Function resetFunction = new Function(outName, resetFormula.toString());
+		return new AssignInstance(setFunction, resetFunction, pins);
 	}
 
 	private Library readGenlib() {
@@ -316,11 +447,7 @@ public class VerilogImporter implements Importer {
 		FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
 		int index = 0;
 		for (Pin verilogPin: verilogInstance.connections) {
-			Wire wire = wires.get(verilogPin.netName);
-			if (wire == null) {
-				wire = new Wire();
-				wires.put(verilogPin.netName, wire);
-			}
+			Wire wire = getOrCreateWire(verilogPin.netName, wires);
 			String pinName = (gate.isPrimititve() ? getPrimitiveGatePinName(index++) : verilogPin.name);
 			Node node = circuit.getNodeByReference(component, pinName);
 			if (node instanceof FunctionContact) {
@@ -349,11 +476,7 @@ public class VerilogImporter implements Importer {
 		HashMap<String, Port> instancePorts = getModulePortMap(module);
 		for (Pin verilogPin: verilogInstance.connections) {
 			Port verilogPort = instancePorts.get(verilogPin.name);
-			Wire wire = wires.get(verilogPin.netName);
-			if (wire == null) {
-				wire = new Wire();
-				wires.put(verilogPin.netName, wire);
-			}
+			Wire wire = getOrCreateWire(verilogPin.netName, wires);
 			FunctionContact contact = new FunctionContact();
 			if ((verilogPort != null) && (verilogPort.isInput())) {
 				contact.setIOType(IOType.INPUT);
@@ -368,6 +491,15 @@ public class VerilogImporter implements Importer {
 			}
 		}
 		return component;
+	}
+
+	private Wire getOrCreateWire(String name, HashMap<String, Wire> wires) {
+		Wire wire = wires.get(name);
+		if (wire == null) {
+			wire = new Wire();
+			wires.put(name, wire);
+		}
+		return wire;
 	}
 
 	private void createConnections(Circuit circuit, Map<String, Wire> wires) {
@@ -421,7 +553,7 @@ public class VerilogImporter implements Importer {
 					rootComponent = component;
 				}
 			}
-			FunctionComponent complexComponent = mergeComponents1(circuit, rootComponent, components);
+			FunctionComponent complexComponent = mergeComponents(circuit, rootComponent, components);
 			for (FunctionComponent component: components) {
 				if (component == complexComponent) continue;
 				circuit.remove(component);
@@ -429,7 +561,7 @@ public class VerilogImporter implements Importer {
 		}
 	}
 
-	private FunctionComponent mergeComponents1(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> components) {
+	private FunctionComponent mergeComponents(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> components) {
 		boolean done = false;
 		do {
 			HashSet<FunctionComponent> leafComponents = new HashSet<>();
@@ -443,7 +575,7 @@ public class VerilogImporter implements Importer {
 			if ( leafComponents.isEmpty() ) {
 				done = true;
 			} else {
-				FunctionComponent newComponent = mergeComponents(circuit, rootComponent, leafComponents);
+				FunctionComponent newComponent = mergeLeafComponents(circuit, rootComponent, leafComponents);
 				components.remove(rootComponent);
 				circuit.remove(rootComponent);
 				rootComponent = newComponent;
@@ -452,7 +584,7 @@ public class VerilogImporter implements Importer {
 		return rootComponent;
 	}
 
-	private FunctionComponent mergeComponents(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> leafComponents) {
+	private FunctionComponent mergeLeafComponents(Circuit circuit, FunctionComponent rootComponent, HashSet<FunctionComponent> leafComponents) {
 		FunctionComponent component = null;
 		FunctionContact rootOutputContact = getOutputContact(circuit, rootComponent);
 		List<Contact> rootInputContacts = new LinkedList<>(rootComponent.getInputs());

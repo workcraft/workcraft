@@ -64,7 +64,7 @@ TOKEN :
 |   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
 |   <ANY_NAME : "*">
 |	<NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
-|   <EXPRESSION: "=" (~[";"])* ";">
+|   <FORMULA: "=" (~[";"])* ";">
 }
 
 Library parseGenlib() :
@@ -152,13 +152,13 @@ String parseName():
 Function parseFunction():
 {
     Token nameToken;
-    Token expressionToken;
+    Token formulaToken;
 }
 {
-    nameToken = <NAME> expressionToken = <EXPRESSION>
+    nameToken = <NAME> formulaToken = <FORMULA>
     {
-        String expression = expressionToken.image.replaceAll("^=", "").replaceAll(";$", "");
-        return new Function(nameToken.image, expression);
+        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        return new Function(nameToken.image, formula);
     }
 }
 

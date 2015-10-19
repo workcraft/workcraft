@@ -6,7 +6,8 @@ options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
   STATIC = false;
-  DEBUG_PARSER = true;
+  DEBUG_PARSER = false;
+  DEBUG_TOKEN_MANAGER = false;
 }
 
 PARSER_BEGIN(ExpressionParser)
@@ -24,90 +25,16 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
+import org.workcraft.plugins.circuit.expression.Expression;
+import org.workcraft.plugins.circuit.expression.Formula;
+import org.workcraft.plugins.circuit.expression.Term;
+import org.workcraft.plugins.circuit.expression.Factor;
+import org.workcraft.plugins.circuit.expression.Negation;
+import org.workcraft.plugins.circuit.expression.Literal;
+import org.workcraft.plugins.circuit.expression.Constant;
+
 public class ExpressionParser {
-    
-    public interface Expression {
-    	public String toString();
-    }
 
-    public class ExpressionExpression implements Expression {
-        public final List<Expression> expressions;
-        public ExpressionExpression(List<Expression> expressions) {
-            this.expressions = expressions;
-        }
-        public String toString() {
-        	String result = "";
-        	boolean first = true;
-        	for (Expression expression: expressions) {
-        		if (!first) {
-        			result += "+";
-        		}
-        		result += expression.toString();
-        		first = false;
-        	}
-        	return result;
-        }
-    }
-
-    public class TermExpression implements Expression {
-        public final List<Expression> expressions;
-        public TermExpression(List<Expression> expressions) {
-            this.expressions = expressions;
-        }
-        public String toString() {
-        	String result = "";
-        	boolean first = true;
-        	for (Expression expression: expressions) {
-        		if (!first) {
-        			result += "*";
-        		}
-        		result += expression.toString();
-        		first = false;
-        	}
-        	return result;
-        }
-    }
-    
-    public class FactorExpression implements Expression {
-        public final Expression expression;
-        public FactorExpression(Expression expression) {
-            this.expression = expression;
-        }
-        public String toString() {
-        	return "(" + expression.toString() + ")";
-        }
-    }
-
-    public class NotExpression implements Expression {
-        public final Expression expression;
-        public NotExpression(Expression expression) {
-            this.expression = expression;
-        }
-        public String toString() {
-        	return expression.toString() + "'";
-        }
-    }
-
-    public class LiteralExpression implements Expression {
-        public final String name;
-        public LiteralExpression(String name) {
-            this.name = name;
-        }
-        public String toString() {
-        	return name;
-        }
-    }
-
-    public class ConstantExpression implements Expression {
-        public final boolean value;
-        public ConstantExpression(boolean value) {
-            this.value = value;
-        }
-        public String toString() {
-        	return (value ? "1" : "0");
-        }
-    }
-    
 }
 PARSER_END(ExpressionParser)
 
@@ -122,8 +49,8 @@ SKIP:
 
 TOKEN :
 {
-    <CONST0 : "CONST0">
-|   <CONST1 : "CONST1">
+    <CONST0 : "0">
+|   <CONST1 : "1">
 |   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
 |   "("
 |   ")"
@@ -143,13 +70,19 @@ Expression parseExpression():
 		{
 			terms.add(term);
 		}
-		( "+"  term = parseTerm() )*
-		{
-			terms.add(term); 
-		}
+		( 
+			("+" | "|" | "||")  term = parseTerm()
+			{
+				terms.add(term); 
+			}
+		)*
 	)
 	{
-		return new ExpressionExpression(terms);
+		if (terms.size() > 1) {
+			return new Formula(terms);
+		} else {
+			return term;
+		}
 	}
 }
 
@@ -164,32 +97,41 @@ Expression parseTerm():
 		{
 			factors.add(factor);
 		} 
-		( ["*"] factor = parseFactor() )*
-		{
-			factors.add(factor);
-		} 
+		( 
+			["*" | "&" | "&&"] factor = parseFactor() 
+			{
+				factors.add(factor);
+			} 
+		)*
 	)
 	{
-		return new TermExpression(factors);
+		if (factors.size() > 1) {
+			return new Term(factors);
+		} else {
+			return factor;
+		}
 	}
 }
 
 Expression parseFactor():
 {
-	Expression factor;
+	Expression expression;
 }
 {
 	(
-		factor = parseLiteral()
-	|	factor = parseConstant()
-	|	"!" factor = parseFactor()
+		expression = parseLiteral()
+	|	expression = parseConstant()
+	|	("!" | "~") expression = parseFactor()
 		{
-			return new NotExpression(factor);
+			return new Negation(expression);
 		}
-	| 	"(" factor = parseExpression() ")"
+	| 	"(" expression = parseExpression() ")"
+		{
+			return new Factor(expression);
+		}
 	)
 	{
-		return factor;
+		return expression;
 	}
 }
 
@@ -201,7 +143,7 @@ Expression parseLiteral():
 	nameToken = <NAME>
 	{
 		String name = nameToken.image;
-		return new LiteralExpression(name);
+		return new Literal(name);
 	}
 }
 
@@ -212,11 +154,11 @@ Expression parseConstant():
 	( 
 		<CONST0>
 		{
-			return new ConstantExpression(false);
+			return new Constant(false);
 		}
 	|	<CONST1>
 		{
-			return new ConstantExpression(true);
+			return new Constant(true);
 		}
 	)
 }

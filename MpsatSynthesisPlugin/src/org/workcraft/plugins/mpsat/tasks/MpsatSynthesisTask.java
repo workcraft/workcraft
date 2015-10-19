@@ -59,6 +59,8 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 				if (gateLibraryFile.exists()) {
 					command.add("-d");
 					command.add(gateLibraryFile.getAbsolutePath());
+				} else {
+					System.out.println("Warning: cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
 				}
 			}
 		}

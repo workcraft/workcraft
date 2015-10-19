@@ -27,8 +27,7 @@ import org.workcraft.plugins.cpog.optimisation.SimpleBooleanFormula;
 
 public class And extends BinaryBooleanFormula implements SimpleBooleanFormula {
 
-	And(BooleanFormula x, BooleanFormula y)
-	{
+	And(BooleanFormula x, BooleanFormula y) {
 		super(x,y);
 	}
 

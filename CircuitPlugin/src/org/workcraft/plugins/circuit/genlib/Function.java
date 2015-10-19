@@ -2,11 +2,11 @@ package org.workcraft.plugins.circuit.genlib;
 
 public class Function {
 	public final String name;
-	public final String expression;
+	public final String formula;
 
-	public Function(String name, String expression) {
+	public Function(String name, String formula) {
 		this.name = name;
-		this.expression = expression;
+		this.formula = formula;
 	}
 
 }

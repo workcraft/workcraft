@@ -35,7 +35,7 @@ public class GenlibUtils {
 		String setFunction = getSetFunction(gate);
 		String resetFunction = getResetFunction(gate);
 		if (CommonDebugSettings.getVerboseImport()) {
-			System.out.println("Info: Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.expression);
+			System.out.println("Info: Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
 			System.out.println("  Set function: " + setFunction);
 			System.out.println("  Reset function: " + resetFunction);
 		}
@@ -53,9 +53,9 @@ public class GenlibUtils {
 	private static String getSetFunction(Gate gate) {
 		String result = null;
 		if ( !gate.isSequential() ) {
-			result = gate.function.expression;
+			result = gate.function.formula;
 		} else {
-			for (String term: getTerms(gate.function.expression)) {
+			for (String term: getTerms(gate.function.formula)) {
 				if (!term.contains(gate.seq)) {
 					if (result == null) {
 						result = "";
@@ -72,7 +72,7 @@ public class GenlibUtils {
 	private static String getResetFunction(Gate gate) {
 		String result = null;
 		if (gate.isSequential()) {
-			for (String term: getTerms(gate.function.expression)) {
+			for (String term: getTerms(gate.function.formula)) {
 				if (term.contains(gate.seq)) {
 					if (result == null) {
 						result = "";

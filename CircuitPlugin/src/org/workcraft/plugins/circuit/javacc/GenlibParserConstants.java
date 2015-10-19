@@ -53,7 +53,7 @@ public interface GenlibParserConstants {
   /** RegularExpression Id. */
   int NUMERAL = 26;
   /** RegularExpression Id. */
-  int EXPRESSION = 27;
+  int FORMULA = 27;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -87,7 +87,7 @@ public interface GenlibParserConstants {
     "<ESCAPESEQ>",
     "\"*\"",
     "<NUMERAL>",
-    "<EXPRESSION>",
+    "<FORMULA>",
   };
 
 }
