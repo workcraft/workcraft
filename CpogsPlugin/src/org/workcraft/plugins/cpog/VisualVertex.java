@@ -29,6 +29,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
@@ -58,7 +60,8 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	public enum RenderType {
 		CIRCLE("Circle"),
-		SQUARE("Square");
+		SQUARE("Square"),
+		LABEL("Label");
 
 		private final String name;
 
@@ -120,6 +123,9 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 				break;
 			case SQUARE:
 				shape = new Rectangle2D.Double(xy, xy, wh, wh);
+				break;
+			case LABEL:
+				shape = new Path2D.Double();
 				break;
 			default:
 				shape = new Ellipse2D.Double(xy, xy, wh, wh);
@@ -212,7 +218,11 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+		Shape shape = getShape();
+		if (getRenderType() == RenderType.LABEL) {
+			shape = getLabelBoundingBox();
+		}
+		return shape.contains(pointInLocalSpace);
 	}
 
 	public RenderType getRenderType() {
@@ -224,6 +234,14 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 			this.renderType = renderType;
 			sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
 		}
+	}
+
+	@Override
+	public Positioning getLabelPositioning() {
+		if (getRenderType() == RenderType.LABEL) {
+			return Positioning.CENTER;
+		}
+		return super.getLabelPositioning();
 	}
 
 	@Override

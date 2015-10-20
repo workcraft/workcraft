@@ -54,6 +54,7 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.Expression;
+import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
 import org.workcraft.plugins.circuit.genlib.Function;
 import org.workcraft.plugins.circuit.genlib.Gate;
@@ -77,12 +78,14 @@ import org.workcraft.workspace.ModelEntry;
 
 public class VerilogImporter implements Importer {
 
-	class AssignInstance {
-		public final Function setFunction;
-		public final Function resetFunction;
-		public final List<Pin> connections;
+	class AssignGate {
+		public final String outputName;
+		public final String setFunction;
+		public final String resetFunction;
+		public final HashMap<String, String> connections; // (portName -> netName)
 
-		public AssignInstance(Function setFunction, Function resetFunction, List<Pin> connections) {
+		public AssignGate(String outputName, String setFunction, String resetFunction, HashMap<String, String> connections) {
+			this.outputName = outputName;
 			this.setFunction = setFunction;
 			this.resetFunction = resetFunction;
 			this.connections = connections;
@@ -203,9 +206,8 @@ public class VerilogImporter implements Importer {
 		HashMap<Instance, FunctionComponent> instanceComponentMap = new HashMap<>();
 		Library library = readGenlib();
 		HashMap<String, Wire> wires = createPorts(circuit, topModule);
-		test();
 		for (Assign assign: topModule.assigns) {
-			createAssignBox(circuit, assign, wires);
+			createAssignGate(circuit, assign, wires);
 		}
 		for (Instance verilogInstance: topModule.instances) {
 			Gate gate = createPrimitiveGate(verilogInstance);
@@ -228,7 +230,7 @@ public class VerilogImporter implements Importer {
 		return circuit;
 	}
 
-	private FunctionComponent createAssignBox(Circuit circuit, Assign assign, HashMap<String, Wire> wires) {
+	private FunctionComponent createAssignGate(Circuit circuit, Assign assign, HashMap<String, Wire> wires) {
 		final FunctionComponent component = new FunctionComponent();
 		circuit.add(component);
 		try {
@@ -237,37 +239,35 @@ public class VerilogImporter implements Importer {
 			System.out.println("Warning: cannot set name '" + assign.name +"' for component '" + circuit.getName(component) + "'.");
 		}
 
-		AssignInstance assignInstance = createAssignInstance(assign);
-		boolean isFirstPin = true;
+		AssignGate assignGate = createAssignCombinationalGate(assign);
 		FunctionContact outContact = null;
-		for (Pin verilogPin: assignInstance.connections) {
-			Wire wire = wires.get(verilogPin.netName);
+		for (Map.Entry<String, String> connection: assignGate.connections.entrySet()) {
+			Wire wire = wires.get(connection.getValue());
 			if (wire == null) {
 				wire = new Wire();
-				wires.put(verilogPin.netName, wire);
+				wires.put(connection.getValue(), wire);
 			}
 			FunctionContact contact = new FunctionContact();
-			if ( !isFirstPin ) {
-				contact.setIOType(IOType.INPUT);
-				wire.sinks.add(contact);
-			} else {
+			if (connection.getKey().equals(assignGate.outputName)) {
 				contact.setIOType(IOType.OUTPUT);
 				outContact = contact;
 				wire.source = contact;
+			} else {
+				contact.setIOType(IOType.INPUT);
+				wire.sinks.add(contact);
 			}
-			isFirstPin = false;
 			component.add(contact);
-			if (verilogPin.name != null) {
-				circuit.setName(contact, verilogPin.name);
+			if (connection.getKey() != null) {
+				circuit.setName(contact, connection.getKey());
 			}
 		}
 
 		if (outContact != null) {
 			try {
-				BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, assignInstance.setFunction.formula);
+				BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.setFunction);
 				outContact.setSetFunction(setFormula);
-				BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, assignInstance.resetFunction.formula);
-				outContact.setSetFunction(resetFormula);
+				BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.resetFunction);
+				outContact.setResetFunction(resetFormula);
 			} catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e) {
 				throw new RuntimeException(e);
 			}
@@ -275,46 +275,17 @@ public class VerilogImporter implements Importer {
 		return component;
 	}
 
-	private void test() {
-		InputStream is = new ByteArrayInputStream("(a + c)*(b + d)".getBytes());
-		ExpressionParser parser = new ExpressionParser(is);
-		Expression formula = null;
-		try {
-			formula = parser.parseExpression();
-		} catch (ParseException e1) {
-		}
-		System.out.println("f = " + formula);
-		HashMap<String, Boolean> assignments = new HashMap<>();
-		assignments.put("a", true);
-		assignments.put("b", false);
-		Expression eval = formula.eval(assignments);
-		System.out.println("f = " + eval);
-	}
-
-	private AssignInstance createAssignInstance(Assign assign) {
-		InputStream expressionStream = new ByteArrayInputStream(assign.formula.getBytes());
-		ExpressionParser parser = new ExpressionParser(expressionStream);
-		Expression formula = null;
-		try {
-			formula = parser.parseExpression();
-		} catch (ParseException e1) {
-			System.out.println("Warning: could not parse assign expression '" + assign.formula + "'.");
-		}
-		LinkedList<Pin> pins = new LinkedList<>();
-		HashMap<String, Boolean> setAssignments = new HashMap<>();
-		setAssignments.put(assign.name, true);
-		Expression setFormula = formula.eval(setAssignments);
-
-		HashMap<String, Boolean> resetAssignments = new HashMap<>();
-		resetAssignments.put(assign.name, false);
-		Expression resetFormula = formula.eval(resetAssignments);
-
+	private AssignGate createAssignGate(Assign assign) {
+		Expression expression = getAssignExpression(assign);
+		Expression setExpression = ExpressionUtils.evalExpression(expression, assign.name, true);
+		Expression resetExpression = ExpressionUtils.evalExpression(expression, assign.name, false);
 		int index = 0;
-		String outName = getPrimitiveGatePinName(0);
+		String outputName = getPrimitiveGatePinName(0);
 		LinkedList<Literal> literals = new LinkedList<>();
-		literals.addAll(setFormula.getLiterals());
-		literals.addAll(resetFormula.getLiterals());
+		literals.addAll(setExpression.getLiterals());
+		literals.addAll(resetExpression.getLiterals());
 		Collections.reverse(literals);
+		HashMap<String, String> connections = new HashMap<>();
 		HashMap<String, String> netToPortMap = new HashMap<>();
 		for (Literal literal: literals) {
 			String netName = literal.name;
@@ -324,13 +295,41 @@ public class VerilogImporter implements Importer {
 				netToPortMap.put(netName, name);
 			}
 			literal.name = name;
-			Pin pin = new Pin(name, netName);
-			pins.add(pin);
+			connections.put(name, netName);
 		}
+		String setFunction = setExpression.toString();
+		String resetFunction = resetExpression.toString();
+		return new AssignGate(outputName, setFunction, resetFunction, connections);
+	}
 
-		Function setFunction = new Function(outName, setFormula.toString());
-		Function resetFunction = new Function(outName, resetFormula.toString());
-		return new AssignInstance(setFunction, resetFunction, pins);
+	private AssignGate createAssignCombinationalGate(Assign assign) {
+		Expression expression = getAssignExpression(assign);
+		int index = 0;
+		HashMap<String, String> connections = new HashMap<>(); // (port -> net)
+		String outputName = getPrimitiveGatePinName(0);
+		connections.put(outputName, assign.name);
+		LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
+		Collections.reverse(literals);
+		for (Literal literal: literals) {
+			String netName = literal.name;
+			String name = getPrimitiveGatePinName(++index);
+			literal.name = name;
+			connections.put(name, netName);
+		}
+		String function = expression.toString();
+		return new AssignGate(outputName, function, null, connections);
+	}
+
+	private Expression getAssignExpression(Assign assign) {
+		InputStream expressionStream = new ByteArrayInputStream(assign.formula.getBytes());
+		ExpressionParser parser = new ExpressionParser(expressionStream);
+		Expression expression = null;
+		try {
+			expression = parser.parseExpression();
+		} catch (ParseException e1) {
+			System.out.println("Warning: could not parse assign expression '" + assign.formula + "'.");
+		}
+		return expression;
 	}
 
 	private Library readGenlib() {
