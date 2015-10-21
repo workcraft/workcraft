@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 public interface Expression {
+	public boolean isAtomic();
 	public String toString();
 	public Collection<Literal> getLiterals();
 	public Expression eval();

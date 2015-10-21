@@ -15,6 +15,11 @@ public class Term implements Expression {
         this.expressions = expressions;
     }
 
+	@Override
+	public boolean isAtomic() {
+		return false;
+	}
+
     @Override
     public String toString() {
     	String result = "";

@@ -12,6 +12,11 @@ public class Factor implements Expression {
         this.expression = expression;
     }
 
+	@Override
+	public boolean isAtomic() {
+		return false;
+	}
+
     @Override
     public String toString() {
     	return "(" + expression.toString() + ")";

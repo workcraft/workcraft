@@ -13,6 +13,11 @@ public class Literal implements Expression {
         this.name = name;
     }
 
+	@Override
+	public boolean isAtomic() {
+		return true;
+	}
+
     @Override
     public String toString() {
     	return name;

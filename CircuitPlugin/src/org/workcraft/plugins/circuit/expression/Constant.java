@@ -14,6 +14,11 @@ public class Constant implements Expression {
     }
 
 	@Override
+	public boolean isAtomic() {
+		return true;
+	}
+
+	@Override
 	public String toString() {
     	return (value ? "1" : "0");
     }

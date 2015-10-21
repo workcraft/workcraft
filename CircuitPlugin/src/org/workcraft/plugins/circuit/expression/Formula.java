@@ -15,6 +15,11 @@ public class Formula implements Expression {
         this.expressions = expressions;
     }
 
+	@Override
+	public boolean isAtomic() {
+		return false;
+	}
+
     @Override
     public String toString() {
     	String result = "";
@@ -53,6 +58,8 @@ public class Formula implements Expression {
     			if (constant.value) {
     				return new Constant(true);
     			}
+    		} else if (evalExpression instanceof Formula) {
+    			evalExpressions.addAll(((Formula) evalExpression).expressions);
     		} else {
     			evalExpressions.add(evalExpression);
     		}

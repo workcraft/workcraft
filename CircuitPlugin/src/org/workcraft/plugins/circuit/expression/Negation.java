@@ -12,9 +12,18 @@ public class Negation implements Expression {
         this.expression = expression;
     }
 
+	@Override
+	public boolean isAtomic() {
+		return true;
+	}
+
     @Override
     public String toString() {
-    	return expression.toString() + "'";
+    	if (expression.isAtomic()) {
+    		return expression.toString() + "'";
+    	} else {
+    		return "(" + expression.toString() + ")'";
+    	}
     }
 
 	@Override

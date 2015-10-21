@@ -2,8 +2,20 @@ package org.workcraft.plugins.circuit.verilog;
 
 public class Port {
 	public enum Type {
-		INPUT, OUTPUT
-	};
+		INPUT("input"),
+		OUTPUT("output");
+
+		private final String name;
+
+		private Type(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+	}
 
 	public final String name;
 	public final Type type;
