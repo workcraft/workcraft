@@ -52,7 +52,7 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 			if (CircuitSettings.getOpenSynthesisResult() && (verilog != null)) {
 				try {
 					ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
-					VerilogImporter verilogImporter = new VerilogImporter(true, false);
+					VerilogImporter verilogImporter = new VerilogImporter();
 					final Circuit circuit = verilogImporter.importCircuit(in);
 					Path<String> path = we.getWorkspacePath();
 					final Path<String> directory = path.getParent();

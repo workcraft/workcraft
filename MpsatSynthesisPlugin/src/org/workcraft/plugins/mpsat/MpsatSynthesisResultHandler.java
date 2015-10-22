@@ -56,14 +56,14 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 		ExternalProcessResult mpsatReturnValue = returnValue.getMpsatResult().getReturnValue();
 		switch (mpsatMode) {
 		case COMPLEX_GATE_IMPLEMENTATION:
-			handleSynthesisResult(mpsatReturnValue, false, false);
+			handleSynthesisResult(mpsatReturnValue, false);
 			break;
 		case GENERALISED_CELEMENT_IMPLEMENTATION:
 		case STANDARD_CELEMENT_IMPLEMENTATION:
-			handleSynthesisResult(mpsatReturnValue, false, true);
+			handleSynthesisResult(mpsatReturnValue, true);
 			break;
 		case TECH_MAPPING:
-			handleSynthesisResult(mpsatReturnValue, true, false);
+			handleSynthesisResult(mpsatReturnValue, false);
 			break;
 		default:
 			SwingUtilities.invokeLater(new Runnable() {
@@ -126,7 +126,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 		});
 	}
 
-	private void handleSynthesisResult(ExternalProcessResult mpsatResult, boolean useGenlib, boolean sequentialAssign) {
+	private void handleSynthesisResult(ExternalProcessResult mpsatResult, boolean sequentialAssign) {
 		final String log = new String(mpsatResult.getOutput());
 		if ((log != null) && !log.isEmpty()) {
 			System.out.println(log);
@@ -141,7 +141,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 		if (CircuitSettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
 			try {
 				ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
-				VerilogImporter verilogImporter = new VerilogImporter(useGenlib, sequentialAssign);
+				VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
 				final Circuit circuit = verilogImporter.importCircuit(in);
 				final WorkspaceEntry we = task.getWorkspaceEntry();
 				Path<String> path = we.getWorkspacePath();

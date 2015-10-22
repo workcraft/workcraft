@@ -56,7 +56,6 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.Expression;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.expression.Literal;
-import org.workcraft.plugins.circuit.expression.Negation;
 import org.workcraft.plugins.circuit.genlib.Function;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
@@ -73,7 +72,6 @@ import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
 
@@ -97,8 +95,9 @@ public class VerilogImporter implements Importer {
 	private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
 	private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
 	private static final String ASSIGN_GATE_PREFIX = "assign_";
+	private static final char ASSIGN_TERM_DELIMITER = '|';
+	private static final char ASSIGN_FACTOR_DELIMITER = '&';
 
-	private final boolean useGenlib;
 	private final boolean sequentialAssign;
 
 	private class Wire {
@@ -107,11 +106,10 @@ public class VerilogImporter implements Importer {
 	}
 
 	public VerilogImporter() {
-		this(true, false);
+		this(false);
 	}
 
-	public VerilogImporter(boolean useGenlib, boolean sequentialAssign) {
-		this.useGenlib = useGenlib;
+	public VerilogImporter(boolean sequentialAssign) {
 		this.sequentialAssign = sequentialAssign;
 	}
 
@@ -219,14 +217,17 @@ public class VerilogImporter implements Importer {
 	private Circuit createCircuit(Module topModule, HashMap<String, Module> modules) {
 		Circuit circuit = new Circuit();
 		HashMap<Instance, FunctionComponent> instanceComponentMap = new HashMap<>();
-		Library library = readGenlib();
 		HashMap<String, Wire> wires = createPorts(circuit, topModule);
 		for (Assign assign: topModule.assigns) {
 			createAssignGate(circuit, assign, wires);
 		}
+		Library library = null;
 		for (Instance verilogInstance: topModule.instances) {
 			Gate gate = createPrimitiveGate(verilogInstance);
 			if (gate == null) {
+				if (library == null) {
+					library = readGenlib();
+				}
 				gate = library.get(verilogInstance.moduleName);
 			}
 			FunctionComponent component = null;
@@ -255,10 +256,10 @@ public class VerilogImporter implements Importer {
 		}
 
 		AssignGate assignGate = null;
-		if (sequentialAssign) {
-			assignGate = createAssignSequentialGate(assign);
+		if (sequentialAssign && isSequentialAssign(assign)) {
+			assignGate = createSequentialAssignGate(assign);
 		} else {
-			assignGate = createAssignCombinationalGate(assign);
+			assignGate = createCombinationalAssignGate(assign);
 		}
 		FunctionContact outContact = null;
 		for (Map.Entry<String, String> connection: assignGate.connections.entrySet()) {
@@ -295,10 +296,44 @@ public class VerilogImporter implements Importer {
 		return component;
 	}
 
-	private AssignGate createAssignSequentialGate(Assign assign) {
-		Expression expression = getAssignExpression(assign);
-		Expression setExpression = ExpressionUtils.evalAndSimplify(expression, assign.name, true);
-		Expression resetExpression = new Negation(ExpressionUtils.evalAndSimplify(expression, assign.name, false));
+	private boolean isSequentialAssign(Assign assign) {
+		Expression expression = convertStringToExpression(assign.formula);
+		LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
+		for (Literal literal: literals) {
+			if (assign.name.equals(literal.name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private AssignGate createCombinationalAssignGate(Assign assign) {
+		Expression expression = convertStringToExpression(assign.formula);
+		int index = 0;
+		HashMap<String, String> connections = new HashMap<>(); // (port -> net)
+		String outputName = getPrimitiveGatePinName(0);
+		connections.put(outputName, assign.name);
+		LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
+		Collections.reverse(literals);
+		for (Literal literal: literals) {
+			String netName = literal.name;
+			String name = getPrimitiveGatePinName(++index);
+			literal.name = name;
+			connections.put(name, netName);
+		}
+		return new AssignGate(outputName, expression.toString(), null, connections);
+	}
+
+	private AssignGate createSequentialAssignGate(Assign assign) {
+		Expression expression = convertStringToExpression(assign.formula);
+
+		String setFunction = ExpressionUtils.extactSetExpression(assign.formula, assign.name,
+				ASSIGN_TERM_DELIMITER, ASSIGN_FACTOR_DELIMITER);
+		Expression setExpression = convertStringToExpression(setFunction);
+
+		String resetFunction = ExpressionUtils.extactResetExpression(assign.formula, assign.name,
+				ASSIGN_TERM_DELIMITER, ASSIGN_FACTOR_DELIMITER);
+		Expression resetExpression = convertStringToExpression(resetFunction);
 
 		HashMap<String, String> connections = new HashMap<>();
 		String outputName = getPrimitiveGatePinName(0);
@@ -320,58 +355,36 @@ public class VerilogImporter implements Importer {
 			literal.name = name;
 			connections.put(name, netName);
 		}
-		String setFunction = setExpression.toString();
-		String resetFunction = resetExpression.toString();
-		return new AssignGate(outputName, setFunction, resetFunction, connections);
+		return new AssignGate(outputName, setExpression.toString(), resetExpression.toString(), connections);
 	}
 
-	private AssignGate createAssignCombinationalGate(Assign assign) {
-		Expression expression = getAssignExpression(assign);
-		int index = 0;
-		HashMap<String, String> connections = new HashMap<>(); // (port -> net)
-		String outputName = getPrimitiveGatePinName(0);
-		connections.put(outputName, assign.name);
-		LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
-		Collections.reverse(literals);
-		for (Literal literal: literals) {
-			String netName = literal.name;
-			String name = getPrimitiveGatePinName(++index);
-			literal.name = name;
-			connections.put(name, netName);
-		}
-		String function = expression.toString();
-		return new AssignGate(outputName, function, null, connections);
-	}
-
-	private Expression getAssignExpression(Assign assign) {
-		InputStream expressionStream = new ByteArrayInputStream(assign.formula.getBytes());
+	private Expression convertStringToExpression(String formula) {
+		InputStream expressionStream = new ByteArrayInputStream(formula.getBytes());
 		ExpressionParser parser = new ExpressionParser(expressionStream);
 		Expression expression = null;
 		try {
 			expression = parser.parseExpression();
 		} catch (ParseException e1) {
-			System.out.println("Warning: could not parse assign expression '" + assign.formula + "'.");
+			System.out.println("Warning: could not parse assign expression '" + formula + "'.");
 		}
 		return expression;
 	}
 
 	private Library readGenlib() {
 		Library library = new Library();
-		if (useGenlib) {
-			String libraryFileName = CircuitSettings.getGateLibrary();
-			if ((libraryFileName == null) || libraryFileName.isEmpty()) {
-				System.out.println("Warning: gate library file is not specified.");
-			} else {
-				File libraryFile = new File(libraryFileName);
-				final Framework framework = Framework.getInstance();
-				if (framework.checkFile(libraryFile, "Gate library access error")) {
-					try {
-						InputStream genlibInputStream = new FileInputStream(CircuitSettings.getGateLibrary());
-						library = new GenlibParser(genlibInputStream).parseGenlib();
-					} catch (FileNotFoundException e) {
-					} catch (ParseException e) {
-						System.out.println("Warning: could not parse the gate library '" + libraryFileName + "'.");
-					}
+		String libraryFileName = CircuitSettings.getGateLibrary();
+		if ((libraryFileName == null) || libraryFileName.isEmpty()) {
+			System.out.println("Warning: gate library file is not specified.");
+		} else {
+			File libraryFile = new File(libraryFileName);
+			final Framework framework = Framework.getInstance();
+			if (framework.checkFile(libraryFile, "Gate library access error")) {
+				try {
+					InputStream genlibInputStream = new FileInputStream(CircuitSettings.getGateLibrary());
+					library = new GenlibParser(genlibInputStream).parseGenlib();
+				} catch (FileNotFoundException e) {
+				} catch (ParseException e) {
+					System.out.println("Warning: could not parse the gate library '" + libraryFileName + "'.");
 				}
 			}
 		}
