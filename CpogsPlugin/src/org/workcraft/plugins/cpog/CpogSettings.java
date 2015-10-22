@@ -48,7 +48,7 @@ public class CpogSettings implements Settings {
 	private static final String defaultEspressoCommand = "espresso";
 	private static final String defaultAbcFolder = "abc/";
 	private static final String defaultGatesLibrary = "90nm.genlib";
-	private static final String defaultPGMinerCommand = "pgminer-algebra";
+	private static final String defaultPGMinerCommand = "pgminer";
 	private static final boolean defaultUseSubscript = false;
 
 	private static SatSolver satSolver = defaultSatSolver;

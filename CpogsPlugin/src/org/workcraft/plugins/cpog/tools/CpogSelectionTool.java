@@ -468,7 +468,6 @@ public class CpogSelectionTool extends SelectionTool {
         visualCpog.select(prevSelection);
 
 
-
         return null;
     }
 	}

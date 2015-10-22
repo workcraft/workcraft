@@ -12,7 +12,7 @@ import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MineSelectedGraphs extends PGMinerTool{
+public class MineSelectedGraphs extends PGMinerTool {
 
 	public String getDisplayName() {
 		return "Extract concurrency";
@@ -20,6 +20,7 @@ public class MineSelectedGraphs extends PGMinerTool{
 
 	@Override
 	public File getInputFile(WorkspaceEntry we) {
+		System.out.println("Start mine selected: " + System.nanoTime() / 1000000);
 		File inputFile = null;
 		try {
 			VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();

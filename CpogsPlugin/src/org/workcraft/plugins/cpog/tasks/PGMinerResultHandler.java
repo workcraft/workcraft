@@ -74,7 +74,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 						e.printStackTrace();
 					}
 					}
-					byte[] output = result.getReturnValue().getOutputFile("output.1.cpog");
+					byte[] output = result.getReturnValue().getOutputFile("output.cpog");
 					String text = new String(output);
 					String line[] = text.split("\r\n");
 
@@ -101,6 +101,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("End of result: " + System.nanoTime() / 1000000);
 	}
 
 }

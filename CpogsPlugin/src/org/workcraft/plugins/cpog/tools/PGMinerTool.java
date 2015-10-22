@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.tools;
 
 import java.io.File;
+
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -34,7 +35,6 @@ public abstract class PGMinerTool implements Tool {
 		try {
 
 			File inputFile = getInputFile(we);
-
 			PGMinerTask task = new PGMinerTask(inputFile);
 
 			final Framework framework = Framework.getInstance();
@@ -43,6 +43,9 @@ public abstract class PGMinerTool implements Tool {
 		} catch (ArrayIndexOutOfBoundsException | OperationCancelledException e) {
 
 		}
+
+
+
 
 	}
 

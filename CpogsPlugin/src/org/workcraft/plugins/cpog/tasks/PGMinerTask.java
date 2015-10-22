@@ -47,7 +47,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 			try {
 				File outputFile = getOutputFile(inputFile);
 				if(outputFile.exists()) {
-					outputFiles.put("output.1.cpog", FileUtils.readAllBytes(outputFile));
+					outputFiles.put("output.cpog", FileUtils.readAllBytes(outputFile));
 				}
 			} catch (IOException e) {
 				return new Result<ExternalProcessResult>(e);
@@ -74,7 +74,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 		int index = filePath.lastIndexOf('/');
 		String fileName = filePath.substring(index + 1);
 		String suffix = fileName.substring(fileName.indexOf('.'));
-		fileName = fileName.replace(suffix, "") + ".1.cpog";
+		fileName = fileName.replace(suffix, "") + ".cpog";
 		filePath = filePath.substring(0, index + 1);
 		File outputFile = new File(filePath + fileName);
 
