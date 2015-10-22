@@ -78,8 +78,9 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
 			monitor.progressUpdate(0.66);
 
 			// Run MPSat on the generated unfolding
+			boolean needLib = settings.getMode().needLib();
 			MpsatSynthesisTask mpsatTask = new MpsatSynthesisTask(settings.getMpsatArguments(directory),
-					unfoldingFile.getCanonicalPath(), directory, tryPnml);
+					unfoldingFile.getCanonicalPath(), directory, tryPnml, needLib);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running mpsat model-checking", subtaskMonitor);
 

@@ -31,9 +31,9 @@ public class ExpressionParser implements ExpressionParserConstants {
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case 9:
+      case 10:
       case 11:
-      case 14:
-      case 15:
         ;
         break;
       default:
@@ -41,14 +41,14 @@ public class ExpressionParser implements ExpressionParserConstants {
         break label_1;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case 9:
+        jj_consume_token(9);
+        break;
+      case 10:
+        jj_consume_token(10);
+        break;
       case 11:
         jj_consume_token(11);
-        break;
-      case 14:
-        jj_consume_token(14);
-        break;
-      case 15:
-        jj_consume_token(15);
         break;
       default:
         jj_la1[1] = jj_gen;
@@ -58,7 +58,11 @@ public class ExpressionParser implements ExpressionParserConstants {
       term = parseTerm();
                                 terms.add(term);
     }
-                {if (true) return new Formula(terms);}
+                if (terms.size() > 1) {
+                        {if (true) return new Formula(terms);}
+                } else {
+                        {if (true) return term;}
+                }
     throw new Error("Missing return statement in function");
   }
 
@@ -73,12 +77,12 @@ public class ExpressionParser implements ExpressionParserConstants {
       case CONST0:
       case CONST1:
       case NAME:
-      case 9:
       case 12:
       case 13:
+      case 14:
+      case 15:
       case 16:
       case 17:
-      case 18:
         ;
         break;
       default:
@@ -87,17 +91,17 @@ public class ExpressionParser implements ExpressionParserConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 12:
-      case 16:
-      case 17:
+      case 13:
+      case 14:
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case 12:
           jj_consume_token(12);
           break;
-        case 16:
-          jj_consume_token(16);
+        case 13:
+          jj_consume_token(13);
           break;
-        case 17:
-          jj_consume_token(17);
+        case 14:
+          jj_consume_token(14);
           break;
         default:
           jj_la1[3] = jj_gen;
@@ -112,7 +116,11 @@ public class ExpressionParser implements ExpressionParserConstants {
       factor = parseFactor();
                                 factors.add(factor);
     }
-                {if (true) return new Term(factors);}
+                if (factors.size() > 1) {
+                        {if (true) return new Term(factors);}
+                } else {
+                        {if (true) return factor;}
+                }
     throw new Error("Missing return statement in function");
   }
 
@@ -126,14 +134,14 @@ public class ExpressionParser implements ExpressionParserConstants {
     case CONST1:
       expression = parseConstant();
       break;
-    case 13:
-    case 18:
+    case 15:
+    case 16:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 13:
-        jj_consume_token(13);
+      case 15:
+        jj_consume_token(15);
         break;
-      case 18:
-        jj_consume_token(18);
+      case 16:
+        jj_consume_token(16);
         break;
       default:
         jj_la1[5] = jj_gen;
@@ -143,10 +151,10 @@ public class ExpressionParser implements ExpressionParserConstants {
       expression = parseFactor();
                         {if (true) return new Negation(expression);}
       break;
-    case 9:
-      jj_consume_token(9);
+    case 17:
+      jj_consume_token(17);
       expression = parseExpression();
-      jj_consume_token(10);
+      jj_consume_token(18);
                         {if (true) return new Factor(expression);}
       break;
     default:
@@ -199,7 +207,7 @@ public class ExpressionParser implements ExpressionParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xc800,0xc800,0x733c0,0x31000,0x31000,0x42000,0x423c0,0xc0,};
+      jj_la1_0 = new int[] {0xe00,0xe00,0x3f1c0,0x7000,0x7000,0x18000,0x381c0,0xc0,};
    }
 
   /** Constructor with InputStream. */

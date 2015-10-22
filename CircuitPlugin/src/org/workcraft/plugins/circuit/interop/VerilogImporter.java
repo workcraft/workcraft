@@ -95,8 +95,6 @@ public class VerilogImporter implements Importer {
 	private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
 	private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
 	private static final String ASSIGN_GATE_PREFIX = "assign_";
-	private static final char ASSIGN_TERM_DELIMITER = '|';
-	private static final char ASSIGN_FACTOR_DELIMITER = '&';
 
 	private final boolean sequentialAssign;
 
@@ -326,15 +324,19 @@ public class VerilogImporter implements Importer {
 
 	private AssignGate createSequentialAssignGate(Assign assign) {
 		Expression expression = convertStringToExpression(assign.formula);
+		String function = expression.toString();
 
-		String setFunction = ExpressionUtils.extactSetExpression(assign.formula, assign.name,
-				ASSIGN_TERM_DELIMITER, ASSIGN_FACTOR_DELIMITER);
+		String setFunction = ExpressionUtils.extactSetExpression(function, assign.name);
 		Expression setExpression = convertStringToExpression(setFunction);
 
-		String resetFunction = ExpressionUtils.extactResetExpression(assign.formula, assign.name,
-				ASSIGN_TERM_DELIMITER, ASSIGN_FACTOR_DELIMITER);
+		String resetFunction = ExpressionUtils.extactResetExpression(function, assign.name);
 		Expression resetExpression = convertStringToExpression(resetFunction);
-
+		if (CommonDebugSettings.getVerboseImport()) {
+			System.out.println("Info: Extracting SET and RESET from assign " + assign.name + " = " + assign.formula);
+			System.out.println("  Function: " + function);
+			System.out.println("  Set function: " + setFunction);
+			System.out.println("  Reset function: " + resetFunction);
+		}
 		HashMap<String, String> connections = new HashMap<>();
 		String outputName = getPrimitiveGatePinName(0);
 		connections.put(outputName, assign.name);

@@ -49,27 +49,27 @@ private int jjMoveStringLiteralDfa0_0()
    switch(curChar)
    {
       case 33:
-         return jjStopAtPos(0, 13);
+         return jjStopAtPos(0, 15);
       case 38:
-         jjmatchedKind = 16;
-         return jjMoveStringLiteralDfa1_0(0x20000L);
+         jjmatchedKind = 13;
+         return jjMoveStringLiteralDfa1_0(0x4000L);
       case 40:
-         return jjStopAtPos(0, 9);
+         return jjStopAtPos(0, 17);
       case 41:
-         return jjStopAtPos(0, 10);
+         return jjStopAtPos(0, 18);
       case 42:
          return jjStopAtPos(0, 12);
       case 43:
-         return jjStopAtPos(0, 11);
+         return jjStopAtPos(0, 9);
       case 48:
          return jjStopAtPos(0, 6);
       case 49:
          return jjStopAtPos(0, 7);
       case 124:
-         jjmatchedKind = 14;
-         return jjMoveStringLiteralDfa1_0(0x8000L);
+         jjmatchedKind = 10;
+         return jjMoveStringLiteralDfa1_0(0x800L);
       case 126:
-         return jjStopAtPos(0, 18);
+         return jjStopAtPos(0, 16);
       default :
          return jjMoveNfa_0(0, 0);
    }
@@ -84,12 +84,12 @@ private int jjMoveStringLiteralDfa1_0(long active0)
    switch(curChar)
    {
       case 38:
-         if ((active0 & 0x20000L) != 0L)
-            return jjStopAtPos(1, 17);
+         if ((active0 & 0x4000L) != 0L)
+            return jjStopAtPos(1, 14);
          break;
       case 124:
-         if ((active0 & 0x8000L) != 0L)
-            return jjStopAtPos(1, 15);
+         if ((active0 & 0x800L) != 0L)
+            return jjStopAtPos(1, 11);
          break;
       default :
          break;
@@ -203,8 +203,8 @@ static final int[] jjnextStates = {
 
 /** Token literal values. */
 public static final String[] jjstrLiteralImages = {
-"", null, null, null, null, null, "\60", "\61", null, "\50", "\51", "\53",
-"\52", "\41", "\174", "\174\174", "\46", "\46\46", "\176", };
+"", null, null, null, null, null, "\60", "\61", null, "\53", "\174",
+"\174\174", "\52", "\46", "\46\46", "\41", "\176", "\50", "\51", };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {

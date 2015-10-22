@@ -4,19 +4,21 @@
 package org.workcraft.plugins.mpsat;
 
 public enum MpsatSynthesisMode {
-	COMPLEX_GATE_IMPLEMENTATION ("-E -!", "Derive complex-gate implementation", true),
-	GENERALISED_CELEMENT_IMPLEMENTATION ("-G -!", "Derive gC-elements implementation", true),
-	STANDARD_CELEMENT_IMPLEMENTATION ("-S -!", "Derive standard-C implementation", true),
-	TECH_MAPPING ("-T -f -p2 -cl -!", "Logic decomposition and technology mapping (not finished yet)", true);
+	COMPLEX_GATE_IMPLEMENTATION ("-E -!", "Derive complex-gate implementation", true, false),
+	GENERALISED_CELEMENT_IMPLEMENTATION ("-G -!", "Derive gC-elements implementation", true, false),
+	STANDARD_CELEMENT_IMPLEMENTATION ("-S -!", "Derive standard-C implementation", true, false),
+	TECH_MAPPING ("-T -f -p2 -cl -!", "Logic decomposition and technology mapping (not finished yet)", true, true);
 
-	private String argument;
-	private String description;
-	private boolean pnml;
+	private final String argument;
+	private final String description;
+	private final boolean canPnml;
+	private final boolean needLib;
 
-	MpsatSynthesisMode(String argument, String description, boolean pnml) {
+	MpsatSynthesisMode(String argument, String description, boolean canPnml, boolean needLib) {
 		this.argument = argument;
 		this.description = description;
-		this.pnml = pnml;
+		this.canPnml = canPnml;
+		this.needLib = needLib;
 	}
 
 	public static MpsatSynthesisMode getModeByArgument(String arg) {
@@ -41,7 +43,11 @@ public enum MpsatSynthesisMode {
 	}
 
 	public boolean canPnml() {
-		return pnml;
+		return canPnml;
+	}
+
+	public boolean needLib() {
+		return needLib;
 	}
 
 }

@@ -18,6 +18,7 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisTask;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
@@ -132,15 +133,21 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 			System.out.println(log);
 			System.out.println();
 		}
-		String verilog = new String(mpsatResult.getOutputFile("mpsat.v"));
-		if ((verilog != null) && !verilog.isEmpty()) {
-			System.out.println("MPSat synthesis result:");
-			System.out.println(verilog);
+		byte[] eqnOutput = mpsatResult.getOutputFile(MpsatSynthesisTask.EQN_FILE_NAME);
+		if (eqnOutput != null) {
+			System.out.println("MPSat synthesis result in EQN format:");
+			System.out.println(new String(eqnOutput));
 			System.out.println();
 		}
-		if (CircuitSettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
+		byte[] verilogOutput = mpsatResult.getOutputFile(MpsatSynthesisTask.VERILOG_FILE_NAME);
+		if (verilogOutput != null) {
+			System.out.println("MPSat synthesis result in Verilog format:");
+			System.out.println(new String(verilogOutput));
+			System.out.println();
+		}
+		if (CircuitSettings.getOpenSynthesisResult() && (verilogOutput != null)) {
 			try {
-				ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
+				ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
 				VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
 				final Circuit circuit = verilogImporter.importCircuit(in);
 				final WorkspaceEntry we = task.getWorkspaceEntry();

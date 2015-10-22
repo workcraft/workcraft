@@ -20,9 +20,9 @@ public class Negation implements Expression {
     @Override
     public String toString() {
     	if (expression.isAtomic()) {
-    		return expression.toString() + "'";
+    		return "!" + expression.toString();
     	} else {
-    		return "(" + expression.toString() + ")'";
+    		return "!(" + expression.toString() + ")";
     	}
     }
 

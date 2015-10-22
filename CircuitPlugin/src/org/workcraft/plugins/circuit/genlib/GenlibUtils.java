@@ -11,8 +11,6 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 
 public class GenlibUtils {
-	private static final char TERM_DELIMITER = '+';
-	private static final char FACTOR_DELIMITER = '*';
 
 	public static FunctionComponent instantiateGate(final Gate gate, final String instanceName, final Circuit circuit) {
 		final FunctionComponent component = new FunctionComponent();
@@ -50,7 +48,7 @@ public class GenlibUtils {
 	private static String getSetFunction(Gate gate) {
 		String result = null;
 		if (gate.isSequential()) {
-			result = ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq, TERM_DELIMITER, FACTOR_DELIMITER);
+			result = ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq);
 		} else {
 			result = gate.function.formula;
 		}
@@ -60,7 +58,7 @@ public class GenlibUtils {
 	private static String getResetFunction(Gate gate) {
 		String result = null;
 		if (gate.isSequential()) {
-			result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq, TERM_DELIMITER, FACTOR_DELIMITER);
+			result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq);
 		}
 		return result;
 	}

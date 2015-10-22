@@ -2,18 +2,22 @@ package org.workcraft.plugins.circuit.expression;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ExpressionUtils {
+	private static final char TERM_DELIMITER = '+';
+	private static final char FACTOR_DELIMITER = '*';
+	private static final char NEGATION_DELIMITER = '!';
 
 	// Extract SET term from an expression SET + seq * RESET'
-	public static String extactSetExpression(String expression, String seqLiteral, char termDelimiter, char factorDelimiter) {
+	public static String extactSetExpression(String expression, String seqLiteral) {
 		String result = null;
-		for (String term: ExpressionUtils.getTerms(expression, termDelimiter)) {
-			if ( !isResetTerm(term, seqLiteral, factorDelimiter)) {
+		for (String term: ExpressionUtils.getTerms(expression)) {
+			if ( !isResetTerm(term, seqLiteral)) {
 				if (result == null) {
 					result = "";
 				} else {
-					result += "+";
+					result += TERM_DELIMITER;
 				}
 				result += term;
 			}
@@ -22,37 +26,34 @@ public class ExpressionUtils {
 	}
 
 	// Extract RESET term from an expression SET + seq * RESET'
-	public static String extactResetExpression(String expression, String seqLiteral, char termDelimiter, char factorDelimiter) {
+	public static String extactResetExpression(String expression, String seqLiteral) {
 		String result = null;
-		for (String term: ExpressionUtils.getTerms(expression, termDelimiter)) {
-			if (isResetTerm(term, seqLiteral, factorDelimiter)) {
+		for (String term: ExpressionUtils.getTerms(expression)) {
+			if (isResetTerm(term, seqLiteral)) {
 				if (result == null) {
 					result = "";
 				} else {
-					result += termDelimiter;
+					result += TERM_DELIMITER;
 				}
-				result += removeTermLiteral(term, seqLiteral, factorDelimiter);
+				result += removeTermLiteral(term, seqLiteral);
 			}
 		}
-		if (result != null) {
-			List<String> terms = ExpressionUtils.getTerms(result, termDelimiter);
-			if (terms.size() == 1) {
-				result = ExpressionUtils.negateTerm(result);
-			} else {
-				result = ExpressionUtils.negateExpression(result);
-			}
+		if (result == null) {
+			result = "";
+		} else {
+			result = ExpressionUtils.negateExpression(result);
 		}
 		return result;
 	}
 
-	private static List<String> getTerms(String expression, char termDelimiter) {
+	private static List<String> getTerms(String expression) {
 		List<String> result = new LinkedList<>();
 		int b = 0;
 		String term = "";
 		for (int i = 0; i < expression.length(); i++){
 			char c = expression.charAt(i);
 			if (c == ' ') continue;
-			if ((c == termDelimiter) && (b == 0)) {
+			if ((c == TERM_DELIMITER) && (b == 0)) {
 				result.add(term);
 				term = "";
 			} else {
@@ -68,47 +69,44 @@ public class ExpressionUtils {
 	}
 
 	private static String negateExpression(String expression) {
-		return "!(" + expression + ")";
-	}
-
-	private static String negateTerm(String expression) {
 		String result = null;
-		if (expression != null) {
+		if (expression.contains(""+TERM_DELIMITER) || expression.contains(""+FACTOR_DELIMITER)) {
+			result= NEGATION_DELIMITER + "(" + expression + ")";
+		} else {
 			if (expression.startsWith("!")) {
 				result = expression.substring(1, expression.length());
 			} else if (expression.endsWith("'")) {
 				result = expression.substring(0, expression.length() - 1);
-			} else if (expression.startsWith("(")) {
-				result = "!" + expression;
 			} else {
-				result = "!(" + expression + ")";
+				result = "!" + expression;
 			}
 		}
 		return result;
 	}
 
-	private static boolean isResetTerm(String term, String seqLiteral, char factorDelimiter) {
-		boolean result = false;
-		if (term.startsWith(seqLiteral + factorDelimiter)) {
-			result = true;
-		} else if (term.endsWith(factorDelimiter + seqLiteral)) {
-			result = true;
-		} else if (term.contains(factorDelimiter + seqLiteral + factorDelimiter)) {
-			result = true;
-		}
-		return result;
+	private static boolean isResetTerm(String term, String literal) {
+		return ( term.startsWith(literal + FACTOR_DELIMITER)
+			  || term.endsWith(FACTOR_DELIMITER + literal)
+			  || term.contains(FACTOR_DELIMITER + literal + FACTOR_DELIMITER)
+			  || term.equals(literal));
 	}
 
-	private static String removeTermLiteral(String term, String literal, char factorDelimiter) {
-		String result = null;
-		if (term.startsWith(literal + factorDelimiter)) {
-			result = term.replaceAll(literal + factorDelimiter, "");
-		} else if (term.endsWith(factorDelimiter + literal)) {
-			result = term.replaceAll(factorDelimiter + literal, "");
-		} else if (term.contains(factorDelimiter + literal + factorDelimiter)) {
-			result = term.replaceAll(factorDelimiter + literal + factorDelimiter, "");
-		} else {
-			result = term;
+	private static String removeTermLiteral(String term, String literal) {
+		String result = term;
+		if (result.startsWith(literal + FACTOR_DELIMITER)) {
+			String pattern = Pattern.quote(literal + FACTOR_DELIMITER);
+			result = result.replaceAll(pattern, "");
+		}
+		if (result.endsWith(FACTOR_DELIMITER + literal)) {
+			String pattern = Pattern.quote(FACTOR_DELIMITER + literal);
+			result = result.replaceAll(pattern, "");
+		}
+		if (result.contains(FACTOR_DELIMITER + literal + FACTOR_DELIMITER)) {
+			String pattern = Pattern.quote(FACTOR_DELIMITER + literal + FACTOR_DELIMITER);
+			result = result.replaceAll(pattern, "");
+		}
+		if (result.equals(literal)) {
+			result = "";
 		}
 		return result;
 	}

@@ -18,13 +18,15 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.FileUtils;
 
 public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
-	public static final String OUTPUT_FILE_NAME = "mpsat.v";
+	public static final String EQN_FILE_NAME = "mpsat.eqn";
+	public static final String VERILOG_FILE_NAME = "mpsat.v";
 	private final String[] args;
 	private final String inputFileName;
 	private final File directory;
 	private final boolean tryPnml;
+	private final boolean needsGateLibrary;
 
-	public MpsatSynthesisTask(String[] args, String inputFileName, File directory, boolean tryPnml) {
+	public MpsatSynthesisTask(String[] args, String inputFileName, File directory, boolean tryPnml, boolean needsGateLibrary) {
 		this.args = args;
 		this.inputFileName = inputFileName;
 		if (directory == null) {
@@ -33,6 +35,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 		}
 		this.directory = directory;
 		this.tryPnml = tryPnml;
+		this.needsGateLibrary = needsGateLibrary;
 	}
 
 	@Override
@@ -51,10 +54,12 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 				command.add(arg);
 			}
 		}
+		// Can this MPSat output Verilog?
+		boolean canOutputVerilog = tryPnml && PunfUtilitySettings.getUsePnmlUnfolding();
 		// Technology mapping library (if needed and accepted)
-		String gateLibrary = CircuitSettings.getGateLibrary();
-		if ((gateLibrary != null) && !gateLibrary.isEmpty()) {
-			if (tryPnml && PunfUtilitySettings.getUsePnmlUnfolding()) {
+		if (canOutputVerilog && needsGateLibrary) {
+			String gateLibrary = CircuitSettings.getGateLibrary();
+			if ((gateLibrary != null) && !gateLibrary.isEmpty()) {
 				File gateLibraryFile = new File(gateLibrary);
 				if (gateLibraryFile.exists()) {
 					command.add("-d");
@@ -67,7 +72,8 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 		// Input file argument
 		command.add(inputFileName);
 		// Output file
-		File outputFile = new File(directory, OUTPUT_FILE_NAME);
+		String outputFileName = (canOutputVerilog ? VERILOG_FILE_NAME : EQN_FILE_NAME);
+		File outputFile = new File(directory, outputFileName);
 		command.add(outputFile.getAbsolutePath());
 
 		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, directory);
@@ -78,9 +84,9 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 
 		Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 		try {
-			File g = new File(directory, OUTPUT_FILE_NAME);
+			File g = new File(directory, outputFileName);
 			if(g.exists()) {
-				outputFiles.put(OUTPUT_FILE_NAME, FileUtils.readAllBytes(g));
+				outputFiles.put(outputFileName, FileUtils.readAllBytes(g));
 			}
 		} catch (IOException e) {
 			return new Result<ExternalProcessResult>(e);
