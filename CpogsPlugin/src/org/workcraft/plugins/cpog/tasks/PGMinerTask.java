@@ -40,9 +40,10 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 			Result<? extends ExternalProcessResult> result = task.run(mon);
 
 			if (result.getOutcome() != Outcome.FINISHED) {
+
 				return result;
 			}
-
+			System.out.println("pgminer complete");
 			Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
 			try {
 				File outputFile = getOutputFile(inputFile);

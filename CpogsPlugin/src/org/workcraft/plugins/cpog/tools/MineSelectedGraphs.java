@@ -20,7 +20,6 @@ public class MineSelectedGraphs extends PGMinerTool {
 
 	@Override
 	public File getInputFile(WorkspaceEntry we) {
-		System.out.println("Start mine selected: " + System.nanoTime() / 1000000);
 		File inputFile = null;
 		try {
 			VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();

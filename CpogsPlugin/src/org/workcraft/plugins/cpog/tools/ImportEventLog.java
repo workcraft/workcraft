@@ -58,7 +58,6 @@ public class ImportEventLog extends PGMinerTool {
 
 			try {
 				File eventLog = getInputFile(we);
-				start = System.nanoTime();
 
 				final Framework framework = Framework.getInstance();
 				final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
@@ -88,7 +87,6 @@ public class ImportEventLog extends PGMinerTool {
 
 			}
 
-			System.out.println("import only: " + (System.nanoTime() - start) / 1000000);
 
 	}
 

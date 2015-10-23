@@ -48,6 +48,9 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 				public void run() {
 					final Framework framework = Framework.getInstance();
 					MainWindow mainWindow = framework.getMainWindow();
+					final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+					final ToolboxPanel toolbox = editor.getToolBox();
+					final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
 					if (result.getOutcome() == Outcome.FAILED) {
 						JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run", "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
 					} else {
@@ -81,19 +84,14 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 					for (int i = 0; i < line.length; i++) {
 
 
-						while (line[i].endsWith(" ")) {
-							line[i] = line[i].substring(0, line[i].length() - 1);
-						}
+//						while (line[i].endsWith(" ")) {
+//							line[i] = line[i].substring(0, line[i].length() - 1);
+//						}
 
-						if (!(line[i].endsWith("="))) {
-							final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-							final ToolboxPanel toolbox = editor.getToolBox();
-							final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-							tool.insertExpression(line[i], false, false, false, true);
-						}
-						else {
-							JOptionPane.showMessageDialog(mainWindow, "PGMiner finished with no result", "No concurrency", JOptionPane.ERROR_MESSAGE);
-						}
+						//System.out.println(line[i].substring(0, line[i].indexOf("=") - 1));
+
+
+							tool.insertExpression(line[i], visualCpog, false, false, false, true);
 					}
 				}
 				}
@@ -101,7 +99,6 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("End of result: " + System.nanoTime() / 1000000);
 	}
 
 }

@@ -45,7 +45,6 @@ public class ImportAndMineEventLog extends PGMinerTool {
 
 	        }
 
-	        System.out.println("Start import and mine: " + System.nanoTime() / 1000000);
 
 	        Scanner k;
 			try {
