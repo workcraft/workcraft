@@ -77,22 +77,15 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 						e.printStackTrace();
 					}
 					}
+					we.captureMemento();
 					byte[] output = result.getReturnValue().getOutputFile("output.cpog");
 					String text = new String(output);
 					String line[] = text.split("\r\n");
-
+					tool.getLowestVertex(visualCpog);
 					for (int i = 0; i < line.length; i++) {
-
-
-//						while (line[i].endsWith(" ")) {
-//							line[i] = line[i].substring(0, line[i].length() - 1);
-//						}
-
-						//System.out.println(line[i].substring(0, line[i].indexOf("=") - 1));
-
-
-							tool.insertExpression(line[i], visualCpog, false, false, false, true);
+						tool.insertExpression(line[i], visualCpog, false, false, false, true);
 					}
+					we.saveMemento();
 				}
 				}
 			});

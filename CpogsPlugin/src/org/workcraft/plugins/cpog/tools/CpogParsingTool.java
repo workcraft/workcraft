@@ -4,7 +4,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +20,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCPOG;
@@ -900,7 +898,7 @@ public class CpogParsingTool {
 			 startPoint = new Point2D.Double(0,0);
 		 } else
 		 {
-			 startPoint.setLocation(startPoint.getX(), startPoint.getY() + 2);
+			 startPoint.setLocation(startPoint.getX(), startPoint.getY());
 		 }
 
 		 return startPoint;

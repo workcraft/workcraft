@@ -75,6 +75,7 @@ public class CpogSelectionTool extends SelectionTool {
 	final double minRadius = 2.0;
 	final double expandRadius = 2.0;
 	double maxX = 0, maxY = 0;
+	Point2D.Double coordinate;
 	int xpos = 0;
 	boolean transitivesActive = true;
 
@@ -118,6 +119,7 @@ public class CpogSelectionTool extends SelectionTool {
 			public void actionPerformed(ActionEvent e) {
 				int prevLineEnd = 0;
 				ArrayList<String> expressions = new ArrayList<String>();
+				editor.getWorkspaceEntry().captureMemento();
 				try {
 					for (int i = 0; i < expressionText.getLineCount(); i++) {
 						String exp = expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i));
@@ -134,6 +136,7 @@ public class CpogSelectionTool extends SelectionTool {
 					WorkspaceEntry we = editor.getWorkspaceEntry();
 					VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 					String exp = "";
+					getLowestVertex(visualCpog);
 					for (String s : expressions) {
 						if (!s.contains("=")) {
 							exp = exp + " " + s;
@@ -148,7 +151,9 @@ public class CpogSelectionTool extends SelectionTool {
 					if (exp.compareTo("") != 0) {
 						insertExpression(exp, visualCpog, false, false, true, false);
 					}
+					editor.getWorkspaceEntry().saveMemento();
 				} catch (BadLocationException e1) {
+					editor.getWorkspaceEntry().cancelMemento();
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -164,6 +169,7 @@ public class CpogSelectionTool extends SelectionTool {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+            	editor.getWorkspaceEntry().captureMemento();
                 JFileChooser chooser = new JFileChooser();
                 File textFile;
                 Scanner fileIn = null;
@@ -183,11 +189,12 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                 WorkspaceEntry we = editor.getWorkspaceEntry();
 				VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+				getLowestVertex(visualCpog);
                 while (fileIn.hasNextLine()) {
                     equation = fileIn.nextLine();
-                    System.out.println(equation.substring(0, equation.indexOf("=") - 1));
                     insertExpression(equation, visualCpog, true, false, true, false);
                 }
+                editor.getWorkspaceEntry().saveMemento();
             }
 
         });
@@ -214,7 +221,7 @@ public class CpogSelectionTool extends SelectionTool {
 
 	public HashMap<String, VisualVertex> insertExpression(String text, final VisualCPOG visualCpog,
 			final boolean createDuplicates, boolean getVertList, boolean zoomFit, boolean blockTransitiveRemoval) {
-        //WorkspaceEntry we = editor.getWorkspaceEntry();
+        WorkspaceEntry we = editor.getWorkspaceEntry();
         //final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
         //we.captureMemento();
 
@@ -364,18 +371,16 @@ public class CpogSelectionTool extends SelectionTool {
 
                     });
         } catch (ParseException e) {
-            //we.cancelMemento();
+            we.cancelMemento();
             JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         } catch (TokenMgrError e) {
-            //we.cancelMemento();
+            we.cancelMemento();
             JOptionPane.showMessageDialog(null, e.getMessage(),
                     "Lexical error", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-
-        System.out.println("Parse complete");
 
         if (getVertList) {
             for (VisualVertex v : vertexMap.values()) {
@@ -401,7 +406,7 @@ public class CpogSelectionTool extends SelectionTool {
 
             parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
-            LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());//new LinkedHashSet<Node>();
+            LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());
 
             if (!(insertTransitives.getState()) && (!blockTransitiveRemoval)) {
             	boolean[][] c = parsingTool.convertToArrayForm(vertexMap.values(), visualCpog);
@@ -429,11 +434,11 @@ public class CpogSelectionTool extends SelectionTool {
             }
 
             editor.requestFocus();
-            Point2D.Double coordinate = parsingTool.getLowestVertex(visualCpog);
 
 
             if (PGF.getGraphName() != null) {
                 inserted = insertAsPage(visualCpog, PGF, coordinate, editor);
+                coordinate = new Point2D.Double(coordinate.getX(), coordinate.getY() + 2);
             } else {
                 insertLoose(visualCpog, coordinate);
             }
@@ -459,12 +464,9 @@ public class CpogSelectionTool extends SelectionTool {
 
         Collection<Node> prevSelection = visualCpog.getSelection();
 
-        //we.saveMemento();
-
         visualCpog.selectNone();
 
         //editor.requestFocus();
-
         //editor.forceRedraw();
         //Doesn't allow zoomFit when creating a new CPOG model
         //Such as when extracting concurrency
@@ -562,9 +564,9 @@ public class CpogSelectionTool extends SelectionTool {
         visualCpog.select(page);
 
         page.setLabel(PGF.getGraphName());
-
-        coordinate.setLocation(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight() / 2) + 1);
-        page.setPosition(coordinate);
+        Point2D.Double pageLocation = new Point2D.Double(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight() / 2));
+        coordinate.setLocation(coordinate.getX(), coordinate.getY() + page.getBoundingBox().getHeight() + 1);
+        page.setPosition(pageLocation);
 
         attatchRefEventHandler(visualCpog, page, editor);
 
@@ -912,7 +914,6 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public void includeArcsInPage(VisualCPOG visualCpog) {
-        //VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
         HashSet<Node> arcs = new HashSet<>();
         for (Node n : visualCpog.getSelection()) {
             for (Connection c : visualCpog.getConnections(n)) {
@@ -988,7 +989,10 @@ public class CpogSelectionTool extends SelectionTool {
     	visualCpog.reparent(page, visualCpog, container, nodes);
     	includeArcsInPage(visualCpog);
 
+    }
 
+    public void getLowestVertex(VisualCPOG visualCpog) {
+    	this.coordinate = parsingTool.getLowestVertex(visualCpog);
     }
 
 
