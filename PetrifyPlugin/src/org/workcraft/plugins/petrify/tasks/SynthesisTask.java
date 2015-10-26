@@ -73,7 +73,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 			command.add(logFile.getCanonicalPath());
 
 			STGModel stg = WorkspaceUtils.getAs(we, STGModel.class);
-			File stgFile = getInputSTG(stg, directory);
+			File stgFile = getInputStg(stg, directory);
 			command.add(stgFile.getCanonicalPath());
 
 			// Call petrify on command line.
@@ -106,7 +106,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		}
 	}
 
-	private File getInputSTG(Model model, File directory) throws IOException {
+	private File getInputStg(Model model, File directory) throws IOException {
 		final Framework framework = Framework.getInstance();
 		Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 		if (stgExporter == null) {
