@@ -8,9 +8,9 @@ public class SynthesisResult {
 	private String stderr;
 
 	public SynthesisResult(String equations, String verilog, String log, String stdout, String stderr) {
-		this.equations= equations;
-		this.verilog= verilog;
-		this.log= log;
+		this.equations = equations;
+		this.verilog = verilog;
+		this.log = log;
 		this.stdout = stdout;
 		this.stderr = stderr;
 	}

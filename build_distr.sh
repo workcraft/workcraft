@@ -13,7 +13,12 @@ model_plugin_dirs="
     SONPlugin 
     STGPlugin 
     XmasPlugin"
-tool_plugin_dirs="MpsatPlugin PetrifyPlugin"
+tool_plugin_dirs="
+    MpsatSynthesisPlugin 
+    MpsatVerificationPlugin 
+    PcompPlugin 
+    PunfPlugin 
+    PetrifyPlugin"
 third_party_dirs="ThirdParty"
 doc_dirs="overview help tutorial"
 core_dirs="WorkcraftCore"

@@ -73,11 +73,11 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 			command.add(logFile.getCanonicalPath());
 
 			STGModel stg = WorkspaceUtils.getAs(we, STGModel.class);
-			File stgFile = getInputSTG(stg, directory);
+			File stgFile = getInputStg(stg, directory);
 			command.add(stgFile.getCanonicalPath());
 
 			// Call petrify on command line.
-			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, directory);
+			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, null);
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends ExternalProcessResult> res = externalProcessTask.run(mon);
 
@@ -91,9 +91,9 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 					outcome = Outcome.FAILED;
 				}
 
-				String equations = FileUtils.readAllText(equationsFile);
-				String verilog = FileUtils.readAllText(verilogFile);
-				String log = FileUtils.readAllText(logFile);
+				String equations = (equationsFile.exists() ? FileUtils.readAllText(equationsFile) : "");
+				String verilog = (verilogFile.exists() ? FileUtils.readAllText(verilogFile) : "");
+				String log = (logFile.exists() ? FileUtils.readAllText(logFile) : "");
 				String stdout = new String(res.getReturnValue().getOutput());
 				String stderr = new String(res.getReturnValue().getErrors());
 				SynthesisResult result = new SynthesisResult(equations, verilog, log, stdout, stderr);
@@ -106,7 +106,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		}
 	}
 
-	private File getInputSTG(Model model, File directory) throws IOException {
+	private File getInputStg(Model model, File directory) throws IOException {
 		final Framework framework = Framework.getInstance();
 		Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 		if (stgExporter == null) {

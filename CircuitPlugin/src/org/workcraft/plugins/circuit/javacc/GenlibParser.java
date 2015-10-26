@@ -144,11 +144,11 @@ public class GenlibParser implements GenlibParserConstants {
 
   final public Function parseFunction() throws ParseException {
     Token nameToken;
-    Token expressionToken;
+    Token formulaToken;
     nameToken = jj_consume_token(NAME);
-    expressionToken = jj_consume_token(EXPRESSION);
-        String expression = expressionToken.image.replaceAll("^=", "").replaceAll(";$", "");
-        {if (true) return new Function(nameToken.image, expression);}
+    formulaToken = jj_consume_token(FORMULA);
+        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        {if (true) return new Function(nameToken.image, formula);}
     throw new Error("Missing return statement in function");
   }
 

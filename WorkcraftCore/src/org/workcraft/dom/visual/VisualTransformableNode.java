@@ -151,7 +151,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 			}
 			node = node.getParent();
 		}
-		setX(value);
+		setY(value);
 	}
 
 	@NoAutoSerialisation

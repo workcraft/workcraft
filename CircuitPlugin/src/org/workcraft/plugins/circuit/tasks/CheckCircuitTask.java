@@ -20,7 +20,8 @@ import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.mpsat.tasks.PunfTask;
+import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
@@ -145,7 +146,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			monitor.progressUpdate(0.30);
 
 			// Generate unfolding
-			File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + MpsatUtilitySettings.getUnfoldingExtension(true));
+			File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
 			PunfTask punfTask = new PunfTask(sysStgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
 			SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<Object>(monitor);
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(

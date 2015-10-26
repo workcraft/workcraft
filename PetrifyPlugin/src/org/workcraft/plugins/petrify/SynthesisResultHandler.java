@@ -39,20 +39,25 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 		} else if (result.getOutcome() == Outcome.FINISHED) {
 
 			String log = result.getReturnValue().getLog();
-			if (log != null) {
+			if ((log != null) && !log.isEmpty()) {
+				System.out.println("Petrify synthesis log:");
 				System.out.println(log);
 			}
 
 			String equations = result.getReturnValue().getEquation();
-			if (equations != null) {
+			if ((equations != null) && !equations.isEmpty()) {
+				System.out.println("Petrify synthesis result in EQN format:");
 				System.out.println(equations);
 			}
 
 			String verilog = result.getReturnValue().getVerilog();
-			if (CircuitSettings.getOpenSynthesisResult() && (verilog != null)) {
+			if (CircuitSettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
+				System.out.println("Petrify synthesis result in Verilog format:");
+				System.out.println(verilog);
 				try {
 					ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
-					final Circuit circuit = new VerilogImporter().importCircuit(in);
+					VerilogImporter verilogImporter = new VerilogImporter();
+					final Circuit circuit = verilogImporter.importCircuit(in);
 					Path<String> path = we.getWorkspacePath();
 					final Path<String> directory = path.getParent();
 					final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));

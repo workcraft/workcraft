@@ -132,18 +132,21 @@ public class CElementRenderer extends GateRenderer {
 		final LinkedList<Pair<String,Boolean>> resetVars = reset.accept(defaultVisitor);
 		final LinkedList<Pair<String,Boolean>> bothVars = new LinkedList<Pair<String,Boolean>>();
 		for (Pair<String,Boolean> p: setVars) {
-			int i = resetVars.indexOf(p);
-			if (i!=-1) {
+			int resetIndex = resetVars.indexOf(p);
+			if (resetIndex != -1) {
 				bothVars.add(p);
 			}
 		}
 
 		for (Pair<String,Boolean> p: bothVars) {
-			int i = setVars.indexOf(p);
-			setVars.remove(i);
-
-			i = resetVars.indexOf(p);
-			resetVars.remove(i);
+			int setIndex = setVars.indexOf(p);
+			if (setIndex != -1) {
+				setVars.remove(setIndex);
+			}
+			int resetIndex = resetVars.indexOf(p);
+			if (resetIndex != -1) {
+				resetVars.remove(resetIndex);
+			}
 		}
 
 		if (bothVars.isEmpty()) {

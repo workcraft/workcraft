@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.circuit.verilog.Assign;
 import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Pin;
 
@@ -62,7 +63,9 @@ TOKEN :
 |   <INOUT : "inout">
 |   <REG : "reg">
 |   <WIRE : "wire">
+|   <ASSIGN : "assign">
 |   <NAME : ["A"-"Z", "a"-"z", "_" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9"])*>
+|   <FORMULA: "=" (~[";"])* ";">
 |   <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
 |   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
 |   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
@@ -111,6 +114,7 @@ Module parseModule():
 {
     String name;
     List<Port> ports; 
+    List<Assign> assigns;
     List<Instance> instances;
     List<Instance> group;
     Set<List<Instance>> groups = new HashSet<List<Instance>>();
@@ -119,6 +123,7 @@ Module parseModule():
 {
     <MODULE> name = parseModuleName() 
     ports = parsePorts()
+    assigns = parseAssigns()
     instances = parseInstances()
     [<PETRIFY_UNMAPPED>
     	(<PETRIFY_EQUATION> 
@@ -131,7 +136,7 @@ Module parseModule():
     ]
     [<PETRIFY_INIT_STATE> highSignals = parseInitialState()]
     <ENDMODULE>
-    {        return new Module(name, ports, instances, highSignals, groups);
+    {        return new Module(name, ports, assigns, instances, highSignals, groups);
     }
 }
 
@@ -323,6 +328,36 @@ Set<String> parseInitialState():
     )*
     {
     	return highSignals;
+    }
+}
+
+List<Assign> parseAssigns():
+{
+	Assign assign;
+    List<Assign> assigns = new LinkedList<Assign>();
+}
+{
+    (
+        assign = parseAssign()
+        {
+        	assigns.add(assign);
+        }
+    )*
+    {
+        return assigns;
+    }
+}
+
+Assign parseAssign():
+{
+    Token nameToken;
+    Token formulaToken;
+}
+{
+    <ASSIGN> nameToken = <NAME> formulaToken = <FORMULA>
+    {
+        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        return new Assign(nameToken.image, formula);
     }
 }
 

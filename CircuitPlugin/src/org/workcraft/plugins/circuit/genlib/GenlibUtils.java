@@ -1,21 +1,16 @@
 package org.workcraft.plugins.circuit.genlib;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 
 public class GenlibUtils {
-	static private final String TERM_DELIMITER = Pattern.quote("+");
-	static private final String FACTOR_DELIMITER = Pattern.quote("*");
 
 	public static FunctionComponent instantiateGate(final Gate gate, final String instanceName, final Circuit circuit) {
 		final FunctionComponent component = new FunctionComponent();
@@ -35,7 +30,7 @@ public class GenlibUtils {
 		String setFunction = getSetFunction(gate);
 		String resetFunction = getResetFunction(gate);
 		if (CommonDebugSettings.getVerboseImport()) {
-			System.out.println("Info: Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.expression);
+			System.out.println("Info: Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
 			System.out.println("  Set function: " + setFunction);
 			System.out.println("  Reset function: " + resetFunction);
 		}
@@ -52,19 +47,10 @@ public class GenlibUtils {
 
 	private static String getSetFunction(Gate gate) {
 		String result = null;
-		if ( !gate.isSequential() ) {
-			result = gate.function.expression;
+		if (gate.isSequential()) {
+			result = ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq);
 		} else {
-			for (String term: getTerms(gate.function.expression)) {
-				if (!term.contains(gate.seq)) {
-					if (result == null) {
-						result = "";
-					} else {
-						result += "+";
-					}
-					result += term;
-				}
-			}
+			result = gate.function.formula;
 		}
 		return result;
 	}
@@ -72,55 +58,7 @@ public class GenlibUtils {
 	private static String getResetFunction(Gate gate) {
 		String result = null;
 		if (gate.isSequential()) {
-			for (String term: getTerms(gate.function.expression)) {
-				if (term.contains(gate.seq)) {
-					if (result == null) {
-						result = "";
-					} else {
-						result += "+";
-					}
-					String clearedTerm = term.replaceAll(gate.seq + FACTOR_DELIMITER, "").replaceAll(FACTOR_DELIMITER + gate.seq, "").replaceAll(gate.seq, "");
-					result += clearedTerm;
-				}
-			}
-		}
-		if (result != null) {
-			List<String> terms = getTerms(result);
-			if (terms.size() != 1) {
-				result = "!(" + result + ")";
-			} else {
-				String singleTerm = terms.iterator().next();
-				if (singleTerm.startsWith("!")) {
-					result = singleTerm.substring(1, singleTerm.length());
-				} else if (singleTerm.endsWith("'")) {
-					result = singleTerm.substring(0, singleTerm.length() - 1);
-				} else if (singleTerm.startsWith("(")) {
-					result = "!" + singleTerm;
-				} else {
-					result = "!(" + singleTerm + ")";
-				}
-			}
-		}
-		return result;
-	}
-
-	private static List<String> getTerms(String expression) {
-		List<String> result = new LinkedList<>();
-		int b = 0;
-		String term = "";
-		for (int i = 0; i < expression.length(); i++){
-			char c = expression.charAt(i);
-			if ((c == '+') && (b == 0)) {
-				result.add(term);
-				term = "";
-			} else {
-				term += c;
-				if (c == '(') b++;
-				if (c == ')') b--;
-			}
-		}
-		if (b == 0) {
-			result.add(term);
+			result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq);
 		}
 		return result;
 	}

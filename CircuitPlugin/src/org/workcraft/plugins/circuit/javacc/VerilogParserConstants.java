@@ -25,27 +25,31 @@ public interface VerilogParserConstants {
   /** RegularExpression Id. */
   int WIRE = 19;
   /** RegularExpression Id. */
-  int NAME = 20;
+  int ASSIGN = 20;
   /** RegularExpression Id. */
-  int PETRIFY_NAME = 21;
+  int NAME = 21;
   /** RegularExpression Id. */
-  int STRING = 22;
+  int FORMULA = 22;
   /** RegularExpression Id. */
-  int CHAR = 23;
+  int PETRIFY_NAME = 23;
   /** RegularExpression Id. */
-  int ESCAPESEQ = 24;
+  int STRING = 24;
   /** RegularExpression Id. */
-  int LOGIC0 = 25;
+  int CHAR = 25;
   /** RegularExpression Id. */
-  int LOGIC1 = 26;
+  int ESCAPESEQ = 26;
   /** RegularExpression Id. */
-  int INTEGER = 27;
+  int LOGIC0 = 27;
   /** RegularExpression Id. */
-  int PETRIFY_UNMAPPED = 28;
+  int LOGIC1 = 28;
   /** RegularExpression Id. */
-  int PETRIFY_EQUATION = 29;
+  int INTEGER = 29;
   /** RegularExpression Id. */
-  int PETRIFY_INIT_STATE = 30;
+  int PETRIFY_UNMAPPED = 30;
+  /** RegularExpression Id. */
+  int PETRIFY_EQUATION = 31;
+  /** RegularExpression Id. */
+  int PETRIFY_INIT_STATE = 32;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -76,7 +80,9 @@ public interface VerilogParserConstants {
     "\"inout\"",
     "\"reg\"",
     "\"wire\"",
+    "\"assign\"",
     "<NAME>",
+    "<FORMULA>",
     "<PETRIFY_NAME>",
     "<STRING>",
     "<CHAR>",

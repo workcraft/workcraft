@@ -5,8 +5,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/WorkcraftCore"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CpogsPlugin"/>
 	<classpathentry kind="lib" path="/ThirdParty/batik/batik-awt-util.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/MpsatPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/STGPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MpsatVerificationPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PcompPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PunfPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

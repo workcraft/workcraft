@@ -5,7 +5,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/CircuitPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CpogsPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GraphPlugin"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/MpsatPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MpsatVerificationPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriNetPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DfsPlugin"/>
@@ -30,5 +30,8 @@
 	<classpathentry kind="lib" path="/ThirdParty/"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FsmPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FstPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MpsatSynthesisPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PcompPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PunfPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
