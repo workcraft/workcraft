@@ -54,32 +54,30 @@ public class ImportEventLog extends PGMinerTool {
 
 	public void run(WorkspaceEntry we) {
 
+			double start = 0;
+
 			try {
 				File eventLog = getInputFile(we);
-				VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+
+				final Framework framework = Framework.getInstance();
+				final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+				final ToolboxPanel toolbox = editor.getToolBox();
+				final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
 
 				Scanner k;
 
 				k = new Scanner(eventLog);
-				System.out.println("Event log input");
+//				System.out.println("Event log input");
 				int i = 0;
+				double yPos = 0;
 				while (k.hasNext()) {
 					String line = k.nextLine();
-					while (line.endsWith(" \n")) {
-						line = line.replace(" \n", "\n");
-					}
-					while (line.endsWith(" ")) {
-						line = line.substring(0, line.length() - 1);
-					}
-					line = line.replace(" ", " -> ");
-					line = "t" + (i++) + " = " + line;
-					System.out.println(line);
+//					System.out.println("t" + i + " = " + line);
 
-					final Framework framework = Framework.getInstance();
-					final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-					final ToolboxPanel toolbox = editor.getToolBox();
-					final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-					tool.insertExpression(line, false, false, true, true);
+					tool.insertEventLog((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel(), i++, line.split(" "), yPos);
+
+					yPos = yPos + 5;
+
 				}
 				k.close();
 			} catch (FileNotFoundException e) {
@@ -88,6 +86,7 @@ public class ImportEventLog extends PGMinerTool {
 			} catch (OperationCancelledException e) {
 
 			}
+
 
 	}
 

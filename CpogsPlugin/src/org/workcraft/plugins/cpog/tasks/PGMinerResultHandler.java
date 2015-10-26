@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog.tasks;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -47,6 +48,9 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 				public void run() {
 					final Framework framework = Framework.getInstance();
 					MainWindow mainWindow = framework.getMainWindow();
+					final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+					final ToolboxPanel toolbox = editor.getToolBox();
+					final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
 					if (result.getOutcome() == Outcome.FAILED) {
 						JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run", "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
 					} else {
@@ -73,32 +77,15 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 						e.printStackTrace();
 					}
 					}
-					byte[] output = result.getReturnValue().getOutputFile("output.1.cpog");
-					String line = "";
-
-					System.out.println("\nResulting Parameterised Graph Equations");
-					for (byte b : output) {
-						if ((char)b != '\n') {
-							line = line + (char)b;
-						} else {
-							line = line.replaceAll("\r", "");
-							System.out.println(line);
-							while (line.endsWith(" ")) {
-								line = line.substring(0, line.length() - 1);
-							}
-							if (!(line.endsWith("="))) {
-								final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-								final ToolboxPanel toolbox = editor.getToolBox();
-								final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-								tool.insertExpression(line, false, false, true, false);
-								line = "";
-							}
-							else {
-								JOptionPane.showMessageDialog(mainWindow, "PGMiner finished with no result", "No concurrency", JOptionPane.ERROR_MESSAGE);
-							}
-						}
+					we.captureMemento();
+					byte[] output = result.getReturnValue().getOutputFile("output.cpog");
+					String text = new String(output);
+					String line[] = text.split("\r\n");
+					tool.getLowestVertex(visualCpog);
+					for (int i = 0; i < line.length; i++) {
+						tool.insertExpression(line[i], visualCpog, false, false, false, true);
 					}
-					System.out.println();
+					we.saveMemento();
 				}
 				}
 			});
