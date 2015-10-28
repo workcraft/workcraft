@@ -368,8 +368,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void rotateClockwise() {
-		if (getParent() instanceof VisualCircuitComponent) {
-			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+		if (getParent() instanceof VisualFunctionComponent) {
+			VisualFunctionComponent component = (VisualFunctionComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				AffineTransform rotateTransform = new AffineTransform();
 				rotateTransform.quadrantRotate(1);
@@ -383,8 +383,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void rotateCounterclockwise() {
-		if (getParent() instanceof VisualCircuitComponent) {
-			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+		if (getParent() instanceof VisualFunctionComponent) {
+			VisualFunctionComponent component = (VisualFunctionComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				AffineTransform rotateTransform = new AffineTransform();
 				rotateTransform.quadrantRotate(-1);
@@ -398,8 +398,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void flipHorizontal() {
-		if (getParent() instanceof VisualCircuitComponent) {
-			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+		if (getParent() instanceof VisualFunctionComponent) {
+			VisualFunctionComponent component = (VisualFunctionComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				setX(-getX());
 			}
@@ -410,8 +410,8 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
 	@Override
 	public void flipVertical() {
-		if (getParent() instanceof VisualCircuitComponent) {
-			VisualCircuitComponent component = (VisualCircuitComponent)getParent();
+		if (getParent() instanceof VisualFunctionComponent) {
+			VisualFunctionComponent component = (VisualFunctionComponent)getParent();
 			if (component.getRenderType() == RenderType.BOX) {
 				setY(-getY());
 			}

@@ -35,6 +35,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 @Hotkey(KeyEvent.VK_F)
 @SVGIcon("images/icons/svg/circuit-formula.svg")
 public class VisualFunctionComponent extends VisualCircuitComponent {
+	private RenderType renderType = RenderType.GATE;
 	private ComponentRenderingResult renderingResult = null;
 
 	public VisualFunctionComponent(FunctionComponent component) {
@@ -43,6 +44,18 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	private void addPropertyDeclarations() {
+
+		addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, RenderType>(
+				this, PROPERTY_RENDER_TYPE, RenderType.class, true, true, true) {
+			protected void setter(VisualFunctionComponent object, RenderType value) {
+				object.setRenderType(value);
+			}
+
+			protected RenderType getter(VisualFunctionComponent object) {
+				return object.getRenderType();
+			}
+		});
+
 		addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, Boolean>(
 				this, FunctionComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class, true, true, true) {
 			protected void setter(VisualFunctionComponent object, Boolean value) {
@@ -57,6 +70,20 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
 	public FunctionComponent getReferencedFunctionComponent() {
 		return (FunctionComponent)this.getReferencedComponent();
+	}
+
+	public RenderType getRenderType() {
+		return renderType;
+	}
+
+	public void setRenderType(RenderType renderType) {
+		if (this.renderType != renderType) {
+			this.renderType = renderType;
+			invalidateRenderingResult();
+			invalidateBoundingBox();
+			setContactsDefaultPosition();
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
+		}
 	}
 
 	public boolean getIsZeroDelay() {
@@ -149,14 +176,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	}
 
 	@Override
-	public void setRenderType(RenderType renderType) {
-		if (getRenderType() != renderType) {
-			invalidateRenderingResult();
-		}
-		super.setRenderType(renderType);
-	}
-
-	@Override
 	public void setContactsDefaultPosition() {
 		ComponentRenderingResult res = getRenderingResult();
 		if (res == null) {
@@ -202,14 +221,27 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 	@Override
 	public void notify(StateEvent e) {
 		super.notify(e);
+
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pc = (PropertyChangedEvent)e;
-			if (pc.getPropertyName().equals(VisualContact.PROPERTY_DIRECTION)) {
+			String propertyName = pc.getPropertyName();
+			if (propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
 				if ((getMainContact() == pc.getSender()) && (getRenderingResult() != null)) {
 					setContactsDefaultPosition();
 				}
 			}
+			if ( propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
+		  	  || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
+
+				for (Node node : getChildren()) {
+					if (node instanceof VisualFunctionContact) {
+						VisualFunctionContact vc = (VisualFunctionContact)node;
+						vc.invalidateRenderedFormula();
+					}
+				}
+			}
 		}
+
 	}
 
 	private Point2D getContactLinePositionInLocalSpace(VisualFunctionContact vc, ComponentRenderingResult rr) {
