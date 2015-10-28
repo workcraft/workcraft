@@ -41,29 +41,33 @@ public class CircuitUtils {
 						+ circuit.getNodeReference(curNode) + "'!");
 			}
             Node node = queue.remove();
-            if (!visited.contains(node)) {
-            	visited.add(node);
-            	if (node instanceof Joint) {
-            		queue.addAll(circuit.getPreset(node));
-            	} else if (node instanceof Contact) {
-            		Contact contact = (Contact)node;
-//TODO: Complete support for zero-delay buffers and inverters.
-//            		Node parent = contact.getParent();
-//            		if (contact.isOutput() && (parent instanceof CircuitComponent)) {
-//            			CircuitComponent component = (CircuitComponent)parent;
-//            			if (component.isBufferOrInverter() && component.getIsZeroDelay()) {
-//            				contact = component.getInputs().iterator().next();
-//            			}
-//            		}
-            		if (contact.isDriver()) {
-            			result = contact;
-            		} else if (node == curNode) {
-            			queue.addAll(circuit.getPreset(node));
+            if (visited.contains(node)) {
+            	continue;
+            }
+            visited.add(node);
+            if (node instanceof Joint) {
+            	queue.addAll(circuit.getPreset(node));
+            } else if (node instanceof Contact) {
+            	Contact contact = (Contact)node;
+            	// Support for zero-delay buffers and inverters.
+            	Contact zeroDelayInput = null;
+            	Node parent = contact.getParent();
+            	if (contact.isOutput() && (parent instanceof FunctionComponent)) {
+            		FunctionComponent component = (FunctionComponent)parent;
+            		if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
+            			zeroDelayInput = component.getInputs().iterator().next();
             		}
-            	} else {
-            		throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
-            				+ "' in the driver trace for node '" + circuit.getNodeReference(curNode) + "'!");
             	}
+            	if (zeroDelayInput != null) {
+            		queue.addAll(circuit.getPreset(zeroDelayInput));
+            	} else if (contact.isDriver()) {
+            		result = contact;
+            	} else if (node == curNode) {
+            		queue.addAll(circuit.getPreset(contact));
+            	}
+            } else {
+            	throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
+            	+ "' in the driver trace for node '" + circuit.getNodeReference(curNode) + "'!");
             }
 		}
 		return result;

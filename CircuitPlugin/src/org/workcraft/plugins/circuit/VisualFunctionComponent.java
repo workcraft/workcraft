@@ -15,8 +15,10 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.plugins.circuit.renderers.CElementRenderer;
@@ -35,8 +37,44 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 public class VisualFunctionComponent extends VisualCircuitComponent {
 	private ComponentRenderingResult renderingResult = null;
 
-	public VisualFunctionComponent(CircuitComponent component) {
+	public VisualFunctionComponent(FunctionComponent component) {
 		super(component);
+		addPropertyDeclarations();
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualFunctionComponent, Boolean>(
+				this, FunctionComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class, true, true, true) {
+			protected void setter(VisualFunctionComponent object, Boolean value) {
+				object.setIsZeroDelay(value);
+			}
+
+			protected Boolean getter(VisualFunctionComponent object) {
+				return object.getIsZeroDelay();
+			}
+		});
+	}
+
+	public FunctionComponent getReferencedFunctionComponent() {
+		return (FunctionComponent)this.getReferencedComponent();
+	}
+
+	public boolean getIsZeroDelay() {
+		return ((getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().getIsZeroDelay());
+	}
+
+	public void setIsZeroDelay(boolean value) {
+		if (getReferencedFunctionComponent() != null) {
+			getReferencedFunctionComponent().setIsZeroDelay(value);
+		}
+	}
+
+	public boolean isBuffer() {
+		return ((getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isBuffer());
+	}
+
+	public boolean isInverter() {
+		return ((getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isInverter());
 	}
 
 	private ComponentRenderingResult getRenderingResult() {
@@ -249,7 +287,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			}
 		}
 		if ((inputPos != null) && (outputPos != null)) {
-			g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+			float dash[] = {0.05f, 0.05f};
+			g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
+				BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
+
 			g.setColor(GateRenderer.foreground);
 			at.transform(inputPos, inputPos);
 			at.transform(outputPos, outputPos);
@@ -299,12 +340,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 				g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
 					BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 			}
+
 			GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
 			GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
 			rr.draw(g);
 			g.transform(bt);
 
-			if (isBufferOrInverter() && getIsZeroDelay()) {
+			if ((isBuffer() || isInverter()) && getIsZeroDelay()) {
 				drawBypass(g, rr, at);
 			}
 
@@ -330,5 +372,15 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 		}
 		super.remove(node);
 	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualFunctionComponent) {
+			VisualFunctionComponent srcComponent = (VisualFunctionComponent)src;
+			setIsZeroDelay(srcComponent.getIsZeroDelay());
+		}
+	}
+
 
 }
