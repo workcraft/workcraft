@@ -120,9 +120,9 @@ public class VisualCircuit extends AbstractVisualModel {
 			}
 		}
 
+		HashSet<Contact> drivenSet = new HashSet<>();
 		Circuit circuit = (Circuit)this.getMathModel();
 		Contact driver = null;
-		HashSet<Contact> drivenSet = new HashSet<>();
 		if (first instanceof VisualConnection) {
 			VisualConnection firstConnection = (VisualConnection)first;
 			driver = CircuitUtils.findDriver(circuit, firstConnection.getReferencedConnection());
@@ -153,6 +153,24 @@ public class VisualCircuit extends AbstractVisualModel {
 				}
 				if ((driver != null) && driver.isInput() && driver.isPort()) {
 					throw new InvalidConnectionException ("Direct connection from input port to output port is not allowed.");
+				}
+			}
+		}
+		// Handle zero-delay components
+		Node firstParent = first.getParent();
+		if (firstParent instanceof VisualFunctionComponent) {
+			VisualFunctionComponent firstComponent = (VisualFunctionComponent)firstParent;
+			Node secondParent = second.getParent();
+			if (secondParent instanceof VisualFunctionComponent) {
+				VisualFunctionComponent secondComponent = (VisualFunctionComponent)secondParent;
+				if (firstComponent.getIsZeroDelay() && secondComponent.getIsZeroDelay()) {
+					throw new InvalidConnectionException ("Zero delay components cannot be connected to each other.");
+				}
+			}
+			if (second instanceof VisualContact) {
+				VisualContact secondContact = (VisualContact)second;
+				if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
+					throw new InvalidConnectionException ("Zero delay components cannot be connected to the output ports.");
 				}
 			}
 		}

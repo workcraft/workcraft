@@ -51,8 +51,10 @@ public class FunctionComponent extends CircuitComponent {
 
 
 	public void setIsZeroDelay(boolean value) {
-		this.isZeroDelay = value;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ZERO_DELAY));
+		if (this.isZeroDelay != value) {
+			this.isZeroDelay = value;
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ZERO_DELAY));
+		}
 	}
 
 	public boolean getIsZeroDelay() {
@@ -69,14 +71,8 @@ public class FunctionComponent extends CircuitComponent {
 		FunctionContact inputContact = null;
 		FunctionContact outputContact = null;
 		if (contacts.size() == 2) {
-			for (FunctionContact contact: contacts) {
-				if (contact.isInput()) {
-					inputContact = contact;
-				}
-				if (contact.isOutput()) {
-					outputContact = contact;
-				}
-			}
+			inputContact = (FunctionContact)getFirstInput();
+			outputContact = (FunctionContact)getFirstOutput();
 		}
 		if ((inputContact != null) && (outputContact != null)) {
 			BooleanFormula setFunction = outputContact.getSetFunction();
@@ -95,17 +91,8 @@ public class FunctionComponent extends CircuitComponent {
 		FunctionContact inputContact = null;
 		FunctionContact outputContact = null;
 		if (contacts.size() == 2) {
-			for (Contact contact: contacts) {
-				if ( !(contact instanceof FunctionContact) ) {
-					continue;
-				}
-				if (contact.isInput()) {
-					inputContact = (FunctionContact)contact;
-				}
-				if (contact.isOutput()) {
-					outputContact = (FunctionContact)contact;
-				}
-			}
+			inputContact = (FunctionContact)getFirstInput();
+			outputContact = (FunctionContact)getFirstOutput();
 		}
 		if ((inputContact != null) && (outputContact != null)) {
 			BooleanFormula setFunction = outputContact.getSetFunction();

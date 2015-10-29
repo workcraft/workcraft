@@ -55,7 +55,7 @@ public class CircuitUtils {
             	if (contact.isOutput() && (parent instanceof FunctionComponent)) {
             		FunctionComponent component = (FunctionComponent)parent;
             		if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-            			zeroDelayInput = component.getInputs().iterator().next();
+            			zeroDelayInput = component.getFirstInput();
             		}
             	}
             	if (zeroDelayInput != null) {
@@ -95,11 +95,22 @@ public class CircuitUtils {
             		queue.addAll(circuit.getPostset(node));
             	} else if (node instanceof Contact) {
             		Contact contact = (Contact)node;
-            		if (contact.isDriven()) {
-            			result.add(contact);
-            		} else if (node == curNode) {
-            			queue.addAll(circuit.getPostset(node));
-            		}
+                	// Support for zero-delay buffers and inverters.
+                	Contact zeroDelayOutput = null;
+                	Node parent = contact.getParent();
+                	if (contact.isInput() && (parent instanceof FunctionComponent)) {
+                		FunctionComponent component = (FunctionComponent)parent;
+                		if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
+                			zeroDelayOutput = component.getFirstOutput();
+                		}
+                	}
+                	if (zeroDelayOutput != null) {
+                		queue.addAll(circuit.getPostset(zeroDelayOutput));
+                	} else if (contact.isDriven()) {
+                		result.add(contact);
+                	} else if (node == curNode) {
+                		queue.addAll(circuit.getPostset(contact));
+                	}
             	} else {
             		throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
             				+ "' in the driven trace for node '" + circuit.getNodeReference(curNode) + "'!");
@@ -324,30 +335,82 @@ public class CircuitUtils {
 		});
 	}
 
-	public static HashSet<MathNode> getComponentPostset(final Circuit circuit, MathNode mathNode) {
-		HashSet<MathNode> result = new HashSet<>();
-		Set<Node> postset = new HashSet<>();
-		if (mathNode instanceof Contact) {
-			postset.addAll(circuit.getPostset(mathNode));
-		} else if (mathNode instanceof CircuitComponent) {
-			CircuitComponent component = (CircuitComponent)mathNode;
-			for (Contact contact: component.getContacts()) {
-				if (contact.isOutput()) {
-					postset.addAll(circuit.getPostset(contact));
+	public static HashSet<CircuitComponent> getComponentPreset(final Circuit circuit, MathNode curNode) {
+		HashSet<CircuitComponent> result = new HashSet<>();
+		HashSet<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        if (curNode instanceof CircuitComponent) {
+        	CircuitComponent component = (CircuitComponent)curNode;
+        	queue.addAll(component.getInputs());
+        } else {
+        	queue.add(curNode);
+        }
+
+        while ( !queue.isEmpty() ) {
+            Node node = queue.remove();
+            if ((node != null) && !visited.contains(node)) {
+            	visited.add(node);
+            	if (node instanceof CircuitComponent) {
+            		result.add((CircuitComponent)node);
+            	} else if (node instanceof Contact) {
+            		Contact contact = (Contact)node;
+            		if (contact.isInput()) {
+            			queue.addAll(circuit.getPreset(node));
+            		} else {
+           				queue.add(contact.getParent());
+            		}
+            	} else if (node instanceof Joint) {
+            		queue.addAll(circuit.getPreset(node));
+            	} else if (node instanceof MathConnection) {
+                	MathConnection connection = (MathConnection)node;
+        			queue.add(connection.getFirst());
 				}
 			}
 		}
-		for (Node nextNode: postset) {
-			CircuitComponent nextComponent = null;
-			if (nextNode instanceof Contact) {
-				if (nextNode.getParent() instanceof CircuitComponent) {
-					nextComponent = (CircuitComponent)nextNode.getParent();
+		return result;
+	}
+
+	public static HashSet<VisualComponent> getComponentPreset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
+		HashSet<VisualComponent> result = new HashSet<>();
+		Circuit circuit = (Circuit)visualCircuit.getMathModel();
+		MathNode mathComponent = visualComponent.getReferencedComponent();
+		for (MathNode node: getComponentPreset(circuit, mathComponent)) {
+			result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
+		}
+		return result;
+	}
+
+
+	public static HashSet<CircuitComponent> getComponentPostset(final Circuit circuit, MathNode curNode) {
+		HashSet<CircuitComponent> result = new HashSet<>();
+		HashSet<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        if (curNode instanceof CircuitComponent) {
+        	CircuitComponent component = (CircuitComponent)curNode;
+        	queue.addAll(component.getOutputs());
+        } else {
+        	queue.add(curNode);
+        }
+
+        while ( !queue.isEmpty() ) {
+            Node node = queue.remove();
+            if ((node != null) && !visited.contains(node)) {
+            	visited.add(node);
+            	if (node instanceof CircuitComponent) {
+            		result.add((CircuitComponent)node);
+            	} else if (node instanceof Contact) {
+            		Contact contact = (Contact)node;
+            		if (contact.isOutput()) {
+            			queue.addAll(circuit.getPostset(node));
+            		} else {
+           				queue.add(contact.getParent());
+            		}
+            	} else if (node instanceof Joint) {
+            		queue.addAll(circuit.getPostset(node));
+            	} else if (node instanceof MathConnection) {
+                	MathConnection connection = (MathConnection)node;
+        			queue.add(connection.getSecond());
 				}
-			} else if (nextNode instanceof CircuitComponent) {
-				nextComponent = (CircuitComponent)nextNode;
-			}
-			if (nextComponent != null) {
-				result.add(nextComponent);
 			}
 		}
 		return result;
@@ -363,6 +426,48 @@ public class CircuitUtils {
 		return result;
 	}
 
+
+	public static HashSet<Contact> getPortPostset(final Circuit circuit, MathNode curNode) {
+		HashSet<Contact> result = new HashSet<>();
+		HashSet<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        if (curNode instanceof CircuitComponent) {
+        	CircuitComponent component = (CircuitComponent)curNode;
+        	queue.addAll(component.getOutputs());
+        } else {
+        	queue.add(curNode);
+        }
+
+        while ( !queue.isEmpty() ) {
+            Node node = queue.remove();
+            if ((node != null) && !visited.contains(node)) {
+            	visited.add(node);
+            	if (node instanceof Contact) {
+            		Contact contact = (Contact)node;
+            		if (contact.isOutput() && contact.isPort()) {
+           				result.add(contact);
+            		} else {
+            			queue.addAll(circuit.getPostset(node));
+            		}
+            	} else if (node instanceof Joint) {
+            		queue.addAll(circuit.getPostset(node));
+            	} else if (node instanceof MathConnection) {
+                	MathConnection connection = (MathConnection)node;
+        			queue.add(connection.getSecond());
+				}
+			}
+		}
+		return result;
+	}
+
+	public static HashSet<VisualContact> getPortPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
+		Circuit circuit = (Circuit)visualCircuit.getMathModel();
+		MathNode mathComponent = visualComponent.getReferencedComponent();
+		HashSet<Contact> ports = getPortPostset(circuit, mathComponent);
+		return getVisualContacts(visualCircuit, ports);
+	}
+
+
 	private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
 		HashSet<VisualContact> result = new HashSet<>();
 		for (Contact mathContact: mathContacts) {
@@ -372,6 +477,11 @@ public class CircuitUtils {
 			}
 		}
 		return result;
+	}
+
+	public static boolean isInvertingPath(Contact driverContact, Contact contact) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
