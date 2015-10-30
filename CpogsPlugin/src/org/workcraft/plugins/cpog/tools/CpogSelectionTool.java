@@ -39,6 +39,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -136,7 +137,7 @@ public class CpogSelectionTool extends SelectionTool {
 					WorkspaceEntry we = editor.getWorkspaceEntry();
 					VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 					String exp = "";
-					getLowestVertex(visualCpog);
+					coordinate = getLowestVertex(visualCpog);
 					for (String s : expressions) {
 						if (!s.contains("=")) {
 							exp = exp + " " + s;
@@ -178,25 +179,26 @@ public class CpogSelectionTool extends SelectionTool {
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "Text Files", "txt");
                 chooser.setFileFilter(filter);
-                chooser.showOpenDialog(btnTextInsert);
-                textFile = chooser.getSelectedFile();
-                try {
-                    fileIn = new Scanner(textFile);
-                } catch (FileNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    JOptionPane.showMessageDialog(null, e1.getMessage(),
-                            "File not found error", JOptionPane.ERROR_MESSAGE);
+                if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+                {
+	                textFile = chooser.getSelectedFile();
+	                try {
+	                    fileIn = new Scanner(textFile);
+	                } catch (FileNotFoundException e1) {
+	                    // TODO Auto-generated catch block
+	                    JOptionPane.showMessageDialog(null, e1.getMessage(),
+	                            "File not found error", JOptionPane.ERROR_MESSAGE);
+	                }
+	                WorkspaceEntry we = editor.getWorkspaceEntry();
+					VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+					coordinate = getLowestVertex(visualCpog);
+	                while (fileIn.hasNextLine()) {
+	                    equation = fileIn.nextLine();
+	                    insertExpression(equation, visualCpog, true, false, true, false);
+	                }
+	                editor.getWorkspaceEntry().saveMemento();
                 }
-                WorkspaceEntry we = editor.getWorkspaceEntry();
-				VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
-				getLowestVertex(visualCpog);
-                while (fileIn.hasNextLine()) {
-                    equation = fileIn.nextLine();
-                    insertExpression(equation, visualCpog, true, false, true, false);
-                }
-                editor.getWorkspaceEntry().saveMemento();
             }
-
         });
 		buttonPanel.add(btnTextInsert);
 
@@ -991,8 +993,8 @@ public class CpogSelectionTool extends SelectionTool {
 
     }
 
-    public void getLowestVertex(VisualCPOG visualCpog) {
-    	this.coordinate = parsingTool.getLowestVertex(visualCpog);
+    public Point2D.Double getLowestVertex(VisualCPOG visualCpog) {
+    	return parsingTool.getLowestVertex(visualCpog);
     }
 
 

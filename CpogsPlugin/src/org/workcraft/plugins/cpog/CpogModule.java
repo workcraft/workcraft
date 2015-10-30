@@ -20,9 +20,8 @@ import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
 import org.workcraft.plugins.cpog.tools.CpogToGraphConverterTool;
 import org.workcraft.plugins.cpog.tools.GraphStatisticsTool;
 import org.workcraft.plugins.cpog.tools.GraphToCpogConverterTool;
-import org.workcraft.plugins.cpog.tools.ImportAndMineEventLog;
-import org.workcraft.plugins.cpog.tools.ImportEventLog;
-import org.workcraft.plugins.cpog.tools.MineSelectedGraphs;
+import org.workcraft.plugins.cpog.tools.PGMinerImportTool;
+import org.workcraft.plugins.cpog.tools.PGMinerSelectedGraphsExtractionTool;
 import org.workcraft.plugins.cpog.tools.ScencoExhaustiveTool;
 import org.workcraft.plugins.cpog.tools.ScencoHeuristicTool;
 import org.workcraft.plugins.cpog.tools.ScencoRandomTool;
@@ -92,11 +91,10 @@ public class CpogModule implements Module {
 			}
 		});
 
-		pm.registerClass(Tool.class, ImportEventLog.class);
+		pm.registerClass(Tool.class, PGMinerImportTool.class);
 
-		pm.registerClass(Tool.class, MineSelectedGraphs.class);
+		pm.registerClass(Tool.class, PGMinerSelectedGraphsExtractionTool.class);
 
-		pm.registerClass(Tool.class, ImportAndMineEventLog.class);
 
 
 	}
