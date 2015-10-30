@@ -30,28 +30,28 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
 
 	private void handleInitStateChange(Contact contact) {
 		boolean initToOne = contact.getInitToOne();
-		{
-			Contact driverContact = CircuitUtils.findDriver(circuit, contact);
-			if (driverContact != null) {
-				boolean isZeroDelayInverter = false;
-				Node parent = contact.getParent();
-				if (parent instanceof FunctionComponent) {
-					FunctionComponent component = (FunctionComponent)parent;
-					isZeroDelayInverter = component.getIsZeroDelay() && component.isInverter();
-				}
-				driverContact.setInitToOne(initToOne != isZeroDelayInverter);
+		Node parent = contact.getParent();
+		boolean isZeroDelay = false;
+		boolean invertDriver = false;
+		boolean inverDriven = false;
+		if (parent instanceof FunctionComponent) {
+			FunctionComponent component = (FunctionComponent)parent;
+			isZeroDelay = component.getIsZeroDelay();
+			if (isZeroDelay && component.isInverter()) {
+				invertDriver = contact.isOutput();
+				inverDriven = contact.isInput();
 			}
 		}
 		{
-			Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact);
+			Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
+			if (driverContact != null) {
+				driverContact.setInitToOne(initToOne != invertDriver);
+			}
+		}
+		{
+			Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
 			for (Contact drivenContact: drivenContacts) {
-				boolean isDrivenZeroDelayInverter = false;
-				Node drivenParent = drivenContact.getParent();
-				if (drivenParent instanceof FunctionComponent) {
-					FunctionComponent drivenComponent = (FunctionComponent)drivenParent;
-					isDrivenZeroDelayInverter = drivenComponent.getIsZeroDelay() && drivenComponent.isInverter();
-				}
-				drivenContact.setInitToOne(initToOne != isDrivenZeroDelayInverter);
+				drivenContact.setInitToOne(initToOne != inverDriven);
 			}
 		}
 	}

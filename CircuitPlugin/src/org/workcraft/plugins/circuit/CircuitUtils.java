@@ -22,11 +22,15 @@ import org.workcraft.util.Hierarchy;
 public class CircuitUtils {
 
 	public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact) {
-		Contact mathDriver = findDriver((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+		return findDriver(circuit, contact, true);
+	}
+
+	public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
+		Contact mathDriver = findDriver((Circuit)circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
 		return circuit.getVisualComponent(mathDriver, VisualContact.class);
 	}
 
-	public static Contact findDriver(Circuit circuit, MathNode curNode) {
+	public static Contact findDriver(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
 		Contact result = null;
 		HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
@@ -50,14 +54,7 @@ public class CircuitUtils {
             } else if (node instanceof Contact) {
             	Contact contact = (Contact)node;
             	// Support for zero-delay buffers and inverters.
-            	Contact zeroDelayInput = null;
-            	Node parent = contact.getParent();
-            	if (contact.isOutput() && (parent instanceof FunctionComponent)) {
-            		FunctionComponent component = (FunctionComponent)parent;
-            		if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-            			zeroDelayInput = component.getFirstInput();
-            		}
-            	}
+            	Contact zeroDelayInput = (transparentZeroDelayComponents ? findZeroDelayInput(contact) : null);
             	if (zeroDelayInput != null) {
             		queue.addAll(circuit.getPreset(zeroDelayInput));
             	} else if (contact.isDriver()) {
@@ -73,12 +70,29 @@ public class CircuitUtils {
 		return result;
 	}
 
+	private static Contact findZeroDelayInput(Contact contact) {
+		Contact zeroDelayInput = null;
+		Node parent = contact.getParent();
+		if (contact.isOutput() && (parent instanceof FunctionComponent)) {
+			FunctionComponent component = (FunctionComponent)parent;
+			if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
+				zeroDelayInput = component.getFirstInput();
+			}
+		}
+		return zeroDelayInput;
+	}
+
+
 	public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
-		Collection<Contact> drivenContacts = findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+		return findDriven(circuit, contact, true);
+	}
+
+	public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
+		Collection<Contact> drivenContacts = findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
 		return getVisualContacts(circuit, drivenContacts);
 	}
 
-	public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode) {
+	public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
 		Set<Contact> result = new HashSet<Contact>();
 		HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
@@ -96,14 +110,7 @@ public class CircuitUtils {
             	} else if (node instanceof Contact) {
             		Contact contact = (Contact)node;
                 	// Support for zero-delay buffers and inverters.
-                	Contact zeroDelayOutput = null;
-                	Node parent = contact.getParent();
-                	if (contact.isInput() && (parent instanceof FunctionComponent)) {
-                		FunctionComponent component = (FunctionComponent)parent;
-                		if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-                			zeroDelayOutput = component.getFirstOutput();
-                		}
-                	}
+                	Contact zeroDelayOutput = (transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null);
                 	if (zeroDelayOutput != null) {
                 		queue.addAll(circuit.getPostset(zeroDelayOutput));
                 	} else if (contact.isDriven()) {
@@ -120,14 +127,26 @@ public class CircuitUtils {
 		return result;
 	}
 
+	private static Contact findZeroDelayOutput(Contact contact) {
+		Contact zeroDelayOutput = null;
+		Node parent = contact.getParent();
+		if (contact.isInput() && (parent instanceof FunctionComponent)) {
+			FunctionComponent component = (FunctionComponent)parent;
+			if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
+				zeroDelayOutput = component.getFirstOutput();
+			}
+		}
+		return zeroDelayOutput;
+	}
+
 	public static Contact findSignal(Circuit circuit, Contact contact) {
 		Contact result = contact;
-		Contact driver = findDriver(circuit, contact);
+		Contact driver = findDriver(circuit, contact, true);
 		if (driver != null) {
 			result = driver;
 			for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
 				if (signal.isPort() && signal.isOutput()) {
-					if (driver == CircuitUtils.findDriver(circuit, signal)) {
+					if (driver == CircuitUtils.findDriver(circuit, signal, true)) {
 						result = signal;
 						break;
 					}
@@ -215,7 +234,7 @@ public class CircuitUtils {
 	public static Contact getDrivenOutputPort(Circuit circuit, Contact contact) {
 		Contact result = null;
 		boolean multipleOutputPorts = false;
-		for (Contact vc: findDriven(circuit, contact)) {
+		for (Contact vc: findDriven(circuit, contact, true)) {
 			if (vc.isPort() && vc.isOutput()) {
 				if (result != null) {
 					multipleOutputPorts = true;
@@ -354,7 +373,7 @@ public class CircuitUtils {
             		result.add((CircuitComponent)node);
             	} else if (node instanceof Contact) {
             		Contact contact = (Contact)node;
-            		if (contact.isInput()) {
+            		if (contact.isPort() == contact.isOutput()) {
             			queue.addAll(circuit.getPreset(node));
             		} else {
            				queue.add(contact.getParent());
@@ -400,7 +419,7 @@ public class CircuitUtils {
             		result.add((CircuitComponent)node);
             	} else if (node instanceof Contact) {
             		Contact contact = (Contact)node;
-            		if (contact.isOutput()) {
+            		if (contact.isPort() == contact.isInput()) {
             			queue.addAll(circuit.getPostset(node));
             		} else {
            				queue.add(contact.getParent());

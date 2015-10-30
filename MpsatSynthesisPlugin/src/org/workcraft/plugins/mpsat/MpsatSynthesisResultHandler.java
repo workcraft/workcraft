@@ -10,11 +10,13 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
@@ -159,7 +161,13 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 
 				final Framework framework = Framework.getInstance();
 				final Workspace workspace = framework.getWorkspace();
-				workspace.add(directory, name, me, true, openInEditor);
+				WorkspaceEntry newWorkspaceEntry = workspace.add(directory, name, me, true, openInEditor);
+				VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
+				if (visualModel instanceof VisualCircuit) {
+					VisualCircuit visualCircuit = (VisualCircuit)visualModel;
+					visualCircuit.setEnvironmentFile(we.getFile());
+					framework.getMainWindow().getCurrentEditor().updatePropertyView();
+				}
 			} catch (DeserialisationException e) {
 				throw new RuntimeException(e);
 			}
