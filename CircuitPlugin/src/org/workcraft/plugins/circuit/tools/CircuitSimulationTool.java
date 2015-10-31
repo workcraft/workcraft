@@ -36,6 +36,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
+import org.workcraft.util.Pair;
 
 public class CircuitSimulationTool extends StgSimulationTool {
 	private CircuitToStgConverter converter;
@@ -206,11 +207,13 @@ public class CircuitSimulationTool extends StgSimulationTool {
 				if (converter == null) return null;
 				if (node instanceof VisualContact) {
 					VisualContact contact = (VisualContact)node;
-					SignalStg signalStg = converter.getSignalStg(contact);
-					if (signalStg != null) {
+					Pair<SignalStg, Boolean> signalStgAndUnitness = converter.getSignalStgAndUnitness(contact);
+					if (signalStgAndUnitness != null) {
 						Node traceCurrentNode = getTraceCurrentNode();
-						final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1);
-						final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1);
+						SignalStg signalStg = signalStgAndUnitness.getFirst();
+						boolean unitness = signalStgAndUnitness.getSecond();
+						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != unitness);
+						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != unitness);
 						final boolean isExcited = (getContactExcitedTransition(contact) != null);
 						final boolean isInTrace = (signalStg.contains(traceCurrentNode));
 						return new Decoration() {
@@ -246,10 +249,12 @@ public class CircuitSimulationTool extends StgSimulationTool {
 						};
 					}
 				} else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
-					SignalStg signalStg = converter.getSignalStg((VisualNode)node);
-					if (signalStg != null) {
-						final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1);
-						final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1);
+					Pair<SignalStg, Boolean> signalStgAndUnitness = converter.getSignalStgAndUnitness((VisualNode)node);
+					if (signalStgAndUnitness != null) {
+						SignalStg signalStg = signalStgAndUnitness.getFirst();
+						boolean unitness = signalStgAndUnitness.getSecond();
+						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != unitness);;
+						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != unitness);;
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {

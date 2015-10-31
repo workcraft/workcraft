@@ -30,17 +30,9 @@ import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
@@ -48,41 +40,11 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public static final String PROPERTY_MODULE = "Module";
 	public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
-	public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";
-
-	private final class CircuitHierarchySupervisor extends HierarchySupervisor {
-		@Override
-		public void handleEvent(HierarchyEvent e) {
-			if (e instanceof NodesDeletingEvent) {
-				for (Node node: e.getAffectedNodes()) {
-					if (node instanceof Contact) {
-						final Contact contact = (Contact)node;
-						removeContactfromFunctions(contact);
-					}
-				}
-			}
-		}
-
-		private void removeContactfromFunctions(final Contact contact) {
-			for (FunctionContact fc: new ArrayList<FunctionContact>(getFunctionContact())) {
-				BooleanFormula setFunction = BooleanUtils.cleverReplace(fc.getSetFunction(), contact, Zero.instance());
-				fc.setSetFunction(setFunction);
-				BooleanFormula resetFunction = BooleanUtils.cleverReplace(fc.getResetFunction(), contact, Zero.instance());
-				fc.setResetFunction(resetFunction);
-			}
-		}
-	}
 
 	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 	private String name = "";
 	private String module = "";
 	private boolean isEnvironment;
-	private boolean isZeroDelay;
-
-	public CircuitComponent() {
-		// Update all set/reset functions of the component when its contact is removed
-		new CircuitHierarchySupervisor().attach(this);
-	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -109,29 +71,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public boolean getIsEnvironment() {
 		return isEnvironment;
-	}
-
-	public void setIsZeroDelay(boolean value) {
-		this.isZeroDelay = value;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ZERO_DELAY));
-	}
-
-	public boolean getIsZeroDelay() {
-		return isZeroDelay;
-	}
-
-	public boolean isBufferOrInverter() {
-		int inputCount = 0;
-		int outputCount = 0;
-		for (Contact c: getContacts()) {
-			if (c.isInput()) {
-				inputCount++;
-			}
-			if (c.isOutput()) {
-				outputCount++;
-			}
-		}
-		return (inputCount == 1) && (outputCount == 1);
 	}
 
 	@Override
@@ -193,15 +132,11 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 		return Hierarchy.filterNodesByType(getChildren(), Contact.class);
 	}
 
-	public Collection<FunctionContact> getFunctionContact() {
-		return Hierarchy.getChildrenOfType(this, FunctionContact.class);
-	}
-
 	public Collection<Contact> getInputs() {
 		ArrayList<Contact> result = new ArrayList<Contact>();
-		for(Contact c : getContacts()) {
-			if(c.getIOType() == IOType.INPUT) {
-				result.add(c);
+		for (Contact contact: getContacts()) {
+			if (contact.isInput()) {
+				result.add(contact);
 			}
 		}
 		return result;
@@ -209,12 +144,36 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
 	public Collection<Contact> getOutputs() {
 		ArrayList<Contact> result = new ArrayList<Contact>();
-		for(Contact c : getContacts()) {
-			if(c.getIOType() == IOType.OUTPUT) {
-				result.add(c);
+		for (Contact contact: getContacts()) {
+			if (contact.isOutput()) {
+				result.add(contact);
 			}
 		}
 		return result;
 	}
+
+
+	public Contact getFirstInput() {
+		Contact result = null;
+		for (Contact contact: getContacts()) {
+			if (contact.isInput()) {
+				result = contact;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public Contact getFirstOutput() {
+		Contact result = null;
+		for (Contact contact: getContacts()) {
+			if (contact.isOutput()) {
+				result = contact;
+				break;
+			}
+		}
+		return result;
+	}
+
 
 }

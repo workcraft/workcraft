@@ -103,19 +103,18 @@ public abstract class Path<Node>
 	public abstract Node getNode();
 	public abstract Path<Node> getParent();
 
-	public static <Node> List<Node> getPath(Path<Node> path)
-	{
+	public static <Node> List<Node> getPath(Path<Node> path) {
 		ArrayList<Node> list = new ArrayList<Node>();
 		Path<Node> p = path;
-		while(!p.isEmpty())
-		{
+		while ((p != null) && !p.isEmpty())	{
 			list.add(p.getNode());
 			p = p.getParent();
 		}
 		int n = list.size();
 		List<Node> result = new ArrayList<Node>();
-		for(int i=0;i<n;i++)
+		for(int i=0;i<n;i++) {
 			result.add(list.get(n-1-i));
+		}
 		return result;
 	}
 

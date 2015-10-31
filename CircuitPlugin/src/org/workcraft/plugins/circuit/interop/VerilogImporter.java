@@ -231,6 +231,7 @@ public class VerilogImporter implements Importer {
 			FunctionComponent component = null;
 			if (gate != null) {
 				component = createLibraryGate(circuit, verilogInstance, wires, gate);
+				component.setIsZeroDelay(verilogInstance.zeroDelay);
 			} else {
 				component = createBlackBox(circuit, verilogInstance, wires, modules);
 			}

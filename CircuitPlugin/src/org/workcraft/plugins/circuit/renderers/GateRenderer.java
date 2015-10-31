@@ -28,12 +28,10 @@ public class GateRenderer {
 	public static Color background = Color.WHITE;
 
 	public static double getXFromY(double y, double pivot) {
-		return -2*y*y*pivot+2*y*pivot;
+		return -2*y*y*pivot + 2*y*pivot;
 	}
 
-
 	public static ComponentRenderingResult renderGate(BooleanFormula formula) {
-
 
 		NaryBooleanFormula f = NaryFormulaBuilder.make(formula);
 
@@ -44,7 +42,7 @@ public class GateRenderer {
 			public ComponentRenderingResult visit(final BooleanVariable var) {
 
 				final Rectangle2D bb =
-					(isBuffer)?new Rectangle2D.Double(-0.5,-0.5,1,1):new Rectangle2D.Double(0,-0.25,0,0.5);
+					(isBuffer) ? new Rectangle2D.Double(-0.5, -0.5, 1.0, 1.0) : new Rectangle2D.Double(0.0, -0.25, 0.0, 0.5);
 
 				return new ComponentRenderingResult() {
 					@Override
@@ -55,10 +53,11 @@ public class GateRenderer {
 					@Override
 					public Map<String, Point2D> contactPositions() {
 						Map<String, Point2D> result = new HashMap<String, Point2D>();
-						if (isBuffer)
+						if (isBuffer) {
 							result.put(var.getLabel(), new Point2D.Double(-0.5,0));
-						else
+						} else {
 							result.put(var.getLabel(), new Point2D.Double(0,0));
+						}
 						return result;
 					}
 
@@ -77,8 +76,6 @@ public class GateRenderer {
 							g.draw(path);
 						}
 					}
-
-
 				};
 			}
 
@@ -88,7 +85,6 @@ public class GateRenderer {
 				final ComponentRenderingResult result = arg.accept(this);
 				final Rectangle2D bb = result.boundingBox();
 				final Ellipse2D.Double bubbleShape = new Ellipse2D.Double(-bubbleSize/2, -bubbleSize/2, bubbleSize, bubbleSize);
-
 				final double w = bb.getWidth()+bubbleSize;
 				final double h = Math.max(bb.getHeight(), 0.5);
 
@@ -98,7 +94,6 @@ public class GateRenderer {
 
 					@Override
 					public void draw(Graphics2D g) {
-
 						g.translate(-bubbleSize/2, 0);
 						result.draw(g);
 						g.translate(w/2, 0);
@@ -111,21 +106,16 @@ public class GateRenderer {
 
 					@Override
 					public Map<String, Point2D> contactPositions() {
-
 						Map<String, Point2D> positions = new HashMap<String, Point2D>();
-
-						for(String v : result.contactPositions().keySet())
-						{
+						for(String v : result.contactPositions().keySet()) {
 							Point2D p = result.contactPositions().get(v);
 							positions.put(v, new Point2D.Double(p.getX() - bubbleSize/2, p.getY()));
 						}
-
 						return positions;
 					}
 
 					@Override
 					public Rectangle2D boundingBox() {
-
 						Rectangle2D ret = new Rectangle2D.Double(-w/2, -h/2, w, h);
 						return ret;
 					}
@@ -147,10 +137,8 @@ public class GateRenderer {
 					private Map<String, Point2D> cachedPositions = null;
 
 					@Override
-					public Rectangle2D boundingBox()
-					{
-						if (cachedBB == null)
-						{
+					public Rectangle2D boundingBox() {
+						if (cachedBB == null) {
 							double maxX=0;
 							double sumY=0;
 							for (ComponentRenderingResult res: results) {
@@ -167,8 +155,7 @@ public class GateRenderer {
 
 					@Override
 					public Map<String, Point2D> contactPositions() {
-						if (cachedPositions == null)
-						{
+						if (cachedPositions == null) {
 							Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
 							double x = boundingBox().getMaxX()-boundingBox().getHeight() * ANDGateAspectRatio;
@@ -176,13 +163,10 @@ public class GateRenderer {
 
 							for (ComponentRenderingResult res: results) {
 								Rectangle2D rec = res.boundingBox();
-
-								for(String v : res.contactPositions().keySet())
-								{
+								for(String v : res.contactPositions().keySet()) {
 									Point2D p = res.contactPositions().get(v);
 									positions.put(v, new Point2D.Double(p.getX() + x - rec.getWidth()/2, p.getY() + y + rec.getHeight()/2));
 								}
-
 								y+=rec.getHeight();
 							}
 							cachedPositions = positions;
@@ -208,9 +192,7 @@ public class GateRenderer {
 						}
 
 						Path2D.Double path = new Path2D.Double();
-
 						y = boundingBox().getMinY();
-
 						double w = h * (ANDGateAspectRatio / 0.8125);
 
 						path.moveTo(x, y);
@@ -233,7 +215,6 @@ public class GateRenderer {
 				isBuffer = false;
 				final List<ComponentRenderingResult> results = new LinkedList<ComponentRenderingResult>();
 
-
 				for (NaryBooleanFormula formula : args) {
 					results.add(formula.accept(this));
 				}
@@ -244,8 +225,7 @@ public class GateRenderer {
 
 					@Override
 					public Rectangle2D boundingBox() {
-						if (cachedBB == null)
-						{
+						if (cachedBB == null) {
 							double maxX=0;
 							double sumY=0;
 							for (ComponentRenderingResult res: results) {
@@ -260,9 +240,7 @@ public class GateRenderer {
 
 					@Override
 					public Map<String, Point2D> contactPositions() {
-
-						if (cachedPositions == null)
-						{
+						if (cachedPositions == null) {
 							Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
 							double h = boundingBox().getHeight();
@@ -273,23 +251,18 @@ public class GateRenderer {
 
 							for (ComponentRenderingResult res: results) {
 								Rectangle2D rec = res.boundingBox();
-
-								for(String v : res.contactPositions().keySet())
-								{
+								for(String v : res.contactPositions().keySet()) {
 									Point2D p = res.contactPositions().get(v);
-
 									double xofs = 0;
-									if (res.boundingBox().getHeight()<=0.5)
+									if (res.boundingBox().getHeight() <= 0.5) {
 										xofs = + getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
-
+									}
 									positions.put(v, new Point2D.Double(
 											p.getX() + x - rec.getWidth()/2  +xofs,
 											p.getY() + y + rec.getHeight()/2));
 								}
-
 								y+=rec.getHeight();
 							}
-
 							cachedPositions = positions;
 						}
 						return cachedPositions;
@@ -297,7 +270,6 @@ public class GateRenderer {
 
 					@Override
 					public void draw(Graphics2D g) {
-
 						double h = boundingBox().getHeight();
 						double x = boundingBox().getMaxX() - h;
 						double y = boundingBox().getMinY();
@@ -320,19 +292,15 @@ public class GateRenderer {
 						for (ComponentRenderingResult res: results) {
 							Rectangle2D rec = res.boundingBox();
 							double xofs = 0;
-							if (rec.getHeight()<=0.5)
+							if (rec.getHeight() <= 0.5) {
 								xofs = getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
-
-							g.translate(x-rec.getWidth()/2+ xofs,
-									y+rec.getHeight()/2);
+							}
+							g.translate(x-rec.getWidth()/2+ xofs, y+rec.getHeight()/2);
 							res.draw(g);
 							g.translate(-x+rec.getWidth()/2- xofs, -y-rec.getHeight()/2);
-
 							y+=rec.getHeight();
 						}
-
 					}
-
 				};
 			}
 
@@ -350,8 +318,7 @@ public class GateRenderer {
 					private Map<String, Point2D> cachedPositions = null;
 					@Override
 					public Rectangle2D boundingBox() {
-						if (cachedBB == null)
-						{
+						if (cachedBB == null) {
 							double maxX=0;
 							double sumY=0;
 							for (ComponentRenderingResult res: results) {
@@ -360,7 +327,6 @@ public class GateRenderer {
 								sumY+=rec.getHeight();
 							}
 							maxX += sumY + XORGateAspectRatio - 1;
-
 							cachedBB = new Rectangle2D.Double(-maxX/2,-sumY/2,maxX,sumY);
 						}
 						return cachedBB;
@@ -368,8 +334,7 @@ public class GateRenderer {
 
 					@Override
 					public Map<String, Point2D> contactPositions() {
-						if (cachedPositions == null)
-						{
+						if (cachedPositions == null) {
 							Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
 							double h = boundingBox().getHeight();
@@ -378,20 +343,16 @@ public class GateRenderer {
 							double y2 = boundingBox().getMaxY();
 							double y = y1;
 
-
 							for (ComponentRenderingResult res: results) {
 								Rectangle2D rec = res.boundingBox();
-
-								for(String v : res.contactPositions().keySet())
-								{
+								for(String v : res.contactPositions().keySet()) {
 									double xofs = 0;
-									if (res.boundingBox().getHeight()<=0.5)
+									if (res.boundingBox().getHeight() <= 0.5) {
 										xofs = + getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
-
+									}
 									Point2D p = res.contactPositions().get(v);
 									positions.put(v, new Point2D.Double(p.getX() + x - rec.getWidth()/2 + xofs, p.getY() + y + rec.getHeight()/2));
 								}
-
 								y+=rec.getHeight();
 							}
 							cachedPositions = positions;
@@ -401,18 +362,13 @@ public class GateRenderer {
 
 					@Override
 					public void draw(Graphics2D g) {
-
 						double h = boundingBox().getHeight();
 						double x = boundingBox().getMaxX() - h;
 						double y1 = boundingBox().getMinY();
 						double y2 = boundingBox().getMaxY();
 						double y = y1;
-
-
 						Path2D.Double path = new Path2D.Double();
-
 						y = boundingBox().getMinY();
-
 						path.moveTo(x, y);
 						path.curveTo(x + h / 2, y, x + 0.85 * h, y + h / 4, x + h, y + h / 2);
 						path.curveTo(x + 0.85 * h, y + 0.75 * h, x + h / 2, y + h, x, y + h);
@@ -436,17 +392,15 @@ public class GateRenderer {
 						for (ComponentRenderingResult res: results) {
 							Rectangle2D rec = res.boundingBox();
 							double xofs = 0;
-							if (res.boundingBox().getHeight()<=0.5)
+							if (res.boundingBox().getHeight() <= 0.5) {
 								xofs = + getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
-
+							}
 							g.translate(x-rec.getWidth()/2+xofs, y+rec.getHeight()/2);
 							res.draw(g);
 							g.translate(-x+rec.getWidth()/2-xofs, -y-rec.getHeight()/2);
-
 							y+=rec.getHeight();
 						}
 					}
-
 				};
 			}
 		});

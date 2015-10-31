@@ -45,11 +45,21 @@ public interface VerilogParserConstants {
   /** RegularExpression Id. */
   int INTEGER = 29;
   /** RegularExpression Id. */
-  int PETRIFY_UNMAPPED = 30;
+  int PETRIFY_EQUATION = 30;
   /** RegularExpression Id. */
-  int PETRIFY_EQUATION = 31;
+  int PETRIFY_UNMAPPED = 31;
   /** RegularExpression Id. */
-  int PETRIFY_INIT_STATE = 32;
+  int PETRIFY_ZERO_DELAY = 32;
+  /** RegularExpression Id. */
+  int MPSAT_ZERO_DELAY = 33;
+  /** RegularExpression Id. */
+  int PETRIFY_INIT_STATE = 34;
+  /** RegularExpression Id. */
+  int MPSAT_INIT_STATE = 35;
+  /** RegularExpression Id. */
+  int WS = 36;
+  /** RegularExpression Id. */
+  int NL = 37;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -90,9 +100,14 @@ public interface VerilogParserConstants {
     "\"1\\\'b0\"",
     "\"1\\\'b1\"",
     "<INTEGER>",
-    "<PETRIFY_UNMAPPED>",
     "<PETRIFY_EQUATION>",
+    "<PETRIFY_UNMAPPED>",
+    "<PETRIFY_ZERO_DELAY>",
+    "<MPSAT_ZERO_DELAY>",
     "<PETRIFY_INIT_STATE>",
+    "<MPSAT_INIT_STATE>",
+    "<WS>",
+    "<NL>",
     "\"(\"",
     "\")\"",
     "\"[\"",

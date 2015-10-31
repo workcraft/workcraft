@@ -120,29 +120,29 @@ public class VisualCircuit extends AbstractVisualModel {
 			}
 		}
 
+		HashSet<Contact> drivenSet = new HashSet<>();
 		Circuit circuit = (Circuit)this.getMathModel();
 		Contact driver = null;
-		HashSet<Contact> drivenSet = new HashSet<>();
 		if (first instanceof VisualConnection) {
 			VisualConnection firstConnection = (VisualConnection)first;
-			driver = CircuitUtils.findDriver(circuit, firstConnection.getReferencedConnection());
+			driver = CircuitUtils.findDriver(circuit, firstConnection.getReferencedConnection(), true);
 			if (driver != null) {
-				drivenSet.addAll(CircuitUtils.findDriven(circuit, driver));
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
 			} else {
-				drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection.getReferencedConnection()));
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection.getReferencedConnection(), true));
 			}
 		} else if (first instanceof VisualComponent) {
 			VisualComponent firstComponent = (VisualComponent)first;
-			driver = CircuitUtils.findDriver(circuit, firstComponent.getReferencedComponent());
+			driver = CircuitUtils.findDriver(circuit, firstComponent.getReferencedComponent(), true);
 			if (driver != null) {
-				drivenSet.addAll(CircuitUtils.findDriven(circuit, driver));
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
 			} else {
-				drivenSet.addAll(CircuitUtils.findDriven(circuit, firstComponent.getReferencedComponent()));
+				drivenSet.addAll(CircuitUtils.findDriven(circuit, firstComponent.getReferencedComponent(), true));
 			}
 		}
 		if (second instanceof VisualComponent) {
 			VisualComponent secondComponent = (VisualComponent)second;
-			drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent.getReferencedComponent()));
+			drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent.getReferencedComponent(), true));
 		}
 		int outputPortCount = 0;
 		for (Contact driven: drivenSet) {
@@ -153,6 +153,24 @@ public class VisualCircuit extends AbstractVisualModel {
 				}
 				if ((driver != null) && driver.isInput() && driver.isPort()) {
 					throw new InvalidConnectionException ("Direct connection from input port to output port is not allowed.");
+				}
+			}
+		}
+		// Handle zero-delay components
+		Node firstParent = first.getParent();
+		if (firstParent instanceof VisualFunctionComponent) {
+			VisualFunctionComponent firstComponent = (VisualFunctionComponent)firstParent;
+			Node secondParent = second.getParent();
+			if (secondParent instanceof VisualFunctionComponent) {
+				VisualFunctionComponent secondComponent = (VisualFunctionComponent)secondParent;
+				if (firstComponent.getIsZeroDelay() && secondComponent.getIsZeroDelay()) {
+					throw new InvalidConnectionException ("Zero delay components cannot be connected to each other.");
+				}
+			}
+			if (second instanceof VisualContact) {
+				VisualContact secondContact = (VisualContact)second;
+				if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
+					throw new InvalidConnectionException ("Zero delay components cannot be connected to the output ports.");
 				}
 			}
 		}

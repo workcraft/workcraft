@@ -113,7 +113,7 @@ public class CircuitSettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-				this, "Import synthesis result (Petrify only)", Boolean.class, true, false, false) {
+				this, "Import synthesis result", Boolean.class, true, false, false) {
 			protected void setter(CircuitSettings object, Boolean value) {
 				setOpenSynthesisResult(value);
 			}

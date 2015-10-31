@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import java.util.Collection;
 
+import org.workcraft.dom.Node;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
@@ -19,7 +20,8 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
 		if (e instanceof PropertyChangedEvent) {
 			PropertyChangedEvent pce = (PropertyChangedEvent)e;
 			Object sender = e.getSender();
-			if ((sender instanceof Contact) && pce.getPropertyName().equals(Contact.PROPERTY_INIT_TO_ONE)) {
+			String propertyName = pce.getPropertyName();
+			if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_INIT_TO_ONE)) {
 				Contact contact = (Contact)sender;
 				handleInitStateChange(contact);
 			}
@@ -28,14 +30,29 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
 
 	private void handleInitStateChange(Contact contact) {
 		boolean initToOne = contact.getInitToOne();
-		Contact driverContact = CircuitUtils.findDriver(circuit, contact);
-		if (driverContact != null) {
-			driverContact.setInitToOne(initToOne);
+		Node parent = contact.getParent();
+		boolean isZeroDelay = false;
+		boolean invertDriver = false;
+		boolean inverDriven = false;
+		if (parent instanceof FunctionComponent) {
+			FunctionComponent component = (FunctionComponent)parent;
+			isZeroDelay = component.getIsZeroDelay();
+			if (isZeroDelay && component.isInverter()) {
+				invertDriver = contact.isOutput();
+				inverDriven = contact.isInput();
+			}
 		}
-
-		Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact);
-		for (Contact drivenContact: drivenContacts) {
-			drivenContact.setInitToOne(initToOne);
+		{
+			Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
+			if (driverContact != null) {
+				driverContact.setInitToOne(initToOne != invertDriver);
+			}
+		}
+		{
+			Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
+			for (Contact drivenContact: drivenContacts) {
+				drivenContact.setInitToOne(initToOne != inverDriven);
+			}
 		}
 	}
 

@@ -24,8 +24,10 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
@@ -45,6 +47,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.SignalStg;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
 public class CircuitToStgConverter {
@@ -66,7 +69,7 @@ public class CircuitToStgConverter {
 	private final VisualSTG stg;
 
 	private final HashMap<String, Container> refToPageMap;
-	private final Map<VisualNode, VisualContact> nodeToDriverMap;
+	private final Map<VisualNode, Pair<VisualContact, Boolean>> nodeToDriverMap;
 	private final TwoWayMap<VisualContact, SignalStg> driverToStgMap;
 
 	public CircuitToStgConverter(VisualCircuit circuit) {
@@ -110,9 +113,26 @@ public class CircuitToStgConverter {
 
 	public SignalStg getSignalStg(VisualNode node) {
 		SignalStg result = null;
-		VisualContact driver = nodeToDriverMap.get(node);
-		if (driver != null) {
+		Pair<VisualContact, Boolean> driverAndUnitness = nodeToDriverMap.get(node);
+		if (driverAndUnitness != null) {
+			VisualContact driver = driverAndUnitness.getFirst();
 			result = driverToStgMap.getValue(driver);
+		}
+		return result;
+	}
+
+	public Pair<SignalStg, Boolean> getSignalStgAndUnitness(VisualNode node) {
+		Pair<SignalStg, Boolean> result = null;
+		Pair<VisualContact, Boolean> driverAndUnitness = nodeToDriverMap.get(node);
+		SignalStg signal = null;
+		boolean unitness = false;
+		if (driverAndUnitness != null) {
+			VisualContact driver = driverAndUnitness.getFirst();
+			signal = driverToStgMap.getValue(driver);
+			unitness = driverAndUnitness.getSecond();
+		}
+		if (signal != null) {
+			result = new Pair<>(signal, unitness);
 		}
 		return result;
 	}
@@ -145,25 +165,44 @@ public class CircuitToStgConverter {
 		return result;
 	}
 
-	private HashMap<VisualNode, VisualContact> associateNodesToDrivers(HashSet<VisualContact> driverSet) {
-		HashMap<VisualNode, VisualContact> result = new HashMap<>();
+	private HashMap<VisualNode, Pair<VisualContact, Boolean>> associateNodesToDrivers(HashSet<VisualContact> driverSet) {
+		HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
 		for (VisualContact driver: driverSet) {
 			if (!result.containsKey(driver)) {
-				result.putAll(propagateDriver(driver, driver));
+				result.putAll(propagateDriverUnitness(driver, new Pair<>(driver, false)));
 			}
 		}
 		return result;
 	}
 
-	private HashMap<VisualNode, VisualContact> propagateDriver(VisualNode node, VisualContact driver) {
-		HashMap<VisualNode, VisualContact> result = new HashMap<>();
-		result.put(node, driver);
+	private HashMap<VisualNode, Pair<VisualContact, Boolean>> propagateDriverUnitness(VisualNode node, Pair<VisualContact, Boolean> driverAndUnitness) {
+		HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
+		result.put(node, driverAndUnitness);
+		// Support for zero-delay buffers and inverters.
+		if (node instanceof VisualContact) {
+			VisualContact contact = (VisualContact)node;
+			Node parent = node.getParent();
+			if (contact.isInput() && (parent instanceof VisualCircuitComponent)) {
+				VisualFunctionComponent component = (VisualFunctionComponent)parent;
+				if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
+					VisualContact driver = driverAndUnitness.getFirst();
+					boolean unitness = component.isInverter();
+					driverAndUnitness = new Pair<>(driver, unitness);
+					for (VisualContact c: component.getContacts()) {
+						if (c.isOutput()) {
+							node = c;
+							result.put(node, driverAndUnitness);
+						}
+					}
+				}
+			}
+		}
 		for (Connection connection: circuit.getConnections(node)) {
 			if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
-				result.put((VisualCircuitConnection)connection, driver);
+				result.put((VisualCircuitConnection)connection, driverAndUnitness);
 				Node succNode = connection.getSecond();
 				if (!result.containsKey(succNode) && (succNode instanceof VisualNode)) {
-					result.putAll(propagateDriver((VisualNode)succNode, driver));
+					result.putAll(propagateDriverUnitness((VisualNode)succNode, driverAndUnitness));
 				}
 			}
 		}
@@ -250,12 +289,14 @@ public class CircuitToStgConverter {
 			for (Literal literal : clause.getLiterals()) {
 				BooleanVariable variable = literal.getVariable();
 				VisualContact sourceContact = circuit.getVisualComponent((Contact)variable, VisualContact.class);
-				VisualContact sourceDriver = nodeToDriverMap.get(sourceContact);
+				Pair<VisualContact, Boolean> sourceDriverAndUnitness = nodeToDriverMap.get(sourceContact);
+				VisualContact sourceDriver = sourceDriverAndUnitness.getFirst();
+				boolean sourceUnitness = sourceDriverAndUnitness.getSecond();
 				SignalStg sourceDriverStg = driverToStgMap.getValue(sourceDriver);
 				if (sourceDriverStg == null) {
 					throw new RuntimeException("No source for '" + circuit.getMathName(sourceContact) + "' while generating '" + signalName + "'.");
 				}
-				VisualPlace place = literal.getNegation() ? sourceDriverStg.zero : sourceDriverStg.one;
+				VisualPlace place = ((literal.getNegation() != sourceUnitness) ? sourceDriverStg.zero : sourceDriverStg.one);
 				if (place != predPlace) {
 					// 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
 					placesToRead.add(place);
@@ -483,7 +524,6 @@ public class CircuitToStgConverter {
 						throw new RuntimeException("Current level is not the same among the processed nodes");
 					}
 				}
-
 				stg.setCurrentLevel(currentLevel);
 				stg.select(nodesToGroup);
 				stg.groupSelection();

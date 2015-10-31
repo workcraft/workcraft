@@ -293,8 +293,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 				result = true;
 			}
 			// Output port of a BOX-rendered component
-			if ((parent instanceof VisualCircuitComponent) && isOutput()) {
-				VisualCircuitComponent component = (VisualCircuitComponent)parent;
+			if ((parent instanceof VisualFunctionComponent) && isOutput()) {
+				VisualFunctionComponent component = (VisualFunctionComponent)parent;
 				if (component.getRenderType() == RenderType.BOX) {
 					result = true;
 				}

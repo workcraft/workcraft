@@ -65,7 +65,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
-import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
@@ -87,7 +86,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 	private WeakReference<VisualContact> mainContact = null;
 
 	protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-	private RenderType renderType = RenderType.BOX;
 
 	private HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<VisualContact, GlyphVector>();
 
@@ -106,28 +104,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 
 			protected Boolean getter(VisualCircuitComponent object) {
 				return object.getIsEnvironment();
-			}
-		});
-//TODO: Complete support for zero-delay buffers and inverters.
-//		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
-//				this, CircuitComponent.PROPERTY_IS_ZERO_DELAY, Boolean.class, true, true, true) {
-//			protected void setter(VisualCircuitComponent object, Boolean value) {
-//				object.setIsZeroDelay(value);
-//			}
-//
-//			protected Boolean getter(VisualCircuitComponent object) {
-//				return object.getIsZeroDelay();
-//			}
-//		});
-
-		addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, RenderType>(
-				this, PROPERTY_RENDER_TYPE, RenderType.class, true, true, true) {
-			protected void setter(VisualCircuitComponent object, RenderType value) {
-				object.setRenderType(value);
-			}
-
-			protected RenderType getter(VisualCircuitComponent object) {
-				return object.getRenderType();
 			}
 		});
 // TODO: Rename label to module name (?)
@@ -169,39 +145,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 	public void setIsEnvironment(boolean value) {
 		if (getReferencedCircuitComponent() != null) {
 			getReferencedCircuitComponent().setIsEnvironment(value);
-		}
-	}
-
-	public boolean getIsZeroDelay() {
-		if (getReferencedCircuitComponent() != null) {
-			return getReferencedCircuitComponent().getIsZeroDelay();
-		}
-		return false;
-	}
-
-	public void setIsZeroDelay(boolean value) {
-		if (getReferencedCircuitComponent() != null) {
-			getReferencedCircuitComponent().setIsZeroDelay(value);
-		}
-	}
-
-	public boolean isBufferOrInverter() {
-		if (getReferencedCircuitComponent() != null) {
-			return getReferencedCircuitComponent().isBufferOrInverter();
-		}
-		return false;
-	}
-
-	public RenderType getRenderType() {
-		return renderType;
-	}
-
-	public void setRenderType(RenderType renderType) {
-		if (this.renderType != renderType) {
-			this.renderType = renderType;
-			setContactsDefaultPosition();
-			invalidateBoundingBox();
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
 		}
 	}
 
@@ -363,7 +306,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 		}
 	}
 
-	private void invalidateBoundingBox() {
+	public void invalidateBoundingBox() {
 		internalBB = null;
 	}
 
@@ -616,28 +559,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		g.setTransform(savedTransform);
 	}
 
-	private void drawBypass(DrawRequest r) {
-		Point2D inputPos = null;
-		Point2D outputPos = null;
-		Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-		for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-			if (vc.isInput()) {
-				inputPos = getContactLinePosition(vc);
-			} else {
-				outputPos = getContactLinePosition(vc);
-			}
-		}
-		if ((inputPos != null) && (outputPos != null)) {
-			Graphics2D g = r.getGraphics();
-			Decoration d = r.getDecoration();
-			Color colorisation = d.getColorisation();
-			g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
-			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-			Line2D line = new Line2D.Double(inputPos, outputPos);
-			g.draw(line);
-		}
-	}
-
 	@Override
 	public Rectangle2D getInternalBoundingBoxInLocalSpace() {
 		if ((groupImpl != null) && (internalBB == null)) {
@@ -678,14 +599,11 @@ public class VisualCircuitComponent extends VisualComponent implements
 		} else {
 			g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
 		}
+
 		g.draw(bb);
 
 		if (d.getColorisation() != null) {
 			drawPivot(r);
-		}
-
-		if (isBufferOrInverter() && getIsZeroDelay()) {
-			drawBypass(r);
 		}
 
 		drawContactLines(r);
@@ -799,16 +717,8 @@ public class VisualCircuitComponent extends VisualComponent implements
 			String propertyName = pc.getPropertyName();
 			if (propertyName.equals(Contact.PROPERTY_NAME)
 				|| propertyName.equals(Contact.PROPERTY_IO_TYPE)
-				|| propertyName.equals(VisualContact.PROPERTY_DIRECTION)
-				|| propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
-				|| propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
+				|| propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
 
-				for (Node node : getChildren()) {
-					if (node instanceof VisualFunctionContact) {
-						VisualFunctionContact vc = (VisualFunctionContact) node;
-						vc.invalidateRenderedFormula();
-					}
-				}
 				invalidateBoundingBox();
 				contactLableGlyphs.clear();
 			}
@@ -836,7 +746,6 @@ public class VisualCircuitComponent extends VisualComponent implements
 		if (src instanceof VisualCircuitComponent) {
 			VisualCircuitComponent srcComponent = (VisualCircuitComponent)src;
 			setIsEnvironment(srcComponent.getIsEnvironment());
-			setIsZeroDelay(srcComponent.getIsZeroDelay());
 		}
 	}
 
@@ -850,6 +759,5 @@ public class VisualCircuitComponent extends VisualComponent implements
 		getReferencedCircuitComponent().setModule(label);
 		super.setLabel(label);
 	}
-
 
 }
