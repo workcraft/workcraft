@@ -24,7 +24,7 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
 	}
 
 	public String getDisplayName() {
-		return "Extract concurrency";
+		return "Extract concurrency of selected graphs";
 	}
 
 	@Override

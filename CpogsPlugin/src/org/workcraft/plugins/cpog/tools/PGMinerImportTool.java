@@ -29,7 +29,7 @@ public class PGMinerImportTool implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Import event log";
+		return "Import an event log";
 	}
 
 	@Override

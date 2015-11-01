@@ -42,8 +42,8 @@ public class PGMinerImportDialog extends JDialog {
 		filePanel.add(selectFileBtn);
 
 
-		extractConcurrencyCB = new JCheckBox("Extract concurrency?", false);
-		splitCB = new JCheckBox("Split traces at repeat events?", false);
+		extractConcurrencyCB = new JCheckBox("Perform concurrency extraction", false);
+		splitCB = new JCheckBox("Split traces into scenarios", false);
 
 		splitCB.setEnabled(false);
 		addCheckBoxListener();
