@@ -8,17 +8,32 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
+import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
+import org.workcraft.plugins.cpog.tasks.PGMinerTask;
+import org.workcraft.Framework;
+import org.workcraft.Tool;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MineSelectedGraphs extends PGMinerTool {
+public class PGMinerSelectedGraphsExtractionTool implements Tool {
+
+	public String getSection() {
+		return "! Process Mining";
+	}
 
 	public String getDisplayName() {
-		return "Extract concurrency";
+		return "Extract concurrency of selected graphs";
 	}
 
 	@Override
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		if (we.getModelEntry() == null) return false;
+		if (we.getModelEntry().getVisualModel() instanceof VisualCPOG) return true;
+		return false;
+	}
+
 	public File getInputFile(WorkspaceEntry we) {
 		File inputFile = null;
 		try {
@@ -78,9 +93,24 @@ public class MineSelectedGraphs extends PGMinerTool {
 						throw e2;
 			}
 
-		importAndExtract = false;
 
 		return inputFile;
+	}
+
+	public void run(WorkspaceEntry we) {
+
+		try {
+
+			File inputFile = getInputFile(we);
+			PGMinerTask task = new PGMinerTask(inputFile, false);
+
+			final Framework framework = Framework.getInstance();
+			PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, true);
+			framework.getTaskManager().queue(task, "PGMiner", result);
+		} catch (ArrayIndexOutOfBoundsException e) {
+
+		}
+
 	}
 
 }

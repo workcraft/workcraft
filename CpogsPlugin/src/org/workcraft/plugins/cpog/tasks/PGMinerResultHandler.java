@@ -31,12 +31,12 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 
 	private VisualCPOG visualCpog;
 	private WorkspaceEntry we;
-	private boolean importAndExtract;
+	private boolean createNewWindow;
 
-	public PGMinerResultHandler(VisualCPOG visualCpog, WorkspaceEntry we, boolean importAndExtract) {
+	public PGMinerResultHandler(VisualCPOG visualCpog, WorkspaceEntry we, boolean createNewWindow) {
 		this.visualCpog = visualCpog;
 		this.we = we;
-		this.importAndExtract = importAndExtract;
+		this.createNewWindow = createNewWindow;
 	}
 
 	public void finished(final Result<? extends ExternalProcessResult> result, String description) {
@@ -54,7 +54,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 					if (result.getOutcome() == Outcome.FAILED) {
 						JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run", "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
 					} else {
-					if (!importAndExtract) {
+					if (createNewWindow) {
 
 					CpogDescriptor cpogModel = new CpogDescriptor();
 					MathModel mathModel = cpogModel.createMathModel();
@@ -72,10 +72,10 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
 						workspace.add(directory, name, me, true, true);
 
 
-					} catch (VisualModelInstantiationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+						} catch (VisualModelInstantiationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					we.captureMemento();
 					byte[] output = result.getReturnValue().getOutputFile("output.cpog");

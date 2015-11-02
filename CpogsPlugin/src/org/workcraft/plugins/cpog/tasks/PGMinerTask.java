@@ -20,9 +20,11 @@ import org.workcraft.util.FileUtils;
 public class PGMinerTask implements Task<ExternalProcessResult> {
 
 	private File inputFile;
+	private boolean split;
 
-	public PGMinerTask(File inputFile) {
+	public PGMinerTask(File inputFile, boolean split) {
 		this.inputFile = inputFile;
+		this.split = split;
 	}
 
 	@Override
@@ -31,6 +33,9 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 		try {
 			ArrayList<String> command = new ArrayList<>();
 			command.add(CpogSettings.getPGMinerCommand());
+			if (split) {
+				command.add("-split");
+			}
 			command.add(inputFile.getAbsolutePath());
 
 			//Call PGMiner
