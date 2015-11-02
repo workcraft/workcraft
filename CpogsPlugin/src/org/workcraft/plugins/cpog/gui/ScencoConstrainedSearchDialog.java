@@ -82,6 +82,10 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		int height;
 		modalResult = 0;
 
+		VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
+		ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
+		m = scenarios.size();
+
 		/*MODE:
 		 * 0 - HEURISTICH APPROACH
 		 * 1 - EXHAUSTIVE APPROACH
@@ -90,11 +94,15 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
 		createStandardPanel();
 		createGenerationPanel(mode);
-		createCustomPanel();
+		createCustomPanel(scenarios);
 		createButtonPanel(mode);
 
 		if(mode != 1){
-			height = 135;
+			if( m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+				height = 135;
+			} else {
+				height = 110;
+			}
 		}else{
 			height = 110;
 		}
@@ -131,10 +139,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		}
 	}
 
-	private void createCustomPanel() {
-		VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
-		ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
-		m = scenarios.size();
+	private void createCustomPanel(ArrayList<VisualTransformableNode> scenarios) {
 
 		// TABLE OF ENCODINGS
 		exampleLabel = new JLabel(
@@ -290,33 +295,11 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		abcLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				abcCheck.setSelected(abcCheck.isSelected() ? false : true);
-				if (abcCheck.isSelected()) {
-					normal.setSelected(true);
-				} else {
-					if (guidedModeBox.getSelectedIndex() == 0) {
-						normal.setSelected(true);
-					}
-				}
-			}
-		});
-		//abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
-		abcCheck.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (abcCheck.isSelected()) {
-					normal.setSelected(true);
-				} else {
-					if (guidedModeBox.getSelectedIndex() == 0) {
-						normal.setSelected(true);
-					}
-				}
 			}
 		});
 
 		// VERBOSE MODE INSTANTIATION
 		verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
-		//verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		verboseModeCheck = new JCheckBox("", false);
 		verboseModeLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -341,10 +324,15 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 				.createTitledBorder("Search range"));
 
 		// SPEED UP MODE
-		normal = new JRadioButton("Synthesise all generated solutions (slow)", true);
 		fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");
 		group = new ButtonGroup();
-		group.add(normal);
+		if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+			System.out.println("NUMBER OF POs: " + m);
+			normal = new JRadioButton("Synthesise all generated solutions (slow)");
+			group.add(normal);
+		}else{
+			fast.setSelected(true);
+		}
 		group.add(fast);
 
 		if (mode != 1){
@@ -363,8 +351,10 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 			generationPanel.add(numberOfSolutionsText);
 			generationPanel.add(new SimpleFlowLayout.LineBreak());
 		}
-		generationPanel.add(normal);
-		generationPanel.add(new SimpleFlowLayout.LineBreak());
+		if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+			generationPanel.add(normal);
+			generationPanel.add(new SimpleFlowLayout.LineBreak());
+		}
 		generationPanel.add(fast);
 
 	}
@@ -384,7 +374,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 				settings.setAbcFlag(abcCheck.isSelected() ? true : false);
 
 				// speed-up mode selection
-				settings.setEffort(normal.isSelected() ? true : false);
+				settings.setEffort(fast.isSelected() ? false : true);
 				settings.setCostFunc(false/* slow.isSelected() */);
 
 				// optimise for option

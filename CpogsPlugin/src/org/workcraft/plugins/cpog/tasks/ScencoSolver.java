@@ -28,9 +28,14 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoSolver {
 
-	public static final String TITLE_SCENCO_ERROR = "SCENCO error";
+	public static final String ACCESS_SCENCO_ERROR = "SCENCO error";
 	public static final String MSG_NOT_ENOUGH_SCENARIOS = "Not enough scenarios. Select at least two scenarios.";
 	public static final String MSG_SELECTION_MODE_UNDEFINED = "Selection mode undefined.";
+	public static final String MSG_GATE_LIB_NOT_PRESENT = "Gate library not present. Please insert this " +
+														  "(genlib format) inside ABC folder.";
+	public static final String MSG_ABC_NOT_PRESENT = "Find out more information on " +
+													 "\"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
+													 "set path of the folder containing Abc inside Workcraft settings.";
 
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
@@ -126,17 +131,16 @@ public class ScencoSolver {
 			return args;
 		}
 
-		//cpogBuilder.instantiateParameters(n, m, opt_enc, opt_formulaeVertices, truthTableVertices, opt_vertices, opt_sources, opt_dests, opt_formulaeArcs, truthTableArcs, arcNames, scencoCommand, espressoCommand, abcFolder, gatesLibrary, espressoFlag, v, a);
 		instantiateParameters(n, m);
 
 		if(settings.isAbcFlag()){
 			File f = new File(abcFolder);
 			if(!f.exists() || !f.isDirectory()){
-				JOptionPane.showMessageDialog(null,
-						"Find out more information on \"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
-						"set path of the folder containing Abc inside Workcraft settings.",
-						"Abc tool not installed correctly",
-						JOptionPane.ERROR_MESSAGE);
+				FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+				args.add("ERROR");
+				args.add(MSG_ABC_NOT_PRESENT);
+				args.add(ACCESS_SCENCO_ERROR);
+				return args;
 			}
 			else{
 				abcFlag = "-a";
@@ -145,8 +149,8 @@ public class ScencoSolver {
 				if(!f.exists() || f.isDirectory()){
 					FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 					args.add("ERROR");
-					args.add(MSG_NOT_ENOUGH_SCENARIOS);
-					args.add(TITLE_SCENCO_ERROR);
+					args.add(MSG_GATE_LIB_NOT_PRESENT);
+					args.add(ACCESS_SCENCO_ERROR);
 					return args;
 				}
 			}
@@ -210,7 +214,7 @@ public class ScencoSolver {
 				FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 				args.add("ERROR");
 				args.add(MSG_SELECTION_MODE_UNDEFINED);
-				args.add(TITLE_SCENCO_ERROR);
+				args.add(ACCESS_SCENCO_ERROR);
 				return args;
 		}
 
@@ -239,6 +243,7 @@ public class ScencoSolver {
 		if (modBitFlag != null && !modBitFlag.isEmpty()) args.add(modBitFlag);
 		if (modBit != null && !modBit.isEmpty()) args.add(modBit);
 
+		// final return
 		return args;
 	}
 

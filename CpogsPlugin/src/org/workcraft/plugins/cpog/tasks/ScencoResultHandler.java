@@ -13,6 +13,8 @@ import org.workcraft.util.FileUtils;
 
 public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 
+	public static final String INTERNAL_ERROR_MSG = "Internal error. Contact developers at www.workcraft.org/";
+
 	private ScencoExternalToolTask scenco;
 	private ScencoSolver solver;
 
@@ -32,7 +34,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 			final Framework framework = Framework.getInstance();
 
 			// In case of an internal error, activate automatically verbose mode
-			if(errorMessage.contains("Internal error")){
+			if(errorMessage.equals(INTERNAL_ERROR_MSG)){
 				String[] sentence = result.getReturnValue().getStdout().split("\n");
 				for (int i=0; i <sentence.length; i++){
 					System.out.println(sentence[i]);
@@ -45,11 +47,19 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 
 			//Display the error
 			JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
+
 		}
 	}
 
 	// Get the error from the STDOUT of SCENCO
 	private String getErrorMessage(String msg) {
+
+		// SCENCO accessing error
+		if(msg.equals(solver.ACCESS_SCENCO_ERROR)){
+			return solver.getScencoArguments().get(1);
+		}
+
+		// SCENCO known error
 		String[] sentence = msg.split("\n");
 		int i=0;
 		for (i=0; i <sentence.length; i++) {
@@ -57,7 +67,9 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 				return sentence[i+1];
 			}
 		}
-		return "Internal error. Contact developers at www.workcraft.org/";
+
+		// SCENCO undefined error
+		return INTERNAL_ERROR_MSG;
 	}
 
 	// GETTER AND SETTER
