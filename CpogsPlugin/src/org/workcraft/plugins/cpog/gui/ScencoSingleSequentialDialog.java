@@ -1,5 +1,7 @@
 package org.workcraft.plugins.cpog.gui;
 
+import info.clearthought.layout.TableLayout;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -19,7 +21,6 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
@@ -33,22 +34,17 @@ import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import info.clearthought.layout.TableLayout;
-
 @SuppressWarnings("serial")
 public class ScencoSingleSequentialDialog extends JDialog {
 
 	private JLabel verboseModeLabel,optimiseLabel, abcLabel;
 	private JCheckBox verboseModeCheck, abcCheck;
-	private JComboBox<String> OptimiseBox, guidedModeBox;
+	private JComboBox<String> OptimiseBox;
 	private JPanel buttonsPanel, content, standardPanel;
 	private JButton saveButton, closeButton;
 	JScrollPane scrollPane;
 	private TableLayout layout;
-	private JRadioButton normal;
 	private int m,bits;
-	// Core variables
-	private SatBasedSolver encoder;
 	private EncoderSettings settings;
 	private WorkspaceEntry we;
 	private int modalResult;
@@ -115,13 +111,6 @@ public class ScencoSingleSequentialDialog extends JDialog {
 				    public void mouseClicked(MouseEvent e)
 				    {
 				    	abcCheck.setSelected(abcCheck.isSelected() ? false : true);
-				    	if(abcCheck.isSelected()){
-		            		normal.setSelected(true);
-		            	}else{
-		            		if (guidedModeBox.getSelectedIndex() == 0){
-		            			normal.setSelected(true);
-		            		}
-		            	}
 				    }
 				});
 
@@ -169,30 +158,17 @@ public class ScencoSingleSequentialDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
 
-
-				// ENCODER EXECUTION
-
 				// abc disabled
 				settings.setAbcFlag(abcCheck.isSelected() ? true : false);
 
-				// speed-up mode selection
-				//settings.setEffort(normal.isSelected() ? true : false);
-				//settings.setCostFunc(/*slow.isSelected()*/false);
-
 				// number of bits selection
 				settings.setBits(bits + 1);
-
-				// circuit size selection
-				//settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
 
 				// optimise for option
 				settings.setCpogSize(OptimiseBox.getSelectedIndex() == 0 ? false : true);
 
 				// verbose mode
 				settings.setVerboseMode(verboseModeCheck.isSelected());
-
-				// continuous mode or number of solutions
-				//settings.setSolutionNumber(Integer.parseInt(numberOfSolutionsText.getText()));
 
 				// generation mode selection
 				settings.setGenerationModeInt(string.matches("Single-literal encoding") ? 4 : 5);
@@ -211,11 +187,9 @@ public class ScencoSingleSequentialDialog extends JDialog {
 					settings.setCustomEncMode(false);
 				}
 
-				// Set them on encoder
-				encoder = new SatBasedSolver(settings);
+				new SatBasedSolver(settings);
 
 				// Execute scenco
-				//encoder.run(we);
 				modalResult = 1;
 			}
 		});

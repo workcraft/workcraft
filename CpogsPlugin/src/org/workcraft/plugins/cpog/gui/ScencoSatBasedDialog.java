@@ -14,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -22,9 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
@@ -41,20 +38,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class ScencoSatBasedDialog extends JDialog {
 
-	private JLabel numberOfSolutionsLabel, verboseModeLabel, bitsLabel,
+	private JLabel verboseModeLabel, bitsLabel,
 			optimiseLabel, abcLabel, circuitSizeLabel;
 	private JCheckBox verboseModeCheck, abcCheck;
-	private JComboBox<String> OptimiseBox, guidedModeBox;
+	private JComboBox<String> OptimiseBox;
 	private JPanel generationPanel, buttonsPanel, content, standardPanel;
 	private JButton saveButton, closeButton;
-	private JTextField numberOfSolutionsText, bitsText, circuitSizeText;
-	private JTable encodingTable;
+	private JTextField bitsText, circuitSizeText;
 	JScrollPane scrollPane;
 	private TableLayout layout;
 	private int m, bits;
-	private JRadioButton normal, fast;
-	private ButtonGroup group;
-
 	// Core variables
 	private SatBasedSolver encoder;
 	private EncoderSettings settings;
@@ -127,13 +120,6 @@ public class ScencoSatBasedDialog extends JDialog {
 		abcLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				abcCheck.setSelected(abcCheck.isSelected() ? false : true);
-				if (abcCheck.isSelected()) {
-					normal.setSelected(true);
-				} else {
-					if (guidedModeBox.getSelectedIndex() == 0) {
-						normal.setSelected(true);
-					}
-				}
 			}
 		});
 

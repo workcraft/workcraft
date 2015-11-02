@@ -48,7 +48,7 @@ public class ScencoExhaustiveTool implements Tool {
 		MainWindow mainWindow = framework.getMainWindow();
 		if ( !CpogParsingTool.hasEnoughScenarios(we) ) {
 			JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS,
-					ScencoSolver.TITLE_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
+					ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
 		} else {
 			settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
 			pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());

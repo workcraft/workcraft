@@ -4,6 +4,9 @@ import java.awt.Dimension;
 
 public class ScencoDialogSupport {
 
+	// Above this number, allows to synthesise the circuit once
+	public static final int MAX_POS_FOR_SEVERAL_SYNTHESIS = 50;
+
 	// Size of components present in SCENCO dialogs
 	public static final Dimension dimensionOptimiseForBox = new Dimension(180, 26);
 	public static final Dimension dimensionText = new Dimension(585, 22);
