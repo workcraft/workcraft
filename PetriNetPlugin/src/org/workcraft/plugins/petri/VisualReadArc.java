@@ -26,11 +26,11 @@ import java.util.Set;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.Stylable;
+import org.workcraft.dom.visual.Undirected;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
-public class VisualReadArc extends VisualConnection {
+public class VisualReadArc extends VisualConnection implements Undirected {
 	private MathConnection mathConsumingArc;
 	private MathConnection mathProducingArc;
 

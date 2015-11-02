@@ -17,11 +17,13 @@ import org.workcraft.plugins.fsm.tools.FsmToDgConverterTool;
 import org.workcraft.plugins.fsm.tools.FsmToPnConverterTool;
 import org.workcraft.plugins.fsm.tools.ReachabilityCheckerTool;
 import org.workcraft.plugins.fsm.tools.ReversibilityCheckerTool;
+import org.workcraft.plugins.fsm.tools.StateMergerTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class FsmModule  implements Module {
+
 	@Override
 	public String getDescription() {
 		return "Finite State Machine";
@@ -102,6 +104,14 @@ public class FsmModule  implements Module {
 				};
 			}
 		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new StateMergerTool();
+			}
+		});
+
 	}
 
 	private void initCompatibilityManager() {

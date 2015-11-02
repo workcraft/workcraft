@@ -25,6 +25,7 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.petri.Place;
@@ -207,17 +208,22 @@ public class CircuitSimulationTool extends StgSimulationTool {
 				if (converter == null) return null;
 				if (node instanceof VisualContact) {
 					VisualContact contact = (VisualContact)node;
-					Pair<SignalStg, Boolean> signalStgAndUnitness = converter.getSignalStgAndUnitness(contact);
-					if (signalStgAndUnitness != null) {
+					Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
+					if (signalStgAndInversion != null) {
+						boolean isZeroDelay = false;
+						Node parent = contact.getParent();
+						if (parent instanceof VisualFunctionComponent) {
+							isZeroDelay = ((VisualFunctionComponent)parent).getIsZeroDelay();
+						}
 						Node traceCurrentNode = getTraceCurrentNode();
-						SignalStg signalStg = signalStgAndUnitness.getFirst();
-						boolean unitness = signalStgAndUnitness.getSecond();
-						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != unitness);
-						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != unitness);
-						final boolean isExcited = (getContactExcitedTransition(contact) != null);
-						final boolean isInTrace = (signalStg.contains(traceCurrentNode));
+						SignalStg signalStg = signalStgAndInversion.getFirst();
+						boolean isInverting = signalStgAndInversion.getSecond();
+						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
+						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
+						final boolean isExcited = ((getContactExcitedTransition(contact) != null) && !isZeroDelay);
+						final boolean isInTrace = (signalStg.contains(traceCurrentNode) && !isZeroDelay);
 						return new Decoration() {
-							@Override
+								@Override
 							public Color getColorisation() {
 								if (isExcited) {
 									if (isInTrace) {
@@ -249,12 +255,12 @@ public class CircuitSimulationTool extends StgSimulationTool {
 						};
 					}
 				} else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
-					Pair<SignalStg, Boolean> signalStgAndUnitness = converter.getSignalStgAndUnitness((VisualNode)node);
-					if (signalStgAndUnitness != null) {
-						SignalStg signalStg = signalStgAndUnitness.getFirst();
-						boolean unitness = signalStgAndUnitness.getSecond();
-						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != unitness);;
-						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != unitness);;
+					Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion((VisualNode)node);
+					if (signalStgAndInversion != null) {
+						SignalStg signalStg = signalStgAndInversion.getFirst();
+						boolean isInverting = signalStgAndInversion.getSecond();
+						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
+						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
 						return new Decoration() {
 							@Override
 							public Color getColorisation() {
@@ -293,4 +299,5 @@ public class CircuitSimulationTool extends StgSimulationTool {
 			}
 		};
 	}
+
 }

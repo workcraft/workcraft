@@ -12,6 +12,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.dfs.tools.CheckDataflowDeadlockTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowHazardTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
+import org.workcraft.plugins.dfs.tools.ComponentMergerTool;
 import org.workcraft.plugins.dfs.tools.StgGeneratorTool;
 import org.workcraft.plugins.dfs.tools.WaggingGeneratorTool;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -126,6 +127,13 @@ public class DfsModule implements Module {
 			@Override
 			public Tool create() {
 				return new CheckDataflowTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new ComponentMergerTool();
 			}
 		});
 
