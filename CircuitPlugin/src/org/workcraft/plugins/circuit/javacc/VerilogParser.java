@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.HashMap;
 
 import org.workcraft.plugins.circuit.verilog.Module;
@@ -49,7 +50,7 @@ public class VerilogParser implements VerilogParserConstants {
     List<Instance> instances;
     List<Instance> group;
     Set<List<Instance>> groups = new HashSet<List<Instance>>();
-    Set<String> highSignals = null;
+    Map<String, Boolean> signalStates = null;
     jj_consume_token(MODULE);
     name = parseModuleName();
     ports = parsePorts();
@@ -93,14 +94,14 @@ public class VerilogParser implements VerilogParserConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
-      highSignals = parseInitialState();
+      signalStates = parseInitialState();
       break;
     default:
       jj_la1[4] = jj_gen;
       ;
     }
     jj_consume_token(ENDMODULE);
-        {if (true) return new Module(name, ports, assigns, instances, highSignals, groups);}
+        {if (true) return new Module(name, ports, assigns, instances, signalStates, groups);}
     throw new Error("Missing return statement in function");
   }
 
@@ -348,9 +349,10 @@ public class VerilogParser implements VerilogParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public Set<String> parseInitialState() throws ParseException {
+  final public Map<String, Boolean> parseInitialState() throws ParseException {
+        Boolean state;
     Token nameToken;
-    Set<String> highSignals = new HashSet<String>();
+    Map<String, Boolean> signalStates = new HashMap<String, Boolean>();
     label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -365,12 +367,12 @@ public class VerilogParser implements VerilogParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 43:
         jj_consume_token(43);
-        jj_consume_token(NAME);
+        nameToken = jj_consume_token(NAME);
+                        state = false;
         break;
       case NAME:
         nameToken = jj_consume_token(NAME);
-                String name = nameToken.image;
-                    highSignals.add(name);
+                state = true;
         break;
       default:
         jj_la1[18] = jj_gen;
@@ -385,8 +387,10 @@ public class VerilogParser implements VerilogParserConstants {
         jj_la1[19] = jj_gen;
         ;
       }
+                String name = nameToken.image;
+            signalStates.put(name, state);
     }
-        {if (true) return highSignals;}
+        {if (true) return signalStates;}
     throw new Error("Missing return statement in function");
   }
 
@@ -566,11 +570,6 @@ public class VerilogParser implements VerilogParserConstants {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3R_18() {
-    if (jj_scan_token(INPUT)) return true;
-    return false;
-  }
-
   private boolean jj_3R_12() {
     if (jj_scan_token(38)) return true;
     Token xsp;
@@ -579,6 +578,11 @@ public class VerilogParser implements VerilogParserConstants {
       if (jj_3R_14()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(39)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_13() {
+    if (jj_3R_15()) return true;
     return false;
   }
 
@@ -592,13 +596,13 @@ public class VerilogParser implements VerilogParserConstants {
     return false;
   }
 
-  private boolean jj_3_2() {
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_13() {
-    if (jj_3R_15()) return true;
+  private boolean jj_3R_11() {
+    Token xsp;
+    if (jj_3R_13()) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_13()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
@@ -610,13 +614,15 @@ public class VerilogParser implements VerilogParserConstants {
     return false;
   }
 
-  private boolean jj_3R_11() {
+  private boolean jj_3R_15() {
+    if (jj_scan_token(45)) return true;
+    if (jj_scan_token(NAME)) return true;
+    if (jj_scan_token(38)) return true;
+    if (jj_scan_token(NAME)) return true;
+    if (jj_scan_token(39)) return true;
     Token xsp;
-    if (jj_3R_13()) return true;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_13()) { jj_scanpos = xsp; break; }
-    }
+    xsp = jj_scanpos;
+    if (jj_scan_token(42)) jj_scanpos = xsp;
     return false;
   }
 
@@ -636,23 +642,21 @@ public class VerilogParser implements VerilogParserConstants {
     return false;
   }
 
-  private boolean jj_3R_15() {
-    if (jj_scan_token(45)) return true;
-    if (jj_scan_token(NAME)) return true;
-    if (jj_scan_token(38)) return true;
-    if (jj_scan_token(NAME)) return true;
-    if (jj_scan_token(39)) return true;
+  private boolean jj_3R_14() {
+    if (jj_3R_16()) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(42)) jj_scanpos = xsp;
     return false;
   }
 
-  private boolean jj_3R_14() {
-    if (jj_3R_16()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(42)) jj_scanpos = xsp;
+  private boolean jj_3R_18() {
+    if (jj_scan_token(INPUT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_11()) return true;
     return false;
   }
 

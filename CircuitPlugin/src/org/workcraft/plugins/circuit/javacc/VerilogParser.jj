@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.HashMap;
 
 import org.workcraft.plugins.circuit.verilog.Module;
@@ -123,7 +124,7 @@ Module parseModule():
     List<Instance> instances;
     List<Instance> group;
     Set<List<Instance>> groups = new HashSet<List<Instance>>();
-    Set<String> highSignals = null; 
+    Map<String, Boolean> signalStates = null; 
 }
 {
     <MODULE> name = parseModuleName() 
@@ -140,10 +141,10 @@ Module parseModule():
     	)*
     ]
     [ (<PETRIFY_INIT_STATE> | <MPSAT_INIT_STATE>) 
-    	highSignals = parseInitialState()
+    	signalStates = parseInitialState()
     ]
     <ENDMODULE>
-    {        return new Module(name, ports, assigns, instances, highSignals, groups);
+    {        return new Module(name, ports, assigns, instances, signalStates, groups);
     }
 }
 
@@ -317,24 +318,31 @@ List<String> parseNames():
     }
 }
 
-Set<String> parseInitialState():
+Map<String, Boolean> parseInitialState():
 {
+	Boolean state;
     Token nameToken;
-    Set<String> highSignals = new HashSet<String>();
+    Map<String, Boolean> signalStates = new HashMap<String, Boolean>();
 }
 {
     (
         (
-        	("!" <NAME>) 
+        	("!" nameToken = <NAME>)
+        	{
+        		state = false;
+        	} 
         |	(nameToken = <NAME>)
 	        {
-    	    	String name = nameToken.image;
-        	    highSignals.add(name);
+    	    	state = true;
         	}
         ) [","]
+        {
+   	    	String name = nameToken.image;
+       	    signalStates.put(name, state);
+       	}
     )*
     {
-    	return highSignals;
+    	return signalStates;
     }
 }
 

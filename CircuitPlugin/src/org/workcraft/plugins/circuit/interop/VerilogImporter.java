@@ -240,7 +240,7 @@ public class VerilogImporter implements Importer {
 			}
 		}
 		createConnections(circuit, wires);
-		setInitialState(circuit, wires, topModule.highSignals);
+		setInitialState(circuit, wires, topModule.signalStates);
 		mergeGroups(circuit, topModule.groups, instanceComponentMap);
 		return circuit;
 	}
@@ -430,7 +430,7 @@ public class VerilogImporter implements Importer {
 			}
 			index++;
 		}
-		if (getPrimitiveUnitness(verilogInstance.moduleName)) {
+		if (isInvertingPrimitive(verilogInstance.moduleName)) {
 			if (index > 1) {
 				expression = "(" + expression + ")";
 			}
@@ -458,7 +458,7 @@ public class VerilogImporter implements Importer {
 		}
 	}
 
-	private boolean getPrimitiveUnitness(String primitiveName) {
+	private boolean isInvertingPrimitive(String primitiveName) {
 		switch (primitiveName) {
 		case "buf":
 		case "and":
@@ -554,11 +554,28 @@ public class VerilogImporter implements Importer {
 		}
 	}
 
-	private void setInitialState(Circuit circuit, Map<String, Wire> wires, Set<String> highSignals) {
+	private void setInitialState(Circuit circuit, Map<String, Wire> wires, Map<String, Boolean> signalStates) {
+		// Set all signals first to 1 and then to 0, to make sure a switch and initiates switching of the neighbours.
 		for (String signalName: wires.keySet()) {
 			Wire wire = wires.get(signalName);
-			if ((highSignals != null) && (wire.source != null)) {
-				wire.source.setInitToOne(highSignals.contains(signalName));
+			if (wire.source != null) {
+				wire.source.setInitToOne(true);
+			}
+		}
+		for (String signalName: wires.keySet()) {
+			Wire wire = wires.get(signalName);
+			if (wire.source != null) {
+				wire.source.setInitToOne(false);
+			}
+		}
+		// Set all signals specified as high to 1.
+		if (signalStates != null) {
+			for (String signalName: wires.keySet()) {
+				Wire wire = wires.get(signalName);
+				if ((wire.source != null) && signalStates.containsKey(signalName)) {
+					boolean signalState = signalStates.get(signalName);
+					wire.source.setInitToOne(signalState);
+				}
 			}
 		}
 	}

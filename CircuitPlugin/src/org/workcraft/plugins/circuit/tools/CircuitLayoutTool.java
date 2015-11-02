@@ -65,7 +65,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
 			VisualCircuit circuit = (VisualCircuit)model;
 			setComponentPosition(circuit);
 			setPolylineConnections(circuit);
-			alignPorts(circuit);
+			//alignPorts(circuit);
 		}
 	}
 

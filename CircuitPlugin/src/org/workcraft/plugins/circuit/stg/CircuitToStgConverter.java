@@ -113,26 +113,26 @@ public class CircuitToStgConverter {
 
 	public SignalStg getSignalStg(VisualNode node) {
 		SignalStg result = null;
-		Pair<VisualContact, Boolean> driverAndUnitness = nodeToDriverMap.get(node);
-		if (driverAndUnitness != null) {
-			VisualContact driver = driverAndUnitness.getFirst();
+		Pair<VisualContact, Boolean> driverAndInversion = nodeToDriverMap.get(node);
+		if (driverAndInversion != null) {
+			VisualContact driver = driverAndInversion.getFirst();
 			result = driverToStgMap.getValue(driver);
 		}
 		return result;
 	}
 
-	public Pair<SignalStg, Boolean> getSignalStgAndUnitness(VisualNode node) {
+	public Pair<SignalStg, Boolean> getSignalStgAndInvertion(VisualNode node) {
 		Pair<SignalStg, Boolean> result = null;
-		Pair<VisualContact, Boolean> driverAndUnitness = nodeToDriverMap.get(node);
+		Pair<VisualContact, Boolean> driverAndInvert = nodeToDriverMap.get(node);
 		SignalStg signal = null;
-		boolean unitness = false;
-		if (driverAndUnitness != null) {
-			VisualContact driver = driverAndUnitness.getFirst();
+		boolean isInverted = false;
+		if (driverAndInvert != null) {
+			VisualContact driver = driverAndInvert.getFirst();
 			signal = driverToStgMap.getValue(driver);
-			unitness = driverAndUnitness.getSecond();
+			isInverted = driverAndInvert.getSecond();
 		}
 		if (signal != null) {
-			result = new Pair<>(signal, unitness);
+			result = new Pair<>(signal, isInverted);
 		}
 		return result;
 	}
@@ -169,15 +169,15 @@ public class CircuitToStgConverter {
 		HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
 		for (VisualContact driver: driverSet) {
 			if (!result.containsKey(driver)) {
-				result.putAll(propagateDriverUnitness(driver, new Pair<>(driver, false)));
+				result.putAll(propagateDriverInversion(driver, new Pair<>(driver, false)));
 			}
 		}
 		return result;
 	}
 
-	private HashMap<VisualNode, Pair<VisualContact, Boolean>> propagateDriverUnitness(VisualNode node, Pair<VisualContact, Boolean> driverAndUnitness) {
+	private HashMap<VisualNode, Pair<VisualContact, Boolean>> propagateDriverInversion(VisualNode node, Pair<VisualContact, Boolean> driverAndInversion) {
 		HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
-		result.put(node, driverAndUnitness);
+		result.put(node, driverAndInversion);
 		// Support for zero-delay buffers and inverters.
 		if (node instanceof VisualContact) {
 			VisualContact contact = (VisualContact)node;
@@ -185,13 +185,13 @@ public class CircuitToStgConverter {
 			if (contact.isInput() && (parent instanceof VisualCircuitComponent)) {
 				VisualFunctionComponent component = (VisualFunctionComponent)parent;
 				if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-					VisualContact driver = driverAndUnitness.getFirst();
-					boolean unitness = component.isInverter();
-					driverAndUnitness = new Pair<>(driver, unitness);
+					VisualContact driver = driverAndInversion.getFirst();
+					boolean isInverting = component.isInverter();
+					driverAndInversion = new Pair<>(driver, isInverting);
 					for (VisualContact c: component.getContacts()) {
 						if (c.isOutput()) {
 							node = c;
-							result.put(node, driverAndUnitness);
+							result.put(node, driverAndInversion);
 						}
 					}
 				}
@@ -199,10 +199,10 @@ public class CircuitToStgConverter {
 		}
 		for (Connection connection: circuit.getConnections(node)) {
 			if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
-				result.put((VisualCircuitConnection)connection, driverAndUnitness);
+				result.put((VisualCircuitConnection)connection, driverAndInversion);
 				Node succNode = connection.getSecond();
 				if (!result.containsKey(succNode) && (succNode instanceof VisualNode)) {
-					result.putAll(propagateDriverUnitness((VisualNode)succNode, driverAndUnitness));
+					result.putAll(propagateDriverInversion((VisualNode)succNode, driverAndInversion));
 				}
 			}
 		}
@@ -289,14 +289,14 @@ public class CircuitToStgConverter {
 			for (Literal literal : clause.getLiterals()) {
 				BooleanVariable variable = literal.getVariable();
 				VisualContact sourceContact = circuit.getVisualComponent((Contact)variable, VisualContact.class);
-				Pair<VisualContact, Boolean> sourceDriverAndUnitness = nodeToDriverMap.get(sourceContact);
-				VisualContact sourceDriver = sourceDriverAndUnitness.getFirst();
-				boolean sourceUnitness = sourceDriverAndUnitness.getSecond();
+				Pair<VisualContact, Boolean> sourceDriverAndInversion = nodeToDriverMap.get(sourceContact);
+				VisualContact sourceDriver = sourceDriverAndInversion.getFirst();
+				boolean sourceInversion = sourceDriverAndInversion.getSecond();
 				SignalStg sourceDriverStg = driverToStgMap.getValue(sourceDriver);
 				if (sourceDriverStg == null) {
 					throw new RuntimeException("No source for '" + circuit.getMathName(sourceContact) + "' while generating '" + signalName + "'.");
 				}
-				VisualPlace place = ((literal.getNegation() != sourceUnitness) ? sourceDriverStg.zero : sourceDriverStg.one);
+				VisualPlace place = ((literal.getNegation() != sourceInversion) ? sourceDriverStg.zero : sourceDriverStg.one);
 				if (place != predPlace) {
 					// 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
 					placesToRead.add(place);
