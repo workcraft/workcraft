@@ -35,7 +35,6 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCPOG;
-import org.workcraft.plugins.cpog.gui.ScencoDialogSupport;
 import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
@@ -49,7 +48,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 			customEncLabel, bitsLabel, optimiseLabel,
 			abcLabel, circuitSizeLabel;
 	private JCheckBox verboseModeCheck, customEncodings, abcCheck;
-	private JComboBox<String> OptimiseBox, guidedModeBox;
+	private JComboBox<String> OptimiseBox;
 	private JPanel generationPanel, buttonsPanel, content, customPanel,
 			standardPanel;
 	private JButton saveButton, closeButton;
@@ -64,10 +63,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 	// Core variables
 	private SatBasedSolver encoder;
 	private EncoderSettings settings;
-	private WorkspaceEntry we;
 	private int modalResult;
-
-	// generationPanel.getPreferredSize().height
 
 	public EncoderSettings getSettings() {
 		return settings;
@@ -78,7 +74,6 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 			EncoderSettings settings, WorkspaceEntry we, String approach, int mode) {
 		super(owner, approach, ModalityType.APPLICATION_MODAL);
 		this.settings = settings;
-		this.we = we;
 		int height;
 		modalResult = 0;
 
@@ -146,10 +141,8 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 				ScencoDialogSupport.normalBitText +
 				ScencoDialogSupport.dontCareBit + ScencoDialogSupport.dontCareBitText +
 				ScencoDialogSupport.reservedBit + ScencoDialogSupport.reservedBitText);
-		//exampleLabel.setPreferredSize(ScencoDialogSupport.dimensionCustomExampleLabel);
 
 		customEncLabel = new JLabel(ScencoDialogSupport.textCustomiseLabel);
-		//customEncLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		customEncodings = new JCheckBox("", false);
 		customEncLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -187,9 +180,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		});
 
 		bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
-		//bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabelCustom);
 		circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
-		//circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
 		int value = 2;
 		while (value < m) {
 			value *= 2;
@@ -280,7 +271,6 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
 		// OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
 		optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
-		//optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
 		OptimiseBox = new JComboBox<String>();
 		OptimiseBox.setEditable(false);
 		OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
@@ -327,8 +317,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");
 		group = new ButtonGroup();
 		if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
-			System.out.println("NUMBER OF POs: " + m);
-			normal = new JRadioButton("Synthesise all generated solutions (slow)");
+			normal = new JRadioButton("Synthesise all generated solutions (slow)", true);
 			group.add(normal);
 		}else{
 			fast.setSelected(true);
@@ -338,7 +327,6 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 		if (mode != 1){
 			// NUMBER OF SOLUTIONS TO GENERATE
 			numberOfSolutionsLabel = new JLabel(ScencoDialogSupport.textNumberSolutionLabel);
-			//numberOfSolutionsLabel.setPreferredSize(ScencoDialogSupport.dimensionNumberSolutionLabel);
 			numberOfSolutionsText = new JTextField();
 			numberOfSolutionsText.setDocument(new IntDocument(3));
 			numberOfSolutionsText.setText(String.valueOf(settings
@@ -375,7 +363,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
 				// speed-up mode selection
 				settings.setEffort(fast.isSelected() ? false : true);
-				settings.setCostFunc(false/* slow.isSelected() */);
+				settings.setCostFunc(false);
 
 				// optimise for option
 				settings.setCpogSize(OptimiseBox.getSelectedIndex() == 0 ? false
@@ -421,9 +409,8 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 				// Set them on encoder
 				encoder = new SatBasedSolver(settings);
 
+				// execute scenco
 				modalResult = 1;
-				// Execute scenco
-				//encoder.run(we);
 			}
 		});
 
