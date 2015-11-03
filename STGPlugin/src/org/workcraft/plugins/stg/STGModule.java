@@ -23,6 +23,7 @@ import org.workcraft.plugins.stg.tools.SignalMirrorTool;
 import org.workcraft.plugins.stg.tools.SignalToDummyTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.StgToPetriNetConverterTool;
 import org.workcraft.plugins.stg.tools.TransitionContractorTool;
+import org.workcraft.plugins.stg.tools.TransitionMergerTool;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -107,6 +108,13 @@ public class STGModule implements Module {
 			@Override
 			public Tool create() {
 				return new StgToPetriNetConverterTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new TransitionMergerTool();
 			}
 		});
 	}

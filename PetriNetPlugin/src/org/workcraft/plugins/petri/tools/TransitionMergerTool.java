@@ -4,25 +4,25 @@ import java.util.Set;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractMergerTool;
-import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public final class PlaceMergerTool extends AbstractMergerTool {
+public final class TransitionMergerTool extends AbstractMergerTool {
 	@Override
 	public String getDisplayName() {
-		return "Merge selected places";
+		return "Merge selected transitions";
 	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+		return we.getModelEntry().getMathModel() instanceof PetriNet;
 	}
 
 	@Override
 	public Set<Class<? extends VisualComponent>> getMergableClasses() {
 		Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
-		result.add(VisualPlace.class);
+		result.add(VisualTransition.class);
 		return result;
 	}
 

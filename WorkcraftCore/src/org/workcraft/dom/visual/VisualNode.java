@@ -129,4 +129,8 @@ public abstract class VisualNode implements Properties, Node, Touchable, Stylabl
 	public void copyStyle(Stylable src) {
 	}
 
+	@Override
+	public void mixStyle(Stylable... srcs) {
+	}
+
 }

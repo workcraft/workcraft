@@ -149,4 +149,5 @@ public class DfsModule implements Module {
 				"<descriptor class=\"org.workcraft.plugins.dfs.DfsModelDescriptor\"/>",
 				"<descriptor class=\"org.workcraft.plugins.dfs.DfsDescriptor\"/>");
 	}
+
 }

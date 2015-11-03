@@ -110,4 +110,24 @@ public class VisualState extends VisualComponent {
 		}
 	}
 
+	@Override
+	public void mixStyle(Stylable... srcs) {
+		super.mixStyle(srcs);
+		boolean isFinal = false;
+		boolean isInitial = false;
+		for (Stylable src: srcs) {
+			if (src instanceof VisualState) {
+				VisualState srcState = (VisualState)src;
+				if (srcState.getReferencedState().isFinal()) {
+					isFinal = true;
+				}
+				if (srcState.getReferencedState().isInitial()) {
+					isInitial = true;
+				}
+			}
+		}
+		getReferencedState().setFinal(isFinal);
+		getReferencedState().setInitial(isInitial);
+	}
+
 }

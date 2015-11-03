@@ -16,6 +16,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Undirected;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -57,26 +58,31 @@ abstract public class AbstractMergerTool extends TransformationTool {
 			Set<VisualComponent> components = classComponents.get(mergableClass);
 			VisualComponent mergedComponent = createMergedComponent(model, components, mergableClass);
 			replaceComponents(model, components, mergedComponent);
-			model.addToSelection(mergedComponent);
+			if (mergedComponent != null) {
+				model.addToSelection(mergedComponent);
+			}
 		}
 	}
 
 	public <T extends VisualComponent> T createMergedComponent(VisualModel model, Set<VisualComponent> components, Class<T> type) {
 		T result = null;
-		double x = 0.0;
-		double y = 0.0;
-		for (VisualComponent component: components) {
-			x += component.getRootSpaceX();
-			y += component.getRootSpaceY();
-		}
-		if ( !components.isEmpty() ) {
-			Container vContainer = Hierarchy.getNearestContainer(new ArrayList<Node>(components));
-			Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
-			Class<? extends MathNode> mathNodeClass = components.iterator().next().getReferencedComponent().getClass();
-			MathNode mathNode = model.getMathModel().createNode(null, mContainer, mathNodeClass);
-			result = model.createVisualComponent(mathNode, vContainer, type);
-			int n = components.size();
-			result.setRootSpacePosition(new Point2D.Double(x / n, y/ n));
+		if (components != null) {
+			double x = 0.0;
+			double y = 0.0;
+			for (VisualComponent component: components) {
+				x += component.getRootSpaceX();
+				y += component.getRootSpaceY();
+			}
+			if ( !components.isEmpty() ) {
+				Container vContainer = Hierarchy.getNearestContainer(new ArrayList<Node>(components));
+				Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
+				Class<? extends MathNode> mathNodeClass = components.iterator().next().getReferencedComponent().getClass();
+				MathNode mathNode = model.getMathModel().createNode(null, mContainer, mathNodeClass);
+				result = model.createVisualComponent(mathNode, vContainer, type);
+				int n = components.size();
+				result.setRootSpacePosition(new Point2D.Double(x / n, y/ n));
+				result.mixStyle(components.toArray(new VisualComponent[components.size()]));
+			}
 		}
 		return result;
 	}
@@ -88,20 +94,25 @@ abstract public class AbstractMergerTool extends TransformationTool {
 				Node first = connection.getFirst();
 				Node second = connection.getSecond();
 				try {
-				if ((first != component) && (second == component)) {
-					if (isUndirected) {
-						model.connectUndirected(first, newComponent);
-					} else {
-						model.connect(first, newComponent);
+					VisualConnection newConnection = null;
+					if ((first != component) && (second == component)) {
+						if (isUndirected) {
+							newConnection = model.connectUndirected(first, newComponent);
+						} else {
+							newConnection = model.connect(first, newComponent);
+						}
 					}
-				}
-				if ((first == component) && (second != component)) {
-					if (isUndirected) {
-						model.connectUndirected(newComponent, second);
-					} else {
-						model.connect(newComponent, second);
+					if ((first == component) && (second != component)) {
+						if (isUndirected) {
+							newConnection = model.connectUndirected(newComponent, second);
+						} else {
+							newConnection = model.connect(newComponent, second);
+						}
 					}
-				}
+					if ((newConnection != null) && (connection instanceof VisualConnection)) {
+						newConnection.copyStyle((VisualConnection)connection);
+						newConnection.copyShape((VisualConnection)connection);
+					}
 				} catch (InvalidConnectionException e) {
 				}
 			}

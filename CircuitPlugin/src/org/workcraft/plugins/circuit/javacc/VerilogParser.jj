@@ -74,14 +74,14 @@ TOKEN :
 |   <LOGIC0 : "1'b0">
 |   <LOGIC1 : "1'b1">
 |   <INTEGER : ([ "0"-"9" ])+>
-|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* ["\r", "\n"]>
+|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* <NL>>
 |   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:"  <WS> <NL>>
 |   <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
 |   <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
 |   <PETRIFY_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
 |   <MPSAT_INIT_STATE : "// initial values of the signals" <WS> <NL> <WS> "//">
 |	<#WS: ([" ", "\t"])*>
-|	<#NL: ["\n", "\r"]>
+|	<#NL: (["\n", "\r"])+>
 |   "("
 |   ")"
 |   "["

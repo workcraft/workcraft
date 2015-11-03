@@ -30,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -200,6 +201,31 @@ public class VisualPlace extends VisualComponent {
 			getReferencedPlace().setTokens(srcPlace.getReferencedPlace().getTokens());
 			setTokenColor(srcPlace.getTokenColor());
 		}
+	}
+
+	@Override
+	public void mixStyle(Stylable... srcs) {
+		super.mixStyle(srcs);
+		int tokens = 0;
+		int capacity = 0;
+		LinkedList<Color> tokenColors = new LinkedList<>();
+		for (Stylable src: srcs) {
+			if (src instanceof VisualPlace) {
+				VisualPlace srcPlace = (VisualPlace)src;
+				int tmpTokens = srcPlace.getReferencedPlace().getTokens();
+				if (tokens < tmpTokens) {
+					tokens = tmpTokens;
+				}
+				int tmpCapacity = srcPlace.getReferencedPlace().getCapacity();
+				if (capacity < tmpCapacity) {
+					capacity = tmpCapacity;
+				}
+				tokenColors.add(srcPlace.getTokenColor());
+			}
+		}
+		getReferencedPlace().setTokens(tokens);
+		getReferencedPlace().setCapacity(capacity);
+		setTokenColor(Coloriser.mix(tokenColors));
 	}
 
 }

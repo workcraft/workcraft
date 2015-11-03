@@ -15,6 +15,7 @@ import org.workcraft.plugins.petri.tools.PlaceMergerTool;
 import org.workcraft.plugins.petri.tools.ReadArcToDualArcConverterTool;
 import org.workcraft.plugins.petri.tools.ReplicateReadArcPlaceTool;
 import org.workcraft.plugins.petri.tools.TransitionContractorTool;
+import org.workcraft.plugins.petri.tools.TransitionMergerTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
@@ -78,6 +79,13 @@ public class PetriNetModule implements Module {
 			@Override
 			public Tool create() {
 				return new PlaceMergerTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new TransitionMergerTool();
 			}
 		});
 	}

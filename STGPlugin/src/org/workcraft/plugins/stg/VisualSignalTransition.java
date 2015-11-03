@@ -27,7 +27,10 @@ import java.awt.event.KeyEvent;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
@@ -109,4 +112,66 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 	public String getSignalName() {
 		return getReferencedTransition().getSignalName();
 	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		// FIXME: type, direction and name of the signal cannot be copied as it breaks template functionality
+//		if (src instanceof VisualSignalTransition) {
+//			VisualSignalTransition srcSignalTransition = (VisualSignalTransition)src;
+//			setType(srcSignalTransition.getType());
+//			setDirection(srcSignalTransition.getDirection());
+//		}
+	}
+
+	@Override
+	public void mixStyle(Stylable... srcs) {
+		super.mixStyle(srcs);
+		// Type priority: OUTPUT > INPUT > INTERNAL
+		boolean foundOutput = false;
+		boolean foundInput= false;
+		boolean foundInternal = false;
+		// Direction priority: TOGGLE > PLUS == MINUS
+		boolean foundToggle = false;
+		boolean foundPlus = false;
+		boolean foundMinus = false;
+		for (Stylable src: srcs) {
+			if (src instanceof VisualSignalTransition) {
+				VisualSignalTransition srcSignalTransition = (VisualSignalTransition)src;
+				if (srcSignalTransition.getType() == Type.OUTPUT) {
+					foundOutput = true;
+				}
+				if (srcSignalTransition.getType() == Type.INPUT) {
+					foundInput = true;
+				}
+				if (srcSignalTransition.getType() == Type.INTERNAL) {
+					foundInternal = true;
+				}
+				if (srcSignalTransition.getDirection() == Direction.TOGGLE) {
+					foundToggle = true;
+				}
+				if (srcSignalTransition.getDirection() == Direction.PLUS) {
+					foundPlus = true;
+				}
+				if (srcSignalTransition.getDirection() == Direction.MINUS) {
+					foundMinus = true;
+				}
+			}
+		}
+		if (foundOutput) {
+			setType(Type.OUTPUT);
+		} else if (foundInput) {
+			setType(Type.INPUT);
+		} else if (foundInternal) {
+			setType(Type.INTERNAL);
+		}
+		if (foundToggle || (foundPlus && foundMinus)) {
+			setDirection(Direction.TOGGLE);
+		} else if (foundPlus) {
+			setDirection(Direction.PLUS);
+		} else if (foundMinus) {
+			setDirection(Direction.MINUS);
+		}
+	}
+
 }

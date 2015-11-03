@@ -3,6 +3,7 @@ package org.workcraft.plugins.fst;
 import java.awt.Color;
 
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
@@ -50,4 +51,15 @@ public class VisualSignalEvent extends VisualEvent {
 	public SignalEvent getReferencedSignalEvent() {
 		return (SignalEvent)getReferencedEvent();
 	}
+
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualSignalEvent) {
+			VisualSignalEvent srcSignalEvent = (VisualSignalEvent)src;
+			getReferencedSignalEvent().setDirection(srcSignalEvent.getReferencedSignalEvent().getDirection());
+		}
+	}
+
 }

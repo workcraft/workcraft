@@ -11,6 +11,7 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.RenderedText;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
@@ -148,6 +149,16 @@ public class VisualEvent extends VisualConnection {
 	public void setLabelColor(Color symbolColor) {
 		this.labelColor = symbolColor;
 		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_COLOR));
+	}
+
+	@Override
+	public void copyStyle(Stylable src) {
+		super.copyStyle(src);
+		if (src instanceof VisualEvent) {
+			VisualEvent srcEvent = (VisualEvent)src;
+			getReferencedEvent().setSymbol(srcEvent.getReferencedEvent().getSymbol());
+			setLabelColor(srcEvent.getLabelColor());
+		}
 	}
 
 }

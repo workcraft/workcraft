@@ -31,7 +31,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
@@ -410,7 +412,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 		return Collections.unmodifiableCollection(replicas);
 	}
 
-
 	@Override
 	public void copyStyle(Stylable src) {
 		super.copyStyle(src);
@@ -424,6 +425,60 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			setNameColor(srcComponent.getNameColor());
 			setNamePositioning(srcComponent.getNamePositioning());
 		}
+	}
+
+	@Override
+	public void mixStyle(Stylable... srcs) {
+		super.mixStyle(srcs);
+		LinkedList<Color> foregroundColors = new LinkedList<>();
+		LinkedList<Color> fillColors = new LinkedList<>();
+		LinkedList<Color> nameColors = new LinkedList<>();
+		LinkedList<Color> labelColors = new LinkedList<>();
+		LinkedList<Positioning> namePositioning = new LinkedList<>();
+		LinkedList<Positioning> labelPositioning = new LinkedList<>();
+		String label = "";
+		for (Stylable src: srcs) {
+			if (src instanceof VisualComponent) {
+				VisualComponent srcComponent = (VisualComponent)src;
+				foregroundColors.add(srcComponent.getForegroundColor());
+				fillColors.add(srcComponent.getFillColor());
+				nameColors.add(srcComponent.getNameColor());
+				labelColors.add(srcComponent.getLabelColor());
+				namePositioning.add(srcComponent.getLabelPositioning());
+				labelPositioning.add(srcComponent.getLabelPositioning());
+				if (srcComponent.getLabel() != null) {
+					label = label + "|" + srcComponent.getLabel();
+				}
+			}
+		}
+		setForegroundColor(Coloriser.mix(foregroundColors));
+		setFillColor(Coloriser.mix(fillColors));
+		setNameColor(Coloriser.mix(nameColors));
+		setLabelColor(Coloriser.mix(labelColors));
+		setNamePositioning(votePositioning(namePositioning));
+		setLabelPositioning(votePositioning(labelPositioning));
+		//setLabel(label);
+	}
+
+	private Positioning votePositioning(LinkedList<Positioning> positionings) {
+		HashMap<Positioning, Integer> positioningCount = new HashMap<>();
+		for (Positioning positioning: positionings) {
+			int count = 0;
+			if (positioningCount.containsKey(positioning)) {
+				count = positioningCount.get(positioning);
+			}
+			positioningCount.put(positioning, count + 1);
+		}
+		int maxCount = 0;
+		Positioning result = Positioning.CENTER;
+		for (Positioning positioning: positioningCount.keySet()) {
+			int count = positioningCount.get(positioning);
+			if (count > maxCount) {
+				maxCount = count;
+				result = positioning;
+			}
+		}
+		return result;
 	}
 
 	@Override
