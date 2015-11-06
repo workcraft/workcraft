@@ -21,6 +21,7 @@ public class CircuitSettings implements Settings {
 	private static final String keyWireWidth  = prefix + ".wireWidth";
 	private static final String keySimplifyStg = prefix + ".simplifyStg";
 	private static final String keyGateLibrary = prefix + ".gateLibrary";
+	private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";
 	private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
 
 	private static final boolean defaultShowContacts = false;
@@ -30,6 +31,7 @@ public class CircuitSettings implements Settings {
 	private static final Double defaultWireWidth = 0.04;
 	private static final boolean defaultSimplifyStg = true;
 	private static final String defaultGateLibrary = "tools/petrify/petrify.lib";
+	private static final String defaultSubstitutionLibrary = "";
 	private static final boolean defaultOpenSynthesisResult = true;
 
 	private static boolean showContacts = defaultShowContacts;
@@ -39,6 +41,7 @@ public class CircuitSettings implements Settings {
 	private static Double wireWidth = defaultWireWidth;
 	private static boolean simplifyStg = defaultSimplifyStg;
 	private static String gateLibrary = defaultGateLibrary;
+	private static String substitutionLibrary = defaultSubstitutionLibrary;
 	private static boolean openSynthesisResult = defaultOpenSynthesisResult;
 
 	public CircuitSettings() {
@@ -112,6 +115,16 @@ public class CircuitSettings implements Settings {
 			}
 		});
 
+		properties.add(new PropertyDeclaration<CircuitSettings, String>(
+				this, "Substitution rules for export", String.class, true, false, false) {
+			protected void setter(CircuitSettings object, String value) {
+				setSubstitutionLibrary(value);
+			}
+			protected String getter(CircuitSettings object) {
+				return getSubstitutionLibrary();
+			}
+		});
+
 		properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
 				this, "Import synthesis result", Boolean.class, true, false, false) {
 			protected void setter(CircuitSettings object, Boolean value) {
@@ -147,6 +160,7 @@ public class CircuitSettings implements Settings {
 		setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
 		setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
 		setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
+		setSubstitutionLibrary(config.getString(keySubstitutionLibrary, defaultSubstitutionLibrary));
 		setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
 	}
 
@@ -159,6 +173,7 @@ public class CircuitSettings implements Settings {
 		config.setDouble(keyWireWidth, getWireWidth());
 		config.setBoolean(keySimplifyStg, getSimplifyStg());
 		config.set(keyGateLibrary, getGateLibrary());
+		config.set(keySubstitutionLibrary, getSubstitutionLibrary());
 		config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
 	}
 
@@ -216,6 +231,14 @@ public class CircuitSettings implements Settings {
 
 	public static void setGateLibrary(String value) {
 		gateLibrary = value;
+	}
+
+	public static String getSubstitutionLibrary() {
+		return substitutionLibrary;
+	}
+
+	public static void setSubstitutionLibrary(String value) {
+		substitutionLibrary = value;
 	}
 
 	public static boolean getOpenSynthesisResult() {

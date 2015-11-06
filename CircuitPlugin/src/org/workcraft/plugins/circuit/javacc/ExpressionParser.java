@@ -24,172 +24,197 @@ import org.workcraft.plugins.circuit.expression.Constant;
 public class ExpressionParser implements ExpressionParserConstants {
 
   final public Expression parseExpression() throws ParseException {
+    trace_call("parseExpression");
+    try {
         Expression term;
         List<Expression> terms = new LinkedList<Expression>();
-    term = parseTerm();
-                        terms.add(term);
-    label_1:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 9:
-      case 10:
-      case 11:
-        ;
-        break;
-      default:
-        jj_la1[0] = jj_gen;
-        break label_1;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 9:
-        jj_consume_token(9);
-        break;
-      case 10:
-        jj_consume_token(10);
-        break;
-      case 11:
-        jj_consume_token(11);
-        break;
-      default:
-        jj_la1[1] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
       term = parseTerm();
+                        terms.add(term);
+      label_1:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 9:
+        case 10:
+        case 11:
+          ;
+          break;
+        default:
+          jj_la1[0] = jj_gen;
+          break label_1;
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 9:
+          jj_consume_token(9);
+          break;
+        case 10:
+          jj_consume_token(10);
+          break;
+        case 11:
+          jj_consume_token(11);
+          break;
+        default:
+          jj_la1[1] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        term = parseTerm();
                                 terms.add(term);
-    }
+      }
                 if (terms.size() > 1) {
                         {if (true) return new Formula(terms);}
                 } else {
                         {if (true) return term;}
                 }
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseExpression");
+    }
   }
 
   final public Expression parseTerm() throws ParseException {
+    trace_call("parseTerm");
+    try {
         Expression factor;
         List<Expression> factors = new LinkedList<Expression>();
-    factor = parseFactor();
+      factor = parseFactor();
                         factors.add(factor);
-    label_2:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case CONST0:
-      case CONST1:
-      case NAME:
-      case 12:
-      case 13:
-      case 14:
-      case 15:
-      case 16:
-      case 17:
-        ;
-        break;
-      default:
-        jj_la1[2] = jj_gen;
-        break label_2;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 12:
-      case 13:
-      case 14:
+      label_2:
+      while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case CONST0:
+        case CONST1:
+        case NAME:
         case 12:
-          jj_consume_token(12);
-          break;
         case 13:
-          jj_consume_token(13);
-          break;
         case 14:
-          jj_consume_token(14);
+        case 15:
+        case 16:
+        case 17:
+          ;
           break;
         default:
-          jj_la1[3] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          jj_la1[2] = jj_gen;
+          break label_2;
         }
-        break;
-      default:
-        jj_la1[4] = jj_gen;
-        ;
-      }
-      factor = parseFactor();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 12:
+        case 13:
+        case 14:
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case 12:
+            jj_consume_token(12);
+            break;
+          case 13:
+            jj_consume_token(13);
+            break;
+          case 14:
+            jj_consume_token(14);
+            break;
+          default:
+            jj_la1[3] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+          break;
+        default:
+          jj_la1[4] = jj_gen;
+          ;
+        }
+        factor = parseFactor();
                                 factors.add(factor);
-    }
+      }
                 if (factors.size() > 1) {
                         {if (true) return new Term(factors);}
                 } else {
                         {if (true) return factor;}
                 }
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseTerm");
+    }
   }
 
   final public Expression parseFactor() throws ParseException {
+    trace_call("parseFactor");
+    try {
         Expression expression;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NAME:
-      expression = parseLiteral();
-      break;
-    case CONST0:
-    case CONST1:
-      expression = parseConstant();
-      break;
-    case 15:
-    case 16:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case 15:
-        jj_consume_token(15);
+      case NAME:
+        expression = parseLiteral();
         break;
+      case CONST0:
+      case CONST1:
+        expression = parseConstant();
+        break;
+      case 15:
       case 16:
-        jj_consume_token(16);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 15:
+          jj_consume_token(15);
+          break;
+        case 16:
+          jj_consume_token(16);
+          break;
+        default:
+          jj_la1[5] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        expression = parseFactor();
+                        {if (true) return new Negation(expression);}
+        break;
+      case 17:
+        jj_consume_token(17);
+        expression = parseExpression();
+        jj_consume_token(18);
+                        {if (true) return new Factor(expression);}
         break;
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[6] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      expression = parseFactor();
-                        {if (true) return new Negation(expression);}
-      break;
-    case 17:
-      jj_consume_token(17);
-      expression = parseExpression();
-      jj_consume_token(18);
-                        {if (true) return new Factor(expression);}
-      break;
-    default:
-      jj_la1[6] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
                 {if (true) return expression;}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseFactor");
+    }
   }
 
   final public Expression parseLiteral() throws ParseException {
+    trace_call("parseLiteral");
+    try {
         Token nameToken;
-    nameToken = jj_consume_token(NAME);
+      nameToken = jj_consume_token(NAME);
                 String name = nameToken.image;
                 {if (true) return new Literal(name);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseLiteral");
+    }
   }
 
   final public Expression parseConstant() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CONST0:
-      jj_consume_token(CONST0);
+    trace_call("parseConstant");
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CONST0:
+        jj_consume_token(CONST0);
                         {if (true) return new Constant(false);}
-      break;
-    case CONST1:
-      jj_consume_token(CONST1);
+        break;
+      case CONST1:
+        jj_consume_token(CONST1);
                         {if (true) return new Constant(true);}
-      break;
-    default:
-      jj_la1[7] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseConstant");
+    }
   }
 
   /** Generated Token Manager. */
@@ -283,6 +308,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     jj_ntk = -1;
     if (token.kind == kind) {
       jj_gen++;
+      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -297,6 +323,7 @@ public class ExpressionParser implements ExpressionParserConstants {
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
+      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -352,12 +379,55 @@ public class ExpressionParser implements ExpressionParserConstants {
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  /** Enable tracing. */
+  private int trace_indent = 0;
+  private boolean trace_enabled = true;
+
+/** Enable tracing. */
   final public void enable_tracing() {
+    trace_enabled = true;
   }
 
-  /** Disable tracing. */
+/** Disable tracing. */
   final public void disable_tracing() {
+    trace_enabled = false;
+  }
+
+  private void trace_call(String s) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.println("Call:   " + s);
+    }
+    trace_indent = trace_indent + 2;
+  }
+
+  private void trace_return(String s) {
+    trace_indent = trace_indent - 2;
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.println("Return: " + s);
+    }
+  }
+
+  private void trace_token(Token t, String where) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.print("Consumed token: <" + tokenImage[t.kind]);
+      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
+        System.out.print(": \"" + t.image + "\"");
+      }
+      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
+    }
+  }
+
+  private void trace_scan(Token t1, int t2) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.print("Visited token: <" + tokenImage[t1.kind]);
+      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
+        System.out.print(": \"" + t1.image + "\"");
+      }
+      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
+    }
   }
 
 }

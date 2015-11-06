@@ -21,18 +21,28 @@
 
 package org.workcraft.plugins.circuit.serialisation;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitComponent;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.javacc.ParseException;
+import org.workcraft.plugins.circuit.javacc.SubstitutionParser;
+import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -130,6 +140,7 @@ public class VerilogSerialiser implements ModelSerialiser {
 	}
 
 	private void writeInstances(PrintWriter out, Circuit circuit) {
+		HashMap<String, SubstitutionRule> substitutionRules = readSubsritutionRules();
 		for (CircuitComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), CircuitComponent.class)) {
 			String moduleName = component.getModule();
 			String instanceRef = circuit.getNodeReference(component);
@@ -137,6 +148,10 @@ public class VerilogSerialiser implements ModelSerialiser {
 			if ((moduleName == null) || moduleName.isEmpty()) {
 				System.out.println("  Warning: component '" + instanceFlatName + "' is not associated to a module.");
 				moduleName = "";
+			}
+			SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
+			if (substitutionRule != null) {
+				moduleName = substitutionRule.newName;
 			}
 			out.print("    " + moduleName + " " + instanceFlatName + " (");
 			boolean first = true;
@@ -152,10 +167,42 @@ public class VerilogSerialiser implements ModelSerialiser {
 					System.out.println("  Warning: contact '" + contactName + "' of component '"+ instanceFlatName + "' is disconnected.");
 					wireName = "";
 				}
+				if (substitutionRule != null) {
+					String newContactName = substitutionRule.substitutions.get(contactName);
+					if (newContactName != null) {
+						contactName = newContactName;
+					}
+				}
 				out.print("." + contactName + "(" + wireName + ")");
 			}
 			out.print(");\n");
 		}
+	}
+
+	private HashMap<String, SubstitutionRule> readSubsritutionRules() {
+		HashMap<String, SubstitutionRule> result = new HashMap<>();
+		String substitutionsFileName = CircuitSettings.getSubstitutionLibrary();
+		if ((substitutionsFileName == null) || substitutionsFileName.isEmpty()) {
+			System.out.println("Warning: file of substitutions is not specified.");
+		} else {
+			File libraryFile = new File(substitutionsFileName);
+			final Framework framework = Framework.getInstance();
+			if (framework.checkFile(libraryFile, "Access error to the substitutions file")) {
+				try {
+					InputStream genlibInputStream = new FileInputStream(substitutionsFileName);
+					SubstitutionParser substitutionParser = new SubstitutionParser(genlibInputStream);
+					//substitutionParser.disable_tracing();
+					List<SubstitutionRule> rules = substitutionParser.parseSubstitutionRules();
+					for (SubstitutionRule rule: rules) {
+						result.put(rule.oldName, rule);
+					}
+				} catch (FileNotFoundException e) {
+				} catch (ParseException e) {
+					System.out.println("Warning: could not parse the gate library '" + substitutionsFileName + "'.");
+				}
+			}
+		}
+		return result;
 	}
 
 }

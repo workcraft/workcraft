@@ -55,6 +55,7 @@ public class GenlibImporter implements Importer {
 	public Circuit importGenlib(InputStream in) throws DeserialisationException {
 		final Circuit circuit = new Circuit();
 		GenlibParser parser = new GenlibParser(in);
+		parser.disable_tracing();
 		try {
 			Library library = parser.parseGenlib();
 			for (final String name: library.getNames()) {

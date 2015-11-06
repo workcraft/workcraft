@@ -129,6 +129,7 @@ public class VerilogImporter implements Importer {
 	public Circuit importCircuit(InputStream in) throws DeserialisationException {
 		try {
 			VerilogParser parser = new VerilogParser(in);
+			parser.disable_tracing();
 			HashMap<String, Module> modules = getModuleMap(parser.parseCircuit());
 			HashSet<Module> topModules = getTopModule(modules);
 			if (topModules.size() == 0) {
@@ -364,6 +365,7 @@ public class VerilogImporter implements Importer {
 	private Expression convertStringToExpression(String formula) {
 		InputStream expressionStream = new ByteArrayInputStream(formula.getBytes());
 		ExpressionParser parser = new ExpressionParser(expressionStream);
+		parser.disable_tracing();
 		Expression expression = null;
 		try {
 			expression = parser.parseExpression();
@@ -383,8 +385,10 @@ public class VerilogImporter implements Importer {
 			final Framework framework = Framework.getInstance();
 			if (framework.checkFile(libraryFile, "Gate library access error")) {
 				try {
-					InputStream genlibInputStream = new FileInputStream(CircuitSettings.getGateLibrary());
-					library = new GenlibParser(genlibInputStream).parseGenlib();
+					InputStream genlibInputStream = new FileInputStream(libraryFileName);
+					GenlibParser genlibParser = new GenlibParser(genlibInputStream);
+					genlibParser.disable_tracing();
+					library = genlibParser.parseGenlib();
 				} catch (FileNotFoundException e) {
 				} catch (ParseException e) {
 					System.out.println("Warning: could not parse the gate library '" + libraryFileName + "'.");
