@@ -33,6 +33,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.javacc.GenlibParser;
 import org.workcraft.plugins.circuit.javacc.ParseException;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
 
 public class GenlibImporter implements Importer {
@@ -54,10 +55,14 @@ public class GenlibImporter implements Importer {
 
 	public Circuit importGenlib(InputStream in) throws DeserialisationException {
 		final Circuit circuit = new Circuit();
-		GenlibParser parser = new GenlibParser(in);
-		parser.disable_tracing();
+		GenlibParser genlibParser = new GenlibParser(in);
+		if (CommonDebugSettings.getParserTracing()) {
+			genlibParser.enable_tracing();
+		} else {
+			genlibParser.disable_tracing();
+		}
 		try {
-			Library library = parser.parseGenlib();
+			Library library = genlibParser.parseGenlib();
 			for (final String name: library.getNames()) {
 				final Gate gate = library.get(name);
 				GenlibUtils.instantiateGate(gate, null, circuit);

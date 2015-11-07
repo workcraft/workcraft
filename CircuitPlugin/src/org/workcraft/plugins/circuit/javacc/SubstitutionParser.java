@@ -57,7 +57,14 @@ public class SubstitutionParser implements SubstitutionParserConstants {
             break label_2;
           }
           portSubstitution = parseSubstitution();
-          jj_consume_token(10);
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case 10:
+            jj_consume_token(10);
+            break;
+          default:
+            jj_la1[2] = jj_gen;
+            ;
+          }
                         String oldPortName = portSubstitution.getFirst();
                         String newPortName = portSubstitution.getSecond();
                 portSubstitutions.put(oldPortName, newPortName);
@@ -65,7 +72,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
         jj_consume_token(9);
         break;
       default:
-        jj_la1[2] = jj_gen;
+        jj_la1[3] = jj_gen;
         ;
       }
         String oldGateName = gateSubstitution.getFirst();
@@ -101,13 +108,13 @@ public class SubstitutionParser implements SubstitutionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[3];
+  final private int[] jj_la1 = new int[4];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x80,0x80,0x100,};
+      jj_la1_0 = new int[] {0x80,0x80,0x400,0x100,};
    }
 
   /** Constructor with InputStream. */
@@ -121,7 +128,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -135,7 +142,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -145,7 +152,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -155,7 +162,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -164,7 +171,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -173,7 +180,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 3; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 4; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -231,7 +238,7 @@ public class SubstitutionParser implements SubstitutionParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

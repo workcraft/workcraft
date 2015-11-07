@@ -128,9 +128,13 @@ public class VerilogImporter implements Importer {
 
 	public Circuit importCircuit(InputStream in) throws DeserialisationException {
 		try {
-			VerilogParser parser = new VerilogParser(in);
-			parser.disable_tracing();
-			HashMap<String, Module> modules = getModuleMap(parser.parseCircuit());
+			VerilogParser verilogParser = new VerilogParser(in);
+			if (CommonDebugSettings.getParserTracing()) {
+				verilogParser.enable_tracing();
+			} else {
+				verilogParser.disable_tracing();
+			}
+			HashMap<String, Module> modules = getModuleMap(verilogParser.parseCircuit());
 			HashSet<Module> topModules = getTopModule(modules);
 			if (topModules.size() == 0) {
 				throw new RuntimeException("No top module found.");
@@ -215,6 +219,7 @@ public class VerilogImporter implements Importer {
 
 	private Circuit createCircuit(Module topModule, HashMap<String, Module> modules) {
 		Circuit circuit = new Circuit();
+		circuit.setTitle(topModule.name);
 		HashMap<Instance, FunctionComponent> instanceComponentMap = new HashMap<>();
 		HashMap<String, Wire> wires = createPorts(circuit, topModule);
 		for (Assign assign: topModule.assigns) {
@@ -364,11 +369,15 @@ public class VerilogImporter implements Importer {
 
 	private Expression convertStringToExpression(String formula) {
 		InputStream expressionStream = new ByteArrayInputStream(formula.getBytes());
-		ExpressionParser parser = new ExpressionParser(expressionStream);
-		parser.disable_tracing();
+		ExpressionParser expressionParser = new ExpressionParser(expressionStream);
+		if (CommonDebugSettings.getParserTracing()) {
+			expressionParser.enable_tracing();
+		} else {
+			expressionParser.disable_tracing();
+		}
 		Expression expression = null;
 		try {
-			expression = parser.parseExpression();
+			expression = expressionParser.parseExpression();
 		} catch (ParseException e1) {
 			System.out.println("Warning: could not parse assign expression '" + formula + "'.");
 		}
@@ -387,8 +396,13 @@ public class VerilogImporter implements Importer {
 				try {
 					InputStream genlibInputStream = new FileInputStream(libraryFileName);
 					GenlibParser genlibParser = new GenlibParser(genlibInputStream);
-					genlibParser.disable_tracing();
+					if (CommonDebugSettings.getParserTracing()) {
+						genlibParser.enable_tracing();
+					} else {
+						genlibParser.disable_tracing();
+					}
 					library = genlibParser.parseGenlib();
+					System.out.println("Info: mapping the imported Verilog into the gate library '" + libraryFileName + "'.");
 				} catch (FileNotFoundException e) {
 				} catch (ParseException e) {
 					System.out.println("Warning: could not parse the gate library '" + libraryFileName + "'.");

@@ -697,54 +697,49 @@ public class VerilogParser implements VerilogParserConstants {
   }
 
   private boolean jj_3R_17() {
-    if (!jj_rescan) trace_call("parsePortType(LOOKING AHEAD...)");
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_18()) {
     jj_scanpos = xsp;
-    if (jj_3R_19()) { if (!jj_rescan) trace_return("parsePortType(LOOKAHEAD FAILED)"); return true; }
+    if (jj_3R_19()) return true;
     }
-    { if (!jj_rescan) trace_return("parsePortType(LOOKAHEAD SUCCEEDED)"); return false; }
+    return false;
   }
 
   private boolean jj_3R_11() {
-    if (!jj_rescan) trace_call("parseNamedPins(LOOKING AHEAD...)");
     Token xsp;
-    if (jj_3R_13()) { if (!jj_rescan) trace_return("parseNamedPins(LOOKAHEAD FAILED)"); return true; }
+    if (jj_3R_13()) return true;
     while (true) {
       xsp = jj_scanpos;
       if (jj_3R_13()) { jj_scanpos = xsp; break; }
     }
-    { if (!jj_rescan) trace_return("parseNamedPins(LOOKAHEAD SUCCEEDED)"); return false; }
+    return false;
   }
 
   private boolean jj_3R_10() {
-    if (!jj_rescan) trace_call("parseCompactPorts(LOOKING AHEAD...)");
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_12()) jj_scanpos = xsp;
-    if (jj_scan_token(44)) { if (!jj_rescan) trace_return("parseCompactPorts(LOOKAHEAD FAILED)"); return true; }
-    { if (!jj_rescan) trace_return("parseCompactPorts(LOOKAHEAD SUCCEEDED)"); return false; }
+    if (jj_scan_token(44)) return true;
+    return false;
   }
 
   private boolean jj_3R_15() {
-    if (!jj_rescan) trace_call("parseNamedPin(LOOKING AHEAD...)");
-    if (jj_scan_token(45)) { if (!jj_rescan) trace_return("parseNamedPin(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(NAME)) { if (!jj_rescan) trace_return("parseNamedPin(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(38)) { if (!jj_rescan) trace_return("parseNamedPin(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(NAME)) { if (!jj_rescan) trace_return("parseNamedPin(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(39)) { if (!jj_rescan) trace_return("parseNamedPin(LOOKAHEAD FAILED)"); return true; }
+    if (jj_scan_token(45)) return true;
+    if (jj_scan_token(NAME)) return true;
+    if (jj_scan_token(38)) return true;
+    if (jj_scan_token(NAME)) return true;
+    if (jj_scan_token(39)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(42)) jj_scanpos = xsp;
-    { if (!jj_rescan) trace_return("parseNamedPin(LOOKAHEAD SUCCEEDED)"); return false; }
+    return false;
   }
 
   private boolean jj_3R_16() {
-    if (!jj_rescan) trace_call("parseCompactPort(LOOKING AHEAD...)");
-    if (jj_3R_17()) { if (!jj_rescan) trace_return("parseCompactPort(LOOKAHEAD FAILED)"); return true; }
-    if (jj_scan_token(NAME)) { if (!jj_rescan) trace_return("parseCompactPort(LOOKAHEAD FAILED)"); return true; }
-    { if (!jj_rescan) trace_return("parseCompactPort(LOOKAHEAD SUCCEEDED)"); return false; }
+    if (jj_3R_17()) return true;
+    if (jj_scan_token(NAME)) return true;
+    return false;
   }
 
   private boolean jj_3_1() {
@@ -917,8 +912,6 @@ public class VerilogParser implements VerilogParserConstants {
       int i = 0; Token tok = token;
       while (tok != null && tok != jj_scanpos) { i++; tok = tok.next; }
       if (tok != null) jj_add_error_token(kind, i);
-    } else {
-      trace_scan(jj_scanpos, kind);
     }
     if (jj_scanpos.kind != kind) return true;
     if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;

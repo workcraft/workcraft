@@ -8,7 +8,7 @@ options {
   STATIC = false;
   DEBUG_PARSER = true;
   DEBUG_LOOKAHEAD = false;
-  DEBUG_TOKEN_MANAGER = true;
+  DEBUG_TOKEN_MANAGER = false;
 }
 
 PARSER_BEGIN(VerilogParser)
