@@ -116,7 +116,7 @@ public class PluginManager implements PluginProvider {
 			try {
 				plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
 			} catch (ClassNotFoundException e) {
-				System.err.println ("Class \"" + info.getClassName() + "\" implements unknown interface \"" + interfaceName +"\". Skipping interface.");
+				System.err.println ("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
 			}
 		}
 
@@ -183,7 +183,7 @@ public class PluginManager implements PluginProvider {
 		try {
 			plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
 		} catch (ClassNotFoundException e) {
-			System.err.println ("Class \"" + info.getClassName() + "\" implements unknown interface \"" + interfaceName +"\". Skipping interface.");
+			System.err.println ("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
 		}
 	}
 

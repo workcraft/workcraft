@@ -273,7 +273,7 @@ public class MainWindow extends JFrame {
 				if (vmd == null) {
 					JOptionPane.showMessageDialog(MainWindow.this,
 							"A visual model could not be created for the selected model.\n"
-							+ "Model \"" + descriptor.getDisplayName() + "\" does not have visual model support.",
+							+ "Model '" + descriptor.getDisplayName() + "' does not have visual model support.",
 							"Error", JOptionPane.ERROR_MESSAGE);
 				}
 				visualModel = vmd.create((MathModel) modelEntry.getModel());
@@ -558,7 +558,7 @@ public class MainWindow extends JFrame {
 
 			if (we.isChanged()) {
 				int result = JOptionPane.showConfirmDialog(this,
-						"Document \"" + we.getTitle() + "\" has unsaved changes.\nSave before closing?",
+						"Document '" + we.getTitle() + "' has unsaved changes.\nSave before closing?",
 						"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 				switch (result) {
@@ -803,7 +803,7 @@ public class MainWindow extends JFrame {
 				if (dialog.createVisualSelected()) {
 					VisualModelDescriptor v = info.getVisualModelDescriptor();
 					if (v == null) {
-						throw new VisualModelInstantiationException("visual model is not defined for \"" + info.getDisplayName() + "\".");
+						throw new VisualModelInstantiationException("visual model is not defined for '" + info.getDisplayName() + "'.");
 					}
 					VisualModel visualModel = v.create(mathModel);
 					ModelEntry me = new ModelEntry(info, visualModel);
@@ -918,7 +918,7 @@ public class MainWindow extends JFrame {
 					break;
 				}
 				if (JOptionPane.showConfirmDialog(this,
-						"The file \"" + f.getName() + "\" already exists. Do you want to overwrite it?",
+						"The file '" + f.getName() + "' already exists. Do you want to overwrite it?",
 						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					break;
 				}
@@ -957,7 +957,7 @@ public class MainWindow extends JFrame {
 				lastOpenPath = f.getParent();
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(this,
-					"A problem was encountered while trying to load \""	+ f.getPath() + "\".\n"
+					"A problem was encountered while trying to load '"	+ f.getPath() + "'.\n"
 					+ "Please see Problems window for details.",
 					"Load failed", JOptionPane.ERROR_MESSAGE);
 				printCause(e);
@@ -991,8 +991,8 @@ public class MainWindow extends JFrame {
 				framework.getWorkspace().merge(we, f);
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(this,
-					"A problem was encountered while trying to merge \""
-					+ f.getPath() + "\".\nPlease see Problems window for details.",
+					"A problem was encountered while trying to merge '"
+					+ f.getPath() + "'.\nPlease see Problems window for details.",
 					"Load failed", JOptionPane.ERROR_MESSAGE);
 				printCause(e);
 			}

@@ -154,7 +154,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 					cellEditors[i] = cls.getCellEditor();
 				} else {
 					// no PropertyClass exists for this class, fall back to read-only mode using Object.toString()
-					System.err.println("Data class \"" + decl.getType().getName() + "\" is not supported by the Property Editor.");
+					System.err.println("Data class '" + decl.getType().getName() + "' is not supported by the Property Editor.");
 					cellRenderers[i] = new DefaultTableCellRenderer();
 					cellEditors[i] = null;
 				}

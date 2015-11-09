@@ -49,7 +49,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 					@Override
 					public void run() {
 						JOptionPane.showMessageDialog(null,
-								"MPSat mode \"" + mpsatMode.getArgument() + "\" is not (yet) supported." ,
+								"MPSat mode '" + mpsatMode.getArgument() + "' is not (yet) supported." ,
 								"Sorry..", JOptionPane.WARNING_MESSAGE);
 					}
 				});
@@ -61,7 +61,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 
 			if (cause1 != null) {
 				// Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-				errorMessage += "\n\nFailure caused by: " + cause1.toString() + "\nPlease see the \"Problems\" tab for more details.";
+				errorMessage += "\n\nFailure caused by: " + cause1.toString() + "\nPlease see the 'Problems' tab for more details.";
 			} else {
 				MpsatChainResult returnValue = result.getReturnValue();
 				Result<? extends Object> exportResult = returnValue.getExportResult();

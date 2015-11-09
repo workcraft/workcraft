@@ -73,7 +73,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 				@Override
 				public void run() {
 					JOptionPane.showMessageDialog(null,
-							"MPSat mode \"" + mpsatMode.getArgument() + "\" is not (yet) supported." ,
+							"MPSat mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported." ,
 							"Sorry..", JOptionPane.WARNING_MESSAGE);
 				}
 			});
@@ -87,7 +87,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 		Throwable genericCause = result.getCause();
 		if (genericCause != null) {
 			// Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-			errorMessage += "\n\nFailure caused by: " + genericCause.toString() + "\nPlease see the \"Problems\" tab for more details.";
+			errorMessage += "\n\nFailure caused by: " + genericCause.toString() + "\nPlease see the 'Problems' tab for more details.";
 		} else {
 			Result<? extends Object> exportResult = returnValue.getExportResult();
 			Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();

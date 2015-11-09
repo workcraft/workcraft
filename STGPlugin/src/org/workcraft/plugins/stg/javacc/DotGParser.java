@@ -100,12 +100,12 @@ public class DotGParser implements DotGParserConstants {
                         if (signals.containsKey(name)) {
                                 Type prevType = signals.get(name);
                                 if (!prevType.equals(type)) {
-                                        throw new FormatException ("The " + type + " signal \u005c"" + name
-                                           + "\u005c" was already listed as an " + prevType + " signal.");
+                                        throw new FormatException ("The " + type + " signal '" + name
+                                           + "' was already listed as an " + prevType + " signal.");
                                 }
                         } else if (dummies.contains(name)) {
-                                throw new FormatException ("The " + type + " \u005c"" + name
-                                    + "\u005c" was already listed as a dummy.");
+                                throw new FormatException ("The " + type + " '" + name
+                                    + "' was already listed as a dummy.");
                         } else {
                                 signals.put(name, type);
                         }
@@ -116,8 +116,8 @@ public class DotGParser implements DotGParserConstants {
                 for (String name : list) {
                         if (signals.containsKey(name)) {
                                 Type type = signals.get(name);
-                                throw new FormatException ("The dummy \u005c"" + name
-                                    + "\u005c" was already listed as an " + type + " signal.");
+                                throw new FormatException ("The dummy '" + name
+                                    + "' was already listed as an " + type + " signal.");
                         } else {
                                 dummies.add(name);
                         }

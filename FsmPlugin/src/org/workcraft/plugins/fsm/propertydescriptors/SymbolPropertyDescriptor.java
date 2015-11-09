@@ -66,7 +66,7 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
     		}
     	} else if (node instanceof Symbol) {
     	} else {
-    		throw new FormatException("Node \"" + name + "\" already exists and it is not a symbol.");
+    		throw new FormatException("Node '" + name + "' already exists and it is not a symbol.");
     	}
 	}
 

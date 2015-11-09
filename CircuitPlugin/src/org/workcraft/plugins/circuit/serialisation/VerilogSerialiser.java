@@ -55,7 +55,7 @@ public class VerilogSerialiser implements ModelSerialiser {
 
 	private static final String KEYWORD_OUTPUT = "output";
 	private static final String KEYWORD_INPUT = "input";
-	private static final String KEYWORD_MODULE = "module ";
+	private static final String KEYWORD_MODULE = "module";
 	private static final String KEYWORD_ENDMODULE = "endmodule";
 
 	class ReferenceResolver implements ReferenceProducer {

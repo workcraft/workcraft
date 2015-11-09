@@ -264,7 +264,7 @@ public class WorkspaceWindow extends JPanel {
 				if (!file.exists()) {
 					break;
 				} else if (JOptionPane.showConfirmDialog(mainWindow,
-						"The file \"" + file.getName() + "\" already exists. Do you want to overwrite it?",
+						"The file '" + file.getName() + "' already exists. Do you want to overwrite it?",
 						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					break;
 				}

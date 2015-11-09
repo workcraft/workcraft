@@ -40,11 +40,11 @@ public class UniqueNameManager implements NameManager {
 					nodes.removeValue(node);
 					nodes.put(name, node);
 				} else {
-					throw new ArgumentException("\"" + name + "\" is not a valid C-style identifier.\n"
+					throw new ArgumentException("'" + name + "' is not a valid C-style identifier.\n"
 							+ "The first character must be alphabetic or an underscore and the following characters must be alphanumeric or an underscore.");
 				}
 			} else {
-				throw new ArgumentException("The name \"" + name + "\" is already taken.");
+				throw new ArgumentException("The name '" + name + "' is already taken.");
 			}
 		}
 	}

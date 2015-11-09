@@ -67,7 +67,7 @@ public class ShowSg implements Tool {
 					String errorMessage = "Petrify tool chain execution failed :-(";
 					Throwable cause = result.getCause();
 					if (cause != null) {
-						errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the \"Problems\" tab for more details.";
+						errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the 'Problems' tab for more details.";
 					} else {
 						errorMessage += "\n\nFailure caused by: \n" + result.getReturnValue().getErrorMessages();
 					}

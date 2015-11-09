@@ -64,7 +64,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 				setName(node, name);
 			}
 		} catch (NodeCreationException e) {
-			throw new RuntimeException ("Cannot create math node \"" + name + "\" of class \"" + type +"\"");
+			throw new RuntimeException ("Cannot create math node '" + name + "' of class '" + type +"'");
 		}
 		return (T)node;
 	}

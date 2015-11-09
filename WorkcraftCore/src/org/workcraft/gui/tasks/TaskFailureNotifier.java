@@ -16,13 +16,13 @@ public class TaskFailureNotifier extends DummyProgressMonitor<Object> {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					String message = "Unfortunately, the task \"" + description + "\" has failed to complete as expected.";
+					String message = "Unfortunately, the task '" + description + "' has failed to complete as expected.";
 
 					if (result.getCause() != null) {
 						Throwable reason = result.getCause();
 						reason.printStackTrace();
 						message += "\n\nThe reason was: " + reason.toString();
-						message += "\nPlease see the \"Problems\" tab for further details.";
+						message += "\nPlease see the 'Problems' tab for further details.";
 					}
 
 					if (!errorMessage.isEmpty()) {

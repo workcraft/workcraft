@@ -30,7 +30,7 @@ public class CircuitSettings implements Settings {
 	private static final Double defaultBorderWidth = 0.06;
 	private static final Double defaultWireWidth = 0.04;
 	private static final boolean defaultSimplifyStg = true;
-	private static final String defaultGateLibrary = "tools/petrify/petrify.lib";
+	private static final String defaultGateLibrary = "tools/petrify/workcraft.lib";
 	private static final String defaultSubstitutionLibrary = "";
 	private static final boolean defaultOpenSynthesisResult = true;
 

@@ -41,8 +41,8 @@ public class InstanceManager {
 		final Pair<String, Integer> assigned = instances.getValue(node);
 		final Integer instance;
 		if (assigned != null) {
-			throw new ArgumentException ("Instance already assigned to \""
-					+ getLabel(node) + "/" + assigned.getSecond() +"\"");
+			throw new ArgumentException ("Instance already assigned to '"
+					+ getLabel(node) + "/" + assigned.getSecond() +"'");
 		}
 		final String label = getLabel(node);
 		instance = getGenerator(label).getNextID();

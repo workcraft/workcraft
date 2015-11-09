@@ -57,9 +57,9 @@ public class Export {
 
 			String message = "Exporting model ";
 			if (!model.getTitle().isEmpty()) {
-				message += "\"" + model.getTitle() + "\" ";
+				message += "\'" + model.getTitle() + "\' ";
 			}
-			message += "to file \"" + file.getAbsolutePath() + "\".";
+			message += "to file \'" + file.getAbsolutePath() + "\'.";
 			System.out.println(message);
 			try {
 				file.createNewFile();

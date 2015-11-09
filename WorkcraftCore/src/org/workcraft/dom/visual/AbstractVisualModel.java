@@ -196,7 +196,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 			container.add(component);
 		} catch (NodeCreationException e) {
 			String mathName = getMathName(mathNode);
-			throw new RuntimeException ("Cannot create visual component for math node \"" + mathName + "\" of class \"" + type +"\"");
+			throw new RuntimeException ("Cannot create visual component for math node '" + mathName + "' of class '" + type +"'");
 		}
 		return (T)component;
 	}

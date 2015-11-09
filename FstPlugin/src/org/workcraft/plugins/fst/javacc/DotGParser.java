@@ -31,8 +31,8 @@ public class DotGParser implements DotGParserConstants {
             if (signals.containsKey(name)) {
                 Type oldType = signals.get(name);
                 if (!oldType.equals(type)) {
-                    throw new FormatException("The " + type + " signal \u005c"" + name
-                        + "\u005c" was already listed as an " + oldType + " signal.");
+                    throw new FormatException("The " + type + " signal '" + name
+                        + "' was already listed as an " + oldType + " signal.");
                 }
             } else {
                 signals.put(name, type);
