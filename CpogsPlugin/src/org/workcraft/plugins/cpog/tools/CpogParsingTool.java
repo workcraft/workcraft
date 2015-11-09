@@ -40,7 +40,7 @@ import com.sun.tracing.dtrace.DependencyClass;
 
 public class CpogParsingTool {
 
-	private static final int MAX_SCENARIOS_LINUX = 650;
+	private static final int MAX_SCENARIOS_LINUX = 680;
 	private static final int MAX_SCENARIOS_OTHER_OS = 340;
 
 	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, HashMap<String, GraphReference> refMap)
