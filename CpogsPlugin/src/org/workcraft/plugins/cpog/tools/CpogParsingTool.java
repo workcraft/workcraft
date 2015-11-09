@@ -20,6 +20,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCPOG;
@@ -35,7 +36,12 @@ import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import com.sun.tracing.dtrace.DependencyClass;
+
 public class CpogParsingTool {
+
+	private static final int MAX_SCENARIOS_LINUX = 650;
+	private static final int MAX_SCENARIOS_OTHER_OS = 340;
 
 	 public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, HashMap<String, GraphReference> refMap)
 	 {
@@ -952,6 +958,16 @@ public class CpogParsingTool {
 	public static boolean hasEnoughScenarios(WorkspaceEntry we) {
 		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
 		return (getScenarios(cpog).size() > 1);
+	}
+
+	public static boolean hasTooScenarios(WorkspaceEntry we){
+		DesktopApi.OsType os = DesktopApi.getOs();
+		VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+		if(os.isLinux()){
+			return (getScenarios(cpog).size() > MAX_SCENARIOS_LINUX);
+		} else {
+			return (getScenarios(cpog).size() > MAX_SCENARIOS_OTHER_OS);
+		}
 	}
 
 	public boolean[][] copyArray(boolean[][] c) {

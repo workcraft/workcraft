@@ -30,6 +30,7 @@ public class ScencoSolver {
 
 	public static final String ACCESS_SCENCO_ERROR = "SCENCO error";
 	public static final String MSG_NOT_ENOUGH_SCENARIOS = "Not enough scenarios. Select at least two scenarios.";
+	public static final String MSG_TOO_MANY_SCENARIOS = "Too many scenarios selected.";
 	public static final String MSG_SELECTION_MODE_UNDEFINED = "Selection mode undefined.";
 	public static final String MSG_GATE_LIB_NOT_PRESENT = "Gate library not present. Please insert this " +
 														  "(genlib format) inside ABC folder.";
