@@ -139,14 +139,14 @@ public class CircuitUtils {
 		return zeroDelayOutput;
 	}
 
-	public static Contact findSignal(Circuit circuit, Contact contact) {
+	public static Contact findSignal(Circuit circuit, Contact contact, boolean transparentZeroDelayComponents) {
 		Contact result = contact;
-		Contact driver = findDriver(circuit, contact, true);
+		Contact driver = findDriver(circuit, contact, transparentZeroDelayComponents);
 		if (driver != null) {
 			result = driver;
 			for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
 				if (signal.isPort() && signal.isOutput()) {
-					if (driver == CircuitUtils.findDriver(circuit, signal, true)) {
+					if (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents)) {
 						result = signal;
 						break;
 					}
@@ -156,15 +156,15 @@ public class CircuitUtils {
 		return result;
 	}
 
-	public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact) {
-		Contact mathSignal = findSignal((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+	public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
+		Contact mathSignal = findSignal((Circuit)circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
 		return circuit.getVisualComponent(mathSignal, VisualContact.class);
 	}
 
 	public static String getWireName(Circuit circuit, Contact contact) {
 		String result = null;
 		if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
-			Contact signal = findSignal(circuit, contact);
+			Contact signal = findSignal(circuit, contact, false);
 			result = getContactName(circuit, signal);
 		}
 		return result;

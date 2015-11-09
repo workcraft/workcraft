@@ -20,241 +20,291 @@ import org.workcraft.plugins.circuit.genlib.Function;
 public class GenlibParser implements GenlibParserConstants {
 
   final public Library parseGenlib() throws ParseException {
+    trace_call("parseGenlib");
+    try {
     List<Gate> gates;
-    gates = parseGates();
+      gates = parseGates();
         {if (true) return new Library(gates);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseGenlib");
+    }
   }
 
   final public List<Gate> parseGates() throws ParseException {
+    trace_call("parseGates");
+    try {
     Gate gate;
     List<Gate> gates = new LinkedList<Gate>();
-    label_1:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case GATE:
-      case LATCH:
-        ;
-        break;
-      default:
-        jj_la1[0] = jj_gen;
-        break label_1;
-      }
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case GATE:
-        gate = parseGate();
-        break;
-      case LATCH:
-        gate = parseLatch();
-        break;
-      default:
-        jj_la1[1] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+      label_1:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case GATE:
+        case LATCH:
+          ;
+          break;
+        default:
+          jj_la1[0] = jj_gen;
+          break label_1;
+        }
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case GATE:
+          gate = parseGate();
+          break;
+        case LATCH:
+          gate = parseLatch();
+          break;
+        default:
+          jj_la1[1] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
             gates.add(gate);
-    }
+      }
         {if (true) return gates;}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseGates");
+    }
   }
 
   final public Gate parseGate() throws ParseException {
+    trace_call("parseGate");
+    try {
     String name;
     Function function;
-    jj_consume_token(GATE);
-    name = parseName();
-    jj_consume_token(NUMERAL);
-    function = parseFunction();
-    label_2:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case PIN:
-        ;
-        break;
-      default:
-        jj_la1[2] = jj_gen;
-        break label_2;
+      jj_consume_token(GATE);
+      name = parseName();
+      jj_consume_token(NUMERAL);
+      function = parseFunction();
+      label_2:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case PIN:
+          ;
+          break;
+        default:
+          jj_la1[2] = jj_gen;
+          break label_2;
+        }
+        parsePin();
       }
-      parsePin();
-    }
         {if (true) return new Gate(name, function, null, false);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseGate");
+    }
   }
 
   final public Gate parseLatch() throws ParseException {
+    trace_call("parseLatch");
+    try {
     String name;
     Function function;
     String next;
-    jj_consume_token(LATCH);
-    name = parseName();
-    jj_consume_token(NUMERAL);
-    function = parseFunction();
-    label_3:
-    while (true) {
+      jj_consume_token(LATCH);
+      name = parseName();
+      jj_consume_token(NUMERAL);
+      function = parseFunction();
+      label_3:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case PIN:
+          ;
+          break;
+        default:
+          jj_la1[3] = jj_gen;
+          break label_3;
+        }
+        parsePin();
+      }
+      next = parseSeq();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case PIN:
-        ;
+      case CONTROL:
+        parseControl();
         break;
       default:
-        jj_la1[3] = jj_gen;
-        break label_3;
+        jj_la1[4] = jj_gen;
+        ;
       }
-      parsePin();
-    }
-    next = parseSeq();
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CONTROL:
-      parseControl();
-      break;
-    default:
-      jj_la1[4] = jj_gen;
-      ;
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case CONSTRAINT:
-      parseConstraint();
-      break;
-    default:
-      jj_la1[5] = jj_gen;
-      ;
-    }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CONSTRAINT:
+        parseConstraint();
+        break;
+      default:
+        jj_la1[5] = jj_gen;
+        ;
+      }
         {if (true) return new Gate(name, function, next, false);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseLatch");
+    }
   }
 
   final public String parseName() throws ParseException {
+    trace_call("parseName");
+    try {
     Token nameToken;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NAME:
-      nameToken = jj_consume_token(NAME);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NAME:
+        nameToken = jj_consume_token(NAME);
                 {if (true) return nameToken.image;}
-      break;
-    case STRING:
-      nameToken = jj_consume_token(STRING);
+        break;
+      case STRING:
+        nameToken = jj_consume_token(STRING);
                 String s = nameToken.image;
             {if (true) return s.substring(1, s.length()-1);}
-      break;
-    default:
-      jj_la1[6] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Function parseFunction() throws ParseException {
-    Token nameToken;
-    Token formulaToken;
-    nameToken = jj_consume_token(NAME);
-    formulaToken = jj_consume_token(FORMULA);
-        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
-        {if (true) return new Function(nameToken.image, formula);}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public void parsePin() throws ParseException {
-    jj_consume_token(PIN);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NAME:
-      jj_consume_token(NAME);
-      break;
-    case ANY_NAME:
-      jj_consume_token(ANY_NAME);
-      break;
-    default:
-      jj_la1[7] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case INV:
-    case NONINV:
-    case UNKNOWN:
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INV:
-        jj_consume_token(INV);
-        break;
-      case NONINV:
-        jj_consume_token(NONINV);
-        break;
-      case UNKNOWN:
-        jj_consume_token(UNKNOWN);
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[6] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      break;
-    default:
-      jj_la1[9] = jj_gen;
-      ;
+    throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseName");
     }
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
+  }
+
+  final public Function parseFunction() throws ParseException {
+    trace_call("parseFunction");
+    try {
+    Token nameToken;
+    Token formulaToken;
+      nameToken = jj_consume_token(NAME);
+      formulaToken = jj_consume_token(FORMULA);
+        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        {if (true) return new Function(nameToken.image, formula);}
+    throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseFunction");
+    }
+  }
+
+  final public void parsePin() throws ParseException {
+    trace_call("parsePin");
+    try {
+      jj_consume_token(PIN);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NAME:
+        jj_consume_token(NAME);
+        break;
+      case ANY_NAME:
+        jj_consume_token(ANY_NAME);
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case INV:
+      case NONINV:
+      case UNKNOWN:
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case INV:
+          jj_consume_token(INV);
+          break;
+        case NONINV:
+          jj_consume_token(NONINV);
+          break;
+        case UNKNOWN:
+          jj_consume_token(UNKNOWN);
+          break;
+        default:
+          jj_la1[8] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        ;
+      }
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+    } finally {
+      trace_return("parsePin");
+    }
   }
 
   final public String parseSeq() throws ParseException {
+    trace_call("parseSeq");
+    try {
     Token nextToken = null;
-    jj_consume_token(SEQ);
-    jj_consume_token(NAME);
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NAME:
-      nextToken = jj_consume_token(NAME);
-      break;
-    case ANY:
-      jj_consume_token(ANY);
-      break;
-    default:
-      jj_la1[10] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case ACTIVE_LOW:
-      jj_consume_token(ACTIVE_LOW);
-      break;
-    case ACTIVE_HIGH:
-      jj_consume_token(ACTIVE_HIGH);
-      break;
-    case RISING_EDGE:
-      jj_consume_token(RISING_EDGE);
-      break;
-    case FALLING_EDGE:
-      jj_consume_token(FALLING_EDGE);
-      break;
-    case ASYNCH:
-      jj_consume_token(ASYNCH);
-      break;
-    default:
-      jj_la1[11] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
+      jj_consume_token(SEQ);
+      jj_consume_token(NAME);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case NAME:
+        nextToken = jj_consume_token(NAME);
+        break;
+      case ANY:
+        jj_consume_token(ANY);
+        break;
+      default:
+        jj_la1[10] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ACTIVE_LOW:
+        jj_consume_token(ACTIVE_LOW);
+        break;
+      case ACTIVE_HIGH:
+        jj_consume_token(ACTIVE_HIGH);
+        break;
+      case RISING_EDGE:
+        jj_consume_token(RISING_EDGE);
+        break;
+      case FALLING_EDGE:
+        jj_consume_token(FALLING_EDGE);
+        break;
+      case ASYNCH:
+        jj_consume_token(ASYNCH);
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
         {if (true) return ((nextToken == null) ? null : nextToken.image);}
     throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("parseSeq");
+    }
   }
 
   final public void parseControl() throws ParseException {
-    jj_consume_token(CONTROL);
-    jj_consume_token(NAME);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
+    trace_call("parseControl");
+    try {
+      jj_consume_token(CONTROL);
+      jj_consume_token(NAME);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+    } finally {
+      trace_return("parseControl");
+    }
   }
 
   final public void parseConstraint() throws ParseException {
-    jj_consume_token(CONSTRAINT);
-    jj_consume_token(NAME);
-    jj_consume_token(NUMERAL);
-    jj_consume_token(NUMERAL);
+    trace_call("parseConstraint");
+    try {
+      jj_consume_token(CONSTRAINT);
+      jj_consume_token(NAME);
+      jj_consume_token(NUMERAL);
+      jj_consume_token(NUMERAL);
+    } finally {
+      trace_return("parseConstraint");
+    }
   }
 
   /** Generated Token Manager. */
@@ -348,6 +398,7 @@ public class GenlibParser implements GenlibParserConstants {
     jj_ntk = -1;
     if (token.kind == kind) {
       jj_gen++;
+      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -362,6 +413,7 @@ public class GenlibParser implements GenlibParserConstants {
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
+      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -417,12 +469,55 @@ public class GenlibParser implements GenlibParserConstants {
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  /** Enable tracing. */
+  private int trace_indent = 0;
+  private boolean trace_enabled = true;
+
+/** Enable tracing. */
   final public void enable_tracing() {
+    trace_enabled = true;
   }
 
-  /** Disable tracing. */
+/** Disable tracing. */
   final public void disable_tracing() {
+    trace_enabled = false;
+  }
+
+  private void trace_call(String s) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.println("Call:   " + s);
+    }
+    trace_indent = trace_indent + 2;
+  }
+
+  private void trace_return(String s) {
+    trace_indent = trace_indent - 2;
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.println("Return: " + s);
+    }
+  }
+
+  private void trace_token(Token t, String where) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.print("Consumed token: <" + tokenImage[t.kind]);
+      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
+        System.out.print(": \"" + t.image + "\"");
+      }
+      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
+    }
+  }
+
+  private void trace_scan(Token t1, int t2) {
+    if (trace_enabled) {
+      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
+      System.out.print("Visited token: <" + tokenImage[t1.kind]);
+      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
+        System.out.print(": \"" + t1.image + "\"");
+      }
+      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
+    }
   }
 
 }

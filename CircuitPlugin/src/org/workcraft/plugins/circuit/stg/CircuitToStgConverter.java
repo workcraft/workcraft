@@ -212,7 +212,7 @@ public class CircuitToStgConverter {
 	private TwoWayMap<VisualContact, SignalStg> convertDriversToStgs(HashSet<VisualContact> drivers) {
 		TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
 		for (VisualContact driver: drivers) {
-			VisualContact signal = CircuitUtils.findSignal(circuit, driver);
+			VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
 			Container container = getContainer(signal);
 			String signalName = CircuitUtils.getSignalName(circuit, signal);
 
@@ -276,7 +276,7 @@ public class CircuitToStgConverter {
 
 		clauses.addAll(dnf.getClauses());
 
-		VisualContact signal = CircuitUtils.findSignal(circuit, driver);
+		VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
 		Container container = getContainer(signal);
 		String signalName = CircuitUtils.getSignalName(circuit, signal);
 		SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, signal);
@@ -459,7 +459,7 @@ public class CircuitToStgConverter {
 		for (VisualContact driver: drivers) {
 			SignalStg signalStg = driverToStgMap.getValue(driver);
 			if (signalStg != null) {
-				VisualContact signal = CircuitUtils.findSignal(circuit, driver);
+				VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
 				Point2D centerPosition = getPosition(signal);
 				setPosition(signalStg.zero, Geometry.add(centerPosition, OFFSET_P0));
 				setPosition(signalStg.one, Geometry.add(centerPosition, OFFSET_P1));
