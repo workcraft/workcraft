@@ -72,6 +72,8 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 					VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
 					if (visualModel instanceof VisualCircuit) {
 						VisualCircuit visualCircuit = (VisualCircuit)visualModel;
+						String title = we.getModelEntry().getModel().getTitle();
+						visualCircuit.setTitle(title);
 						visualCircuit.setEnvironmentFile(we.getFile());
 						framework.getMainWindow().getCurrentEditor().updatePropertyView();
 					}
