@@ -123,7 +123,7 @@ public class DesktopApi {
 		return parts.toArray(new String[parts.size()]);
 	}
 
-	private static enum OsType {
+	public static enum OsType {
 		LINUX,
 		MACOS,
 		SOLARIS,
@@ -144,7 +144,7 @@ public class DesktopApi {
 	}
 
 
-	private static OsType getOs() {
+	public static OsType getOs() {
 		String s = System.getProperty("os.name").toLowerCase();
 		OsType result = OsType.UNKNOWN;
 		if (s.contains("win")) {
