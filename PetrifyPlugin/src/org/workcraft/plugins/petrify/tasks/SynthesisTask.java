@@ -68,6 +68,10 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 			command.add("-vl");
 			command.add(verilogFile.getCanonicalPath());
 
+			File blifFile = new File(directory, "petrify.blif");
+			command.add("-blif");
+			command.add(blifFile.getCanonicalPath());
+
 			File logFile = new File(directory, "petrify.log");
 			command.add("-log");
 			command.add(logFile.getCanonicalPath());

@@ -50,7 +50,6 @@ import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
@@ -213,10 +212,6 @@ public class WorkspaceEntry implements ObservableState {
 	public void setCanSelect(boolean canSelect) {
 		this.canSelect = canSelect;
 		updateActionState();
-	}
-
-	public boolean getCanModify() {
-		return canModify;
 	}
 
 	public void captureMemento() {

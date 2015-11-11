@@ -22,21 +22,18 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationResultHandler extends DummyProgressMonitor<TransformationResult> {
-	private final TransformationTask task;
+	private final WorkspaceEntry we;
 
-	public TransformationResultHandler(TransformationTask task) {
-		this.task = task;
+	public TransformationResultHandler(WorkspaceEntry we) {
+		this.we = we;
 	}
 
 	@Override
 	public void finished(final Result<? extends TransformationResult> result, String description) {
-
-		SwingUtilities.invokeLater(new Runnable()
-		{
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				final Framework framework = Framework.getInstance();
-				WorkspaceEntry we = task.getWorkspaceEntry();
 				Path<String> path = we.getWorkspacePath();
 				if (result.getOutcome() == Outcome.FINISHED) {
 					STGModel model = result.getReturnValue().getResult();

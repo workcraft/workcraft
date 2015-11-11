@@ -24,6 +24,6 @@ public class PetrifyDummyContraction extends ConversionTool {
 	public void run(WorkspaceEntry we) {
 		final TransformationTask task = new TransformationTask(we, "Dummy contraction", new String[] { "-hide", ".dummy" });
 		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Petrify dummy contraction", new TransformationResultHandler(task));
+		framework.getTaskManager().queue(task, "Petrify dummy contraction", new TransformationResultHandler(we));
 	}
 }

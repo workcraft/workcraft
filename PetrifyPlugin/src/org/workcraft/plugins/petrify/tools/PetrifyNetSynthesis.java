@@ -25,7 +25,7 @@ public class PetrifyNetSynthesis extends ConversionTool {
 	public void run(WorkspaceEntry we) {
 		final TransformationTask task = new TransformationTask(we, "Net synthesis", new String[] { });
 		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Petrify net synthesis", new TransformationResultHandler(task));
+		framework.getTaskManager().queue(task, "Petrify net synthesis", new TransformationResultHandler(we));
 	}
 
 }

@@ -53,9 +53,11 @@ public class ActionMenuItem extends JMenuItem implements Actor {
 	}
 
 	private void fireActionPerformed() {
-		if (scriptedAction != null)
-			for (ScriptedActionListener l : listeners)
+		if (scriptedAction != null) {
+			for (ScriptedActionListener l : listeners) {
 				l.actionPerformed(scriptedAction);
+			}
+		}
 	}
 
 	public void addScriptedActionListener(ScriptedActionListener listener) {

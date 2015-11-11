@@ -24,6 +24,6 @@ public class PetrifyUntoggle extends ConversionTool {
 	public void run(WorkspaceEntry we) {
 		final TransformationTask task = new TransformationTask(we, "Signal transition untoggle", new String[] {"-untog"});
 		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Petrify signal transition untoggle", new TransformationResultHandler(task));
+		framework.getTaskManager().queue(task, "Petrify signal transition untoggle", new TransformationResultHandler(we));
 	}
 }

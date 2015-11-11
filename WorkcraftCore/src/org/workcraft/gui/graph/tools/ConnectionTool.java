@@ -92,7 +92,7 @@ public class ConnectionTool extends AbstractTool {
 		return KeyEvent.VK_C;
 	}
 
-	protected void resetState(GraphEditor editor) {
+	private void resetState(GraphEditor editor) {
 		currentPoint = null;
 		currentNode = null;
 		firstPoint = null;
@@ -100,7 +100,7 @@ public class ConnectionTool extends AbstractTool {
 		warningMessage = null;
 		mouseLeftFirstNode = false;
 		editor.getModel().selectNone();
-		editor.getWorkspaceEntry().setCanModify(true);
+		editor.getWorkspaceEntry().setCanModify(false);
 		editor.getWorkspaceEntry().setCanSelect(false);
 	}
 
@@ -208,7 +208,6 @@ public class ConnectionTool extends AbstractTool {
 			} else {
 				if (firstNode == null) {
 					startConnection(e);
-					editor.getWorkspaceEntry().setCanModify(false);
 				} else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
 					if (forbidSelfLoops) {
 						warningMessage = "Self-loops are not allowed.";

@@ -62,9 +62,6 @@ public class Grid implements ViewportListener {
 
 
 	protected double majorInterval = 10.0;
-	public double getMajorInterval() {
-		return majorInterval;
-	}
 
 	/**
 	 * Set the interval of major grid lines in user-space units.
@@ -200,9 +197,7 @@ public class Grid implements ViewportListener {
 	protected void updateGrid(Viewport viewport) {
 		Rectangle view = viewport.getShape();
 
-
 		// Compute the visible user space area from the viewport
-
 		Point2D visibleUL = new Point2D.Double();
 		Point2D visibleLR = new Point2D.Double();
 		Point viewLL = new Point (view.x, view.height+view.y);
@@ -210,18 +205,17 @@ public class Grid implements ViewportListener {
 		viewport.getInverseTransform().transform(viewLL, visibleUL);
 		viewport.getInverseTransform().transform(viewUR, visibleLR);
 
-
 		// Dynamic line interval scaling
-
 		double visibleHeight = visibleUL.getY() - visibleLR.getY();
-		while (visibleHeight / majorInterval > magThreshold)
-			majorInterval *= intervalScaleFactor;
-		while (visibleHeight / majorInterval < minThreshold)
-			majorInterval /= intervalScaleFactor;
-
-
+		if (majorInterval > 0) {
+			while (visibleHeight / majorInterval > magThreshold) {
+				majorInterval *= intervalScaleFactor;
+			}
+			while (visibleHeight / majorInterval < minThreshold) {
+				majorInterval /= intervalScaleFactor;
+			}
+		}
 		// Compute the leftmost, rightmost, topmost and bottom visible grid lines
-
 		int majorBottom  = (int)Math.ceil(visibleLR.getY()/majorInterval);
 		int majorTop = (int)Math.floor(visibleUL.getY()/majorInterval);
 
@@ -236,11 +230,8 @@ public class Grid implements ViewportListener {
 		int minorBottom = (int)Math.ceil(visibleLR.getY()/minorInterval);
 		int minorTop = (int)Math.floor(visibleUL.getY()/minorInterval);
 
-
-
-		// Build the gridlines positions, store them as user-space coordinates, screen-space coordinates,
-		// and as a drawable path (in screen-space)
-
+		// Build the gridlines positions, store them as user-space coordinates,
+		// screen-space coordinates, and as a drawable path (in screen-space)
 		minorLinesPath = new Path2D.Double();
 		majorLinesPath = new Path2D.Double();
 
@@ -264,7 +255,6 @@ public class Grid implements ViewportListener {
 		minorLinePositions[1] = new double[countMinV];
 		minorLinePositionsScreen[1] = new int[countMinV];
 
-
 		for (int y=minorBottom; y<=minorTop; y++) {
 			minorLinePositions[1][y-minorBottom] = y*minorInterval;
 			p1.setLocation(0, y*minorInterval);
@@ -283,11 +273,7 @@ public class Grid implements ViewportListener {
 			majorLinePositions[0][x-majorLeft] = x*majorInterval;
 			p1.setLocation(x*majorInterval, 0);
 			viewport.getTransform().transform(p1, p2);
-
-
 			majorLinePositionsScreen[0][x-majorLeft] = (int)p2.getX();
-
-
 			majorLinesPath.moveTo((int)p2.getX(), viewLL.getY());
 			majorLinesPath.lineTo((int)p2.getX(), viewUR.getY());
 		}
@@ -306,9 +292,9 @@ public class Grid implements ViewportListener {
 			majorLinesPath.lineTo(viewUR.getX(), p2.getY());
 		}
 
-
-		for (GridListener l : listeners)
+		for (GridListener l : listeners) {
 			l.gridChanged(this);
+		}
 	}
 
 	/**
