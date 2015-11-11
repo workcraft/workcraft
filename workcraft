@@ -17,7 +17,7 @@ PGMINER_DIR=$TOOLS_DIR/pgminer
 VXM_DIR=$TOOLS_DIR/vxm
 
 # Add location of the third-party tools to the PATH variable
-export PATH=$PATH:$PETRIFY_DIR:$PUNF_DIR:$MPSAT_DIR:$PCOMP_DIR:$SCENCO_DIR:$ESPRESSO_DIR:$PGMINER_DIR:$VXM_DIR
+export PATH=$PETRIFY_DIR:$PUNF_DIR:$MPSAT_DIR:$PCOMP_DIR:$SCENCO_DIR:$ESPRESSO_DIR:$PGMINER_DIR:$VXM_DIR:$PATH
 
 # Set the JVM executable in JAVA_BIN variable (if not defined yet)
 if [ -z "$JAVA_BIN" ]
@@ -29,7 +29,7 @@ then
         if [ -e "$JAVA_HOME"/bin/java ]
         then
             JAVA_BIN="$JAVA_HOME"/bin/java
-        else        
+        else
             JAVA_BIN="$JAVA_HOME"/java
         fi
     fi
