@@ -237,7 +237,6 @@ public class VerilogImporter implements Importer {
 			FunctionComponent component = null;
 			if (gate != null) {
 				component = createLibraryGate(circuit, verilogInstance, wires, gate);
-				component.setIsZeroDelay(verilogInstance.zeroDelay);
 			} else {
 				component = createBlackBox(circuit, verilogInstance, wires, modules);
 			}
@@ -246,6 +245,7 @@ public class VerilogImporter implements Importer {
 			}
 		}
 		createConnections(circuit, wires);
+		setZeroDelayAttribute(instanceComponentMap);
 		setInitialState(circuit, wires, topModule.signalStates);
 		mergeGroups(circuit, topModule.groups, instanceComponentMap);
 		return circuit;
@@ -567,6 +567,19 @@ public class VerilogImporter implements Importer {
 				try {
 					circuit.connect(wire.source, sink);
 				} catch (InvalidConnectionException e) {
+				}
+			}
+		}
+	}
+
+	private void setZeroDelayAttribute(HashMap<Instance, FunctionComponent> instanceComponentMap) {
+		for (Instance verilogInstance: instanceComponentMap.keySet()) {
+			FunctionComponent component = instanceComponentMap.get(verilogInstance);
+			if ((component != null) && (verilogInstance.zeroDelay)) {
+				try {
+					component.setIsZeroDelay(true);
+				} catch (ArgumentException e) {
+					System.out.println("Warning for component '" + verilogInstance.name + "': " + e.getMessage());
 				}
 			}
 		}
