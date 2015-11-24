@@ -34,7 +34,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -46,8 +45,8 @@ import org.workcraft.plugins.policy.propertydescriptors.BundleColorPropertyDescr
 import org.workcraft.plugins.policy.propertydescriptors.BundleNamePropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.BundlesOfTransitionPropertyDescriptor;
 import org.workcraft.plugins.policy.propertydescriptors.TransitionsOfBundlePropertyDescriptor;
-import org.workcraft.util.ColorUtils;
 import org.workcraft.util.ColorGenerator;
+import org.workcraft.util.ColorUtils;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName ("Policy Net")
@@ -58,7 +57,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 			new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
 			new float[]{0.50f},  new float[]{0.9f, 0.7f, 0.5f}));
 
-	public VisualPolicyNet(PolicyNet model) throws VisualModelInstantiationException {
+	public VisualPolicyNet(PolicyNet model) {
 		this(model, null);
 	}
 

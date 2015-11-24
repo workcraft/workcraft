@@ -50,6 +50,7 @@ public class PetriNetGenerator {
 			String name = policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace());
 			VisualPlace newPlace = petriNet.createPlace(name, null);
 			newPlace.copyStyle(place);
+			newPlace.copyPosition(place);
 			result.put(place, newPlace);
 		}
 		return result;
