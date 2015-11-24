@@ -39,6 +39,7 @@ import org.w3c.dom.Element;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LinkedTwoWayMap;
@@ -103,7 +104,7 @@ public class Workspace {
 		we.setTemporary(temporary);
 		we.setChanged(false);
 		final Framework framework = Framework.getInstance();
-		if (file.getName().endsWith(".work")) {
+		if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
 			we.setModelEntry(framework.loadFile(file));
 			if (workspacePath == null) {
 				workspacePath = tempMountExternalFile(file);
@@ -124,7 +125,7 @@ public class Workspace {
 	}
 
 	public WorkspaceEntry merge(WorkspaceEntry we, File file) throws DeserialisationException {
-		if (we != null && file.exists() && file.getName().endsWith(".work")) {
+		if (we != null && file.exists() && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
 			final Framework framework = Framework.getInstance();
 			we.insert(framework.loadFile(file));
 		}

@@ -38,6 +38,7 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainMenu;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
@@ -127,7 +128,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 			if (openFile==null)
 			{
 				if(file.exists()) {
-					if(file.getName().endsWith(".work"))
+					if(file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION))
 					{
 						final JMenuItem miOpen = new JMenuItem("Open");
 						miOpen.addActionListener(new ActionListener()

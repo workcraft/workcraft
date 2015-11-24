@@ -92,7 +92,7 @@ CLASSPATH=\
 "$WORKCRAFT_HOME/XmasPlugin/bin:"\
 
 # Run Workcraft with the specific JAVA_BIN and CLASSPATH
-"$JAVA_BIN" -classpath "$CLASSPATH" org.workcraft.Console
+"$JAVA_BIN" -classpath "$CLASSPATH" org.workcraft.Console -dir:"$CURRENT_DIR" "$@"
 
 # Restore the current working directory
 cd "$CURRENT_DIR"

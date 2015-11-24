@@ -41,6 +41,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.workspace.Path;
@@ -119,7 +120,7 @@ public class WorkspaceEntry implements ObservableState {
 	}
 
 	public boolean isWork() {
-		return (modelEntry != null) || (getWorkspacePath().getNode().endsWith(".work"));
+		return (modelEntry != null) || (getWorkspacePath().getNode().endsWith(FileFilters.DOCUMENT_EXTENSION));
 	}
 
 	public String getTitle() {

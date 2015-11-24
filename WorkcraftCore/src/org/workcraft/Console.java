@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.util.FileUtils;
 
 
@@ -57,7 +58,7 @@ public class Console {
 			}
 		}
 
-		if (!silent) {
+		if ( !silent ) {
 			System.out.println(Info.getFullTitle());
 			System.out.println(Info.getCopyright());
 			System.out.println();
@@ -70,14 +71,14 @@ public class Console {
 			return;
 		}
 
-		if (!f.exists()) {
+		if ( !f.exists() ) {
 			f.mkdirs();
 		}
 
 		final Framework framework  = Framework.getInstance();
 		framework.setSilent(silent);
 
-		BufferedReader in = new BufferedReader (new InputStreamReader (System.in));
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
 		framework.initJavaScript();
 		framework.initPlugins();
@@ -99,10 +100,11 @@ public class Console {
 			System.err.println ("! Startup script failed: " + e.getMessage());
 		}
 
-		if (!silent) {
+		if ( !silent ) {
 			System.out.println("Startup complete.\n\n");
 		}
 		boolean startGUI = true;
+		String dir = null;
 		for (String arg: args) {
 			if (arg.equals("-gui")) {
 				startGUI = true;
@@ -112,16 +114,20 @@ public class Console {
 				startGUI = false;
 				arglist.remove(arg);
 			}
+			if (arg.startsWith("-dir:")) {
+				dir = arg.substring(5);
+				arglist.remove(arg);
+			}
 			if (arg.startsWith("-exec:")) {
 				arglist.remove(arg);
 				framework.setArgs(arglist);
 				try {
 					if (!silent) {
-						System.out.println ("Executing "+ arg.substring(6) + "...");
+						System.out.println("Executing "+ arg.substring(6) + "...");
 					}
 					framework.execJavaScript(new File (arg.substring(6)));
 				} catch (FileNotFoundException e) {
-					System.err.println ("Script specified from command line not found: "+arg);
+					System.err.println ("Script specified from command line not found: " + arg);
 				} catch (org.mozilla.javascript.WrappedException e) {
 					e.getWrappedException().printStackTrace();
 					System.exit(1);
@@ -134,40 +140,29 @@ public class Console {
 
 		if (startGUI) {
 			framework.startGUI();
+			for (String arg: arglist) {
+				if (arg.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+					File file = new File(dir, arg);
+					framework.getMainWindow().openWork(file);
+				}
+			}
 		}
+
 
 		while (true) {
 			if (framework.shutdownRequested()) {
-				/* This way of dealing with shutdown request results in unclosable Workcraft window after UI reset.
-				 * A replacement code is suggested without calling for inwokeAndWait method... but still does not work.
-				try {
-					SwingUtilities.invokeAndWait(new Runnable() {
-						public void run() {
-							try {
-								framework.shutdownGUI();
-							} catch (OperationCancelledException e) {
-								framework.abortShutdown();
-
-							}
-						}
-					});
-				} catch (InterruptedException e1) {
-				} catch (InvocationTargetException e1) {
-					e1.printStackTrace();
-				}
-				*/
 				try {
 					framework.shutdownGUI();
 				} catch (OperationCancelledException e) {
 					framework.abortShutdown();
 				}
 
-				if (!framework.shutdownRequested()) {
+				if ( !framework.shutdownRequested() ) {
 					continue;
 				}
 
 				try {
-					if (!silent) {
+					if ( !silent ) {
 						System.out.println ("Shutting down...");
 					}
 					framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/shutdown.js"));

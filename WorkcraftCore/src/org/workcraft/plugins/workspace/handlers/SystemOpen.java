@@ -25,15 +25,13 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
+import org.workcraft.gui.FileFilters;
 import org.workcraft.workspace.FileHandler;
 
 public class SystemOpen implements FileHandler {
 
 	public boolean accept(File f) {
-		if (!f.getName().endsWith(".work"))
-			return true;
-		else
-			return false;
+		return !f.getName().endsWith(FileFilters.DOCUMENT_EXTENSION);
 	}
 
 
@@ -44,10 +42,11 @@ public class SystemOpen implements FileHandler {
 
 	public static void open(File f) {
 		try {
-			if (System.getProperty ("os.name").contains("Windows"))
+			if (System.getProperty ("os.name").contains("Windows")) {
 				Runtime.getRuntime().exec (new String[] {"cmd", "/c", f.getAbsolutePath() });
-			else
+			} else {
 				Desktop.getDesktop().open(f);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -58,4 +57,5 @@ public class SystemOpen implements FileHandler {
 	public String getDisplayName() {
 		return "Open using system default program";
 	}
+
 }

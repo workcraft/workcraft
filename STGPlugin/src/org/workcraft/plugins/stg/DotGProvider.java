@@ -7,6 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NotImplementedException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.serialisation.Format;
 import org.workcraft.util.Export;
@@ -47,7 +48,7 @@ public class DotGProvider {
 			}
 		} else if (source.getNode().endsWith(".g")){
 			return workspace.getFile(source);
-		} else if (source.getNode().endsWith(".work")){
+		} else if (source.getNode().endsWith(FileFilters.DOCUMENT_EXTENSION)){
 			throw new NotImplementedException();
 		} else {
 			throw new RuntimeException ("Don't know how to create a .g file from " + source);

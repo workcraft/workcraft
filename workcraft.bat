@@ -86,7 +86,7 @@ set CLASSPATH=^
 ;
 
 :: Run Workcraft with the specific JAVA_BIN and CLASSPATH
-"%JAVA_BIN%" -classpath "%CLASSPATH%" org.workcraft.Console
+"%JAVA_BIN%" -classpath "%CLASSPATH%" org.workcraft.Console %* 
 
 :: Restore the current working directory
 popd
