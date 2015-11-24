@@ -33,8 +33,14 @@ public class SolutionPanel extends JPanel {
 		));
 
 		traceText = new JTextArea();
-		traceText.setText(solution.toString());
-		traceText.setEditable(false);
+		String solutionString = solution.toString();
+		if (solutionString.isEmpty()) {
+			traceText.setText("[empty trace]");
+			traceText.setEnabled(false);
+		} else {
+			traceText.setText(solutionString);
+			traceText.setEditable(false);
+		}
 
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(traceText);

@@ -36,8 +36,8 @@ public class Solution {
 		if (mainTrace != null) {
 			result += mainTrace.toString();
 		}
-		result += "\n";
 		if (branchTrace != null) {
+			result += "\n";
 			result += branchTrace.toString();
 		}
 		return result;
