@@ -217,7 +217,6 @@ public class VisualCircuit extends AbstractVisualModel {
 		VisualCircuitConnection vConnection = null;
 		if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
 			VisualComponent vComponent1 = (VisualComponent)first;
-
 			VisualComponent vComponent2 = (VisualComponent)second;
 
 			Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
@@ -227,16 +226,10 @@ public class VisualCircuit extends AbstractVisualModel {
 					return ((node instanceof VisualGroup) || (node instanceof VisualPage));
 				}
 			});
-			Container mContainer = NamespaceHelper.getMathContainer(this, vContainer);
-
 			if (mConnection == null) {
 				MathNode mComponent1 = vComponent1.getReferencedComponent();
 				MathNode mComponent2 = vComponent2.getReferencedComponent();
 				mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
-				Container mParent = (Container)(mConnection.getParent());
-				LinkedList<Node> mConnections = new LinkedList<Node>();
-				mConnections.add(mConnection);
-				mParent.reparent(mConnections, mContainer);
 			}
 			vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
 			vConnection.setArrowLength(0.0);

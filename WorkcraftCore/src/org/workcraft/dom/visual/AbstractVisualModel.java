@@ -102,7 +102,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		}.attach(getRoot());
 	}
 
-	protected final void createDefaultFlatStructure() throws NodeCreationException {
+	@Override
+	public void createDefaultFlatStructure() throws NodeCreationException {
 		HashMap <MathNode, VisualComponent> createdNodes = new HashMap<>();
 		// Create components
 		Queue<Pair<Container, Container>> containerQueue = new LinkedList<>();

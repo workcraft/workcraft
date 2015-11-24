@@ -56,8 +56,9 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		for (String arg : args) {
 			command.add(arg);
 		}
-
-		String prefix = FileUtils.getTempPrefix(we.getTitle());
+		// Petrify uses the full name of the file as the name of the Verilog module (with _net suffix).
+		// As there may be non-alpha-numerical symbols in the model title, it is better not to include it to the directory name.
+		String prefix = FileUtils.getTempPrefix(null/* we.getTitle() */);
 		File directory = FileUtils.createTempDirectory(prefix);
 		try {
 			File equationsFile = new File(directory, "petrify.eqn");

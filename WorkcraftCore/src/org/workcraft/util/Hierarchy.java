@@ -147,7 +147,7 @@ public class Hierarchy {
 
 	public static Container getNearestContainer(Node... node) {
 		Node parent = getCommonParent(node);
-		return getNearestAncestor (parent, Container.class);
+		return getNearestAncestor(parent, Container.class);
 	}
 
 	public static Container getNearestContainer(Collection<Node> nodes) {

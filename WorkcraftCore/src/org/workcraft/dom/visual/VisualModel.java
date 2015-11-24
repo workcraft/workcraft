@@ -33,11 +33,13 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.plugins.layout.AbstractLayoutTool;
 
 public interface VisualModel extends Model, ObservableState {
+	public void createDefaultFlatStructure() throws NodeCreationException;
 	public void draw(Graphics2D g, Decorator decorator);
 
 	public void setCurrentLevel(Container group);

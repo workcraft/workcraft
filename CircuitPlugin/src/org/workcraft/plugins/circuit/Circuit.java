@@ -76,9 +76,13 @@ public class Circuit extends AbstractMathModel {
 	}
 
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
-		Hierarchy.getNearestContainer(first, second).add(con);
-		return con;
+		MathConnection connection = new MathConnection((MathNode)first, (MathNode)second);
+		Container container = Hierarchy.getNearestContainer(first, second);
+		if (container instanceof CircuitComponent) {
+			container = (Container)container.getParent();
+		}
+		container.add(connection);
+		return connection;
 	}
 
 	public Collection<FunctionContact> getFunctionContacts() {
