@@ -70,12 +70,22 @@ class DrawMan
 
 	private void simpleDraw(final Decoration decoration, Node node) {
 		AffineTransform oldTransform = graphics.getTransform();
+		if (node instanceof VisualConnection) {
+			// Draw connection children first
+			drawChildren(decoration, node);
+			drawNode(decoration, node);
+		} else {
+			// Draw node children last
+			drawNode(decoration, node);
+			drawChildren(decoration, node);
+		}
+		graphics.setTransform(oldTransform);
+	}
 
-		boolean isCollapsed = (node instanceof Collapsible) && ((Collapsible)node).getIsCollapsed();
-		boolean isInsideCollapsed = isCollapsed && ((Collapsible)node).isCurrentLevelInside();
-
+	private void drawNode(final Decoration decoration, Node node) {
 		if (node instanceof Drawable) {
-			((Drawable)node).draw(new DrawRequest(){
+			Drawable drawableNode = (Drawable)node;
+			drawableNode.draw(new DrawRequest(){
 				@Override
 				public Decoration getDecoration() {
 					return decoration;
@@ -90,21 +100,23 @@ class DrawMan
 				}
 			});
 		}
-		graphics.setTransform(oldTransform);
+	}
 
-		// a collapsed node does not draw its contents, unless we are inside this node
+	private void drawChildren(final Decoration decoration, Node node) {
+		// A collapsed node does not draw its contents, unless we are inside this node
+		boolean isCollapsed = (node instanceof Collapsible) && ((Collapsible)node).getIsCollapsed();
+		boolean isInsideCollapsed = isCollapsed && ((Collapsible)node).isCurrentLevelInside();
 		if (isInsideCollapsed || !isCollapsed) {
-			// draw nodes
-			for (Node n : node.getChildren()) {
-				if ( !(n instanceof VisualConnection)) {
-					draw(decoration, n);
+			// First draw nodes
+			for (Node childNode : node.getChildren()) {
+				if ( !(childNode instanceof VisualConnection) ) {
+					draw(decoration, childNode);
 				}
 			}
-
-			// draw connections
-			for (Node n : node.getChildren()) {
-				if (n instanceof VisualConnection) {
-					draw(decoration, n);
+			// Then draw connections
+			for (Node childNode : node.getChildren()) {
+				if (childNode instanceof VisualConnection) {
+					draw(decoration, childNode);
 				}
 			}
 		}

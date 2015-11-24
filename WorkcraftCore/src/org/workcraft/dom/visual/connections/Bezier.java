@@ -93,6 +93,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 		return new BezierControlPoint[] { cp1, cp2 };
 	}
 
+	@Override
 	public void draw(DrawRequest r) {
 		Graphics2D g = r.getGraphics();
 		PartialCurveInfo curveInfo = getCurveInfo();
