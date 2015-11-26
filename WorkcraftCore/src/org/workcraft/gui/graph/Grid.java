@@ -196,6 +196,7 @@ public class Grid implements ViewportListener {
 	 */
 	protected void updateGrid(Viewport viewport) {
 		Rectangle view = viewport.getShape();
+		if (view.isEmpty()) return;
 
 		// Compute the visible user space area from the viewport
 		Point2D visibleUL = new Point2D.Double();

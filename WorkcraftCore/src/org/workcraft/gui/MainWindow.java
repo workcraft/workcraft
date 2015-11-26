@@ -26,15 +26,12 @@ import java.awt.Color;
 import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,8 +74,6 @@ import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.LayoutException;
@@ -87,7 +83,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.Viewport;
+import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -104,7 +100,6 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Tools;
@@ -125,7 +120,6 @@ public class MainWindow extends JFrame {
 	public static final String TITLE_PLACEHOLDER = "";
 
 	private static final String UILAYOUT_PATH = "./config/uilayout.xml";
-	private static final int VIEWPORT_MARGIN = 30;
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(Action e) {
@@ -293,9 +287,7 @@ public class MainWindow extends JFrame {
 
 		final GraphEditorPanel editor = new GraphEditorPanel(this, we);
 		String title = getTitle(we, visualModel);
-
 		final DockableWindow editorWindow;
-
 		if (editorWindows.isEmpty()) {
 			editorWindow = createDockableWindow(editor, title, documentPlaceholder,
 					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON,
@@ -313,6 +305,7 @@ public class MainWindow extends JFrame {
 		editorWindows.put(we, editorWindow);
 		requestFocus(editor);
 		setWorkActionsEnableness(true);
+		editor.zoomFit();
 		return editor;
 	}
 
@@ -611,8 +604,8 @@ public class MainWindow extends JFrame {
 	}
 
 	private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
-		return dockableWindow.getContentPanel().getContent() instanceof GraphEditorPanel ? (GraphEditorPanel) dockableWindow
-				.getContentPanel().getContent() : null;
+		JComponent content = dockableWindow.getContentPanel().getContent();
+		return ((content instanceof GraphEditorPanel) ? (GraphEditorPanel)content : null);
 	}
 
 	/** For use from Javascript **/
@@ -824,7 +817,6 @@ public class MainWindow extends JFrame {
 	}
 
 	public void requestFocus(GraphEditorPanel sender) {
-		final Framework framework = Framework.getInstance();
 		sender.requestFocusInWindow();
 		if (editorInFocus != sender) {
 			editorInFocus = sender;
@@ -833,6 +825,8 @@ public class MainWindow extends JFrame {
 			editorToolsWindow.setContent(sender.getToolBox().getControlPanel());
 			mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
 			sender.updatePropertyView();
+
+			final Framework framework = Framework.getInstance();
 
 			framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
 			framework.setJavaScriptProperty("visualModel", sender.getModel(),
@@ -932,24 +926,46 @@ public class MainWindow extends JFrame {
 	public void openWork() throws OperationCancelledException {
 		JFileChooser fc = createOpenDialog("Open work file(s)", true, null);
 		if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
+			final HashSet<WorkspaceEntry> newWorkspaceEntries = new HashSet<>();
 			for (File f : fc.getSelectedFiles()) {
 				String path = f.getPath();
-				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+				if ( !path.endsWith(FileFilters.DOCUMENT_EXTENSION) ) {
 					path += FileFilters.DOCUMENT_EXTENSION;
 					f = new File(path);
 				}
-				openWork(f);
+				WorkspaceEntry we = openWork(f);
+				if (we != null) {
+					newWorkspaceEntries.add(we);
+				}
 			}
+			// FIXME: Go through the newly open works and update their zoom, in case tabs appeared and changed the viewport size.
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					for (WorkspaceEntry we: newWorkspaceEntries) {
+						zoomFitWorkspaceEntryEditors(we);
+					}
+				}
+				private void zoomFitWorkspaceEntryEditors(WorkspaceEntry we) {
+					for (DockableWindow w: editorWindows.get(we)) {
+						GraphEditor editor = getGraphEditorPanel(w);
+						if (editor != null) {
+							editor.zoomFit();
+						}
+					}
+				}
+			});
 		} else {
 			throw new OperationCancelledException("Open operation cancelled by user.");
 		}
 	}
 
-	public void openWork(File f) {
+	public WorkspaceEntry openWork(File f) {
 		final Framework framework = Framework.getInstance();
+		WorkspaceEntry we = null;
 		if (framework.checkFile(f, null)) {
 			try {
-				WorkspaceEntry we = framework.getWorkspace().open(f, false);
+				we = framework.getWorkspace().open(f, false);
 				if (we.getModelEntry().isVisual()) {
 					createEditorWindow(we);
 				}
@@ -963,6 +979,7 @@ public class MainWindow extends JFrame {
 				printCause(e);
 			}
 		}
+		return we;
 	}
 
 	public void mergeWork() throws OperationCancelledException {
@@ -1339,86 +1356,6 @@ public class MainWindow extends JFrame {
 				} catch (OperationCancelledException e) {
 				}
 			}
-		}
-	}
-
-	public void zoomIn() {
-		editorInFocus.getViewport().zoom(1);
-		editorInFocus.repaint();
-	}
-
-	public void zoomOut() {
-		editorInFocus.getViewport().zoom(-1);
-		editorInFocus.repaint();
-	}
-
-	public void zoomDefault() {
-		editorInFocus.getViewport().scaleDefault();
-		editorInFocus.repaint();
-	}
-
-	public void zoomFit() {
-		if (editorInFocus != null) {
-			Viewport viewport = editorInFocus.getViewport();
-			Rectangle2D viewportBox = viewport.getShape();
-			VisualModel model = editorInFocus.getModel();
-			Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
-			if (!model.getSelection().isEmpty()) {
-				nodes.retainAll(model.getSelection());
-			}
-			Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-			if ((modelBox != null) && (viewportBox != null)) {
-				double ratioX = 1.0;
-				double ratioY = 1.0;
-				if (viewportBox.getHeight() > VIEWPORT_MARGIN) {
-					ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getHeight();
-					ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getHeight();
-				}
-				double scaleX = ratioX / modelBox.getWidth();
-				double scaleY = ratioY / modelBox.getHeight();
-				double scale = 2.0 * Math.min(scaleX, scaleY);
-				viewport.scale(scale);
-				panCenter();
-			}
-		}
-	}
-
-	public void panLeft() {
-		editorInFocus.getViewport().pan(20, 0);
-		editorInFocus.repaint();
-	}
-
-	public void panUp() {
-		editorInFocus.getViewport().pan(0, 20);
-		editorInFocus.repaint();
-	}
-
-	public void panRight() {
-		editorInFocus.getViewport().pan(-20, 0);
-		editorInFocus.repaint();
-	}
-
-	public void panDown() {
-		editorInFocus.getViewport().pan(0, -20);
-		editorInFocus.repaint();
-	}
-
-	public void panCenter() {
-		Viewport viewport = editorInFocus.getViewport();
-		Rectangle2D viewportBox = viewport.getShape();
-		VisualModel model = editorInFocus.getModel();
-		Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
-		if (!model.getSelection().isEmpty()) {
-			nodes.retainAll(model.getSelection());
-		}
-		Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-		if ((modelBox != null) && (viewportBox != null)) {
-			int viewportCenterX = (int)Math.round(viewportBox.getCenterX());
-			int viewportCenterY = (int)Math.round(viewportBox.getCenterY());
-			Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
-			Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
-			viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
-			editorInFocus.repaint();
 		}
 	}
 

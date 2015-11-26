@@ -45,4 +45,16 @@ public interface GraphEditor {
 	public void forceRedraw();
 	public boolean hasFocus();
 	public void requestFocus();
+
+	public void zoomIn();
+	public void zoomOut();
+	public void zoomDefault();
+	public void zoomFit();
+
+	public void panLeft();
+	public void panUp();
+	public void panRight();
+	public void panDown();
+	public void panCenter();
+
 }

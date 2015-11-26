@@ -206,13 +206,13 @@ public class DotLayoutTool extends AbstractLayoutTool {
 			final Framework framework = Framework.getInstance();
 			Result<? extends ExternalProcessResult> res = framework.getTaskManager().execute(task, "Laying out the graph...");
 
-			if(res.getOutcome() == Outcome.CANCELLED) {
+			if (res.getOutcome() == Outcome.CANCELLED) {
 				return;
 			}
-			if(res.getOutcome() == Outcome.FAILED) {
+			if (res.getOutcome() == Outcome.FAILED) {
 				throw new LayoutException("Failed to execute external process:\n" + res.getCause());
 			}
-			if(res.getReturnValue().getReturnCode() == 0) {
+			if (res.getReturnValue().getReturnCode() == 0) {
 				String in = FileUtils.readAllText(layout);
 				applyLayout(in, (VisualModel)model);
 			} else {

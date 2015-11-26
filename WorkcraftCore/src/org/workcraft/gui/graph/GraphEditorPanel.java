@@ -27,6 +27,7 @@ import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
@@ -38,6 +39,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +57,9 @@ import javax.swing.Timer;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Dependent;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
@@ -76,15 +80,16 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
-
 
 	public static final String TITLE_SUFFIX_TEMPLATE = "template";
 	public static final String TITLE_SUFFIX_MODEL = "model";
 	public static final String TITLE_SUFFIX_SINGLE_ELEMENT = "single element";
 	public static final String TITLE_SUFFIX_SELECTED_ELEMENTS = " selected elements";
+	private static final int VIEWPORT_MARGIN = 20;
 
 	class Resizer implements ComponentListener {
 
@@ -600,6 +605,138 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
 	public ToolboxPanel getToolBox() {
 		return toolboxPanel;
+	}
+	public void zoomIn() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getViewport().zoom(1);
+				repaint();
+			}
+		});
+	}
+
+	public void zoomOut() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getViewport().zoom(-1);
+				repaint();
+			}
+		});
+	}
+
+	public void zoomDefault() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getViewport().scaleDefault();
+				repaint();
+			}
+		});
+	}
+
+	public void zoomFit() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Viewport viewport = getViewport();
+				Rectangle2D viewportBox = viewport.getShape();
+				VisualModel model = getModel();
+				Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+				if (!model.getSelection().isEmpty()) {
+					nodes.retainAll(model.getSelection());
+				}
+				Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+				if ((modelBox != null) && (viewportBox != null)) {
+					Point2D ratio = getVewportRatio(viewportBox);
+					double scaleX = ratio.getX() / modelBox.getWidth();
+					double scaleY = ratio.getY() / modelBox.getHeight();
+					double scale = 2.0 * Math.min(scaleX, scaleY);
+					viewport.scale(scale);
+					panCenter();
+				}
+			}
+
+			private Point2D getVewportRatio(Rectangle2D viewportBox) {
+				double ratioX = 1.0;
+				double ratioY = 1.0;
+				if ((viewportBox.getWidth() > VIEWPORT_MARGIN) && (viewportBox.getHeight() > VIEWPORT_MARGIN)) {
+					if (viewportBox.getWidth() > viewportBox.getHeight()) {
+						ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getHeight();
+						ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getHeight();
+					} else {
+						ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getWidth();
+						ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getWidth();
+					}
+				}
+				return new Point2D.Double(ratioX, ratioY);
+			}
+		});
+	}
+
+	public void panLeft() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getViewport().pan(20, 0);
+				repaint();
+			}
+		});
+	}
+
+	public void panUp() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getViewport().pan(0, 20);
+				repaint();
+			}
+		});
+	}
+
+	public void panRight() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getViewport().pan(-20, 0);
+				repaint();
+			}
+		});
+	}
+
+	public void panDown() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				getViewport().pan(0, -20);
+				repaint();
+			}
+		});
+	}
+
+	public void panCenter() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Viewport viewport = getViewport();
+				Rectangle2D viewportBox = viewport.getShape();
+				VisualModel model = getModel();
+				Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+				if ( !model.getSelection().isEmpty() ) {
+					nodes.retainAll(model.getSelection());
+				}
+				Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+				if ((modelBox != null) && (viewportBox != null)) {
+					int viewportCenterX = (int)Math.round(viewportBox.getCenterX());
+					int viewportCenterY = (int)Math.round(viewportBox.getCenterY());
+					Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
+					Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
+					viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
+					repaint();
+				}
+			}
+		});
 	}
 
 }

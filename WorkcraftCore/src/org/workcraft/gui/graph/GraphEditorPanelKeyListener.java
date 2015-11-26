@@ -40,16 +40,16 @@ class GraphEditorPanelKeyListener implements KeyListener {
 		if (e.isControlDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_LEFT:
-				editor.getMainWindow().panLeft();
+				editor.panLeft();
 				break;
 			case KeyEvent.VK_UP:
-				editor.getMainWindow().panUp();
+				editor.panUp();
 				break;
 			case KeyEvent.VK_RIGHT:
-				editor.getMainWindow().panRight();
+				editor.panRight();
 				break;
 			case KeyEvent.VK_DOWN:
-				editor.getMainWindow().panDown();
+				editor.panDown();
 				break;
 			}
 		} else {
@@ -57,18 +57,18 @@ class GraphEditorPanelKeyListener implements KeyListener {
 			case KeyEvent.VK_EQUALS:
 			case KeyEvent.VK_PLUS:
 			case KeyEvent.VK_ADD:
-				editor.getMainWindow().zoomIn();
+				editor.zoomIn();
 				break;
 			case KeyEvent.VK_MINUS:
 			case KeyEvent.VK_UNDERSCORE:
 			case KeyEvent.VK_SUBTRACT:
-				editor.getMainWindow().zoomOut();
+				editor.zoomOut();
 				break;
 			case KeyEvent.VK_MULTIPLY:
-				editor.getMainWindow().zoomFit();
+				editor.zoomFit();
 				break;
 			case KeyEvent.VK_DIVIDE:
-				editor.getMainWindow().panCenter();
+				editor.panCenter();
 				break;
 			}
 		}

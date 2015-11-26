@@ -7,6 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.graph.tools.GraphEditor;
 
 public class MainWindowActions {
 	public static final Action CREATE_WORK_ACTION = new Action() {
@@ -261,8 +262,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().zoomIn();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.zoomIn();
+			}
 		}
 	};
 
@@ -273,8 +276,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().zoomOut();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.zoomOut();
+			}
 		}
 	};
 
@@ -285,8 +290,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().zoomDefault();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.zoomDefault();
+			}
 		}
 	};
 
@@ -297,8 +304,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().panCenter();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.panCenter();
+			}
 		}
 	};
 
@@ -309,8 +318,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().zoomFit();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.zoomFit();
+			}
 		}
 	};
 
@@ -321,8 +332,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().panLeft();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.panLeft();
+			}
 		}
 	};
 
@@ -333,8 +346,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().panUp();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.panUp();
+			}
 		}
 	};
 
@@ -345,8 +360,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().panRight();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.panRight();
+			}
 		}
 	};
 
@@ -357,8 +374,10 @@ public class MainWindowActions {
 		}
 		@Override
 		public void run() {
-			final Framework f = Framework.getInstance();
-			f.getMainWindow().panDown();
+			GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+			if (editor != null) {
+				editor.panDown();
+			}
 		}
 	};
 

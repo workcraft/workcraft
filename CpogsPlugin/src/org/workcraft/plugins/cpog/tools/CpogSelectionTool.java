@@ -39,7 +39,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -402,85 +401,79 @@ public class CpogSelectionTool extends SelectionTool {
             CpogConnector cc = new CpogConnector(visualCpog);
             f.accept(cc);
             VisualPage inserted = null;
-        if (!PGF.getRef()) {//If this graph is not for reference
+            if (!PGF.getRef()) {//If this graph is not for reference
 
-            graphMap.put(PGF.getGraphName(), f);
+            	graphMap.put(PGF.getGraphName(), f);
 
-            parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
+            	parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
-            LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());
+            	LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());
 
-            if (!(insertTransitives.getState()) && (!blockTransitiveRemoval)) {
-            	boolean[][] c = parsingTool.convertToArrayForm(vertexMap.values(), visualCpog);
-            	parsingTool.computeTransitiveClosure(c);
-            	if (!parsingTool.hasSelfLoops(c)) {
-            		boolean [][] t = parsingTool.findTransitives(c);
-            		parsingTool.convertFromArrayForm(t, vertexMap.values(), visualCpog);
+            	if (!(insertTransitives.getState()) && (!blockTransitiveRemoval)) {
+            		boolean[][] c = parsingTool.convertToArrayForm(vertexMap.values(), visualCpog);
+            		parsingTool.computeTransitiveClosure(c);
+            		if (!parsingTool.hasSelfLoops(c)) {
+            			boolean [][] t = parsingTool.findTransitives(c);
+            			parsingTool.convertFromArrayForm(t, vertexMap.values(), visualCpog);
+            		}
+            	}
+
+            	ArrayList<Node> prevSelection = new ArrayList<>();
+            	for (Node n1 : vertexMap.values()) {
+            		prevSelection.add(n1);
+            	}
+
+
+            	ArrayList<String> usedReferences = parsingTool.getUsedReferences();
+
+            	addUsedReferences(visualCpog, editor, usedReferences, localVertices, prevSelection);
+
+            	if (roots.isEmpty()) {
+            		noRootLayout(vertexMap, n, i);
+            	} else {
+            		bfsLayout(visualCpog, roots);
+            	}
+
+            	editor.requestFocus();
+
+
+            	if (PGF.getGraphName() != null) {
+            		inserted = insertAsPage(visualCpog, PGF, coordinate, editor);
+            		coordinate = new Point2D.Double(coordinate.getX(), coordinate.getY() + 2);
+            	} else {
+            		insertLoose(visualCpog, coordinate);
+            	}
+
+            }
+            if (inserted != null) {
+            	String normalForm = getNormalForm(arcConditionList, localVertices);
+            	String graphName = PGF.getGraphName();
+            	graphName = graphName.replace("{", "");
+            	graphName = graphName.replace("}", "");
+            	LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
+            	bfsLayout(visualCpog, roots);
+            	if (referenceMap.containsKey(graphName)) {
+            		referenceMap.remove(graphName);
+            	}
+            	GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
+            	g.addRefPage(inserted);
+            	referenceMap.put(graphName, g);
+            	if (PGF.getRef()) {
+            		visualCpog.remove(visualCpog.getSelection());
             	}
             }
-
-            ArrayList<Node> prevSelection = new ArrayList<>();
-            for (Node n1 : vertexMap.values()) {
-                prevSelection.add(n1);
+            Collection<Node> prevSelection = visualCpog.getSelection();
+            visualCpog.selectNone();
+            //editor.requestFocus();
+            //editor.forceRedraw();
+            //Doesn't allow zoomFit when creating a new CPOG model
+            //Such as when extracting concurrency
+            if (zoomFit) {
+            	editor.zoomFit();
             }
-
-
-            ArrayList<String> usedReferences = parsingTool.getUsedReferences();
-
-            addUsedReferences(visualCpog, editor, usedReferences, localVertices, prevSelection);
-
-            if (roots.isEmpty()) {
-                noRootLayout(vertexMap, n, i);
-            } else {
-                bfsLayout(visualCpog, roots);
-            }
-
-            editor.requestFocus();
-
-
-            if (PGF.getGraphName() != null) {
-                inserted = insertAsPage(visualCpog, PGF, coordinate, editor);
-                coordinate = new Point2D.Double(coordinate.getX(), coordinate.getY() + 2);
-            } else {
-                insertLoose(visualCpog, coordinate);
-            }
-
+            visualCpog.select(prevSelection);
+            return null;
         }
-            if (inserted != null) {
-                String normalForm = getNormalForm(arcConditionList, localVertices);
-                String graphName = PGF.getGraphName();
-                graphName = graphName.replace("{", "");
-                graphName = graphName.replace("}", "");
-                LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
-                bfsLayout(visualCpog, roots);
-                if (referenceMap.containsKey(graphName)) {
-                	referenceMap.remove(graphName);
-                }
-                GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
-                g.addRefPage(inserted);
-                referenceMap.put(graphName, g);
-                if (PGF.getRef()) {
-                    visualCpog.remove(visualCpog.getSelection());
-                }
-            }
-
-        Collection<Node> prevSelection = visualCpog.getSelection();
-
-        visualCpog.selectNone();
-
-        //editor.requestFocus();
-        //editor.forceRedraw();
-        //Doesn't allow zoomFit when creating a new CPOG model
-        //Such as when extracting concurrency
-        if (zoomFit) {
-        	editor.getMainWindow().zoomFit();
-        }
-
-        visualCpog.select(prevSelection);
-
-
-        return null;
-    }
 	}
 
     public String getNormalForm(HashSet<ArcCondition> arcConditionList, HashMap<String, VisualVertex> localVertices) {
