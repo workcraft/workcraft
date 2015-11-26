@@ -10,9 +10,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.xmas.tools.JsonExport;
 import org.workcraft.plugins.xmas.tools.PNetGen;
-import org.workcraft.plugins.xmas.tools.STGGen;
 import org.workcraft.plugins.xmas.tools.StgGeneratorTool;
-import org.workcraft.plugins.xmas.tools.SyncGen;
 import org.workcraft.plugins.xmas.tools.SyncTool;
 import org.workcraft.plugins.xmas.tools.VerAnalysis;
 import org.workcraft.plugins.xmas.tools.VerConfTool;
@@ -40,20 +38,12 @@ public class XmasModule implements Module {
 		pm.registerClass(Tool.class, JsonExport.class);
 		pm.registerClass(Tool.class, PNetGen.class);
 		pm.registerClass(Tool.class, SyncTool.class);
-		pm.registerClass(Tool.class, SyncGen.class);
 		pm.registerClass(Tool.class, VerConfTool.class);
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
 				return new StgGeneratorTool();
-			}
-		});
-
-		framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new STGGen();
 			}
 		});
 		framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {

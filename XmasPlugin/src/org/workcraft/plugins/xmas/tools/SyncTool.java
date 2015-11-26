@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import javax.swing.JTextField;
 
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
@@ -38,8 +40,14 @@ import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.plugins.xmas.components.SyncComponent;
+import org.workcraft.plugins.xmas.components.VisualForkComponent;
+import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
+import org.workcraft.plugins.xmas.components.VisualJoinComponent;
+import org.workcraft.plugins.xmas.components.VisualMergeComponent;
 import org.workcraft.plugins.xmas.components.VisualQueueComponent;
+import org.workcraft.plugins.xmas.components.VisualSinkComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
+import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.util.Hierarchy;
@@ -72,15 +80,151 @@ public class SyncTool implements Tool {
 		mainFrame.setVisible(false);
 	}
 
+	private static class sync_ {
+
+		   String name1;
+		   String name2;
+		   String name3;
+		   String l1;
+		   String l2;
+		   String typ;
+		   int gr1;
+		   int gr2;
+		   String g1;
+		   String g2;
+
+		   public sync_(String s1,String s2,String s3,String s4,int gr,int cno) {
+		     name1 = s1;
+		     name2 = s2;
+		     name3 = s3;
+		     if(s4.equals("o")) {  //new
+		    	 if(cno==0) {
+			       l1 = s4;
+		    	 }
+		    	 else if(cno==1) {
+				   l1 = "b";
+		    	 }
+		    	 else if(cno==2) {
+				   l1 = "a";
+		    	 }
+		    	 gr1=gr;
+		     }
+		     else {
+		    	 if(cno==0) {
+			       l2 = s4;
+		    	 }
+		    	 else if(cno==1) {
+		    	   l2 = "b";
+		    	 }
+		    	 else if(cno==2) {
+				   l2 = "a";
+		    	 }
+		    	 gr2=gr;
+		     }
+		   }
+	}
+
 	public List<String> slist=new ArrayList<String>();
+	static List<sync_> synclist=new ArrayList<sync_>();
+
+	private static int checksynclist(String str) {
+		for (sync_ s : synclist) {
+			if(s.name1.equals(str)) {
+				return 0;
+			}
+		}
+		return 1;
+	}
+
+	private static void store_sname(String str,String str_,int gr,int cno) {
+		for (sync_ s : synclist) {
+			if(s.name1.equals(str)) {
+				s.name3=str_;
+				if(cno==0) {
+					s.l2 = "i";
+				}
+				else if(cno==1) {
+					s.l2 = "b";
+				}
+				else if(cno==2) {
+					s.l2 = "a";
+				}
+				s.gr2 = gr;
+			}
+		}
+	}
+
+	private static void store_sname_(String str,String str_,int gr,int cno) {
+		for (sync_ s : synclist) {
+			if(s.name1.equals(str)) {
+				s.name2=str_;
+				if(cno==0) {
+					s.l1 = "o";
+				}
+				else if(cno==1) {
+					s.l1 = "b";
+				}
+				else if(cno==2) {
+					s.l1 = "a";
+				}
+				s.gr1 = gr; //new
+			}
+		}
+	}
+
+	public void updatesynclist() {
+		int no=0;
+		for (sync_ s : synclist) {
+			if(slist.get(no).equals("asynchronous")) {
+				s.typ="a";
+			}
+			else if(slist.get(no).equals("mesochronous")) {
+				s.typ="m";
+			}
+			else if(slist.get(no).equals("pausible")) {
+				s.typ="p";
+			}
+			s.g1=slist1.get(no);
+			s.g2=slist2.get(no);
+			no++;
+		}
+	}
+
+	public void writesynclist() {
+		File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
+	    PrintWriter writer_s = null;
+	    try {
+			writer_s = new PrintWriter(syncFile);
+			for (sync_ s : synclist) {
+				String str;
+				str = s.name1.replace("Sync", "Qs");
+				str = s.name1.replace("sync", "Qs");
+    			String rstr2;
+    			rstr2 = s.name2;
+    			rstr2 = rstr2.replace(rstr2.charAt(0),Character.toUpperCase(rstr2.charAt(0)));
+    			String rstr3;
+    			rstr3 = s.name3;
+    			rstr3 = rstr3.replace(rstr3.charAt(0),Character.toUpperCase(rstr3.charAt(0)));
+				//System.out.println("//gensync2s " + str + " " + s.g1 + " " + s.g2 + " " + s.typ);
+				writer_s.println("//gensync2s " + str + " " + s.g1 + " " + s.g2 + " " + s.typ);
+				//System.out.println(rstr2 + " "+ s.l1 + " " + rstr3 + " " + s.l2 + " " + "0");
+				writer_s.println(rstr2 + " "+ s.l1 + " " + rstr3 + " " + s.l2 + " " + "0");
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	    finally
+	    {
+	            if ( writer_s != null )
+	            {
+	                writer_s.close();
+	            }
+	    }
+	}
 
 	public void write_output() {
 		//JPanel panelmain=mainFrame.getContentPane().get();
-		/*for(int no = 0; no < cnt_syncnodes; no = no+1) {
-			System.out.println("Sync" + no);
-		    String name = (String)combob.getSelectedItem();
-			System.out.println(name);
-		}*/
+
 		slist.clear();
 		for(Component con : mainFrame.getContentPane().getComponents()) {
 			if(con instanceof JPanel) {
@@ -195,63 +339,87 @@ public class SyncTool implements Tool {
 		final VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
 		//Circuit cnet = (Circuit)we.getModelEntry().getModel();
 		//VisualCircuit vnet = (VisualCircuit)we.getModelEntry().getMathModel();
+		Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
 
 		cnt_syncnodes=0;
 		if(loaded==0) slist1 = new ArrayList<String>();
 		if(loaded==0) slist2 = new ArrayList<String>();
+		VisualSourceComponent src1=null;
+		VisualQueueComponent qu1=null;
+		VisualSyncComponent syn1=null;
+		VisualSinkComponent snk1=null;
 		VisualSourceComponent src_v1=null;
 		VisualSourceComponent src_v2=null;
-		VisualSourceComponent src_v3=null;
-		VisualSourceComponent src_v4=null;
+		VisualGroup gr=null;
 		VisualGroup gr1=null;
 		VisualGroup gr2=null;
-		VisualGroup gr3=null;
-		VisualGroup gr4=null;
-		for (Node node : vnet.getNodes()) {
-            if(node instanceof VisualSourceComponent) {
-            	if(src_v1==null) {
-        			System.out.println("storing 1");
-            		src_v1=(VisualSourceComponent)node;
-            		gr1 = vnet.getGroup((VisualComponent) node);
-            		System.out.println(gr1);
-            		System.out.println(src_v1.getParent());
-            		System.out.println(gr1.getParent());
-            		Node n = Hierarchy.getNearestAncestor (vnet.getRoot(), VisualGroup.class);
-            		if(n instanceof VisualGroup) {
-            			VisualGroup v = (VisualGroup)n;
-                    	System.out.println(v);
-            		}
-            		System.out.println();
-            	}
-            	else if(src_v2==null) {
-        			System.out.println("storing 2");
-            		src_v2=(VisualSourceComponent)node;
-            		gr2 = vnet.getGroup((VisualComponent) node);
-            	}
-            	else if(src_v3==null) {
-        			System.out.println("storing 3");
-            		src_v3=(VisualSourceComponent)node;
-            		gr3 = vnet.getGroup(src_v3);
-            	}
-            	else if(src_v4==null) {
-        			System.out.println("storing 4");
-            		src_v4=(VisualSourceComponent)node;
-            		gr4 = vnet.getGroup(src_v4);
-            	}
-            }
-		}
-		if(gr1==gr2) {
-			System.out.println("gr1==gr2");
-		}
-		if(gr1==gr3) {
-			System.out.println("gr1==gr3");
-		}
-		if(gr3==gr4) {
-			System.out.println("gr3==gr4");
-		}
+		int gno=1;
 
+		for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
+        	for(VisualComponent vp: vg.getComponents()) {
+				if(vp instanceof VisualSourceComponent) {
+					VisualSourceComponent vsc=(VisualSourceComponent)vp;
+					SourceComponent sc=vsc.getReferencedSourceComponent();
+				    sc.setGr(gno);
+				}
+				else if(vp instanceof VisualSinkComponent) {
+					VisualSinkComponent vsc=(VisualSinkComponent)vp;
+					SinkComponent sc=vsc.getReferencedSinkComponent();
+				    sc.setGr(gno);
+				}
+				else if(vp instanceof VisualFunctionComponent) {
+					VisualFunctionComponent vsc=(VisualFunctionComponent)vp;
+					FunctionComponent sc=vsc.getReferencedFunctionComponent();
+				    sc.setGr(gno);
+				}
+				else if(vp instanceof VisualQueueComponent) {
+					VisualQueueComponent vsc=(VisualQueueComponent)vp;
+					QueueComponent sc=vsc.getReferencedQueueComponent();
+				    sc.setGr(gno);
+					/*System.out.println("Queue no = " + gno + " " + sc.getGr());
+					Collection<XmasContact> contacts_ = sc.getOutputs();
+					for(XmasContact node : contacts_) {
+						System.out.println("InputContact =" + cnet.getName(sc));
+					}
+					Collection<XmasContact> ccontacts = sc.getOutputs();
+					for(XmasContact contact_node_ : ccontacts) {
+						for (Connection c : cnet.getConnections(contact_node_)) {
+		            		if((c.getSecond() instanceof XmasContact)) {
+		            			Node cp_node = c.getSecond().getParent();
+		            			System.out.println("  Found contact = " + cnet.getName(cp_node));
+		            			//if(checksynclist(cnet.getName(cp_node))==1) {
+		            			//	synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o"));
+		            			//}
+		            		}
+		            	}
+					}*/
+				}
+				else if(vp instanceof VisualForkComponent) {
+					VisualForkComponent vsc=(VisualForkComponent)vp;
+					ForkComponent sc=vsc.getReferencedForkComponent();
+				    sc.setGr(gno);
+					//System.out.println("Fork no = " + gno + " " + sc.getGr());
+				}
+				else if(vp instanceof VisualJoinComponent) {
+					VisualJoinComponent vsc=(VisualJoinComponent)vp;
+					JoinComponent sc=vsc.getReferencedJoinComponent();
+				    sc.setGr(gno);
+					//System.out.println("Join no = " + gno + " " + sc.getGr());
+				}
+				else if(vp instanceof VisualSwitchComponent) {
+					VisualSwitchComponent vsc=(VisualSwitchComponent)vp;
+					SwitchComponent sc=vsc.getReferencedSwitchComponent();
+				    sc.setGr(gno);
+				}
+				else if(vp instanceof VisualMergeComponent) {
+					VisualMergeComponent vsc=(VisualMergeComponent)vp;
+					MergeComponent sc=vsc.getReferencedMergeComponent();
+				    sc.setGr(gno);
+				}
+			}
+			gno++;
+	    }
 
-		Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
 
 		//SyncMenu dialog = new SyncMenu();
 
@@ -279,6 +447,7 @@ public class SyncTool implements Tool {
 		//GEN JSON
 		File jsonFile = new File(XmasSettings.getVxmDirectory(), "JsonFile");
 	    PrintWriter writer = null;
+
 		try
 		{
 	    writer = new PrintWriter(jsonFile);
@@ -311,6 +480,7 @@ public class SyncTool implements Tool {
         	grnum++;
         }
 
+        synclist.clear();
 		//Finds all sync connections + groups
 		Collection <VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
 		for(VisualConnection vc: lvc) {
@@ -318,34 +488,283 @@ public class SyncTool implements Tool {
 			VisualNode vc2 = vc.getSecond();
 				Node vn1 = vc1.getParent();
 				Node vn2 = vc2.getParent();
-				/*if(vn1 instanceof VisualSourceComponent) {
-					System.out.println("Found v1");
-        			VisualGroup gr = vnet.getGroup((VisualComponent) vn1);
-        			//groups.add(gr);
+
+				//new
+				//if(vn1 instanceof VisualQueueComponent && vn2 instanceof VisualSyncComponent) {
+
+				if(vn2 instanceof VisualSyncComponent) {   //vn2
+					Collection<XmasContact> contacts_;
+					Collection<XmasContact> ccontacts;
+					if(vn1 instanceof VisualQueueComponent) {					//Queue
+						VisualQueueComponent vsc=(VisualQueueComponent)vn1;
+						QueueComponent sc=vsc.getReferencedQueueComponent();
+						contacts_ = sc.getOutputs();
+						ccontacts = sc.getOutputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Queue grno = " + sc.getGr());
+							//System.out.println("InputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							for (Connection c : cnet.getConnections(contact_node_)) {
+			            		if((c.getSecond() instanceof XmasContact)) {
+			            			Node cp_node = c.getSecond().getParent();
+			            			//System.out.println("  Found contact = " + cnet.getName(cp_node));
+			            			if(checksynclist(cnet.getName(cp_node))==1) {
+			            				synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),0));
+			            			}
+									else {
+										store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+									}
+			            		}
+			            	}
+						}
+					}
+					else if(vn1 instanceof VisualFunctionComponent) {			//Fun
+						VisualFunctionComponent vsc=(VisualFunctionComponent)vn1;
+						FunctionComponent sc=vsc.getReferencedFunctionComponent();
+						contacts_ = sc.getOutputs();
+						ccontacts = sc.getOutputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Fun grno = " + sc.getGr());
+							//System.out.println("InputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							for (Connection c : cnet.getConnections(contact_node_)) {
+			            		if((c.getSecond() instanceof XmasContact)) {
+			            			Node cp_node = c.getSecond().getParent();
+			            			//System.out.println("  Found contact = " + cnet.getName(cp_node));
+			            			if(checksynclist(cnet.getName(cp_node))==1) {
+			            				synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),0));
+			            			}
+									else {
+										store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+									}
+			            		}
+			            	}
+						}
+					}
+					else if(vn1 instanceof VisualMergeComponent) {				//Merge
+						VisualMergeComponent vsc=(VisualMergeComponent)vn1;
+						MergeComponent sc=vsc.getReferencedMergeComponent();
+						contacts_ = sc.getOutputs();
+						ccontacts = sc.getOutputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Merge grno = " + sc.getGr());
+							//System.out.println("InputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							int cno=0;
+							for (Connection c : cnet.getConnections(contact_node_)) {
+			            		if((c.getSecond() instanceof XmasContact)) {
+			            			Node cp_node = c.getSecond().getParent();
+									cno++;
+			            			//System.out.println("  Found contact = " + cnet.getName(cp_node));
+									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
+										if(checksynclist(cnet.getName(cp_node))==1) {
+											synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),cno));
+										}
+										else {
+											store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+										}
+									}
+			            		}
+			            	}
+						}
+					}
+					else if(vn1 instanceof VisualSwitchComponent) {				//Switch
+						VisualSwitchComponent vsc=(VisualSwitchComponent)vn1;
+						SwitchComponent sc=vsc.getReferencedSwitchComponent();
+						contacts_ = sc.getOutputs();
+						ccontacts = sc.getOutputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Switch grno = " + sc.getGr());
+							//System.out.println("InputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							int cno=0;
+							for (Connection c : cnet.getConnections(contact_node_)) {
+			            		if((c.getSecond() instanceof XmasContact)) {
+			            			Node cp_node = c.getSecond().getParent();
+									cno++;
+			            			//System.out.println("  Found contact = " + cnet.getName(cp_node));
+									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
+										if(checksynclist(cnet.getName(cp_node))==1) {
+											synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),cno));
+										}
+										else {
+											store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+										}
+									}
+			            		}
+			            	}
+						}
+					}
+					else if(vn1 instanceof VisualJoinComponent) {				   //Join
+						VisualJoinComponent vsc=(VisualJoinComponent)vn1;
+						JoinComponent sc=vsc.getReferencedJoinComponent();
+						contacts_ = sc.getOutputs();
+						ccontacts = sc.getOutputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Join grno = " + sc.getGr());
+							//System.out.println("InputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							int cno=0;
+							for (Connection c : cnet.getConnections(contact_node_)) {
+			            		if((c.getSecond() instanceof XmasContact)) {
+			            			Node cp_node = c.getSecond().getParent();
+									cno++;
+			            			//System.out.println("  Found contact = " + cnet.getName(cp_node));
+			            			if(checksynclist(cnet.getName(cp_node))==1) {
+			            				synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),cno));
+			            			}
+									else {
+										store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+									}
+			            		}
+			            	}
+						}
+					}
 				}
-				if(vn2 instanceof VisualSourceComponent) {
-					System.out.println("Found v2");
-        			VisualGroup gr = vnet.getGroup((VisualComponent) vn2);
-				}*/
-				int gpos1=0;
-				int gpos2=0;
-				if(!(vn1 instanceof VisualSyncComponent)) {
-					gpos1=vcomps.indexOf(vn1);
+				else if(vn1 instanceof VisualSyncComponent) {	//vn1
+					Collection<XmasContact> contacts_;
+					Collection<XmasContact> ccontacts;
+					if(vn2 instanceof VisualQueueComponent) {               //Queue
+						VisualQueueComponent vsc=(VisualQueueComponent)vn2;
+						QueueComponent sc=vsc.getReferencedQueueComponent();
+						contacts_ = sc.getInputs();
+						ccontacts = sc.getInputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Queue grno = " + sc.getGr());
+							//System.out.println("OutputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							for (Connection c : cnet.getConnections(contact_node_)) {
+								if((c.getSecond() instanceof XmasContact)) {
+									Node cp_node = c.getFirst().getParent();
+									//System.out.println("  Found contact = " + cnet.getName(cp_node));
+									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
+										if(checksynclist(cnet.getName(cp_node))==1) {
+											System.out.println("Queue ___ = " + sc.getGr());
+											synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
+										}
+										else {
+											store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+										}
+									}
+								}
+							}
+						}
+					}
+					else if(vn2 instanceof VisualFunctionComponent) {       //Function
+						VisualFunctionComponent vsc=(VisualFunctionComponent)vn2;
+						FunctionComponent sc=vsc.getReferencedFunctionComponent();
+						contacts_ = sc.getInputs();
+						ccontacts = sc.getInputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Fun grno = " + sc.getGr());
+							//System.out.println("OutputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							for (Connection c : cnet.getConnections(contact_node_)) {
+								if((c.getSecond() instanceof XmasContact)) {
+									Node cp_node = c.getFirst().getParent();
+									//System.out.println("  Found contact = " + cnet.getName(cp_node));
+									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
+										if(checksynclist(cnet.getName(cp_node))==1) {
+											synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
+										}
+										else {
+											store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+										}
+									}
+								}
+							}
+						}
+					}
+					else if(vn2 instanceof VisualMergeComponent) {				//Merge
+						VisualMergeComponent vsc=(VisualMergeComponent)vn2;
+						MergeComponent sc=vsc.getReferencedMergeComponent();
+						contacts_ = sc.getInputs();
+						ccontacts = sc.getInputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Merge grno = " + sc.getGr());
+							//System.out.println("OutputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							int cno=0;
+							for (Connection c : cnet.getConnections(contact_node_)) {
+								if((c.getSecond() instanceof XmasContact)) {
+									Node cp_node = c.getFirst().getParent();
+									cno++;
+									//System.out.println("  Found contact__ = " + cnet.getName(cp_node));
+									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
+										if(checksynclist(cnet.getName(cp_node))==1) {
+											System.out.println("  Found contact__ = merge ");
+											synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),cno));
+										}
+										else {
+											store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),cno);
+										}
+									}
+								}
+							}
+						}
+					}
+					else if(vn2 instanceof VisualSwitchComponent) {           //Switch - base
+						VisualSwitchComponent vsc=(VisualSwitchComponent)vn2;
+						SwitchComponent sc=vsc.getReferencedSwitchComponent();
+						contacts_ = sc.getInputs();
+						ccontacts = sc.getInputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Switch grno = " + sc.getGr());
+							//System.out.println("OutputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							for (Connection c : cnet.getConnections(contact_node_)) {
+								if((c.getSecond() instanceof XmasContact)) {
+									Node cp_node = c.getFirst().getParent();
+									//System.out.println("  Found contact = " + cnet.getName(cp_node));
+									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
+										if(checksynclist(cnet.getName(cp_node))==1) {
+											synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
+										}
+										else {
+											store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+										}
+									}
+								}
+							}
+						}
+					}
+					else if(vn2 instanceof VisualForkComponent) {           //Fork - base
+						VisualForkComponent vsc=(VisualForkComponent)vn2;
+						ForkComponent sc=vsc.getReferencedForkComponent();
+						contacts_ = sc.getInputs();
+						ccontacts = sc.getInputs();
+						for(XmasContact node : contacts_) {
+							//System.out.println("Fun grno = " + sc.getGr());
+							//System.out.println("OutputContact =" + cnet.getName(sc));
+						}
+						for(XmasContact contact_node_ : ccontacts) {
+							for (Connection c : cnet.getConnections(contact_node_)) {
+								if((c.getSecond() instanceof XmasContact)) {
+									Node cp_node = c.getFirst().getParent();
+									//System.out.println("  Found contact = " + cnet.getName(cp_node));
+									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
+										if(checksynclist(cnet.getName(cp_node))==1) {
+											synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
+										}
+										else {
+											store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
+										}
+									}
+								}
+							}
+						}
+					}
 				}
-				if(!(vn2 instanceof VisualSyncComponent)) {
-					gpos2=vcomps.indexOf(vn2);
-				}
-				if(vn1 instanceof VisualSyncComponent) {
-					int pos1=vscomps.indexOf(vn1);
-					grnums2.set(pos1,grnums.get(gpos2));
-					System.out.println("Assign sync_output[" + pos1 + "]" + "group" + grnums.get(gpos2));
-					//grnums2.set(pos1,Integer.valueOf(9)); //9
-				}
-				if(vn2 instanceof VisualSyncComponent) {
-					int pos2=vscomps.indexOf(vn2);
-					grnums1.set(pos2,grnums.get(gpos1));
-					System.out.println("Assign sync_input[" + pos2 + "]" + "group" + grnums.get(gpos1));
-				}
+
 		}
 
 		}
@@ -429,33 +848,16 @@ public class SyncTool implements Tool {
 				dispose();
 				write_output();
 				store_fields();
+				updatesynclist();
+				writesynclist();
 			    String gp="";
-			    for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
-		        	for(VisualComponent vp: vg.getComponents()) {
-						if(vp instanceof VisualSourceComponent) {
-							VisualSourceComponent vsc=(VisualSourceComponent)vp;
-							SourceComponent sc=vsc.getReferencedSourceComponent();
-						    for(int i=0; i<grnums1.size(); i++) {
-						    	if(grnums1.get(i)==no) gp=slist1.get(i);
-						    	if(grnums2.get(i)==no) gp=slist2.get(i);
-						    }
-						    //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
-						    sc.setGp(gp);
-						}
-						else if(vp instanceof VisualQueueComponent) {
-							VisualQueueComponent vsc=(VisualQueueComponent)vp;
-							QueueComponent sc=vsc.getReferencedQueueComponent();
-						    for(int i=0; i<grnums1.size(); i++) {
-						    	if(grnums1.get(i)==no) gp=slist1.get(i);
-						    	if(grnums2.get(i)==no) gp=slist2.get(i);
-						    }
-						    //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
-						    //sc.setGp(Integer.parseInt(gp));
-						    sc.setGp(gp);
-						}
-					}
+
+			    no=0;
+			    for (sync_ s : synclist) {
+					grnums1.set(no,s.gr1);
+					grnums2.set(no,s.gr2);
 					no++;
-			    }
+				}
 			    //System.out.println("grnums = " + grnums);
 			    //System.out.println("grnums1 = " + grnums1);
 			    //System.out.println("grnums2 = " + grnums2);
@@ -463,9 +865,10 @@ public class SyncTool implements Tool {
 			    //System.out.println("slist2 = " + slist2);
 			    no=0;
 			    for (Node node : vnet.getNodes()) {
-		            if(node instanceof VisualSyncComponent) {
+		            if(node instanceof VisualSyncComponent) {   //won't work for sync
 		            	VisualSyncComponent vsc=(VisualSyncComponent)node;
 						SyncComponent sc=vsc.getReferencedSyncComponent();
+					    //System.out.println("SSSync component " + "Sync" + no);
 					    System.out.println("Sync component " + "Sync" + no + " = " + slist.get(no));
 					    System.out.println("group1 = " + grnums1.get(no) + " " + "group2 = " + grnums2.get(no));
 					    System.out.println("Clk1 = " + slist1.get(no) + " " + "Clk2 = " + slist2.get(no));
@@ -477,8 +880,32 @@ public class SyncTool implements Tool {
 						sc.setTyp(typ);
 						//System.out.println("Found Sync Type ===========" + sc.getTyp());
 						//System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
+			            no++;  //shifted
 		            }
-		            no++;
+		            else if(node instanceof VisualSourceComponent) {
+							VisualSourceComponent vsc=(VisualSourceComponent)node;
+							SourceComponent sc=vsc.getReferencedSourceComponent();
+							int sno=sc.getGr();
+						    for(int i=0; i<grnums1.size(); i++) {
+						    	if(grnums1.get(i)==sno) gp=slist1.get(i);
+						    	if(grnums2.get(i)==sno) gp=slist2.get(i);
+						    }
+						    //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
+						    sc.setGp(gp);
+					}
+					else if(node instanceof VisualQueueComponent) {
+							VisualQueueComponent vsc=(VisualQueueComponent)node;
+							QueueComponent sc=vsc.getReferencedQueueComponent();
+							int qno=sc.getGr();
+						    for(int i=0; i<grnums1.size(); i++) {
+						    	if(grnums1.get(i)==qno) gp=slist1.get(i);
+						    	if(grnums2.get(i)==qno) gp=slist2.get(i);
+						    }
+						    //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
+						    //sc.setGp(Integer.parseInt(gp));
+						    sc.setGp(gp);
+					}
+		            //no++;
 				}
             }
 

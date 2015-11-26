@@ -65,6 +65,7 @@ public class Xmas extends AbstractMathModel {
 				if (node instanceof SwitchComponent) return "sw";
 				if (node instanceof MergeComponent) return "mrg";
 				if (node instanceof SinkComponent) return "snk";
+				if (node instanceof SyncComponent) return "sync";
 				if (node instanceof XmasContact) return "contact";
 				if (node instanceof XmasConnection) return "con";
 				return super.getPrefix(node);

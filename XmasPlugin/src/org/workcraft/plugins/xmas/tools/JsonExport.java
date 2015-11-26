@@ -1,6 +1,7 @@
 package org.workcraft.plugins.xmas.tools;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Collection;
 
@@ -30,6 +31,7 @@ import org.workcraft.plugins.xmas.components.VisualQueueComponent;
 import org.workcraft.plugins.xmas.components.VisualSinkComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
 import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
+import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
@@ -71,6 +73,24 @@ public class JsonExport implements Tool {
 	//public Collection<String> src_nodes;
 	public Collection<VisualSourceComponent> src_nodes;
 
+	public void sync_reset() {
+		File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
+	    PrintWriter writer_s = null;
+	    try {
+			writer_s = new PrintWriter(syncFile);
+			writer_s.println("empty");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	    finally
+	    {
+	            if ( writer_s != null )
+	            {
+	                writer_s.close();
+	            }
+	    }
+	}
+
 	public void run(WorkspaceEntry we) {
 		System.out.println("Running tests");
 		VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
@@ -87,7 +107,6 @@ public class JsonExport implements Tool {
 
 		FunctionComponent fun_node = null;
 		QueueComponent qu_node = null;
-		SyncComponent syc_node = null;
 
 		ForkComponent frk_node = null;
 		JoinComponent jn_node = null;
@@ -95,6 +114,15 @@ public class JsonExport implements Tool {
 		SwitchComponent sw_node = null;
 		MergeComponent mrg_node = null;
 
+		int syncr=0;
+		for (Node node : vnet.getNodes()) {
+            if(node instanceof VisualSyncComponent) {
+            	syncr=1;
+            }
+		}
+		if(syncr==0) {
+        	sync_reset();
+		}
 		for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
         	for(VisualComponent vp: vg.getComponents()) {
 				if(vp instanceof VisualSourceComponent) {
@@ -126,7 +154,6 @@ public class JsonExport implements Tool {
 					VisualJoinComponent vsc=(VisualJoinComponent)vp;
 					JoinComponent sc=vsc.getReferencedJoinComponent();
 				    sc.setGr(no);
-					System.out.println("Join no =" + no + " " + sc.getGr());
 				}
 				else if(vp instanceof VisualSwitchComponent) {
 					VisualSwitchComponent vsc=(VisualSwitchComponent)vp;
@@ -148,12 +175,10 @@ public class JsonExport implements Tool {
 		VisualQueueComponent vqc;
 
 		for (SourceComponent node : cnet.getSourceComponents()) {
-			//System.out.println("Name =" + node.getName());
-			//System.out.println("Name =" + cnet.getPostset(node).size());
 			//System.out.println("Num =" + cnet.getPostset(node).size());
-			System.out.println("Name =" + cnet.getName(node));
+			//System.out.println("Name =" + cnet.getName(node));
 			//((SourceComponent)node).setVal('b');
-			System.out.println("Val =" + ((SourceComponent)node).getType());
+			//System.out.println("Val =" + ((SourceComponent)node).getType());
 			src_node=node;
 		}
 		//System.out.println("Name_ =" + cnet.getName(src_node));
@@ -209,8 +234,12 @@ public class JsonExport implements Tool {
 			cnt_nodes++;
 			System.out.println("    {");
 			writer.println("    {");
+			String rstr;
+			rstr = cnet.getName(node);
+			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
             System.out.println("      \"id\": \"" + cnet.getName(node) + "\",");
-            writer.println("      \"id\": \"" + cnet.getName(node) + "\",");
+            //writer.println("      \"id\": \"" + cnet.getName(node) + "\",");
+            writer.println("      \"id\": \"" + rstr + "\",");
             if(cnet.getType(node).equals("fork")) {
             	System.out.println("      \"type\": \"" + "xfork" + "\",");
                 writer.println("      \"type\": \"" + "xfork" + "\",");
@@ -265,11 +294,6 @@ public class JsonExport implements Tool {
             	contacts=mrg_node.getOutputs();
         		num_outputs=1;
             }
-            else if(node instanceof SyncComponent) {
-            	syc_node=(SyncComponent)node;
-            	contacts=syc_node.getOutputs();
-        		num_outputs=contacts.size();
-            }
             for(XmasContact contact_node_ : contacts) {
             	for (Connection c : cnet.getConnections(contact_node_)) {
             		if((c.getSecond() instanceof XmasContact)) {
@@ -301,8 +325,11 @@ public class JsonExport implements Tool {
                     			contact_cnt++;
                         	}
             			}
+            			rstr = cnet.getName(cp_node);
+            			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
             			System.out.println("          \"id\": " + "\"" + cnet.getName(cp_node) + "\",");
-            			writer.println("          \"id\": " + "\"" + cnet.getName(cp_node) + "\",");
+            			//writer.println("          \"id\": " + "\"" + cnet.getName(cp_node) + "\",");
+            			writer.println("          \"id\": " + "\"" + rstr + "\",");
             			System.out.println("          \"in_port\": " + (contact_no-1));
             			writer.println("          \"in_port\": " + (contact_no-1));
             			if(num_outputs>1) {
@@ -324,10 +351,6 @@ public class JsonExport implements Tool {
 			else if(node instanceof QueueComponent) {
 			  System.out.println("      ],");
 			  writer.println("      ],");
-			}
-			else if(node instanceof SyncComponent) {
-				  System.out.println("      ],");
-				  writer.println("      ],");
 			}
 			else {
 				  System.out.println("      ],");
@@ -467,29 +490,6 @@ public class JsonExport implements Tool {
               	System.out.println("      ]");
               	writer.println("      ]");
 			}
-			else if(node instanceof SyncComponent) {
-				System.out.println("      \"fields\": [");
-				writer.println("      \"fields\": [");
-				System.out.println("        {");
-				writer.println("        {");
-    			String sycgp = syc_node.getGp1();
-				System.out.println("          \"gpf1\": " + sycgp + ",");
-    			writer.println("          \"gpf1\": " + sycgp + ",");
-    			sycgp = syc_node.getGp2();
-				System.out.println("          \"gpf2\": " + sycgp + ",");
-    			writer.println("          \"gpf2\": " + sycgp + ",");
-    			String styp = syc_node.getTyp();
-    			String styp_="a";
-    			if(styp.charAt(0)=='a') styp_ = "a";
-    			else if(styp.charAt(0)=='m') styp_ = "m";
-    			else if(styp.charAt(0)=='p') styp_ = "p";
-				System.out.println("          \"typ\": " + "\"" + styp_ + "\"");
-    			writer.println("          \"typ\": " + "\"" + styp_ + "\"");
-				System.out.println("        }");
-				writer.println("        }");
-              	System.out.println("      ]");
-              	writer.println("      ]");
-			}
 			if(cnt_nodes<num_nodes) {
 			  System.out.println("    },");
 			  writer.println("    },");
@@ -503,7 +503,7 @@ public class JsonExport implements Tool {
 		writer.println("  ]");
 		System.out.println("}");
 		writer.println("}");
-		System.out.println("Output written to JsonFile" + '\n');
+		System.out.println("Output written to JsonFile");
 		}
 		catch (Exception e)
 	    {

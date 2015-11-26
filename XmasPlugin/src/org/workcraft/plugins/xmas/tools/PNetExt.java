@@ -130,18 +130,22 @@ public class PNetExt {
 		   writer.println("TS");
 		   int no=0;
 		   for (SourceComponent src_node : src_nodes) {
-			 writer.println(sourcelist.get(no).name1 + "\"" + src_node.getType() + "\"");
+			 String ls = "";
 			 switch (src_node.getMode()) {
 			 case MODE_0:
-				 writer.println("d");
+				 ls = "d";
+				 //writer.println("d");
 				 break;
 			 case MODE_1:
-				 writer.println("t");
+				 ls = "t";
+				 //writer.println("t");
 				 break;
 			 case MODE_2:
-				 writer.println("n");
+				 ls = "n";
+				 //writer.println("n");
 				 break;
 			 }
+			 writer.println(sourcelist.get(no).name1 + "\"" + src_node.getType() + "\"" + ls);
 			 no++;
 		   }
 		   writer.println("FN");
@@ -158,7 +162,7 @@ public class PNetExt {
 		   for (merge_ mrg : mergelist) {
 		     writer.println(mrg.name1 + "\"" + mrg.name2);
 		   }
-		   System.out.print("Output written to CPNFile" + '\n');
+		   System.out.print("Output written to CPNFile");
 	}
 
 	public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, int syncflag) {

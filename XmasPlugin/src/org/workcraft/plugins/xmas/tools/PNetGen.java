@@ -2,9 +2,11 @@ package org.workcraft.plugins.xmas.tools;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
+import java.util.Scanner;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
@@ -82,6 +84,53 @@ public class PNetGen implements Tool {
 		slsto.clear();
 		slsto_.clear();
 	}
+
+	private static void printlst() {
+        System.out.println("printing lst");
+        for (Info inf : lst) {
+        	System.out.println("a=" + inf.a + " b=" + inf.b + " c=" + inf.c + " d=" + inf.d);
+        }
+	}
+
+    private static void Process_file(String file)
+    {
+		Scanner sc=null;
+		try {
+			sc=new Scanner(new File(file));
+		} catch (FileNotFoundException e) {
+		    System.err.println("Error: " + e.getMessage());
+		}
+		String qs="";
+		String cn="";
+		String dn="";
+		int tst=0;
+		while(sc.hasNextLine() && tst==0) {
+		    Scanner line_=new Scanner(sc.nextLine());
+		    Scanner nxt=new Scanner(line_.next());
+		    String check=nxt.next();
+		    if(check.startsWith("empty")) {
+		    	tst=1;
+		    }
+		    else if(check.startsWith("//gensync")) {
+		    	nxt=new Scanner(line_.next());
+		    	String str = nxt.next();
+		    	qs = str.replace("Qs", "Sync");
+		    }
+		    else {
+		    	nxt=new Scanner(line_.next());
+		    	String str = nxt.next();
+			    nxt=new Scanner(line_.next());
+		    	cn = nxt.next();
+			    nxt=new Scanner(line_.next());
+		    	dn = nxt.next();
+		    	String d="0";
+		    	if(dn.equals("b")) {
+		    		d = "1";  //Mrg conn
+		    	}
+		    	lst.add(new Info(cn,qs,"",d));
+		    }
+		}
+    }
 
 	public String getDisplayName() {
 		return "Generate Circuit Petri net";
@@ -811,75 +860,6 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	    }
 	}
 
-	private static void sync2s_i(int size, String id, String input_id, String output_id, String c, String idp, String gpf1, String gpf2, String styp, PrintWriter writer) {
-	    int inc=0;
-	    writer.println("//gensync2s " + id + " " + gpf1 + " " + gpf2 + " " + styp);
-
-	    String id2 = input_id;
-	    String id3 = c;
-	    String typ1;
-	    String typ2;
-	    if(id3.equals("a")) typ1="a";
-	    else if(id3.equals("b")) typ1="b";
-	    else typ1="o";
-	    if(idp.equals("0")) typ2="a";
-	    else if(idp.equals("1")) typ2="b";
-	    else typ2="i";
-	    if(!id2.contains("Src") && !id2.contains("Qu") && !id2.contains("Sync")) {
-		    writer.println(id2 + " " + typ1 + " " + output_id + " " + typ2 + " " +id2);
-	    }
-	    else {
-		    writer.println(id2 + " " + typ1 + " " + output_id + " " + typ2 + " " + "0");
-	    }
-	}
-
-	static private int syncno=0;
-
-	private static void sync_inf(String id, String id1, String id2, String gpf1, String gpf2, String styp, PrintWriter writer) {
-	    int no=0;
-	    syncflag=1;
-
-	    for(int i=0;i<slsti.size();i++) {
-	      if(slsti.get(i).b.equals(id)) {
-	        no++;
-	      }
-	    }
-	    for(int i=0;i<slsto.size();i++) {
-	      if(slsto.get(i).b.equals(id)) {
-	      }
-	    }
-	    for(int i=0;i<slsti.size();i++) {
-	      if(slsti.get(i).b.equals(id)) {
-	        String searchtypo="";
-	        String searchtypi="";
-	        searchtypo=searchlist__(slsto.get(i).a);
-	        searchtypi=searchlist__(slsti.get(i).a);
-			String s = slsti.get(i).b.replace("Sync","");  //new
-	        String qu = "Qs" + s;                          //new
-
-	        String c="";
-	        if(searchtypi.equals("xfork")) {
-	          c=search_lst_(slsti.get(i).a,slsti.get(i).b);
-	        }
-	        else if(searchtypi.equals("xswitch")) {
-	          c=search_lst_(slsti.get(i).a,slsti.get(i).b);
-	        }
-	        if(searchtypo.equals("join")) {
-	          String p="";
-	          if(slsto.get(i).d.equals("0")) p="1";
-	          else p="0";
-	          sync2s_i(2, qu, slsti.get(i).a, slsto.get(i).a, c, p, gpf1, gpf2, styp, writer);
-	        }
-	        else if(searchtypo.equals("merge")) {
-	          sync2s_i(2, qu, slsti.get(i).a, slsto.get(i).a, c, slsto.get(i).d, gpf1, gpf2, styp, writer);
-	        }
-	        else {
-	          sync2s_i(2, qu, slsti.get(i).a, slsto.get(i).a, c, "", gpf1, gpf2, styp, writer);
-	        }
-	      }
-	    }
-	}
-
 	public static void init_parse(String args) throws Exception {
 		JsonFactory f = new MappingJsonFactory();
 	    JsonParser jp = f.createJsonParser(new File(args));
@@ -900,6 +880,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	        if (fieldName.equals("NETWORK")) {
 	          if (current == JsonToken.START_ARRAY) {
 	            // For each of the records in the array
+	      		System.out.println("Generate CPNs");
 	            while (jp.nextToken() != JsonToken.END_ARRAY) {
 	              JsonNode node = jp.readValueAsTree();
 	              String idName = node.get("id").getValueAsText();
@@ -909,7 +890,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	              String idNamep1 = "";
 	              String idNamep2 = "";
 	              String typeName = node.get("type").getValueAsText();
-	              System.out.println("id: " + idName + "type: " + typeName);
+	              //System.out.println("id: " + idName + "type: " + typeName);
 	              lst_.add(new Ids(idName,typeName));
 	              JsonNode y = node.get("outs");
 	              if(y!=null) {
@@ -921,7 +902,10 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	                    if(typeName.equals("xfork")) lst.add(new Info(idName1,idName,"b",idNamep1));
 	                    else if(typeName.equals("xswitch")) lst.add(new Info(idName1,idName,"a",idNamep1));
 	                    else lst.add(new Info(idName1,idName,"",idNamep1));
-	                    if(idName1.contains("Sync")) slsti.add(new Info(idName,idName1,"",idNamep1));   //swapped order slsti slsto
+	                    if(idName1.contains("Sync")) {
+		      	            //System.out.println("id: " + idName + "sync: " + idName1);
+	                    	slsti.add(new Info(idName,idName1,"",idNamep1));   //swapped order slsti slsto
+	                    }
 	                    //add o based on order of i or reverse?
 	                    if(idName.contains("Sync")) {
 	                    	slsto_.add(new Info(idName1,idName,"",idNamep1));
@@ -954,7 +938,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	            jp.skipChildren();
 	          }
 	        } else {
-	          System.out.println("Unprocessed property: " + fieldName);
+	          //System.out.println("Unprocessed property: " + fieldName);
 	          jp.skipChildren();
 	        }
 	      }
@@ -976,18 +960,21 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 		JsonFactory f = new MappingJsonFactory();
 		File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
 	    PrintWriter writer = null;
-		File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
-	    PrintWriter writer_s = null;
+		//File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
+	    //PrintWriter writer_s = null;
 	    try
 	    {
 
 	    	initlist();
+	    	File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
+	    	Process_file(syncFile.getAbsolutePath());
+
 	    	File jsonFile = new File(XmasSettings.getVxmDirectory(), "JsonFile");
 	    	init_parse(jsonFile.getAbsolutePath());
-	    	create_slsto();
+	    	//create_slsto();
 
 	    	writer = new PrintWriter(cpnFile);
-	    	writer_s = new PrintWriter(syncFile);
+	    	//writer_s = new PrintWriter(syncFile);
 	        JsonParser jp = f.createJsonParser(jsonFile);
 	        JsonToken current;
 
@@ -1120,7 +1107,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	                    else if(size>0) genqueue2p(size,idName,idName1,idNamep1,y,fieldinit,fieldgpf,fieldgr,writer);
 	                  }
 	                  if(typeName.equals("sink")) gensink(idName,fieldgr,writer);
-	                  if(typeName.equals("sync")) sync_inf(idName,idName1,idName2,fieldgpf,fieldgpf1,styp,writer_s);
+	                  //if(typeName.equals("sync")) sync_inf(idName,idName1,idName2,fieldgpf,fieldgpf1,styp,writer_s);
 	                  }
 	                } else {
 	                  System.out.println("Error: records should be an array: skipping.");
@@ -1141,13 +1128,14 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	            if ( writer != null )
 	            {
 	                writer.close();
-	        		System.out.println("Control CPN created");
+	        		System.out.println("Control CPNs created");
 	                PNetExt pnconv = new PNetExt(src_nodes,fun_nodes,syncflag);
+	                //printlst();
 	            }
-	            if ( writer_s != null )
+	            /*if ( writer_s != null )
 	            {
 	                writer_s.close();
-	            }
+	            }*/
 	    }
 		System.out.println("");
 	}

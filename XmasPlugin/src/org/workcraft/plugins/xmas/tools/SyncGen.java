@@ -184,7 +184,7 @@ public class SyncGen implements Tool {
         	      VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
 
         	      System.out.println("");
-                  System.out.println("Generating circuit");
+                  //System.out.println("Generating circuit");
 
                   List<SyncComponent> scomps = new ArrayList<SyncComponent>();
                   for (Node node : vnet.getNodes()) {
@@ -269,25 +269,8 @@ public class SyncGen implements Tool {
                   });
 
                   mainFrame.pack();
-                  mainFrame.setVisible(true);
+                  mainFrame.setVisible(false);
 
-                  /*for (Node node : vnet.getNodes()) {
-  		             if(node instanceof VisualSyncComponent) {
-  		            	VisualSyncComponent vsc=(VisualSyncComponent)node;
-  						SyncComponent sc=vsc.getReferencedSyncComponent();
-					    System.out.println("Sync component " + cnet.getName(sc));
-  						System.out.println("Type = " + sc.typ);
-  						if(sc.typ.equals("asynchronous")) {
-							create_synca();
-  						}
-  						else if(sc.typ.equals("mesochronous")) {
-							create_syncm();
-  						}
-  						else if(sc.typ.equals("pausible")) {
-							create_syncp();
-  						}
-  		             }
-  				  }*/
 
           }
 

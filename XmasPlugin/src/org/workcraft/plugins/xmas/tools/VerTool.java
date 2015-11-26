@@ -119,7 +119,7 @@ public class VerTool extends AbstractTool implements Tool {
 		     else if(check.startsWith("soln")) {
 		    	 nxt=new Scanner(line_.next());
 		    	 str = nxt.next();
-	     	     System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
+	     	     //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
 	     	     soln = str;
 	     	     sarg = " -s" + str;
 		     }
@@ -161,7 +161,7 @@ public class VerTool extends AbstractTool implements Tool {
 		    nxt=new Scanner(line_.next());
 	    	String str = nxt.next();
 	    	int num = Integer.parseInt(str);
-	    	System.out.println("qsl " + check + " " + str + " " + num);
+	    	//System.out.println("qsl " + check + " " + str + " " + num);
 			qslist.add(new qslist(check,num));
 		}
     }
@@ -194,7 +194,7 @@ public class VerTool extends AbstractTool implements Tool {
 		else if(s.contains("Local")) {
 			return 2;
 		}
-		return 0;
+		return -1;
 	}
 
 	public void init_highlight(Xmas xnet,VisualXmas vnet) {
@@ -230,7 +230,10 @@ public class VerTool extends AbstractTool implements Tool {
 		            	vqc=(VisualQueueComponent)node;
 		            	qc=vqc.getReferencedQueueComponent();
 		            	//if(xnet.getName(qc).contains(st)) {
-			            if(xnet.getName(qc).equals(st)) {
+		    			String rstr;
+		    			rstr = xnet.getName(qc);
+		    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+			            if(rstr.equals(st)) {
 		            		vqc.setForegroundColor(Color.red);
 		            	}
 		            }
@@ -238,7 +241,10 @@ public class VerTool extends AbstractTool implements Tool {
 		            	vsc=(VisualSyncComponent)node;
 		            	sc=vsc.getReferencedSyncComponent();
 		            	//if(xnet.getName(qc).contains(st)) {
-			            if(xnet.getName(sc).equals(st)) {
+		    			String rstr;
+		    			rstr = xnet.getName(sc);
+		    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+			            if(rstr.equals(st)) {
 		            		vsc.setForegroundColor(Color.red);
 		            	}
 		            }
@@ -269,7 +275,10 @@ public class VerTool extends AbstractTool implements Tool {
 				            	vqc=(VisualQueueComponent)node;
 				            	qc=vqc.getReferencedQueueComponent();
 				            	//System.out.println("x===" + xnet.getName(qc));
-				            	if(xnet.getName(qc).equals(str) && typ==0) {
+				    			String rstr;
+				    			rstr = xnet.getName(qc);
+				    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+				            	if(rstr.equals(str) && typ==0) {
 				            		vqc.setForegroundColor(Color.pink);
 				            	}
 				            }
@@ -277,7 +286,10 @@ public class VerTool extends AbstractTool implements Tool {
 				            	vsc=(VisualSyncComponent)node;
 				            	sc=vsc.getReferencedSyncComponent();
 						        //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
-				            	if(xnet.getName(sc).equals(str) && typ==0) {
+				    			String rstr;
+				    			rstr = xnet.getName(sc);
+				    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+				            	if(rstr.equals(str) && typ==0) {
 				            		vsc.setForegroundColor(Color.pink);
 				            	}
 							}
@@ -294,14 +306,20 @@ public class VerTool extends AbstractTool implements Tool {
 							if(node instanceof VisualQueueComponent) {
 				            	vqc=(VisualQueueComponent)node;
 				            	qc=vqc.getReferencedQueueComponent();
-				            	if(xnet.getName(qc).equals(str) && typ==1) {
+				    			String rstr;
+				    			rstr = xnet.getName(qc);
+				    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+				            	if(rstr.equals(str) && typ==1) {
 				            		vqc.setForegroundColor(Color.red);
 				            	}
 				            }
 							else if(node instanceof VisualSyncComponent) {
 				            	vsc=(VisualSyncComponent)node;
 				            	sc=vsc.getReferencedSyncComponent();
-				            	if(xnet.getName(sc).equals(str) && typ==1) {
+				    			String rstr;
+				    			rstr = xnet.getName(sc);
+				    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+				            	if(rstr.equals(str) && typ==1) {
 				            		vsc.setForegroundColor(Color.red);
 				            	}
 							}
@@ -325,14 +343,20 @@ public class VerTool extends AbstractTool implements Tool {
 					if(node instanceof VisualQueueComponent) {
 		            	vqc=(VisualQueueComponent)node;
 		            	qc=vqc.getReferencedQueueComponent();
-		            	if(xnet.getName(qc).equals(ql.name)) {
+		    			String rstr;
+		    			rstr = xnet.getName(qc);
+		    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+		            	if(rstr.equals(ql.name)) {
 		            		vqc.setForegroundColor(Color.green);
 		            	}
 					}
 					else if(node instanceof VisualSyncComponent) {
 			            vsc=(VisualSyncComponent)node;
 			            sc=vsc.getReferencedSyncComponent();
-			            if(xnet.getName(sc).equals(ql.name)) {
+		    			String rstr;
+		    			rstr = xnet.getName(sc);
+		    			rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+			            if(rstr.equals(ql.name)) {
 			            	vsc.setForegroundColor(Color.green);
 			            }
 		            }
@@ -349,7 +373,7 @@ public class VerTool extends AbstractTool implements Tool {
 	Graphics2D g;
 
 	public void run(final WorkspaceEntry we) {
-        System.out.println("Generating Circuit");
+        System.out.println("Verifying Model");
 
         Xmas xnet = (Xmas)we.getModelEntry().getMathModel();
         VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
@@ -365,21 +389,26 @@ public class VerTool extends AbstractTool implements Tool {
             cpProcess.waitFor();
 
             File vsettingsFile = new File(XmasSettings.getVxmDirectory(), "vsettings");
+            File vxmFile = new File(XmasSettings.getVxmDirectory(), "vxm");
             String arg = ProcessArg(vsettingsFile.getAbsolutePath());
-            System.out.println("arg = " + arg);
             ArrayList<String> vxmCommand = new ArrayList<>();
-            vxmCommand.add("vxm");
+            vxmCommand.add(vxmFile.getAbsolutePath());
             vxmCommand.add(arg);
-            Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
+            String VXMCommand = "";
+            for(String str : vxmCommand){
+            	VXMCommand = VXMCommand + str + " ";
+            }
+
+            Process vxmProcess = Runtime.getRuntime().exec(VXMCommand);
 
             String s, str="";
             InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
 			BufferedReader stdInput = new BufferedReader(inputStreamReader);
             int n=0;
-            int test=0;
+            int test=-1;
             init_highlight(xnet,vnet);
             while ((s = stdInput.readLine()) != null) {
-            	if(test==0) test=check_type(s);
+            	if(test==-1) test=check_type(s);
             	if(n>0) str = str + s + '\n';
             	n++;
             	System.out.println(s);
@@ -411,10 +440,11 @@ public class VerTool extends AbstractTool implements Tool {
             		}
             		else if(highlight.equals("rel")) {
             			rel_highlight(str,xnet,vnet);
+                        //System.out.println("str = " + str);
             			active_highlight(xnet,vnet);
             		}
             	}
-    		} else {
+    		} else if(test==0) {
         		if(display.equals("popup")) {
         			String message = "The system is deadlock-free.";
         			JOptionPane.showMessageDialog(null, message);
