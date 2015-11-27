@@ -41,7 +41,7 @@ public class PcompTool implements Tool {
 					dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(), null);
 
 			PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor());
-			framework.getTaskManager().queue(pcompTask,	"Running pcomp", pcompResult);
+			framework.getTaskManager().queue(pcompTask,	"Running parallel composition [PComp]", pcompResult);
 		}
 	}
 

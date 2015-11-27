@@ -82,7 +82,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
 					unfoldingFile.getCanonicalPath(), directory, tryPnml);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
-					mpsatTask, "Running mpsat model-checking", subtaskMonitor);
+					mpsatTask, "Running verification [MPSat]", subtaskMonitor);
 
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {

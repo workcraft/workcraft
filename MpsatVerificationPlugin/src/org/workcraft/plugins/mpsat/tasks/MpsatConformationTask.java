@@ -110,7 +110,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			File stgFile = new File(directory, "system.g");
 			PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, directory);
 			pcompResult = framework.getTaskManager().execute(
-					pcompTask, "Running pcomp", subtaskMonitor);
+					pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
 			if (pcompResult.getOutcome() != Outcome.FINISHED) {
 				if (pcompResult.getOutcome() == Outcome.CANCELLED) {

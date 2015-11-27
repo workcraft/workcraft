@@ -4,7 +4,7 @@
 package org.workcraft.plugins.mpsat;
 
 public enum MpsatMode {
-	UNDEFINED (null, null, false, false), // Special mode to integrate foreign tasks into Mpsat toolchain (export, composition, unfolding)
+	UNDEFINED (null, null, false, false), // Special mode to integrate foreign tasks into MPSat toolchain (export, composition, unfolding)
 	DEADLOCK ("-D", "Deadlock checking", false, true),
 	REACHABILITY ("-F", "Reachability analysis", true, true),
 	STG_REACHABILITY ("-Fs", "STG reachability analysis", true, true),

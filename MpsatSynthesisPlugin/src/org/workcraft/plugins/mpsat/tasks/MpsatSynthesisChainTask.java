@@ -82,7 +82,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
 			MpsatSynthesisTask mpsatTask = new MpsatSynthesisTask(settings.getMpsatArguments(directory),
 					unfoldingFile.getCanonicalPath(), directory, tryPnml, needLib);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
-					mpsatTask, "Running mpsat model-checking", subtaskMonitor);
+					mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {

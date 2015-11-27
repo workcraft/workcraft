@@ -146,7 +146,7 @@ public class CircuitStgUtils {
 		Framework framework = Framework.getInstance();
 		File[] inputFiles = new File[]{devStgFile, envStgFile};
 		PcompTask pcompTask = new PcompTask(inputFiles, ConversionMode.OUTPUT, true, false, directory);
-		String description = "Running pcomp";
+		String description = "Running parallel composition [PComp]";
 		SubtaskMonitor<Object> subtaskMonitor = null;
 		if (monitor != null) {
 			subtaskMonitor = new SubtaskMonitor<Object>(monitor);
