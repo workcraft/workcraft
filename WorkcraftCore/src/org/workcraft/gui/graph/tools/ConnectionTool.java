@@ -100,8 +100,8 @@ public class ConnectionTool extends AbstractTool {
 		warningMessage = null;
 		mouseLeftFirstNode = false;
 		editor.getModel().selectNone();
-		editor.getWorkspaceEntry().setCanModify(false);
 		editor.getWorkspaceEntry().setCanSelect(false);
+		editor.getWorkspaceEntry().setCanModify(true);
 	}
 
 	protected void updateState(GraphEditor editor) {
@@ -248,6 +248,7 @@ public class ConnectionTool extends AbstractTool {
 		warningMessage = null;
 		mouseLeftFirstNode = false;
 		controlPoints = new LinkedList<Point2D>();
+		e.getEditor().getWorkspaceEntry().setCanModify(false);
 	}
 
 	public VisualConnection finishConnection(GraphEditorMouseEvent e) {
