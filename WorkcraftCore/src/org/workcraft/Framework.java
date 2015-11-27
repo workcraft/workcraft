@@ -713,11 +713,11 @@ public class Framework {
 		Document stateDoc = XmlUtil.createDocument();
 		Element stateRoot = stateDoc.createElement("workcraft-state");
 		stateDoc.appendChild(stateRoot);
-
+		// level
 		Element levelElement = stateDoc.createElement("level");
 		levelElement.setAttribute("ref", visualRefs.getReference(visualModel.getCurrentLevel()));
 		stateRoot.appendChild(levelElement);
-
+		// selection
 		Element selectionElement = stateDoc.createElement("selection");
 		for (Node node: visualModel.getSelection()) {
 			Element nodeElement = stateDoc.createElement("node");
