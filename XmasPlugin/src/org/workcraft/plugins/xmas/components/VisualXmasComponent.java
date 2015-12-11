@@ -170,10 +170,14 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 	public void addContact(VisualXmasContact vc, Positioning positioning) {
 		if (!getChildren().contains(vc)) {
-			this.getReferencedXmasComponent().add(vc.getReferencedComponent());
+			getReferencedXmasComponent().add(vc.getReferencedComponent());
 			add(vc);
-			vc.setPosition(new Point2D.Double(size / 2 * positioning.xSign, size / 2 * positioning.ySign));
+			setContactPosition(vc, positioning);
 		}
+	}
+
+	public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
+		vc.setPosition(new Point2D.Double(size / 2 * positioning.xSign, size / 2 * positioning.ySign));
 	}
 
 	@Override
@@ -225,7 +229,6 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 	@Override
 	public void remove(Collection<Node> nodes) {
 	}
-
 
 	@Override
 	public void reparent(Collection<Node> nodes, Container newParent) {

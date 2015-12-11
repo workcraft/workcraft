@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -34,6 +35,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -58,11 +60,11 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
 	public VisualQueueComponent(QueueComponent component) {
 		super(component);
-		addPropertyDeclarations();
 		if (component.getChildren().isEmpty()) {
 			this.addInput("i", Positioning.LEFT);
 			this.addOutput("o", Positioning.RIGHT);
 		}
+		addPropertyDeclarations();
 	}
 
 	private void addPropertyDeclarations() {
@@ -72,29 +74,33 @@ public class VisualQueueComponent extends VisualXmasComponent {
 				if (value < 1) {
 					throw new ArgumentException("Negative or zero capacity is not allowed.");
 				}
-				double scale = (double)value / (double) object.getReferencedQueueComponent().getCapacity();
-				for (VisualXmasContact contact: getContacts()) {
-					double x = scaleContactCoord(contact.getX(), scale);
-					double y = scaleContactCoord(contact.getY(), scale);
-					contact.setPosition(new Point2D.Double(x, y));
-				}
 				object.getReferencedQueueComponent().setCapacity(value);
-			}
-
-			private double scaleContactCoord(double val, double scale) {
-				double result = val;
-				if (val > 0.0) {
-					result = scale * (val - contactLength) + contactLength;
-				} else if (val < 0.0) {
-					result = scale * (val + contactLength) - contactLength;
+				AffineTransform unrotateTransform = new AffineTransform();
+				unrotateTransform.quadrantRotate(-getOrientation().getQuadrant());
+				AffineTransform rotateTransform = new AffineTransform();
+				rotateTransform.quadrantRotate(getOrientation().getQuadrant());
+				for (VisualXmasContact contact: getContacts()) {
+					TransformHelper.applyTransform(contact, unrotateTransform);
+					if (contact.isInput()) {
+						setContactPosition(contact, Positioning.LEFT);
+					} else {
+						setContactPosition(contact, Positioning.RIGHT);
+					}
+					TransformHelper.applyTransform(contact, rotateTransform);
 				}
-				return result;
 			}
-
 			public Integer getter(VisualQueueComponent object) {
 				return object.getReferencedQueueComponent().getCapacity();
 			}
 		});
+	}
+
+	public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
+		double factor2 = (double)getReferencedQueueComponent().getCapacity() / 2.0;
+		double offset = factor2 * (size / 2 - contactLength);
+		double x = positioning.xSign * offset;
+		double y = positioning.ySign * offset;
+		vc.setPosition(new Point2D.Double(x, y));
 	}
 
 	public QueueComponent getReferencedQueueComponent() {
