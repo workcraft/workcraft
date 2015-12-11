@@ -11,6 +11,7 @@ import java.util.Scanner;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
+import org.workcraft.plugins.xmas.components.SwitchComponent;
 
 
 public class PNetExt {
@@ -126,7 +127,7 @@ public class PNetExt {
 		   }
 	}
 
-	private static void WriteNet(PrintWriter writer, Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes) {
+	private static void WriteNet(PrintWriter writer, Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes) {
 		   writer.println("TS");
 		   int no=0;
 		   for (SourceComponent src_node : src_nodes) {
@@ -155,8 +156,14 @@ public class PNetExt {
 			 no++;
 		   }
 		   writer.println("ST");
-		   for (switch_ sw : switchlist) {
-		     writer.println(sw.name1 + "\"" + "t");
+		   /*for (switch_ sw : switchlist) {
+		     //writer.println(sw.name1 + "\"" + "t");  //fff
+		     writer.println(sw.name1 + "\"" + sw.getType());
+		   }*/
+		   no=0;
+		   for (SwitchComponent sw_node : sw_nodes) {  //fff
+			 writer.println(switchlist.get(no).name1 + "\"" + sw_node.getType() + "\"" + sw_node.getVal());
+			 no++;
 		   }
 		   writer.println("MT");
 		   for (merge_ mrg : mergelist) {
@@ -165,8 +172,8 @@ public class PNetExt {
 		   System.out.print("Output written to CPNFile");
 	}
 
-	public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, int syncflag) {
-
+	public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes, int syncflag) {
+	//fff
 		initlist();
 		File pncFile = new File(XmasSettings.getVxmDirectory(), "PNCFile");
 	    PrintWriter writer = null;
@@ -175,7 +182,7 @@ public class PNetExt {
 	    	writer = new PrintWriter(pncFile);
 	    	File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
 	    	ReadFile(cpnFile.getAbsolutePath(), syncflag);
-	    	WriteNet(writer,src_nodes,fun_nodes);
+	    	WriteNet(writer,src_nodes,fun_nodes, sw_nodes);  //fff
 	    }
 	    catch (Exception e)
 	    {

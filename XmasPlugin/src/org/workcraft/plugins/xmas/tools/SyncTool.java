@@ -645,7 +645,7 @@ public class SyncTool implements Tool {
 									//System.out.println("  Found contact = " + cnet.getName(cp_node));
 									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
 										if(checksynclist(cnet.getName(cp_node))==1) {
-											System.out.println("Queue ___ = " + sc.getGr());
+											//System.out.println("Queue ___ = " + sc.getGr());  //fff
 											synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
 										}
 										else {
@@ -700,7 +700,7 @@ public class SyncTool implements Tool {
 									//System.out.println("  Found contact__ = " + cnet.getName(cp_node));
 									if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
 										if(checksynclist(cnet.getName(cp_node))==1) {
-											System.out.println("  Found contact__ = merge ");
+											//System.out.println("  Found contact__ = merge ");  //fff
 											synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),cno));
 										}
 										else {

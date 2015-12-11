@@ -33,7 +33,10 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.xmas.XmasSettings;
+import org.workcraft.plugins.xmas.components.SwitchComponent.Type;  //fff
+import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
 
 
 @DisplayName("Switch")
@@ -49,6 +52,28 @@ public class VisualSwitchComponent extends VisualXmasComponent {
 			this.addOutput("a", Positioning.TOP_RIGHT);
 			this.addOutput("b", Positioning.BOTTOM_RIGHT);
 		}
+		addPropertyDeclarations();  //fff
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Type>(  //fff
+				this, SwitchComponent.PROPERTY_TYPE, Type.class, true, true, true) {
+			protected void setter(VisualSwitchComponent object, Type value) {
+				object.getReferencedSwitchComponent().setType(value);
+			}
+			protected Type getter(VisualSwitchComponent object) {
+				return object.getReferencedSwitchComponent().getType();
+			}
+		});
+		addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Val>(  //fff
+				this, SwitchComponent.PROPERTY_VAL, Val.class, true, true, true) {
+			protected void setter(VisualSwitchComponent object, Val value) {
+				object.getReferencedSwitchComponent().setVal(value);
+			}
+			protected Val getter(VisualSwitchComponent object) {
+				return object.getReferencedSwitchComponent().getVal();
+			}
+		});
 	}
 
 	public SwitchComponent getReferencedSwitchComponent() {
