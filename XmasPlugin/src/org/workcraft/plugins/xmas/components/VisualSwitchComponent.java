@@ -24,7 +24,6 @@ package org.workcraft.plugins.xmas.components;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 
 import org.workcraft.annotations.DisplayName;
@@ -35,7 +34,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.plugins.xmas.components.SwitchComponent.Type;  //fff
+import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
 
 
@@ -52,11 +51,11 @@ public class VisualSwitchComponent extends VisualXmasComponent {
 			this.addOutput("a", Positioning.TOP_RIGHT);
 			this.addOutput("b", Positioning.BOTTOM_RIGHT);
 		}
-		addPropertyDeclarations();  //fff
+		addPropertyDeclarations();
 	}
 
 	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Type>(  //fff
+		addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Type>(
 				this, SwitchComponent.PROPERTY_TYPE, Type.class, true, true, true) {
 			protected void setter(VisualSwitchComponent object, Type value) {
 				object.getReferencedSwitchComponent().setType(value);
@@ -65,7 +64,7 @@ public class VisualSwitchComponent extends VisualXmasComponent {
 				return object.getReferencedSwitchComponent().getType();
 			}
 		});
-		addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Val>(  //fff
+		addPropertyDeclaration(new PropertyDeclaration<VisualSwitchComponent, Val>(
 				this, SwitchComponent.PROPERTY_VAL, Val.class, true, true, true) {
 			protected void setter(VisualSwitchComponent object, Val value) {
 				object.getReferencedSwitchComponent().setVal(value);

@@ -157,11 +157,11 @@ public class PNetExt {
 		   }
 		   writer.println("ST");
 		   /*for (switch_ sw : switchlist) {
-		     //writer.println(sw.name1 + "\"" + "t");  //fff
+		     //writer.println(sw.name1 + "\"" + "t");
 		     writer.println(sw.name1 + "\"" + sw.getType());
 		   }*/
 		   no=0;
-		   for (SwitchComponent sw_node : sw_nodes) {  //fff
+		   for (SwitchComponent sw_node : sw_nodes) {
 			 writer.println(switchlist.get(no).name1 + "\"" + sw_node.getType() + "\"" + sw_node.getVal());
 			 no++;
 		   }
@@ -173,7 +173,6 @@ public class PNetExt {
 	}
 
 	public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes, int syncflag) {
-	//fff
 		initlist();
 		File pncFile = new File(XmasSettings.getVxmDirectory(), "PNCFile");
 	    PrintWriter writer = null;
@@ -182,7 +181,7 @@ public class PNetExt {
 	    	writer = new PrintWriter(pncFile);
 	    	File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
 	    	ReadFile(cpnFile.getAbsolutePath(), syncflag);
-	    	WriteNet(writer,src_nodes,fun_nodes, sw_nodes);  //fff
+	    	WriteNet(writer,src_nodes,fun_nodes, sw_nodes);
 	    }
 	    catch (Exception e)
 	    {

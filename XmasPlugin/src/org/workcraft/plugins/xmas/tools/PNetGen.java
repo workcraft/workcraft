@@ -763,12 +763,12 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 		if(printoutput) {
 			if(size==2) System.out.println("//genqueue2p " + id + " " + gpf);
 			if(size==3) System.out.println("//genqueue3p " + id + " " + gpf);
-			if(size==4) System.out.println("//genqueue4p " + id + " " + gpf);    //fff
+			if(size==4) System.out.println("//genqueue4p " + id + " " + gpf);
 			if(size==5) System.out.println("//genqueue5p " + id + " " + gpf);
 		}
 	    if(size==2) writer.println("//genqueue2p " + id + " " + gpf);
 	    if(size==3) writer.println("//genqueue3p " + id + " " + gpf);
-	    if(size==4) writer.println("//genqueue4p " + id + " " + gpf);    //fff
+	    if(size==4) writer.println("//genqueue4p " + id + " " + gpf);
 	    if(size==5) writer.println("//genqueue5p " + id + " " + gpf);
 	    if(fieldgr>0) {
 	    	System.out.println("//g " + fieldgr);
@@ -952,7 +952,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	//public Collection<VisualSourceComponent> src_nodes;
 	public Collection<SourceComponent> src_nodes;
 	public Collection<FunctionComponent> fun_nodes;
-	public Collection<SwitchComponent> sw_nodes;  //fff
+	public Collection<SwitchComponent> sw_nodes;
 
 	public void run(WorkspaceEntry we) {
 		System.out.println("");
@@ -962,7 +962,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 		src_nodes=cnet.getSourceComponents();
 		//fun_nodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
 		fun_nodes=cnet.getFunctionComponents();
-		sw_nodes=cnet.getSwitchComponents();  //fff
+		sw_nodes=cnet.getSwitchComponents();
 
 		JsonFactory f = new MappingJsonFactory();
 		File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
@@ -1136,7 +1136,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	            {
 	                writer.close();
 	        		System.out.println("Control CPNs created");
-	                PNetExt pnconv = new PNetExt(src_nodes,fun_nodes,sw_nodes,syncflag);  //fff
+	                PNetExt pnconv = new PNetExt(src_nodes,fun_nodes,sw_nodes,syncflag);
 	                //printlst();
 	            }
 	            /*if ( writer_s != null )

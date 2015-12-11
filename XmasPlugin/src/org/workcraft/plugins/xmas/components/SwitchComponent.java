@@ -27,7 +27,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass(org.workcraft.plugins.xmas.components.VisualSwitchComponent.class)
 public class SwitchComponent extends XmasComponent {
 
-	public static final String PROPERTY_TYPE = "Type";  //fff
+	public static final String PROPERTY_TYPE = "Type";
 	public static final String PROPERTY_VAL = "Val";
 
     public enum Type {
