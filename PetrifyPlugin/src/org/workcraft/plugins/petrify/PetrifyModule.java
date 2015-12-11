@@ -1,6 +1,7 @@
 package org.workcraft.plugins.petrify;
 
 import org.workcraft.Framework;
+import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -15,7 +16,6 @@ import org.workcraft.plugins.petrify.tools.PetrifySynthesisGeneralisedCelement;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisTechnologyMapping;
 import org.workcraft.plugins.petrify.tools.PetrifyUntoggle;
 import org.workcraft.plugins.petrify.tools.ShowSg;
-import org.workcraft.plugins.petrify.tools.ShowSgBinary;
 
 public class PetrifyModule implements Module {
 
@@ -35,8 +35,20 @@ public class PetrifyModule implements Module {
 		pm.registerClass(Tool.class, PetrifyDummyContraction.class);
 		pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
 		pm.registerClass(Tool.class, PetrifyNetSynthesisWithEr.class);
-		pm.registerClass(Tool.class, ShowSg.class);
-		pm.registerClass(Tool.class, ShowSgBinary.class);
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new ShowSg(false);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new ShowSg(true);
+			}
+		});
 	}
 
 	@Override

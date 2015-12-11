@@ -48,7 +48,6 @@ public 	class FsmToFstConverter extends DefaultModelConverter<VisualFsm, VisualF
 		return dstConnection;
 	}
 
-
 	@Override
 	public void postprocessing() {
 		VisualFsm fsm = getSrcModel();

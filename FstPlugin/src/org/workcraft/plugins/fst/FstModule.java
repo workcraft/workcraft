@@ -49,7 +49,14 @@ public class FstModule  implements Module {
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new StgToFstConverterTool();
+				return new StgToFstConverterTool(false);
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new StgToFstConverterTool(true);
 			}
 		});
 

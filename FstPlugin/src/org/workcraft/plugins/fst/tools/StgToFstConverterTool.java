@@ -9,6 +9,11 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgToFstConverterTool extends ConversionTool {
+	private final boolean binary;
+
+	public StgToFstConverterTool(boolean binary) {
+		this.binary = binary;
+	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -17,12 +22,12 @@ public class StgToFstConverterTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Finate State Transducer [Petrify]";
+		return (binary ? "Finate State Transducer (binary-encoded) [Petrify]" : "Finate State Transducer (basic) [Petrify]");
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		WriteSgConversionTask task = new WriteSgConversionTask(we, true);
+		WriteSgConversionTask task = new WriteSgConversionTask(we, binary);
 		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, "Building state graph", new StgToFstConversionResultHandler(task));
 	}

@@ -16,6 +16,11 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ShowSg implements Tool {
+	private final boolean binary;
+
+	public ShowSg(boolean binary) {
+		this.binary = binary;
+	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -29,16 +34,12 @@ public class ShowSg implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "Basic state graph [write_sg + draw_astg]";
-	}
-
-	public boolean isBinaryEncodded() {
-		return false;
+		return (binary ? "State graph (binary-encoded) [write_sg + draw_astg]" : "State graph (basic) [write_sg + draw_astg]");
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		DrawSgTask task = new DrawSgTask(we, isBinaryEncodded());
+		DrawSgTask task = new DrawSgTask(we, binary);
 		final Framework framework = Framework.getInstance();
 
 		ProgressMonitor<DrawSgResult> monitor = new ProgressMonitor<DrawSgResult>() {
