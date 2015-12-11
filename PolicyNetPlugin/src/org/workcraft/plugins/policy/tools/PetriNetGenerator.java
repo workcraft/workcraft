@@ -49,8 +49,8 @@ public class PetriNetGenerator {
 		for(VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
 			String name = policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace());
 			VisualPlace newPlace = petriNet.createPlace(name, null);
-			newPlace.copyStyle(place);
 			newPlace.copyPosition(place);
+			newPlace.copyStyle(place);
 			result.put(place, newPlace);
 		}
 		return result;

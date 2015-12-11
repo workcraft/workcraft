@@ -14,6 +14,7 @@ import org.workcraft.plugins.cpog.tools.PnToCpogTool;
 import org.workcraft.plugins.fst.interop.DotGExporter;
 import org.workcraft.plugins.fst.interop.DotGImporter;
 import org.workcraft.plugins.fst.serialisation.DotGSerialiser;
+import org.workcraft.plugins.fst.tools.FsmToFstConverterTool;
 import org.workcraft.plugins.fst.tools.FstToFsmConverterTool;
 import org.workcraft.plugins.fst.tools.FstToStgConverterTool;
 import org.workcraft.plugins.fst.tools.PnToFsmConverterTool;
@@ -63,6 +64,13 @@ public class FstModule  implements Module {
 			@Override
 			public Tool create() {
 				return new PnToFsmConverterTool();
+			}
+		});
+
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new FsmToFstConverterTool();
 			}
 		});
 

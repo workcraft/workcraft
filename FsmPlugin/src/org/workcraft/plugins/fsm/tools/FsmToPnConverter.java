@@ -57,6 +57,7 @@ public class FsmToPnConverter {
 		for(VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
 			String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
 			VisualPlace place = dstModel.createPlace(name, null);
+			place.copyPosition(state);
 			place.copyStyle(state);
 			place.getReferencedPlace().setTokens(state.getReferencedState().isInitial() ? 1 : 0);
 			place.setTokenColor(state.getForegroundColor());

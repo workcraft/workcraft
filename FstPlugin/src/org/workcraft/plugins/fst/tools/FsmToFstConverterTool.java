@@ -14,26 +14,26 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class FstToFsmConverterTool extends ConversionTool {
+public class FsmToFstConverterTool extends ConversionTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Finite State Machine";
+		return "Finite State Transducer";
 	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		MathModel mathModel = we.getModelEntry().getMathModel();
-		return mathModel.getClass().equals(Fst.class);
+		return mathModel.getClass().equals(Fsm.class);
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
 		we.captureMemento();
 		try {
-			final VisualFst src = (VisualFst)we.getModelEntry().getVisualModel();
-			final VisualFsm dst = new VisualFsm(new Fsm());
-			final FstToFsmConverter converter = new FstToFsmConverter(src, dst);
+			final VisualFsm src = (VisualFsm)we.getModelEntry().getVisualModel();
+			final VisualFst dst = new VisualFst(new Fst());
+			final FsmToFstConverter converter = new FsmToFstConverter(src, dst);
 			final Framework framework = Framework.getInstance();
 			final Workspace workspace = framework.getWorkspace();
 			final Path<String> directory = we.getWorkspacePath().getParent();
