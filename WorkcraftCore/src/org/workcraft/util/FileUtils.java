@@ -85,12 +85,16 @@ public class FileUtils {
 	}
 
 	public static String getTempPrefix(String title) {
-		// Prefix must be at least 3 symbols long.
 		String s = TEMP_DIRECTORY_PREFIX;
 		if ((title != null) && !title.isEmpty()) {
 			s = TEMP_DIRECTORY_PREFIX + title + "-";
 		}
-		return s.replaceAll("\\s","_");
+		// Prefix must be at least 3 symbols long (prepend short prefix with underscores).
+		while (s.length() < 3) {
+			s = "_" + s;
+		}
+		// Prefix must be without spaces (replace spaces with underscores).
+		return s.replaceAll("\\s", "_");
 	}
 
 	public static File createTempDirectory(String prefix) {

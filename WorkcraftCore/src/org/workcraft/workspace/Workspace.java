@@ -239,21 +239,22 @@ public class Workspace {
 		}
 	}
 
-	private Path<String> newName(Path<String> dir, String desired) {
-		if(desired.length() == 0)
-			desired = "Untitled";
+	private Path<String> newName(Path<String> dir, String desiredName) {
+		if ((desiredName == null) || desiredName.isEmpty()) {
+			desiredName = "Untitled";
+		}
 		int i=1;
-		int dotIndex = desired.lastIndexOf(".");
+		int dotIndex = desiredName.lastIndexOf(".");
 		String name;
 		String ext;
 		if (dotIndex == -1) {
-			name = desired;
+			name = desiredName;
 			ext = null;
 		} else {
-			name = desired.substring(0, dotIndex);
-			ext = desired.substring(dotIndex + 1);
+			name = desiredName.substring(0, dotIndex);
+			ext = desiredName.substring(dotIndex + 1);
 		}
-		Path<String> desiredPath = Path.append(dir, desired);
+		Path<String> desiredPath = Path.append(dir, desiredName);
 		while (pathTaken(desiredPath)) {
 			desiredPath = Path.append(dir, name + " " + i++ + (ext==null?"":"."+ext));
 		}

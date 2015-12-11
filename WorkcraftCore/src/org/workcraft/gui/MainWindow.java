@@ -1073,7 +1073,7 @@ public class MainWindow extends JFrame {
 				fileName = we.getTitle();
 			}
 		}
-		if (fileName.isEmpty()) {
+		if ((fileName == null) || fileName.isEmpty()) {
 			fileName = "Untitled";
 		}
 		return removeSpecialFileNameCharacters(fileName);

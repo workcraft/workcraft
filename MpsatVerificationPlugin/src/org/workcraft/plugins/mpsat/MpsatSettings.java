@@ -135,9 +135,10 @@ public class MpsatSettings {
 					if (devPlaceNames.contains(placeFlatName)) {
 						devPreset += (devPreset.isEmpty() ? "{" : ", ");
 						devPreset += "\"" + placeFlatName + "\"";
+					} else {
+						envPreset += (envPreset.isEmpty() ? "{" : ", ");
+						envPreset += "\"" + placeFlatName + "\"";
 					}
-					envPreset += (envPreset.isEmpty() ? "{" : ", ");
-					envPreset += "\"" + placeFlatName + "\"";
 				}
 
 				if ( !devPreset.isEmpty() && !envPreset.isEmpty() ) {
