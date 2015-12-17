@@ -70,10 +70,10 @@ final class TreeModelWrapper<Node> implements TreeModel {
 	private final TreeSource<Node> source;
 	Map<TreeModelListener, TreeListenerWrapper<Node>> listeners = new HashMap<TreeModelListener, TreeListenerWrapper<Node>>();
 
-	public void update(Path<Node> path)
-	{
-		for(TreeListenerWrapper<Node> l : listeners.values())
+	public void update(Path<Node> path) {
+		for (TreeListenerWrapper<Node> l : listeners.values()) {
 			l.restructured(path);
+		}
 	}
 
 	TreeModelWrapper(TreeSource<Node> source) {
@@ -86,15 +86,19 @@ final class TreeModelWrapper<Node> implements TreeModel {
 
 	private TreeListenerWrapper<Node> wrap(final TreeModelListener l) {
 		TreeListenerWrapper<Node> result = listeners.get(l);
-
-		if(result == null)
+		if (result == null) {
 			listeners.put(l, result = new TreeListenerWrapper<Node>(l));
-
+		}
 		return result;
 	}
 
 	@Override public Object getChild(Object parent, int index) {
-		return source.getChildren(cast(parent)).get(index);
+		Object result = null;
+		List<Node> children = source.getChildren(cast(parent));
+		if (index < children.size()) {
+			result = children.get(index);
+		}
+		return result;
 	}
 
 	@Override
@@ -130,4 +134,5 @@ final class TreeModelWrapper<Node> implements TreeModel {
 	@Override public void valueForPathChanged(TreePath path, Object newValue) {
 		throw new org.workcraft.exceptions.NotSupportedException();
 	}
+
 }

@@ -43,19 +43,27 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 
 	@Override
 	public Result<? extends SynthesisResult> run(ProgressMonitor<? super SynthesisResult> monitor) {
-		// Build the command line call for petrify.
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PetrifyUtilitySettings.getPetrifyCommand());
 
+		// Name of the executable
+		String toolName = PetrifyUtilitySettings.getPetrifyCommand();
+		if (PetrifyUtilitySettings.getUseBundledVersion()) {
+			toolName = FileUtils.getToolFileName(PetrifyUtilitySettings.BUNDLED_DIRECTORY, toolName);
+		}
+		command.add(toolName);
+
+		// Extra arguments
 		for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" ")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
 
+		// Built-in arguments
 		for (String arg : args) {
 			command.add(arg);
 		}
+
 		// Petrify uses the full name of the file as the name of the Verilog module (with _net suffix).
 		// As there may be non-alpha-numerical symbols in the model title, it is better not to include it to the directory name.
 		String prefix = FileUtils.getTempPrefix(null/* we.getTitle() */);

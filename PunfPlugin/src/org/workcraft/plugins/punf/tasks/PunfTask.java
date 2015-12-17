@@ -9,6 +9,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
+import org.workcraft.util.FileUtils;
 
 public class PunfTask implements Task<ExternalProcessResult> {
 	private String inputPath;
@@ -24,14 +25,22 @@ public class PunfTask implements Task<ExternalProcessResult> {
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PunfUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml));
 
+		// Name of the executable
+		String toolName = PunfUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml);
+		if (PunfUtilitySettings.getUseBundledVersion()) {
+			toolName = FileUtils.getToolFileName(PunfUtilitySettings.BUNDLED_DIRECTORY, toolName);
+		}
+		command.add(toolName);
+
+		// Extra arguments
 		for (String arg : PunfUtilitySettings.getExtraArgs().split(" ")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
 
+		// Built-in arguments
 		command.add("-m=" + outputPath);
 		command.add(inputPath);
 

@@ -30,22 +30,27 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
 
 public class MpsatUtilitySettings implements Settings {
+	public static final String BUNDLED_DIRECTORY = "tools/mpsat/";
+
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "Tools.mpsat";
 
 	private static final String keyCommand = prefix + ".command";
 	private static final String keySolutionMode = prefix + ".solutionMode";
 	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyUseBundledVersion = prefix + ".useBundledVersion";
 	private static final String keyDebugReach = prefix + ".debugReach";
 
 	private static final String defaultCommand = "mpsat";
 	private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
 	private static final String defaultExtraArgs = "";
+	private static Boolean defaultUseBundledVersion = true;
 	private static final Boolean defaultDebugReach = false;
 
 	private static String command = defaultCommand;
 	private static SolutionMode solutionMode = defaultSolutionMode;
 	private static String extraArgs = defaultExtraArgs;
+	private static Boolean useBundledVersion = defaultUseBundledVersion;
 	private static Boolean debugReach = defaultDebugReach;
 
 	public MpsatUtilitySettings() {
@@ -60,7 +65,7 @@ public class MpsatUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, SolutionMode>(
-				this, "Solution mode for verification", SolutionMode.class, true, false, false) {
+				this, "Solution mode", SolutionMode.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, SolutionMode value) {
 				setSolutionMode(value);
 			}
@@ -70,12 +75,22 @@ public class MpsatUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
-				this, "Additional arguments for verification", String.class, true, false, false) {
+				this, "Additional parameters", String.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, String value) {
 				setExtraArgs(value);
 			}
 			protected String getter(MpsatUtilitySettings object) {
 				return getExtraArgs();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
+				this, "Use bundled version (in " + BUNDLED_DIRECTORY + ")", Boolean.class, true, false, false) {
+			protected void setter(MpsatUtilitySettings object, Boolean value) {
+				setUseBundledVersion(value);
+			}
+			protected Boolean getter(MpsatUtilitySettings object) {
+				return getUseBundledVersion();
 			}
 		});
 
@@ -100,6 +115,7 @@ public class MpsatUtilitySettings implements Settings {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+		setUseBundledVersion(config.getBoolean(keyUseBundledVersion, defaultUseBundledVersion));
 		setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
 	}
 
@@ -108,6 +124,7 @@ public class MpsatUtilitySettings implements Settings {
 		config.set(keyCommand, getCommand());
 		config.setEnum(keySolutionMode, SolutionMode.class, getSolutionMode());
 		config.set(keyExtraArgs, getExtraArgs());
+		config.setBoolean(keyUseBundledVersion, getUseBundledVersion());
 		config.setBoolean(keyDebugReach, getDebugReach());
 	}
 
@@ -148,6 +165,15 @@ public class MpsatUtilitySettings implements Settings {
 	public static int getSolutionCount() {
 		return (solutionMode == SolutionMode.ALL) ? 10 : 1;
 	}
+
+	public static Boolean getUseBundledVersion() {
+		return useBundledVersion;
+	}
+
+	public static void setUseBundledVersion(Boolean value) {
+		useBundledVersion = value;
+	}
+
 	public static Boolean getDebugReach() {
 		return debugReach;
 	}

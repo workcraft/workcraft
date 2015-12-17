@@ -36,18 +36,26 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 		ArrayList<String> command = new ArrayList<>();
+
 		// Name of the executable
-		command.add(MpsatUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml));
+		String toolName = MpsatUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml);
+		if (MpsatUtilitySettings.getUseBundledVersion()) {
+			toolName = FileUtils.getToolFileName(MpsatUtilitySettings.BUNDLED_DIRECTORY, toolName);
+		}
+		command.add(toolName);
+
 		// Built-in arguments
 		for (String arg : args) {
 			command.add(arg);
 		}
+
 		// Extra arguments
 		for (String arg : MpsatUtilitySettings.getExtraArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
+
 		// Input file argument
 		command.add(inputFileName);
 

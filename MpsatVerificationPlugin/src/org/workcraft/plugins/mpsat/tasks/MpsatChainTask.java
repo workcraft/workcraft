@@ -5,7 +5,6 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;

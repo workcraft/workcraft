@@ -196,7 +196,8 @@ public class DotLayoutTool extends AbstractLayoutTool {
 			saveGraph((VisualModel)model, original);
 
 			List<String> args = new ArrayList<String>();
-			args.add(DotLayoutSettings.getCommand());
+			String toolName = FileUtils.getToolFileName(DotLayoutSettings.BUNDLED_DIRECTORY, DotLayoutSettings.getCommand());
+			args.add(toolName);
 			args.add("-Tdot");
 			args.add("-o");
 			args.add(layout.getAbsolutePath());

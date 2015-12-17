@@ -367,8 +367,8 @@ public class SatBasedSolver {
 		opt_formulaeArcs = new String[elements*elements];
 		truthTableArcs =  new String[elements*elements];
 		arcNames = new String[elements*elements];
-		scencoCommand = CpogSettings.getScencoCommand();
-		espressoCommand = CpogSettings.getEspressoCommand();
+		scencoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_SCENCO, CpogSettings.getScencoCommand());
+		espressoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_ESPRESSO, CpogSettings.getEspressoCommand());
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();
 		espressoFlag = "-e";

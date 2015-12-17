@@ -132,25 +132,6 @@ public class ScencoExecutionSupport {
 		return;
 	}
 
-	protected void instantiateParameters(int elements, int scenarios, String[] opt_enc, String[] opt_formulaeVertices, String[] truthTableVertices, String[] opt_vertices, String[] opt_sources, String[] opt_dests, String[] opt_formulaeArcs, String[] truthTableArcs, String[] arcNames, String scencoCommand, String espressoCommand, String abcFolder, String gatesLibrary, String espressoFlag, int v, int a){
-		opt_enc = new String[scenarios];
-		opt_formulaeVertices = new String[elements*elements];
-		truthTableVertices =  new String[elements*elements];
-		opt_vertices = new String[elements];
-		opt_sources = new String[elements*elements];
-		opt_dests = new String[elements*elements];
-		opt_formulaeArcs = new String[elements*elements];
-		truthTableArcs =  new String[elements*elements];
-		arcNames = new String[elements*elements];
-		scencoCommand = CpogSettings.getScencoCommand();
-		espressoCommand = CpogSettings.getEspressoCommand();
-		abcFolder = CpogSettings.getAbcFolder();
-		gatesLibrary = CpogSettings.getGatesLibrary();
-		espressoFlag = "-e";
-		v=0;
-		a=0;
-	}
-
 	protected int scanScenarios(int m, ArrayList<VisualTransformableNode> scenarios,
 			HashMap<String, Integer> events, ArrayList<Point2D> positions,
 			ArrayList<Integer> count){

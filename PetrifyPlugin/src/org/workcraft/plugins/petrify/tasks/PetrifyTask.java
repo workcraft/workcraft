@@ -9,9 +9,10 @@ import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
+import org.workcraft.util.FileUtils;
 
 public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcessListener {
 		private String[] args;
@@ -33,16 +34,23 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 		@Override
 		public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 			this.monitor = monitor;
-
 			ArrayList<String> command = new ArrayList<String>();
-			command.add(PetrifyUtilitySettings.getPetrifyCommand());
 
+			// Name of the executable
+			String toolName = PetrifyUtilitySettings.getPetrifyCommand();
+			if (PetrifyUtilitySettings.getUseBundledVersion()) {
+				toolName = FileUtils.getToolFileName(PetrifyUtilitySettings.BUNDLED_DIRECTORY, toolName);
+			}
+			command.add(toolName);
+
+			// Extra arguments
 			for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" ")) {
 				if (!arg.isEmpty()) {
 					command.add(arg);
 				}
 			}
 
+			// Built-in arguments
 			for (String arg : args) {
 				command.add(arg);
 			}

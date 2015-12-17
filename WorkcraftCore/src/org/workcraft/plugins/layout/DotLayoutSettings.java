@@ -30,6 +30,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class DotLayoutSettings implements Settings {
+	public static final String BUNDLED_DIRECTORY = "tools/dot/";
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "DotLayout";
 

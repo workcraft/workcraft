@@ -20,6 +20,7 @@ import org.workcraft.util.FileUtils;
 public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 	public static final String EQN_FILE_NAME = "mpsat.eqn";
 	public static final String VERILOG_FILE_NAME = "mpsat.v";
+
 	private final String[] args;
 	private final String inputFileName;
 	private final File directory;
@@ -40,22 +41,30 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
-
 		ArrayList<String> command = new ArrayList<>();
+
 		// Name of the executable
-		command.add(MpsatSynthesisUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml));
-		// Built-in arguments
-		for (String arg : args) {
-			command.add(arg);
+		String toolName = MpsatSynthesisUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml);
+		if (MpsatSynthesisUtilitySettings.getUseBundledVersion()) {
+			toolName = FileUtils.getToolFileName(MpsatSynthesisUtilitySettings.BUNDLED_DIRECTORY, toolName);
 		}
+		command.add(toolName);
+
 		// Extra arguments
 		for (String arg : MpsatSynthesisUtilitySettings.getExtraArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
+
+		// Built-in arguments
+		for (String arg : args) {
+			command.add(arg);
+		}
+
 		// Can this MPSat output Verilog?
 		boolean canOutputVerilog = tryPnml && PunfUtilitySettings.getUsePnmlUnfolding();
+
 		// Technology mapping library (if needed and accepted)
 		if (canOutputVerilog && needsGateLibrary) {
 			String gateLibrary = CircuitSettings.getGateLibrary();
@@ -69,8 +78,10 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 				}
 			}
 		}
+
 		// Input file argument
 		command.add(inputFileName);
+
 		// Output file
 		String outputFileName = (canOutputVerilog ? VERILOG_FILE_NAME : EQN_FILE_NAME);
 		File outputFile = new File(directory, outputFileName);

@@ -40,14 +40,22 @@ public class PcompTask implements Task<ExternalProcessResult> {
 	@Override
 	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
 		ArrayList<String> command = new ArrayList<String>();
-		command.add(PcompUtilitySettings.getCommand());
 
+		// Name of the executable
+		String toolName = PcompUtilitySettings.getCommand();
+		if (PcompUtilitySettings.getUseBundledVersion()) {
+			toolName = FileUtils.getToolFileName(PcompUtilitySettings.BUNDLED_DIRECTORY, toolName);
+		}
+		command.add(toolName);
+
+		// Extra arguments
 		for (String arg : PcompUtilitySettings.getExtraArgs().split(" ")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
 
+		// Built-in arguments
 		if (conversionMode == ConversionMode.DUMMY) {
 			command.add("-d");
 			command.add("-r");

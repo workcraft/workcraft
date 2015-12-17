@@ -31,7 +31,6 @@
 	<classpathentry kind="lib" path="/ThirdParty/substance.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/TableLayout-bin-jdk1.5-2009-08-26.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/commons-logging-1.1.3.jar"/>
-	<classpathentry kind="lib" path="/ThirdParty/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/"/>
 	<classpathentry kind="lib" path="/ThirdParty/jga-0.8-lgpl.jar"/>
 	<classpathentry kind="output" path="bin"/>

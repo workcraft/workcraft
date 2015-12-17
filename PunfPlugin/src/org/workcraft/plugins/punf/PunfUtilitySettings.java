@@ -29,19 +29,24 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class PunfUtilitySettings implements Settings {
+	public static final String BUNDLED_DIRECTORY = "tools/punf/";
+
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "Tools.punf";
 
 	private static final String keyCommand = prefix + ".command";
 	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyUseBundledVersion = prefix + ".useBundledVersion";
 	private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 
 	private static final String defaultCommand = "punf";
 	private static final String defaultExtraArgs = "-r";
+	private static Boolean defaultUseBundledVersion = true;
 	private static final Boolean defaultUsePnmlUnfolding = true;
 
 	private static String command = defaultCommand;
 	private static String extraArgs = defaultExtraArgs;
+	private static Boolean useBundledVersion = defaultUseBundledVersion;
 	private static Boolean usePnmlUnfolding = defaultUsePnmlUnfolding;
 
 	public PunfUtilitySettings() {
@@ -56,12 +61,22 @@ public class PunfUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
-				this, "Additional arguments", String.class, true, false, false) {
+				this, "Additional parameters", String.class, true, false, false) {
 			protected void setter(PunfUtilitySettings object, String value) {
 				setExtraArgs(value);
 			}
 			protected String getter(PunfUtilitySettings object) {
 				return getExtraArgs();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PunfUtilitySettings, Boolean>(
+				this, "Use bundled version (in " + BUNDLED_DIRECTORY + ")", Boolean.class, true, false, false) {
+			protected void setter(PunfUtilitySettings object, Boolean value) {
+				setUseBundledVersion(value);
+			}
+			protected Boolean getter(PunfUtilitySettings object) {
+				return getUseBundledVersion();
 			}
 		});
 
@@ -85,6 +100,7 @@ public class PunfUtilitySettings implements Settings {
 	public void load(Config config) {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+		setUseBundledVersion(config.getBoolean(keyUseBundledVersion, defaultUseBundledVersion));
 		setUsePnmlUnfolding(config.getBoolean(keyUsePnmlUnfolding, defaultUsePnmlUnfolding));
 	}
 
@@ -92,6 +108,7 @@ public class PunfUtilitySettings implements Settings {
 	public void save(Config config) {
 		config.set(keyCommand, getCommand());
 		config.set(keyExtraArgs, getExtraArgs());
+		config.setBoolean(keyUseBundledVersion, getUseBundledVersion());
 		config.setBoolean(keyUsePnmlUnfolding, getUsePnmlUnfolding());
 	}
 
@@ -121,6 +138,13 @@ public class PunfUtilitySettings implements Settings {
 		extraArgs = value;
 	}
 
+	public static Boolean getUseBundledVersion() {
+		return useBundledVersion;
+	}
+
+	public static void setUseBundledVersion(Boolean value) {
+		useBundledVersion = value;
+	}
 
 	public static Boolean getUsePnmlUnfolding() {
 		return usePnmlUnfolding;

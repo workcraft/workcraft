@@ -32,7 +32,8 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 		//Build the commands for PGMiner
 		try {
 			ArrayList<String> command = new ArrayList<>();
-			command.add(CpogSettings.getPGMinerCommand());
+			String toolName = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_ESPRESSO, CpogSettings.getPgminerCommand());
+			command.add(toolName);
 			if (split) {
 				command.add("-split");
 			}

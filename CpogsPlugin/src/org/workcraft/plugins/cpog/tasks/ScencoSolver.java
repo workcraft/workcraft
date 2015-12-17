@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.EncoderSettings;
@@ -220,7 +218,7 @@ public class ScencoSolver {
 		}
 
 		//Adding arguments to list
-		scencoCommand = CpogSettings.getScencoCommand();
+		scencoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_SCENCO, CpogSettings.getScencoCommand());
 		if (scencoCommand != null && !scencoCommand.isEmpty()) args.add(scencoCommand);
 		if (scenarioFile.getAbsolutePath() != null && !scenarioFile.getAbsolutePath().isEmpty()) args.add(scenarioFile.getAbsolutePath());
 		args.add("-m");
@@ -414,8 +412,8 @@ public class ScencoSolver {
 	}
 
 	private void instantiateParameters(int elements, int scenarios){
-		scencoCommand = CpogSettings.getScencoCommand();
-		espressoCommand = CpogSettings.getEspressoCommand();
+		scencoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_SCENCO, CpogSettings.getScencoCommand());
+		espressoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_ESPRESSO, CpogSettings.getEspressoCommand());
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();
 		espressoFlag = "-e";

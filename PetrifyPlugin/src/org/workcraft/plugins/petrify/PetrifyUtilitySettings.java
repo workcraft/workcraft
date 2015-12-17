@@ -29,6 +29,8 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class PetrifyUtilitySettings implements Settings {
+	public static final String BUNDLED_DIRECTORY = "tools/petrify/";
+
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "Tools";
 
@@ -38,6 +40,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
 	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
 	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
+	private static final String keyUseBundledVersion = prefix + ".useBundledVersion";
 
 	private static final String defaultPetrifyCommand = "petrify";
 	private static final String defaultPetrifyArgs = "";
@@ -45,6 +48,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String defaultDrawAstgArgs = "";
 	private static final String defaultWriteSgCommand = "write_sg";
 	private static final String defaultWriteSgArgs = "";
+	private static Boolean defaultUseBundledVersion = true;
 
 	private static String petrifyCommand = defaultPetrifyCommand;
 	private static String petrifyArgs = defaultPetrifyArgs;
@@ -52,10 +56,11 @@ public class PetrifyUtilitySettings implements Settings {
 	private static String drawAstgArgs = defaultDrawAstgArgs;
 	private static String writeSgCommand = defaultWriteSgCommand;
 	private static String writeSgArgs = defaultWriteSgArgs;
+	private static Boolean useBundledVersion = defaultUseBundledVersion;
 
 	public PetrifyUtilitySettings() {
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "petrify command", String.class, true, false, false) {
+				this, "Petrify command", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
 				setPetrifyCommand(value);
 			}
@@ -65,7 +70,7 @@ public class PetrifyUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional petrify command line arguments", String.class, true, false, false) {
+				this, "Additional parameters for Petrify", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
 				setPetrifyArgs(value);
 			}
@@ -75,7 +80,7 @@ public class PetrifyUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "write_sg command", String.class, true, false, false) {
+				this, "WriteSG command", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
 				setWriteSgCommand(value);
 			}
@@ -85,7 +90,7 @@ public class PetrifyUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional write_sg command line arguments", String.class, true, false, false) {
+				this, "Additional parameters for WriteSG", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
 				setWriteSgArgs(value);
 			}
@@ -95,7 +100,7 @@ public class PetrifyUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "draw_astg command", String.class, true, false, false) {
+				this, "DrawASTG command", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
 				setDrawAstgCommand(value);
 			}
@@ -105,12 +110,22 @@ public class PetrifyUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional draw_astg command line arguments", String.class, true, false, false) {
+				this, "Additional parameters for DrawASTG", String.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, String value) {
 				setDrawAstgArgs(value);
 			}
 			protected String getter(PetrifyUtilitySettings object) {
 				return getDrawAstgArgs();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
+				this, "Use bundled version (in " + BUNDLED_DIRECTORY + ")", Boolean.class, true, false, false) {
+			protected void setter(PetrifyUtilitySettings object, Boolean value) {
+				setUseBundledVersion(value);
+			}
+			protected Boolean getter(PetrifyUtilitySettings object) {
+				return getUseBundledVersion();
 			}
 		});
 	}
@@ -128,6 +143,7 @@ public class PetrifyUtilitySettings implements Settings {
 		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
 		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
 		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
+		setUseBundledVersion(config.getBoolean(keyUseBundledVersion, defaultUseBundledVersion));
 	}
 
 	@Override
@@ -138,6 +154,7 @@ public class PetrifyUtilitySettings implements Settings {
 		config.set(keyDrawAstgArgs, getDrawAstgArgs());
 		config.set(keyWriteSgCommand, getWriteSgCommand());
 		config.set(keyWriteSgArgs, getWriteSgArgs());
+		config.setBoolean(keyUseBundledVersion, getUseBundledVersion());
 	}
 
 	@Override
@@ -196,6 +213,14 @@ public class PetrifyUtilitySettings implements Settings {
 
 	public static void setWriteSgArgs(String value) {
 		writeSgArgs = value;
+	}
+
+	public static Boolean getUseBundledVersion() {
+		return useBundledVersion;
+	}
+
+	public static void setUseBundledVersion(Boolean value) {
+		useBundledVersion = value;
 	}
 
 }
