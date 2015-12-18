@@ -10,8 +10,7 @@ public class TreeSourceAdapter<Node> implements TreeSource<Node>
 	TreeListenerArray<Node> ls = new TreeListenerArray<Node>();
 	private final TreeSource<Node> source;
 
-	public TreeSourceAdapter(TreeSource<Node> source)
-	{
+	public TreeSourceAdapter(TreeSource<Node> source) {
 		this.source = source;
 		source.addListener(getListener(ls));
 	}
@@ -53,4 +52,5 @@ public class TreeSourceAdapter<Node> implements TreeSource<Node>
 	public Path<Node> getPath(Node node) {
 		return source.getPath(node);
 	}
+
 };

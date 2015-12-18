@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -95,8 +96,9 @@ public class Workspace {
 		// Option 2: file already loaded
 		Path<String> workspacePath = getWorkspacePath(file);
 		for(WorkspaceEntry we : openFiles.values()) {
-			if(we.getWorkspacePath().equals(workspacePath))
+			if(we.getWorkspacePath().equals(workspacePath)) {
 				return we;
+			}
 		}
 
 		// Option 3: file needs loading (from *.work) or importing (other extensions)
@@ -332,24 +334,23 @@ public class Workspace {
 
 	public void saveAs(File newFile) {
 		File newBaseDir = newFile.getParentFile();
-		if (!newBaseDir.exists())
-			if (!newBaseDir.mkdirs())
+		if (!newBaseDir.exists()) {
+			if (!newBaseDir.mkdirs()) {
 				throw new RuntimeException("Cannot create directory " + newBaseDir.getAbsolutePath());
-
-		if (!newBaseDir.isDirectory())
-			throw new RuntimeException("Workspace must be saved to a directory, not a file.");
-
-		try {
-			for(File f : baseDir().listFiles())
-			{
-				if(!f.getAbsoluteFile().equals(workspaceFile.getAbsoluteFile()))
-					FileUtils.copyAll(f, newBaseDir);
 			}
-		} catch (IOException e)
-		{
+		}
+		if (!newBaseDir.isDirectory()) {
+			throw new RuntimeException("Workspace must be saved to a directory, not a file.");
+		}
+		try {
+			for(File f : baseDir().listFiles()) {
+				if(!f.getAbsoluteFile().equals(workspaceFile.getAbsoluteFile())) {
+					FileUtils.copyAll(f, newBaseDir);
+				}
+			}
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
 		writeWorkspaceFile(newFile);
 		setWorkspaceFile(newFile);
 	}
@@ -442,12 +443,15 @@ public class Workspace {
 	}
 
 	public MountTree getRoot() {
-		Map<Path<String>, File> allMounts = new HashMap<Path<String>, File>(mounts);
-		for(WorkspaceEntry we : openFiles.values())
-		{
+		final Map<Path<String>, File> allMounts = new HashMap<>(mounts);
+		for(WorkspaceEntry we : new HashSet<>(openFiles.values())) {
 			final File file = getFile(we.getWorkspacePath());
-			if(!file.exists())
-				allMounts.put(openFiles.getKey(we), file);
+			if(!file.exists()) {
+				Path<String> key = openFiles.getKey(we);
+				if (key != null) {
+					allMounts.put(key, file);
+				}
+			}
 		}
 		return new MountTree(baseDir(), allMounts, Path.<String>empty());
 	}

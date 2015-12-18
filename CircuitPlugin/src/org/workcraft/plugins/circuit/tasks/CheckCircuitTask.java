@@ -165,7 +165,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			if (hasEnvironment && checkConformation) {
 				Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
 				Set<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
-				String reachConformation = MpsatSettings.genReachConformationDetail(sysStg, devOutputNames, devPlaceNames);
+				String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the interface conformation property:");
 					System.out.println(reachConformation);

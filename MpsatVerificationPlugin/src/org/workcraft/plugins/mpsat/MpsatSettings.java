@@ -69,41 +69,64 @@ public class MpsatSettings {
 		"        }\n" +
 		"    }\n";
 
-	// Reach expression for checking conformation (this is a template,
-	// the list of places needs to be updated for each circuit)
-	public static final String reachConformation =
-//			"let devOutputs = gather signalName in { \"out0\" } { S signalName },\n" +
-//			"    devPlaces = gather placeName in { \"in1_0\", \"in1_1\", \"in0_1\", \"in0_0\", \"<out0+,out0->\", \"<out0-,out0+>\" } { P placeName } {\n" +
-			"    card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n" +
-			"    exists s in devOutputs {\n" +
-			"        exists t in tran s {\n" +
-			"            is_plus t & forall p in pre t * devPlaces { $ p }\n" +
-			"        }\n" +
+	// Reach expression for checking conformation (this is a template, the list of places needs to be updated for each circuit)
+	private static final String reachConformationDevPlaces = "// insert device place names here"; // For example: "p0", "<a-,b+>"
+/*
+			"    PDEV_NAMES={ \"GUID\", \n" +
+			"        " +reachConformationDevPlaces + "\n" +
+			"    } \\ {\"GUID\"},\n" +
+*/
+	private static final String reachConformation =
+			// LIMITATIONS (could be checked before parallel composition):
+			// - The set of device STG place names is non-empty (this limitation can be easily removed).
+			// - Each transition in the device STG must have some arcs, i.e. its preset or postset is non-empty.
+			// - The device STG must have no dummies.
+			"let\n" +
+			    // PDEV_NAMES is the set of names of places in the composed STG which originated from the device STG.
+			    // This set may in fact contain places from the environment STG, e.g. when PCOMP removes duplicate
+			    // places from the composed STG, it substitutes them with equivalent places that remain.
+			    // LIMITATION: syntax error if any of these sets is empty.
+			"    PDEV_NAMES={\n" +
+			"        " +reachConformationDevPlaces + "\n" +
+			"    },\n" +
+  			    // PDEV is the set of places with the names in PDEV_NAMES.
+  			    // XML-based PUNF / MPSAT are needed here to process dead places correctly.
+			"    PDEV=gather nm in PDEV_NAMES { P nm },\n" +
+  			    // PDEV_EXT includes PDEV and places with the same preset and postset ignoring context as some place in PDEV
+  			"    PDEV_EXT=gather p in PLACES s.t.\n" +
+  		    "        p in PDEV\n" +
+  		    "        |\n" +
+  		    "        let pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
+  		    "            exists q in PDEV {\n" +
+  		    "                let pre_q=pre q, post_q=post q {\n" +
+  		    "                    pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
+  		    "                }\n" +
+  		    "            }\n" +
+  		    "        }\n" +
+  		    "    { p },\n" +
+  		    	// TDEV is the set of device transitions.
+			    // XML-based PUNF / MPSAT are needed here to process dead transitions correctly.
+			    // LIMITATION: each transition in the device must have some arcs, i.e. its preset or postset is non-empty.
+  		    "    TDEV=tran sig (pre PDEV + post PDEV)\n" +
+  		    "{\n" +
+			    // The device STG must have no dummies.
+			"    card (sig TDEV * DUMMY) != 0 ? fail \"Conformance can currently be checked only for device STGs without dummies\" :\n" +
+			"    exists t in TDEV s.t. is_output t {\n" +
+			  		// Check if t is enabled in the device STG.
+			  		// LIMITATION: The device STG must have no dummies (this limitation is checked above.)
+			"        forall p in pre t s.t. p in PDEV_EXT { $p }\n" +
 			"        &\n" +
-			"        forall t in tran s {\n" +
-			"            is_plus t & exists p in pre t \\ devPlaces { ~ $ p }\n" +
-			"        }\n" +
-			"        |\n" +
-			"        exists t in tran s {\n" +
-			"            is_minus t & forall p in pre t * devPlaces { $ p }\n" +
-			"        }\n" +
-			"        &\n" +
-			"        forall t in tran s {\n" +
-			"            is_minus t & exists p in pre t \\ devPlaces { ~ $ p }\n" +
-			"        }\n" +
+			        // Check if t is enabled in the composed STG (and thus in the environment STG).
+			"        ~@ sig t\n" +
 			"    }\n" +
 			"}\n";
 
-	// Note: New (PNML-based) version of Punf is required to check conformation property.
-	// Old version of Punf does not support dead signals, transitions and places well
-	// (e.g. a dead transition may disappear from unfolding), therefore the conformation
-	// property cannot be checked reliably.
+	// Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
+	// Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
+	// may disappear from unfolding), therefore the conformation property cannot be checked reliably.
 	public static String genReachConformation(Set<String> devOutputNames, Set<String> devPlaceNames) {
-		String devOutputList = genNameList(devOutputNames);
 		String devPlaceList = genNameList(devPlaceNames);
-		return "let devOutputs = gather signalName in { " + devOutputList + " } { S signalName },\n" +
-			   "    devPlaces = gather placeName in { " + devPlaceList + " } { P placeName } {\n" +
-			   reachConformation;
+		return reachConformation.replaceFirst(reachConformationDevPlaces, devPlaceList);
 	}
 
 	private static String genNameList(Collection<String> names) {
@@ -113,91 +136,6 @@ public class MpsatSettings {
 				result += ", ";
 			}
 			result += "\"" + name + "\"";
-		}
-		return result;
-	}
-
-	public static String genReachConformationDetail(STG stg, Set<String> devOutputNames, Set<String> devPlaceNames) {
-		String result = "";
-		for (String signalFlatName: devOutputNames) {
-			String riseDevPredicate = "";
-			String fallDevPredicate = "";
-			String riseEnvPredicate = "";
-			String fallEnvPredicate = "";
-
-			String signalRef = NamespaceHelper.flatToHierarchicalName(signalFlatName);
-			for (SignalTransition t: stg.getSignalTransitions(signalRef)) {
-				String devPreset = "";
-				String envPreset = "";
-				for (Node p: stg.getPreset(t)) {
-					String placeRef = stg.getNodeReference(p);
-					String placeFlatName = NamespaceHelper.hierarchicalToFlatName(placeRef);
-					if (devPlaceNames.contains(placeFlatName)) {
-						devPreset += (devPreset.isEmpty() ? "{" : ", ");
-						devPreset += "\"" + placeFlatName + "\"";
-					} else {
-						envPreset += (envPreset.isEmpty() ? "{" : ", ");
-						envPreset += "\"" + placeFlatName + "\"";
-					}
-				}
-
-				if ( !devPreset.isEmpty() && !envPreset.isEmpty() ) {
-					devPreset += "}";
-					envPreset += "}";
-					String devPredicate = "";
-					devPredicate += "        forall p in " + devPreset  + " {\n";
-					devPredicate += "            $ P p\n";
-					devPredicate += "        }\n";
-					String envPredicate = "";
-					envPredicate += "        exists p in " + envPreset  + " {\n";
-					envPredicate += "          ~$ P p\n";
-					envPredicate += "        }\n";
-					if (t.getDirection() == Direction.PLUS) {
-						if ( !riseDevPredicate.isEmpty() ) {
-							riseDevPredicate += "        |\n";
-						}
-						riseDevPredicate += devPredicate;
-						if ( !riseEnvPredicate.isEmpty() ) {
-							riseEnvPredicate += "        &\n";
-						}
-						riseEnvPredicate += envPredicate;
-					} else {
-						if ( !fallDevPredicate.isEmpty() ) {
-							fallDevPredicate += "        |\n";
-						}
-						fallDevPredicate += devPredicate;
-						if ( !fallEnvPredicate.isEmpty() ) {
-							fallEnvPredicate += "        &\n";
-						}
-						fallEnvPredicate += envPredicate;
-					}
-				}
-			}
-
-			if ( !riseDevPredicate.isEmpty() || !fallDevPredicate.isEmpty() ) {
-				if (result.isEmpty()) {
-					result = "card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n";
-				} else {
-					result += "|\n";
-				}
-				result += "(  /* Conformation check for signal \"" + signalFlatName + "\" */\n";
-				result += "    (\n";
-				result +=          riseDevPredicate;
-				result += "    )\n";
-				result += "    &\n";
-				result += "    (\n";
-				result +=          riseEnvPredicate;
-				result += "    )\n";
-				result += "    |\n";
-				result += "    (\n";
-				result +=          fallDevPredicate;
-				result += "    )\n";
-				result += "    &\n";
-				result += "    (\n";
-				result +=          fallEnvPredicate;
-				result += "    )\n";
-				result += ")\n";
-			}
 		}
 		return result;
 	}
@@ -255,10 +193,10 @@ public class MpsatSettings {
 			try {
 				File reachFile = null;
 				if (workingDirectory == null) {
-					reachFile = File.createTempFile("reach", ".txt");
+					reachFile = File.createTempFile("property", ".re");
 					reachFile.deleteOnExit();
 				} else {
-					reachFile = new File(workingDirectory, "reach.txt");
+					reachFile = new File(workingDirectory, "property.re");
 				}
 				FileUtils.dumpString(reachFile, getReach());
 				args.add("-d");

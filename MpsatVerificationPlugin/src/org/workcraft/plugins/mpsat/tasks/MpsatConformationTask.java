@@ -143,8 +143,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 			// Check for interface conformation
 			Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
 			Set<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
-//			String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
-			String reachConformation = MpsatSettings.genReachConformationDetail(stg, devOutputNames, devPlaceNames);
+			String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
 			if (MpsatUtilitySettings.getDebugReach()) {
 				System.out.println("\nReach expression for the interface conformation property:");
 				System.out.println(reachConformation);

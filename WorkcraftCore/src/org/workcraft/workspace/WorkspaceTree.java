@@ -33,14 +33,11 @@ import org.workcraft.gui.trees.TreeListener;
 import org.workcraft.gui.trees.TreeSource;
 import org.workcraft.gui.workspace.Path;
 
-public class WorkspaceTree implements TreeSource<Path<String>>
-{
-	private final class WorkspaceListenerWrapper implements
-			WorkspaceListener {
+public class WorkspaceTree implements TreeSource<Path<String>> {
+	private final class WorkspaceListenerWrapper implements	WorkspaceListener {
 		private final TreeListener<Path<String>> listener;
 
-		private WorkspaceListenerWrapper(
-				TreeListener<Path<String>> listener) {
+		private WorkspaceListenerWrapper(TreeListener<Path<String>> listener) {
 			this.listener = listener;
 		}
 
@@ -78,8 +75,7 @@ public class WorkspaceTree implements TreeSource<Path<String>>
 
 	Workspace workspace;
 
-	public WorkspaceTree(Workspace workspace)
-	{
+	public WorkspaceTree(Workspace workspace) {
 		this.workspace = workspace;
 	}
 
@@ -92,8 +88,7 @@ public class WorkspaceTree implements TreeSource<Path<String>>
 
 	private WorkspaceListener wrap(TreeListener<Path<String>> listener) {
 		WorkspaceListener res = wrappers.get(listener);
-		if(res == null)
-		{
+		if(res == null) {
 			res = new WorkspaceListenerWrapper(listener);
 			wrappers.put(listener, res);
 		}
@@ -103,19 +98,19 @@ public class WorkspaceTree implements TreeSource<Path<String>>
 	@Override
 	public List<Path<String>> getChildren(Path<String> node) {
 		MountTree mount = workspace.getMountTree(node);
-
 		Map<String, Path<String>> res = new TreeMap<String, Path<String>>();
 		String[] list = mount.mountTo.list();
-		if(list != null)
-			for(String name : list)
+		if(list != null) {
+			for(String name : list) {
 				res.put(name, mount.getSubtree(name).path);
-		for(String name : mount.subDirs.keySet())
-		{
-			if(!res.containsKey(name))
+			}
+		}
+		for(String name : mount.subDirs.keySet()) {
+			if(!res.containsKey(name)) {
 				res.put(name, mount.subDirs.get(name).path);
+			}
 		}
 		List<Path<String>> result = new ArrayList<Path<String>>(res.values());
-
 		return result;
 	}
 
@@ -143,19 +138,18 @@ public class WorkspaceTree implements TreeSource<Path<String>>
 	@Override
 	public Path<Path<String>> getPath(Path<String> node) {
 		Path<Path<String>> result = Path.empty();
-
 		Deque<Path<String>> qq = new ArrayDeque<Path<String>>();
-
 		while (true) {
 			qq.push(node);
-			if (node.isEmpty())
+			if (node.isEmpty()) {
 				break;
+			}
 			node = node.getParent();
 		}
-
-		for (Path<String> n : qq)
+		for (Path<String> n : qq) {
 			result = Path.append(result, n);
-
+		}
 		return result;
 	}
+
 }

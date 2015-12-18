@@ -84,7 +84,7 @@ public class CircuitToStgConverter {
 			simplifyDriverStgs(drivers); // remove dead transitions
 		}
 		positionDriverStgs(drivers);
-		groupDriverStgs(drivers);
+		//groupDriverStgs(drivers);
 	}
 
 	public CircuitToStgConverter(VisualCircuit circuit, VisualSTG stg) {
@@ -98,7 +98,7 @@ public class CircuitToStgConverter {
 			simplifyDriverStgs(drivers); // remove dead transitions
 		}
 		positionDriverStgs(drivers);
-		groupDriverStgs(drivers);
+		//groupDriverStgs(drivers);
 	}
 
 
