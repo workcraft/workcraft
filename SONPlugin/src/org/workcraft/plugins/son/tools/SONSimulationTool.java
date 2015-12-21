@@ -863,7 +863,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 	}
 
 	protected void setDecoration(Step enabled){
-		net.refreshColor();
+		net.refreshAllColor();
 
 		for(TransitionNode e : enabled){
 			//e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());

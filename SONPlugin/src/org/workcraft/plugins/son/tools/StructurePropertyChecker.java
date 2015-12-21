@@ -35,7 +35,7 @@ public class StructurePropertyChecker implements Tool {
 		final Framework framework = Framework.getInstance();
 		final MainWindow mainWindow = framework.getMainWindow();
 
-		net.refreshColor();
+		net.refreshAllColor();
 		StructureVerifyDialog dialog = new StructureVerifyDialog(mainWindow, we);
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
@@ -46,6 +46,6 @@ public class StructurePropertyChecker implements Tool {
 			SONMainTask sonTask = new SONMainTask(dialog.getSettings(), we);
 			framework.getTaskManager().queue(sonTask, "Verification");
 		}
-		net.refreshColor();
+		net.refreshAllColor();
 	}
 }
