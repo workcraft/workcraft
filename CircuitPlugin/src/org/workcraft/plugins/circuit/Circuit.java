@@ -89,6 +89,10 @@ public class Circuit extends AbstractMathModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), FunctionContact.class);
 	}
 
+	public Collection<FunctionComponent> getFunctionComponents() {
+		return Hierarchy.getDescendantsOfType(getRoot(), FunctionComponent.class);
+	}
+
 	@Override
 	public ModelProperties getProperties(Node node) {
 		ModelProperties properties = super.getProperties(node);

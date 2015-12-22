@@ -9,11 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.FileUtils;
 
 public class MpsatSettings {

@@ -1,7 +1,10 @@
 package org.workcraft.plugins.circuit.tools;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
@@ -20,13 +23,22 @@ public class CheckCircuitTool extends VerificationTool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
+		final Framework framework = Framework.getInstance();
+		MainWindow mainWindow = framework.getMainWindow();
+
+		Circuit circuit = (Circuit)we.getModelEntry().getMathModel();
+		if (circuit.getFunctionComponents().isEmpty()) {
+			JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
+					"Circuit verification error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
 		final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation(), checkDeadlock(), checkHazard());
 		String description = "MPSat tool chain";
 		String title = we.getTitle();
 		if (!title.isEmpty()) {
 			description += "(" + title +")";
 		}
-		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
 	}
 
