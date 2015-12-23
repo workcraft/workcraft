@@ -91,4 +91,5 @@ public class MpsatResultParser {
 	public List<Solution> getSolutions() {
 		return Collections.unmodifiableList(solutions);
 	}
+
 }

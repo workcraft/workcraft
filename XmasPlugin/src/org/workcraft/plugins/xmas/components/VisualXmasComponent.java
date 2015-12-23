@@ -101,16 +101,16 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
 
 		public Orientation flipHorizontal() {
 			switch (this) {
-			case ORIENTATION_90: return ORIENTATION_270;
-			case ORIENTATION_270: return ORIENTATION_90;
+			case ORIENTATION_0: return ORIENTATION_180;
+			case ORIENTATION_180: return ORIENTATION_0;
 			default: return this;
 			}
 		}
 
 		public Orientation flipVertical() {
 			switch (this) {
-			case ORIENTATION_0: return ORIENTATION_180;
-			case ORIENTATION_180: return ORIENTATION_0;
+			case ORIENTATION_90: return ORIENTATION_270;
+			case ORIENTATION_270: return ORIENTATION_90;
 			default: return this;
 			}
 		}

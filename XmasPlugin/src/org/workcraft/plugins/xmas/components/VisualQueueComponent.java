@@ -97,7 +97,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
 	public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
 		double factor2 = (double)getReferencedQueueComponent().getCapacity() / 2.0;
-		double offset = factor2 * (size / 2 - contactLength);
+		double offset = factor2 * (size / 2 - contactLength) + contactLength;
 		double x = positioning.xSign * offset;
 		double y = positioning.ySign * offset;
 		vc.setPosition(new Point2D.Double(x, y));

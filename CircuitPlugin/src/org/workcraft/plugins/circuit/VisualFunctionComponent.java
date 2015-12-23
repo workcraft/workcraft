@@ -232,7 +232,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 			}
 			if ( propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
 		  	  || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
-
+				setContactsDefaultPosition();
 				for (Node node : getChildren()) {
 					if (node instanceof VisualFunctionContact) {
 						VisualFunctionContact vc = (VisualFunctionContact)node;
