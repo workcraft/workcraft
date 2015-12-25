@@ -185,7 +185,7 @@ public class SON extends AbstractMathModel {
 		}
 	}
 
-	public void refreshColor(){
+	public void refreshAllColor(){
 		for(Node n:  getComponents()){
 			setFillColor(n,CommonVisualSettings.getFillColor());
 			setForegroundColor(n, CommonVisualSettings.getBorderColor());
@@ -199,6 +199,25 @@ public class SON extends AbstractMathModel {
 		for (SONConnection con : this.getSONConnections()){
 			setForegroundColor(con, CommonVisualSettings.getBorderColor());
 			setTimeColor(con, Color.BLACK);
+		}
+		for (Block block : this.getBlocks()){
+			setFillColor(block, CommonVisualSettings.getFillColor());
+			setForegroundColor(block,  CommonVisualSettings.getBorderColor());
+		}
+	}
+
+	public void refreshNodeColor(){
+		for(Node n:  getComponents()){
+			setFillColor(n,CommonVisualSettings.getFillColor());
+			setForegroundColor(n, CommonVisualSettings.getBorderColor());
+			setTokenColor(n, Color.BLACK);
+		}
+		for (ONGroup group : this.getGroups()){
+			setForegroundColor(group, SONSettings.getGroupForegroundColor());
+		}
+
+		for (SONConnection con : this.getSONConnections()){
+			setForegroundColor(con, CommonVisualSettings.getBorderColor());
 		}
 		for (Block block : this.getBlocks()){
 			setFillColor(block, CommonVisualSettings.getFillColor());

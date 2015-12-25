@@ -41,6 +41,8 @@ public class EstimationAlg extends TimeAlg{
 	private Before before;
 	private Granularity g;
 	private Color color =Color.ORANGE;
+	private Collection<Path> fwdPaths = new ArrayList<Path>();
+	private Collection<Path> bwdPaths = new ArrayList<Path>();
 
 	public EstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s) {
 		super(net);
@@ -83,7 +85,7 @@ public class EstimationAlg extends TimeAlg{
 		return scenario;
 	}
 
-	public void twoDirEstimation(Node n) throws AlternativeStructureException, TimeEstimationException, TimeOutOfBoundsException, TimeInconsistencyException{
+	public void twoDirEstimation(Node n, boolean interm) throws AlternativeStructureException, TimeEstimationException, TimeOutOfBoundsException, TimeInconsistencyException{
 		ConsistencyAlg alg = new ConsistencyAlg(net);
 		Time node = null;
 
@@ -268,12 +270,54 @@ public class EstimationAlg extends TimeAlg{
 				con.setTime(end);
 				con.setTimeLabelColor(color);
 			}
+
+			if(interm) intermediateEst();
+
 			if(!alg.nodeConsistency(node, start, end, node.getDuration(), g).isEmpty()){
 				throw new TimeInconsistencyException("Warning: Estimated start and end times are inconsistent.");
 			}
 		}
 	}
 
+	private void intermediateEst() throws TimeOutOfBoundsException{
+
+		for(Path path : fwdPaths){
+			for(int i = 1;  i < path.size(); i++){
+				Time n = (Time)path.get(i);
+				if(!n.getDuration().isSpecified()){
+					n.setDuration(defaultDuration);
+				}
+				SONConnection preCon = net.getSONConnection(path.get(i-1), path.get(i));
+				Interval time = granularity.plusTD(preCon.getTime(), n.getDuration());
+				if( (i+1) < path.size()){
+					SONConnection postCon = net.getSONConnection(path.get(i), path.get(i+1));
+					postCon.setTime(time);
+					postCon.setTimeLabelColor(color);
+				}
+			}
+		}
+
+		fwdPaths.clear();
+
+		for(Path path : bwdPaths){
+			for(int i = 1;  i < path.size(); i++){
+				Time n = (Time)path.get(i);
+				if(!n.getDuration().isSpecified()){
+					n.setDuration(defaultDuration);
+				}
+				SONConnection preCon = net.getSONConnection(path.get(i-1), path.get(i));
+				Interval time = granularity.subtractTD(preCon.getTime(), n.getDuration());
+				if( (i+1) < path.size()){
+					SONConnection postCon = net.getSONConnection(path.get(i), path.get(i+1));
+					postCon.setTime(time);
+					postCon.setTimeLabelColor(color);
+				}
+			}
+		}
+
+		bwdPaths.clear();
+
+	}
 
 	private boolean hasConflict(){
 		RelationAlgorithm alg = new RelationAlgorithm(net);
@@ -596,6 +640,10 @@ public class EstimationAlg extends TimeAlg{
         	result[0] = visited.getLast().getEndTime();
         	result[1] = durationAccumulator1(visited);
             resultTimeAndDuration.add(result);
+
+           	Path path = new Path();
+            path.addAll(visited);
+            fwdPaths.add(path);
         }
 
         // examine post nodes
@@ -611,6 +659,11 @@ public class EstimationAlg extends TimeAlg{
             	result[0] = con.getTime();
             	result[1] = durationAccumulator1(visited);
                 resultTimeAndDuration.add(result);
+
+            	Path path = new Path();
+                visited.addLast(node);
+                path.addAll(visited);
+                fwdPaths.add(path);
             }
         }
         // in depth-first, recursion needs to come after visiting post nodes
@@ -633,8 +686,11 @@ public class EstimationAlg extends TimeAlg{
         	Interval[] result = new Interval[2];
         	result[0] = visited.getLast().getStartTime();
         	result[1] = durationAccumulator1(visited);
-
             resultTimeAndDuration.add(result);
+
+           	Path path = new Path();
+            path.addAll(visited);
+            bwdPaths.add(path);
         }
 
         // examine post nodes
@@ -650,6 +706,11 @@ public class EstimationAlg extends TimeAlg{
             	result[0] = con.getTime();
             	result[1] = durationAccumulator1(visited);
                 resultTimeAndDuration.add(result);
+
+            	Path path = new Path();
+                visited.addLast(node);
+                path.addAll(visited);
+                bwdPaths.add(path);
             }
         }
         // in depth-first, recursion needs to come after visiting post nodes
@@ -681,22 +742,6 @@ public class EstimationAlg extends TimeAlg{
     	}
     	return result;
     }
-
-//    private Interval durationAccumulator2 (LinkedList<Time> visited){
-//    	Interval result = new Interval(0000, 0000);
-//    	Time first = visited.getFirst();
-//    	Time last =  visited.getLast();
-//    	for(Time time : visited){
-//    		if(time != first || time != last){
-//	    		if (time.getDuration().isSpecified())
-//	    			result = result.add(time.getDuration());
-//	    		else{
-//	    			result = result.add(defaultDuration);
-//	    		}
-//    		}
-//    	}
-//    	return result;
-//    }
 
     private LinkedList<Time> getCausalPreset(Time n, Collection<Node> nodes){
     	LinkedList<Time> preSet = new LinkedList<Time>();

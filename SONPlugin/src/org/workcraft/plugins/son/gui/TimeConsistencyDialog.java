@@ -212,7 +212,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
 		selectionTabbedPane.addChangeListener(new ChangeListener() {
 	        public void stateChanged(ChangeEvent e) {
-	        	 net.refreshColor();
+	        	 net.refreshAllColor();
 	    		 addAllButton.setEnabled(true);
 	    		 removeAllButton.setEnabled(true);
 	    		 int index = getTabIndex();

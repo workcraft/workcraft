@@ -40,7 +40,7 @@ public class TimeConsistencyChecker implements Tool{
 		SON net = (SON)we.getModelEntry().getMathModel();
 
 		BlockConnector.blockBoundingConnector(visualNet);
-		net.refreshColor();
+		net.refreshAllColor();
 		TimeConsistencyDialog dialog = new TimeConsistencyDialog(mainWindow, we);
 		GUI.centerToParent(dialog, mainWindow);
 		dialog.setVisible(true);
@@ -52,7 +52,7 @@ public class TimeConsistencyChecker implements Tool{
 		}
 
 		if(dialog.getTabIndex() !=1){
-			net.refreshColor();
+			net.refreshAllColor();
 		}
 
 		BlockConnector.blockInternalConnector(visualNet);
