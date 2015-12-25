@@ -36,7 +36,7 @@ public class SONModule implements Module{
 
 		pm.registerClass(ModelDescriptor.class, SONDescriptor.class);
 		pm.registerClass(Settings.class, SONSettings.class);
-		//pm.registerClass(Tool.class, TestTool.class);
+		pm.registerClass(Tool.class, TestTool.class);
 		//verification
 		pm.registerClass(Tool.class, StructurePropertyChecker.class);
 		pm.registerClass(Tool.class, ReachabilityTool.class);

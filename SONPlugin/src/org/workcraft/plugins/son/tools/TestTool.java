@@ -78,9 +78,9 @@ public class TestTool extends AbstractTool implements Tool{
 		//bhvTimeTest(net);
 		//getScenario(net);
 
-	//	dfsTest(net);
+		dfsTest(net);
 		//outputBefore(net);
-		phaseTest(net);
+		//phaseTest(net);
 		//csonCycleTest(net);
 		//abtreactConditionTest(net);
 		//GUI.drawEditorMessage(editor, g, Color.red, "sfasdfadsfa");
@@ -198,17 +198,18 @@ public class TestTool extends AbstractTool implements Tool{
 		ScenarioGeneratorTool s = new ScenarioGeneratorTool();
 	}
 
-//	private void dfsTest(SON net){
-//		PathAlgorithm alg = new PathAlgorithm(net);
-//		RelationAlgorithm alg2 = new RelationAlgorithm(net);
-//		Collection<Path> result = alg.dfs3(alg2.getInitial(net.getGroups().iterator().next().getComponents()).iterator().next(),
-//				alg2.getFinal(net.getGroups().iterator().next().getComponents()).iterator().next(),
-//				net.getGroups().iterator().next().getComponents());
-//
-//		for(Path path : result){
-//			System.out.println(path.toString(net));
-//		}
-//	}
+	private void dfsTest(SON net){
+		PathAlgorithm alg = new PathAlgorithm(net);
+		RelationAlgorithm alg2 = new RelationAlgorithm(net);
+		ONGroup g = net.getGroups().iterator().next();
+		Collection<Path> result = alg.getPaths(alg2.getInitial(g).iterator().next(),
+				alg2.getFinal(g).iterator().next(),
+				net.getGroups().iterator().next().getComponents());
+
+		for(Path path : result){
+			System.out.println(path.toString(net));
+		}
+	}
 
 	private void outputBefore(SON net){
 

@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.util.Marking;
 
 public class PathAlgorithm{
@@ -52,6 +53,32 @@ public class PathAlgorithm{
             visited.removeLast();
 
         }
+    }
+
+    private void DFStest (Collection<Node> nodes , LinkedList<Node> visited, Collection<Condition> v){
+        LinkedList<Node> post = getPostset(visited.getLast(), nodes);
+        for(Node node : post){
+            visited.add(node);
+            if (v.contains(node)) {
+                Path path = new Path();
+                path.addAll(visited);
+                pathResult.add(path);
+                visited.removeLast();
+            }
+            else if(!visited.contains(node)){
+                DFStest(nodes, visited, v);
+                visited.removeLast();
+            }
+        }
+    }
+
+    //get paths between two given nodes. (recursion)
+    public Collection<Path> getPaths (Condition s,  Collection<Condition> v, Collection<Node> nodes){
+    	pathResult.clear();
+    	LinkedList<Node> visited = new LinkedList<Node>();
+    	visited.add(s);
+    	DFStest(nodes, visited, v);
+    	return pathResult;
     }
 
     //get paths between two given nodes. (recursion)

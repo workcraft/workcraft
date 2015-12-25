@@ -225,6 +225,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				reset(editor);
+				setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
 			}
 		});
 
