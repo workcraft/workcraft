@@ -86,7 +86,7 @@ public class DotGParser {
 		try {
 			ConnectionResult result = stg.connect(first, second);
 			STGPlace implicitPlace = result.getImplicitPlace();
-			if (implicitPlace != null) {				implicitPlaces.put (Pair.of (first, second), implicitPlace);
+			if (implicitPlace != null) {				implicitPlaces.put(Pair.of(first, second), implicitPlace);
 				implicitPlace.setImplicit(true);
 			}
 		} catch (InvalidConnectionException e) {
