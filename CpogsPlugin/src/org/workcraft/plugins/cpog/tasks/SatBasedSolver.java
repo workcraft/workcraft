@@ -29,6 +29,7 @@ import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class SatBasedSolver {
@@ -367,8 +368,8 @@ public class SatBasedSolver {
 		opt_formulaeArcs = new String[elements*elements];
 		truthTableArcs =  new String[elements*elements];
 		arcNames = new String[elements*elements];
-		scencoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_SCENCO, CpogSettings.getScencoCommand());
-		espressoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_ESPRESSO, CpogSettings.getEspressoCommand());
+		scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
+		espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();
 		espressoFlag = "-e";

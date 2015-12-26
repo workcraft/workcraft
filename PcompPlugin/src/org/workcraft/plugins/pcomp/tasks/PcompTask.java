@@ -14,6 +14,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 
 public class PcompTask implements Task<ExternalProcessResult> {
 
@@ -42,10 +43,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolName = PcompUtilitySettings.getCommand();
-		if (PcompUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(PcompUtilitySettings.BUNDLED_DIRECTORY, toolName);
-		}
+		String toolName = ToolUtils.getAbsoluteCommandPath(PcompUtilitySettings.getCommand());
 		command.add(toolName);
 
 		// Extra arguments

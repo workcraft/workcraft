@@ -24,12 +24,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class PetrifyExtraUtilitySettings implements Settings {
-	public static final String BUNDLED_DIRECTORY = "tools/petrify/";
 
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "Tools";
@@ -38,19 +38,16 @@ public class PetrifyExtraUtilitySettings implements Settings {
 	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
 	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
 	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
-	private static final String keyUseBundledVersion = prefix + ".useBundledVersion1";
 
-	private static final String defaultDrawAstgCommand = "draw_astg";
+	private static final String defaultDrawAstgCommand = (DesktopApi.getOs().isWindows() ? "tools\\petrify\\draw_astg.exe" : "tools/petrify/draw_astg");
 	private static final String defaultDrawAstgArgs = "";
-	private static final String defaultWriteSgCommand = "write_sg";
+	private static final String defaultWriteSgCommand = (DesktopApi.getOs().isWindows() ? "tools\\petrify\\write_sg.exe" : "tools/petrify/write_sg");
 	private static final String defaultWriteSgArgs = "";
-	private static Boolean defaultUseBundledVersion = true;
 
 	private static String drawAstgCommand = defaultDrawAstgCommand;
 	private static String drawAstgArgs = defaultDrawAstgArgs;
 	private static String writeSgCommand = defaultWriteSgCommand;
 	private static String writeSgArgs = defaultWriteSgArgs;
-	private static Boolean useBundledVersion = defaultUseBundledVersion;
 
 	public PetrifyExtraUtilitySettings() {
 		properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
@@ -92,16 +89,6 @@ public class PetrifyExtraUtilitySettings implements Settings {
 				return getDrawAstgArgs();
 			}
 		});
-
-		properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, Boolean>(
-				this, "Use bundled version (in " + BUNDLED_DIRECTORY + ")", Boolean.class, true, false, false) {
-			protected void setter(PetrifyExtraUtilitySettings object, Boolean value) {
-				setUseBundledVersion(value);
-			}
-			protected Boolean getter(PetrifyExtraUtilitySettings object) {
-				return getUseBundledVersion();
-			}
-		});
 	}
 
 	@Override
@@ -115,7 +102,6 @@ public class PetrifyExtraUtilitySettings implements Settings {
 		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
 		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
 		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
-		setUseBundledVersion(config.getBoolean(keyUseBundledVersion, defaultUseBundledVersion));
 	}
 
 	@Override
@@ -124,7 +110,6 @@ public class PetrifyExtraUtilitySettings implements Settings {
 		config.set(keyDrawAstgArgs, getDrawAstgArgs());
 		config.set(keyWriteSgCommand, getWriteSgCommand());
 		config.set(keyWriteSgArgs, getWriteSgArgs());
-		config.setBoolean(keyUseBundledVersion, getUseBundledVersion());
 	}
 
 	@Override
@@ -167,14 +152,6 @@ public class PetrifyExtraUtilitySettings implements Settings {
 
 	public static void setWriteSgArgs(String value) {
 		writeSgArgs = value;
-	}
-
-	public static Boolean getUseBundledVersion() {
-		return useBundledVersion;
-	}
-
-	public static void setUseBundledVersion(Boolean value) {
-		useBundledVersion = value;
 	}
 
 }

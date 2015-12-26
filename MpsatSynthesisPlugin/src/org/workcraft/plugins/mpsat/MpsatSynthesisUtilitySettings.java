@@ -24,27 +24,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class MpsatSynthesisUtilitySettings implements Settings {
-	public static final String BUNDLED_DIRECTORY = "tools/mpsat/";
-
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "Tools.mpsatSynthesis";
 
 	private static final String keyCommand = prefix + ".command";
 	private static final String keyExtraArgs = prefix + ".args";
-	private static final String keyUseBundledVersion = prefix + ".useBundledVersion";
 
-	private static final String defaultCommand = "mpsat";
+	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\mpsat\\mpsat.exe" : "tools/mpsat/mpsat");
 	private static final String defaultExtraArgs = "";
-	private static Boolean defaultUseBundledVersion = true;
 
 	private static String command = defaultCommand;
 	private static String extraArgs = defaultExtraArgs;
-	private static Boolean useBundledVersion = defaultUseBundledVersion;
 
 	public MpsatSynthesisUtilitySettings() {
 		properties.add(new PropertyDeclaration<MpsatSynthesisUtilitySettings, String>(
@@ -66,16 +62,6 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 				return getExtraArgs();
 			}
 		});
-
-		properties.add(new PropertyDeclaration<MpsatSynthesisUtilitySettings, Boolean>(
-				this, "Use bundled version (in " + BUNDLED_DIRECTORY + ")", Boolean.class, true, false, false) {
-			protected void setter(MpsatSynthesisUtilitySettings object, Boolean value) {
-				setUseBundledVersion(value);
-			}
-			protected Boolean getter(MpsatSynthesisUtilitySettings object) {
-				return getUseBundledVersion();
-			}
-		});
 	}
 
 	@Override
@@ -87,14 +73,12 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 	public void load(Config config) {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
-		setUseBundledVersion(config.getBoolean(keyUseBundledVersion, defaultUseBundledVersion));
 	}
 
 	@Override
 	public void save(Config config) {
 		config.set(keyCommand, getCommand());
 		config.set(keyExtraArgs, getExtraArgs());
-		config.setBoolean(keyUseBundledVersion, getUseBundledVersion());
 	}
 
 	@Override
@@ -121,14 +105,6 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 
 	public static void setExtraArgs(String value) {
 		extraArgs = value;
-	}
-
-	public static Boolean getUseBundledVersion() {
-		return useBundledVersion;
-	}
-
-	public static void setUseBundledVersion(Boolean value) {
-		useBundledVersion = value;
 	}
 
 }

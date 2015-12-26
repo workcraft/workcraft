@@ -25,19 +25,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class DotLayoutSettings implements Settings {
-	public static final String BUNDLED_DIRECTORY = "tools/dot/";
+
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
 	private static final String prefix = "DotLayout";
 
 	private static final String keyImportConnectionsShape  = prefix + ".importConnectionsShape";
 	private static final String keyDotCommand  = prefix + ".dotCommand";
 
-	private static final String defaultDotCommand = "dot";
+	private static final String defaultDotCommand = (DesktopApi.getOs().isWindows() ? "tools\\dot\\dot.exe" : "dot");
 	private static final boolean defaultImportConnectionsShape = true;
 
 	private static String dotCommand = defaultDotCommand;

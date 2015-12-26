@@ -4,14 +4,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.Config;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class CpogSettings implements Settings {
-	public static final String BUNDLED_DIRECTORY_SCENCO = "tools/scenco/";
-	public static final String BUNDLED_DIRECTORY_ESPRESSO = "tools/espresso/";
-	public static final String BUNDLED_DIRECTORY_PGMINER = "tools/pgminer/";
 
 	public enum SatSolver {
 		MINISAT("MiniSat"),
@@ -47,11 +45,11 @@ public class CpogSettings implements Settings {
 	private static final int defaultCircuitSize = 4;
 	private static final String defaultClaspCommand = "clasp";
 	private static final String defaultMinisatCommand = "minisat";
-	private static final String defaultScencoCommand = "scenco";
-	private static final String defaultEspressoCommand = "espresso";
+	private static final String defaultScencoCommand = (DesktopApi.getOs().isWindows() ? "tools\\scenco\\scenco.exe" : "tools/scenco/scenco");
+	private static final String defaultEspressoCommand = (DesktopApi.getOs().isWindows() ? "tools\\espresso\\espresso.exe" : "tools/espresso/espresso");
 	private static final String defaultAbcFolder = "abc/";
 	private static final String defaultGatesLibrary = "90nm.genlib";
-	private static final String defaultPgminerCommand = "pgminer";
+	private static final String defaultPgminerCommand = (DesktopApi.getOs().isWindows() ? "tools\\pgminer\\pgminer.exe" : "tools/pgminer/pgminer");
 	private static final boolean defaultUseSubscript = false;
 
 	private static SatSolver satSolver = defaultSatSolver;

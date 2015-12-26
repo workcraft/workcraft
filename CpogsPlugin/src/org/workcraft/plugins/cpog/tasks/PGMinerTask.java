@@ -11,10 +11,11 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 
 
 public class PGMinerTask implements Task<ExternalProcessResult> {
@@ -32,8 +33,9 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 		//Build the commands for PGMiner
 		try {
 			ArrayList<String> command = new ArrayList<>();
-			String toolName = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_ESPRESSO, CpogSettings.getPgminerCommand());
+			String toolName = ToolUtils.getAbsoluteCommandPath(CpogSettings.getPgminerCommand());
 			command.add(toolName);
+
 			if (split) {
 				command.add("-split");
 			}

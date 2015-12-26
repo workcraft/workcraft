@@ -233,21 +233,4 @@ public class FileUtils {
 		}
 	}
 
-	public static String getToolFileName(String toolRelativePath, String toolName) {
-		String result = toolName;
-		File toolDir = new File(toolRelativePath);
-		if (toolDir.exists()) {
-			File toolFile = new File(toolDir, toolName);
-			if (toolFile.exists()) {
-				result = toolFile.getAbsolutePath();
-			} else {
-				File exeToolFile = new File(toolDir, toolName + ".exe");
-				if (exeToolFile.exists()) {
-					result = exeToolFile.getAbsolutePath();
-				}
-			}
-		}
-		return result;
-	}
-
 }

@@ -16,6 +16,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 
 public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 	public static final String EQN_FILE_NAME = "mpsat.eqn";
@@ -44,10 +45,9 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<>();
 
 		// Name of the executable
-		String toolName = MpsatSynthesisUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml);
-		if (MpsatSynthesisUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(MpsatSynthesisUtilitySettings.BUNDLED_DIRECTORY, toolName);
-		}
+		String toolPrefix = MpsatSynthesisUtilitySettings.getCommand();
+		String toolSuffix = PunfUtilitySettings.getToolSuffix(tryPnml);
+		String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
 		command.add(toolName);
 
 		// Extra arguments

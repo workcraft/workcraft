@@ -22,6 +22,7 @@ import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoSolver {
@@ -218,7 +219,7 @@ public class ScencoSolver {
 		}
 
 		//Adding arguments to list
-		scencoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_SCENCO, CpogSettings.getScencoCommand());
+		scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
 		if (scencoCommand != null && !scencoCommand.isEmpty()) args.add(scencoCommand);
 		if (scenarioFile.getAbsolutePath() != null && !scenarioFile.getAbsolutePath().isEmpty()) args.add(scenarioFile.getAbsolutePath());
 		args.add("-m");
@@ -412,8 +413,8 @@ public class ScencoSolver {
 	}
 
 	private void instantiateParameters(int elements, int scenarios){
-		scencoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_SCENCO, CpogSettings.getScencoCommand());
-		espressoCommand = FileUtils.getToolFileName(CpogSettings.BUNDLED_DIRECTORY_ESPRESSO, CpogSettings.getEspressoCommand());
+		scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
+		espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
 		abcFolder = CpogSettings.getAbcFolder();
 		gatesLibrary = CpogSettings.getGatesLibrary();
 		espressoFlag = "-e";

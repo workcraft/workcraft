@@ -15,6 +15,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 
 public class MpsatTask implements Task<ExternalProcessResult> {
 	private final String[] args;
@@ -38,10 +39,9 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<>();
 
 		// Name of the executable
-		String toolName = MpsatUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml);
-		if (MpsatUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(MpsatUtilitySettings.BUNDLED_DIRECTORY, toolName);
-		}
+		String toolPrefix = MpsatUtilitySettings.getCommand();
+		String toolSuffix = PunfUtilitySettings.getToolSuffix(tryPnml);
+		String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
 		command.add(toolName);
 
 		// Built-in arguments

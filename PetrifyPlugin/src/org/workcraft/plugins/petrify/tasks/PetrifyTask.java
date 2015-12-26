@@ -12,7 +12,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
-import org.workcraft.util.FileUtils;
 
 public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcessListener {
 		private String[] args;
@@ -38,9 +37,6 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 
 			// Name of the executable
 			String toolName = PetrifyUtilitySettings.getPetrifyCommand();
-			if (PetrifyUtilitySettings.getUseBundledVersion()) {
-				toolName = FileUtils.getToolFileName(PetrifyUtilitySettings.BUNDLED_DIRECTORY, toolName);
-			}
 			command.add(toolName);
 
 			// Extra arguments

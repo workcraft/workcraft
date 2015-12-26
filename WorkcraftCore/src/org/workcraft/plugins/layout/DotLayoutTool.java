@@ -57,6 +57,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 
 public class DotLayoutTool extends AbstractLayoutTool {
 
@@ -196,7 +197,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 			saveGraph((VisualModel)model, original);
 
 			List<String> args = new ArrayList<String>();
-			String toolName = FileUtils.getToolFileName(DotLayoutSettings.BUNDLED_DIRECTORY, DotLayoutSettings.getCommand());
+			String toolName = ToolUtils.getAbsoluteCommandPath(DotLayoutSettings.getCommand());
 			args.add(toolName);
 			args.add("-Tdot");
 			args.add("-o");

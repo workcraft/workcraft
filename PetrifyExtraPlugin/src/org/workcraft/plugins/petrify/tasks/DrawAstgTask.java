@@ -9,8 +9,8 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.ToolUtils;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.FileUtils;
 
 public class DrawAstgTask implements Task<ExternalProcessResult> {
 	private String inputPath, outputPath;
@@ -27,10 +27,7 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolName = PetrifyExtraUtilitySettings.getDrawAstgCommand();
-		if (PetrifyExtraUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(PetrifyExtraUtilitySettings.BUNDLED_DIRECTORY, toolName);
-		}
+		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getDrawAstgCommand());
 		command.add(toolName);
 
 		// Extra arguments

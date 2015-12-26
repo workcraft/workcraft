@@ -22,6 +22,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -46,10 +47,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolName = PetrifyUtilitySettings.getPetrifyCommand();
-		if (PetrifyUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(PetrifyUtilitySettings.BUNDLED_DIRECTORY, toolName);
-		}
+		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getPetrifyCommand());
 		command.add(toolName);
 
 		// Extra arguments

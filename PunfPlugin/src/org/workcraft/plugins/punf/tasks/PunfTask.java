@@ -9,7 +9,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 
 public class PunfTask implements Task<ExternalProcessResult> {
 	private String inputPath;
@@ -27,10 +27,9 @@ public class PunfTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolName = PunfUtilitySettings.getCommand() + PunfUtilitySettings.getCommandSuffix(tryPnml);
-		if (PunfUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(PunfUtilitySettings.BUNDLED_DIRECTORY, toolName);
-		}
+		String toolPrefix = PunfUtilitySettings.getCommand();
+		String toolSuffix = PunfUtilitySettings.getToolSuffix(tryPnml);
+		String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
 		command.add(toolName);
 
 		// Extra arguments

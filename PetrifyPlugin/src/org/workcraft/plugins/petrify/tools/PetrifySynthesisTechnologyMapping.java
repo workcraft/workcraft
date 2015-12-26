@@ -1,13 +1,14 @@
 package org.workcraft.plugins.petrify.tools;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.util.ToolUtils;
 
 public class PetrifySynthesisTechnologyMapping extends PetrifySynthesis {
 
 	@Override
 	public String[] getSynthesisParameter() {
 		String[] result;
-		String gateLibrary = CircuitSettings.getGateLibrary();
+		String gateLibrary = ToolUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
 		if ((gateLibrary == null) || gateLibrary.isEmpty()) {
 			result = new String[1];
 			result[0] = "-tm";

@@ -13,7 +13,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
-import org.workcraft.util.FileUtils;
+import org.workcraft.util.ToolUtils;
 
 public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcessListener {
 	private String inputPath, outputPath;
@@ -41,10 +41,7 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolName = PetrifyExtraUtilitySettings.getWriteSgCommand();
-		if (PetrifyExtraUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(PetrifyExtraUtilitySettings.BUNDLED_DIRECTORY, toolName);
-		}
+		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getWriteSgCommand());
 		command.add(toolName);
 
 		// Extra arguments
