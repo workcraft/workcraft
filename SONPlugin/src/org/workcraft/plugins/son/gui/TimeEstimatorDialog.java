@@ -49,7 +49,7 @@ public class TimeEstimatorDialog extends JDialog{
 
 	protected JPanel buttonsPanel, durationPanel;
 	protected JButton runButton, cancelButton;
-	protected JCheckBox setDuration;
+	protected JCheckBox setDuration, intermediate;
 	protected Dimension buttonSize = new Dimension(80, 25);
 	protected int run = 0;
 
@@ -82,18 +82,23 @@ public class TimeEstimatorDialog extends JDialog{
 	}
 
 	protected void createDurationPanel(){
-		setDuration = new JCheckBox("Set default value for all unspecifed nodes");
+		setDuration = new JCheckBox("Set default duration for all unspecifed nodes");
 		setDuration.setSelected(false);
 		setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+		intermediate = new  JCheckBox("Set values for intermediate nodes");
+		intermediate.setSelected(false);
+		intermediate.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
 		defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		durationPanel = new JPanel();
 		//durationPanel.setBorder(BorderFactory.createTitledBorder("Default Duration Setting"));
-		durationPanel.setLayout(new GridLayout(2,0));
+		durationPanel.setLayout(new GridLayout(3,0));
 		durationPanel.add(defaultDurationPanel);
 		durationPanel.add(setDuration);
+		durationPanel.add(intermediate);
 	}
 
 	protected void createScenarioTable(){
@@ -173,7 +178,7 @@ public class TimeEstimatorDialog extends JDialog{
 						alg.setDefaultDuration();
 
 					try {
-						alg.twoDirEstimation(selection);
+						alg.twoDirEstimation(selection, intermediate.isSelected());
 					} catch (AlternativeStructureException e1) {
 						errMsg(e1.getMessage());
 					} catch (TimeEstimationException e1) {

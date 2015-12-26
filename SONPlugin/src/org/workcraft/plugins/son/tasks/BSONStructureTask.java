@@ -10,11 +10,15 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.ASONAlg;
+import org.workcraft.plugins.son.algorithm.BSONAlg;
+import org.workcraft.plugins.son.algorithm.BSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.exception.UnboundedException;
+import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 
 
@@ -26,12 +30,25 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 	private Collection<Path> cycleErrors = new ArrayList<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
+	private BSONAlg bsonAlg;
+	private BSONCycleAlg bsonCycleAlg;
+	private Map<Condition, Collection<Phase>> allPhases;
+	private ArrayList<String> phaseCutTask = new ArrayList<String>();
+
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
-	public BSONStructureTask(SON net){
+	public BSONStructureTask(SON net, Map<ONGroup, List<Marking>> allMarkings){
 		super(net);
 		this.net = net;
+
+		bsonAlg = new BSONAlg(net);
+		if(allMarkings == null)
+			allPhases = bsonAlg.getAllPhases(getReachableMarking());
+		else{
+			allPhases = bsonAlg.getAllPhases(allMarkings);
+		}
+		bsonCycleAlg = new BSONCycleAlg(net, allPhases);
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -93,6 +110,10 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 				errMsg(phaseResult.get(c));
 				relationErrors.add(c);
 			}
+		}else if(!phaseCutTask.isEmpty()){
+			for(String str : phaseCutTask){
+				infoMsg(str);
+			}
 		}else
 			infoMsg("Valid phase structure.");
 
@@ -151,7 +172,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		return result;
 	}
 
-	//correctness for A/SYN communication between upper and lower level ONs
+	//correctness of A/SYN communication between upper and lower level ONs
 	private Collection<ChannelPlace> groupTask2(Collection<ONGroup> groups){
 		Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
 		Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
@@ -185,27 +206,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 			result.putAll(phaseTask2(uGroup));
 			result.putAll(phaseTask3(uGroup));
 
-			Map<Phase, ONGroup> orderedPhases = new HashMap<Phase, ONGroup>();
-			for(Condition c : uGroup.getConditions()){
-				//get ordered phases for each upper level condition of uGroup
-				orderedPhases.putAll(getOrderedPhases(c));
-			}
-
-			Collection<ONGroup> lowerGroups2 = getBSONAlg().getLowerGroups(uGroup);
-
-			for(ONGroup lGroup : lowerGroups2){
-				Map<Condition, Phase> phaseMap = new HashMap<Condition, Phase>();
-				for(Condition c : uGroup.getConditions()){
-					Collection<Phase> phases = getAllPhases().get(c);
-					for(Phase phase : phases){
-						if(net.getGroup(phase.iterator().next()) == lGroup){
-							phaseMap.put(c, phase);
-						}
-					}
-				}
-				Collection<Path> paths= pathTask(lGroup);
-				result.putAll(phaseTask4(paths, phaseMap));
-			}
+			result.putAll(bsonAlg.getPhaseCutErr());
 		}
 
 		return result;
@@ -268,12 +269,14 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
 			if(pre != null){
 				Collection<Phase> prePhases = getAllPhases().get(pre);
-				Collection<Condition> maxSet = getBSONAlg().getMaximalPhase(prePhases);
+				Collection<Condition> preMax = getBSONAlg().getMaximalPhase(prePhases);
+				System.out.println("premax+"+net.toString(preMax));
 
 				for(Phase phase : phases){
 					boolean match = false;
 					Collection<Condition> min = getBSONAlg().getMinimalPhase(phase);
-					if(maxSet.containsAll(min))
+					System.out.println("min+"+net.toString(min));
+					if(preMax.containsAll(min))
 						match = true;
 
 					if(!match){
@@ -281,12 +284,11 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 						ONGroup lowGroup = net.getGroup(phase.iterator().next());
 						boolean containFinal = false;
 
-
-						if(!min.containsAll(getRelationAlg().getInitial(lowGroup.getConditions()))){
+						if(!min.containsAll(getRelationAlg().getInitial(lowGroup))){
 							match = false;
 						}
 						for(ONGroup group : getBSONAlg().getLowerGroups(pre)){
-							if(maxSet.containsAll(getRelationAlg().getFinal(group.getConditions()))){
+							if(preMax.containsAll(getRelationAlg().getFinal(group))){
 								containFinal = true;
 								break;
 							}
@@ -306,77 +308,52 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 		return result;
 	}
 
-	//check for cut
-	//input: 1 path collection from initial to final state
-	//       2.phase collection between one upper group and one lower group
-	private Map<Condition, String> phaseTask4(Collection<Path> paths, Map<Condition, Phase> phases){
-		 Map<Condition, String> result = new HashMap<Condition, String>();
+    public Map<ONGroup, List<Marking>> getReachableMarking(){
+    	Map<ONGroup, List<Marking>> result = new HashMap<ONGroup, List<Marking>>();
 
-		for(Condition c : phases.keySet()){
-			String ref = net.getNodeReference(c);
-			Phase phase = phases.get(c);
+		ASONAlg alg = new ASONAlg(net);
+		Collection<ONGroup> lowerGroups =bsonAlg.getLowerGroups(net.getGroups());
 
-			Collection<Condition> minimal = getBSONAlg().getMinimalPhase(phase);
-			Collection<Condition> maximal = getBSONAlg().getMaximalPhase(phase);
-			boolean minErr = false;
-			boolean maxErr = false;
-
-			//check if minimal/maximal phase is a cut
-			for(Path path : paths){
-				int minCount = 0;
-				int maxCount = 0;
-
-				for(Condition min : minimal)
-					if(path.contains(min)) {
-						minCount++;
-					}
-
-				if (minCount != 1){
-					minErr = true;
-				}
-
-				for(Condition max : maximal)
-					if(path.contains(max)) {
-						maxCount++;
-					}
-				if (maxCount != 1){
-					maxErr = true;
-				}
+		for(ONGroup group : lowerGroups){
+			try {
+				result.put(group, alg.getReachableMarkings(group));
+			}catch (UnboundedException e) {
 			}
-
-			if(minErr)
-				result.put(c, "ERROR: Minimal phase " +net.toString(minimal) + " is not a cut: "+ref);
-
-			if(maxErr)
-				result.put(c, "ERROR: Maximal phase " +net.toString(maximal) + " is not a cut: "+ref);
-		}
-		return result;
-	}
-
-
-	private Collection<Path> pathTask (ONGroup group){
-		List<Path> result = new ArrayList<Path>();
-		PathAlgorithm alg = new PathAlgorithm(net);
-
-		for(Node start : getRelationAlg().getInitial(group.getConditions()))
-			for(Node end : getRelationAlg().getFinal(group.getConditions())){
-				result.addAll(alg.getPaths(start, end, group.getComponents()));
-			}
-
-		 return result;
-	}
-
-	/**
-	 * get the ordered phase map for a given upper-level conditions.
-	 */
-	private Map<Phase, ONGroup> getOrderedPhases(Condition c){
-		Map<Phase, ONGroup> result = new HashMap<Phase, ONGroup>();
-		for(Phase phase : getAllPhases().get(c)){
-			ONGroup group = net.getGroup(phase.iterator().next());
-			result.put(phase, group);
+			break;
 		}
 
 		return result;
+    }
+
+	public boolean equals(Marking m, Collection<Condition> b){
+
+		if(m.size() !=  b.size()) return false;
+
+		for(Node node : m){
+			if(!b.contains(node)){
+				return false;
+			}
+		}
+
+		for(Node node : b){
+			if(!m.contains(node)){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public BSONAlg getBSONAlg(){
+		return this.bsonAlg;
+	}
+
+	public BSONCycleAlg getBSONCycleAlg(){
+		return bsonCycleAlg;
+	}
+
+	public Map<Condition, Collection<Phase>> getAllPhases(){
+		return allPhases;
 	}
 
 	@Override

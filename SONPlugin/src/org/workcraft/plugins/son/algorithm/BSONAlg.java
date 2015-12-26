@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
@@ -14,12 +18,16 @@ import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Before;
+import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 
 public class BSONAlg extends RelationAlgorithm{
 
 	private SON net;
+	private static Marking dfsResult =new Marking();
+	private Map<Condition, String> phaseCutErr =new HashMap<Condition, String>();
 
 	public BSONAlg(SON net) {
 		super(net);
@@ -61,47 +69,182 @@ public class BSONAlg extends RelationAlgorithm{
 
 	/**
 	 * get phases collection for a given upper-level condition
+	 * @throws InvalidPhaseException
 	 */
-	public Collection<Phase> getPhases(Condition c){
+	public Collection<Phase> getPhases(Condition c, Map<ONGroup, List<Marking>> allMarkings){
+
 		Collection<Phase> result = new ArrayList<Phase>();
 
 		for(ONGroup group : getLowerGroups(net.getGroups())){
 			//find all nodes pointing to c
-			Collection<Node> nodes = new ArrayList<Node>();
-			for(Node n : group.getConditions()){
-				SONConnection con = null;
-				if(n != c){
-					con = net.getSONConnection(n, c);
+			Marking min = new Marking();
+			min.addAll(getPathBounding(getInitial(group), c, true));
+			Marking max = new Marking();
+			max.addAll(getPathBounding(getFinal(group), c, false));
+
+			if(!min.isEmpty() && !max.isEmpty()){
+				//group does not have alternative behaviours
+				if(!allMarkings.keySet().contains(group)){
+					Phase phase = new Phase();
+					for(Node node : PathAlgorithm.dfs2(min, max, net)){
+						if(node instanceof Condition)
+							phase.add((Condition)node);
+					}
+					result.add(phase);
+				}else{
+					List<Marking> markings = allMarkings.get(group);
+					Collection<Marking> minMarkings = new ArrayList<Marking>();
+					Collection<Marking> maxMarkings = new ArrayList<Marking>();
+
+					Collection<Node> minSet = new ArrayList<Node>();
+					Collection<Node> maxSet = new ArrayList<Node>();
+
+					for(Marking m : markings){
+						if(min.containsAll(m)){
+							minMarkings.add(m);
+							minSet.addAll(m);
+						}
+						if(max.containsAll(m)){
+							maxMarkings.add(m);
+							maxSet.addAll(m);
+						}
+					}
+					for(Marking min1 : minMarkings){
+						for(Marking max1 : maxMarkings){
+							Phase phase = new Phase();
+							for(Node node : PathAlgorithm.dfs2(min1, max1, net)){
+								if(node instanceof Condition)
+									phase.add((Condition)node);
+							}
+							result.add(phase);
+						}
+					}
+					min.removeAll(minSet);
+					max.removeAll(maxSet);
+
+					String err = null;
+					if(!min.isEmpty()){
+						err = "ERROR: Minimal phase " +net.toString(min) + " is not a cut:";
+					}
+					if(!max.isEmpty()){
+						if(err == null)
+							err = "ERROR: Maximal phase " +net.toString(max) + " is not a cut:";
+						else{
+							err += "\nERROR: Maximal phase " +net.toString(max) + " is not a cut:";
+						}
+					}
+					if(err != null )
+						phaseCutErr.put(c, err);
 				}
-				if(con != null && con.getSemantics()==Semantics.BHVLINE)
-					nodes.add(n);
-			}
-			if(!nodes.isEmpty()){
-				Phase phase = new Phase();
-				for(Node node : PathAlgorithm.dfs2(nodes, nodes, net)){
-					if(node instanceof Condition)
-						phase.add((Condition)node);
-				}
-				result.add(phase);
 			}
 		}
 		return result;
 	}
 
+    private Marking getPathBounding (Collection<Condition> nodes, Node upper, boolean getMin){
+    	dfsResult.clear();
+    	LinkedList<Node> visited = new LinkedList<Node>();
+    	for(Condition s : nodes){
+    		visited.add(s);
+    		dfs(visited, upper, getMin);
+    	}
+    	return dfsResult;
+    }
+
+    private void dfs(LinkedList<Node> visited, Node upper, boolean getMin) {
+    	Node n = visited.getLast();
+    	if((n instanceof Condition) && getPostBhvSet((Condition)n).contains(upper)){
+	          dfsResult.add((Condition)n);
+    	}else{
+        	Collection<Node> neighbours = null;
+        	if(getMin)
+        		neighbours = getPostPNSet(n);
+        	else
+        		neighbours = getPrePNSet(n);
+
+	        for (Node node : neighbours) {
+	            if (!visited.contains(node)) {
+		            visited.addLast(node);
+	            	dfs(visited, upper, getMin);
+	            }
+	        }
+        }
+    }
+
+    public Map<ONGroup, List<Marking>> getReachableMarking(){
+    	Map<ONGroup, List<Marking>> result = new HashMap<ONGroup, List<Marking>>();
+
+		ASONAlg alg = new ASONAlg(net);
+		Collection<ONGroup> lowerGroups =getLowerGroups(net.getGroups());
+		boolean b = false;
+
+		for(ONGroup group : lowerGroups){
+			for(Condition c : group.getConditions()){
+				if(hasPreConflictEvents(c) || hasPostConflictEvents(c)){
+					try {
+						result.put(group, alg.getReachableMarkings(group));
+					} catch (UnboundedException e) {
+						b = true;
+					}
+					break;
+				}
+			}
+			if(b)
+				errMsg("Fail to get phase: occurrence net is unsafe " + net.getNodeReference(group));
+		}
+
+		return result;
+    }
+
 	/**
 	 * get the phase collection for all upper-level conditions.
+	 * @throws UnboundedException
 	 */
 	public Map<Condition, Collection<Phase>> getAllPhases(){
 		Map<Condition, Collection<Phase>> result = new HashMap<Condition, Collection<Phase>>();
+
+		//if reachable markings are not provided, get markings.
+		Map<ONGroup, List<Marking>> allMarkings = new HashMap<ONGroup, List<Marking>>();
+
+		allMarkings.putAll(getReachableMarking());
+
 		Collection<ONGroup> upperGroups =getUpperGroups(net.getGroups());
 
 		for(ONGroup group : upperGroups){
 			for(Condition c : group.getConditions())
-				result.put(c, getPhases(c));
+				result.put(c, getPhases(c, allMarkings));
 		}
 		return result;
 	}
 
+	public Map<Condition, Collection<Phase>> getAllPhases(Map<ONGroup, List<Marking>> allMarkings){
+		Map<Condition, Collection<Phase>> result = new HashMap<Condition, Collection<Phase>>();
+
+		if(allMarkings == null)
+			return getAllPhases();
+
+		Collection<ONGroup> upperGroups =getUpperGroups(net.getGroups());
+
+		for(ONGroup group : upperGroups){
+			for(Condition c : group.getConditions())
+				result.put(c, getPhases(c, allMarkings));
+		}
+		return result;
+	}
+
+	protected void errMsg(String msg){
+		JOptionPane.showMessageDialog(null, msg, "Fail to get phase", JOptionPane.ERROR_MESSAGE);
+	}
+
+//	public Map<Condition, Collection<Phase>> getAllPhases(){
+//		try {
+//			return getAllPhases(null);
+//		} catch (UnboundedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
 	private Collection<Condition> forwardSearch(Node node){
 		Collection<Condition> result = new HashSet<Condition>();
@@ -116,13 +259,13 @@ public class BSONAlg extends RelationAlgorithm{
 
 			if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
 				result.addAll(getPostBhvSet((Condition)node));
-			}
-
-			Collection<Node> postSet = getPostPNSet(node);
-			if(!postSet.isEmpty()){
-				for(Node post : postSet){
-					if(!visit.contains(post)){
-						stack.push(post);
+			}else{
+				Collection<Node> postSet = getPostPNSet(node);
+				if(!postSet.isEmpty()){
+					for(Node post : postSet){
+						if(!visit.contains(post)){
+							stack.push(post);
+						}
 					}
 				}
 			}
@@ -143,13 +286,13 @@ public class BSONAlg extends RelationAlgorithm{
 
 			if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
 				result.addAll(getPostBhvSet((Condition)node));
-			}
-
-			Collection<Node> preSet = getPrePNSet(node);
-			if(!preSet.isEmpty()){
-				for(Node pre : preSet){
-					if(!visit.contains(pre)){
-						stack.push(pre);
+			}else{
+				Collection<Node> preSet = getPrePNSet(node);
+				if(!preSet.isEmpty()){
+					for(Node pre : preSet){
+						if(!visit.contains(pre)){
+							stack.push(pre);
+						}
 					}
 				}
 			}
@@ -172,10 +315,21 @@ public class BSONAlg extends RelationAlgorithm{
 
 		Collection<Condition> min = backWardSearch(node);
 		Collection<Condition> max = forwardSearch(node);
+
 		for(Condition c : max){
 			if(min.contains(c))
 				result.add(c);
 		}
+		return result;
+	}
+
+	public Collection<Condition> getUpperConditions(Collection<? extends Node> nodes){
+		Collection<Condition> result = new HashSet<Condition>();
+
+		for(Node node : nodes){
+			result.addAll(getUpperConditions(node));
+		}
+
 		return result;
 	}
 
@@ -207,13 +361,11 @@ public class BSONAlg extends RelationAlgorithm{
 	/**
 	 * get lower-level group for a set of phase bounds
 	 */
-	public ONGroup getLowerGroup(Collection<Condition> phaseBound){
-		Collection<ONGroup> groups = new HashSet<ONGroup>();
-		for(ONGroup group : net.getGroups())
-			if(!getCommonElements(group.getComponents(), phaseBound).isEmpty())
-				groups.add(group);
+	public ONGroup getLowerGroup(Phase phase){
+		if(phase.isEmpty())
+			return null;
 
-		return groups.iterator().next();
+		return net.getGroup(phase.iterator().next());
 	}
 
 	/**
@@ -295,9 +447,12 @@ public class BSONAlg extends RelationAlgorithm{
 		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMinimal = true;
-			for(Condition pre : this.getPrePNCondition(c))
-				if(phase.contains(pre))
+			for(Condition pre : this.getPrePNCondition(c)){
+				if(phase.contains(pre)){
 					isMinimal = false;
+					break;
+				}
+			}
 			if(isMinimal)
 				result.add(c);
 		}
@@ -322,9 +477,12 @@ public class BSONAlg extends RelationAlgorithm{
 		ArrayList<Condition> result = new ArrayList<Condition>();
 		for(Condition c : phase){
 			boolean isMaximal = true;
-			for(Condition pre : this.getPostPNCondition(c))
-				if(phase.contains(pre))
+			for(Condition pre : this.getPostPNCondition(c)){
+				if(phase.contains(pre)){
 					isMaximal = false;
+					break;
+				}
+			}
 			if(isMaximal)
 				result.add(c);
 		}
@@ -451,5 +609,9 @@ public class BSONAlg extends RelationAlgorithm{
 			}
 		}
 		return result;
+	}
+
+	public Map<Condition, String> getPhaseCutErr() {
+		return phaseCutErr;
 	}
 }

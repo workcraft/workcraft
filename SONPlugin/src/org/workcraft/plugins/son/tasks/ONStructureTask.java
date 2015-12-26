@@ -2,14 +2,20 @@ package org.workcraft.plugins.son.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.ASONAlg;
+import org.workcraft.plugins.son.algorithm.ONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
-import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.UnboundedException;
+import org.workcraft.plugins.son.util.Marking;
 
 
 public class ONStructureTask extends AbstractStructuralVerification{
@@ -20,12 +26,21 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	private Collection<Path> cycleErrors = new HashSet<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
+	private ONCycleAlg onCycleAlg;
+	private ASONAlg asonAlg;
+
+	private Map<ONGroup, List<Marking>> reachableMarkings;
+
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
 	public ONStructureTask(SON net){
 		super(net);
 		this.net = net;
+
+		onCycleAlg = new ONCycleAlg(net);
+		asonAlg = new ASONAlg(net);
+		reachableMarkings = new HashMap<ONGroup, List<Marking>>();
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -43,7 +58,7 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
 		for(ONGroup group : groups){
 
-		Collection<Node> task1, task2, task3, task4;
+		Collection<Node> task1, task2;
 		Collection<Path> cycleResult;
 
 		//group info
@@ -93,24 +108,14 @@ public class ONStructureTask extends AbstractStructuralVerification{
 				}
 			}
 
-			//conflict result
-			task3 = postConflictTask(groupComponents);
-			task4 = preConflictTask(groupComponents);
-
-			if (task3.isEmpty() && task4.isEmpty())
-				infoMsg("Occurrence net is conflict free.");
-			else{
-				errNumber = errNumber + task3.size()+ task4.size();
-				for(Node condition : task3){
-					relationErrors.add(condition);
-					errMsg("ERROR : Output events in conflict.", condition);
-					}
-				for(Node condition : task4){
-					relationErrors.add(condition);
-					errMsg("ERROR : Input events in conflict.", condition);
-				}
-			}
 			infoMsg("Component relation tasks complete.");
+			//safeness result
+			infoMsg("Running safeness checking task...");
+			Node node = safenessTask(group);
+			if(node != null){
+				relationErrors.add(node);
+				errNumber++;
+			}
 
 			//cycle detection result
 			infoMsg("Running cycle detection task...");
@@ -152,22 +157,23 @@ public class ONStructureTask extends AbstractStructuralVerification{
 		return result;
 	}
 
-	private Collection<Node> postConflictTask(Collection<Node> groupNodes){
-		ArrayList<Node> result = new ArrayList<Node>();
-		for (Node node : groupNodes)
-			if(node instanceof Condition)
-				if(getRelationAlg().hasPostConflictEvents(node))
-					result.add(node);
-		return result;
+	private Node safenessTask(ONGroup group){
+		List<Marking> markings = null;
+
+		try {
+			markings =asonAlg.getReachableMarkings(group);
+		} catch (UnboundedException e) {
+			infoMsg("ERROR : "+e.getMessage());
+			return e.getNode();
+		}
+
+		if(markings != null)
+			reachableMarkings.put(group, markings);
+		return null;
 	}
 
-	private Collection<Node> preConflictTask(Collection<Node> groupNodes){
-		ArrayList<Node> result = new ArrayList<Node>();
-		for (Node node : groupNodes)
-			if(node instanceof Condition)
-				if(getRelationAlg().hasPreConflictEvents(node))
-					result.add(node);
-		return result;
+	public ONCycleAlg getONCycleAlg(){
+		return onCycleAlg;
 	}
 
 	@Override
@@ -183,6 +189,10 @@ public class ONStructureTask extends AbstractStructuralVerification{
 	@Override
 	public Collection<String> getGroupErrors() {
 		return getGroupErrorsSetRefs(groupErrors);
+	}
+
+	public Map<ONGroup, List<Marking>> getReachableMarkings() {
+		return reachableMarkings;
 	}
 
 	@Override

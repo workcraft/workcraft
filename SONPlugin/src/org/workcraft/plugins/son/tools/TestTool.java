@@ -18,6 +18,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.ASONAlg;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.EstimationAlg;
@@ -37,9 +38,12 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.TimeInconsistencyException;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
+import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
+import org.workcraft.plugins.son.util.Marking;
+import org.workcraft.plugins.son.util.MarkingRef;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
@@ -68,12 +72,13 @@ public class TestTool extends AbstractTool implements Tool{
 		System.out.println("================================================================================");
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
+		//reachableMarkingsTest(net);
 		//esitmationTest(net);
 		//timeTest(net);
 		//bhvTimeTest(net);
 		//getScenario(net);
 
-	//	dfsTest(net);
+		dfsTest(net);
 		//outputBefore(net);
 		//phaseTest(net);
 		//csonCycleTest(net);
@@ -88,6 +93,21 @@ public class TestTool extends AbstractTool implements Tool{
 		//conditionOutputTest(vnet);
 	}
 
+	private void reachableMarkingsTest(SON net){
+		ASONAlg alg = new ASONAlg(net);
+		for(ONGroup group : net.getGroups()){
+			try {
+				Collection<Marking> markings = alg.getReachableMarkings(group);
+				for(Marking marking : markings){
+					System.out.println();
+					for(Node node : marking)
+						System.out.print(net.getNodeReference(node) + ", ");
+				}
+			} catch (UnboundedException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+	}
 
 //	private void esitmationTest(SON net){
 //		EstimationAlg timeAlg = new EstimationAlg(net, new Interval(10, 10), Granularity.YEAR_YEAR);
@@ -181,8 +201,9 @@ public class TestTool extends AbstractTool implements Tool{
 	private void dfsTest(SON net){
 		PathAlgorithm alg = new PathAlgorithm(net);
 		RelationAlgorithm alg2 = new RelationAlgorithm(net);
-		Collection<Path> result = alg.dfs3(alg2.getInitial(net.getGroups().iterator().next().getComponents()).iterator().next(),
-				alg2.getFinal(net.getGroups().iterator().next().getComponents()).iterator().next(),
+		ONGroup g = net.getGroups().iterator().next();
+		Collection<Path> result = alg.getPaths(alg2.getInitial(g).iterator().next(),
+				alg2.getFinal(g).iterator().next(),
 				net.getGroups().iterator().next().getComponents());
 
 		for(Path path : result){
@@ -235,17 +256,14 @@ public class TestTool extends AbstractTool implements Tool{
 		BSONAlg alg = new BSONAlg(net);
 
 		System.out.println("phase test");
-		for(ONGroup group : alg.getUpperGroups(net.getGroups())){
-			System.out.println("group = " + net.getNodeReference(group));
-			for(Condition c : group.getConditions()){
-				System.out.println("condition = " + net.getNodeReference(c));
-				for(Phase phase : alg.getPhases(c)){
-					System.out.println("phase = " + phase.toString(net));
-				}
-				System.out.println();
-			}
-		}
+		for(Condition c : alg.getAllPhases().keySet()){
+			System.out.println("condition = " + net.getNodeReference(c));
 
+			for(Phase phase : alg.getAllPhases().get(c)){
+				System.out.println("phase = " + phase.toString(net));
+			}
+
+		}
 	}
 
 	private void syncCycleTest(SON net){

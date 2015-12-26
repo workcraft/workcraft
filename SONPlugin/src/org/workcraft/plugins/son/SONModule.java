@@ -49,7 +49,7 @@ public class SONModule implements Module{
 		//time analysis
 		pm.registerClass(Tool.class, TimeValueSetter.class);
 		pm.registerClass(Tool.class, TimeValueDisable.class);
-		pm.registerClass(Tool.class, TimeValueEstimator.class);
+		//pm.registerClass(Tool.class, TimeValueEstimator.class);
 		pm.registerClass(Tool.class, TimeConsistencyChecker.class);
 	}
 

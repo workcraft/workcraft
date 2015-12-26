@@ -13,7 +13,7 @@ import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Phase;
 
-public class ErrorTracingAlg extends RelationAlgorithm{
+public class ErrorTracingAlg extends SimulationAlg{
 
 	private SON net;
 	private BSONAlg bsonAlg;
@@ -99,7 +99,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 				((Condition)post).setErrors(err);
 				//set err number for lower condition
 				if(!isLower)
-					for(Condition min : bsonAlg.getMinimalPhase(phases.get(post))){
+					for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
 						((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition)post).getErrors());
 					}
 			}
@@ -132,7 +132,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 					((Condition)post).setErrors(err);
 					//set err number for upper conditions
 					if(!isLower)
-						for(Condition min : bsonAlg.getMinimalPhase(phases.get(post))){
+						for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
 							((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition)post).getErrors());
 						}
 				}
@@ -210,7 +210,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 				((Condition)post).setErrors(err);
 				//set err number for lower condition
 				if(!isLower)
-					for(Condition min : bsonAlg.getMinimalPhase(phases.get(post))){
+					for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
 						((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 					}
 				((Condition)post).setErrors(((Condition)post).getErrors() - err);
@@ -244,7 +244,7 @@ public class ErrorTracingAlg extends RelationAlgorithm{
 					((Condition)post).setErrors(err);
 					//set err number for upper conditions
 					if(!isLower)
-						for(Condition min : bsonAlg.getMinimalPhase(phases.get(post))){
+						for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
 							((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
 						}
 					((Condition)post).setErrors(((Condition)post).getErrors() - err);

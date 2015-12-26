@@ -1,5 +1,6 @@
 package org.workcraft.plugins.son.algorithm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,19 +49,19 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for(ONGroup group : net.getGroups()){
 			if(upperGroups.contains(group))
-				for(Condition c : getInitial(group.getConditions())){
+				for(Condition c : getInitial(group)){
 					result.put(c, true);
 				}
 			//an initial state of a lower group is the initial state of SON
 			//if all of its upper conditions are the initial states.
 			else if(lowerGroups.contains(group)){
-				for(Condition c : getInitial(group.getConditions())){
+				for(Condition c : getInitial(group)){
 					boolean isInitial = true;
 					Collection<Condition> set = bsonAlg.getUpperConditions(c);
 					for(Condition c2 : set){
 						if(!isInitial(c2)){
 							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getInitial(group2.getConditions())))
+							if(!set.containsAll(getInitial(group2)))
 								isInitial = false;
 						}
 					}
@@ -69,7 +70,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 			else{
-				for(Condition c : getInitial(group.getConditions())){
+				for(Condition c : getInitial(group)){
 					result.put(c, true);
 				}
 			}
@@ -88,18 +89,18 @@ public class SimulationAlg extends RelationAlgorithm {
 
 		for(ONGroup group : net.getGroups()){
 			if(upperGroups.contains(group))
-				for(Condition c : getFinal(group.getConditions())){
+				for(Condition c : getFinal(group)){
 					result.put(c, true);
 				}
 
 			else if(lowerGroups.contains(group)){
-				for(Condition c : getFinal(group.getConditions())){
+				for(Condition c : getFinal(group)){
 					boolean isFinal = true;
 					Collection<Condition> set = bsonAlg.getUpperConditions(c);
 					for(Condition c2 : set){
 						if(!isInitial(c2)){
 							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getFinal(group2.getConditions())))
+							if(!set.containsAll(getFinal(group2)))
 								isFinal = false;
 						}
 					}
@@ -108,7 +109,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				}
 			}
 			else{
-				for(Condition c : getFinal(group.getConditions())){
+				for(Condition c : getFinal(group)){
 					result.put(c, true);
 				}
 			}
@@ -244,7 +245,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Node pre : getPrePNSet(e)){
 					Condition c = (Condition)pre;
-					Collection<Phase> phase = phases.get(c);
+					Collection<Phase> phase = getActivatedPhases(phases.get(c));
 					Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
 					for(Condition c2 : max)
 						if(!c2.isMarked())
@@ -265,6 +266,18 @@ public class SimulationAlg extends RelationAlgorithm {
 		return true;
 	}
 
+	protected ArrayList<Phase> getActivatedPhases(Collection<Phase> phases){
+		ArrayList<Phase> result = new ArrayList<Phase>();
+		for(Phase phase : phases){
+			for(Condition c : phase){
+				if(c.isMarked()){
+					result.add(phase);
+					break;
+				}
+			}
+		}
+		return result;
+	}
 
 	private Step getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases){
 		Step result = new Step();
@@ -358,12 +371,11 @@ public class SimulationAlg extends RelationAlgorithm {
 			if(group.getComponents().contains(e)){
 				for(Node post : getPostPNSet(e)){
 					Condition c = (Condition)post;
-					Collection<Phase> phase = phases.get(c);
+					Collection<Phase> phase = getActivatedPhases(phases.get(c));
 					Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
 					for(Condition c2 : min)
 						if(!c2.isMarked())
-							return false;
-				}
+							return false;				}
 			return true;
 			}
 		}
@@ -470,7 +482,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			for(Node post : net.getPostset(e)){
 				if((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
 					if(((PlaceNode)post).isMarked())
-						throw new UnboundedException(net.getNodeReference(post));
+						throw new UnboundedException(net.getNodeReference(post), post);
 					else
 						((PlaceNode)post).setMarked(true);
 			}
@@ -490,7 +502,7 @@ public class SimulationAlg extends RelationAlgorithm {
 				if(bsonAlg.isUpperCondition(pre)){
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
-					//backward checking for all upper conditions, if there has no marked condition, remvoe the token
+					//backward checking for all upper conditions, if there has no marked condition, remove the token
 					boolean hasMarking = false;
 					for(Condition c2 : maxSet){
 						for(Condition c3 : bsonAlg.getUpperConditions(c2)){
@@ -508,9 +520,10 @@ public class SimulationAlg extends RelationAlgorithm {
 				if(bsonAlg.isUpperCondition(post)){
 					Condition c = (Condition)post;
 					Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
-					for(Condition c2 : minSet)
-						if(!c2.isMarked())
-							c2.setMarked(true);
+					for(Condition min : minSet){
+						if(isInitial(min) && !min.isMarked())
+							min.setMarked(true);
+					}
 				}
 			}
 		}
@@ -527,7 +540,7 @@ public class SimulationAlg extends RelationAlgorithm {
 			for(Node pre : net.getPreset(e)){
 				if((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
 					if(((PlaceNode)pre).isMarked())
-						throw new UnboundedException(net.getNodeReference(pre));
+						throw new UnboundedException(net.getNodeReference(pre), pre);
 					else
 						((PlaceNode)pre).setMarked(true);
 			}
@@ -565,9 +578,10 @@ public class SimulationAlg extends RelationAlgorithm {
 				if(bsonAlg.isUpperCondition(pre)){
 					Condition c = (Condition)pre;
 					Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
-					for(Condition c2 : maxSet)
-						if(!c2.isMarked())
-							c2.setMarked(true);
+					for(Condition max : maxSet){
+						if(isFinal(max) && !max.isMarked())
+							max.setMarked(true);
+					}
 				}
 			}
 		}

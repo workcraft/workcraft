@@ -86,7 +86,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		//workcraft invoke this method before activate method
 		visualNet = (VisualSON)editor.getModel();
 		net = (SON)visualNet.getMathModel();
-		net.refreshColor();
+		net.refreshAllColor();
 
 		startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-start.svg"), "Generate");
 		resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-reset.svg"), "Reset");
@@ -237,7 +237,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		}else{
 			scenarioRef.clear();
 			net.clearMarking();
-			net.refreshColor();
+			net.refreshAllColor();
 			scenarioTable.setIsCellColor(false);
 			saveList.setPosition(0);
 			scenarioGenerator(editor);
@@ -272,7 +272,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
 		BlockConnector.blockInternalConnector(visualNet);
 		exportScenarios();
 		scenarioRef.clear();
-		net.refreshColor();
+		net.refreshAllColor();
 		net.clearMarking();
 	}
 

@@ -16,6 +16,7 @@ import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.ReachabilityAlg;
+import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
@@ -44,6 +45,11 @@ public class ReachabilityTask implements Task<VerificationResult>{
 		this.we = we;
 		net = (SON)we.getModelEntry().getMathModel();
 
+		if(hasConflict()){
+			JOptionPane.showMessageDialog(null, "Model has alternative behaviours", "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
 		bsonAlg = new BSONAlg(net);
 		reachAlg = new ReachabilityAlg (net);
 
@@ -55,6 +61,17 @@ public class ReachabilityTask implements Task<VerificationResult>{
 			if(node.isMarked())
 				markingRefs.add(net.getNodeReference(node));
 		}
+	}
+
+	private boolean hasConflict(){
+		RelationAlgorithm alg = new RelationAlgorithm(net);
+		for(Condition c : net.getConditions()){
+			if(alg.hasPostConflictEvents(c))
+				return true;
+			else if(alg.hasPreConflictEvents(c))
+				return true;
+		}
+		return false;
 	}
 
 	@Override

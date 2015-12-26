@@ -15,7 +15,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.son.tools.ErrTracingDisable;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.util.Interval;
 
 
@@ -50,7 +50,7 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 	}
 
 	public void drawFault(DrawRequest r){
-		if (ErrTracingDisable.showErrorTracing()) {
+		if (SONSettings.isErrorTracing()) {
 			Graphics2D g = r.getGraphics();
 			GlyphVector glyphVector=null;
 			Rectangle2D labelBB=null;

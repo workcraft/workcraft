@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 
@@ -19,12 +20,16 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 	private Collection<Path> cycleErrors = new ArrayList<Path>();
 	private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
 
+	private CSONCycleAlg csonCycleAlg;
+
 	private int errNumber = 0;
 	private int warningNumber = 0;
 
 	public CSONStructureTask(SON net){
 		super(net);
 		this.net = net;
+
+		csonCycleAlg = new CSONCycleAlg(net);
 	}
 
 	public void task(Collection<ONGroup> groups){
@@ -109,6 +114,11 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 				result.add(cPlace);
 		}
 		return result;
+	}
+
+
+	public CSONCycleAlg getCSONCycleAlg(){
+		return csonCycleAlg;
 	}
 
 	@Override

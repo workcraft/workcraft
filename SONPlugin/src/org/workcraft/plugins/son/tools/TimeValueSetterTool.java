@@ -553,7 +553,7 @@ public class TimeValueSetterTool extends AbstractTool{
 		timeAlg = new ConsistencyAlg(net);
 		settings = new TimeEstimatorSettings();
 
-		net.refreshColor();
+		net.refreshAllColor();
 		net.clearMarking();
 
 		//set property states for initial and final states
@@ -574,13 +574,13 @@ public class TimeValueSetterTool extends AbstractTool{
 			timeAlg.removeProperties();
 		}
 		SONSettings.setTimeVisibility(visibility);
-		net.refreshColor();
+		net.refreshAllColor();
 		net.clearMarking();
 	}
 
 	@Override
 	public void mousePressed(GraphEditorMouseEvent e){
-		net.refreshColor();
+		net.refreshNodeColor();
 
 		Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
 		if( node instanceof VisualSONConnection){
@@ -591,6 +591,7 @@ public class TimeValueSetterTool extends AbstractTool{
 			if(con.getSemantics()==Semantics.PNLINE){
 				((VisualSONConnection) node).setColor(selectedColor);
 				updateTimePanel(e.getEditor(), node);
+				net.setTimeColor(selection, Color.BLACK);
 				return;
 			}
 		}
@@ -603,6 +604,7 @@ public class TimeValueSetterTool extends AbstractTool{
 				estimatorButton.setEnabled(true);
 				((VisualBlock) node2).setForegroundColor(selectedColor);
 				updateTimePanel(e.getEditor(), node2);
+				net.setTimeColor(selection, Color.BLACK);
 				return;
 			}
 		}
@@ -622,6 +624,7 @@ public class TimeValueSetterTool extends AbstractTool{
 				visualSelection = node3;
 				((VisualComponent) node3).setForegroundColor(selectedColor);
 				updateTimePanel(e.getEditor(), node3);
+				net.setTimeColor(selection, Color.BLACK);
 			}
 	}
 

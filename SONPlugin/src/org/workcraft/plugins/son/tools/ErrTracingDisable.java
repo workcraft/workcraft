@@ -2,12 +2,11 @@ package org.workcraft.plugins.son.tools;
 
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;
+import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ErrTracingDisable implements Tool{
-
-	private static boolean showErrorTracing = false;
 
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, SON.class);
@@ -18,15 +17,11 @@ public class ErrTracingDisable implements Tool{
 	}
 
 	public String getDisplayName(){
-		return "Enable/disable error tracing";
+		return "Enable/Disable error tracing";
 	}
 
 	public void run(WorkspaceEntry we){
-		showErrorTracing = !showErrorTracing;
-	}
-
-	public static boolean showErrorTracing(){
-		return showErrorTracing;
+		SONSettings.setErrorTracing(!SONSettings.isErrorTracing());
 	}
 
 }

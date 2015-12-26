@@ -220,7 +220,7 @@ public class ParallelSimDialog  extends JDialog{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				run = 1;
-				net.refreshColor();
+				net.refreshAllColor();
 				setVisible(false);
 			}
 		});
@@ -231,7 +231,7 @@ public class ParallelSimDialog  extends JDialog{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				run = 2;
-				net.refreshColor();
+				net.refreshAllColor();
 				setVisible(false);
 			}
 		});
@@ -304,7 +304,7 @@ public class ParallelSimDialog  extends JDialog{
 		{
 		  public void windowClosing(WindowEvent e)
 		  {
-			  getSONModel().refreshColor();
+			  getSONModel().refreshAllColor();
 		  }
 		});
 
