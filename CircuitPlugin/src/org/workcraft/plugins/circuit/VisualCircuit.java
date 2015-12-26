@@ -24,9 +24,6 @@ package org.workcraft.plugins.circuit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -295,8 +292,7 @@ public class VisualCircuit extends AbstractVisualModel {
 	private WorkspaceEntry getWorkspaceEntry() {
 		Framework framework = Framework.getInstance();
 		GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-		WorkspaceEntry we = editor.getWorkspaceEntry();
-		return we;
+		return (editor == null ? null : editor.getWorkspaceEntry());
 	}
 
 	@NoAutoSerialisation
@@ -309,12 +305,15 @@ public class VisualCircuit extends AbstractVisualModel {
 				String basePath = base.getPath().replaceAll("\\\\", "/");
 				String filePath = file.getPath().replaceAll("\\\\", "/");
 				if (filePath.startsWith(basePath)) {
-					String relativePath = filePath.substring(basePath.length(),filePath.length());
-					while (relativePath.startsWith("/")) {
-						relativePath = relativePath.substring(1, relativePath.length());
+					WorkspaceEntry we = getWorkspaceEntry();
+					File newBase = (we == null ? null : we.getFile().getParentFile());
+					if (newBase != null) {
+						String relativePath = filePath.substring(basePath.length(),filePath.length());
+						while (relativePath.startsWith("/")) {
+							relativePath = relativePath.substring(1, relativePath.length());
+						}
+						file = new File(newBase, relativePath);
 					}
-					base = getWorkspaceEntry().getFile().getParentFile();
-					file = new File(base, relativePath);
 				}
 			}
 			break;
