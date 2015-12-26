@@ -92,6 +92,10 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
 	}
 
+	final public Collection<Connection> getConnections() {
+		return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
+	}
+
 	public boolean isUnfireEnabled(Transition t) {
 		return isUnfireEnabled (this, t);
 	}

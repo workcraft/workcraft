@@ -2,11 +2,13 @@ package org.workcraft.plugins.petri;
 
 import java.util.Collection;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
 
 public interface PetriNetModel extends Model {
 	public Collection<Transition> getTransitions();
 	public Collection<Place> getPlaces();
+	public Collection<Connection> getConnections();
 
 	public boolean isEnabled(Transition t);
 	public void fire(Transition t);

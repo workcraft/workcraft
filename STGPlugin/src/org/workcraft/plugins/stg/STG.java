@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -129,6 +130,11 @@ public class STG extends AbstractMathModel implements STGModel {
 	@Override
 	final public Collection<Place> getPlaces() {
 		return Hierarchy.getDescendantsOfType(getRoot(), Place.class);
+	}
+
+	@Override
+	final public Collection<Connection> getConnections() {
+		return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
 	}
 
 	@Override
