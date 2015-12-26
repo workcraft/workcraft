@@ -25,6 +25,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -299,20 +301,25 @@ public class VisualCircuit extends AbstractVisualModel {
 
 	@NoAutoSerialisation
 	public File getEnvironmentFile() {
-		File result = null;
+		File file = null;
 		for (Environment env: getEnvironments()) {
-			result = env.getFile();
+			file = env.getFile();
 			File base = env.getBase();
 			if (base != null) {
-				URI relativeUri = base.toURI().relativize(result.toURI());
-				if (!relativeUri.equals(result.toURI())) {
+				String basePath = base.getPath().replaceAll("\\\\", "/");
+				String filePath = file.getPath().replaceAll("\\\\", "/");
+				if (filePath.startsWith(basePath)) {
+					String relativePath = filePath.substring(basePath.length(),filePath.length());
+					while (relativePath.startsWith("/")) {
+						relativePath = relativePath.substring(1, relativePath.length());
+					}
 					base = getWorkspaceEntry().getFile().getParentFile();
-					result = new File(base, relativeUri.getPath());
+					file = new File(base, relativePath);
 				}
 			}
 			break;
 		}
-		return result;
+		return file;
 	}
 
 	@NoAutoSerialisation
