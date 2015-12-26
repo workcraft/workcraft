@@ -2,22 +2,23 @@
 
 unsupported_plugin_dirs="BalsaPluginBase BalsaWrapperGenerator DesiJPlugi"
 model_plugin_dirs="
-    CircuitPlugin 
-    CpogsPlugin 
-    DfsPlugin 
-    FsmPlugin 
-    FstPlugin 
-    GraphPlugin 
-    PetriNetPlugin 
-    PolicyNetPlugin 
-    SONPlugin 
-    STGPlugin 
+    CircuitPlugin
+    CpogsPlugin
+    DfsPlugin
+    FsmPlugin
+    FstPlugin
+    GraphPlugin
+    PetriNetPlugin
+    PolicyNetPlugin
+    SONPlugin
+    STGPlugin
     XmasPlugin"
 tool_plugin_dirs="
-    MpsatSynthesisPlugin 
-    MpsatVerificationPlugin 
-    PcompPlugin 
-    PunfPlugin 
+    MpsatSynthesisPlugin
+    MpsatVerificationPlugin
+    PcompPlugin
+    PunfPlugin
+    PetrifyExtraPlugin
     PetrifyPlugin"
 third_party_dirs="ThirdParty"
 doc_dirs="overview help tutorial"

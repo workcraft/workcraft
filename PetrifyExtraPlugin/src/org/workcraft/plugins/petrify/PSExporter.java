@@ -54,15 +54,16 @@ public class PSExporter implements Exporter {
 		final Framework framework = Framework.getInstance();
 		final Result<? extends Object> result = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g");
 
-		if (result.getOutcome() != Outcome.FINISHED)
-		{
-			if (result.getOutcome() == Outcome.CANCELLED)
+		if (result.getOutcome() != Outcome.FINISHED) {
+			if (result.getOutcome() == Outcome.CANCELLED) {
 				return;
-			else
-				if (result.getCause() != null)
+			} else {
+				if (result.getCause() != null) {
 					throw new SerialisationException (result.getCause());
-				else
+				} else {
 					throw new SerialisationException ("Could not export model as .g");
+				}
+			}
 		}
 
 		File ps = File.createTempFile("workcraft", ".ps");
@@ -72,20 +73,18 @@ public class PSExporter implements Exporter {
 		final Result<? extends ExternalProcessResult> draw_astgResult = framework.getTaskManager().execute(task, "Executing draw_astg");
 
 		if (draw_astgResult.getOutcome() != Outcome.FINISHED) {
-			if (draw_astgResult.getOutcome() == Outcome.CANCELLED)
+			if (draw_astgResult.getOutcome() == Outcome.CANCELLED) {
 				return;
-
-			else
-				if (draw_astgResult.getCause() != null)
+			} else {
+				if (draw_astgResult.getCause() != null) {
 					throw new SerialisationException (draw_astgResult.getCause());
-				else
+				} else {
 					throw new SerialisationException ("draw_astg failed with return code " + draw_astgResult.getReturnValue().getReturnCode() + "\n\n" +
 							new String(draw_astgResult.getReturnValue().getErrors()) +"\n");
-
+				}
+			}
 		}
-
 		FileUtils.copyFileToStream(ps, out);
-
 		dotG.delete();
 		ps.delete();
 	}
@@ -99,14 +98,16 @@ public class PSExporter implements Exporter {
 	}
 
 	public int getCompatibility(Model model) {
-		if (model instanceof STGModel)
+		if (model instanceof STGModel) {
 			return Exporter.GENERAL_COMPATIBILITY;
-		else
+		} else {
 			return Exporter.NOT_COMPATIBLE;
+		}
 	}
 
 	@Override
 	public UUID getTargetFormat() {
 		return Format.PS;
 	}
+
 }

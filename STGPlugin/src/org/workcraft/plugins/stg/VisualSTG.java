@@ -49,8 +49,8 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -75,6 +75,7 @@ public class VisualSTG extends AbstractVisualModel {
 		if (root == null) {
 			try {
 				createDefaultFlatStructure();
+				fixReadArcs();
 				// FIXME: Implicit places should not appear in the first place.
 				fixVisibilityOfImplicitPlaces();
 			} catch (NodeCreationException e) {
@@ -93,6 +94,10 @@ public class VisualSTG extends AbstractVisualModel {
 				}
 			}
 		}
+	}
+
+	private void fixReadArcs() {
+		PetriNetUtils.convertSelectedDualArcsToReadArcs(this);
 	}
 
 	@Override

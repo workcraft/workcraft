@@ -69,7 +69,7 @@ public class DotGParser implements DotGParserConstants {
                 Node node = stg.getNodeByReference (reference);
                 if (node == null) {
                         SignalTransition st = stg.createSignalTransition();
-                        stg.setName (st, reference, true);
+                        stg.setName(st, reference, true);
                         if (signals.containsKey(name)) {
                                 st.setSignalType(signals.get(name));
                                 node = st;
@@ -86,7 +86,7 @@ public class DotGParser implements DotGParserConstants {
                         ConnectionResult result = stg.connect(first, second);
                         STGPlace implicitPlace = result.getImplicitPlace();
                         if (implicitPlace != null) {
-                                implicitPlaces.put (Pair.of (first, second), implicitPlace);
+                                implicitPlaces.put(Pair.of(first, second), implicitPlace);
                                 implicitPlace.setImplicit(true);
                         }
                 } catch (InvalidConnectionException e) {

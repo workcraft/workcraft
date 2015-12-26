@@ -1,6 +1,5 @@
 package org.workcraft.plugins.interop;
 
-import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,7 +15,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
-import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.serialisation.Format;
@@ -38,7 +36,6 @@ public class DotExporter implements Exporter {
 			this.destinations = destinations;
 			this.comment = comment;
 		}
-
 	}
 
 	public static void export(Collection<ExportNode> nodes, OutputStream outStream) throws IOException {

@@ -36,26 +36,14 @@ public class PetrifyUtilitySettings implements Settings {
 
 	private static final String keyPetrifyCkeyPmmand = prefix + ".petrify.command";
 	private static final String keyPetrifyArgs = prefix + ".petrify.args";
-	private static final String keyDrawAstgCommand = prefix + ".draw_astg.command";
-	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
-	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
-	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
 	private static final String keyUseBundledVersion = prefix + ".useBundledVersion";
 
 	private static final String defaultPetrifyCommand = "petrify";
 	private static final String defaultPetrifyArgs = "";
-	private static final String defaultDrawAstgCommand = "draw_astg";
-	private static final String defaultDrawAstgArgs = "";
-	private static final String defaultWriteSgCommand = "write_sg";
-	private static final String defaultWriteSgArgs = "";
 	private static Boolean defaultUseBundledVersion = true;
 
 	private static String petrifyCommand = defaultPetrifyCommand;
 	private static String petrifyArgs = defaultPetrifyArgs;
-	private static String drawAstgCommand = defaultDrawAstgCommand;
-	private static String drawAstgArgs = defaultDrawAstgArgs;
-	private static String writeSgCommand = defaultWriteSgCommand;
-	private static String writeSgArgs = defaultWriteSgArgs;
 	private static Boolean useBundledVersion = defaultUseBundledVersion;
 
 	public PetrifyUtilitySettings() {
@@ -79,46 +67,6 @@ public class PetrifyUtilitySettings implements Settings {
 			}
 		});
 
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "WriteSG command", String.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, String value) {
-				setWriteSgCommand(value);
-			}
-			protected String getter(PetrifyUtilitySettings object) {
-				return getWriteSgCommand();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional parameters for WriteSG", String.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, String value) {
-				setWriteSgArgs(value);
-			}
-			protected String getter(PetrifyUtilitySettings object) {
-				return getWriteSgArgs();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "DrawASTG command", String.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, String value) {
-				setDrawAstgCommand(value);
-			}
-			protected String getter(PetrifyUtilitySettings object) {
-				return getDrawAstgCommand();
-			}
-		});
-
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional parameters for DrawASTG", String.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, String value) {
-				setDrawAstgArgs(value);
-			}
-			protected String getter(PetrifyUtilitySettings object) {
-				return getDrawAstgArgs();
-			}
-		});
-
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
 				this, "Use bundled version (in " + BUNDLED_DIRECTORY + ")", Boolean.class, true, false, false) {
 			protected void setter(PetrifyUtilitySettings object, Boolean value) {
@@ -139,10 +87,6 @@ public class PetrifyUtilitySettings implements Settings {
 	public void load(Config config) {
 		setPetrifyCommand(config.getString(keyPetrifyCkeyPmmand, defaultPetrifyCommand));
 		setPetrifyArgs(config.getString(keyPetrifyArgs, defaultPetrifyArgs));
-		setDrawAstgCommand(config.getString(keyDrawAstgCommand, defaultDrawAstgCommand));
-		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
-		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
-		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
 		setUseBundledVersion(config.getBoolean(keyUseBundledVersion, defaultUseBundledVersion));
 	}
 
@@ -150,10 +94,6 @@ public class PetrifyUtilitySettings implements Settings {
 	public void save(Config config) {
 		config.set(keyPetrifyCkeyPmmand, getPetrifyCommand());
 		config.set(keyPetrifyArgs, getPetrifyArgs());
-		config.set(keyDrawAstgCommand, getDrawAstgCommand());
-		config.set(keyDrawAstgArgs, getDrawAstgArgs());
-		config.set(keyWriteSgCommand, getWriteSgCommand());
-		config.set(keyWriteSgArgs, getWriteSgArgs());
 		config.setBoolean(keyUseBundledVersion, getUseBundledVersion());
 	}
 
@@ -164,7 +104,7 @@ public class PetrifyUtilitySettings implements Settings {
 
 	@Override
 	public String getName() {
-		return "Petrify toolset";
+		return "Petrify";
 	}
 
 	public static String getPetrifyCommand() {
@@ -181,38 +121,6 @@ public class PetrifyUtilitySettings implements Settings {
 
 	public static void setPetrifyArgs(String value) {
 		petrifyArgs = value;
-	}
-
-	public static String getDrawAstgCommand() {
-		return drawAstgCommand;
-	}
-
-	public static void setDrawAstgCommand(String value) {
-		drawAstgCommand = value;
-	}
-
-	public static String getDrawAstgArgs() {
-		return drawAstgArgs;
-	}
-
-	public static void setDrawAstgArgs(String value) {
-		drawAstgArgs = value;
-	}
-
-	public static String getWriteSgCommand() {
-		return writeSgCommand;
-	}
-
-	public static void setWriteSgCommand(String value) {
-		writeSgCommand = value;
-	}
-
-	public static String getWriteSgArgs() {
-		return writeSgArgs;
-	}
-
-	public static void setWriteSgArgs(String value) {
-		writeSgArgs = value;
 	}
 
 	public static Boolean getUseBundledVersion() {

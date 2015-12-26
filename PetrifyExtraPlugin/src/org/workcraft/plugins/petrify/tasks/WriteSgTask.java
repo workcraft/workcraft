@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
+import org.workcraft.plugins.petrify.PetrifyExtraUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -41,14 +41,14 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolName = PetrifyUtilitySettings.getWriteSgCommand();
-		if (PetrifyUtilitySettings.getUseBundledVersion()) {
-			toolName = FileUtils.getToolFileName(PetrifyUtilitySettings.BUNDLED_DIRECTORY, toolName);
+		String toolName = PetrifyExtraUtilitySettings.getWriteSgCommand();
+		if (PetrifyExtraUtilitySettings.getUseBundledVersion()) {
+			toolName = FileUtils.getToolFileName(PetrifyExtraUtilitySettings.BUNDLED_DIRECTORY, toolName);
 		}
 		command.add(toolName);
 
 		// Extra arguments
-		for (String arg : PetrifyUtilitySettings.getWriteSgArgs().split(" ")) {
+		for (String arg : PetrifyExtraUtilitySettings.getWriteSgArgs().split(" ")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}

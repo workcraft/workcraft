@@ -2,6 +2,7 @@ package org.workcraft.plugins.petri;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -24,6 +25,45 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 
 public class PetriNetUtils {
+
+
+	public static void convertSelectedDualArcsToReadArcs(final VisualModel visualModel) {
+		convertDualArcsToReadArcs(visualModel, getSelectedDualArcs(visualModel));
+	}
+
+	public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedDualArcs(final VisualModel visualModel) {
+		HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
+		HashSet<VisualConnection> consumingArcs = PetriNetUtils.getVisualConsumingArcs(visualModel);
+		HashSet<VisualConnection> producingArcs = PetriNetUtils.getVisualProducerArcs(visualModel);
+		for (VisualConnection consumingArc: consumingArcs) {
+			for (VisualConnection producingArc: producingArcs) {
+				boolean isDualArcs = ((consumingArc.getFirst() == producingArc.getSecond())
+						&& (consumingArc.getSecond() == producingArc.getFirst()));
+				Collection<Node> selection = visualModel.getSelection();
+				boolean selectedArcsOrNoSelection = (selection.isEmpty() || selection.contains(consumingArc) || selection.contains(producingArc));
+				if (isDualArcs && selectedArcsOrNoSelection) {
+					dualArcs.add(new Pair<VisualConnection, VisualConnection>(consumingArc, producingArc));
+				}
+			}
+		}
+		return dualArcs;
+	}
+
+
+	public static HashSet<VisualReadArc> convertDualArcsToReadArcs(final VisualModel visualModel,
+			HashSet<Pair<VisualConnection, VisualConnection>> dualArcs) {
+		HashSet<VisualReadArc> readArcs = new HashSet<>(dualArcs.size());
+		for (Pair<VisualConnection, VisualConnection> dualArc: dualArcs) {
+			VisualConnection consumingArc = dualArc.getFirst();
+			VisualConnection producingArc = dualArc.getSecond();
+			VisualReadArc readArc = PetriNetUtils.convertDualArcToReadArc(visualModel, consumingArc, producingArc);
+			if (readArc instanceof VisualReadArc) {
+				readArcs.add(readArc);
+			}
+		}
+		return readArcs;
+	}
+
 
 	public static VisualReadArc convertDualArcToReadArc(VisualModel visualModel, VisualConnection consumingArc, VisualConnection producingArc) {
 		VisualReadArc readArc = null;
