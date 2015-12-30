@@ -39,9 +39,9 @@ public class PetrifyExtraUtilitySettings implements Settings {
 	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
 	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
 
-	private static final String defaultDrawAstgCommand = (DesktopApi.getOs().isWindows() ? "tools\\petrify\\draw_astg.exe" : "tools/petrify/draw_astg");
+	private static final String defaultDrawAstgCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\draw_astg.exe" : "tools/PetrifyTools/draw_astg");
 	private static final String defaultDrawAstgArgs = "";
-	private static final String defaultWriteSgCommand = (DesktopApi.getOs().isWindows() ? "tools\\petrify\\write_sg.exe" : "tools/petrify/write_sg");
+	private static final String defaultWriteSgCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\write_sg.exe" : "tools/PetrifyTools/write_sg");
 	private static final String defaultWriteSgArgs = "";
 
 	private static String drawAstgCommand = defaultDrawAstgCommand;

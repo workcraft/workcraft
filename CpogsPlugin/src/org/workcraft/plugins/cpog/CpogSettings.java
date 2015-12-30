@@ -45,11 +45,11 @@ public class CpogSettings implements Settings {
 	private static final int defaultCircuitSize = 4;
 	private static final String defaultClaspCommand = "clasp";
 	private static final String defaultMinisatCommand = "minisat";
-	private static final String defaultScencoCommand = (DesktopApi.getOs().isWindows() ? "tools\\scenco\\scenco.exe" : "tools/scenco/scenco");
-	private static final String defaultEspressoCommand = (DesktopApi.getOs().isWindows() ? "tools\\espresso\\espresso.exe" : "tools/espresso/espresso");
+	private static final String defaultScencoCommand = (DesktopApi.getOs().isWindows() ? "tools\\ScEnco\\scenco.exe" : "tools/ScEnco/scenco");
+	private static final String defaultEspressoCommand = (DesktopApi.getOs().isWindows() ? "tools\\Espresso\\espresso.exe" : "tools/Espresso/espresso");
 	private static final String defaultAbcFolder = "abc/";
 	private static final String defaultGatesLibrary = "90nm.genlib";
-	private static final String defaultPgminerCommand = (DesktopApi.getOs().isWindows() ? "tools\\pgminer\\pgminer.exe" : "tools/pgminer/pgminer");
+	private static final String defaultPgminerCommand = (DesktopApi.getOs().isWindows() ? "tools\\PGMiner\\pgminer.exe" : "tools/PGMiner/pgminer");
 	private static final boolean defaultUseSubscript = false;
 
 	private static SatSolver satSolver = defaultSatSolver;

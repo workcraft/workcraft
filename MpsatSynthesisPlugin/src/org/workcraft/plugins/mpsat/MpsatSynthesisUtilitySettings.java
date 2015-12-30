@@ -36,7 +36,7 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 	private static final String keyCommand = prefix + ".command";
 	private static final String keyExtraArgs = prefix + ".args";
 
-	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\unfolding\\mpsat.exe" : "tools/unfolding/mpsat");
+	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat");
 	private static final String defaultExtraArgs = "";
 
 	private static String command = defaultCommand;

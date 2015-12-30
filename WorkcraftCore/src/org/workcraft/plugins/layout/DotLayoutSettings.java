@@ -38,7 +38,7 @@ public class DotLayoutSettings implements Settings {
 	private static final String keyImportConnectionsShape  = prefix + ".importConnectionsShape";
 	private static final String keyDotCommand  = prefix + ".dotCommand";
 
-	private static final String defaultDotCommand = (DesktopApi.getOs().isWindows() ? "tools\\dot\\dot.exe" : "dot");
+	private static final String defaultDotCommand = (DesktopApi.getOs().isWindows() ? "tools\\GraphvizMinimal\\dot.exe" : "dot");
 	private static final boolean defaultImportConnectionsShape = true;
 
 	private static String dotCommand = defaultDotCommand;

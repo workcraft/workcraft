@@ -37,7 +37,7 @@ public class PetrifyUtilitySettings implements Settings {
 	private static final String keyPetrifyCkeyPmmand = prefix + ".petrify.command";
 	private static final String keyPetrifyArgs = prefix + ".petrify.args";
 
-	private static final String defaultPetrifyCommand = (DesktopApi.getOs().isWindows() ? "tools\\petrify\\petrify.exe" : "tools/petrify/petrify");
+	private static final String defaultPetrifyCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify");
 	private static final String defaultPetrifyArgs = "";
 
 	private static String petrifyCommand = defaultPetrifyCommand;

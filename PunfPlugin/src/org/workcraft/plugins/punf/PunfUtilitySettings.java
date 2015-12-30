@@ -38,7 +38,7 @@ public class PunfUtilitySettings implements Settings {
 	private static final String keyExtraArgs = prefix + ".args";
 	private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 
-	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\unfolding\\punf.exe" : "tools/unfolding/punf");
+	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf");
 	private static final String defaultExtraArgs = "-r";
 	private static final Boolean defaultUsePnmlUnfolding = true;
 

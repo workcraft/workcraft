@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.Config;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -30,7 +31,7 @@ public class CircuitSettings implements Settings {
 	private static final Double defaultBorderWidth = 0.06;
 	private static final Double defaultWireWidth = 0.04;
 	private static final boolean defaultSimplifyStg = true;
-	private static final String defaultGateLibrary = "tools/petrify/workcraft.lib";
+	private static final String defaultGateLibrary = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\workcraft.lib" : "tools/PetrifyTools/workcraft.lib");
 	private static final String defaultSubstitutionLibrary = "";
 	private static final boolean defaultOpenSynthesisResult = true;
 

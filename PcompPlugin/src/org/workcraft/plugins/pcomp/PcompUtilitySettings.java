@@ -37,7 +37,7 @@ public class PcompUtilitySettings implements Settings {
 	private static final String ketCommand = prefix + ".command";
 	private static final String keyExtraArgs = prefix + ".args";
 
-	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\unfolding\\pcomp.exe" : "tools/unfolding/pcomp");
+	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\pcomp.exe" : "tools/UnfoldingTools/pcomp");
 	private static final String defaultExtraArgs = "";
 
 	private static String command = defaultCommand;
