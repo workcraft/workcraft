@@ -22,8 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.workcraft.Tool;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
@@ -191,7 +191,7 @@ public class SyncTool implements Tool {
 	}
 
 	public void writesynclist() {
-		File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
+		File syncFile = XmasSettings.getTempVxmSyncFile();
 	    PrintWriter writer_s = null;
 	    try {
 			writer_s = new PrintWriter(syncFile);
@@ -445,7 +445,7 @@ public class SyncTool implements Tool {
 			num_nodes++;
 		}
 		//GEN JSON
-		File jsonFile = new File(XmasSettings.getVxmDirectory(), "JsonFile");
+		File jsonFile = XmasSettings.getTempVxmJsonFile();
 	    PrintWriter writer = null;
 
 		try

@@ -74,7 +74,7 @@ public class JsonExport implements Tool {
 	public Collection<VisualSourceComponent> src_nodes;
 
 	public void sync_reset() {
-		File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
+		File syncFile = XmasSettings.getTempVxmSyncFile();
 	    PrintWriter writer_s = null;
 	    try {
 			writer_s = new PrintWriter(syncFile);
@@ -212,7 +212,7 @@ public class JsonExport implements Tool {
 			num_nodes++;
 		}
 		//GEN JSON
-		File file = new File(XmasSettings.getVxmDirectory(), "JsonFile");
+		File file = XmasSettings.getTempVxmJsonFile();
 	    PrintWriter writer = null;
 		try
 		{

@@ -41,13 +41,12 @@ public class FileUtils {
 	public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
 	public static void copyFile(File in, File out)  throws IOException {
-		if (out.getParentFile().mkdirs()) {
-			FileOutputStream outStream = new FileOutputStream(out);
-			try {
-			   copyFileToStream(in, outStream);
-			} finally {
-				outStream.close();
-			}
+		out.getParentFile().mkdirs();
+		FileOutputStream outStream = new FileOutputStream(out);
+		try {
+			copyFileToStream(in, outStream);
+		} finally {
+			outStream.close();
 		}
 	}
 

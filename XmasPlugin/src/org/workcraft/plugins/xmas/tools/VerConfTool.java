@@ -116,7 +116,7 @@ public class VerConfTool implements Tool {
 	private void init_settings() {
 		Scanner sc = null;
 		try {
-			File vsettingsFile = new File(XmasSettings.getVxmDirectory(), "vsettings");
+			File vsettingsFile = XmasSettings.getTempVxmVsettingsFile();
 			sc=new Scanner(vsettingsFile);
 		} catch (FileNotFoundException e) {
 			System.err.println("Error: " + e.getMessage());
@@ -159,9 +159,8 @@ public class VerConfTool implements Tool {
 		String slname = (String)slcombob.getSelectedItem();
 
 	    PrintWriter writer = null;
-		try
-		{
-			File vsettingsFile = new File(XmasSettings.getVxmDirectory(), "vsettings");
+		try {
+			File vsettingsFile = XmasSettings.getTempVxmVsettingsFile();
 			writer = new PrintWriter(vsettingsFile);
 			writer.println("trace " + trname);
 			writer.println("level " + lvname);

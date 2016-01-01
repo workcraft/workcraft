@@ -174,25 +174,19 @@ public class PNetExt {
 
 	public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes, int syncflag) {
 		initlist();
-		File pncFile = new File(XmasSettings.getVxmDirectory(), "PNCFile");
+		File pncFile = XmasSettings.getTempVxmPncFile();
 	    PrintWriter writer = null;
-	    try
-	    {
+	    try {
 	    	writer = new PrintWriter(pncFile);
-	    	File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
+	    	File cpnFile = XmasSettings.getTempVxmCpnFile();
 	    	ReadFile(cpnFile.getAbsolutePath(), syncflag);
 	    	WriteNet(writer,src_nodes,fun_nodes, sw_nodes);
-	    }
-	    catch (Exception e)
-	    {
+	    } catch (Exception e) {
 	            e.printStackTrace();
-	    }
-	    finally
-	    {
-	            if ( writer != null )
-	            {
-	                writer.close();
-	            }
+	    } finally {
+	    	if ( writer != null ) {
+	    		writer.close();
+	        }
 	    }
 		System.out.println("");
 	}

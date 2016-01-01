@@ -965,7 +965,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 		sw_nodes=cnet.getSwitchComponents();
 
 		JsonFactory f = new MappingJsonFactory();
-		File cpnFile = new File(XmasSettings.getVxmDirectory(), "CPNFile");
+		File cpnFile = XmasSettings.getTempVxmCpnFile();
 	    PrintWriter writer = null;
 		//File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
 	    //PrintWriter writer_s = null;
@@ -973,10 +973,10 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	    {
 
 	    	initlist();
-	    	File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
+	    	File syncFile = XmasSettings.getTempVxmSyncFile();
 	    	Process_file(syncFile.getAbsolutePath());
 
-	    	File jsonFile = new File(XmasSettings.getVxmDirectory(), "JsonFile");
+	    	File jsonFile = XmasSettings.getTempVxmJsonFile();
 	    	init_parse(jsonFile.getAbsolutePath());
 	    	//create_slsto();
 
