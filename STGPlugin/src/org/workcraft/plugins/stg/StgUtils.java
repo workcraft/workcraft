@@ -10,9 +10,36 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 public class StgUtils {
 	public static final String DEVICE_FILE_NAME = "device";
 	public static final String ENVIRONMENT_FILE_NAME = "environment";
-	public static final String COMPOSITION_FILE_NAME = "composition";
 	public static final String SYSTEM_FILE_NAME = "system";
+	public static final String MODIFIED_FILE_SUFFIX = "_mod";
 	public static final String ASTG_FILE_EXT = ".g";
+
+	private static void replaceNamedTransition(STG stg, NamedTransition oldTransition, NamedTransition newTransition) {
+		for (Node pred: stg.getPreset(oldTransition)) {
+			try {
+				stg.connect(pred, newTransition);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
+		}
+
+		for (Node succ: stg.getPostset(oldTransition)) {
+			try {
+				stg.connect(newTransition, succ);
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
+		}
+		stg.remove(oldTransition);
+	}
+
+	static public DummyTransition convertSignalToDummyTransition(STG stg, SignalTransition signalTransition) {
+		Container container = (Container)signalTransition.getParent();
+		DummyTransition dummyTransition = stg.createDummyTransition(null, container);
+		replaceNamedTransition(stg, signalTransition, dummyTransition);
+		return dummyTransition;
+	}
+
 
 	private static void replaceNamedTransition(VisualSTG stg, VisualNamedTransition oldTransition, VisualNamedTransition newTransition) {
 		newTransition.copyPosition(oldTransition);

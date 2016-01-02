@@ -163,6 +163,17 @@ public class STG extends AbstractMathModel implements STGModel {
 				});
 	}
 
+	public Set<String> getSignalNames(Container container) {
+		if (container == null) {
+			container = getRoot();
+		}
+		Set<String> result = new HashSet<String>();
+		for (SignalTransition st : Hierarchy.getChildrenOfType(container, SignalTransition.class)) {
+			result.add(st.getSignalName());
+		}
+		return result;
+	}
+
 	public Set<String> getSignalNames(final Type type, Container container) {
 		if (container == null) {
 			container = getRoot();

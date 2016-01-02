@@ -13,6 +13,9 @@ import org.workcraft.util.FileUtils;
 
 public class MpsatSettings {
 
+	private static final String PROPERTY_FILE_PREFIX = "property";
+	private static final String PROPERTY_FILE_EXTENTION = ".re";
+
 	public enum SolutionMode {
 		MINIMUM_COST("Minimal cost solution"),
 		FIRST("First solution"),
@@ -188,10 +191,11 @@ public class MpsatSettings {
 			try {
 				File reachFile = null;
 				if (workingDirectory == null) {
-					reachFile = File.createTempFile("property", ".re");
+					reachFile = File.createTempFile(PROPERTY_FILE_PREFIX, PROPERTY_FILE_EXTENTION);
 					reachFile.deleteOnExit();
 				} else {
-					reachFile = new File(workingDirectory, "property.re");
+					String prefix = (name == null ? PROPERTY_FILE_PREFIX : PROPERTY_FILE_PREFIX + "-" + name.replaceAll("\\s", "_"));
+					reachFile = new File(workingDirectory, prefix + PROPERTY_FILE_EXTENTION);
 				}
 				FileUtils.dumpString(reachFile, getReach());
 				args.add("-d");

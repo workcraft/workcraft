@@ -16,6 +16,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -33,10 +34,10 @@ public class CircuitStgUtils {
 
 	public static CircuitToStgConverter createCircuitToStgConverter(VisualCircuit circuit) {
 		CircuitToStgConverter generator = new CircuitToStgConverter(circuit);
-		File envFile = circuit.getEnvironmentFile();
-		if ((envFile != null) && envFile.exists()) {
+		File envWorkFile = circuit.getEnvironmentFile();
+		if ((envWorkFile != null) && envWorkFile.exists()) {
 			STG devStg = (STG)generator.getStg().getMathModel();
-			STG systemStg = createSystemStg(devStg, envFile, circuit.getTitle());
+			STG systemStg = createSystemStg(devStg, envWorkFile, circuit.getTitle());
 			if (systemStg != null) {
 				generator = new CircuitToStgConverter(circuit, new VisualSTG(systemStg));
 			}
@@ -44,36 +45,47 @@ public class CircuitStgUtils {
 		return generator;
 	}
 
-	private static STG createSystemStg(STG devStg, File envFile, String title) {
+	private static STG createSystemStg(STG devStg, File envWorkFile, String title) {
 		STG systemStg = null;
 		String prefix = FileUtils.getTempPrefix(title);
 		File directory = FileUtils.createTempDirectory(prefix);
 		try {
 			File devStgFile = exportDevStg(devStg, directory);
-			File envStgFile = exportEnvStg(envFile, directory);
-			File compStgFile = createComposedStg(devStgFile, envStgFile, directory);
-			if (compStgFile != null) {
-				systemStg = importStg(compStgFile);
-				Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
-				restoreInputSignals(systemStg, inputSignalNames);
+			// Make sure that input signals of the device STG are also inputs in the environment STG
+			Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
+			Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+			File envStgFile = exportEnvStg(envWorkFile, inputSignalNames, outputSignalNames, directory);
+			// Generating .g for the whole system (circuit and environment)
+			File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+			Result<? extends ExternalProcessResult> pcompResult = composeDevWithEnv(devStgFile, envStgFile, directory, null);
+
+			switch (pcompResult.getOutcome()) {
+			case FINISHED:
+				FileUtils.writeAllText(sysStgFile, new String(pcompResult.getReturnValue().getOutput()));
+				break;
+			case CANCELLED:
+				sysStgFile = null;
+				break;
+			case FAILED:
+				throw new RuntimeException("Composition failed:\n" + pcompResult.getCause());
 			}
+			systemStg = importStg(sysStgFile);
 		} catch (Throwable e) {
+			System.err.println(e.getMessage());
 		} finally {
 			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 		return systemStg;
 	}
 
-	private static File exportEnvStg(File envFile, File directory) throws DeserialisationException, IOException {
-		File envStgFile = null;
-		if (envFile.getName().endsWith(StgUtils.ASTG_FILE_EXT)) {
-			envStgFile = envFile;
-		} else {
-			Framework framework = Framework.getInstance();
-			ModelEntry modelEntry = framework.loadFile(envFile);
-			STG envStg = (STG)modelEntry.getMathModel();
-			envStgFile = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
-		}
+	private static File exportEnvStg(File envFile, Set<String> inputSignalNames, Set<String> outputSignalNames,
+			File directory) throws DeserialisationException, IOException {
+
+		Framework framework = Framework.getInstance();
+		ModelEntry modelEntry = framework.loadFile(envFile);
+		STG envStg = (STG)modelEntry.getMathModel();
+		CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+		File envStgFile = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
 		return envStgFile;
 	}
 
@@ -120,27 +132,6 @@ public class CircuitStgUtils {
 		return framework.getTaskManager().execute(exportTask, description, subtaskMonitor);
 	}
 
-	private static File createComposedStg(File devStgFile, File envStgFile, File directory) throws IOException {
-		File compStgFile = null;
-		if ((devStgFile != null) && (envStgFile != null)) {
-			// Generating .g for the whole system (circuit and environment)
-			compStgFile = new File(directory, StgUtils.COMPOSITION_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-			Result<? extends ExternalProcessResult> pcompResult = composeDevWithEnv(devStgFile, envStgFile, directory, null);
-
-			switch (pcompResult.getOutcome()) {
-			case FINISHED:
-				FileUtils.writeAllText(compStgFile, new String(pcompResult.getReturnValue().getOutput()));
-				break;
-			case CANCELLED:
-				compStgFile = null;
-				break;
-			case FAILED:
-				throw new RuntimeException("Composition failed:\n" + pcompResult.getCause());
-			}
-		}
-		return compStgFile;
-	}
-
 	public static Result<? extends ExternalProcessResult> composeDevWithEnv(File devStgFile, File envStgFile, File directory,
 			ProgressMonitor<? super MpsatChainResult> monitor) {
 		Framework framework = Framework.getInstance();
@@ -166,9 +157,21 @@ public class CircuitStgUtils {
 		return stg;
 	}
 
-	public static void restoreInputSignals(STG stg, Collection<String> inputSignalNames) {
+	public static void restoreInterfaceSignals(STG stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
+		for (String signalName: stg.getSignalNames(null)) {
+			stg.setSignalType(signalName, Type.INTERNAL, null);
+		}
 		for (String inputName: inputSignalNames) {
 			stg.setSignalType(inputName, Type.INPUT, null);
+		}
+		for (String outputName: outputSignalNames) {
+			stg.setSignalType(outputName, Type.OUTPUT, null);
+		}
+	}
+
+	public static void convertInternalSignalsToDummies(STG stg) {
+		for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
+			StgUtils.convertSignalToDummyTransition(stg, transition);
 		}
 	}
 
