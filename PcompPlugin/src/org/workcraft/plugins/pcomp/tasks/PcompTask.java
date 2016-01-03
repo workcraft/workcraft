@@ -46,13 +46,6 @@ public class PcompTask implements Task<ExternalProcessResult> {
 		String toolName = ToolUtils.getAbsoluteCommandPath(PcompUtilitySettings.getCommand());
 		command.add(toolName);
 
-		// Extra arguments
-		for (String arg : PcompUtilitySettings.getExtraArgs().split(" ")) {
-			if (!arg.isEmpty()) {
-				command.add(arg);
-			}
-		}
-
 		// Built-in arguments
 		if (conversionMode == ConversionMode.DUMMY) {
 			command.add("-d");
@@ -69,6 +62,14 @@ public class PcompTask implements Task<ExternalProcessResult> {
 			command.add("-p");
 		}
 
+		// Extra arguments (should go before the file parameters)
+		for (String arg : PcompUtilitySettings.getExtraArgs().split(" ")) {
+			if (!arg.isEmpty()) {
+				command.add(arg);
+			}
+		}
+
+		// List of places output file
 		File listFile = null;
 		try {
 			if (directory == null) {
@@ -82,6 +83,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
 		}
 		command.add("-l" + listFile.getAbsolutePath());
 
+		// Input files
 		for (File inputFile: inputFiles) {
 			command.add(inputFile.getAbsolutePath());
 		}

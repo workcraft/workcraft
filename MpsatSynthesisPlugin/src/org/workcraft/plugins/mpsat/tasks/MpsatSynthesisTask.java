@@ -50,13 +50,6 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 		String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
 		command.add(toolName);
 
-		// Extra arguments
-		for (String arg : MpsatSynthesisUtilitySettings.getExtraArgs().split("\\s")) {
-			if (!arg.isEmpty()) {
-				command.add(arg);
-			}
-		}
-
 		// Built-in arguments
 		for (String arg : args) {
 			command.add(arg);
@@ -79,7 +72,14 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 			}
 		}
 
-		// Input file argument
+		// Extra arguments (should go before the file parameters)
+		for (String arg : MpsatSynthesisUtilitySettings.getExtraArgs().split("\\s")) {
+			if (!arg.isEmpty()) {
+				command.add(arg);
+			}
+		}
+
+		// Input file
 		command.add(inputFileName);
 
 		// Output file

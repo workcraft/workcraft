@@ -30,18 +30,22 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
 		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getDrawAstgCommand());
 		command.add(toolName);
 
-		// Extra arguments
+		// Built-in arguments
+		for (String arg : options) {
+			command.add(arg);
+		}
+
+		// Extra arguments (should go before the file parameters)
 		for (String arg : PetrifyExtraUtilitySettings.getDrawAstgArgs().split(" ")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
 
-		// Built-in arguments
-		for (String arg : options) {
-			command.add(arg);
-		}
+		// Input file
 		command.add(inputPath);
+
+		// Output file
 		command.add("-o");
 		command.add(outputPath);
 

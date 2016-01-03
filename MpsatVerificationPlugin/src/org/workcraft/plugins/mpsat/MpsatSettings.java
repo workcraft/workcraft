@@ -56,7 +56,7 @@ public class MpsatSettings {
 
 	// Reach expression for checking semimodularity (output persistency)
 	public static final String reachSemimodularity =
-		"card DUMMY != 0 ? fail \"This property can be checked only on STGs without dummies\" :\n" +
+		"card DUMMY != 0 ? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
 		"    exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n" +
 		"        @t1 &\n" +
 		"        exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n" +

@@ -49,14 +49,14 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 			command.add(arg);
 		}
 
-		// Extra arguments
+		// Extra arguments (should go before the file parameters)
 		for (String arg : MpsatUtilitySettings.getExtraArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
 		}
 
-		// Input file argument
+		// Input file
 		command.add(inputFileName);
 
 		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, directory);

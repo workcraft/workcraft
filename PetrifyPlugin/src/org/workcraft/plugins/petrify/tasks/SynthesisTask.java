@@ -50,16 +50,16 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getPetrifyCommand());
 		command.add(toolName);
 
-		// Extra arguments
+		// Built-in arguments
+		for (String arg : args) {
+			command.add(arg);
+		}
+
+		// Extra arguments (should go before the file parameters)
 		for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" ")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}
-		}
-
-		// Built-in arguments
-		for (String arg : args) {
-			command.add(arg);
 		}
 
 		// Petrify uses the full name of the file as the name of the Verilog module (with _net suffix).
@@ -83,11 +83,11 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 			command.add("-log");
 			command.add(logFile.getCanonicalPath());
 
+			// Input file
 			STGModel stg = WorkspaceUtils.getAs(we, STGModel.class);
 			File stgFile = getInputStg(stg, directory);
 			command.add(stgFile.getCanonicalPath());
 
-			// Call petrify on command line.
 			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, null);
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends ExternalProcessResult> res = externalProcessTask.run(mon);

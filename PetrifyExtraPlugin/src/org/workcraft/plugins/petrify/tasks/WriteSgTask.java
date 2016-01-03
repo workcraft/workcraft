@@ -44,22 +44,26 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getWriteSgCommand());
 		command.add(toolName);
 
-		// Extra arguments
-		for (String arg : PetrifyExtraUtilitySettings.getWriteSgArgs().split(" ")) {
-			if (!arg.isEmpty()) {
-				command.add(arg);
-			}
-		}
-
 		// Built-in arguments
 		if (options != null) {
 			for (String arg : options) {
 				command.add(arg);
 			}
 		}
+
+		// Extra arguments (should go before the file parameters)
+		for (String arg : PetrifyExtraUtilitySettings.getWriteSgArgs().split(" ")) {
+			if (!arg.isEmpty()) {
+				command.add(arg);
+			}
+		}
+
+		// Input file
 		if ((inputPath != null) && !inputPath.isEmpty()) {
 			command.add(inputPath);
 		}
+
+		// Output file
 		if ((outputPath != null) && !outputPath.isEmpty()) {
 			command.add("-o");
 			command.add(outputPath);

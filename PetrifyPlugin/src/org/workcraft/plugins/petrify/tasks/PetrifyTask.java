@@ -39,17 +39,19 @@ public class PetrifyTask implements Task<ExternalProcessResult>, ExternalProcess
 			String toolName = PetrifyUtilitySettings.getPetrifyCommand();
 			command.add(toolName);
 
-			// Extra arguments
+			// Built-in arguments
+			for (String arg : args) {
+				command.add(arg);
+			}
+
+			// Extra arguments (should go before the file parameters)
 			for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" ")) {
 				if (!arg.isEmpty()) {
 					command.add(arg);
 				}
 			}
 
-			// Built-in arguments
-			for (String arg : args) {
-				command.add(arg);
-			}
+			// Input file
 			command.add(inputFileName);
 
 			ExternalProcess petrifyProcess = new ExternalProcess(command.toArray(new String[command.size()]), ".");

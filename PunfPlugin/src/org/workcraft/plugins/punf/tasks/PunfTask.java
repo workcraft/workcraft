@@ -32,7 +32,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 		String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
 		command.add(toolName);
 
-		// Extra arguments
+		// Extra arguments (should go before the file parameters)
 		for (String arg : PunfUtilitySettings.getExtraArgs().split(" ")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
