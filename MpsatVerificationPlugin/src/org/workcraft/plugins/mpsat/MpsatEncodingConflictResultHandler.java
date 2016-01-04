@@ -11,8 +11,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.mpsat.gui.Solution;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
 import org.workcraft.tasks.Result;
@@ -27,22 +26,21 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
             new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
             new float[]{0.30f},  new float[]{0.9f, 0.7f, 0.5f}));
 
-	private final Result<? extends MpsatChainResult> result;
-	private final MpsatChainTask task;
+	private final WorkspaceEntry we;
+	private final Result<? extends ExternalProcessResult> result;
 
-	MpsatEncodingConflictResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
-		this.task = task;
+	MpsatEncodingConflictResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result) {
+		this.we = we;
 		this.result = result;
 	}
 
 	@Override
 	public void run() {
-		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue().getMpsatResult().getReturnValue());
+		MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
 		List<Solution> solutions = mdp.getSolutions();
 		if ( !Solution.hasTraces(solutions) ) {
 			JOptionPane.showMessageDialog(null, "No encodning conflicts.", "Verification results", JOptionPane.INFORMATION_MESSAGE);
 		} else {
-            final WorkspaceEntry we = task.getWorkspaceEntry();
             GraphEditorPanel currentEditor = getCurrentEditor(we);
             final ToolboxPanel toolbox = currentEditor.getToolBox();
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);

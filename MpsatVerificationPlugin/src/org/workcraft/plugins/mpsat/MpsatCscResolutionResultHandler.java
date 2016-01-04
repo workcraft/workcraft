@@ -8,8 +8,6 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
@@ -23,17 +21,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCscResolutionResultHandler implements Runnable {
 
-	private final MpsatChainTask task;
-	private final Result<? extends MpsatChainResult> result;
+	final WorkspaceEntry we;
+	private final Result<? extends ExternalProcessResult> result;
 
-	public MpsatCscResolutionResultHandler(MpsatChainTask task, Result<? extends MpsatChainResult> result) {
-				this.task = task;
+	public MpsatCscResolutionResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result) {
+				this.we = we;
 				this.result = result;
 	}
 
 	public STGModel getResolvedStg() {
-		Result<? extends ExternalProcessResult> mpsatResult = result.getReturnValue().getMpsatResult();
-		final byte[] output = mpsatResult.getReturnValue().getOutputFile("mpsat.g");
+		final byte[] output = result.getReturnValue().getOutputFile("mpsat.g");
 		if(output == null) {
 			return null;
 		}
@@ -47,14 +44,13 @@ public class MpsatCscResolutionResultHandler implements Runnable {
 	@Override
 	public void run() {
 		final Framework framework = Framework.getInstance();
-		final WorkspaceEntry we = task.getWorkspaceEntry();
 		Path<String> path = we.getWorkspacePath();
 		String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
 
 		STGModel model = getResolvedStg();
 		if (model == null) {
 			JOptionPane.showMessageDialog(framework.getMainWindow(),
-					"MPSat output: \n\n" + new String(result.getReturnValue().getMpsatResult().getReturnValue().getErrors()),
+					"MPSat output: \n\n" + new String(result.getReturnValue().getErrors()),
 					"Conflict resolution failed", JOptionPane.WARNING_MESSAGE );
 		} else {
 			Path<String> directory = path.getParent();

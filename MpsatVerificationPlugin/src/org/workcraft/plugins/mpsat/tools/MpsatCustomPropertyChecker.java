@@ -19,6 +19,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MpsatCustomPropertyChecker extends VerificationTool {
 
 	@Override
+	public String getDisplayName() {
+		return "Custom properties [MPSat]...";
+	}
+
+	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return WorkspaceUtils.canHas(we, PetriNetModel.class);
 	}
@@ -36,11 +41,6 @@ public class MpsatCustomPropertyChecker extends VerificationTool {
 			framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
 					new MpsatChainResultHandler(mpsatTask));
 		}
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Custom properties [MPSat]...";
 	}
 
 }

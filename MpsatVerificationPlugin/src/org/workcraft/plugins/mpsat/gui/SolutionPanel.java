@@ -1,7 +1,5 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -16,9 +14,10 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 
 @SuppressWarnings("serial")
@@ -26,7 +25,7 @@ public class SolutionPanel extends JPanel {
 	private JPanel buttonsPanel;
 	private JTextArea traceText;
 
-	public SolutionPanel(final MpsatChainTask task, final Solution solution, final ActionListener closeAction) {
+	public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
 		super (new TableLayout(new double[][]
 		        { { TableLayout.FILL, TableLayout.PREFERRED },
 				{TableLayout.FILL} }
@@ -53,7 +52,6 @@ public class SolutionPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final Framework framework = Framework.getInstance();
-				final WorkspaceEntry we = task.getWorkspaceEntry();
 				final MainWindow mainWindow = framework.getMainWindow();
 				GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
 				if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {

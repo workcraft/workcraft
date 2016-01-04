@@ -1,42 +1,44 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import java.util.List;
+
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.Result;
 
-public class MpsatChainResult {
+public class MpsatCombinedChainResult {
 	private Result<? extends Object> exportResult;
 	private Result<? extends ExternalProcessResult> pcompResult;
 	private Result<? extends ExternalProcessResult> punfResult;
-	private Result<? extends ExternalProcessResult> mpsatResult;
-	private MpsatSettings mpsatSettings;
+	private List<Result<? extends ExternalProcessResult>> mpsatResultList;
+	private List<MpsatSettings> mpsatSettingsList;
 	private String message;
 
-	public MpsatChainResult(Result<? extends Object> exportResult,
+	public MpsatCombinedChainResult(Result<? extends Object> exportResult,
 			Result<? extends ExternalProcessResult> pcompResult,
 			Result<? extends ExternalProcessResult> punfResult,
-			Result<? extends ExternalProcessResult> mpsatResult,
-			MpsatSettings mpsatSettings, String message) {
+			List<Result<? extends ExternalProcessResult>> mpsatResultList,
+			List<MpsatSettings> mpsatSettingsList, String message) {
 
 		this.exportResult = exportResult;
 		this.pcompResult = pcompResult;
 		this.punfResult = punfResult;
-		this.mpsatResult = mpsatResult;
-		this.mpsatSettings = mpsatSettings;
+		this.mpsatResultList = mpsatResultList;
+		this.mpsatSettingsList = mpsatSettingsList;
 		this.message = message;
 	}
 
-	public MpsatChainResult(Result<? extends Object> exportResult,
+	public MpsatCombinedChainResult(Result<? extends Object> exportResult,
 			Result<? extends ExternalProcessResult> pcompResult,
 			Result<? extends ExternalProcessResult> punfResult,
-			Result<? extends ExternalProcessResult> mpsatResult,
-			MpsatSettings mpsatSettings) {
+			List<Result<? extends ExternalProcessResult>> mpsatResultList,
+			List<MpsatSettings> mpsatSettingsList) {
 
-		this(exportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, null);
+		this(exportResult, pcompResult, punfResult, mpsatResultList, mpsatSettingsList, null);
 	}
 
-	public MpsatSettings getMpsatSettings() {
-		return mpsatSettings;
+	public List<MpsatSettings> getMpsatSettingsList() {
+		return mpsatSettingsList;
 	}
 
 	public Result<? extends Object> getExportResult() {
@@ -51,8 +53,8 @@ public class MpsatChainResult {
 		return punfResult;
 	}
 
-	public Result<? extends ExternalProcessResult> getMpsatResult() {
-		return mpsatResult;
+	public List<Result<? extends ExternalProcessResult>> getMpsatResultList() {
+		return mpsatResultList;
 	}
 
 	public String getMessage() {

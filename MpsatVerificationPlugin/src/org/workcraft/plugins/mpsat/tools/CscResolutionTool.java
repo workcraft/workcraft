@@ -14,13 +14,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CscResolutionTool implements Tool {
 
 	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
+	public String getSection() {
+		return "Encoding conflicts";
 	}
 
 	@Override
-	public String getSection() {
-		return "Encoding conflicts";
+	public String getDisplayName() {
+		return "Resolve CSC conflicts [MPSat]";
+	}
+
+	@Override
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return WorkspaceUtils.canHas(we, STGModel.class);
 	}
 
 	@Override
@@ -33,11 +38,6 @@ public class CscResolutionTool implements Tool {
 		final Framework framework = Framework.getInstance();
 		framework.getTaskManager().queue(mpsatTask, "Resolution of CSC conflicts",
 				new MpsatChainResultHandler(mpsatTask));
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Resolve CSC conflicts [MPSat]";
 	}
 
 }

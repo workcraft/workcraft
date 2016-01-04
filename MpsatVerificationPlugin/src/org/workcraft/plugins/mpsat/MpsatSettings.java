@@ -225,4 +225,38 @@ public class MpsatSettings {
 		return args.toArray(new String[args.size()]);
 	}
 
+	public static MpsatSettings getConsistencySettings() {
+		return new MpsatSettings("Consistency", MpsatMode.STG_REACHABILITY, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+				MpsatSettings.reachConsistency, true);
+	}
+
+	public static MpsatSettings getDeadlockSettings() {
+		MpsatSettings deadlockSettings = new MpsatSettings("Deadlock", MpsatMode.DEADLOCK, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
+		return deadlockSettings;
+	}
+
+	public static MpsatSettings getPersistencySettings() {
+		return new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+				MpsatSettings.reachSemimodularity, true);
+	}
+
+	public static MpsatSettings getCscSettings() {
+		return new MpsatSettings("Complete State Coding", MpsatMode.CSC_CONFLICT_DETECTION, 0,
+				SolutionMode.ALL, -1 /* unlimited */, null, true);
+	}
+
+	public static MpsatSettings getNormalcySettings() {
+		return new MpsatSettings("Normalcy", MpsatMode.NORMALCY, 0,
+				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+				null, true);
+	}
+
+	public static MpsatSettings getUscSettings() {
+		return new MpsatSettings("Unique State Coding", MpsatMode.USC_CONFLICT_DETECTION, 0,
+				SolutionMode.ALL, -1 /* unlimited */, null, true);
+	}
+
 }

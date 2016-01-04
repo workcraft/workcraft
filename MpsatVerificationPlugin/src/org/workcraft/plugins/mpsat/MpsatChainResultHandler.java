@@ -12,6 +12,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResult> {
 	private String errorMessage;
@@ -23,34 +24,43 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 
 	@Override
 	public void finished(final Result<? extends MpsatChainResult> result, String description) {
+		final WorkspaceEntry we = task.getWorkspaceEntry();
+		MpsatChainResult returnValue = result.getReturnValue();
+		Result<? extends Object> exportResult = returnValue.getExportResult();
+		Result<? extends ExternalProcessResult> pcompResult = returnValue.getPcompResult();
+		Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
+		Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
 		if (result.getOutcome() == Outcome.FINISHED) {
-			final MpsatMode mpsatMode = result.getReturnValue().getMpsatSettings().getMode();
-			switch (mpsatMode) {
+			MpsatSettings mpsatSettings = returnValue.getMpsatSettings();
+			switch (mpsatSettings.getMode()) {
 			case UNDEFINED:
-				SwingUtilities.invokeLater(new MpsatUndefinedResultHandler(task, result));
+				String undefinedMessage = returnValue.getMessage();
+				if ((undefinedMessage != null) && (mpsatSettings != null) && (mpsatSettings.getName() != null)) {
+					undefinedMessage = mpsatSettings.getName();
+				}
+				SwingUtilities.invokeLater(new MpsatUndefinedResultHandler(undefinedMessage));
 				break;
 			case REACHABILITY:
 			case STG_REACHABILITY:
 			case NORMALCY:
-				SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(task, result));
+				SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(we, mpsatResult, mpsatSettings));
 				break;
 			case CSC_CONFLICT_DETECTION:
 			case USC_CONFLICT_DETECTION:
-				SwingUtilities.invokeLater(new MpsatEncodingConflictResultHandler(task, result));
+				SwingUtilities.invokeLater(new MpsatEncodingConflictResultHandler(we, mpsatResult));
 				break;
 			case DEADLOCK:
-				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(task, result));
+				SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(we, mpsatResult));
 				break;
 			case RESOLVE_ENCODING_CONFLICTS:
-				SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(task, result));
+				SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(we, mpsatResult));
 				break;
 			default:
+				final String unsupportedMessage = "MPSat mode '" + mpsatSettings.getMode().getArgument() + "' is not (yet) supported.";
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						JOptionPane.showMessageDialog(null,
-								"MPSat mode '" + mpsatMode.getArgument() + "' is not (yet) supported." ,
-								"Sorry..", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null,	unsupportedMessage, "Sorry..", JOptionPane.WARNING_MESSAGE);
 					}
 				});
 				break;
@@ -63,11 +73,6 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				// Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
 				errorMessage += "\n\nFailure caused by: " + cause1.toString() + "\nPlease see the 'Problems' tab for more details.";
 			} else {
-				MpsatChainResult returnValue = result.getReturnValue();
-				Result<? extends Object> exportResult = returnValue.getExportResult();
-				Result<? extends ExternalProcessResult> pcompResult = returnValue.getPcompResult();
-				Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
-				Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
 				if (exportResult != null && exportResult.getOutcome() == Outcome.FAILED) {
 					errorMessage += "\n\nFailed to export the model as a .g file.";
 					Throwable cause = exportResult.getCause();

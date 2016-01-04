@@ -1,9 +1,7 @@
 package org.workcraft.plugins.mpsat.tools;
 
 import org.workcraft.Tool;
-import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -12,7 +10,7 @@ public class MpsatPersistencyChecker extends AbstractMpsatChecker implements Too
 
 	@Override
 	public String getDisplayName() {
-		return " Output persistency (without dummies) [MPSat]";
+		return "  Output persistency (without dummies) [MPSat]";
 	}
 
 	@Override
@@ -22,10 +20,7 @@ public class MpsatPersistencyChecker extends AbstractMpsatChecker implements Too
 
 	@Override
 	public MpsatSettings getSettings() {
-		return new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
-				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachSemimodularity, true);
-
+		return MpsatSettings.getPersistencySettings();
 	}
 
 }

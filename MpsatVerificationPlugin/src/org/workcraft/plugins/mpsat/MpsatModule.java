@@ -6,6 +6,7 @@ import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.tools.CscResolutionTool;
+import org.workcraft.plugins.mpsat.tools.MpsatCombinedChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatConformationChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatConsistencyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatCscChecker;
@@ -30,6 +31,7 @@ public class MpsatModule implements Module {
 		pm.registerClass(Tool.class, MpsatCscChecker.class);
 		pm.registerClass(Tool.class, MpsatUscChecker.class);
 		pm.registerClass(Tool.class, MpsatConformationChecker.class);
+		pm.registerClass(Tool.class, MpsatCombinedChecker.class);
 		pm.registerClass(Tool.class, MpsatCustomPropertyChecker.class);
 		pm.registerClass(Settings.class, MpsatUtilitySettings.class);
 	}

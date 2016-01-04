@@ -102,39 +102,47 @@ public class CheckCircuitTask extends MpsatChainTask {
 			}
 
 			// Generating system .g for deadlock and hazard checks (only if needed)
-			File sysStgFile = devStgFile;
+			File sysStgFile = null;
 			Result<? extends ExternalProcessResult>  pcompResult = null;
-			if ((envStg != null) && (checkDeadlock || checkHazard)) {
-				File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-				Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
-				if (envExportResult.getOutcome() != Outcome.FINISHED) {
-					if (envExportResult.getOutcome() == Outcome.CANCELLED) {
-						return new Result<MpsatChainResult>(Outcome.CANCELLED);
+			if (checkDeadlock || checkHazard) {
+				if (envStg == null) {
+					sysStgFile = devStgFile;
+				} else {
+					File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+					Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
+					if (envExportResult.getOutcome() != Outcome.FINISHED) {
+						if (envExportResult.getOutcome() == Outcome.CANCELLED) {
+							return new Result<MpsatChainResult>(Outcome.CANCELLED);
+						}
+						return new Result<MpsatChainResult>(Outcome.FAILED,
+								new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
 					}
-					return new Result<MpsatChainResult>(Outcome.FAILED,
-							new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
-				}
 
-				// Generating .g for the whole system (circuit and environment)
-				pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
-				if (pcompResult.getOutcome() != Outcome.FINISHED) {
-					if (pcompResult.getOutcome() == Outcome.CANCELLED) {
-						return new Result<MpsatChainResult>(Outcome.CANCELLED);
+					// Generating .g for the whole system (circuit and environment)
+					pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
+					if (pcompResult.getOutcome() != Outcome.FINISHED) {
+						if (pcompResult.getOutcome() == Outcome.CANCELLED) {
+							return new Result<MpsatChainResult>(Outcome.CANCELLED);
+						}
+						return new Result<MpsatChainResult>(Outcome.FAILED,
+								new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
 					}
-					return new Result<MpsatChainResult>(Outcome.FAILED,
-							new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
+					sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+					FileUtils.writeAllText(sysStgFile, new String(pcompResult.getReturnValue().getOutput()));
 				}
-				sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-				FileUtils.writeAllText(sysStgFile, new String(pcompResult.getReturnValue().getOutput()));
 			}
 			monitor.progressUpdate(0.20);
 
 			// Generating system .g for conformation check (only if needed) -- should be without environment internal signals
-			File sysModStgFile = devStgFile;
+			File sysModStgFile = null;
 			Result<? extends ExternalProcessResult>  pcompModResult = null;
-			if ((envStg != null) && checkConformation) {
-				sysModStgFile = sysStgFile;
-				if ((sysModStgFile == null) || !envStg.getSignalNames(Type.INTERNAL, null).isEmpty()) {
+			if (checkConformation) {
+				if (envStg == null) {
+					sysModStgFile = devStgFile;
+				} else if (envStg.getSignalNames(Type.INTERNAL, null).isEmpty() && (sysStgFile != null)) {
+					sysModStgFile = sysStgFile;
+					pcompModResult = pcompResult;
+				} else {
 					// Convert internal signals to dummies
 					CircuitStgUtils.convertInternalSignalsToDummies(envStg);
 					File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.MODIFIED_FILE_SUFFIX + StgUtils.ASTG_FILE_EXT);
