@@ -33,6 +33,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -84,7 +85,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
 	public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
 
-    private static String ProcessArg(String file,int index) {
+    private static List<String> ProcessArg(String file,int index) {
 		   String typ=null;
 		   Scanner sc=null;
 		   try {
@@ -139,14 +140,18 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		    	 str = nxt.next();
 	     	     //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
 	     	     soln = str;
-	     	     sarg = " -s" + str;
+	     	     sarg = "-s" + str;
 		     }
 		   }
 		   //System.out.println("aaaaaaaaaaaindex==============" + index);
-		   aarg = " -a" + index;
+		   aarg = "-a" + index;
    	       //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
-		   arg = targ + " " + larg + sarg + aarg;
-		   return arg;
+		   ArrayList<String> args = new ArrayList<>();
+		   if ( !targ.isEmpty() ) args.add(targ);
+		   if ( !larg.isEmpty() ) args.add(larg);
+		   if ( !sarg.isEmpty() ) args.add(sarg);
+		   if ( !aarg.isEmpty() ) args.add(aarg);
+		   return args;
     }
 
     private static String process_loc(String file)
@@ -516,7 +521,8 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
 		                ArrayList<String> vxmCommand = new ArrayList<>();
 		                vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
-		                vxmCommand.add(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
+		                vxmCommand.addAll(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
+		                ExternalProcessTask.printCommandLine(vxmCommand);
 	                	Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
 
 		                String s, str="";

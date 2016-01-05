@@ -967,8 +967,6 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 		JsonFactory f = new MappingJsonFactory();
 		File cpnFile = XmasSettings.getTempVxmCpnFile();
 	    PrintWriter writer = null;
-		//File syncFile = new File(XmasSettings.getVxmDirectory(), "sync");
-	    //PrintWriter writer_s = null;
 	    try
 	    {
 

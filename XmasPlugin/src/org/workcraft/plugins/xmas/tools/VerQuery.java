@@ -2,6 +2,7 @@ package org.workcraft.plugins.xmas.tools;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog.ModalExclusionType;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -34,6 +35,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -88,7 +90,7 @@ public class VerQuery extends AbstractTool implements Tool {
 		mainFrame.setVisible(false);
 	}
 
-    private static String ProcessArg(String file,int index) {
+    private static List<String> ProcessArg(String file, int index) {
 		   String typ=null;
 		   Scanner sc=null;
 		   try {
@@ -144,11 +146,11 @@ public class VerQuery extends AbstractTool implements Tool {
 		    	 str = nxt.next();
 	     	     //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
 	     	     soln = str;
-	     	     sarg = " -s" + str;
+	     	     sarg = "-s" + str;
 		     }
 		   }
 		   //System.out.println("aaaaaaaaaaaindex==============" + index);
-		   //aarg = " -a" + index;
+		   //aarg = "-a" + index;
 		   if(index>0) {
 			   String queue1="";
 			   String queue2="";
@@ -162,11 +164,16 @@ public class VerQuery extends AbstractTool implements Tool {
 			     rstr2 = queue2;
 			     rstr2 = rstr2.replace(rstr2.charAt(0),Character.toUpperCase(rstr2.charAt(0)));
 			   }
-			   qarg = " -q" + index + rstr1 + rstr2;
+			   qarg = "-q" + index + rstr1 + rstr2;
 		   }
    	       //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
-		   arg = targ + " " + larg + sarg + aarg + qarg;
-		   return arg;
+		   ArrayList<String> args = new ArrayList<>();
+		   if ( !targ.isEmpty() ) args.add(targ);
+		   if ( !larg.isEmpty() ) args.add(larg);
+		   if ( !sarg.isEmpty() ) args.add(sarg);
+		   if ( !aarg.isEmpty() ) args.add(aarg);
+		   if ( !qarg.isEmpty() ) args.add(qarg);
+		   return args;
     }
 
     private static String process_loc(String file)
@@ -474,15 +481,9 @@ public class VerQuery extends AbstractTool implements Tool {
     	}
     }
 
-    void create_panel(List<JPanel> panellist,String file,Xmas cnet,int grnum) {
+    void create_panel(List<JPanel> panellist, Xmas cnet,int grnum) {
     	int no=1;
         String typ=null;
-		Scanner sc=null;
-		try {
-		   sc=new Scanner(new File(file));
-		} catch (FileNotFoundException e) {
-		   System.err.println("Error: " + e.getMessage());
-		}
 		panellist.add(new JPanel());
 		panellist.get(panellist.size()-1).add(new JLabel(" Sources" + ": "));
 		panellist.get(panellist.size()-1).add(mdcombob = new JComboBox());
@@ -582,8 +583,7 @@ public class VerQuery extends AbstractTool implements Tool {
         panelmain.add(panela);
 
 		jcbn.clear();
-		File solnFile = XmasSettings.getTempVxmSolnFile();
-        create_panel(panellist, solnFile.getAbsolutePath(), cnet, grnum);
+        create_panel(panellist, cnet, grnum);
 		for (JPanel plist : panellist) {
 			panelmain.add(plist);
 		}
@@ -619,7 +619,8 @@ public class VerQuery extends AbstractTool implements Tool {
 
 		                ArrayList<String> vxmCommand = new ArrayList<>();
 		                vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
-		                vxmCommand.add(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
+						vxmCommand.addAll(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
+						ExternalProcessTask.printCommandLine(vxmCommand);
 	                	Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
 
 		                String s, str="", str_="";

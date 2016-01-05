@@ -20,6 +20,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -68,7 +69,7 @@ public class VerTool extends AbstractTool implements Tool {
 		mainFrame.setVisible(false);
 	}
 
-    private static String ProcessArg(String file) {
+    private static List<String> ProcessArg(String file) {
 		   String typ=null;
 		   Scanner sc=null;
 		   try {
@@ -122,11 +123,14 @@ public class VerTool extends AbstractTool implements Tool {
 		    	 str = nxt.next();
 	     	     //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
 	     	     soln = str;
-	     	     sarg = " -s" + str;
+	     	     sarg = "-s" + str;
 		     }
 		   }
-		   arg = targ + " " + larg + sarg;
-		   return arg;
+		   ArrayList<String> args = new ArrayList<>();
+		   if ( !targ.isEmpty() ) args.add(targ);
+		   if ( !larg.isEmpty() ) args.add(larg);
+		   if ( !sarg.isEmpty() ) args.add(sarg);
+		   return args;
     }
 
     private static String process_loc(String file)
@@ -386,7 +390,8 @@ public class VerTool extends AbstractTool implements Tool {
 
             ArrayList<String> vxmCommand = new ArrayList<>();
             vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
-            vxmCommand.add(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath()));
+            vxmCommand.addAll(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath()));
+			ExternalProcessTask.printCommandLine(vxmCommand);
         	Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
 
             String s, str="";

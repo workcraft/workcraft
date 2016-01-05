@@ -89,7 +89,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 	public static final String TITLE_SUFFIX_MODEL = "model";
 	public static final String TITLE_SUFFIX_SINGLE_ELEMENT = "single element";
 	public static final String TITLE_SUFFIX_SELECTED_ELEMENTS = " selected elements";
-	private static final int VIEWPORT_MARGIN = 20;
+	private static final int VIEWPORT_MARGIN = 25;
 
 	class Resizer implements ComponentListener {
 

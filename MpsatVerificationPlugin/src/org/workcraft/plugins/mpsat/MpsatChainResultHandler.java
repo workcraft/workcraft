@@ -35,7 +35,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 			switch (mpsatSettings.getMode()) {
 			case UNDEFINED:
 				String undefinedMessage = returnValue.getMessage();
-				if ((undefinedMessage != null) && (mpsatSettings != null) && (mpsatSettings.getName() != null)) {
+				if ((undefinedMessage == null) && (mpsatSettings != null) && (mpsatSettings.getName() != null)) {
 					undefinedMessage = mpsatSettings.getName();
 				}
 				SwingUtilities.invokeLater(new MpsatUndefinedResultHandler(undefinedMessage));
