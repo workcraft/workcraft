@@ -31,7 +31,7 @@ public class CircuitSettings implements Settings {
 	private static final Double defaultBorderWidth = 0.06;
 	private static final Double defaultWireWidth = 0.04;
 	private static final boolean defaultSimplifyStg = true;
-	private static final String defaultGateLibrary = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\workcraft.lib" : "tools/PetrifyTools/workcraft.lib");
+	private static final String defaultGateLibrary = (DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib");
 	private static final String defaultSubstitutionLibrary = "";
 	private static final boolean defaultOpenSynthesisResult = true;
 
