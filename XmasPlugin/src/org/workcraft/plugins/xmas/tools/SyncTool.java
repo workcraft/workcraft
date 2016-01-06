@@ -328,6 +328,7 @@ public class SyncTool implements Tool {
 	}
 
 	int loaded = 0;
+	VisualXmas vnet1;
 	public List<Integer> grnums = new ArrayList<Integer>();
 	public List<Integer> grnums1 = new ArrayList<Integer>();
 	public List<Integer> grnums2 = new ArrayList<Integer>();
@@ -337,6 +338,12 @@ public class SyncTool implements Tool {
 	public void run(WorkspaceEntry we) {
 		System.out.println("Running tests");
 		final VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
+
+		if(vnet!=vnet1) {
+			loaded = 0;
+		}
+		vnet1 = vnet;
+
 		//Circuit cnet = (Circuit)we.getModelEntry().getModel();
 		//VisualCircuit vnet = (VisualCircuit)we.getModelEntry().getMathModel();
 		Xmas cnet = (Xmas)we.getModelEntry().getMathModel();

@@ -42,7 +42,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 	private final MpsatSettings toolchainCompletionSettings = new MpsatSettings("Toolchain completion",
 			MpsatMode.UNDEFINED, 0, null, 0);
 
-	private final MpsatSettings deadlockSettings = new MpsatSettings("Deadlock",
+	private final MpsatSettings deadlockSettings = new MpsatSettings("Deadlock freeness",
 			MpsatMode.DEADLOCK, 0, MpsatUtilitySettings.getSolutionMode(),
 			MpsatUtilitySettings.getSolutionCount());
 

@@ -10,7 +10,7 @@ public class MpsatPersistencyChecker extends AbstractMpsatChecker implements Too
 
 	@Override
 	public String getDisplayName() {
-		return "  Output persistency (without dummies) [MPSat]";
+		return "     Output persistency (without dummies) [MPSat]";
 	}
 
 	@Override

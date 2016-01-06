@@ -10,7 +10,7 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker implements Tool {
 
 	@Override
 	public String getDisplayName() {
-		return "  Deadlock [MPSat]";
+		return "     Deadlock freeness [MPSat]";
 	}
 
 	@Override

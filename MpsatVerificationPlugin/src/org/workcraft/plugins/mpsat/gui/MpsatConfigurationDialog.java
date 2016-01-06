@@ -119,6 +119,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);
 		builtInPresets.add(MpsatBuiltinPresets.CONSISTENCY_CHECKER);
 		builtInPresets.add(MpsatBuiltinPresets.PERSISTENCY_CHECKER);
+		builtInPresets.add(MpsatBuiltinPresets.NORMALCY_CHECKER);
 
 		SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
 			@Override
@@ -148,6 +149,7 @@ public class MpsatConfigurationDialog extends JDialog {
 		modeCombo.addItem(MpsatMode.DEADLOCK);
 		modeCombo.addItem(MpsatMode.REACHABILITY);
 		modeCombo.addItem(MpsatMode.STG_REACHABILITY);
+		modeCombo.addItem(MpsatMode.NORMALCY);
 		modeCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

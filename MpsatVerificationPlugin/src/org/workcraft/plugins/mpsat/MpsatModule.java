@@ -27,9 +27,9 @@ public class MpsatModule implements Module {
 		pm.registerClass(Tool.class, MpsatDeadlockChecker.class);
 		pm.registerClass(Tool.class, MpsatConsistencyChecker.class);
 		pm.registerClass(Tool.class, MpsatPersistencyChecker.class);
-		pm.registerClass(Tool.class, MpsatNormalcyChecker.class);
+//		pm.registerClass(Tool.class, MpsatNormalcyChecker.class);
 		pm.registerClass(Tool.class, MpsatCscChecker.class);
-		pm.registerClass(Tool.class, MpsatUscChecker.class);
+//		pm.registerClass(Tool.class, MpsatUscChecker.class);
 		pm.registerClass(Tool.class, MpsatConformationChecker.class);
 		pm.registerClass(Tool.class, MpsatCombinedChecker.class);
 		pm.registerClass(Tool.class, MpsatCustomPropertyChecker.class);

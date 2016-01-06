@@ -20,7 +20,7 @@ public class MpsatConformationChecker extends VerificationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Conformation (without dummies) [MPSat]...";
+		return "   Conformation (without dummies) [MPSat]...";
 	}
 
 	@Override

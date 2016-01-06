@@ -22,7 +22,6 @@ import org.workcraft.plugins.xmas.components.QueueComponent;
 import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
-import org.workcraft.plugins.xmas.components.SyncComponent;
 import org.workcraft.plugins.xmas.components.VisualForkComponent;
 import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
 import org.workcraft.plugins.xmas.components.VisualJoinComponent;
@@ -418,9 +417,8 @@ public class JsonExport implements Tool {
 				writer.println("        {");
 				int quchecksize = qu_node.getCapacity();
 				//System.out.println("capacity = " + quchecksize + ",");
-				//int qusize = qu_node.getCapacity();
+				int qusize = qu_node.getCapacity();
 				//int qusize = 2;    //hardwire
-				int qusize = 2;    //hardwire
 				//int qusize = 3;    //hardwire
     			System.out.println("          \"size\": " + qusize + ",");
     			writer.println("          \"size\": " + qusize + ",");

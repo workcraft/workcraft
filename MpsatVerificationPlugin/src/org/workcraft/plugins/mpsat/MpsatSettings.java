@@ -232,7 +232,7 @@ public class MpsatSettings {
 	}
 
 	public static MpsatSettings getDeadlockSettings() {
-		MpsatSettings deadlockSettings = new MpsatSettings("Deadlock", MpsatMode.DEADLOCK, 0,
+		MpsatSettings deadlockSettings = new MpsatSettings("Deadlock freeness", MpsatMode.DEADLOCK, 0,
 				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
 		return deadlockSettings;
 	}
@@ -244,7 +244,7 @@ public class MpsatSettings {
 	}
 
 	public static MpsatSettings getCscSettings() {
-		return new MpsatSettings("Complete State Coding", MpsatMode.CSC_CONFLICT_DETECTION, 0,
+		return new MpsatSettings("Complete ctate coding", MpsatMode.CSC_CONFLICT_DETECTION, 0,
 				SolutionMode.ALL, -1 /* unlimited */, null, true);
 	}
 
@@ -255,7 +255,7 @@ public class MpsatSettings {
 	}
 
 	public static MpsatSettings getUscSettings() {
-		return new MpsatSettings("Unique State Coding", MpsatMode.USC_CONFLICT_DETECTION, 0,
+		return new MpsatSettings("Unique state coding", MpsatMode.USC_CONFLICT_DETECTION, 0,
 				SolutionMode.ALL, -1 /* unlimited */, null, true);
 	}
 

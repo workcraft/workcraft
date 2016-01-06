@@ -15,7 +15,7 @@ public class MpsatCombinedChecker extends VerificationTool {
 
 	@Override
 	public String getDisplayName() {
-		return " Consistency, deadlock and output persistency (reuse unfolding) [MPSat]";
+		return "    Consistency, deadlock freenes and output persistency (reuse unfolding) [MPSat]";
 	}
 
 	@Override

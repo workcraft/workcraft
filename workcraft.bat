@@ -15,10 +15,10 @@ IF NOT DEFINED JAVA_BIN (
     IF NOT DEFINED JAVA_HOME (
         SET JAVA_BIN=javaw.exe
     ) ELSE (
-        IF EXIST %JAVA_HOME%\bin\javaw.exe (
-            SET JAVA_BIN=%JAVA_HOME%\bin\javaw.exe
+        IF EXIST "%JAVA_HOME%\bin\javaw.exe" (
+            SET "JAVA_BIN=%JAVA_HOME%\bin\javaw.exe"
         ) ELSE (
-            SET JAVA_BIN=%JAVA_HOME%\javaw.exe
+            SET "JAVA_BIN=%JAVA_HOME%\javaw.exe"
         )
     )
 )
