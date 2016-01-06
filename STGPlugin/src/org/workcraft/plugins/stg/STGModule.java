@@ -90,12 +90,12 @@ public class STGModule implements Module {
 			}
 		});
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new TransitionContractorTool();
-			}
-		});
+//		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+//			@Override
+//			public Tool create() {
+//				return new TransitionContractorTool();
+//			}
+//		});
 
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override

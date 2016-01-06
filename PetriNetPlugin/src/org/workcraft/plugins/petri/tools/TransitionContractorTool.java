@@ -16,6 +16,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
@@ -37,9 +38,7 @@ public class TransitionContractorTool extends TransformationTool {
 	public void run(WorkspaceEntry we) {
 		final VisualPetriNet model = (VisualPetriNet)we.getModelEntry().getVisualModel();
 		HashSet<VisualTransition> transitions = new HashSet<VisualTransition>(model.getVisualTransitions());
-		if (!model.getSelection().isEmpty()) {
-			transitions.retainAll(model.getSelection());
-		}
+		transitions.retainAll(model.getSelection());
 		if (!transitions.isEmpty()) {
 			we.saveMemento();
 			for (VisualTransition transition: transitions) {
@@ -70,7 +69,7 @@ public class TransitionContractorTool extends TransformationTool {
 			VisualPlace predPlace = (VisualPlace)predNode;
 			for (Node succNode: succNodes) {
 				VisualPlace succPlace = (VisualPlace)succNode;
-				replicatePlace(model, predPlace, succPlace);
+				replicatePlace(model, transition, predPlace, succPlace);
 			}
 			Connection predConnection = model.getConnection(predPlace, transition);
 			model.remove(predConnection);
@@ -91,7 +90,7 @@ public class TransitionContractorTool extends TransformationTool {
 		}
 	}
 
-	private void replicatePlace(VisualPetriNet model, VisualPlace predPlace, VisualPlace succPlace) {
+	private void replicatePlace(VisualPetriNet model, VisualTransition transition, VisualPlace predPlace, VisualPlace succPlace) {
 		Container vContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
 		Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
 
@@ -101,22 +100,56 @@ public class TransitionContractorTool extends TransformationTool {
 		String predName = model.getPetriNet().getName(predPlace.getReferencedPlace());
 		String succName = model.getPetriNet().getName(succPlace.getReferencedPlace());
 		String name = nameManagerer.getDerivedName(null, predName + succName);
-		VisualPlace place = model.createPlace(name, vContainer);
+		VisualPlace newPlace = model.createPlace(name, vContainer);
 
 		Point2D pos = Geometry.middle(predPlace.getPosition(), succPlace.getPosition());
-		place.setPosition(pos);
+		newPlace.setPosition(pos);
 		int tokens = predPlace.getReferencedPlace().getTokens() + succPlace.getReferencedPlace().getTokens();
-		place.getReferencedPlace().setTokens(tokens);
-		for (Node pred: model.getPreset(predPlace)) {
+		newPlace.getReferencedPlace().setTokens(tokens);
+
+		for (Connection predConnection: model.getConnections(predPlace)) {
+			Node first = predConnection.getFirst();
+			Node second = predConnection.getSecond();
 			try {
-				model.connect(pred, place);
+				if (predConnection instanceof VisualReadArc) {
+					if ((first instanceof VisualTransition) && (first != transition)) {
+						model.connectUndirected(first, newPlace);
+					}
+					if ((second instanceof VisualTransition) && (second != transition)) {
+						model.connectUndirected(newPlace, second);
+					}
+				} else {
+					if ((first instanceof VisualTransition) && (first != transition)) {
+						model.connect(first, newPlace);
+					}
+					if ((second instanceof VisualTransition) && (second!= transition)) {
+						model.connect(newPlace, second);
+					}
+				}
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}
 		}
-		for (Node succ: model.getPostset(succPlace)) {
+
+		for (Connection succConnection: model.getConnections(succPlace)) {
+			Node first = succConnection.getFirst();
+			Node second = succConnection.getSecond();
 			try {
-				model.connect(place, succ);
+				if (succConnection instanceof VisualReadArc) {
+					if ((first instanceof VisualTransition) && (first != transition)) {
+						model.connectUndirected(first, newPlace);
+					}
+					if ((second instanceof VisualTransition) && (second != transition)) {
+						model.connectUndirected(newPlace, second);
+					}
+				} else {
+					if ((first instanceof VisualTransition) && (first != transition)) {
+						model.connect(first, newPlace);
+					}
+					if ((second instanceof VisualTransition) && (second != transition)) {
+						model.connect(newPlace, second);
+					}
+				}
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}

@@ -22,10 +22,10 @@
 package org.workcraft.plugins.petri;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
