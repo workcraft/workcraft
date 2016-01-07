@@ -3,10 +3,17 @@ package org.workcraft.plugins.cpog.tools;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Double;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,6 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 
@@ -34,11 +42,14 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -49,6 +60,7 @@ import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
+import org.workcraft.plugins.cpog.CPOG;
 import org.workcraft.plugins.cpog.CPOGHangingConnectionRemover;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
@@ -65,6 +77,8 @@ import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
@@ -92,6 +106,7 @@ public class CpogSelectionTool extends SelectionTool {
 	private ArrayList<VisualPage> refPages = new ArrayList<>();
 
 	private GraphEditor editor;
+	protected boolean cancelInPlaceEdit;
 
 	public CpogSelectionTool() {
 		super();
@@ -608,6 +623,10 @@ public class CpogSelectionTool extends SelectionTool {
 					VisualVariable var = (VisualVariable) node;
 					var.toggle();
 					processed = true;
+				} else if (node instanceof VisualVertex) {
+					VisualVertex vertex = (VisualVertex) node;
+					editNameInPlace(editor, vertex, vertex.getLabel());
+					processed = true;
 				}
 			}
 		}
@@ -990,6 +1009,64 @@ public class CpogSelectionTool extends SelectionTool {
     	return parsingTool.getLowestVertex(visualCpog);
     }
 
+    private void editNameInPlace (final GraphEditor editor, final VisualVertex vertex, String initialText) {
+		final JTextField text = new JTextField(initialText);
+		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(vertex);
+		Rectangle2D bbRoot = TransformHelper.transform(vertex, localToRootTransform).getBoundingBox();
+		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
+		float fontSize = VisualNamedTransition.font.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+		text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
+		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
+		text.setHorizontalAlignment(JTextField.CENTER);
+		text.selectAll();
+		editor.getOverlay().add(text);
+		text.requestFocusInWindow();
 
+		text.addKeyListener( new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					editor.requestFocus();
+				}
+				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					cancelInPlaceEdit = true;
+					editor.requestFocus();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+		});
+
+		text.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				editor.getWorkspaceEntry().setCanModify(false);
+				cancelInPlaceEdit = false;
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				final String newName = text.getText();
+				text.getParent().remove(text);
+				if (!cancelInPlaceEdit) {
+					try {
+						editor.getWorkspaceEntry().saveMemento();
+						vertex.setLabel(newName);
+					} catch (ArgumentException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage());
+						editNameInPlace(editor, vertex, newName);
+					}
+				}
+				editor.getWorkspaceEntry().setCanModify(true);
+				editor.repaint();
+			}
+		});
+	}
 
 }
