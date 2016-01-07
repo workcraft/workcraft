@@ -50,6 +50,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -60,7 +61,6 @@ import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.cpog.CPOG;
 import org.workcraft.plugins.cpog.CPOGHangingConnectionRemover;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
@@ -77,7 +77,6 @@ import org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -233,6 +232,8 @@ public class CpogSelectionTool extends SelectionTool {
 
 		interfacePanel.add(expressionScroll, BorderLayout.CENTER);
 		interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
+
+		renderTypeChangeHandler();
 	}
 
 	public HashMap<String, VisualVertex> insertExpression(String text, final VisualCPOG visualCpog,
@@ -834,7 +835,7 @@ public class CpogSelectionTool extends SelectionTool {
             public void handleEvent(StateEvent e) {
                 if (e instanceof PropertyChangedEvent) {
                     PropertyChangedEvent pce = (PropertyChangedEvent) e;
-                    if (((PropertyChangedEvent) e).getPropertyName().compareTo("position") == 0)
+                    if (pce.getPropertyName().compareTo("position") == 0)
                     {
                         if ((pce.getSender() instanceof VisualVertex) && !(pce.getSender().getParent() instanceof VisualScenarioPage)) {
                             VisualVertex v = (VisualVertex) pce.getSender();
@@ -1021,6 +1022,9 @@ public class CpogSelectionTool extends SelectionTool {
 		text.selectAll();
 		editor.getOverlay().add(text);
 		text.requestFocusInWindow();
+		VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+
+
 
 		text.addKeyListener( new KeyListener() {
 			@Override
@@ -1058,10 +1062,16 @@ public class CpogSelectionTool extends SelectionTool {
 					try {
 						editor.getWorkspaceEntry().saveMemento();
 						vertex.setLabel(newName);
+						correctConnectionLengths(visualCpog, vertex);
 					} catch (ArgumentException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage());
 						editNameInPlace(editor, vertex, newName);
+					} catch (InvalidConnectionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+
+
 				}
 				editor.getWorkspaceEntry().setCanModify(true);
 				editor.repaint();
@@ -1069,4 +1079,49 @@ public class CpogSelectionTool extends SelectionTool {
 		});
 	}
 
+    private void correctConnectionLengths(VisualCPOG visualCpog, VisualVertex vertex) throws InvalidConnectionException {
+    	ArrayList<Node> cons = parsingTool.getChildren(visualCpog, vertex);
+		cons.addAll(parsingTool.getParents(visualCpog, vertex));
+		for (Node n : cons) {
+			Node f, s;
+			if (visualCpog.getConnection(n, vertex) != null) {
+				f = n;
+				s = vertex;
+			} else {
+				f = vertex;
+				s = n;
+			}
+			Connection c = visualCpog.getConnection(f, s);
+			VisualArc a = (VisualArc) c;
+			BooleanFormula b = a.getCondition();
+			visualCpog.remove(c);
+			a = (VisualArc) visualCpog.connect(f, s);
+			a.setCondition(b);
+		}
+    }
+
+    private void renderTypeChangeHandler() {
+    	VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+
+    	final class renderTypeChangedHandler extends StateSupervisor {
+
+			@Override
+			public void handleEvent(StateEvent e) {
+				if (e instanceof PropertyChangedEvent) {
+                    PropertyChangedEvent pce = (PropertyChangedEvent) e;
+                    if (pce.getPropertyName().compareTo("Render type") == 0) {
+                    	try {
+							correctConnectionLengths(visualCpog, (VisualVertex) pce.getSender());
+						} catch (InvalidConnectionException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                    }
+				}
+
+			}
+    }
+    new renderTypeChangedHandler().attach(visualCpog.getRoot());
+
+    }
 }
