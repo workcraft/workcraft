@@ -84,27 +84,32 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		return transition;
 	}
 
+	@Override
 	final public Collection<Place> getPlaces() {
 		return Hierarchy.getDescendantsOfType(getRoot(), Place.class);
 	}
 
+	@Override
 	final public Collection<Transition> getTransitions() {
 		return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
 	}
 
+	@Override
 	final public Collection<Connection> getConnections() {
 		return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
 	}
 
+	@Override
 	public boolean isUnfireEnabled(Transition t) {
 		return isUnfireEnabled (this, t);
 	}
 
-	final public boolean isEnabled (Transition t) {
+	@Override
+	final public boolean isEnabled(Transition t) {
 		return isEnabled (this, t);
 	}
 
-	final public static boolean isUnfireEnabled (PetriNetModel net, Transition t) {
+	final public static boolean isUnfireEnabled(PetriNetModel net, Transition t) {
 		// gather number of connections for each post-place
 		Map<Place, Integer> map = new HashMap<Place, Integer>();
 		for (Connection c: net.getConnections(t)) {
@@ -124,7 +129,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		return true;
 	}
 
-	final public static boolean isEnabled (PetriNetModel net, Transition t) {
+	final public static boolean isEnabled(PetriNetModel net, Transition t) {
 		// gather number of connections for each pre-place
 		Map<Place, Integer> map = new HashMap<Place, Integer>();
 		for (Connection c: net.getConnections(t)) {
@@ -145,7 +150,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 	}
 
 	@Override
-	final public void fire (Transition t) {
+	final public void fire(Transition t) {
 		fire (this, t);
 	}
 
@@ -173,7 +178,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
 		}
 	}
 
-	final public static void fire (PetriNetModel net, Transition t) {
+	final public static void fire(PetriNetModel net, Transition t) {
 		if (net.isEnabled(t)) {
 			// first consume tokens and then produce tokens (to avoid extra capacity)
 			for (Connection c : net.getConnections(t)) {

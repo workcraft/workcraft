@@ -34,7 +34,7 @@ public class PetriNetUtils {
 	public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedDualArcs(final VisualModel visualModel) {
 		HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
 		HashSet<VisualConnection> consumingArcs = PetriNetUtils.getVisualConsumingArcs(visualModel);
-		HashSet<VisualConnection> producingArcs = PetriNetUtils.getVisualProducerArcs(visualModel);
+		HashSet<VisualConnection> producingArcs = PetriNetUtils.getVisualProducingArcs(visualModel);
 		for (VisualConnection consumingArc: consumingArcs) {
 			for (VisualConnection producingArc: producingArcs) {
 				boolean isDualArcs = ((consumingArc.getFirst() == producingArc.getSecond())
@@ -314,7 +314,7 @@ public class PetriNetUtils {
 		return connections;
 	}
 
-	public static HashSet<VisualConnection> getVisualProducerArcs(VisualModel visualModel) {
+	public static HashSet<VisualConnection> getVisualProducingArcs(VisualModel visualModel) {
 		HashSet<VisualConnection> connections = new HashSet<>();
 		for (VisualConnection connection: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
 			if (connection instanceof VisualReadArc) continue;

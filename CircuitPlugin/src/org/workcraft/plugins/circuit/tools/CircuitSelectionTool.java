@@ -37,8 +37,8 @@ public class CircuitSelectionTool extends SelectionTool {
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			JPopupMenu popup = createPopupMenu(node, e.getEditor());
 			if (popup != null) {
-				popup.show(e.getSystemEvent().getComponent(),
-						e.getSystemEvent().getX(), e.getSystemEvent().getY());
+				MouseEvent systemEvent = e.getSystemEvent();
+				popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
 			}
 			processed = true;
 		}
