@@ -3,6 +3,7 @@ package org.workcraft.plugins.petri.tools;
 import java.util.HashSet;
 
 import org.workcraft.TransformationTool;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
@@ -20,6 +21,11 @@ public class CollapseReplicaTool extends TransformationTool {
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+	}
+
+	@Override
+	public boolean isApplicableToNode(Node node) {
+		return (node instanceof VisualReplicaPlace);
 	}
 
 	@Override

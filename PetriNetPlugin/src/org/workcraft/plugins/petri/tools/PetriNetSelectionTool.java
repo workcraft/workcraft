@@ -1,22 +1,26 @@
 package org.workcraft.plugins.petri.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.actions.ActionMenuItem;
+import org.workcraft.gui.actions.ToolAction;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.util.Tools;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriNetSelectionTool extends SelectionTool {
 
@@ -58,34 +62,33 @@ public class PetriNetSelectionTool extends SelectionTool {
 
 		if (!processed) {
 			super.mouseClicked(e);
-
 		}
 	}
-
 
 	private JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
-		JPopupMenu popup = new JPopupMenu();
-
-		if (node instanceof VisualTransition) {
-			final VisualTransition transition= (VisualTransition)node;
-			popup.setFocusable(false);
-			popup.add(new JLabel("Transition"));
-			popup.addSeparator();
-			{
-				JMenuItem contractionMenuItem = new JMenuItem("Contract transition");
-				contractionMenuItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						TransitionContractorTool.transform(editor.getWorkspaceEntry());
-					}
-				});
-				popup.add(contractionMenuItem);
+		JPopupMenu popup = null;
+		WorkspaceEntry we = editor.getWorkspaceEntry();
+		List<Tool> applicableTools = new ArrayList<>();
+		for (Tool tool: Tools.getApplicableTools(we)) {
+			if (tool instanceof TransformationTool) {
+				TransformationTool transformTool = (TransformationTool)tool;
+				if (transformTool.isApplicableToNode(node)) {
+					applicableTools.add(transformTool);
+				}
 			}
-			return popup;
 		}
-
-		return null;
+		if ( !applicableTools.isEmpty() ) {
+			popup = new JPopupMenu();
+			popup.setFocusable(false);
+			MainWindow mainWindow = editor.getMainWindow();
+			for (Tool tool: applicableTools) {
+				ToolAction toolAction = new ToolAction(tool);
+				ActionMenuItem miTool = new ActionMenuItem(toolAction);
+				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
+				popup.add(miTool);
+			}
+		}
+		return popup;
 	}
-
 
 }

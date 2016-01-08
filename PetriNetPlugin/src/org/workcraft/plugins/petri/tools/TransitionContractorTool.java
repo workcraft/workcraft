@@ -41,11 +41,12 @@ public class TransitionContractorTool extends TransformationTool {
 	}
 
 	@Override
-	public void run(WorkspaceEntry we) {
-		transform(we);
-	}
+	public boolean isApplicableToNode(Node node) {
+		return (node instanceof VisualTransition);
+	};
 
-	public static void transform(WorkspaceEntry we) {
+	@Override
+	public void run(WorkspaceEntry we) {
 		final VisualPetriNet model = (VisualPetriNet)we.getModelEntry().getVisualModel();
 		HashSet<VisualTransition> transitions = new HashSet<VisualTransition>(model.getVisualTransitions());
 		transitions.retainAll(model.getSelection());

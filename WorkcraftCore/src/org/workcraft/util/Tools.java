@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,26 +15,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class Tools {
 
-	public static ListMap<String, Pair<String, Tool>> getTools(WorkspaceEntry we) {
-		ListMap<String, Pair<String, Tool>> toolSections = new ListMap<String, Pair<String, Tool>>();
-
-		final Framework framework = Framework.getInstance();
-		Collection<PluginInfo<? extends Tool>> toolPlugins = framework.getPluginManager().getPlugins(Tool.class);
-		for (PluginInfo<? extends Tool> info : toolPlugins) {
-			Tool tool = info.getSingleton();
-			if (tool.isApplicableTo(we)) {
-				String toolDisplayName = tool.getDisplayName();
-				Pair<String, Tool> toolDescription = new Pair <String,Tool>(toolDisplayName, tool);
-				toolSections.put(tool.getSection(), toolDescription);
-			}
-		}
-		return toolSections;
-	}
-
 	public static void run(WorkspaceEntry we, Tool tool) {
-		if (tool.isApplicableTo(we))
+		if (tool.isApplicableTo(we)) {
 			tool.run(we);
-		else {
+		} else {
 			String errorMessage = "Attempt to apply incompatible tool " +
 				tool.getClass().getName() + " to a workspace entry " + we.getWorkspacePath();
 
@@ -41,23 +26,44 @@ public class Tools {
 		}
 	}
 
-	public static List<String> getSections(ListMap<String, Pair<String, Tool>> tools) {
-		LinkedList<String> list = new LinkedList<String>(tools.keySet());
-		Collections.sort(list);
-		return list;
+
+	public static List<Tool> getApplicableTools(WorkspaceEntry we) {
+		ArrayList<Tool> tools = new ArrayList<>();
+
+		final Framework framework = Framework.getInstance();
+		Collection<PluginInfo<? extends Tool>> toolPlugins = framework.getPluginManager().getPlugins(Tool.class);
+		for (PluginInfo<? extends Tool> info : toolPlugins) {
+			Tool tool = info.getSingleton();
+			if (tool.isApplicableTo(we)) {
+				tools.add(tool);
+			}
+		}
+		return tools;
 	}
 
-	public static List<Pair<String,Tool>> getSectionTools(String section, ListMap<String, Pair<String, Tool>> tools) {
-		List<Pair<String,Tool>> sectionTools = new ArrayList<Pair<String, Tool>>(tools.get(section));
+	public static List<String> getSections(List<Tool> tools) {
+		HashSet<String> sections = new HashSet<>();
+		for (Tool tool: tools) {
+			sections.add(tool.getSection());
+		}
+		LinkedList<String> seortedSections = new LinkedList<>(sections);
+		Collections.sort(seortedSections);
+		return seortedSections;
+	}
 
-		Collections.sort(sectionTools, new Comparator<Pair<String,Tool>>() {
+	public static List<Tool> getSectionTools(String section, List<Tool> tools) {
+		List<Tool> sectionTools = new ArrayList<Tool>();
+		for (Tool tool: tools) {
+			if (tool.getSection().equals(section)) {
+				sectionTools.add(tool);
+			}
+		}
+		Collections.sort(sectionTools, new Comparator<Tool>() {
 			@Override
-			public int compare(Pair<String, Tool> o1,
-					Pair<String, Tool> o2) {
-				return (o1.getFirst().compareTo(o2.getFirst()));
+			public int compare(Tool o1, Tool o2) {
+				return (o1.getDisplayName().compareTo(o2.getDisplayName()));
 			}
 		});
-
 		return sectionTools;
 	}
 

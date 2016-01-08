@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
@@ -16,6 +17,11 @@ public class ReplicateReadArcPlaceTool extends TransformationTool {
 	@Override
 	public String getDisplayName() {
 		return "Replicate read-arc places";
+	}
+
+	@Override
+	public boolean isApplicableToNode(Node node) {
+		return (node instanceof VisualReadArc);
 	}
 
 	@Override

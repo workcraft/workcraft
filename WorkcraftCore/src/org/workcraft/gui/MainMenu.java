@@ -46,37 +46,16 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ActionMenuItem;
+import org.workcraft.gui.actions.ToolAction;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.ListMap;
-import org.workcraft.util.Pair;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
 	private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
-
-	class ToolAction extends Action {
-		Tool tool;
-		String text;
-
-		public ToolAction(Pair<String, Tool> tool) {
-			this.tool = tool.getSecond();
-			this.text = tool.getFirst().trim();
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		@Override
-		public void run() {
-			final Framework framework = Framework.getInstance();
-			framework.getMainWindow().runTool(tool);
-		}
-	}
 
 	class ToggleWindowAction extends Action {
 		private DockableWindow window;
@@ -527,7 +506,7 @@ public class MainMenu extends JMenuBar {
 	private void createToolsMenu(final WorkspaceEntry we) {
 		removeToolsMenu();
 
-		ListMap<String, Pair<String, Tool>> tools = Tools.getTools(we);
+		List<Tool> tools = Tools.getApplicableTools(we);
 		List<String> sections = Tools.getSections(tools);
 
 		JMenu mnTools = new JMenu("Tools");
@@ -545,8 +524,9 @@ public class MainMenu extends JMenuBar {
 					mnToolsList.addFirst(mnTools);
 				}
 			}
-			for (Pair<String, Tool> tool : Tools.getSectionTools(section, tools)) {
-				ActionMenuItem miTool = new ActionMenuItem(new ToolAction(tool));
+			for (Tool tool : Tools.getSectionTools(section, tools)) {
+				ToolAction toolAction = new ToolAction(tool);
+				ActionMenuItem miTool = new ActionMenuItem(toolAction);
 				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
 				mnSection.add(miTool);
 			}
