@@ -38,6 +38,10 @@ public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
 	private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
 	private Action scriptedAction = null;
 
+	public ActionCheckBoxMenuItem(Action action) {
+		this(action, action.getText());
+	}
+
 	public ActionCheckBoxMenuItem(Action action, String text) {
 		super(text);
 		scriptedAction = action;
@@ -45,11 +49,6 @@ public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
 		setEnabled(scriptedAction.isEnabled());
 
 		addActionListener(new ActionForwarder());
-	}
-
-	public ActionCheckBoxMenuItem(Action action) {
-		this(action, action.getText());
-
 	}
 
 	private void fireActionPerformed() {

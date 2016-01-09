@@ -65,7 +65,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
 			// Generate unfolding
 			boolean tryPnml = settings.getMode().canPnml();
 			File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(tryPnml));
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), tryPnml);
+			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
 			if (punfResult.getOutcome() != Outcome.FINISHED) {

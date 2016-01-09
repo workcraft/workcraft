@@ -38,6 +38,10 @@ public class ActionMenuItem extends JMenuItem implements Actor {
 	private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
 	private Action scriptedAction = null;
 
+	public ActionMenuItem(Action action) {
+		this(action, action.getText());
+	}
+
 	public ActionMenuItem(Action action, String text) {
 		super(text);
 		scriptedAction = action;
@@ -45,11 +49,6 @@ public class ActionMenuItem extends JMenuItem implements Actor {
 		setEnabled(scriptedAction.isEnabled());
 
 		addActionListener(new ActionForwarder());
-	}
-
-	public ActionMenuItem(Action action) {
-		this(action, action.getText());
-
 	}
 
 	private void fireActionPerformed() {

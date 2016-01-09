@@ -176,7 +176,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			Result<? extends ExternalProcessResult> punfResult = null;
 			if (checkDeadlock || checkHazard) {
 				unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
-				punfTask = new PunfTask(sysStgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath(), true);
+				punfTask = new PunfTask(sysStgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
 				SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<Object>(monitor);
 				punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", punfMonitor);
 
@@ -195,7 +195,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			if (hasEnvironment && checkConformation) {
 				if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
 					unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.MODIFIED_FILE_SUFFIX + PunfUtilitySettings.getUnfoldingExtension(true));
-					punfModTask = new PunfTask(sysModStgFile.getCanonicalPath(), unfoldingModFile.getCanonicalPath(), true);
+					punfModTask = new PunfTask(sysModStgFile.getCanonicalPath(), unfoldingModFile.getCanonicalPath());
 					SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<Object>(monitor);
 					punfModResult = framework.getTaskManager().execute(punfModTask, "Unfolding .g", punfModMonitor);
 
