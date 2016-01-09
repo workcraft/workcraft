@@ -15,6 +15,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
@@ -51,7 +52,7 @@ public class TransitionContractorTool extends TransformationTool {
 		HashSet<VisualTransition> transitions = new HashSet<VisualTransition>(model.getVisualTransitions());
 		transitions.retainAll(model.getSelection());
 		if (transitions.size() > 1) {
-			JOptionPane.showMessageDialog(null, "Only one transition can be contracted at a time.", title, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "One transition can be contracted at a time.", title, JOptionPane.WARNING_MESSAGE);
 		} else if (!transitions.isEmpty()) {
 			we.saveMemento();
 			for (VisualTransition transition: transitions) {
@@ -80,6 +81,7 @@ public class TransitionContractorTool extends TransformationTool {
 		return ( !isType1Secure(model, transition) && !isType2Secure(model, transition) );
 	}
 
+	// There are no choice places in the preset (preset can be empty).
 	private static boolean isType1Secure(PetriNet model, Transition transition) {
 		Set<Node> predNodes = model.getPreset(transition);
 		for (Node predNode: predNodes) {
@@ -92,12 +94,9 @@ public class TransitionContractorTool extends TransformationTool {
 		return true;
 	}
 
+	// There is at least one unmarked place in the postset AND there are no merge places in the postset (the postset cannot be empty).
 	private static boolean isType2Secure(PetriNet model, Transition transition) {
 		Set<Node> succNodes = model.getPostset(transition);
-		if (succNodes.isEmpty()) {
-			return true;
-		}
-
 		int markedPlaceCount = 0;
 		for (Node succNode: succNodes) {
 			Place succPlace = (Place)succNode;
@@ -108,7 +107,6 @@ public class TransitionContractorTool extends TransformationTool {
 		if (markedPlaceCount >= succNodes.size()) {
 			return false;
 		}
-
 		for (Node succNode: succNodes) {
 			HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
 			succPredNodes.remove(transition);
@@ -123,9 +121,10 @@ public class TransitionContractorTool extends TransformationTool {
 		return ( !isType1Safe(model, transition) && !isType2Safe(model, transition) && !isType3Safe(model, transition));
 	}
 
+	// The only place in the postset is unmarked AND it is not a merge.
 	private static boolean isType1Safe(PetriNet model, Transition transition) {
 		Set<Node> succNodes = model.getPostset(transition);
-		if (succNodes.size() > 1) {
+		if (succNodes.size() != 1) {
 			return false;
 		}
 		for (Node succNode: succNodes) {
@@ -133,47 +132,49 @@ public class TransitionContractorTool extends TransformationTool {
 			if (succPlace.getTokens() != 0) {
 				return false;
 			}
-		}
-		Set<Node> preset = model.getPreset(transition);
-		for (Node pred: preset) {
-			HashSet<Node> predPostset = new HashSet<>(model.getPostset(pred));
-			predPostset.remove(transition);
-			if ( !predPostset.isEmpty() ) {
+			HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
+			succPredNodes.remove(transition);
+			if ( !succPredNodes.isEmpty() ) {
 				return false;
 			}
 		}
 		return true;
 	}
 
+	// There is a single place in the preset AND all the postset places are unmarked and not merge places (the postset cannot be empty).
 	private static boolean isType2Safe(PetriNet model, Transition transition) {
-		Set<Node> preset = model.getPreset(transition);
-		if (preset.size() != 1) {
+		Set<Node> predNodes = model.getPreset(transition);
+		if (predNodes.size() != 1) {
 			return false;
 		}
-		Set<Node> postset = model.getPostset(transition);
-		for (Node succ: postset) {
-			Place place = (Place)succ;
-			if (place.getTokens() != 0) {
+		Set<Node> succNodes = model.getPostset(transition);
+		if (succNodes.isEmpty()) {
+			return false;
+		}
+		for (Node succNode: succNodes) {
+			Place succPlace = (Place)succNode;
+			if (succPlace.getTokens() != 0) {
 				return false;
 			}
-			HashSet<Node> succPreset = new HashSet<>(model.getPreset(succ));
-			succPreset.remove(transition);
-			if ( !succPreset.isEmpty() ) {
+			HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
+			succPredNodes.remove(transition);
+			if ( !succPredNodes.isEmpty() ) {
 				return false;
 			}
 		}
 		return true;
 	}
 
+	// The only preset place is not a choice.
 	private static boolean isType3Safe(PetriNet model, Transition transition) {
-		Set<Node> preset = model.getPreset(transition);
-		if (preset.size() != 1) {
+		Set<Node> predNodes = model.getPreset(transition);
+		if (predNodes.size() != 1) {
 			return false;
 		}
-		for (Node pred: preset) {
-			HashSet<Node> predPostset = new HashSet<>(model.getPostset(pred));
-			predPostset.remove(transition);
-			if ( !predPostset.isEmpty() ) {
+		for (Node predNode: predNodes) {
+			HashSet<Node> predSuccNodes = new HashSet<>(model.getPostset(predNode));
+			predSuccNodes.remove(transition);
+			if ( !predSuccNodes.isEmpty() ) {
 				return false;
 			}
 		}
@@ -191,13 +192,11 @@ public class TransitionContractorTool extends TransformationTool {
 			}
 		}
 		model.remove(transition);
-		if ( !predNodes.isEmpty() && !succNodes.isEmpty() ) {
-			for (Node predNode: predNodes) {
-				model.remove(predNode);
-			}
-			for (Node succNode: succNodes) {
-				model.remove(succNode);
-			}
+		for (Node predNode: predNodes) {
+			model.remove(predNode);
+		}
+		for (Node succNode: succNodes) {
+			model.remove(succNode);
 		}
 	}
 
@@ -215,55 +214,70 @@ public class TransitionContractorTool extends TransformationTool {
 
 		Point2D pos = Geometry.middle(predPlace.getPosition(), succPlace.getPosition());
 		newPlace.setPosition(pos);
+		newPlace.mixStyle(predPlace, succPlace);
+		// Accumulate token and capacity count
 		int tokens = predPlace.getReferencedPlace().getTokens() + succPlace.getReferencedPlace().getTokens();
 		newPlace.getReferencedPlace().setTokens(tokens);
+		int capacity= predPlace.getReferencedPlace().getCapacity() + succPlace.getReferencedPlace().getCapacity();
+		newPlace.getReferencedPlace().setCapacity(capacity);
 
 		for (Connection predConnection: model.getConnections(predPlace)) {
 			Node first = predConnection.getFirst();
 			Node second = predConnection.getSecond();
+			VisualConnection newConnection = null;
 			try {
 				if (predConnection instanceof VisualReadArc) {
 					if (first instanceof VisualTransition) {
-						model.connectUndirected(first, newPlace);
+						newConnection = model.connectUndirected(first, newPlace);
 					}
 					if (second instanceof VisualTransition) {
-						model.connectUndirected(newPlace, second);
+						newConnection = model.connectUndirected(newPlace, second);
 					}
 				} else {
 					if (first instanceof VisualTransition) {
-						model.connect(first, newPlace);
+						newConnection = model.connect(first, newPlace);
 					}
 					if (second instanceof VisualTransition) {
-						model.connect(newPlace, second);
+						newConnection = model.connect(newPlace, second);
 					}
 				}
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
+			}
+			if ((newConnection != null) && (predConnection instanceof VisualConnection)) {
+				newConnection.copyStyle((VisualConnection)predConnection);
+				newConnection.copyShape((VisualConnection)predConnection);
 			}
 		}
 
 		for (Connection succConnection: model.getConnections(succPlace)) {
 			Node first = succConnection.getFirst();
 			Node second = succConnection.getSecond();
+			VisualConnection newConnection = null;
 			try {
 				if (succConnection instanceof VisualReadArc) {
 					if (first instanceof VisualTransition) {
-						model.connectUndirected(first, newPlace);
+						newConnection = model.connectUndirected(first, newPlace);
 					}
 					if (second instanceof VisualTransition) {
-						model.connectUndirected(newPlace, second);
+						newConnection = model.connectUndirected(newPlace, second);
 					}
 				} else {
 					if (first instanceof VisualTransition) {
-						model.connect(first, newPlace);
+						newConnection = model.connect(first, newPlace);
 					}
 					if (second instanceof VisualTransition) {
-						model.connect(newPlace, second);
+						newConnection = model.connect(newPlace, second);
 					}
 				}
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}
+			if ((newConnection != null) && (succConnection instanceof VisualConnection)) {
+				newConnection.copyStyle((VisualConnection)succConnection);
+				newConnection.copyShape((VisualConnection)succConnection);
+			}
+
 		}
 	}
 

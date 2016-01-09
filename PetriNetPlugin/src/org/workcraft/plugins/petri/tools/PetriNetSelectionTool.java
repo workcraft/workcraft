@@ -37,9 +37,13 @@ public class PetriNetSelectionTool extends SelectionTool {
 		VisualModel model = e.getEditor().getModel();
 		VisualNode node = (VisualNode)HitMan.hitTestForSelection(e.getPosition(), model);
 		if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
-			model.select(node);
 			JPopupMenu popup = createPopupMenu(node, e.getEditor());
 			if (popup != null) {
+				if (node == null) {
+					model.selectNone();
+				} else {
+					model.select(node);
+				}
 				MouseEvent systemEvent = e.getSystemEvent();
 				popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
 			}

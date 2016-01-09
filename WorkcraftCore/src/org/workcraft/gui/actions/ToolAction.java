@@ -11,7 +11,7 @@ public class ToolAction extends Action {
 	}
 
 	public String getText() {
-		return tool.getDisplayName();
+		return tool.getDisplayName().trim();
 	}
 
 	@Override
@@ -19,4 +19,5 @@ public class ToolAction extends Action {
 		final Framework framework = Framework.getInstance();
 		framework.getMainWindow().runTool(tool);
 	}
+
 }
