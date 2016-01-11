@@ -29,7 +29,8 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransitionContractorTool extends TransformationTool {
-	private static final String title = "Transition contraction";
+
+	private static final String MESSAGE_TITLE = "Transition contraction";
 
 	@Override
 	public String getDisplayName() {
@@ -52,18 +53,18 @@ public class TransitionContractorTool extends TransformationTool {
 		HashSet<VisualTransition> transitions = new HashSet<VisualTransition>(model.getVisualTransitions());
 		transitions.retainAll(model.getSelection());
 		if (transitions.size() > 1) {
-			JOptionPane.showMessageDialog(null, "One transition can be contracted at a time.", title, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "One transition can be contracted at a time.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
 		} else if (!transitions.isEmpty()) {
 			we.saveMemento();
 			for (VisualTransition transition: transitions) {
 				if (hasSelfLoop(model.getPetriNet(), transition.getReferencedTransition())) {
-					JOptionPane.showMessageDialog(null, "A transition with a self-loop/read-arc cannot be contracted.", title, JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error: a transition with a self-loop/read-arc cannot be contracted.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
 				} else if (isLanguageChanging(model.getPetriNet(), transition.getReferencedTransition())) {
 					contractTransition(model, transition);
-					JOptionPane.showMessageDialog(null, "This transforLanguage can be changed.", title, JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Warning: this transformation may change the language.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
 				} else if (isSafenessViolationg(model.getPetriNet(), transition.getReferencedTransition())) {
 					contractTransition(model, transition);
-					JOptionPane.showMessageDialog(null, "Safeness can be violated.", title, JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Warning: this transformation may be not safeness-preserving.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
 				} else {
 					contractTransition(model, transition);
 				}
@@ -215,10 +216,16 @@ public class TransitionContractorTool extends TransformationTool {
 		Point2D pos = Geometry.middle(predPlace.getPosition(), succPlace.getPosition());
 		newPlace.setPosition(pos);
 		newPlace.mixStyle(predPlace, succPlace);
-		// Accumulate token and capacity count
+		// Correct the token count and capacity of the new place
 		int tokens = predPlace.getReferencedPlace().getTokens() + succPlace.getReferencedPlace().getTokens();
 		newPlace.getReferencedPlace().setTokens(tokens);
-		int capacity= predPlace.getReferencedPlace().getCapacity() + succPlace.getReferencedPlace().getCapacity();
+		int capacity = tokens;
+		if (capacity < predPlace.getReferencedPlace().getCapacity()) {
+			capacity = predPlace.getReferencedPlace().getCapacity();
+		}
+		if (capacity < succPlace.getReferencedPlace().getCapacity()) {
+			capacity = succPlace.getReferencedPlace().getCapacity();
+		}
 		newPlace.getReferencedPlace().setCapacity(capacity);
 
 		for (Connection predConnection: model.getConnections(predPlace)) {
@@ -277,7 +284,6 @@ public class TransitionContractorTool extends TransformationTool {
 				newConnection.copyStyle((VisualConnection)succConnection);
 				newConnection.copyShape((VisualConnection)succConnection);
 			}
-
 		}
 	}
 

@@ -2,22 +2,18 @@ package org.workcraft.plugins.circuit.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
-import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -30,35 +26,19 @@ public class CircuitSelectionTool extends SelectionTool {
 	private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
 
 	@Override
-	public void mouseClicked(GraphEditorMouseEvent e) {
-		boolean processed = false;
-		if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
-			VisualModel model = e.getEditor().getModel();
-			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
-			JPopupMenu popup = createPopupMenu(node, e.getEditor());
-			if (popup != null) {
-				MouseEvent systemEvent = e.getSystemEvent();
-				popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
-			}
-			processed = true;
-		}
-		if (!processed) {
-			super.mouseClicked(e);
-		}
-	}
-
-	private JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
-		JPopupMenu popup = new JPopupMenu();
-
+	public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
+		JPopupMenu popup = super.createPopupMenu(node, editor);
 		if (node instanceof VisualFunctionComponent) {
 			final VisualFunctionComponent component = (VisualFunctionComponent)node;
-
-			popup.setFocusable(false);
-			popup.add(new JLabel("Function component"));
-			popup.addSeparator();
+			if (popup != null) {
+				popup.addSeparator();
+			} else {
+				popup = new JPopupMenu();
+				popup.setFocusable(false);
+			}
 			{
-				JMenuItem addOutput = new JMenuItem("Add output (EAST)");
-				addOutput.addActionListener(new ActionListener() {
+				JMenuItem addOutputMenuItem = new JMenuItem("Add output (EAST)");
+				addOutputMenuItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						editor.getWorkspaceEntry().saveMemento();
@@ -67,11 +47,11 @@ public class CircuitSelectionTool extends SelectionTool {
 						component.setContactsDefaultPosition();
 					}
 				});
-				popup.add(addOutput);
+				popup.add(addOutputMenuItem);
 			}
 			{
-				JMenuItem addInput = new JMenuItem("Add input (WEST)");
-				addInput.addActionListener(new ActionListener() {
+				JMenuItem addInputMenuItem = new JMenuItem("Add input (WEST)");
+				addInputMenuItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						editor.getWorkspaceEntry().saveMemento();
@@ -80,35 +60,33 @@ public class CircuitSelectionTool extends SelectionTool {
 						component.setContactsDefaultPosition();
 					}
 				});
-				popup.add(addInput);
+				popup.add(addInputMenuItem);
 			}
 			popup.addSeparator();
 			{
-				JMenuItem defaultContactPosition = new JMenuItem("Set contacts in default position");
-				defaultContactPosition.addActionListener(new ActionListener() {
+				JMenuItem defaultContactPositionMenuItem = new JMenuItem("Set contacts in default position");
+				defaultContactPositionMenuItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						editor.getWorkspaceEntry().saveMemento();
 						component.setContactsDefaultPosition();
 					}
 				});
-				popup.add(defaultContactPosition);
+				popup.add(defaultContactPositionMenuItem);
 			}
 			{
-				JMenuItem centerPivotPoint = new JMenuItem("Center pivot point");
-				centerPivotPoint.addActionListener(new ActionListener() {
+				JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
+				centerPivotPointMenuItem.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						editor.getWorkspaceEntry().saveMemento();
 						component.centerPivotPoint();
 					}
 				});
-				popup.add(centerPivotPoint);
+				popup.add(centerPivotPointMenuItem);
 			}
-			return popup;
 		}
-
-		return null;
+		return popup;
 	}
 
 	@Override

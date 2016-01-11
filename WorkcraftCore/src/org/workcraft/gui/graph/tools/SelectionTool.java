@@ -37,15 +37,18 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
@@ -53,6 +56,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.workcraft.Tool;
+import org.workcraft.TransformationTool;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -69,11 +74,16 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.actions.ActionMenuItem;
+import org.workcraft.gui.actions.ToolAction;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Tools;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class SelectionTool extends AbstractTool {
 	private enum DrugState {NONE, MOVE, SELECT};
@@ -274,15 +284,15 @@ public class SelectionTool extends AbstractTool {
 
 	@Override
 	public void mouseClicked(GraphEditorMouseEvent e) {
-		if(notClick1 && e.getButton() == MouseEvent.BUTTON1) {
+		if (notClick1 && e.getButton() == MouseEvent.BUTTON1) {
 			return;
 		}
-		if(notClick3 && e.getButton() == MouseEvent.BUTTON3) {
+		if (notClick3 && e.getButton() == MouseEvent.BUTTON3) {
 			return;
 		}
 
+		VisualModel model = e.getModel();
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			VisualModel model = e.getModel();
 			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
 			if (node == null) {
 				if (e.getClickCount() > 1) {
@@ -337,8 +347,48 @@ public class SelectionTool extends AbstractTool {
 					}
 				}
 			}
+			anchorGenerator.mouseClicked(e);
 		}
-		anchorGenerator.mouseClicked(e);
+
+		if (e.getButton() == MouseEvent.BUTTON3) {
+			VisualNode node = (VisualNode)HitMan.hitTestForPopup(e.getPosition(), model);
+			JPopupMenu popup = createPopupMenu(node, e.getEditor());
+			if (popup != null) {
+				if (node == null) {
+					model.selectNone();
+				} else {
+					model.select(node);
+				}
+				MouseEvent systemEvent = e.getSystemEvent();
+				popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
+			}
+		}
+	}
+
+	public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
+		JPopupMenu popup = null;
+		WorkspaceEntry we = editor.getWorkspaceEntry();
+		List<Tool> applicableTools = new ArrayList<>();
+		for (Tool tool: Tools.getApplicableTools(we)) {
+			if (tool instanceof TransformationTool) {
+				TransformationTool transformTool = (TransformationTool)tool;
+				if (transformTool.isApplicableToNode(node)) {
+					applicableTools.add(transformTool);
+				}
+			}
+		}
+		if ( !applicableTools.isEmpty() ) {
+			popup = new JPopupMenu();
+			popup.setFocusable(false);
+			MainWindow mainWindow = editor.getMainWindow();
+			for (Tool tool: applicableTools) {
+				ToolAction toolAction = new ToolAction(tool);
+				ActionMenuItem miTool = new ActionMenuItem(toolAction);
+				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
+				popup.add(miTool);
+			}
+		}
+		return popup;
 	}
 
 	@Override

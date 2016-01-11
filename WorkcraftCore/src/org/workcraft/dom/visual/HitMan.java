@@ -183,6 +183,13 @@ public class HitMan
 	}
 
 
+	public static Node hitTestForSelection (Point2D point, VisualModel model) {
+		AffineTransform t = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
+		Point2D pt = new Point2D.Double();
+		t.transform(point, pt);
+		return hitTestForSelection(pt, model.getCurrentLevel());
+	}
+
 	public static Node hitTestForSelection(Point2D point, Node node) {
 		Node result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
 			public Boolean eval(Node n) {
@@ -191,7 +198,6 @@ public class HitMan
 				return (isMovable && !isHidden);
 			}
 		});
-
 		if (result == null) {
 			result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
 				public Boolean eval(Node n) {
@@ -204,9 +210,14 @@ public class HitMan
 		return result;
 	}
 
-	public static Node hitTestForConnection(Point2D point, Node node) {
 
-		Node nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+	public static Node hitTestForConnection (Point2D point, VisualModel model) {
+		Point2D pt = transformToChildSpace(point, model.getRoot());
+		return hitTestForConnection(pt, model.getRoot());
+	}
+
+	public static Node hitTestForConnection(Point2D point, Node node) {
+		Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
 			public Boolean eval(Node n) {
 				boolean isMovable = (n instanceof Movable);
 				boolean isHidden = ((n instanceof Hidable) && ((Hidable)n).isHidden());
@@ -216,9 +227,8 @@ public class HitMan
 				return (isMovable && !isHidden && (isCollapsed || isDistributable || !isContainer));
 			}
 		});
-
-		if (nd == null) {
-			nd = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+		if (result == null) {
+			result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
 				public Boolean eval(Node n) {
 					boolean isConnection = n instanceof VisualConnection;
 					boolean isHidden = ((n instanceof Hidable) && ((Hidable)n).isHidden());
@@ -226,21 +236,36 @@ public class HitMan
 				}
 			});
 		}
-		return nd;
+		return result;
 	}
 
-	public static Node hitTestForConnection (Point2D point, VisualModel model) {
-		Point2D pt = transformToChildSpace(point, model.getRoot());
-		return hitTestForConnection(pt, model.getRoot());
-	}
 
-	public static Node hitTestForSelection (Point2D point, VisualModel model) {
+	public static Node hitTestForPopup(Point2D point, VisualModel model) {
 		AffineTransform t = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
 		Point2D pt = new Point2D.Double();
 		t.transform(point, pt);
-		return hitTestForSelection(pt, model.getCurrentLevel());
+		return hitTestForPopup(pt, model.getCurrentLevel());
 	}
 
+	public static Node hitTestForPopup(Point2D point, Node node) {
+		Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+			public Boolean eval(Node n) {
+				boolean isMovable = (n instanceof Movable);
+				boolean isHidden = ((n instanceof Hidable) && ((Hidable)n).isHidden());
+				return (isMovable && !isHidden);
+			}
+		});
+		if (result == null) {
+			result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+				public Boolean eval(Node n) {
+					boolean isConnection = (n instanceof VisualConnection);
+					boolean isHidden = ((n instanceof Hidable) && ((Hidable)n).isHidden());
+					return (isConnection && !isHidden);
+				}
+			});
+		}
+		return result;
+	}
 
 	/**
 	 * The method finds all direct children of the given container, which completely fit inside the given rectangle.
