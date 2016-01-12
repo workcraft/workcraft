@@ -1,6 +1,7 @@
 package org.workcraft.plugins.petri.tools;
 
 import java.awt.geom.Point2D;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -13,28 +14,35 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransitionContractorTool extends TransformationTool {
 
 	private static final String MESSAGE_TITLE = "Transition contraction";
 
+	private HashSet<VisualConnection> replicaPlaces = new HashSet<>();
+
 	@Override
 	public String getDisplayName() {
-		return "Contract selected transition";
+		return "Contract selected transitions";
 	}
 
 	@Override
@@ -49,41 +57,43 @@ public class TransitionContractorTool extends TransformationTool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final VisualPetriNet model = (VisualPetriNet)we.getModelEntry().getVisualModel();
-		HashSet<VisualTransition> transitions = new HashSet<VisualTransition>(model.getVisualTransitions());
-		transitions.retainAll(model.getSelection());
-		if (transitions.size() > 1) {
+		final VisualModel visualModel = we.getModelEntry().getVisualModel();
+		HashSet<VisualTransition> visualTransitions = PetriNetUtils.getVisualTransitions(visualModel);
+		visualTransitions.retainAll(visualModel.getSelection());
+		if (visualTransitions.size() > 1) {
 			JOptionPane.showMessageDialog(null, "One transition can be contracted at a time.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
-		} else if (!transitions.isEmpty()) {
+		} else if (!visualTransitions.isEmpty()) {
 			we.saveMemento();
-			for (VisualTransition transition: transitions) {
-				if (hasSelfLoop(model.getPetriNet(), transition.getReferencedTransition())) {
+			PetriNetModel mathModel = (PetriNetModel)visualModel.getMathModel();
+			for (VisualTransition visualTransition: visualTransitions) {
+				Transition mathTransition = visualTransition.getReferencedTransition();
+				if (hasSelfLoop(mathModel, mathTransition)) {
 					JOptionPane.showMessageDialog(null, "Error: a transition with a self-loop/read-arc cannot be contracted.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
-				} else if (isLanguageChanging(model.getPetriNet(), transition.getReferencedTransition())) {
-					contractTransition(model, transition);
+				} else if (isLanguageChanging(mathModel, mathTransition)) {
+					contractTransition(visualModel, visualTransition);
 					JOptionPane.showMessageDialog(null, "Warning: this transformation may change the language.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
-				} else if (isSafenessViolationg(model.getPetriNet(), transition.getReferencedTransition())) {
-					contractTransition(model, transition);
+				} else if (isSafenessViolationg(mathModel, mathTransition)) {
+					contractTransition(visualModel, visualTransition);
 					JOptionPane.showMessageDialog(null, "Warning: this transformation may be not safeness-preserving.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
 				} else {
-					contractTransition(model, transition);
+					contractTransition(visualModel, visualTransition);
 				}
 			}
 		}
 	}
 
-	private static boolean hasSelfLoop(PetriNet model, Transition transition) {
+	private boolean hasSelfLoop(PetriNetModel model, Transition transition) {
 		HashSet<Node> connectedNodes = new HashSet<>(model.getPreset(transition));
 		connectedNodes.retainAll(model.getPostset(transition));
 		return !connectedNodes.isEmpty();
 	}
 
-	private static boolean isLanguageChanging(PetriNet model, Transition transition) {
+	private boolean isLanguageChanging(PetriNetModel model, Transition transition) {
 		return ( !isType1Secure(model, transition) && !isType2Secure(model, transition) );
 	}
 
 	// There are no choice places in the preset (preset can be empty).
-	private static boolean isType1Secure(PetriNet model, Transition transition) {
+	private boolean isType1Secure(PetriNetModel model, Transition transition) {
 		Set<Node> predNodes = model.getPreset(transition);
 		for (Node predNode: predNodes) {
 			HashSet<Node> predSuccNodes = new HashSet<>(model.getPostset(predNode));
@@ -96,7 +106,7 @@ public class TransitionContractorTool extends TransformationTool {
 	}
 
 	// There is at least one unmarked place in the postset AND there are no merge places in the postset (the postset cannot be empty).
-	private static boolean isType2Secure(PetriNet model, Transition transition) {
+	private boolean isType2Secure(PetriNetModel model, Transition transition) {
 		Set<Node> succNodes = model.getPostset(transition);
 		int markedPlaceCount = 0;
 		for (Node succNode: succNodes) {
@@ -118,12 +128,12 @@ public class TransitionContractorTool extends TransformationTool {
 		return true;
 	}
 
-	private static boolean isSafenessViolationg(PetriNet model, Transition transition) {
+	private boolean isSafenessViolationg(PetriNetModel model, Transition transition) {
 		return ( !isType1Safe(model, transition) && !isType2Safe(model, transition) && !isType3Safe(model, transition));
 	}
 
 	// The only place in the postset is unmarked AND it is not a merge.
-	private static boolean isType1Safe(PetriNet model, Transition transition) {
+	private boolean isType1Safe(PetriNetModel model, Transition transition) {
 		Set<Node> succNodes = model.getPostset(transition);
 		if (succNodes.size() != 1) {
 			return false;
@@ -143,7 +153,7 @@ public class TransitionContractorTool extends TransformationTool {
 	}
 
 	// There is a single place in the preset AND all the postset places are unmarked and not merge places (the postset cannot be empty).
-	private static boolean isType2Safe(PetriNet model, Transition transition) {
+	private boolean isType2Safe(PetriNetModel model, Transition transition) {
 		Set<Node> predNodes = model.getPreset(transition);
 		if (predNodes.size() != 1) {
 			return false;
@@ -167,7 +177,7 @@ public class TransitionContractorTool extends TransformationTool {
 	}
 
 	// The only preset place is not a choice.
-	private static boolean isType3Safe(PetriNet model, Transition transition) {
+	private boolean isType3Safe(PetriNetModel model, Transition transition) {
 		Set<Node> predNodes = model.getPreset(transition);
 		if (predNodes.size() != 1) {
 			return false;
@@ -182,109 +192,124 @@ public class TransitionContractorTool extends TransformationTool {
 		return true;
 	}
 
-	private static void contractTransition(VisualPetriNet model, VisualTransition transition) {
-		LinkedList<Node> predNodes = new LinkedList<Node>(model.getPreset(transition));
-		LinkedList<Node> succNodes = new LinkedList<Node>(model.getPostset(transition));
+	private void contractTransition(VisualModel visualModel, VisualTransition visualTransition) {
+		beforeContraction(visualModel, visualTransition);
+		LinkedList<Node> predNodes = new LinkedList<Node>(visualModel.getPreset(visualTransition));
+		LinkedList<Node> succNodes = new LinkedList<Node>(visualModel.getPostset(visualTransition));
+		HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaces = new HashMap<>();
 		for (Node predNode: predNodes) {
 			VisualPlace predPlace = (VisualPlace)predNode;
 			for (Node succNode: succNodes) {
 				VisualPlace succPlace = (VisualPlace)succNode;
-				replicatePlace(model, predPlace, succPlace);
+				VisualPlace productPlace = createProductPlace(visualModel, predPlace, succPlace);
+				initialiseProductPlace(visualModel, predPlace, succPlace, productPlace);
+
+				HashSet<Connection> connections = new HashSet<>();
+				connections.addAll(visualModel.getConnections(predPlace));
+				connections.addAll(visualModel.getConnections(succPlace));
+				connectProductPlace(visualModel, connections, productPlace);
+				productPlaces.put(productPlace, new Pair<>(predPlace, succPlace));
 			}
 		}
-		model.remove(transition);
+		visualModel.remove(visualTransition);
 		for (Node predNode: predNodes) {
-			model.remove(predNode);
+			visualModel.remove(predNode);
 		}
 		for (Node succNode: succNodes) {
-			model.remove(succNode);
+			visualModel.remove(succNode);
+		}
+		afterContraction(visualModel, visualTransition, productPlaces);
+	}
+
+	public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
+		replicaPlaces.clear();
+		Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
+		for (Connection connection: adjacentConnections) {
+			VisualReplicaPlace replica = null;
+			if (connection.getFirst() instanceof VisualReplicaPlace) {
+				replica = (VisualReplicaPlace)connection.getFirst();
+			}
+			if (connection.getSecond() instanceof VisualReplicaPlace) {
+				replica = (VisualReplicaPlace)connection.getSecond();
+			}
+			if (replica != null) {
+				VisualConnection newConnection = PetriNetUtils.collapseReplicaPlace(visualModel, replica);
+				replicaPlaces.add(newConnection);
+			}
 		}
 	}
 
-	private static void replicatePlace(VisualPetriNet model, VisualPlace predPlace, VisualPlace succPlace) {
-		Container vContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
-		Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
+	public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
+			HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaces) {
+	}
 
-		// Create replica place and put it in the common container
-		HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)model.getPetriNet().getReferenceManager();
-		NameManager nameManagerer = refManager.getNameManager((NamespaceProvider)mContainer);
-		String predName = model.getPetriNet().getName(predPlace.getReferencedPlace());
-		String succName = model.getPetriNet().getName(succPlace.getReferencedPlace());
-		String name = nameManagerer.getDerivedName(null, predName + succName);
-		VisualPlace newPlace = model.createPlace(name, vContainer);
+	public VisualPlace createProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace) {
+		Container visualContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
+		Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
+		MathModel mathModel = visualModel.getMathModel();
+		HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)mathModel.getReferenceManager();
+		NameManager nameManagerer = refManager.getNameManager((NamespaceProvider)mathContainer);
+		String predName = visualModel.getMathName(predPlace);
+		String succName = visualModel.getMathName(succPlace);
+		String productName = nameManagerer.getDerivedName(null, predName + succName);
+		Place mathPlace = mathModel.createNode(productName, mathContainer, Place.class);
+		return visualModel.createVisualComponent(mathPlace, visualContainer, VisualPlace.class);
+	}
 
-		Point2D pos = Geometry.middle(predPlace.getPosition(), succPlace.getPosition());
-		newPlace.setPosition(pos);
-		newPlace.mixStyle(predPlace, succPlace);
+	public void initialiseProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace, VisualPlace productPlace) {
+		Point2D pos = Geometry.middle(predPlace.getRootSpacePosition(), succPlace.getRootSpacePosition());
+		productPlace.setRootSpacePosition(pos);
+		productPlace.mixStyle(predPlace, succPlace);
 		// Correct the token count and capacity of the new place
-		int tokens = predPlace.getReferencedPlace().getTokens() + succPlace.getReferencedPlace().getTokens();
-		newPlace.getReferencedPlace().setTokens(tokens);
+		Place mathPredPlace = predPlace.getReferencedPlace();
+		Place mathSuccPlace = succPlace.getReferencedPlace();
+		Place mathProductPlace = productPlace.getReferencedPlace();
+		int tokens = mathPredPlace.getTokens() + mathSuccPlace.getTokens();
+		mathProductPlace.setTokens(tokens);
 		int capacity = tokens;
-		if (capacity < predPlace.getReferencedPlace().getCapacity()) {
-			capacity = predPlace.getReferencedPlace().getCapacity();
+		if (capacity < mathPredPlace.getCapacity()) {
+			capacity = mathPredPlace.getCapacity();
 		}
-		if (capacity < succPlace.getReferencedPlace().getCapacity()) {
-			capacity = succPlace.getReferencedPlace().getCapacity();
+		if (capacity < mathSuccPlace.getCapacity()) {
+			capacity = mathSuccPlace.getCapacity();
 		}
-		newPlace.getReferencedPlace().setCapacity(capacity);
+		mathProductPlace.setCapacity(capacity);
+	}
 
-		for (Connection predConnection: model.getConnections(predPlace)) {
-			Node first = predConnection.getFirst();
-			Node second = predConnection.getSecond();
+	public Set<Connection> connectProductPlace(VisualModel visualModel, Set<Connection> originalConnections, VisualPlace productPlace) {
+		HashSet<Connection> newConnections = new HashSet<>();
+		for (Connection originalConnection: originalConnections) {
+			Node first = originalConnection.getFirst();
+			Node second = originalConnection.getSecond();
 			VisualConnection newConnection = null;
 			try {
-				if (predConnection instanceof VisualReadArc) {
+				if (originalConnection instanceof VisualReadArc) {
 					if (first instanceof VisualTransition) {
-						newConnection = model.connectUndirected(first, newPlace);
+						newConnection = visualModel.connectUndirected(first, productPlace);
 					}
 					if (second instanceof VisualTransition) {
-						newConnection = model.connectUndirected(newPlace, second);
+						newConnection = visualModel.connectUndirected(productPlace, second);
 					}
 				} else {
 					if (first instanceof VisualTransition) {
-						newConnection = model.connect(first, newPlace);
+						newConnection = visualModel.connect(first, productPlace);
 					}
 					if (second instanceof VisualTransition) {
-						newConnection = model.connect(newPlace, second);
+						newConnection = visualModel.connect(productPlace, second);
 					}
 				}
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}
-			if ((newConnection != null) && (predConnection instanceof VisualConnection)) {
-				newConnection.copyStyle((VisualConnection)predConnection);
-				newConnection.copyShape((VisualConnection)predConnection);
-			}
-		}
-
-		for (Connection succConnection: model.getConnections(succPlace)) {
-			Node first = succConnection.getFirst();
-			Node second = succConnection.getSecond();
-			VisualConnection newConnection = null;
-			try {
-				if (succConnection instanceof VisualReadArc) {
-					if (first instanceof VisualTransition) {
-						newConnection = model.connectUndirected(first, newPlace);
-					}
-					if (second instanceof VisualTransition) {
-						newConnection = model.connectUndirected(newPlace, second);
-					}
-				} else {
-					if (first instanceof VisualTransition) {
-						newConnection = model.connect(first, newPlace);
-					}
-					if (second instanceof VisualTransition) {
-						newConnection = model.connect(newPlace, second);
-					}
+			if (newConnection != null) {
+				newConnections.add(newConnection);
+				if (originalConnection instanceof VisualConnection) {
+					newConnection.copyStyle((VisualConnection)originalConnection);
+					newConnection.copyShape((VisualConnection)originalConnection);
 				}
-			} catch (InvalidConnectionException e) {
-				e.printStackTrace();
-			}
-			if ((newConnection != null) && (succConnection instanceof VisualConnection)) {
-				newConnection.copyStyle((VisualConnection)succConnection);
-				newConnection.copyShape((VisualConnection)succConnection);
 			}
 		}
+		return newConnections;
 	}
 
 }

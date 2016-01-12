@@ -337,4 +337,8 @@ public class PetriNetUtils {
 		return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualPlace.class));
 	}
 
+	public static HashSet<VisualTransition> getVisualTransitions(VisualModel visualModel) {
+		return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualTransition.class));
+	}
+
 }

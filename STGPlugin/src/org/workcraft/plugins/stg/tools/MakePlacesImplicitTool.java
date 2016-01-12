@@ -3,6 +3,7 @@ package org.workcraft.plugins.stg.tools;
 import java.util.HashSet;
 
 import org.workcraft.TransformationTool;
+import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -18,6 +19,11 @@ public class MakePlacesImplicitTool extends TransformationTool {
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return we.getModelEntry().getMathModel() instanceof STG;
+	}
+
+	@Override
+	public boolean isApplicableToNode(Node node) {
+		return (node instanceof VisualPlace);
 	}
 
 	@Override

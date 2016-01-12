@@ -25,6 +25,11 @@ public class SignalToDummyTransitionConverterTool extends TransformationTool {
 	}
 
 	@Override
+	public boolean isApplicableToNode(Node node) {
+		return (node instanceof VisualSignalTransition);
+	}
+
+	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
 		HashSet<VisualSignalTransition> signalTransitions = new HashSet<VisualSignalTransition>(stg.getVisualSignalTransitions());

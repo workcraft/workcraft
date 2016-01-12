@@ -2,23 +2,19 @@ package org.workcraft.plugins.xmas.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
-import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
@@ -30,56 +26,40 @@ public class SyncSelectionTool extends SelectionTool {
 	private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
 
 	@Override
-	public void mouseClicked(GraphEditorMouseEvent e)
-	{
-		boolean processed = false;
-		if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
-			VisualModel model = e.getEditor().getModel();
-			Node node = HitMan.hitTestForSelection(e.getPosition(), model);
-			JPopupMenu popup = createPopupMenu(node, e.getEditor());
-			if (popup != null) {
-				popup.show(e.getSystemEvent().getComponent(),
-						e.getSystemEvent().getX(), e.getSystemEvent().getY());
-			}
-			processed = true;
-		}
-		if (!processed) {
-			super.mouseClicked(e);
-		}
-	}
-
-	private JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
-		JPopupMenu popup = new JPopupMenu();
-
+	public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
+		JPopupMenu popup = super.createPopupMenu(node, editor);
 		if (node instanceof VisualSyncComponent) {
 			final VisualSyncComponent component = (VisualSyncComponent)node;
-
-			popup.setFocusable(false);
-			popup.add(new JLabel("Sync component"));
-			popup.addSeparator();
-
-			JMenuItem addInput = new JMenuItem("Add input-output pair");
-			addInput.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					editor.getWorkspaceEntry().saveMemento();
-					component.addInput("", Positioning.TOP);
-					component.addOutput("", Positioning.BOTTOM);
-				}
-			});
-
-			JMenuItem removeInput = new JMenuItem("Remove input-output pair");
-			removeInput.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					for(VisualXmasContact contact : component.getContacts()) {
-						contact=null;
+			if (popup != null) {
+				popup.addSeparator();
+			} else {
+				popup = new JPopupMenu();
+				popup.setFocusable(false);
+			}
+			{
+				JMenuItem addInputMenuItem = new JMenuItem("Add input-output pair");
+				addInputMenuItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						editor.getWorkspaceEntry().saveMemento();
+						component.addInput("", Positioning.TOP);
+						component.addOutput("", Positioning.BOTTOM);
 					}
-				}
-			});
-
-			popup.add(addInput);
-			popup.add(removeInput);
+				});
+				popup.add(addInputMenuItem);
+			}
+			{
+				JMenuItem removeInputMenuItem = new JMenuItem("Remove input-output pair");
+				removeInputMenuItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						for(VisualXmasContact contact : component.getContacts()) {
+							contact = null;
+						}
+					}
+				});
+				popup.add(removeInputMenuItem);
+			}
 			return popup;
 		}
 
