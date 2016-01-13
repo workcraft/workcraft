@@ -56,8 +56,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.workcraft.NodeTransformer;
 import org.workcraft.Tool;
-import org.workcraft.TransformationTool;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -370,10 +370,9 @@ public class SelectionTool extends AbstractTool {
 		WorkspaceEntry we = editor.getWorkspaceEntry();
 		List<Tool> applicableTools = new ArrayList<>();
 		for (Tool tool: Tools.getApplicableTools(we)) {
-			if (tool instanceof TransformationTool) {
-				TransformationTool transformTool = (TransformationTool)tool;
-				if (transformTool.isApplicableToNode(node)) {
-					applicableTools.add(transformTool);
+			if (tool instanceof NodeTransformer) {
+				if (((NodeTransformer)tool).isApplicableTo(node)) {
+					applicableTools.add(tool);
 				}
 			}
 		}

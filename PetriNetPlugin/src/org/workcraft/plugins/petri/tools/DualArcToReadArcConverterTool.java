@@ -17,18 +17,13 @@ public class DualArcToReadArcConverterTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Convert paired producer-consumer arcs to read-arcs";
+		return "Convert paired producing/consuming arcs to read-arcs";
 	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
 	}
-
-	@Override
-	public boolean isApplicableToNode(Node node) {
-		return ((node instanceof VisualConnection) && !(node instanceof VisualReadArc));
-	};
 
 	@Override
 	public void run(WorkspaceEntry we) {

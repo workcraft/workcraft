@@ -160,6 +160,16 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
 	}
 
 	@Override
+	public Connection getConnection(Node first, Node second) {
+		for(Connection connection : getConnections(first)) {
+			if ((connection.getFirst() == first) && (connection.getSecond() == second)) {
+				return connection;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public void handleEvent(HierarchyEvent e) {
 		if (e instanceof NodesReparentingEvent) {
 			for (Node n : e.getAffectedNodes()) {

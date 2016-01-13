@@ -19,14 +19,12 @@
 *
 */
 
-package org.workcraft.dom;
+package org.workcraft;
 
-import java.util.Set;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
 
-public interface NodeContext {
-	public Set<Node> getPreset(Node node);
-	public Set<Node> getPostset(Node node);
-	public Set<Connection> getConnections (Node node);
-	public boolean hasConnection(Node first, Node second);
-	public Connection getConnection(Node first, Node second);
+public interface NodeTransformer {
+	public boolean isApplicableTo(Node node);
+	public void transform(Model model, Node node);
 }

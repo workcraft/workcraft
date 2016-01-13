@@ -25,7 +25,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class NamedTransitionContractorTool extends TransitionContractorTool {
 
-	HashSet<VisualPlace> implicitPlaces = new HashSet<>();
+	HashSet<VisualPlace> convertedImplicitPlaces = new HashSet<>();
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
@@ -35,14 +35,14 @@ public class NamedTransitionContractorTool extends TransitionContractorTool {
 	@Override
 	public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
 		super.beforeContraction(visualModel, visualTransition);
-		implicitPlaces.clear();
+		convertedImplicitPlaces.clear();
 		if (visualModel instanceof VisualSTG) {
 			VisualSTG visualStg = (VisualSTG)visualModel;
 			Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
 			for (Connection connection: adjacentConnections) {
 				if (connection instanceof VisualImplicitPlaceArc) {
 					VisualPlace formerImplicitPlace = visualStg.makeExplicit((VisualImplicitPlaceArc)connection);
-					implicitPlaces.add(formerImplicitPlace);
+					convertedImplicitPlaces.add(formerImplicitPlace);
 				}
 			}
 		}
@@ -50,15 +50,15 @@ public class NamedTransitionContractorTool extends TransitionContractorTool {
 
 	@Override
 	public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
-			HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaces) {
-		super.afterContraction(visualModel, visualTransition, productPlaces);
+			HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap) {
+		super.afterContraction(visualModel, visualTransition, productPlaceMap);
 		if (visualModel instanceof VisualSTG) {
 			VisualSTG visualStg = (VisualSTG)visualModel;
-			for (VisualPlace productPlace: productPlaces.keySet()) {
-				Pair<VisualPlace, VisualPlace> originalPlacePair = productPlaces.get(productPlace);
+			for (VisualPlace productPlace: productPlaceMap.keySet()) {
+				Pair<VisualPlace, VisualPlace> originalPlacePair = productPlaceMap.get(productPlace);
 				VisualPlace predPlace = originalPlacePair.getFirst();
 				VisualPlace succPlace = originalPlacePair.getSecond();
-				if (implicitPlaces.contains(predPlace) && implicitPlaces.contains(succPlace)) {
+				if (convertedImplicitPlaces.contains(predPlace) && convertedImplicitPlaces.contains(succPlace)) {
 					visualStg.maybeMakeImplicit(productPlace, true);
 				}
 			}

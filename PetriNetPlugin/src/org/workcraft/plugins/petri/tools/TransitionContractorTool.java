@@ -8,15 +8,18 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -34,11 +37,11 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TransitionContractorTool extends TransformationTool {
+public class TransitionContractorTool extends TransformationTool implements NodeTransformer {
 
 	private static final String MESSAGE_TITLE = "Transition contraction";
 
-	private HashSet<VisualConnection> replicaPlaces = new HashSet<>();
+	private HashSet<VisualConnection> convertedReplicaConnections = new HashSet<>();
 
 	@Override
 	public String getDisplayName() {
@@ -51,7 +54,7 @@ public class TransitionContractorTool extends TransformationTool {
 	}
 
 	@Override
-	public boolean isApplicableToNode(Node node) {
+	public boolean isApplicableTo(Node node) {
 		return (node instanceof VisualTransition);
 	};
 
@@ -64,22 +67,51 @@ public class TransitionContractorTool extends TransformationTool {
 			JOptionPane.showMessageDialog(null, "One transition can be contracted at a time.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
 		} else if (!visualTransitions.isEmpty()) {
 			we.saveMemento();
-			PetriNetModel mathModel = (PetriNetModel)visualModel.getMathModel();
 			for (VisualTransition visualTransition: visualTransitions) {
-				Transition mathTransition = visualTransition.getReferencedTransition();
-				if (hasSelfLoop(mathModel, mathTransition)) {
-					JOptionPane.showMessageDialog(null, "Error: a transition with a self-loop/read-arc cannot be contracted.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
-				} else if (isLanguageChanging(mathModel, mathTransition)) {
-					contractTransition(visualModel, visualTransition);
-					JOptionPane.showMessageDialog(null, "Warning: this transformation may change the language.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
-				} else if (isSafenessViolationg(mathModel, mathTransition)) {
-					contractTransition(visualModel, visualTransition);
-					JOptionPane.showMessageDialog(null, "Warning: this transformation may be not safeness-preserving.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
-				} else {
-					contractTransition(visualModel, visualTransition);
-				}
+				transform(visualModel, visualTransition);
 			}
 		}
+	}
+
+	@Override
+	public void transform(Model model, Node node) {
+		if ((model instanceof VisualModel) && (node instanceof VisualTransition)) {
+			VisualModel visualModel = (VisualModel)model;
+			PetriNetModel mathModel = (PetriNetModel)visualModel.getMathModel();
+			VisualTransition visualTransition = (VisualTransition)node;
+			Transition mathTransition = visualTransition.getReferencedTransition();
+			if (needsWaitedArcs(mathModel, mathTransition)) {
+				JOptionPane.showMessageDialog(null, "Error: waited arcs are needed but not supported.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
+			} else if (hasSelfLoop(mathModel, mathTransition)) {
+				JOptionPane.showMessageDialog(null, "Error: a transition with a self-loop/read-arc cannot be contracted.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
+			} else if (isLanguageChanging(mathModel, mathTransition)) {
+				contractTransition(visualModel, visualTransition);
+				JOptionPane.showMessageDialog(null, "Warning: this transformation may change the language.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
+			} else if (isSafenessViolationg(mathModel, mathTransition)) {
+				contractTransition(visualModel, visualTransition);
+				JOptionPane.showMessageDialog(null, "Warning: this transformation may be not safeness-preserving.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
+			} else {
+				contractTransition(visualModel, visualTransition);
+			}
+		}
+	}
+
+	private boolean needsWaitedArcs(PetriNetModel model, Transition transition) {
+		HashSet<Node> predPredNodes = new HashSet<>();
+		HashSet<Node> predSuccNodes = new HashSet<>();
+		for (Node predNode: model.getPreset(transition)) {
+			predPredNodes.addAll(model.getPreset(predNode));
+			predSuccNodes.addAll(model.getPostset(predNode));
+		}
+		HashSet<Node> succPredNodes = new HashSet<>();
+		HashSet<Node> succSuccNodes = new HashSet<>();
+		for (Node succNode: model.getPostset(transition)) {
+			succPredNodes.addAll(model.getPreset(succNode));
+			succSuccNodes.addAll(model.getPostset(succNode));
+		}
+		predPredNodes.retainAll(succPredNodes);
+		predSuccNodes.retainAll(succSuccNodes);
+		return !(predPredNodes.isEmpty() && predSuccNodes.isEmpty());
 	}
 
 	private boolean hasSelfLoop(PetriNetModel model, Transition transition) {
@@ -196,7 +228,7 @@ public class TransitionContractorTool extends TransformationTool {
 		beforeContraction(visualModel, visualTransition);
 		LinkedList<Node> predNodes = new LinkedList<Node>(visualModel.getPreset(visualTransition));
 		LinkedList<Node> succNodes = new LinkedList<Node>(visualModel.getPostset(visualTransition));
-		HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaces = new HashMap<>();
+		HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap = new HashMap<>();
 		for (Node predNode: predNodes) {
 			VisualPlace predPlace = (VisualPlace)predNode;
 			for (Node succNode: succNodes) {
@@ -208,39 +240,17 @@ public class TransitionContractorTool extends TransformationTool {
 				connections.addAll(visualModel.getConnections(predPlace));
 				connections.addAll(visualModel.getConnections(succPlace));
 				connectProductPlace(visualModel, connections, productPlace);
-				productPlaces.put(productPlace, new Pair<>(predPlace, succPlace));
+				productPlaceMap.put(productPlace, new Pair<>(predPlace, succPlace));
 			}
 		}
 		visualModel.remove(visualTransition);
+		afterContraction(visualModel, visualTransition, productPlaceMap);
 		for (Node predNode: predNodes) {
 			visualModel.remove(predNode);
 		}
 		for (Node succNode: succNodes) {
 			visualModel.remove(succNode);
 		}
-		afterContraction(visualModel, visualTransition, productPlaces);
-	}
-
-	public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
-		replicaPlaces.clear();
-		Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
-		for (Connection connection: adjacentConnections) {
-			VisualReplicaPlace replica = null;
-			if (connection.getFirst() instanceof VisualReplicaPlace) {
-				replica = (VisualReplicaPlace)connection.getFirst();
-			}
-			if (connection.getSecond() instanceof VisualReplicaPlace) {
-				replica = (VisualReplicaPlace)connection.getSecond();
-			}
-			if (replica != null) {
-				VisualConnection newConnection = PetriNetUtils.collapseReplicaPlace(visualModel, replica);
-				replicaPlaces.add(newConnection);
-			}
-		}
-	}
-
-	public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
-			HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaces) {
 	}
 
 	public VisualPlace createProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace) {
@@ -276,8 +286,8 @@ public class TransitionContractorTool extends TransformationTool {
 		mathProductPlace.setCapacity(capacity);
 	}
 
-	public Set<Connection> connectProductPlace(VisualModel visualModel, Set<Connection> originalConnections, VisualPlace productPlace) {
-		HashSet<Connection> newConnections = new HashSet<>();
+	public HashMap<Connection, Connection> connectProductPlace(VisualModel visualModel, Set<Connection> originalConnections, VisualPlace productPlace) {
+		HashMap<Connection, Connection> productConnectionMap = new HashMap<>();
 		for (Connection originalConnection: originalConnections) {
 			Node first = originalConnection.getFirst();
 			Node second = originalConnection.getSecond();
@@ -299,17 +309,83 @@ public class TransitionContractorTool extends TransformationTool {
 					}
 				}
 			} catch (InvalidConnectionException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
-			if (newConnection != null) {
-				newConnections.add(newConnection);
-				if (originalConnection instanceof VisualConnection) {
-					newConnection.copyStyle((VisualConnection)originalConnection);
-					newConnection.copyShape((VisualConnection)originalConnection);
+			if ((newConnection != null) && (originalConnection instanceof VisualConnection)) {
+				productConnectionMap.put(newConnection, originalConnection);
+				newConnection.copyStyle((VisualConnection)originalConnection);
+				newConnection.copyShape((VisualConnection)originalConnection);
+			}
+		}
+		return productConnectionMap;
+	}
+
+	public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
+		convertedReplicaConnections.clear();
+		HashSet<VisualReplicaPlace> replicaPlaces = new HashSet<>();
+		for (Connection connection: visualModel.getConnections(visualTransition)) {
+			VisualReplicaPlace replicaPlace = null;
+			if (connection.getFirst() instanceof VisualReplicaPlace) {
+				replicaPlace = (VisualReplicaPlace)connection.getFirst();
+			}
+			if (connection.getSecond() instanceof VisualReplicaPlace) {
+				replicaPlace = (VisualReplicaPlace)connection.getSecond();
+			}
+			if (replicaPlace != null) {
+				replicaPlaces.add(replicaPlace);
+			}
+
+			VisualPlace place = null;
+			if (connection.getFirst() instanceof VisualPlace) {
+				place = (VisualPlace)connection.getFirst();
+			}
+			if (connection.getSecond() instanceof VisualPlace) {
+				place = (VisualPlace)connection.getSecond();
+			}
+			if (place != null) {
+				for (Replica replica: place.getReplicas()) {
+					if (replica instanceof VisualReplicaPlace) {
+						replicaPlaces.add((VisualReplicaPlace)replica);
+					}
 				}
 			}
 		}
-		return newConnections;
+		for (VisualReplicaPlace replica: replicaPlaces) {
+			VisualConnection newConnection = PetriNetUtils.collapseReplicaPlace(visualModel, replica);
+			convertedReplicaConnections.add(newConnection);
+		}
+	}
+
+	public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
+			HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap) {
+		HashSet<VisualConnection> replicaPlaceConnections = new HashSet<>();
+		for (VisualPlace productPlace: productPlaceMap.keySet()) {
+			for (Connection productConnection: visualModel.getConnections(productPlace)) {
+				Pair<VisualPlace, VisualPlace> originalPlaces = productPlaceMap.get(productPlace);
+				VisualPlace predPlace = originalPlaces.getFirst();
+				VisualPlace succPlace = originalPlaces.getSecond();
+
+				Connection predPlaceConnection = null;
+				Connection succPlaceConnection = null;
+				if (productConnection.getFirst() instanceof VisualTransition) {
+					VisualTransition transition = (VisualTransition)productConnection.getFirst();
+					predPlaceConnection = visualModel.getConnection(transition, predPlace);
+					succPlaceConnection = visualModel.getConnection(transition, succPlace);
+				}
+				if (productConnection.getSecond() instanceof VisualTransition) {
+					VisualTransition transition = (VisualTransition)productConnection.getSecond();
+					predPlaceConnection = visualModel.getConnection(predPlace, transition);
+					succPlaceConnection = visualModel.getConnection(succPlace, transition);
+				}
+				if (  ((predPlaceConnection == null) || convertedReplicaConnections.contains(predPlaceConnection))
+					  &&((succPlaceConnection == null) || convertedReplicaConnections.contains(succPlaceConnection)) ) {
+					replicaPlaceConnections.add((VisualConnection)productConnection);
+				}
+			}
+		}
+		for (VisualConnection replicaPlaceConnection: replicaPlaceConnections) {
+			PetriNetUtils.replicateConnectedPlace(visualModel, replicaPlaceConnection);
+		}
 	}
 
 }

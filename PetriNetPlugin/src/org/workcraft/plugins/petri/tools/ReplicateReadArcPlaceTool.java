@@ -2,8 +2,10 @@ package org.workcraft.plugins.petri.tools;
 
 import java.util.HashSet;
 
+import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -12,7 +14,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReplicateReadArcPlaceTool extends TransformationTool {
+public class ReplicateReadArcPlaceTool extends TransformationTool implements NodeTransformer {
 
 	@Override
 	public String getDisplayName() {
@@ -20,7 +22,7 @@ public class ReplicateReadArcPlaceTool extends TransformationTool {
 	}
 
 	@Override
-	public boolean isApplicableToNode(Node node) {
+	public boolean isApplicableTo(Node node) {
 		return (node instanceof VisualReadArc);
 	}
 
@@ -51,9 +53,18 @@ public class ReplicateReadArcPlaceTool extends TransformationTool {
 		if ( !readArcs.isEmpty() ) {
 			we.saveMemento();
 			for (VisualReadArc readArc: readArcs) {
-				PetriNetUtils.replicateReadArcPlace(visualModel, readArc);
+				transform(visualModel, readArc);
 			}
 			visualModel.selectNone();
+		}
+	}
+
+	@Override
+	public void transform(Model model, Node node) {
+		if ((model instanceof VisualModel) && (node instanceof VisualReadArc)) {
+			VisualModel visualModel = (VisualModel)model;
+			VisualReadArc readArc = (VisualReadArc)node;
+			PetriNetUtils.replicateConnectedPlace(visualModel, readArc);
 		}
 	}
 
