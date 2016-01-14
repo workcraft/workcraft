@@ -14,4 +14,9 @@ public class MpsatSynthesisComplexGate extends MpsatSynthesis {
 		return "Complex gate [MPSat]";
 	}
 
+	@Override
+	public Position getPosition() {
+		return null;
+	}
+
 }

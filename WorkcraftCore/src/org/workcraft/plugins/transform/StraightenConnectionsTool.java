@@ -44,6 +44,11 @@ public class StraightenConnectionsTool extends TransformationTool {
 	}
 
 	@Override
+	public Position getPosition() {
+		return Position.BOTTOM;
+	}
+
+	@Override
 	public void run(WorkspaceEntry we) {
 		VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
 		if (visualModel != null) {

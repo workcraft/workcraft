@@ -15,7 +15,7 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
 
 	@Override
 	public String getDisplayName() {
-		return "  Make places implicit (selected or all)";
+		return "Make places implicit (selected or all)";
 	}
 
 	@Override
@@ -26,6 +26,11 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
 	@Override
 	public boolean isApplicableTo(Node node) {
 		return (node instanceof VisualPlace);
+	}
+
+	@Override
+	public Position getPosition() {
+		return null;
 	}
 
 	@Override

@@ -39,6 +39,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
+import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.visual.VisualModel;
@@ -466,8 +467,8 @@ public class MainMenu extends JMenuBar {
 	private void createToolsMenu(final WorkspaceEntry we) {
 		removeToolsMenu();
 
-		List<Tool> tools = Tools.getApplicableTools(we);
-		List<String> sections = Tools.getSections(tools);
+		List<Tool> applicableTools = Tools.getApplicableTools(we);
+		List<String> sections = Tools.getSections(applicableTools);
 
 		JMenu mnTools = new JMenu("Tools");
 		mnToolsList.clear();
@@ -484,11 +485,26 @@ public class MainMenu extends JMenuBar {
 					mnToolsList.addFirst(mnTools);
 				}
 			}
-			for (Tool tool : Tools.getSectionTools(section, tools)) {
-				ToolAction toolAction = new ToolAction(tool);
-				ActionMenuItem miTool = new ActionMenuItem(toolAction);
-				miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
-				mnSection.add(miTool);
+			List<Tool> sectionTools = Tools.getSectionTools(section, applicableTools);
+			List<List<Tool>> sectionToolsPartitions = new LinkedList<>();
+			sectionToolsPartitions.add(Tools.getUnpositionedTools(sectionTools));
+			sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.TOP));
+			sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
+			sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
+			boolean needSeparator = false;
+			for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
+				boolean isFirstItem = true;
+				for (Tool tool : sectionToolsPartition) {
+					if (needSeparator && isFirstItem) {
+						mnSection.addSeparator();
+					}
+					needSeparator = true;
+					isFirstItem = false;
+					ToolAction toolAction = new ToolAction(tool);
+					ActionMenuItem miTool = new ActionMenuItem(toolAction);
+					miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
+					mnSection.add(miTool);
+				}
 			}
 		}
 		addToolsMenu();

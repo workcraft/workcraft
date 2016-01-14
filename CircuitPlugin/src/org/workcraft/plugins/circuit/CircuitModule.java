@@ -65,8 +65,12 @@ public class CircuitModule implements Module {
 			public Tool create() {
 				return new CheckCircuitTool() {
 					@Override
+					public Position getPosition() {
+						return Position.TOP;
+					}
+					@Override
 					public String getDisplayName() {
-						return " Conformation [MPSat]";
+						return "Conformation [MPSat]";
 					}
 					@Override
 					public boolean checkDeadlock() {
@@ -85,8 +89,12 @@ public class CircuitModule implements Module {
 			public Tool create() {
 				return new CheckCircuitTool() {
 					@Override
+					public Position getPosition() {
+						return Position.TOP;
+					}
+					@Override
 					public String getDisplayName() {
-						return " Deadlock [MPSat]";
+						return "Deadlock [MPSat]";
 					}
 					@Override
 					public boolean checkConformation() {
@@ -105,8 +113,12 @@ public class CircuitModule implements Module {
 			public Tool create() {
 				return new CheckCircuitTool() {
 					@Override
+					public Position getPosition() {
+						return Position.TOP;
+					}
+					@Override
 					public String getDisplayName() {
-						return " Hazard [MPSat]";
+						return "Hazard [MPSat]";
 					}
 					@Override
 					public boolean checkConformation() {

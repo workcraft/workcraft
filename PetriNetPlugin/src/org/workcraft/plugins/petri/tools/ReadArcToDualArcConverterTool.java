@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
+import org.workcraft.MenuOrdering.Position;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
@@ -32,6 +33,11 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
 	public boolean isApplicableTo(Node node) {
 		return (node instanceof VisualReadArc);
 	};
+
+	@Override
+	public Position getPosition() {
+		return Position.TOP;
+	}
 
 	@Override
 	public void run(WorkspaceEntry we) {

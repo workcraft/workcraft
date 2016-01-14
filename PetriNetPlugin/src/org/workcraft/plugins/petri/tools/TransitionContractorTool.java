@@ -45,7 +45,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
 
 	@Override
 	public String getDisplayName() {
-		return "Contract selected transitions";
+		return "Contract a selected transition";
 	}
 
 	@Override
@@ -57,6 +57,11 @@ public class TransitionContractorTool extends TransformationTool implements Node
 	public boolean isApplicableTo(Node node) {
 		return (node instanceof VisualTransition);
 	};
+
+	@Override
+	public Position getPosition() {
+		return null;
+	}
 
 	@Override
 	public void run(WorkspaceEntry we) {

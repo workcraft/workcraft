@@ -7,7 +7,7 @@ import org.workcraft.VerificationTool;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -15,12 +15,22 @@ public class MpsatCombinedChecker extends VerificationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "    Consistency, deadlock freenes and output persistency (reuse unfolding) [MPSat]";
+		return "Consistency, deadlock freenes and output persistency (reuse unfolding) [MPSat]";
 	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, PetriNetModel.class);
+		return WorkspaceUtils.canHas(we, STGModel.class);
+	}
+
+	@Override
+	public int getPriority() {
+		return 1;
+	}
+
+	@Override
+	public Position getPosition() {
+		return Position.TOP;
 	}
 
 	@Override

@@ -10,10 +10,9 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.plugins.petri.serialization.ReadArcDeserialiser;
 import org.workcraft.plugins.petri.serialization.ReadArcSerialiser;
 import org.workcraft.plugins.petri.tools.CollapseReplicaTool;
-import org.workcraft.plugins.petri.tools.ConsumingArcToReadArcConverterTool;
+import org.workcraft.plugins.petri.tools.DirectedArcToReadArcConverterTool;
 import org.workcraft.plugins.petri.tools.DualArcToReadArcConverterTool;
 import org.workcraft.plugins.petri.tools.PlaceMergerTool;
-import org.workcraft.plugins.petri.tools.ProducingArcToReadArcConverterTool;
 import org.workcraft.plugins.petri.tools.ReadArcToDualArcConverterTool;
 import org.workcraft.plugins.petri.tools.ReplicateReadArcPlaceTool;
 import org.workcraft.plugins.petri.tools.TransitionContractorTool;
@@ -48,16 +47,11 @@ public class PetriNetModule implements Module {
 				return new TransitionContractorTool();
 			}
 		});
+
 		pm.registerClass(Tool.class, new Initialiser<Tool>() {
 			@Override
 			public Tool create() {
-				return new ProducingArcToReadArcConverterTool();
-			}
-		});
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new ConsumingArcToReadArcConverterTool();
+				return new DirectedArcToReadArcConverterTool();
 			}
 		});
 

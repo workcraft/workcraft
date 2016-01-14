@@ -26,4 +26,9 @@ public class PetrifySynthesisTechnologyMapping extends PetrifySynthesis {
 		return "Technology mapping [Petrify]";
 	}
 
+	@Override
+	public Position getPosition() {
+		return Position.BOTTOM;
+	}
+
 }

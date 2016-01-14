@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Framework;
+import org.workcraft.MenuOrdering;
+import org.workcraft.MenuOrdering.Position;
 import org.workcraft.Tool;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -52,7 +54,7 @@ public class Tools {
 	}
 
 	public static List<Tool> getSectionTools(String section, List<Tool> tools) {
-		List<Tool> sectionTools = new ArrayList<Tool>();
+		List<Tool> sectionTools = new ArrayList<>();
 		for (Tool tool: tools) {
 			if (tool.getSection().equals(section)) {
 				sectionTools.add(tool);
@@ -61,10 +63,44 @@ public class Tools {
 		Collections.sort(sectionTools, new Comparator<Tool>() {
 			@Override
 			public int compare(Tool o1, Tool o2) {
-				return (o1.getDisplayName().compareTo(o2.getDisplayName()));
+				Integer p1 = ((o1 instanceof MenuOrdering) ? ((MenuOrdering)o1).getPriority() : 0);
+				Integer p2 = ((o2 instanceof MenuOrdering) ? ((MenuOrdering)o2).getPriority() : 0);
+				int result = -p1.compareTo(p2); // Reverse the order, so low values correspond to lower priority
+				if (result == 0) {
+					result = (o1.getDisplayName().compareTo(o2.getDisplayName()));
+				}
+				return result;
 			}
 		});
 		return sectionTools;
+	}
+
+	public static List<Tool> getPositionedSectionTools(String section, List<Tool> tools, Position position) {
+		return getSectionTools(section, getPositionedTools(tools, position));
+	}
+
+	public static List<Tool> getPositionedTools(List<Tool> tools, Position position) {
+		List<Tool> result = new ArrayList<>();
+		for (Tool tool: tools) {
+			if ((tool instanceof MenuOrdering) && (((MenuOrdering)tool).getPosition() == position)) {
+				result.add(tool);
+			}
+		}
+		return result;
+	}
+
+	public static List<Tool> getUnpositionedSectionTools(String section, List<Tool> tools) {
+		return getSectionTools(section, getUnpositionedTools(tools));
+	}
+
+	public static List<Tool> getUnpositionedTools(List<Tool> tools) {
+		List<Tool> result = new ArrayList<>();
+		for (Tool tool: tools) {
+			if ( !(tool instanceof MenuOrdering) || (((MenuOrdering)tool).getPosition() == null)) {
+				result.add(tool);
+			}
+		}
+		return result;
 	}
 
 }

@@ -13,4 +13,10 @@ public class PetrifySynthesisComplexGate extends PetrifySynthesis {
 	public String getDisplayName() {
 		return "Complex gate [Petrify]";
 	}
+
+	@Override
+	public Position getPosition() {
+		return null;
+	}
+
 }

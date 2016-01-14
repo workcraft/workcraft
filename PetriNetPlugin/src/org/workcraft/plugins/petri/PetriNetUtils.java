@@ -84,7 +84,6 @@ public class PetriNetUtils {
 					readArc = (VisualReadArc)undirectedConnection;
 					readArc.copyStyle(connection);
 					readArc.copyShape(connection);
-					readArc.inverseShape();
 				}
 			} catch (InvalidConnectionException e) {
 			}
@@ -482,11 +481,11 @@ public class PetriNetUtils {
 			}
 			VisualNode transition1 = consumingArc.getSecond();
 
-			VisualNode place2 = producingArc.getFirst();
+			VisualNode transition2 = producingArc.getFirst();
+			VisualNode place2 = producingArc.getSecond();
 			if (place2 instanceof VisualReplicaPlace) {
 				place2 = ((VisualReplicaPlace)place2).getMaster();
 			}
-			VisualNode transition2 = producingArc.getSecond();
 
 			return ((place1 == place2) && (transition1 == transition2));
 		}
