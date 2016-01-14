@@ -19,7 +19,7 @@ public class ProducingArcToReadArcConverterTool extends TransformationTool imple
 
 	@Override
 	public String getDisplayName() {
-		return "Convert producing arcs to a read-arcs";
+		return "Convert selected producing arcs to a read-arcs";
 	}
 
 	@Override

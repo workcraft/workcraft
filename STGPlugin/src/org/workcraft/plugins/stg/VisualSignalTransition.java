@@ -113,6 +113,11 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 		return getReferencedTransition().getSignalName();
 	}
 
+	@NoAutoSerialisation
+	public Type getSignalType() {
+		return getReferencedTransition().getSignalType();
+	}
+
 	@Override
 	public void copyStyle(Stylable src) {
 		super.copyStyle(src);

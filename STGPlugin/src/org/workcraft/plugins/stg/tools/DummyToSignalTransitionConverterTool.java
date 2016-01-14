@@ -19,7 +19,7 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
 
 	@Override
 	public String getDisplayName() {
-		return "Convert dummies to signal transitions";
+		return "Convert selected dummies to signal transitions";
 	}
 
 	@Override

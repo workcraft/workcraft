@@ -14,7 +14,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public final class TransitionMergerTool extends AbstractMergerTool {
 	@Override
 	public String getDisplayName() {
-		return "Merge selected transitions";
+		return "  Merge selected transitions";
 	}
 
 	@Override

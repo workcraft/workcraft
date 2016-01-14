@@ -19,7 +19,7 @@ public class ConsumingArcToReadArcConverterTool extends TransformationTool imple
 
 	@Override
 	public String getDisplayName() {
-		return "Convert consuming arcs to a read-arcs";
+		return "Convert selected consuming arcs to a read-arcs";
 	}
 
 	@Override

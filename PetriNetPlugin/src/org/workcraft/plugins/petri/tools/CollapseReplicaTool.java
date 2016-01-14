@@ -17,7 +17,7 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
 
 	@Override
 	public String getDisplayName() {
-		return "Collapse replica places";
+		return " Collapse replica places (selected or all)";
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
 
 	@Override
 	public String getDisplayName() {
-		return "Convert read-arcs to dual producing/consuming arcs";
+		return "Convert selected read-arcs to dual producing/consuming arcs";
 	}
 
 	@Override

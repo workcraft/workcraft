@@ -15,7 +15,7 @@ public class MakePlacesExplicitTool extends TransformationTool implements NodeTr
 
 	@Override
 	public String getDisplayName() {
-		return "Make places explicit";
+		return "  Make places explicit (selected or all)";
 	}
 
 	@Override

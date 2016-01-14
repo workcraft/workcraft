@@ -64,7 +64,9 @@ public class TransitionContractorTool extends TransformationTool implements Node
 		HashSet<VisualTransition> visualTransitions = PetriNetUtils.getVisualTransitions(visualModel);
 		visualTransitions.retainAll(visualModel.getSelection());
 		if (visualTransitions.size() > 1) {
-			JOptionPane.showMessageDialog(null, "One transition can be contracted at a time.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"One transition can be contracted at a time.",
+					MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
 		} else if (!visualTransitions.isEmpty()) {
 			we.saveMemento();
 			for (VisualTransition visualTransition: visualTransitions) {
@@ -81,15 +83,23 @@ public class TransitionContractorTool extends TransformationTool implements Node
 			VisualTransition visualTransition = (VisualTransition)node;
 			Transition mathTransition = visualTransition.getReferencedTransition();
 			if (needsWaitedArcs(mathModel, mathTransition)) {
-				JOptionPane.showMessageDialog(null, "Error: waited arcs are needed but not supported.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						"Error: this transformation requires weighted arcs that are currently not supported.",
+						MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
 			} else if (hasSelfLoop(mathModel, mathTransition)) {
-				JOptionPane.showMessageDialog(null, "Error: a transition with a self-loop/read-arc cannot be contracted.", MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						"Error: a transition with a self-loop/read-arc cannot be contracted.",
+						MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
 			} else if (isLanguageChanging(mathModel, mathTransition)) {
 				contractTransition(visualModel, visualTransition);
-				JOptionPane.showMessageDialog(null, "Warning: this transformation may change the language.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						"Warning: this transformation may change the language.",
+						MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
 			} else if (isSafenessViolationg(mathModel, mathTransition)) {
 				contractTransition(visualModel, visualTransition);
-				JOptionPane.showMessageDialog(null, "Warning: this transformation may be not safeness-preserving.", MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						"Warning: this transformation may be not safeness-preserving.",
+						MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
 			} else {
 				contractTransition(visualModel, visualTransition);
 			}

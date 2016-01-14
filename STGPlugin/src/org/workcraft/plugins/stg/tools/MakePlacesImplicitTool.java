@@ -15,7 +15,7 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
 
 	@Override
 	public String getDisplayName() {
-		return "Make places implicit";
+		return "  Make places implicit (selected or all)";
 	}
 
 	@Override

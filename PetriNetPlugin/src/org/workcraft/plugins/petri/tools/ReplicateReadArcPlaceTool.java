@@ -18,7 +18,7 @@ public class ReplicateReadArcPlaceTool extends TransformationTool implements Nod
 
 	@Override
 	public String getDisplayName() {
-		return "Replicate read-arc places";
+		return " Replicate read-arc places (selected or all)";
 	}
 
 	@Override

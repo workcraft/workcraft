@@ -16,6 +16,7 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.transform.CopyLablesTool;
+import org.workcraft.plugins.transform.StraightenConnectionsTool;
 
 public class BuiltinTools implements Module {
 	@Override
@@ -37,6 +38,7 @@ public class BuiltinTools implements Module {
 		pm.registerClass(Tool.class, RandomLayoutTool.class);
 
 		pm.registerClass(Tool.class, CopyLablesTool.class);
+		pm.registerClass(Tool.class, StraightenConnectionsTool.class);
 	}
 
 	@Override
