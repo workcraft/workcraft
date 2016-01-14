@@ -302,7 +302,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 		notifySelectionChanged(getCurrentLevel().getChildren());
 	}
 
-	private void validateSelection (Node node) {
+	private void validateSelection(Node node) {
 		if (!Hierarchy.isDescendant(node, getCurrentLevel())) {
 			throw new RuntimeException (
 				"Cannot select a node that is not in the current editing level ("

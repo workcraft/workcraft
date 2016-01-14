@@ -1165,7 +1165,7 @@ public class MainWindow extends JFrame {
 		Tools.run(editorInFocus.getWorkspaceEntry(), tool);
 	}
 
-	void export(Exporter exporter) throws OperationCancelledException {
+	public void export(Exporter exporter) throws OperationCancelledException {
 		String title = "Export as " + exporter.getDescription();
 		File file = new File(getFileNameForCurrentWork());
 		JFileChooser fc = createSaveDialog(title, file, exporter);

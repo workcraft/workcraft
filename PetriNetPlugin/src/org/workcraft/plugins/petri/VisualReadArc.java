@@ -43,7 +43,6 @@ public class VisualReadArc extends VisualConnection implements Undirected {
 		super(null, place, transition);
 		this.mathConsumingArc = mathConsumingArc;
 		this.mathProducingArc = mathProducingArc;
-		setLineWidth(0.01);
 		removePropertyDeclarations();
 	}
 

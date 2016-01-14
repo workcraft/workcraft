@@ -42,8 +42,6 @@ import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainMenu;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.ListMap;
-import org.workcraft.util.Pair;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.FileHandler;
 import org.workcraft.workspace.Workspace;
@@ -196,7 +194,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 				popup.add(miSaveAs);
 				popup.add(miOpenView);
 
-				ListMap<String, Pair<String, Tool>> applicableTools = Tools.getTools(openFile);
+				List<Tool> applicableTools = Tools.getApplicableTools(openFile);
 				List<String> sections = Tools.getSections(applicableTools);
 
 				if (!sections.isEmpty()) {
@@ -205,9 +203,9 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 				for (String section : sections) {
 					String menuName = MainMenu.getMenuNameFromSection(section);
 					JMenu menu = new JMenu(menuName.trim());
-					for (Pair<String, Tool> tool : Tools.getSectionTools(section, applicableTools)) {
-						JMenuItem item = new JMenuItem(tool.getFirst());
-						tools.put(item, tool.getSecond());
+					for (Tool tool : Tools.getSectionTools(section, applicableTools)) {
+						JMenuItem item = new JMenuItem(tool.getDisplayName());
+						tools.put(item, tool);
 						item.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								Tools.run(openFile, tools.get(e.getSource()));

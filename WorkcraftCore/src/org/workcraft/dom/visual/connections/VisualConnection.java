@@ -586,4 +586,10 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 		}
 	}
 
+	public void setDefaultArrow() {
+		setArrow(true);
+		setArrowLength(defaultArrowLength);
+		setArrowWidth(defaultArrowWidth);
+	}
+
 }

@@ -60,7 +60,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						JOptionPane.showMessageDialog(null,	unsupportedMessage, "Sorry..", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null,	unsupportedMessage, "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				});
 				break;
@@ -113,7 +113,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					JOptionPane.showMessageDialog(null, errorMessage, "Oops..", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			});
 		}

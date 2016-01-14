@@ -205,7 +205,6 @@ public class VisualSTG extends AbstractVisualModel {
 	public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException {
 		validateUndirectedConnection(first, second);
 
-
 		VisualNode place = null;
 		VisualNode transition = null;
 		if (first instanceof VisualTransition) {

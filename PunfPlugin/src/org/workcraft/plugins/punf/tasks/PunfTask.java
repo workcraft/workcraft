@@ -14,12 +14,10 @@ import org.workcraft.util.ToolUtils;
 public class PunfTask implements Task<ExternalProcessResult> {
 	private String inputPath;
 	private String outputPath;
-	private boolean tryPnml;
 
-	public PunfTask(String inputPath, String outputPath, boolean tryPnml) {
+	public PunfTask(String inputPath, String outputPath) {
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
-		this.tryPnml = tryPnml;
 	}
 
 	@Override
@@ -27,9 +25,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolPrefix = PunfUtilitySettings.getCommand();
-		String toolSuffix = PunfUtilitySettings.getToolSuffix(tryPnml);
-		String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
+		String toolName = ToolUtils.getAbsoluteCommandPath(PunfUtilitySettings.getCommand());
 		command.add(toolName);
 
 		// Extra arguments (should go before the file parameters)

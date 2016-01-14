@@ -156,6 +156,11 @@ public abstract class AbstractModel implements Model {
 	}
 
 	@Override
+	public Connection getConnection(Node first, Node second) {
+		return nodeContextTracker.getConnection(first, second);
+	}
+
+	@Override
 	public <R> Set<R> getPreset(Node node, Class<R> type) {
 		Set<R> result = new HashSet<R>();
 		for (Node pred: getPreset(node)) {
@@ -230,15 +235,6 @@ public abstract class AbstractModel implements Model {
 
 	public void reparent(Container targetContainer, Model sourceModel, Collection<Node> sourceNodes) {
 		// reparent for the general model undefined?
-	}
-
-	public Connection getConnection(Node first, Node second) {
-		for(Connection connection : getConnections(first)) {
-			if ((connection.getFirst() == first) && (connection.getSecond() == second)) {
-				return connection;
-			}
-		}
-		return null;
 	}
 
 }

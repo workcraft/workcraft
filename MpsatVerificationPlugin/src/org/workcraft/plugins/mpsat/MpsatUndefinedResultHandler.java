@@ -13,7 +13,8 @@ final class MpsatUndefinedResultHandler implements Runnable {
 
 	@Override
 	public void run() {
-		JOptionPane.showMessageDialog(null, message);
+		String title = "Verification results";
+		JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 	}
 
 }

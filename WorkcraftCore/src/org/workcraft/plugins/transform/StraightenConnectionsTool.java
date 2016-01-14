@@ -24,19 +24,18 @@ package org.workcraft.plugins.transform;
 import java.util.Collection;
 
 import org.workcraft.TransformationTool;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CopyLablesTool extends TransformationTool {
+public class StraightenConnectionsTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Copy unique names into labels (selected or all)";
+		return "Straighten connections (selected or all)";
 	}
 
 	@Override
@@ -48,16 +47,15 @@ public class CopyLablesTool extends TransformationTool {
 	public void run(WorkspaceEntry we) {
 		VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
 		if (visualModel != null) {
-			MathModel mathModel = (MathModel)visualModel.getMathModel();
-			Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class);
+			Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class);
 			if ( !visualModel.getSelection().isEmpty() ) {
-				components.retainAll(visualModel.getSelection());
+				connections.retainAll(visualModel.getSelection());
 			}
-			if ( !components.isEmpty() ) {
+			if ( !connections.isEmpty() ) {
 				we.saveMemento();
-				for (VisualComponent visualComponent : components) {
-					Node refComponent = visualComponent.getReferencedComponent();
-					visualComponent.setLabel(mathModel.getName(refComponent));
+				for (VisualConnection connection: connections) {
+					connection.setConnectionType(ConnectionType.BEZIER);
+					connection.setConnectionType(ConnectionType.POLYLINE);
 				}
 			}
 		}

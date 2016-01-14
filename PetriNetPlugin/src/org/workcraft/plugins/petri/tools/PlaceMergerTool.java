@@ -11,7 +11,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public final class PlaceMergerTool extends AbstractMergerTool {
 	@Override
 	public String getDisplayName() {
-		return "Merge selected places";
+		return "  Merge selected places";
 	}
 
 	@Override

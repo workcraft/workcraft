@@ -34,7 +34,7 @@ public class PetriNetUtils {
 	public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedDualArcs(final VisualModel visualModel) {
 		HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
 		HashSet<VisualConnection> consumingArcs = PetriNetUtils.getVisualConsumingArcs(visualModel);
-		HashSet<VisualConnection> producingArcs = PetriNetUtils.getVisualProducerArcs(visualModel);
+		HashSet<VisualConnection> producingArcs = PetriNetUtils.getVisualProducingArcs(visualModel);
 		for (VisualConnection consumingArc: consumingArcs) {
 			for (VisualConnection producingArc: producingArcs) {
 				boolean isDualArcs = ((consumingArc.getFirst() == producingArc.getSecond())
@@ -48,7 +48,6 @@ public class PetriNetUtils {
 		}
 		return dualArcs;
 	}
-
 
 	public static HashSet<VisualReadArc> convertDualArcsToReadArcs(final VisualModel visualModel,
 			HashSet<Pair<VisualConnection, VisualConnection>> dualArcs) {
@@ -64,28 +63,120 @@ public class PetriNetUtils {
 		return readArcs;
 	}
 
-
 	public static VisualReadArc convertDualArcToReadArc(VisualModel visualModel, VisualConnection consumingArc, VisualConnection producingArc) {
 		VisualReadArc readArc = null;
-		VisualNode first = consumingArc.getFirst();
-		VisualNode second = consumingArc.getSecond();
-		if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace)) && (second instanceof VisualTransition)) {
+		if (isVisualDualArcs(consumingArc, producingArc)) {
+			VisualConnection connection = consumingArc;
+			if ( !isVisualConsumingArc(consumingArc) ) {
+				connection = producingArc;
+			}
+			VisualNode place = connection.getFirst();
+			if (place instanceof VisualReplicaPlace) {
+				place = copyReplicaPlace(visualModel, (VisualReplicaPlace)place);
+			}
+			VisualNode transition = connection.getSecond();
+
+			visualModel.remove(consumingArc);
+			visualModel.remove(producingArc);
 			try {
-				if (first instanceof VisualReplicaPlace) {
-					first = copyReplicaPlace(visualModel, (VisualReplicaPlace)first);
-				}
-				visualModel.remove(consumingArc);
-				visualModel.remove(producingArc);
-				VisualConnection connection = visualModel.connectUndirected(first, second);
-				connection.copyShape(consumingArc);
-				if (connection instanceof VisualReadArc) {
-					readArc = (VisualReadArc)connection;
+				VisualConnection undirectedConnection = visualModel.connectUndirected(place, transition);
+				if (undirectedConnection instanceof VisualReadArc) {
+					readArc = (VisualReadArc)undirectedConnection;
+					readArc.copyStyle(connection);
+					readArc.copyShape(connection);
+					readArc.inverseShape();
 				}
 			} catch (InvalidConnectionException e) {
 			}
 		}
 		return readArc;
 	}
+
+	public static VisualReadArc convertDirectedArcToReadArc(VisualModel visualModel, VisualConnection connection) {
+		VisualReadArc readArc = null;
+		if (isVisualProducingArc(connection)) {
+			readArc = convertProducingArcToReadArc(visualModel, connection);
+		} else if (isVisualConsumingArc(connection)) {
+			readArc = convertConsumingArcToReadArc(visualModel, connection);
+		}
+		return readArc;
+	}
+
+	public static VisualReadArc convertProducingArcToReadArc(VisualModel visualModel, VisualConnection connection) {
+		VisualReadArc readArc = null;
+		VisualNode transition = null;
+		VisualNode placeOrReplica = null;
+		if (isVisualProducingArc(connection)) {
+			transition = connection.getFirst();
+			placeOrReplica = connection.getSecond();
+			if (placeOrReplica instanceof VisualReplicaPlace) {
+				placeOrReplica = copyReplicaPlace(visualModel, (VisualReplicaPlace)placeOrReplica);
+			}
+			// Remove producing and dual consuming arcs (including replicas)
+			visualModel.remove(connection);
+			VisualPlace place = (VisualPlace)((placeOrReplica instanceof VisualPlace) ? placeOrReplica : ((VisualReplicaPlace)placeOrReplica).getMaster());
+			Connection dualConsumingArc = visualModel.getConnection(place, transition);
+			if (dualConsumingArc != null) {
+				visualModel.remove(dualConsumingArc);
+			}
+			for (Replica replica: place.getReplicas()) {
+				Connection dualReplicaConsumingArc = visualModel.getConnection((VisualReplicaPlace)replica, transition);
+				if (dualReplicaConsumingArc != null) {
+					visualModel.remove(dualReplicaConsumingArc);
+				}
+			}
+			// Create read-arc
+			try {
+				VisualConnection undirectedConnection = visualModel.connectUndirected(placeOrReplica, transition);
+				if (undirectedConnection instanceof VisualReadArc) {
+					readArc = (VisualReadArc)undirectedConnection;
+					readArc.copyStyle(connection);
+					readArc.copyShape(connection);
+					readArc.inverseShape();
+				}
+			} catch (InvalidConnectionException e) {
+			}
+		}
+		return readArc;
+	}
+
+	public static VisualReadArc convertConsumingArcToReadArc(VisualModel visualModel, VisualConnection connection) {
+		VisualReadArc readArc = null;
+		VisualNode placeOrReplica = null;
+		VisualNode transition = null;
+		if (isVisualConsumingArc(connection)) {
+			placeOrReplica = connection.getFirst();
+			if (placeOrReplica instanceof VisualReplicaPlace) {
+				placeOrReplica = copyReplicaPlace(visualModel, (VisualReplicaPlace)placeOrReplica);
+			}
+			transition = connection.getSecond();
+			// Remove consuming and dual producing arcs (including replicas)
+			visualModel.remove(connection);
+			VisualPlace place = (VisualPlace)((placeOrReplica instanceof VisualPlace) ? placeOrReplica : ((VisualReplicaPlace)placeOrReplica).getMaster());
+			Connection dualProducingArc = visualModel.getConnection(transition, place);
+			if (dualProducingArc != null) {
+				visualModel.remove(dualProducingArc);
+			}
+			for (Replica replica: place.getReplicas()) {
+				Connection dualReplicaProducingArc = visualModel.getConnection(transition, (VisualReplicaPlace)replica);
+				if (dualReplicaProducingArc != null) {
+					visualModel.remove(dualReplicaProducingArc);
+				}
+			}
+			// Create read-arc
+			try {
+				VisualConnection undirectedConnection = visualModel.connectUndirected(placeOrReplica, transition);
+				if (undirectedConnection instanceof VisualReadArc) {
+					readArc = (VisualReadArc)undirectedConnection;
+					readArc.copyStyle(connection);
+					readArc.copyShape(connection);
+				}
+			} catch (InvalidConnectionException e) {
+			}
+		}
+		return readArc;
+	}
+
 
 	public static Pair<VisualConnection, VisualConnection> converReadArcTotDualArc(VisualModel visualModel, VisualReadArc readArc) {
 		VisualNode first = readArc.getFirst();
@@ -98,11 +189,19 @@ public class PetriNetUtils {
 					first = copyReplicaPlace(visualModel, (VisualReplicaPlace)first);
 				}
 				visualModel.remove(readArc);
-				consumingArc = visualModel.connect(first, second);
-				consumingArc.copyShape(readArc);
-				producingArc = visualModel.connect(second, first);
-				producingArc.copyShape(readArc);
-				producingArc.inverseShape();
+				{
+					consumingArc = visualModel.connect(first, second);
+					consumingArc.copyStyle(readArc);
+					consumingArc.setDefaultArrow();
+					consumingArc.copyShape(readArc);
+				}
+				{
+					producingArc = visualModel.connect(second, first);
+					producingArc.copyStyle(readArc);
+					producingArc.setDefaultArrow();
+					producingArc.copyShape(readArc);
+					producingArc.inverseShape();
+				}
 			} catch (InvalidConnectionException e) {
 			}
 		}
@@ -150,7 +249,7 @@ public class PetriNetUtils {
 		return result;
 	}
 
-	public static VisualConnection replicateReadArcPlace(VisualModel visualModel, VisualConnection connection) {
+	public static VisualConnection replicateConnectedPlace(VisualModel visualModel, VisualConnection connection) {
 		VisualConnection result = null;
 		VisualNode first = connection.getFirst();
 		VisualNode second = connection.getSecond();
@@ -306,19 +405,17 @@ public class PetriNetUtils {
 	public static HashSet<VisualConnection> getVisualConsumingArcs(VisualModel visualModel) {
 		HashSet<VisualConnection> connections = new HashSet<>();
 		for (VisualConnection connection: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
-			if (connection instanceof VisualReadArc) continue;
-			if (connection.getSecond() instanceof VisualTransition) {
+			if (isVisualConsumingArc(connection)) {
 				connections.add(connection);
 			}
 		}
 		return connections;
 	}
 
-	public static HashSet<VisualConnection> getVisualProducerArcs(VisualModel visualModel) {
+	public static HashSet<VisualConnection> getVisualProducingArcs(VisualModel visualModel) {
 		HashSet<VisualConnection> connections = new HashSet<>();
 		for (VisualConnection connection: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
-			if (connection instanceof VisualReadArc) continue;
-			if (connection.getFirst() instanceof VisualTransition) {
+			if (isVisualProducingArc(connection)) {
 				connections.add(connection);
 			}
 		}
@@ -335,6 +432,65 @@ public class PetriNetUtils {
 
 	public static HashSet<VisualPlace> getVisualPlaces(VisualModel visualModel) {
 		return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualPlace.class));
+	}
+
+	public static HashSet<VisualTransition> getVisualTransitions(VisualModel visualModel) {
+		return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualTransition.class));
+	}
+
+	public static boolean isVisualTransition(Node node) {
+		return (node instanceof VisualTransition);
+	}
+
+	public static boolean isVisualPlaceOrReplicaPlace(Node node) {
+		return ((node instanceof VisualPlace) || (node instanceof VisualReplicaPlace));
+	}
+
+	public static boolean isVisualProducingArc(Node node) {
+		if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
+			VisualConnection connection = (VisualConnection)node;
+			return (isVisualTransition(connection.getFirst()) && isVisualPlaceOrReplicaPlace(connection.getSecond()));
+		}
+		return false;
+	}
+
+	public static boolean isVisualConsumingArc(Node node) {
+		if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
+			VisualConnection connection = (VisualConnection)node;
+			return (isVisualPlaceOrReplicaPlace(connection.getFirst()) && isVisualTransition(connection.getSecond()));
+		}
+		return false;
+	}
+
+	public static boolean isVisualDualArcs(Node node1, Node node2) {
+		VisualConnection consumingArc = null;
+		VisualConnection producingArc = null;
+		if (isVisualConsumingArc(node1)) {
+			consumingArc = (VisualConnection)node1;
+		} else if (isVisualProducingArc(node1)) {
+			producingArc = (VisualConnection)node1;
+		}
+		if (isVisualConsumingArc(node2)) {
+			consumingArc = (VisualConnection)node2;
+		} else if (isVisualProducingArc(node2)) {
+			producingArc = (VisualConnection)node2;
+		}
+		if ((consumingArc != null) && (producingArc != null)) {
+			VisualNode place1 = consumingArc.getFirst();
+			if (place1 instanceof VisualReplicaPlace) {
+				place1 = ((VisualReplicaPlace)place1).getMaster();
+			}
+			VisualNode transition1 = consumingArc.getSecond();
+
+			VisualNode place2 = producingArc.getFirst();
+			if (place2 instanceof VisualReplicaPlace) {
+				place2 = ((VisualReplicaPlace)place2).getMaster();
+			}
+			VisualNode transition2 = producingArc.getSecond();
+
+			return ((place1 == place2) && (transition1 == transition2));
+		}
+		return false;
 	}
 
 }

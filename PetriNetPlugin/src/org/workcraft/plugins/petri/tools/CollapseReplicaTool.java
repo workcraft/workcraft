@@ -2,7 +2,10 @@ package org.workcraft.plugins.petri.tools;
 
 import java.util.HashSet;
 
+import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
@@ -10,16 +13,21 @@ import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CollapseReplicaTool extends TransformationTool {
+public class CollapseReplicaTool extends TransformationTool implements NodeTransformer {
 
 	@Override
 	public String getDisplayName() {
-		return "Collapse replica places";
+		return " Collapse replica places (selected or all)";
 	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+	}
+
+	@Override
+	public boolean isApplicableTo(Node node) {
+		return (node instanceof VisualReplicaPlace);
 	}
 
 	@Override
@@ -45,9 +53,18 @@ public class CollapseReplicaTool extends TransformationTool {
 		if ( !replicas.isEmpty() ) {
 			we.saveMemento();
 			for (VisualReplicaPlace replica: replicas) {
-				PetriNetUtils.collapseReplicaPlace(visualModel, replica);
+				transform(visualModel, replica);
 			}
 			visualModel.selectNone();
+		}
+	}
+
+	@Override
+	public void transform(Model model, Node node) {
+		if ((model instanceof VisualModel) && (node instanceof VisualReplicaPlace)) {
+			VisualModel visualModel = (VisualModel)model;
+			VisualReplicaPlace replicaPlace = (VisualReplicaPlace)node;
+			PetriNetUtils.collapseReplicaPlace(visualModel, replicaPlace);
 		}
 	}
 

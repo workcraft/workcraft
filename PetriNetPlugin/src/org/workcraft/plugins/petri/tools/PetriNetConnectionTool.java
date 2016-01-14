@@ -39,7 +39,7 @@ public class PetriNetConnectionTool extends ConnectionTool {
 
 				if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
 					VisualModel visualModel = e.getEditor().getModel();
-					connection = PetriNetUtils.replicateReadArcPlace(visualModel, connection);
+					connection = PetriNetUtils.replicateConnectedPlace(visualModel, connection);
 				}
 			}
 		}
