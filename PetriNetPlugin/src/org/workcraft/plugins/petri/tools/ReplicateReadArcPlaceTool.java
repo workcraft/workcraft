@@ -18,7 +18,7 @@ public class ReplicateReadArcPlaceTool extends TransformationTool implements Nod
 
 	@Override
 	public String getDisplayName() {
-		return " Replicate read-arc places (selected or all)";
+		return "Create proxies for read-arc places (selected or all)";
 	}
 
 	@Override
@@ -29,6 +29,11 @@ public class ReplicateReadArcPlaceTool extends TransformationTool implements Nod
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+	}
+
+	@Override
+	public Position getPosition() {
+		return Position.MIDDLE;
 	}
 
 	@Override

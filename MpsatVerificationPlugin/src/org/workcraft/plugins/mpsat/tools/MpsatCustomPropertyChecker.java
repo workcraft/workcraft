@@ -29,6 +29,11 @@ public class MpsatCustomPropertyChecker extends VerificationTool {
 	}
 
 	@Override
+	public Position getPosition() {
+		return Position.BOTTOM;
+	}
+
+	@Override
 	public void run(WorkspaceEntry we) {
 		PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(new File("config/mpsat_presets.xml"), new MpsatSettingsSerialiser());
 		final Framework framework = Framework.getInstance();

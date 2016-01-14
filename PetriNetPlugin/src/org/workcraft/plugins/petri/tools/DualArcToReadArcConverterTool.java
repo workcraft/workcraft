@@ -26,6 +26,11 @@ public class DualArcToReadArcConverterTool extends TransformationTool {
 	}
 
 	@Override
+	public Position getPosition() {
+		return Position.TOP;
+	}
+
+	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualModel visualModel = we.getModelEntry().getVisualModel();
 		HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedDualArcs(visualModel);

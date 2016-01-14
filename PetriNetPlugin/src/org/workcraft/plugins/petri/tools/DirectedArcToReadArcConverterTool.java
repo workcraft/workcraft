@@ -14,12 +14,12 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ProducingArcToReadArcConverterTool extends TransformationTool implements NodeTransformer {
+public class DirectedArcToReadArcConverterTool extends TransformationTool implements NodeTransformer {
 	private HashSet<VisualReadArc> readArcs = null;
 
 	@Override
 	public String getDisplayName() {
-		return "Convert selected producing arcs to a read-arcs";
+		return "Convert selected arcs to read-arcs";
 	}
 
 	@Override
@@ -29,13 +29,20 @@ public class ProducingArcToReadArcConverterTool extends TransformationTool imple
 
 	@Override
 	public boolean isApplicableTo(Node node) {
-		return PetriNetUtils.isVisualProducingArc(node);
+		return (PetriNetUtils.isVisualConsumingArc(node) || PetriNetUtils.isVisualProducingArc(node));
 	};
+
+	@Override
+	public Position getPosition() {
+		return Position.TOP;
+	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualModel model = we.getModelEntry().getVisualModel();
-		HashSet<VisualConnection> connections = PetriNetUtils.getVisualProducingArcs(model);
+		HashSet<VisualConnection> connections = new HashSet<>();
+		connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
+		connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
 		connections.retainAll(model.getSelection());
 		if ( !connections.isEmpty() ) {
 			we.saveMemento();

@@ -13,4 +13,10 @@ public class PetrifySynthesisGeneralisedCelement extends PetrifySynthesis {
 	public String getDisplayName() {
 		return "Generalized C-element [Petrify]";
 	}
+
+	@Override
+	public Position getPosition() {
+		return Position.TOP;
+	}
+
 }

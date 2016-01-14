@@ -22,6 +22,11 @@ public class CheckCircuitTool extends VerificationTool {
 	}
 
 	@Override
+	public Position getPosition() {
+		return Position.BOTTOM;
+	}
+
+	@Override
 	public void run(WorkspaceEntry we) {
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();

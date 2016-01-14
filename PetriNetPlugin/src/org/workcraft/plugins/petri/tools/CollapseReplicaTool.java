@@ -17,7 +17,7 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
 
 	@Override
 	public String getDisplayName() {
-		return " Collapse replica places (selected or all)";
+		return "Collapse proxy places (selected or all)";
 	}
 
 	@Override
@@ -28,6 +28,11 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
 	@Override
 	public boolean isApplicableTo(Node node) {
 		return (node instanceof VisualReplicaPlace);
+	}
+
+	@Override
+	public Position getPosition() {
+		return Position.MIDDLE;
 	}
 
 	@Override

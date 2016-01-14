@@ -16,7 +16,7 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
 
 	@Override
 	public String getDisplayName() {
-		return "  Mirror signals (selected or all)";
+		return "Mirror signals (selected or all)";
 	}
 
 	@Override
@@ -32,6 +32,11 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
 			return ((signalType == Type.INPUT) || (signalType == Type.OUTPUT));
 		}
 		return false;
+	}
+
+	@Override
+	public Position getPosition() {
+		return null;
 	}
 
 	@Override

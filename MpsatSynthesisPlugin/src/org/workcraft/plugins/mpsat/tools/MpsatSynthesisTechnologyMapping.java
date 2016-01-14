@@ -14,4 +14,9 @@ public class MpsatSynthesisTechnologyMapping extends MpsatSynthesis {
 		return "Technology mapping [MPSat]";
 	}
 
+	@Override
+	public Position getPosition() {
+		return Position.BOTTOM;
+	}
+
 }

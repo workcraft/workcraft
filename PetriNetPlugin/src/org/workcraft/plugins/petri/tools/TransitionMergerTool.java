@@ -11,12 +11,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 public final class TransitionMergerTool extends AbstractMergerTool {
 	@Override
 	public String getDisplayName() {
-		return "  Merge selected transitions";
+		return "Merge selected transitions";
 	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return we.getModelEntry().getMathModel() instanceof PetriNet;
+	}
+
+	@Override
+	public Position getPosition() {
+		return null;
 	}
 
 	@Override

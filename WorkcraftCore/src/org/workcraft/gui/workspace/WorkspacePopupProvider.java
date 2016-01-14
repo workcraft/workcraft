@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -36,6 +37,7 @@ import javax.swing.JPopupMenu;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.MenuOrdering.Position;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
@@ -201,19 +203,35 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 					popup.addSeparator();
 				}
 				for (String section : sections) {
-					String menuName = MainMenu.getMenuNameFromSection(section);
-					JMenu menu = new JMenu(menuName.trim());
-					for (Tool tool : Tools.getSectionTools(section, applicableTools)) {
-						JMenuItem item = new JMenuItem(tool.getDisplayName());
-						tools.put(item, tool);
-						item.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								Tools.run(openFile, tools.get(e.getSource()));
+					String sectionMenuName = MainMenu.getMenuNameFromSection(section);
+					JMenu sectionMenu = new JMenu(sectionMenuName);
+
+					List<Tool> sectionTools = Tools.getSectionTools(section, applicableTools);
+					List<List<Tool>> sectionToolsPartitions = new LinkedList<>();
+					sectionToolsPartitions.add(Tools.getUnpositionedTools(sectionTools));
+					sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.TOP));
+					sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
+					sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
+					boolean needSeparator = false;
+					for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
+						boolean isFirstItem = true;
+						for (Tool tool : sectionToolsPartition) {
+							if (needSeparator && isFirstItem) {
+								sectionMenu.addSeparator();
 							}
-						});
-						menu.add(item);
+							needSeparator = true;
+							isFirstItem = false;
+							JMenuItem item = new JMenuItem(tool.getDisplayName().trim());
+							tools.put(item, tool);
+							item.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent e) {
+									Tools.run(openFile, tools.get(e.getSource()));
+								}
+							});
+							sectionMenu.add(item);
+						}
 					}
-					popup.add(menu);
+					popup.add(sectionMenu);
 				}
 			}
 			popup.addSeparator();

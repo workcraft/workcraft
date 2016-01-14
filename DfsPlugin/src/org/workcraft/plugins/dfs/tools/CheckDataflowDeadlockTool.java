@@ -11,7 +11,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDataflowDeadlockTool extends VerificationTool {
 
 	public String getDisplayName() {
-		return " Deadlock [MPSat]";
+		return "Deadlock [MPSat]";
 	}
 
 	@Override

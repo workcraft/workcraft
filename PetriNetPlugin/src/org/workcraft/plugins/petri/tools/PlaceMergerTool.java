@@ -11,7 +11,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public final class PlaceMergerTool extends AbstractMergerTool {
 	@Override
 	public String getDisplayName() {
-		return "  Merge selected places";
+		return "Merge selected places";
 	}
 
 	@Override
@@ -24,6 +24,11 @@ public final class PlaceMergerTool extends AbstractMergerTool {
 		Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
 		result.add(VisualPlace.class);
 		return result;
+	}
+
+	@Override
+	public Position getPosition() {
+		return null;
 	}
 
 }

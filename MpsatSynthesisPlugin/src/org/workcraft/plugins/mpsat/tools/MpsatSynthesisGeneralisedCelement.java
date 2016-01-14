@@ -14,4 +14,9 @@ public class MpsatSynthesisGeneralisedCelement extends MpsatSynthesis {
 		return "Generalised C-element [MPSat]";
 	}
 
+	@Override
+	public Position getPosition() {
+		return Position.TOP;
+	}
+
 }
