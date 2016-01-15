@@ -27,11 +27,7 @@ import org.workcraft.util.Pair;
 public class PetriNetUtils {
 
 
-	public static void convertSelectedDualArcsToReadArcs(final VisualModel visualModel) {
-		convertDualArcsToReadArcs(visualModel, getSelectedDualArcs(visualModel));
-	}
-
-	public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedDualArcs(final VisualModel visualModel) {
+	public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedOrAllDualArcs(final VisualModel visualModel) {
 		HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
 		HashSet<VisualConnection> consumingArcs = PetriNetUtils.getVisualConsumingArcs(visualModel);
 		HashSet<VisualConnection> producingArcs = PetriNetUtils.getVisualProducingArcs(visualModel);
@@ -76,6 +72,11 @@ public class PetriNetUtils {
 			}
 			VisualNode transition = connection.getSecond();
 
+			boolean needsShapeInversion = !visualModel.getSelection().contains(connection);
+			if (needsShapeInversion) {
+				connection = producingArc;
+			}
+
 			visualModel.remove(consumingArc);
 			visualModel.remove(producingArc);
 			try {
@@ -84,6 +85,9 @@ public class PetriNetUtils {
 					readArc = (VisualReadArc)undirectedConnection;
 					readArc.copyStyle(connection);
 					readArc.copyShape(connection);
+					if (needsShapeInversion) {
+						readArc.inverseShape();
+					}
 				}
 			} catch (InvalidConnectionException e) {
 			}

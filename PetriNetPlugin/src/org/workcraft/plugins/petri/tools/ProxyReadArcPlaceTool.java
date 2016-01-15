@@ -14,7 +14,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReplicateReadArcPlaceTool extends TransformationTool implements NodeTransformer {
+public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTransformer {
 
 	@Override
 	public String getDisplayName() {
@@ -22,13 +22,17 @@ public class ReplicateReadArcPlaceTool extends TransformationTool implements Nod
 	}
 
 	@Override
-	public boolean isApplicableTo(Node node) {
-		return (node instanceof VisualReadArc);
+	public boolean isApplicableTo(WorkspaceEntry we) {
+		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
 	}
 
 	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+	public boolean isApplicableTo(Node node) {
+		if (node instanceof VisualReadArc) {
+			VisualReadArc readArc = (VisualReadArc)node;
+			return (readArc.getFirst() instanceof VisualPlace);
+		}
+		return false;
 	}
 
 	@Override
@@ -38,17 +42,17 @@ public class ReplicateReadArcPlaceTool extends TransformationTool implements Nod
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final VisualModel visualModel = we.getModelEntry().getVisualModel();
-		HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
-		if ( !visualModel.getSelection().isEmpty() ) {
-			readArcs.retainAll(visualModel.getSelection());
+		final VisualModel model = we.getModelEntry().getVisualModel();
+		HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(model);
+		if ( !model.getSelection().isEmpty() ) {
+			readArcs.retainAll(model.getSelection());
 		}
-		HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(visualModel);
-		if ( !visualModel.getSelection().isEmpty() ) {
-			places.retainAll(visualModel.getSelection());
+		HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(model);
+		if ( !model.getSelection().isEmpty() ) {
+			places.retainAll(model.getSelection());
 		}
 		for (VisualPlace place: places) {
-			for (Connection connection: visualModel.getConnections(place)) {
+			for (Connection connection: model.getConnections(place)) {
 				if (connection instanceof VisualReadArc) {
 					readArcs.add((VisualReadArc)connection);
 				}
@@ -58,9 +62,9 @@ public class ReplicateReadArcPlaceTool extends TransformationTool implements Nod
 		if ( !readArcs.isEmpty() ) {
 			we.saveMemento();
 			for (VisualReadArc readArc: readArcs) {
-				transform(visualModel, readArc);
+				transform(model, readArc);
 			}
-			visualModel.selectNone();
+			model.selectNone();
 		}
 	}
 

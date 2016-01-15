@@ -17,7 +17,7 @@ public class DualArcToReadArcConverterTool extends TransformationTool {
 
 	@Override
 	public String getDisplayName() {
-		return "Convert selected dual producing/consuming arcs to read-arcs";
+		return "Convert dual producing/consuming arcs to read-arcs (selected or all)";
 	}
 
 	@Override
@@ -32,12 +32,12 @@ public class DualArcToReadArcConverterTool extends TransformationTool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		final VisualModel visualModel = we.getModelEntry().getVisualModel();
-		HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedDualArcs(visualModel);
+		final VisualModel model = we.getModelEntry().getVisualModel();
+		HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(model);
 		if ( !dualArcs.isEmpty() ) {
 			we.saveMemento();
-			HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(visualModel, dualArcs);
-			visualModel.select(new LinkedList<Node>(readArcs));
+			HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(model, dualArcs);
+			model.select(new LinkedList<Node>(readArcs));
 		}
 	}
 

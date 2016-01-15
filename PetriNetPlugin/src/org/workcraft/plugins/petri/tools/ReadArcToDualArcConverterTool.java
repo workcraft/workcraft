@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
-import org.workcraft.MenuOrdering.Position;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
@@ -21,7 +20,7 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
 
 	@Override
 	public String getDisplayName() {
-		return "Convert selected read-arcs to dual producing/consuming arcs";
+		return "Convert read-arcs to dual producing/consuming arcs (selected or all)";
 	}
 
 	@Override

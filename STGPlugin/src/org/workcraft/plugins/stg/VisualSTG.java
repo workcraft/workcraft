@@ -57,6 +57,7 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 
 @DisplayName("Signal Transition Graph")
 @CustomTools(STGToolsProvider.class)
@@ -97,7 +98,8 @@ public class VisualSTG extends AbstractVisualModel {
 	}
 
 	private void fixReadArcs() {
-		PetriNetUtils.convertSelectedDualArcsToReadArcs(this);
+		HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(this);
+		PetriNetUtils.convertDualArcsToReadArcs(this, dualArcs);
 	}
 
 	@Override

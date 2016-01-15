@@ -1,7 +1,6 @@
 package org.workcraft.plugins.petri.tools;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
@@ -11,61 +10,63 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
-import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DirectedArcToReadArcConverterTool extends TransformationTool implements NodeTransformer {
-	private HashSet<VisualReadArc> readArcs = null;
+public class ProxyDirectedArcPlaceTool extends TransformationTool implements NodeTransformer {
 
 	@Override
 	public String getDisplayName() {
-		return "Convert selected arcs to read-arcs";
+		return "Create proxies for selected producing/consuming arc places";
 	}
 
 	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
-		return (we.getModelEntry().getMathModel() instanceof PetriNetModel);
+		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
 	}
 
 	@Override
 	public boolean isApplicableTo(Node node) {
-		return (PetriNetUtils.isVisualConsumingArc(node) || PetriNetUtils.isVisualProducingArc(node));
-	};
+		if (node instanceof VisualConnection) {
+			VisualConnection connection = (VisualConnection)node;
+			Node place = null;
+			if (PetriNetUtils.isVisualConsumingArc(connection)) {
+				place = connection.getFirst();
+			} else if (PetriNetUtils.isVisualProducingArc(connection)) {
+				place = connection.getSecond();
+			}
+			return (place instanceof VisualPlace);
+		}
+		return false;
+	}
 
 	@Override
 	public Position getPosition() {
-		return Position.TOP;
+		return Position.MIDDLE;
 	}
 
 	@Override
 	public void run(WorkspaceEntry we) {
 		final VisualModel model = we.getModelEntry().getVisualModel();
 		HashSet<VisualConnection> connections = new HashSet<>();
-		connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
 		connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
+		connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
 		connections.retainAll(model.getSelection());
 		if ( !connections.isEmpty() ) {
 			we.saveMemento();
-			readArcs = new HashSet<>();
 			for (VisualConnection connection: connections) {
-				// Check that the arc was not removed because of a dual arc
-				if (connection.getParent() != null) {
-					transform(model, connection);
-				}
+				transform(model, connection);
 			}
-			model.select(new LinkedList<Node>(readArcs));
-			readArcs = null;
+			model.selectNone();
 		}
 	}
 
 	@Override
 	public void transform(Model model, Node node) {
 		if ((model instanceof VisualModel) && (node instanceof VisualConnection)) {
+			VisualModel visualModel = (VisualModel)model;
 			VisualConnection connection = (VisualConnection)node;
-			VisualReadArc readArc = PetriNetUtils.convertDirectedArcToReadArc((VisualModel)model, connection);
-			if ((readArcs != null) && (readArc != null)) {
-				readArcs.add(readArc);
-			}
+			PetriNetUtils.replicateConnectedPlace(visualModel, connection);
 		}
 	}
 
