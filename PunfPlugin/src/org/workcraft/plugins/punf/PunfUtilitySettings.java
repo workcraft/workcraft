@@ -36,14 +36,20 @@ public class PunfUtilitySettings implements Settings {
 
 	private static final String keyCommand = prefix + ".command";
 	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyPrintStdout= prefix + ".printStdout";
+	private static final String keyPrintStderr= prefix + ".printStderr";
 	private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 
 	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf");
 	private static final String defaultExtraArgs = "-r";
+	private static final Boolean defaultPrintStdout = true;
+	private static final Boolean defaultPrintStderr = true;
 	private static final Boolean defaultUsePnmlUnfolding = true;
 
 	private static String command = defaultCommand;
 	private static String extraArgs = defaultExtraArgs;
+	private static Boolean printStdout = defaultPrintStdout;
+	private static Boolean printStderr = defaultPrintStderr;
 	private static Boolean usePnmlUnfolding = defaultUsePnmlUnfolding;
 
 	public PunfUtilitySettings() {
@@ -68,6 +74,26 @@ public class PunfUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<PunfUtilitySettings, Boolean>(
+				this, "Output stdout", Boolean.class, true, false, false) {
+			protected void setter(PunfUtilitySettings object, Boolean value) {
+				setPrintStdout(value);
+			}
+			protected Boolean getter(PunfUtilitySettings object) {
+				return getPrintStdout();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PunfUtilitySettings, Boolean>(
+				this, "Output stderr", Boolean.class, true, false, false) {
+			protected void setter(PunfUtilitySettings object, Boolean value) {
+				setPrintStderr(value);
+			}
+			protected Boolean getter(PunfUtilitySettings object) {
+				return getPrintStderr();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PunfUtilitySettings, Boolean>(
 				this, "Use PNML-based unfolding (where possible)", Boolean.class, true, false, false) {
 			protected void setter(PunfUtilitySettings object, Boolean value) {
 				setUsePnmlUnfolding(value);
@@ -88,12 +114,16 @@ public class PunfUtilitySettings implements Settings {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
 		setUsePnmlUnfolding(config.getBoolean(keyUsePnmlUnfolding, defaultUsePnmlUnfolding));
+		setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
+		setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
 	}
 
 	@Override
 	public void save(Config config) {
 		config.set(keyCommand, getCommand());
 		config.set(keyExtraArgs, getExtraArgs());
+		config.setBoolean(keyPrintStdout, getPrintStdout());
+		config.setBoolean(keyPrintStderr, getPrintStderr());
 		config.setBoolean(keyUsePnmlUnfolding, getUsePnmlUnfolding());
 	}
 
@@ -121,6 +151,22 @@ public class PunfUtilitySettings implements Settings {
 
 	public static void setExtraArgs(String value) {
 		extraArgs = value;
+	}
+
+	public static Boolean getPrintStdout() {
+		return printStdout;
+	}
+
+	public static void setPrintStdout(Boolean value) {
+		printStdout = value;
+	}
+
+	public static Boolean getPrintStderr() {
+		return printStderr;
+	}
+
+	public static void setPrintStderr(Boolean value) {
+		printStderr = value;
 	}
 
 	public static Boolean getUsePnmlUnfolding() {

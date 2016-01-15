@@ -42,7 +42,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 			command.add(inputFile.getAbsolutePath());
 
 			//Call PGMiner
-			ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
+			ExternalProcessTask task = new ExternalProcessTask(command, new File("."), false, false);
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 
 			Result<? extends ExternalProcessResult> result = task.run(mon);

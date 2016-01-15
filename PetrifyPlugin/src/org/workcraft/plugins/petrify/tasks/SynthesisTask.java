@@ -66,32 +66,38 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		// As there may be non-alpha-numerical symbols in the model title, it is better not to include it to the directory name.
 		String prefix = FileUtils.getTempPrefix(null/* we.getTitle() */);
 		File directory = FileUtils.createTempDirectory(prefix);
+
+		File outFile = new File(directory, "result.g");
+		command.add("-o");
+		command.add(outFile.getAbsolutePath());
+
+		File equationsFile = new File(directory, "petrify.eqn");
+		command.add("-eqn");
+		command.add(equationsFile.getAbsolutePath());
+
+		File verilogFile = new File(directory, "petrify.v");
+		command.add("-vl");
+		command.add(verilogFile.getAbsolutePath());
+
+		File blifFile = new File(directory, "petrify.blif");
+		command.add("-blif");
+		command.add(blifFile.getAbsolutePath());
+
+		File logFile = new File(directory, "petrify.log");
+		command.add("-log");
+		command.add(logFile.getAbsolutePath());
+
+		// Input file
+		STGModel stg = WorkspaceUtils.getAs(we, STGModel.class);
+		File stgFile = getInputFile(stg, directory);
+		command.add(stgFile.getAbsolutePath());
+
+		boolean printStdout = PetrifyUtilitySettings.getPrintStdout();
+		boolean printStderr = PetrifyUtilitySettings.getPrintStderr();
+		ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
+		SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+		Result<? extends ExternalProcessResult> res = task.run(mon);
 		try {
-			File equationsFile = new File(directory, "petrify.eqn");
-			command.add("-eqn");
-			command.add(equationsFile.getCanonicalPath());
-
-			File verilogFile = new File(directory, "petrify.v");
-			command.add("-vl");
-			command.add(verilogFile.getCanonicalPath());
-
-			File blifFile = new File(directory, "petrify.blif");
-			command.add("-blif");
-			command.add(blifFile.getCanonicalPath());
-
-			File logFile = new File(directory, "petrify.log");
-			command.add("-log");
-			command.add(logFile.getCanonicalPath());
-
-			// Input file
-			STGModel stg = WorkspaceUtils.getAs(we, STGModel.class);
-			File stgFile = getInputStg(stg, directory);
-			command.add(stgFile.getCanonicalPath());
-
-			ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, null);
-			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-			Result<? extends ExternalProcessResult> res = externalProcessTask.run(mon);
-
 			if (res.getOutcome() == Outcome.CANCELLED) {
 				return new Result<SynthesisResult>(Outcome.CANCELLED);
 			} else {
@@ -110,24 +116,24 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 				SynthesisResult result = new SynthesisResult(equations, verilog, log, stdout, stderr);
 				return new Result<SynthesisResult>(outcome, result);
 			}
-		} catch (IOException e1) {
-			throw new RuntimeException(e1);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		} finally {
 			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
 		}
 	}
 
-	private File getInputStg(Model model, File directory) throws IOException {
+	private File getInputFile(Model model, File directory) {
 		final Framework framework = Framework.getInstance();
 		Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
 		if (stgExporter == null) {
-			throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
+			throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
 		}
 
 		File stgFile = new File(directory, "petrify" + stgExporter.getExtenstion());
-		ExportTask exportTask = new ExportTask(stgExporter, model, stgFile.getCanonicalPath());
-		Result<? extends Object> res = framework.getTaskManager().execute(exportTask, "Exporting .g");
-		if (res.getOutcome() != Outcome.FINISHED) {
+		ExportTask exportTask = new ExportTask(stgExporter, model, stgFile.getAbsolutePath());
+		Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+		if (exportResult.getOutcome() != Outcome.FINISHED) {
 			stgFile = null;
 		}
 		return stgFile;

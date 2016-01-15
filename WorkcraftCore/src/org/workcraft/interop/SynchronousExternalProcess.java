@@ -26,18 +26,19 @@ import java.util.LinkedList;
 
 public class SynchronousExternalProcess {
 	class SynchronousListener implements ExternalProcessListener {
+		@Override
 		public void errorData(byte[] data) {
 			synchronized (errorData) {
 				errorData.add(data);
 			}
 		}
-
+		@Override
 		public void outputData(byte[] data) {
 			synchronized (outputData) {
 				outputData.add(data);
 			}
 		}
-
+		@Override
 		public void processFinished(int returnCode) {
 			SynchronousExternalProcess.this.returnCode = returnCode;
 			finished = true;
@@ -90,18 +91,18 @@ public class SynchronousExternalProcess {
 		return returnCode;
 	}
 
-	private static byte [] mergeChunksToArray (LinkedList<byte[]> chunks) {
+	private static byte [] mergeChunksToArray(LinkedList<byte[]> chunks) {
 		int len = 0;
-		for (byte[] dataChunk : chunks)
+		for (byte[] dataChunk : chunks) {
 			len += dataChunk.length;
-
+		}
 		byte [] result = new byte[len];
-
 		int cur = 0;
-		for (byte[] dataChunk : chunks)
-			for(int i=0;i<dataChunk.length;i++)
+		for (byte[] dataChunk : chunks) {
+			for(int i=0;i<dataChunk.length;i++) {
 				result[cur++] = dataChunk[i];
-
+			}
+		}
 		return result;
 	}
 
@@ -112,4 +113,5 @@ public class SynchronousExternalProcess {
 	public byte [] getErrorData() {
 		return mergeChunksToArray(errorData);
 	}
+
 }

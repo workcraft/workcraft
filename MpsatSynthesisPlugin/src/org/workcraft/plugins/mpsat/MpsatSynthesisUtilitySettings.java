@@ -35,12 +35,18 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 
 	private static final String keyCommand = prefix + ".command";
 	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyPrintStdout= prefix + ".printStdout";
+	private static final String keyPrintStderr= prefix + ".printStderr";
 
 	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat");
 	private static final String defaultExtraArgs = "";
+	private static final Boolean defaultPrintStdout = true;
+	private static final Boolean defaultPrintStderr = true;
 
 	private static String command = defaultCommand;
 	private static String extraArgs = defaultExtraArgs;
+	private static Boolean printStdout = defaultPrintStdout;
+	private static Boolean printStderr = defaultPrintStderr;
 
 	public MpsatSynthesisUtilitySettings() {
 		properties.add(new PropertyDeclaration<MpsatSynthesisUtilitySettings, String>(
@@ -57,9 +63,30 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 				this, "Additional parameters", String.class, true, false, false) {
 			protected void setter(MpsatSynthesisUtilitySettings object, String value) {
 				setExtraArgs(value);
+
 			}
 			protected String getter(MpsatSynthesisUtilitySettings object) {
 				return getExtraArgs();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatSynthesisUtilitySettings, Boolean>(
+				this, "Output stdout", Boolean.class, true, false, false) {
+			protected void setter(MpsatSynthesisUtilitySettings object, Boolean value) {
+				setPrintStdout(value);
+			}
+			protected Boolean getter(MpsatSynthesisUtilitySettings object) {
+				return getPrintStdout();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatSynthesisUtilitySettings, Boolean>(
+				this, "Output stderr", Boolean.class, true, false, false) {
+			protected void setter(MpsatSynthesisUtilitySettings object, Boolean value) {
+				setPrintStderr(value);
+			}
+			protected Boolean getter(MpsatSynthesisUtilitySettings object) {
+				return getPrintStderr();
 			}
 		});
 	}
@@ -73,12 +100,16 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 	public void load(Config config) {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+		setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
+		setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
 	}
 
 	@Override
 	public void save(Config config) {
 		config.set(keyCommand, getCommand());
 		config.set(keyExtraArgs, getExtraArgs());
+		config.setBoolean(keyPrintStdout, getPrintStdout());
+		config.setBoolean(keyPrintStderr, getPrintStderr());
 	}
 
 	@Override
@@ -105,6 +136,22 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 
 	public static void setExtraArgs(String value) {
 		extraArgs = value;
+	}
+
+	public static Boolean getPrintStdout() {
+		return printStdout;
+	}
+
+	public static void setPrintStdout(Boolean value) {
+		printStdout = value;
+	}
+
+	public static Boolean getPrintStderr() {
+		return printStderr;
+	}
+
+	public static void setPrintStderr(Boolean value) {
+		printStderr = value;
 	}
 
 }

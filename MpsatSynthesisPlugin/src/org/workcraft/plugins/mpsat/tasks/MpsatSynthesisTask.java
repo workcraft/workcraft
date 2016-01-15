@@ -87,8 +87,10 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 		File outputFile = new File(directory, outputFileName);
 		command.add(outputFile.getAbsolutePath());
 
-		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, directory);
-		Result<? extends ExternalProcessResult> res = externalProcessTask.run(monitor);
+		boolean printStdout = MpsatSynthesisUtilitySettings.getPrintStdout();
+		boolean printStderr = MpsatSynthesisUtilitySettings.getPrintStderr();
+		ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
+		Result<? extends ExternalProcessResult> res = task.run(monitor);
 		if(res.getOutcome() == Outcome.CANCELLED) {
 			return res;
 		}

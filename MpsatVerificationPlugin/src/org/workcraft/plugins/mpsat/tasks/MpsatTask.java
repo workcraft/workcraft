@@ -59,8 +59,10 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		// Input file
 		command.add(inputFileName);
 
-		ExternalProcessTask externalProcessTask = new ExternalProcessTask(command, directory);
-		Result<? extends ExternalProcessResult> res = externalProcessTask.run(monitor);
+		boolean printStdout = MpsatUtilitySettings.getPrintStdout();
+		boolean printStderr = MpsatUtilitySettings.getPrintStderr();
+		ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
+		Result<? extends ExternalProcessResult> res = task.run(monitor);
 		if(res.getOutcome() == Outcome.CANCELLED) {
 			return res;
 		}

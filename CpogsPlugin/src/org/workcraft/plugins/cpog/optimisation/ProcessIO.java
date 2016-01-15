@@ -65,7 +65,7 @@ public class ProcessIO {
 
 			writeFile(input, inputFile);
 
-			Process minisat = Runtime.getRuntime().exec(new String[]{minisatPath, inputFile.getCanonicalPath(), outputFile.getCanonicalPath()});
+			Process minisat = Runtime.getRuntime().exec(new String[]{minisatPath, inputFile.getAbsolutePath(), outputFile.getAbsolutePath()});
 			minisat.getOutputStream().close();
 			while(true) {
 				int r = minisat.getInputStream().read();
@@ -80,7 +80,6 @@ public class ProcessIO {
 			}
 
 			result = readFile(outputFile);
-
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
