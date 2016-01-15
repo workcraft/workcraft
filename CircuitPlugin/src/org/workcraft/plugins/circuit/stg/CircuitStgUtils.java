@@ -114,7 +114,7 @@ public class CircuitStgUtils {
 	}
 
 	public static Result<? extends Object> exportStg(STG stg, File stgFile, File directory,
-			ProgressMonitor<? super MpsatChainResult> monitor) throws IOException {
+			ProgressMonitor<? super MpsatChainResult> monitor) {
 
 		Framework framework = Framework.getInstance();
 		PluginManager pluginManager = framework.getPluginManager();
@@ -123,7 +123,7 @@ public class CircuitStgUtils {
 			throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to .g format.");
 		}
 
-		ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getCanonicalPath());
+		ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
 		String description = "Exporting " + stgFile.getAbsolutePath();
 		SubtaskMonitor<Object> subtaskMonitor = null;
 		if (monitor != null) {

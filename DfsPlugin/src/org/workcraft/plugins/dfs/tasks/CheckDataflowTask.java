@@ -63,7 +63,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			monitor.progressUpdate(0.10);
 
 			File netFile = new File(directory, "net" + exporter.getExtenstion());
-			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
+			ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
 			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 			Result<? extends Object> exportResult = framework.getTaskManager().execute(
 					exportTask, "Exporting .g", mon);
@@ -78,7 +78,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			monitor.progressUpdate(0.20);
 
 			File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(true));
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", mon);
 
@@ -92,7 +92,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			monitor.progressUpdate(0.40);
 
 			MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-					unfoldingFile.getCanonicalPath(), directory, true);
+					unfoldingFile.getAbsolutePath(), directory, true);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -113,7 +113,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 			monitor.progressUpdate(0.70);
 
 			mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
-					unfoldingFile.getCanonicalPath(), directory, true);
+					unfoldingFile.getAbsolutePath(), directory, true);
 			mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
 			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
 				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {

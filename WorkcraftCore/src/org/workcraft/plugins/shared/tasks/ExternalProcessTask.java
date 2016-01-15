@@ -14,24 +14,24 @@ import org.workcraft.util.DataAccumulator;
 
 public class ExternalProcessTask implements Task<ExternalProcessResult>, ExternalProcessListener {
 	private List<String> args;
+	private final File workingDir;
+	private boolean printStdout;
+	private boolean printStderr;
 
 	private volatile boolean finished;
 	private volatile int returnCode;
 	private boolean userCancelled = false;
 	private ProgressMonitor<? super ExternalProcessResult> monitor;
+	private boolean needsExtraNewLine = false;
 
 	private DataAccumulator stdoutAccum = new DataAccumulator();
 	private DataAccumulator stderrAccum = new DataAccumulator();
 
-	private final File workingDir;
-
-	public ExternalProcessTask(List<String> args) {
-		this(args, null);
-	}
-
-	public ExternalProcessTask(List<String> args, File workingDir) {
+	public ExternalProcessTask(List<String> args, File workingDir, boolean printStdout, boolean printStderr) {
 		this.args = args;
 		this.workingDir = workingDir;
+		this.printStdout = printStdout;
+		this.printStderr = printStderr;
 	}
 
 	@Override
@@ -68,7 +68,9 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		if (userCancelled) {
 			return Result.cancelled();
 		}
-		ExternalProcessResult result = new ExternalProcessResult(returnCode, stdoutAccum.getData(), stderrAccum.getData(), Collections.<String, byte[]>emptyMap());
+		ExternalProcessResult result = new ExternalProcessResult(
+				returnCode, stdoutAccum.getData(), stderrAccum.getData(),
+				Collections.<String, byte[]>emptyMap());
 
 		return Result.finished(result);
 	}
@@ -91,16 +93,6 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 	}
 
 	@Override
-	public void errorData(byte[] data) {
-		try {
-			stderrAccum.write(data);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		monitor.stderr(data);
-	}
-
-	@Override
 	public void outputData(byte[] data) {
 		try {
 			stdoutAccum.write(data);
@@ -108,12 +100,40 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 			throw new RuntimeException(e);
 		}
 		monitor.stdout(data);
+		if (printStdout) {
+			printData(data);
+		}
+	}
+
+	@Override
+	public void errorData(byte[] data) {
+		try {
+			stderrAccum.write(data);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		monitor.stderr(data);
+		if (printStderr) {
+			printData(data);
+		}
+
 	}
 
 	@Override
 	public void processFinished(int returnCode) {
 		this.returnCode = returnCode;
 		this.finished = true;
+		System.out.println();
+		if (needsExtraNewLine) {
+			System.out.println();
+			needsExtraNewLine = false;
+		}
+	}
+
+	private void printData(byte[] data) {
+		String s = new String(data);
+		System.out.print(s);
+		needsExtraNewLine = !s.endsWith("\n");
 	}
 
 }

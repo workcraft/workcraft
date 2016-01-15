@@ -70,7 +70,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 
 			// Generating .g for the model
 			File devStgFile =  new File(directory, "dev.g");
-			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getCanonicalPath());
+			ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getAbsolutePath());
 			Result<? extends Object> devExportResult = framework.getTaskManager().execute(
 					devExportTask, "Exporting circuit .g", subtaskMonitor);
 
@@ -92,7 +92,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 				STG envStg = (STG)framework.loadFile(envFile).getMathModel();
 				Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
 				envStgFile = new File(directory, "env.g");
-				ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getCanonicalPath());
+				ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
 				Result<? extends Object> envExportResult = framework.getTaskManager().execute(
 						envExportTask, "Exporting environment .g", subtaskMonitor);
 
@@ -127,7 +127,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 
 			// Generate unfolding
 			File unfoldingFile = new File(directory, "system" + PunfUtilitySettings.getUnfoldingExtension(true));
-			PunfTask punfTask = new PunfTask(stgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
 					punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -153,7 +153,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 					MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 			MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-					unfoldingFile.getCanonicalPath(), directory, true);
+					unfoldingFile.getAbsolutePath(), directory, true);
 			Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 					mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 

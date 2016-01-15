@@ -196,7 +196,7 @@ public class CreateWorkDialog extends JDialog {
 		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
 		okButton = new JButton();
-		okButton.setPreferredSize(new Dimension(100, 20));
+		okButton.setPreferredSize(new Dimension(100, 25));
 		okButton.setEnabled(false);
 		okButton.setText("OK");
 		okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -206,7 +206,7 @@ public class CreateWorkDialog extends JDialog {
 		});
 
 		cancelButton = new JButton();
-		cancelButton.setPreferredSize(new Dimension(100, 20));
+		cancelButton.setPreferredSize(new Dimension(100, 25));
 		cancelButton.setText("Cancel");
 		cancelButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -216,11 +216,11 @@ public class CreateWorkDialog extends JDialog {
 
 		buttonsPane.add(okButton);
 		buttonsPane.add(cancelButton);
-
 		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
+		getRootPane().setDefaultButton(okButton);
 
-	    getRootPane().registerKeyboardAction(new ActionListener() {
+		getRootPane().registerKeyboardAction(new ActionListener() {
 	    	@Override
 	    	public void actionPerformed(ActionEvent e) {
 				ok();

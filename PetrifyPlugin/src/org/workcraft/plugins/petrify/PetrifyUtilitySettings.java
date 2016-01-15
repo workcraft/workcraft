@@ -36,12 +36,18 @@ public class PetrifyUtilitySettings implements Settings {
 
 	private static final String keyPetrifyCkeyPmmand = prefix + ".petrify.command";
 	private static final String keyPetrifyArgs = prefix + ".petrify.args";
+	private static final String keyPrintStdout= prefix + ".printStdout";
+	private static final String keyPrintStderr= prefix + ".printStderr";
 
 	private static final String defaultPetrifyCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify");
 	private static final String defaultPetrifyArgs = "";
+	private static final Boolean defaultPrintStdout = true;
+	private static final Boolean defaultPrintStderr = true;
 
 	private static String petrifyCommand = defaultPetrifyCommand;
 	private static String petrifyArgs = defaultPetrifyArgs;
+	private static Boolean printStdout = defaultPrintStdout;
+	private static Boolean printStderr = defaultPrintStderr;
 
 	public PetrifyUtilitySettings() {
 		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
@@ -63,6 +69,26 @@ public class PetrifyUtilitySettings implements Settings {
 				return getPetrifyArgs();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
+				this, "Output stdout", Boolean.class, true, false, false) {
+			protected void setter(PetrifyUtilitySettings object, Boolean value) {
+				setPrintStdout(value);
+			}
+			protected Boolean getter(PetrifyUtilitySettings object) {
+				return getPrintStdout();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
+				this, "Output stderr", Boolean.class, true, false, false) {
+			protected void setter(PetrifyUtilitySettings object, Boolean value) {
+				setPrintStderr(value);
+			}
+			protected Boolean getter(PetrifyUtilitySettings object) {
+				return getPrintStderr();
+			}
+		});
 	}
 
 	@Override
@@ -74,12 +100,16 @@ public class PetrifyUtilitySettings implements Settings {
 	public void load(Config config) {
 		setPetrifyCommand(config.getString(keyPetrifyCkeyPmmand, defaultPetrifyCommand));
 		setPetrifyArgs(config.getString(keyPetrifyArgs, defaultPetrifyArgs));
+		setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
+		setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
 	}
 
 	@Override
 	public void save(Config config) {
 		config.set(keyPetrifyCkeyPmmand, getPetrifyCommand());
 		config.set(keyPetrifyArgs, getPetrifyArgs());
+		config.setBoolean(keyPrintStdout, getPrintStdout());
+		config.setBoolean(keyPrintStderr, getPrintStderr());
 	}
 
 	@Override
@@ -106,6 +136,22 @@ public class PetrifyUtilitySettings implements Settings {
 
 	public static void setPetrifyArgs(String value) {
 		petrifyArgs = value;
+	}
+
+	public static Boolean getPrintStdout() {
+		return printStdout;
+	}
+
+	public static void setPrintStdout(Boolean value) {
+		printStdout = value;
+	}
+
+	public static Boolean getPrintStderr() {
+		return printStderr;
+	}
+
+	public static void setPrintStderr(Boolean value) {
+		printStderr = value;
 	}
 
 }

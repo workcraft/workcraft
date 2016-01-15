@@ -38,16 +38,22 @@ public class MpsatUtilitySettings implements Settings {
 	private static final String keyCommand = prefix + ".command";
 	private static final String keySolutionMode = prefix + ".solutionMode";
 	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyPrintStdout= prefix + ".printStdout";
+	private static final String keyPrintStderr= prefix + ".printStderr";
 	private static final String keyDebugReach = prefix + ".debugReach";
 
 	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat");
 	private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
 	private static final String defaultExtraArgs = "";
+	private static final Boolean defaultPrintStdout = true;
+	private static final Boolean defaultPrintStderr = true;
 	private static final Boolean defaultDebugReach = false;
 
 	private static String command = defaultCommand;
 	private static SolutionMode solutionMode = defaultSolutionMode;
 	private static String extraArgs = defaultExtraArgs;
+	private static Boolean printStdout = defaultPrintStdout;
+	private static Boolean printStderr = defaultPrintStderr;
 	private static Boolean debugReach = defaultDebugReach;
 
 	public MpsatUtilitySettings() {
@@ -82,7 +88,27 @@ public class MpsatUtilitySettings implements Settings {
 		});
 
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
-				this, "Print out Reach expressions (debug)", Boolean.class, true, false, false) {
+				this, "Output stdout", Boolean.class, true, false, false) {
+			protected void setter(MpsatUtilitySettings object, Boolean value) {
+				setPrintStdout(value);
+			}
+			protected Boolean getter(MpsatUtilitySettings object) {
+				return getPrintStdout();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
+				this, "Output stderr", Boolean.class, true, false, false) {
+			protected void setter(MpsatUtilitySettings object, Boolean value) {
+				setPrintStderr(value);
+			}
+			protected Boolean getter(MpsatUtilitySettings object) {
+				return getPrintStderr();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
+				this, "Output Reach expressions", Boolean.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, Boolean value) {
 				setDebugReach(value);
 			}
@@ -102,6 +128,8 @@ public class MpsatUtilitySettings implements Settings {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
 		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+		setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
+		setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
 		setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
 	}
 
@@ -110,6 +138,8 @@ public class MpsatUtilitySettings implements Settings {
 		config.set(keyCommand, getCommand());
 		config.setEnum(keySolutionMode, SolutionMode.class, getSolutionMode());
 		config.set(keyExtraArgs, getExtraArgs());
+		config.setBoolean(keyPrintStdout, getPrintStdout());
+		config.setBoolean(keyPrintStderr, getPrintStderr());
 		config.setBoolean(keyDebugReach, getDebugReach());
 	}
 
@@ -149,6 +179,22 @@ public class MpsatUtilitySettings implements Settings {
 
 	public static int getSolutionCount() {
 		return (solutionMode == SolutionMode.ALL) ? 10 : 1;
+	}
+
+	public static Boolean getPrintStdout() {
+		return printStdout;
+	}
+
+	public static void setPrintStdout(Boolean value) {
+		printStdout = value;
+	}
+
+	public static Boolean getPrintStderr() {
+		return printStderr;
+	}
+
+	public static void setPrintStderr(Boolean value) {
+		printStderr = value;
 	}
 
 	public static Boolean getDebugReach() {

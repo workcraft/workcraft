@@ -176,7 +176,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			Result<? extends ExternalProcessResult> punfResult = null;
 			if (checkDeadlock || checkHazard) {
 				unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
-				punfTask = new PunfTask(sysStgFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+				punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
 				SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<Object>(monitor);
 				punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", punfMonitor);
 
@@ -195,7 +195,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			if (hasEnvironment && checkConformation) {
 				if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
 					unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.MODIFIED_FILE_SUFFIX + PunfUtilitySettings.getUnfoldingExtension(true));
-					punfModTask = new PunfTask(sysModStgFile.getCanonicalPath(), unfoldingModFile.getCanonicalPath());
+					punfModTask = new PunfTask(sysModStgFile.getAbsolutePath(), unfoldingModFile.getAbsolutePath());
 					SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<Object>(monitor);
 					punfModResult = framework.getTaskManager().execute(punfModTask, "Unfolding .g", punfModMonitor);
 
@@ -214,7 +214,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			// Check for deadlock (if requested)
 			if (checkDeadlock) {
 				MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-						unfoldingFile.getCanonicalPath(), directory, true);
+						unfoldingFile.getAbsolutePath(), directory, true);
 				SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
 				Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
 						mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
@@ -240,7 +240,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 			// Check for hazards (if requested)
 			if (checkHazard) {
 				MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
-						unfoldingFile.getCanonicalPath(), directory, true);
+						unfoldingFile.getAbsolutePath(), directory, true);
 				if (MpsatUtilitySettings.getDebugReach()) {
 					System.out.println("\nReach expression for the hazard property:");
 					System.out.println(hazardSettings.getReach());
@@ -281,7 +281,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 						MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
 				MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-						unfoldingModFile.getCanonicalPath(), directory, true);
+						unfoldingModFile.getAbsolutePath(), directory, true);
 				SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
 				Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
 						mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);

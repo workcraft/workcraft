@@ -98,7 +98,7 @@ public class AboutDialog extends JDialog {
 	    });
 
 		okButton = new JButton();
-		okButton.setPreferredSize(new Dimension(100, 20));
+		okButton.setPreferredSize(new Dimension(100, 25));
 		okButton.setText("OK");
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {

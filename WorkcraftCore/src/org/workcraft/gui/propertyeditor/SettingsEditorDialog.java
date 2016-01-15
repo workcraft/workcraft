@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -35,13 +36,16 @@ import java.util.Comparator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -49,6 +53,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.gui.MainWindow;
@@ -62,9 +67,14 @@ public class SettingsEditorDialog extends JDialog {
 	private JSplitPane splitPane;
 	private JPanel buttonsPane;
 	private JButton okButton;
+	private JButton cancelButton;
+	private JButton restoreButton;
 	private DefaultMutableTreeNode sectionRoot;
 	private JTree sectionTree;
 	private final PropertyEditorTable propertiesTable;
+
+	private Settings currentPage;
+	private Config currentConfig;
 
 	static class SettingsPageNode {
 		private Settings page;
@@ -172,6 +182,7 @@ public class SettingsEditorDialog extends JDialog {
 			final TreePath treePath = sectionTree.getPathForRow(i);
 			sectionTree.expandPath(treePath);
 		}
+		setObject(null);
 	}
 
 	private ArrayList<Settings> getSortedPluginSettings(Collection<PluginInfo<? extends Settings>> plugins) {
@@ -204,12 +215,17 @@ public class SettingsEditorDialog extends JDialog {
 		return settings;
 	}
 
-	private void setObject(Settings p) {
-		if (p == null) {
-			propertiesTable.setObject(null);
+	private void setObject(Settings page) {
+		if (page == null) {
+			currentConfig = null;
+			restoreButton.setText("Restore defaults (all)");
 		} else {
-			propertiesTable.setObject(p);
+			currentConfig = new Config();
+			page.save(currentConfig);
+			restoreButton.setText("Restore defaults");
 		}
+		currentPage = page;
+		propertiesTable.setObject(currentPage);
 	}
 
 	private void initComponents() {
@@ -227,7 +243,8 @@ public class SettingsEditorDialog extends JDialog {
 			public void valueChanged(TreeSelectionEvent e) {
 				Object userObject = ((DefaultMutableTreeNode)e.getPath().getLastPathComponent()).getUserObject();
 				if (userObject instanceof SettingsPageNode) {
-					setObject( ((SettingsPageNode) userObject).getPage() );
+					Settings page = ((SettingsPageNode) userObject).getPage();
+					setObject(page);
 				} else {
 					setObject(null);
 				}
@@ -251,7 +268,7 @@ public class SettingsEditorDialog extends JDialog {
 		splitPane.setResizeWeight(0.1);
 
 		okButton = new JButton();
-		okButton.setPreferredSize(new Dimension(100, 20));
+		okButton.setPreferredSize(new Dimension(100, 25));
 		okButton.setText("OK");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -259,16 +276,77 @@ public class SettingsEditorDialog extends JDialog {
 			}
 		});
 
+		cancelButton = new JButton();
+		cancelButton.setPreferredSize(new Dimension(100, 25));
+		cancelButton.setText("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancel();
+			}
+		});
+
+		restoreButton = new JButton();
+		restoreButton.setPreferredSize(new Dimension(170, 25));
+		restoreButton.setText("Restore defaults");
+		restoreButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				restore();
+			}
+		});
+
 		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 		buttonsPane.add(okButton);
+		buttonsPane.add(cancelButton);
+		buttonsPane.add(restoreButton);
 		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
 		getRootPane().setDefaultButton(okButton);
+
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				ok();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				cancel();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 	private void ok() {
 		setObject(null);
 		setVisible(false);
+	}
+
+	private void cancel() {
+		if ((currentPage != null) && (currentConfig != null)) {
+			currentPage.load(currentConfig);
+		}
+		setObject(null);
+		setVisible(false);
+	}
+
+	private void restore() {
+		if (currentPage != null) {
+			currentPage.load(new Config());
+			setObject(currentPage);
+		} else {
+			final Framework framework = Framework.getInstance();
+			int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
+					"This will reset all the settings to defaults.\nContinue?",
+					"Please confirm", JOptionPane.YES_NO_OPTION);
+			if (answer == JOptionPane.YES_OPTION) {
+				framework.resetConfig();
+			}
+		}
 	}
 
 }

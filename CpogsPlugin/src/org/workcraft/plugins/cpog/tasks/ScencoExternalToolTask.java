@@ -2,8 +2,6 @@ package org.workcraft.plugins.cpog.tasks;
 
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -37,9 +35,9 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
 		}
 
 		// Running the tool through external process interface
-		ExternalProcessTask externalProcessTask = new ExternalProcessTask(args);
+		ExternalProcessTask task = new ExternalProcessTask(args, null, false, false);
 		SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-		Result<? extends ExternalProcessResult> result = externalProcessTask.run(mon);
+		Result<? extends ExternalProcessResult> result = task.run(mon);
 
 		// Handling the result
 		if (result.getOutcome() == Outcome.CANCELLED) {

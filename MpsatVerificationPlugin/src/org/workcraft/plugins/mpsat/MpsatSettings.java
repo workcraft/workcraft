@@ -199,7 +199,7 @@ public class MpsatSettings {
 				}
 				FileUtils.dumpString(reachFile, getReach());
 				args.add("-d");
-				args.add("@" + reachFile.getCanonicalPath());
+				args.add("@" + reachFile.getAbsolutePath());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

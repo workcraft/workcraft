@@ -88,7 +88,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
 			// Generating .g file for Petri Net
 			pnFile = File.createTempFile("stg_", ".g");
-			ExportTask pnExportTask = new ExportTask(pnExporter, pn, pnFile.getCanonicalPath());
+			ExportTask pnExportTask = new ExportTask(pnExporter, pn, pnFile.getAbsolutePath());
 			Result<? extends Object> pnExportResult = framework.getTaskManager().execute(
 					pnExportTask, "Exporting .g", subtaskMonitor);
 
@@ -107,7 +107,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 			}
 
 			while (true) {
-				WriteSgTask writeSgTask = new WriteSgTask(pnFile.getCanonicalPath(), null, writeSgOptions);
+				WriteSgTask writeSgTask = new WriteSgTask(pnFile.getAbsolutePath(), null, writeSgOptions);
 				Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
 						writeSgTask, "Building state graph", subtaskMonitor);
 

@@ -49,7 +49,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 			// Generate .g for the model
 			File netFile = new File(directory, "net" + exporter.getExtenstion());
-			ExportTask exportTask = new ExportTask(exporter, model, netFile.getCanonicalPath());
+			ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
 			Result<? extends Object> exportResult = framework.getTaskManager().execute(
 					exportTask, "Exporting .g", subtaskMonitor);
 
@@ -65,7 +65,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 			// Generate unfolding
 			boolean tryPnml = settings.getMode().canPnml();
 			File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(tryPnml));
-			PunfTask punfTask = new PunfTask(netFile.getCanonicalPath(), unfoldingFile.getCanonicalPath());
+			PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
 			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
 			if (punfResult.getOutcome() != Outcome.FINISHED) {
@@ -79,7 +79,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
 			// Run MPSat on the generated unfolding
 			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-					unfoldingFile.getCanonicalPath(), directory, tryPnml);
+					unfoldingFile.getAbsolutePath(), directory, tryPnml);
 			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
 					mpsatTask, "Running verification [MPSat]", subtaskMonitor);
 

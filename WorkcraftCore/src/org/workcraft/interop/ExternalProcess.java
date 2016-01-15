@@ -32,34 +32,31 @@ import java.util.LinkedList;
 
 public class ExternalProcess {
 
-	abstract static class StreamReaderThread extends Thread
-	{
+	abstract static class StreamReaderThread extends Thread {
 		private final ReadableByteChannel channel;
 		private final ByteBuffer buffer = ByteBuffer.allocate(1024);
 
-		public StreamReaderThread(ReadableByteChannel channel)
-		{
+		public StreamReaderThread(ReadableByteChannel channel) {
 			this.channel = channel;
 		}
 
 		abstract void handleData(byte [] data);
 
+		@Override
 		public void run() {
 			while (true)
 				try {
 					buffer.rewind();
 					int result = channel.read(buffer);
-
-					if (result == -1)
+					if (result == -1) {
 						return;
-
-					if (result == 0)
+					}
+					if (result == 0) {
 						continue;
-
+					}
 					buffer.rewind();
 					byte[] data = new byte[result];
 					buffer.get(data);
-
 					handleData(data);
 				} catch (IOException e) {
 //					e.printStackTrace(); -- This exception is mostly caused by the process termination and spams the user with information about exceptions that should
@@ -70,29 +67,27 @@ public class ExternalProcess {
 	}
 
 	class InputReaderThread extends StreamReaderThread {
-
-		InputReaderThread()
-		{
+		InputReaderThread() {
 			super(inputStream);
 		}
-
+		@Override
 		void handleData(byte[] data) {
 			outputData(data);
 		}
 	}
 
 	class ErrorReaderThread extends StreamReaderThread {
-		ErrorReaderThread()
-		{
+		ErrorReaderThread() {
 			super(errorStream);
 		}
-
+		@Override
 		void handleData(byte[] data) {
 			errorData(data);
 		}
 	}
 
 	class WaiterThread extends Thread {
+		@Override
 		public void run() {
 			try {
 				process.waitFor();
@@ -112,7 +107,7 @@ public class ExternalProcess {
 
 	private LinkedList<ExternalProcessListener> listeners = new LinkedList<ExternalProcessListener>();
 
-	public ExternalProcess (String[] command, String workingDirectoryPath) {
+	public ExternalProcess(String[] command, String workingDirectoryPath) {
 		processBuilder = new ProcessBuilder(command);
 		processBuilder.directory(workingDirectoryPath == null? null : new File(workingDirectoryPath));
 	}
@@ -122,13 +117,15 @@ public class ExternalProcess {
 	}
 
 	private void outputData(byte[] data) {
-		for (ExternalProcessListener l : listeners)
+		for (ExternalProcessListener l : listeners) {
 			l.outputData(data);
+		}
 	}
 
 	private void errorData(byte[] data) {
-		for (ExternalProcessListener l : listeners)
+		for (ExternalProcessListener l : listeners) {
 			l.errorData(data);
+		}
 	}
 
 	private void processFinished() {
@@ -143,15 +140,13 @@ public class ExternalProcess {
 	}
 
 	public void start() throws IOException {
-		if (isRunning())
+		if (isRunning()) {
 			return;
-
+		}
 		process = processBuilder.start();
-
 		outputStream = Channels.newChannel(process.getOutputStream());
 		errorStream = Channels.newChannel(process.getErrorStream());
 		inputStream = Channels.newChannel(process.getInputStream());
-
 		if (outputStream == null) {
 			throw new RuntimeException("No output stream!");
 		}
@@ -161,8 +156,9 @@ public class ExternalProcess {
 	}
 
 	public void cancel() {
-		if (isRunning())
+		if (isRunning()) {
 			process.destroy();
+		}
 	}
 
 	public void writeData(byte[] data) {

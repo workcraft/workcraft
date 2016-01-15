@@ -228,9 +228,15 @@ public class Framework {
 		return instance;
 	}
 
+	public void resetConfig() {
+		config = new Config();
+		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
+			info.getSingleton().load(config);
+		}
+	}
+
 	public void loadConfig(String fileName) {
 		config.load(fileName);
-
 		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
 			info.getSingleton().load(config);
 		}
@@ -240,7 +246,6 @@ public class Framework {
 		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
 			info.getSingleton().save(config);
 		}
-
 		config.save(fileName);
 	}
 
