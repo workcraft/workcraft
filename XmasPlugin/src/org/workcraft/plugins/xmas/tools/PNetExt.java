@@ -12,6 +12,7 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
+import org.workcraft.util.LogUtils;
 
 
 public class PNetExt {
@@ -90,7 +91,7 @@ public class PNetExt {
 		   try{
 		     sc=new Scanner(new File(file));
 		   }catch (FileNotFoundException e) { //Catch exception if any
-		      System.err.println("Error: " + e.getMessage());
+			   LogUtils.logErrorLine(e.getMessage());
 		   }
 		   String name;
 		   int num;

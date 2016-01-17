@@ -42,6 +42,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.workcraft.plugins.shared.CommonLogSettings;
+
 @SuppressWarnings("serial")
 public class ErrorWindow extends JPanel implements ComponentListener {
 	protected PrintStream systemErr;
@@ -56,7 +58,6 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 		txtStdErr.setEditable(false);
 		txtStdErr.setWrapStyleWord(true);
 		txtStdErr.setForeground(Color.RED);
-		txtStdErr.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		txtStdErr.addMouseListener(new LogAreaMouseListener());
 
 		scrollStdErr = new JScrollPane();
@@ -97,6 +98,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 				}
 			});
 			target.append(s);
+			target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
 		}
 
 		@Override

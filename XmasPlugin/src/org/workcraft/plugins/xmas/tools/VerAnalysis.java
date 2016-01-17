@@ -44,6 +44,7 @@ import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog1;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -91,7 +92,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		   try {
 		      sc=new Scanner(new File(file));
 		   } catch (FileNotFoundException e) {
-		      System.err.println("Error: " + e.getMessage());
+			   LogUtils.logErrorLine(e.getMessage());
 		   }
 		   String targ="";
 		   String larg="";
@@ -160,7 +161,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		try {
 			sc=new Scanner(new File(file));
 		} catch (FileNotFoundException e) {
-		    System.err.println("Error: " + e.getMessage());
+			LogUtils.logErrorLine(e.getMessage());
 		}
 		String str="";
 		while(sc.hasNextLine()) {
@@ -178,7 +179,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		try {
 			sc=new Scanner(new File(file));
 		} catch (FileNotFoundException e) {
-		    System.err.println("Error: " + e.getMessage());
+			LogUtils.logErrorLine(e.getMessage());
 		}
 		while(sc.hasNextLine()) {
 		    Scanner line_=new Scanner(sc.nextLine());
@@ -198,7 +199,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		try {
 			sc=new Scanner(new File(file));
 		} catch (FileNotFoundException e) {
-		    System.err.println("Error: " + e.getMessage());
+			LogUtils.logErrorLine(e.getMessage());
 		}
 		String str="";
 		while(sc.hasNextLine()) {
@@ -405,7 +406,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
 		try {
 		   sc=new Scanner(new File(file));
 		} catch (FileNotFoundException e) {
-		   System.err.println("Error: " + e.getMessage());
+			LogUtils.logErrorLine(e.getMessage());
 		}
 		while(sc.hasNextLine()) {
 			String line = sc.nextLine();

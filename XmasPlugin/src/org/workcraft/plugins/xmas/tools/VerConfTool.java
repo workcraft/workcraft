@@ -25,6 +25,7 @@ import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.Framework;
@@ -119,7 +120,7 @@ public class VerConfTool implements Tool {
 			File vsettingsFile = XmasSettings.getTempVxmVsettingsFile();
 			sc=new Scanner(vsettingsFile);
 		} catch (FileNotFoundException e) {
-			System.err.println("Error: " + e.getMessage());
+			LogUtils.logErrorLine(e.getMessage());
 		}
 		while(sc.hasNextLine()) {
 			Scanner line_=new Scanner(sc.nextLine());

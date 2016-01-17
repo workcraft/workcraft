@@ -30,6 +30,7 @@ import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.LogUtils;
 
 public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerator {
 
@@ -173,7 +174,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 		}
 		for (VisualComponent component: remainingComponents) {
 			String name = getXmasModel().getNodeMathReference(component);
-			System.out.println("ERROR: Cannot derive an STG for xMAS component '" + name +"' of type " + component.getClass().getName());
+			LogUtils.logErrorLine("Cannot derive an STG for xMAS component '" + name +"' of type " + component.getClass().getName());
 		}
 		getXmasModel().selectNone();
 	}

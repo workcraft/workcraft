@@ -9,6 +9,7 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.util.LogUtils;
 
 public class GenlibUtils {
 
@@ -20,7 +21,7 @@ public class GenlibUtils {
 			try {
 				circuit.setName(component, instanceName);
 			} catch (ArgumentException e) {
-				System.out.println("Warning: cannot set name '" + instanceName +"' for component '" + circuit.getName(component) + "'.");
+				LogUtils.logWarningLine("Cannot set name '" + instanceName +"' for component '" + circuit.getName(component) + "'.");
 			}
 		}
 
@@ -30,9 +31,9 @@ public class GenlibUtils {
 		String setFunction = getSetFunction(gate);
 		String resetFunction = getResetFunction(gate);
 		if (CommonDebugSettings.getVerboseImport()) {
-			System.out.println("Info: Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
-			System.out.println("  Set function: " + setFunction);
-			System.out.println("  Reset function: " + resetFunction);
+			LogUtils.logInfoLine("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
+			LogUtils.logInfoLine("  Set function: " + setFunction);
+			LogUtils.logInfoLine("  Reset function: " + resetFunction);
 		}
 		try {
 			BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setFunction);

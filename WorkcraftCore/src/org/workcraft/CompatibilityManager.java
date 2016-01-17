@@ -14,6 +14,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.workcraft.util.LogUtils;
+
 public class CompatibilityManager {
 	private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
 	private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
@@ -60,9 +62,9 @@ public class CompatibilityManager {
 	private String replace(String line, Map.Entry<String, String> replacement, String message) {
 		String newline = line.replaceAll(replacement.getKey(), replacement.getValue());
 		if ((message != null) && !line.equals(newline)) {
-			System.out.println(message);
-			System.out.println("  old: " + replacement.getKey());
-			System.out.println("  new: " + replacement.getValue());
+			LogUtils.logInfoLine("Compatibility management: " + message);
+			LogUtils.logInfoLine("  old: " + replacement.getKey());
+			LogUtils.logInfoLine("  new: " + replacement.getValue());
 		}
 		return newline;
 	}
@@ -70,7 +72,7 @@ public class CompatibilityManager {
 	private String replaceMetaData(String line) {
 		for (Map.Entry<String, String> replacement: metaCompatibilityMap.entrySet()) {
 			if (line.contains(replacement.getKey())) {
-				line = replace(line, replacement, "Compatibility management: legacy meta data");
+				line = replace(line, replacement, "legacy meta data");
 			}
 		}
 		return line;
@@ -79,7 +81,7 @@ public class CompatibilityManager {
 	private String replaceModelName(String line) {
 		for (Map.Entry<String, String> replacement: modelCompatibilityMap.entrySet()) {
 			if (line.contains(replacement.getKey())) {
-				line = replace(line, replacement, "Compatibility management: legacy model class");
+				line = replace(line, replacement, "legacy model class");
 			}
 		}
 		return line;
@@ -89,7 +91,7 @@ public class CompatibilityManager {
 		CompatibilityMap replacementMap = globalReplacementMap.get(modelName);
 		if (replacementMap != null) {
 			for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
-				line = replace(line, replacement, "Compatibility management: global replacement");
+				line = replace(line, replacement, "global replacement");
 			}
 		}
 		return line;
@@ -101,7 +103,7 @@ public class CompatibilityManager {
 			CompatibilityMap replacementMap = contextualMap.get(className);
 			if (replacementMap != null) {
 				for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
-					line = replace(line, replacement, "Compatibility management: contextual replacement for " + className);
+					line = replace(line, replacement, "contextual replacement for " + className);
 				}
 			}
 		}

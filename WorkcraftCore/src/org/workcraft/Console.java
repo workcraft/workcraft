@@ -91,9 +91,9 @@ public class Console {
 			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/functions.js"));
 			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/startup.js"));
 		} catch (FileNotFoundException e2) {
-			System.err.println ("! Warning: System script file not found: "+e2.getMessage());
+			System.err.println ("! Warning: System script file not found: " + e2.getMessage());
 		} catch (IOException e) {
-			System.err.println ("! Warning: Error reading system script file: "+e.getMessage());
+			System.err.println ("! Warning: Error reading system script file: " + e.getMessage());
 		} catch (WrappedException e) {
 			System.err.println ("! Startup script failed: " + e.getMessage());
 		} catch (org.mozilla.javascript.EcmaError e) {

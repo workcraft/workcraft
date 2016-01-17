@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -14,11 +17,13 @@ import java.net.URISyntaxException;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -72,6 +77,8 @@ public class AboutDialog extends JDialog {
 		logoLabel.setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
 
 		infoPane = new JEditorPane();
+		infoPane.setFocusable(false);
+
 		infoPane.setContentType("text/html");
 
 
@@ -100,8 +107,8 @@ public class AboutDialog extends JDialog {
 		okButton = new JButton();
 		okButton.setPreferredSize(new Dimension(100, 25));
 		okButton.setText("OK");
-		okButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				ok();
 			}
 		});
@@ -116,6 +123,25 @@ public class AboutDialog extends JDialog {
 		contentPane.add(buttonsPane, BorderLayout.SOUTH);
 		setContentPane(contentPane);
 		getRootPane().setDefaultButton(okButton);
+
+		getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				ok();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+	    getRootPane().registerKeyboardAction(new ActionListener() {
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+				ok();
+	    	}
+	    },
+	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+
 	}
 
 	private void ok() {

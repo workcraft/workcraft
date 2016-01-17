@@ -32,6 +32,12 @@ import java.io.PrintStream;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+
+import org.workcraft.plugins.shared.CommonLogSettings;
+import org.workcraft.util.LogUtils;
 
 @SuppressWarnings("serial")
 public class OutputWindow extends JPanel {
@@ -45,18 +51,34 @@ public class OutputWindow extends JPanel {
 		txtStdOut.setLineWrap(true);
 		txtStdOut.setEditable(false);
 		txtStdOut.setWrapStyleWord(true);
-		txtStdOut.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		txtStdOut.addMouseListener(new LogAreaMouseListener());
 
 		scrollStdOut = new JScrollPane();
 		scrollStdOut.setViewportView(txtStdOut);
-
 		setLayout(new BorderLayout(0,0));
 		this.add(scrollStdOut, BorderLayout.CENTER);
 	}
 
+	public void captureStream() {
+		if ( !streamCaptured ) {
+			OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), txtStdOut);
+			PrintStream outStream = new PrintStream(outView);
+			systemOut = System.out;
+			System.setOut(outStream);
+			streamCaptured = true;
+		}
+	}
+
+	public void releaseStream() {
+		if (streamCaptured) {
+			System.setOut(systemOut);
+			systemOut = null;
+			streamCaptured = false;
+		}
+	}
+
 	class OutputStreamView extends FilterOutputStream {
-		JTextArea target;
+		private JTextArea target;
 
 		public OutputStreamView(OutputStream aStream, JTextArea target) {
 			super(aStream);
@@ -68,9 +90,7 @@ public class OutputWindow extends JPanel {
 			if (systemOut != null) {
 				systemOut.write(b);
 			}
-			String s = new String(b);
-			txtStdOut.append(s);
-			txtStdOut.setCaretPosition(txtStdOut.getDocument().getLength());
+			print(new String(b));
 		}
 
 		@Override
@@ -78,27 +98,43 @@ public class OutputWindow extends JPanel {
 			if (systemOut != null) {
 				systemOut.write(b, off, len);
 			}
-			String s = new String(b , off , len);
-			txtStdOut.append(s);
+			print(new String(b , off , len));
 		}
-	}
 
-	public void captureStream() {
-		if (!streamCaptured) {
-			PrintStream outPrintStream = new PrintStream(new OutputStreamView(
-					new ByteArrayOutputStream(), txtStdOut));
+		private void print(String text) {
+			Highlighter.HighlightPainter highlighter = null;
+			if (text.startsWith(LogUtils.PREFIX_INFO)) {
+				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
+			} else if (text.startsWith(LogUtils.PREFIX_WARNING)) {
+				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
+			} else if (text.startsWith(LogUtils.PREFIX_ERROR)) {
+				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
+			} else if (text.startsWith(LogUtils.PREFIX_STDOUT)) {
+				text = text.substring(LogUtils.PREFIX_STDOUT.length());
+				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
+			} else if (text.startsWith(LogUtils.PREFIX_STDERR)) {
+				text = text.substring(LogUtils.PREFIX_STDERR.length());
+				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
+			}
+			String suffix = "";
+			if (highlighter != null) {
+				// A text suffix to separate highlighted portions
+				suffix = " ";
+			}
+			int fromPos = target.getDocument().getLength();
+			target.append(text + suffix);
+			int toPos = target.getDocument().getLength();
+			target.setCaretPosition(toPos);
 
-			systemOut = System.out;
-			System.setOut(outPrintStream);
-			streamCaptured = true;
-		}
-	}
+			target.setForeground(CommonLogSettings.getTextColor());
+			target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
 
-	public void releaseStream() {
-		if (streamCaptured) {
-			System.setOut(systemOut);
-			systemOut = null;
-			streamCaptured = false;
+			if ((highlighter != null) && (toPos > fromPos)) {
+				try {
+					target.getHighlighter().addHighlight(fromPos, toPos-suffix.length(), highlighter);
+				} catch (BadLocationException e) {
+				}
+			}
 		}
 	}
 

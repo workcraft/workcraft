@@ -73,6 +73,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 
@@ -143,7 +144,7 @@ public class VerilogImporter implements Importer {
 				throw new RuntimeException("More than one top module is found.");
 			}
 			if (CommonDebugSettings.getVerboseImport()) {
-				System.out.print("Info: parsed Verilog modules\n");
+				LogUtils.logInfoLine("Parsed Verilog modules\n");
 				for (Module module: modules.values()) {
 					if (topModules.contains(module)) {
 						System.out.print("// Top module\n");
@@ -257,7 +258,7 @@ public class VerilogImporter implements Importer {
 		try {
 			circuit.setName(component, ASSIGN_GATE_PREFIX + assign.name);
 		} catch (ArgumentException e) {
-			System.out.println("Warning: cannot set name '" + assign.name +"' for component '" + circuit.getName(component) + "'.");
+			LogUtils.logWarningLine("Cannot set name '" + assign.name +"' for component '" + circuit.getName(component) + "'.");
 		}
 
 		AssignGate assignGate = null;
@@ -339,10 +340,10 @@ public class VerilogImporter implements Importer {
 		String resetFunction = ExpressionUtils.extactResetExpression(function, assign.name);
 		Expression resetExpression = convertStringToExpression(resetFunction);
 		if (CommonDebugSettings.getVerboseImport()) {
-			System.out.println("Info: Extracting SET and RESET from assign " + assign.name + " = " + assign.formula);
-			System.out.println("  Function: " + function);
-			System.out.println("  Set function: " + setFunction);
-			System.out.println("  Reset function: " + resetFunction);
+			LogUtils.logInfoLine("Extracting SET and RESET from assign " + assign.name + " = " + assign.formula);
+			LogUtils.logInfoLine("  Function: " + function);
+			LogUtils.logInfoLine("  Set function: " + setFunction);
+			LogUtils.logInfoLine("  Reset function: " + resetFunction);
 		}
 		HashMap<String, String> connections = new HashMap<>();
 		String outputName = getPrimitiveGatePinName(0);
@@ -379,7 +380,7 @@ public class VerilogImporter implements Importer {
 		try {
 			expression = expressionParser.parseExpression();
 		} catch (ParseException e1) {
-			System.out.println("Warning: could not parse assign expression '" + formula + "'.");
+			LogUtils.logWarningLine("Could not parse assign expression '" + formula + "'.");
 		}
 		return expression;
 	}
@@ -388,7 +389,7 @@ public class VerilogImporter implements Importer {
 		Library library = new Library();
 		String libraryFileName = CircuitSettings.getGateLibrary();
 		if ((libraryFileName == null) || libraryFileName.isEmpty()) {
-			System.out.println("Warning: gate library file is not specified.");
+			LogUtils.logWarningLine("Gate library file is not specified.");
 		} else {
 			File libraryFile = new File(libraryFileName);
 			final Framework framework = Framework.getInstance();
@@ -402,10 +403,10 @@ public class VerilogImporter implements Importer {
 						genlibParser.disable_tracing();
 					}
 					library = genlibParser.parseGenlib();
-					System.out.println("Info: mapping the imported Verilog into the gate library '" + libraryFileName + "'.");
+					LogUtils.logInfoLine("Mapping the imported Verilog into the gate library '" + libraryFileName + "'.");
 				} catch (FileNotFoundException e) {
 				} catch (ParseException e) {
-					System.out.println("Warning: could not parse the gate library '" + libraryFileName + "'.");
+					LogUtils.logWarningLine("Could not parse the gate library '" + libraryFileName + "'.");
 				}
 			}
 		}
@@ -528,7 +529,7 @@ public class VerilogImporter implements Importer {
 		try {
 			circuit.setName(component, verilogInstance.name);
 		} catch (ArgumentException e) {
-			System.out.println("Warning: cannot set name '" + verilogInstance.name +"' for component '" + circuit.getName(component) + "'.");
+			LogUtils.logWarningLine("Cannot set name '" + verilogInstance.name +"' for component '" + circuit.getName(component) + "'.");
 		}
 		Module module = modules.get(verilogInstance.moduleName);
 		HashMap<String, Port> instancePorts = getModulePortMap(module);
@@ -579,7 +580,7 @@ public class VerilogImporter implements Importer {
 				try {
 					component.setIsZeroDelay(true);
 				} catch (ArgumentException e) {
-					System.out.println("Warning for component '" + verilogInstance.name + "': " + e.getMessage());
+					LogUtils.logWarningLine("Component '" + verilogInstance.name + "': " + e.getMessage());
 				}
 			}
 		}
@@ -728,16 +729,16 @@ public class VerilogImporter implements Importer {
 	private BooleanFormula printFunctionSubstitution(BooleanFormula function, List<Contact> inputContacts, List<BooleanFormula> inputFunctions) {
 		final BooleanFormula setFunction = BooleanUtils.dumbReplace(function, inputContacts, inputFunctions);
 		if (CommonDebugSettings.getVerboseImport()) {
-			System.out.println("Info: Expression substitution");
-			System.out.println("  Original: " + FormulaToString.toString(function));
+			LogUtils.logInfoLine("Expression substitution");
+			LogUtils.logInfoLine("  Original: " + FormulaToString.toString(function));
 			Iterator<Contact> contactIterator = inputContacts.iterator();
 			Iterator<BooleanFormula> formulaIterator = inputFunctions.iterator();
 			while (contactIterator.hasNext() && formulaIterator.hasNext()) {
 				Contact contact = contactIterator.next();
 				BooleanFormula formula = formulaIterator.next();
-				System.out.println("  Replacement: " + contact.getName() + " = " + FormulaToString.toString(formula));
+				LogUtils.logInfoLine("  Replacement: " + contact.getName() + " = " + FormulaToString.toString(formula));
 			}
-			System.out.println("  Result: " + FormulaToString.toString(setFunction));
+			LogUtils.logInfoLine("  Result: " + FormulaToString.toString(setFunction));
 		}
 		return setFunction;
 	}
