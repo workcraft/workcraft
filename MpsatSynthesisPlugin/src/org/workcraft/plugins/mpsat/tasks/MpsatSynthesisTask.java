@@ -16,6 +16,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 
 public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
@@ -67,7 +68,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 					command.add("-d");
 					command.add(gateLibraryFile.getAbsolutePath());
 				} else {
-					System.out.println("Warning: cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
+					LogUtils.logWarningLine("Cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
 				}
 			}
 		}

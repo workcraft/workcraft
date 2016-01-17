@@ -13,6 +13,7 @@ import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.shared.CommonCommentSettings;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.shared.CommonLogSettings;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.transform.CopyLablesTool;
@@ -29,6 +30,7 @@ public class BuiltinTools implements Module {
 		pm.registerClass(Settings.class, CommonSimulationSettings.class);
 		pm.registerClass(Settings.class, CommonCommentSettings.class);
 		pm.registerClass(Settings.class, CommonDebugSettings.class);
+		pm.registerClass(Settings.class, CommonLogSettings.class);
 
 		pm.registerClass(Settings.class, DotLayoutSettings.class);
 		pm.registerClass(Settings.class, RandomLayoutSettings.class);

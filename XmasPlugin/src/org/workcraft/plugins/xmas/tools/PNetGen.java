@@ -22,6 +22,7 @@ import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualSourceComponent;
 import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -99,7 +100,7 @@ public class PNetGen implements Tool {
 		try {
 			sc=new Scanner(new File(file));
 		} catch (FileNotFoundException e) {
-		    System.err.println("Error: " + e.getMessage());
+			LogUtils.logErrorLine(e.getMessage());
 		}
 		String qs="";
 		String cn="";
@@ -873,7 +874,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 
 	    current = jp.nextToken();
 	    if (current != JsonToken.START_OBJECT) {
-	      System.out.println("Error: root should be object: quiting.");
+	    	LogUtils.logErrorLine("Root should be object: quiting.");
 	      return;
 	    }
 
@@ -939,7 +940,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	              }
 	            }
 	          } else {
-	            System.out.println("Error: records should be an array: skipping.");
+	        	  LogUtils.logErrorLine("Records should be an array: skipping.");
 	            jp.skipChildren();
 	          }
 	        } else {
@@ -985,7 +986,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 
 	        current = jp.nextToken();
 	        if (current != JsonToken.START_OBJECT) {
-	          System.out.println("Error: root should be object: quiting.");
+	        	LogUtils.logErrorLine("Root should be object: quiting.");
 	          return;
 	        }
 
@@ -1115,11 +1116,11 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 	                  //if(typeName.equals("sync")) sync_inf(idName,idName1,idName2,fieldgpf,fieldgpf1,styp,writer_s);
 	                  }
 	                } else {
-	                  System.out.println("Error: records should be an array: skipping.");
+	                	LogUtils.logErrorLine("Records should be an array: skipping.");
 	                  jp.skipChildren();
 	                }
 	              } else {
-	                System.out.println("Unprocessed property: " + fieldName);
+	            	  LogUtils.logWarningLine("Unprocessed property: " + fieldName);
 	                jp.skipChildren();
 	              }
 	            }

@@ -50,6 +50,7 @@ import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.LogUtils;
 
 public class VerilogSerialiser implements ModelSerialiser {
 
@@ -113,7 +114,7 @@ public class VerilogSerialiser implements ModelSerialiser {
 	private void writeHeader(PrintWriter out, Circuit circuit) {
 		String topName = circuit.getTitle();
 		if ((topName == null) || topName.isEmpty()) {
-			System.out.println("  Warning: the top module does not have a name.");
+			LogUtils.logWarningLine("The top module does not have a name.");
 			topName = "";
 		}
 		out.print(KEYWORD_MODULE + " " + topName + " (");
@@ -149,14 +150,14 @@ public class VerilogSerialiser implements ModelSerialiser {
 			String instanceRef = circuit.getNodeReference(component);
 			String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
 			if ((moduleName == null) || moduleName.isEmpty()) {
-				System.out.println("  Warning: component '" + instanceFlatName + "' is not associated to a module.");
+				LogUtils.logWarningLine("Component '" + instanceFlatName + "' is not associated to a module.");
 				moduleName = "";
 			}
 			SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
 			if (substitutionRule != null) {
 				String newModuleName = substitutionRule.newName;
 				if (newModuleName != null) {
-					System.out.println("Info: in component '" + instanceFlatName + "' renaming module '" + moduleName + "' to '" + newModuleName + "'.");
+					LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming module '" + moduleName + "' to '" + newModuleName + "'.");
 					moduleName = newModuleName;
 				}
 			}
@@ -174,13 +175,13 @@ public class VerilogSerialiser implements ModelSerialiser {
 				String contactName = contact.getName();
 				String wireName = CircuitUtils.getWireName(circuit, contact);
 				if ((wireName == null) || wireName.isEmpty()) {
-					System.out.println("  Warning: in component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
+					LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
 					wireName = "";
 				}
 				if (substitutionRule != null) {
 					String newContactName = substitutionRule.substitutions.get(contactName);
 					if (newContactName != null) {
-						System.out.println("Info: in component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
+						LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
 						contactName = newContactName;
 					}
 				}
@@ -194,7 +195,7 @@ public class VerilogSerialiser implements ModelSerialiser {
 		HashMap<String, SubstitutionRule> result = new HashMap<>();
 		String substitutionsFileName = CircuitSettings.getSubstitutionLibrary();
 		if ((substitutionsFileName == null) || substitutionsFileName.isEmpty()) {
-			System.out.println("Warning: file of substitutions is not specified.");
+			LogUtils.logWarningLine("File of substitutions is not specified.");
 		} else {
 			File libraryFile = new File(substitutionsFileName);
 			final Framework framework = Framework.getInstance();
@@ -211,10 +212,10 @@ public class VerilogSerialiser implements ModelSerialiser {
 					for (SubstitutionRule rule: rules) {
 						result.put(rule.oldName, rule);
 					}
-					System.out.println("Info: renaming gates and pins using the file of substitutions '" + substitutionsFileName + "'.");
+					LogUtils.logInfoLine("Renaming gates and pins using the file of substitutions '" + substitutionsFileName + "'.");
 				} catch (FileNotFoundException e) {
 				} catch (ParseException e) {
-					System.out.println("Warning: could not parse the file of substitutions '" + substitutionsFileName + "'.");
+					LogUtils.logWarningLine("Could not parse the file of substitutions '" + substitutionsFileName + "'.");
 				}
 			}
 		}

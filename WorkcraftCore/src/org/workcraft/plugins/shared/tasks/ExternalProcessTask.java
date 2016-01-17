@@ -11,6 +11,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
+import org.workcraft.util.LogUtils;
 
 public class ExternalProcessTask implements Task<ExternalProcessResult>, ExternalProcessListener {
 	private List<String> args;
@@ -89,7 +90,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 	}
 
 	public static  void printCommandLine(List<String> args) {
-		System.out.println("Running external command: " + getCommandLine(args));
+		LogUtils.logInfoLine("Running external command: " + getCommandLine(args));
 	}
 
 	@Override
@@ -101,7 +102,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		}
 		monitor.stdout(data);
 		if (printStdout) {
-			printData(data);
+			printData(data, LogUtils.PREFIX_STDOUT);
 		}
 	}
 
@@ -114,7 +115,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		}
 		monitor.stderr(data);
 		if (printStderr) {
-			printData(data);
+			printData(data, LogUtils.PREFIX_STDERR);
 		}
 
 	}
@@ -130,10 +131,10 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		}
 	}
 
-	private void printData(byte[] data) {
-		String s = new String(data);
-		System.out.print(s);
-		needsExtraNewLine = !s.endsWith("\n");
+	private void printData(byte[] data, String prefix) {
+		String text = new String(data);
+		System.out.println(prefix+text);
+		needsExtraNewLine = !text.endsWith("\n");
 	}
 
 }
