@@ -239,8 +239,9 @@ public class CpogSelectionTool extends SelectionTool {
 	public HashMap<String, VisualVertex> insertExpression(String text, final VisualCPOG visualCpog,
 			final boolean createDuplicates, boolean getVertList, boolean zoomFit, boolean blockTransitiveRemoval) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        //final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
-        //we.captureMemento();
+
+        String name = "";
+        boolean ref = false;
 
         visualCpog.setCurrentLevel(visualCpog.getRoot());
 
@@ -249,6 +250,13 @@ public class CpogSelectionTool extends SelectionTool {
         text = text.replace("\n", "");
         text = parsingTool.replaceReferences(text);
 
+        if (text.contains("=")) {
+        	name = text.substring(0, text.indexOf("="));
+        	while (name.endsWith(" ")) name = name.substring(0, name.length() - 1);
+        	text = text.substring(text.indexOf("=") + 1);
+        	while (text.startsWith(" ")) text = text.substring(1);
+        }
+
         CpogFormula f = null;
         GraphFunc<String, CpogFormula> PGF = null;
         final HashMap<String, VisualVertex> localVertices = new HashMap<String, VisualVertex>();
@@ -256,7 +264,6 @@ public class CpogSelectionTool extends SelectionTool {
             f = CpogExpressionParser.parse(text,
                     PGF = new GraphFunc<String, CpogFormula>() {
 
-                        String name;
                         boolean ref;
 
                         @Override
@@ -270,16 +277,6 @@ public class CpogSelectionTool extends SelectionTool {
                             }
 
                             vertex = null;
-
-                            // TODO: Optimise!
-
-//                            if (!createDuplicates)
-//                                for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
-//                                    if (v.getLabel().equals(label)) {
-//                                        vertex = v;
-//                                        localVertices.put(label, vertex);
-//                                        break;
-//                                    }
 
                             if (vertex == null) {
                                 vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
@@ -324,15 +321,6 @@ public class CpogSelectionTool extends SelectionTool {
                                 return vertex;
                             }
 
-                            // TODO: Optimise!
-
-//                            if (!createDuplicates)
-//                                for (VisualVertex v : visualCpog.getVertices(visualCpog.getCurrentLevel()))
-//                                    if (v.getLabel().equals(label)) {
-//                                        vertex = v;
-//                                        localVertices.put(label, vertex);
-//                                        break;
-//                                    }
 
                             if (vertex == null) {
                                 vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
@@ -362,29 +350,16 @@ public class CpogSelectionTool extends SelectionTool {
                         }
 
                         @Override
-                        public String getGraphName() {
-                            return name;
-                        }
-
-                        @Override
-                        public void setGraphName(String graphName) {
-                            this.name = graphName;
-                            if ((name.contains("{")) && (name.contains("}"))) {
-                                ref = true;
-                            }
-                        }
-
-                        @Override
                         public void setSequenceCondition(CpogFormula formula, String boolForm) {
                             ArcCondition a = new ArcCondition(formula, boolForm);
                             arcConditionList.add(a);
                         }
 
-                        @Override
-                        public boolean getRef() {
-                            // TODO Auto-generated method stub
-                            return ref;
-                        }
+//                        @Override
+//                        public boolean getRef() {
+//                            // TODO Auto-generated method stub
+//                            return ref;
+//                        }
 
                     });
         } catch (ParseException e) {
@@ -417,9 +392,9 @@ public class CpogSelectionTool extends SelectionTool {
             CpogConnector cc = new CpogConnector(visualCpog);
             f.accept(cc);
             VisualPage inserted = null;
-            if (!PGF.getRef()) {//If this graph is not for reference
+            if (!ref) {//If this graph is not for reference
 
-            	graphMap.put(PGF.getGraphName(), f);
+            	graphMap.put(name, f);
 
             	parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
@@ -453,8 +428,8 @@ public class CpogSelectionTool extends SelectionTool {
             	editor.requestFocus();
 
 
-            	if (PGF.getGraphName() != null) {
-            		inserted = insertAsPage(visualCpog, PGF, coordinate, editor);
+            	if (name != "") {
+            		inserted = insertAsPage(visualCpog, name, coordinate, editor);
             		coordinate = new Point2D.Double(coordinate.getX(), coordinate.getY() + 2);
             	} else {
             		insertLoose(visualCpog, coordinate);
@@ -463,7 +438,7 @@ public class CpogSelectionTool extends SelectionTool {
             }
             if (inserted != null) {
             	String normalForm = getNormalForm(arcConditionList, localVertices);
-            	String graphName = PGF.getGraphName();
+            	String graphName = name;
             	graphName = graphName.replace("{", "");
             	graphName = graphName.replace("}", "");
             	LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
@@ -474,7 +449,7 @@ public class CpogSelectionTool extends SelectionTool {
             	GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
             	g.addRefPage(inserted);
             	referenceMap.put(graphName, g);
-            	if (PGF.getRef()) {
+            	if (ref) {
             		visualCpog.remove(visualCpog.getSelection());
             	}
             }
@@ -539,7 +514,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
     }
 
-    public VisualPage insertAsPage(VisualCPOG visualCpog, GraphFunc<String, CpogFormula> PGF, Double coordinate, GraphEditor editor) {
+    public VisualPage insertAsPage(VisualCPOG visualCpog, String graphName, Double coordinate, GraphEditor editor) {
         HashSet<VisualScenarioPage> pageList = new HashSet<>();
         for (Node n0 : visualCpog.getSelection()) {
             if (n0 instanceof VisualScenarioPage) {
@@ -574,7 +549,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
         visualCpog.select(page);
 
-        page.setLabel(PGF.getGraphName());
+        page.setLabel(graphName);
         Point2D.Double pageLocation = new Point2D.Double(coordinate.getX(), coordinate.getY() + (page.getBoundingBox().getHeight() / 2));
         coordinate.setLocation(coordinate.getX(), coordinate.getY() + page.getBoundingBox().getHeight() + 1);
         page.setPosition(pageLocation);

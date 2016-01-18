@@ -117,52 +117,17 @@ public class CpogExpressionParser {
         }
 
 		@Override
-		public String getGraphName() {
-			// TODO Auto-generated method stub
-			return graphName;
-		}
-
-		@Override
-		public void setGraphName(String graphName) {
-			this.graphName = graphName;
-			
-		}
-
-		@Override
 				public void setSequenceCondition(CpogFormula formula, String boolForm) {
 					// TODO Auto-generated method stub
 					
 				}
 
-		@Override
-		public boolean getRef() {
-			// TODO Auto-generated method stub
-			return false;
-		}
 
     });
   }
 
   public static void main(String [] args) throws ParseException
   {
-  }
-
-  public void setName(String name) throws ParseException
-  {
-    if (!nameSet)
-    {
-      graphName = name;
-      vars.setGraphName(name);
-		nameSet = true;
-	} else
-	{
-	  throw new ParseException("Only one '=' allowed in each equation");
-	}
-  }
-
-  public String getName()
-  {
-	return graphName;
   }
 
 }
@@ -181,7 +146,6 @@ TOKEN : /* OPERATORS */
 {
   	< OVERLAY: "+" >
 |  	< SEQUENCE: "->" | "^" >
-| 	< GRAPHNAME: "=" >
 |   < BOOLOPEN: "[" >
 |   < BOOLCLOSE: "]" >
 | 	< BRACKOPEN: "(" >
@@ -194,27 +158,6 @@ TOKEN :
 }
 
 CpogFormula formula() :
-{
-  	CpogFormula result = null;
-  	String	name;
-  	GraphFunc<String, ? extends CpogFormula> newVars;
-}
-{
-  name = stringLiteral() ( < GRAPHNAME > result = name()
-  {
-    if (name.compareTo("_") != 0)
-    { 
-    	setName(name);
-    }
-    newVars = vars.removeGraphName(graphName);
-  } )*
-  {
-    return result;
-  }
-  
-}
-
-CpogFormula name() :
 {
   CpogFormula op;
   CpogFormula result = null;
@@ -281,7 +224,7 @@ CpogFormula literal() :
 	  boolClose();
 	  result = literal1(bool);
 	} 
-    | "(" result = name() ")"
+    | "(" result = formula() ")"
   )
   {
     return result; }
@@ -316,7 +259,7 @@ CpogFormula literal1(String bool) :
   	    exp = exp + str;
   	    str = bracketInternals();
   	  }
-  	  result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).name();
+  	  result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).formula();
   	}
   )
 	{

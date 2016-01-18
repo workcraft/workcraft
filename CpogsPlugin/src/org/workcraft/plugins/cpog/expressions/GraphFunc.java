@@ -15,11 +15,7 @@ public interface GraphFunc <Arg, Result> extends Func<Arg, Result>{
 
 	CpogFormula eval(String label, String boolExpression) throws org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 
-	public String getGraphName();
-
-	public void setGraphName(String graphName);
-
 	public void setSequenceCondition(CpogFormula formula, String boolForm);
 
-	public boolean getRef();
+//	public boolean getRef();
 }

@@ -15,17 +15,15 @@ public interface CpogExpressionParserConstants {
   /** RegularExpression Id. */
   int SEQUENCE = 6;
   /** RegularExpression Id. */
-  int GRAPHNAME = 7;
+  int BOOLOPEN = 7;
   /** RegularExpression Id. */
-  int BOOLOPEN = 8;
+  int BOOLCLOSE = 8;
   /** RegularExpression Id. */
-  int BOOLCLOSE = 9;
+  int BRACKOPEN = 9;
   /** RegularExpression Id. */
-  int BRACKOPEN = 10;
+  int BRACKCLOSE = 10;
   /** RegularExpression Id. */
-  int BRACKCLOSE = 11;
-  /** RegularExpression Id. */
-  int VARIABLE = 12;
+  int VARIABLE = 11;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -39,7 +37,6 @@ public interface CpogExpressionParserConstants {
     "\"\\n\"",
     "\"+\"",
     "<SEQUENCE>",
-    "\"=\"",
     "\"[\"",
     "\"]\"",
     "\"(\"",
