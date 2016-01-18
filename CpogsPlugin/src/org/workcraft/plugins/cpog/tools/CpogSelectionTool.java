@@ -151,6 +151,7 @@ public class CpogSelectionTool extends SelectionTool {
 					VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 					String exp = "";
 					coordinate = getLowestVertex(visualCpog);
+					coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
 					for (String s : expressions) {
 						if (!s.contains("=")) {
 							exp = exp + " " + s;
