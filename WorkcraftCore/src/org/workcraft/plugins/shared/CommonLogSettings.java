@@ -147,7 +147,7 @@ public class CommonLogSettings implements Settings {
 
 	@Override
 	public void save(Config config) {
-		config.setDouble(keyTextSize, getTextSize());
+		config.setInt(keyTextSize, getTextSize());
 		config.setColor(keyTextColor, getTextColor());
 		config.setColor(keyInfoBackground, getInfoBackground());
 		config.setColor(keyWarningBackground, getWarningBackground());

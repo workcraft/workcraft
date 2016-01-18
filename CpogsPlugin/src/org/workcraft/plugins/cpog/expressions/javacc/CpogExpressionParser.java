@@ -108,28 +108,11 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
         }
 
                 @Override
-                public String getGraphName() {
-                        // TODO Auto-generated method stub
-                        return graphName;
-                }
-
-                @Override
-                public void setGraphName(String graphName) {
-                        this.graphName = graphName;
-
-                }
-
-                @Override
                                 public void setSequenceCondition(CpogFormula formula, String boolForm) {
                                         // TODO Auto-generated method stub
 
                                 }
 
-                @Override
-                public boolean getRef() {
-                        // TODO Auto-generated method stub
-                        return false;
-                }
 
     });
   }
@@ -138,65 +121,20 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
   {
   }
 
-  public void setName(String name) throws ParseException
-  {
-    if (!nameSet)
-    {
-      graphName = name;
-      vars.setGraphName(name);
-                nameSet = true;
-        } else
-        {
-          throw new ParseException("Only one '=' allowed in each equation");
-        }
-  }
-
-  public String getName()
-  {
-        return graphName;
-  }
-
   final public CpogFormula formula() throws ParseException {
-        CpogFormula result = null;
-        String  name;
-        GraphFunc<String, ? extends CpogFormula> newVars;
-    name = stringLiteral();
-    label_1:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case GRAPHNAME:
-        ;
-        break;
-      default:
-        jj_la1[0] = jj_gen;
-        break label_1;
-      }
-      jj_consume_token(GRAPHNAME);
-      result = name();
-    if (name.compareTo("_") != 0)
-    {
-        setName(name);
-    }
-    newVars = vars.removeGraphName(graphName);
-    }
-    {if (true) return result;}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public CpogFormula name() throws ParseException {
   CpogFormula op;
   CpogFormula result = null;
   String bool;
     result = overlayOp1();
-    label_2:
+    label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case OVERLAY:
         ;
         break;
       default:
-        jj_la1[1] = jj_gen;
-        break label_2;
+        jj_la1[0] = jj_gen;
+        break label_1;
       }
       jj_consume_token(OVERLAY);
       op = overlayOp1();
@@ -210,7 +148,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
         CpogFormula result;
         CpogFormula op;
     result = overlayOp();
-    label_3:
+    label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BOOLOPEN:
@@ -219,8 +157,8 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
         ;
         break;
       default:
-        jj_la1[2] = jj_gen;
-        break label_3;
+        jj_la1[1] = jj_gen;
+        break label_2;
       }
       op = overlayOp();
     result = overlay(result, op);
@@ -233,15 +171,15 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
         CpogFormula result;
         CpogFormula op;
     result = literal();
-    label_4:
+    label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case SEQUENCE:
         ;
         break;
       default:
-        jj_la1[3] = jj_gen;
-        break label_4;
+        jj_la1[2] = jj_gen;
+        break label_3;
       }
       jj_consume_token(SEQUENCE);
       op = literal();
@@ -274,11 +212,11 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
       break;
     case BRACKOPEN:
       jj_consume_token(BRACKOPEN);
-      result = name();
+      result = formula();
       jj_consume_token(BRACKCLOSE);
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[3] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -312,10 +250,10 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
             exp = exp + str;
             str = bracketInternals();
           }
-          result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).name();
+          result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).formula();
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[4] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -381,7 +319,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
       result = t.image + " ";
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[5] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -398,13 +336,13 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[7];
+  final private int[] jj_la1 = new int[6];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x80,0x20,0x1500,0x40,0x1500,0x1400,0x1f60,};
+      jj_la1_0 = new int[] {0x20,0xa80,0x40,0xa80,0xa00,0xfe0,};
    }
 
   /** Constructor with InputStream. */
@@ -418,7 +356,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -432,7 +370,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -442,7 +380,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -452,7 +390,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -461,7 +399,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -470,7 +408,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 6; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -521,12 +459,12 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[13];
+    boolean[] la1tokens = new boolean[12];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 6; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -535,7 +473,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
         }
       }
     }
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 12; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
