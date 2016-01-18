@@ -35,7 +35,9 @@ public final class LogAreaMouseListener implements MouseListener {
 		Object src = e.getSource();
 		if (src instanceof JTextArea) {
 			final JTextArea textArea = (JTextArea)src;
-			if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				textArea.getHighlighter().removeAllHighlights();
+			} else if (e.getButton() == MouseEvent.BUTTON3) {
 				JPopupMenu popup = new JPopupMenu();
 				popup.setFocusable(false);
 
@@ -51,6 +53,7 @@ public final class LogAreaMouseListener implements MouseListener {
 				miSelect.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						textArea.getHighlighter().removeAllHighlights();
 						textArea.selectAll();
 					}
 				});
