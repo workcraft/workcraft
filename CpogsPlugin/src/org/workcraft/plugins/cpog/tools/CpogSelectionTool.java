@@ -195,6 +195,8 @@ public class CpogSelectionTool extends SelectionTool {
                 chooser.setFileFilter(filter);
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
                 {
+                	ArrayList<String> expressions = new ArrayList<String>();
+
 	                textFile = chooser.getSelectedFile();
 	                try {
 	                    fileIn = new Scanner(textFile);
@@ -206,11 +208,45 @@ public class CpogSelectionTool extends SelectionTool {
 	                WorkspaceEntry we = editor.getWorkspaceEntry();
 					VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 					coordinate = getLowestVertex(visualCpog);
-	                while (fileIn.hasNextLine()) {
-	                    equation = fileIn.nextLine();
-	                    insertExpression(equation, visualCpog, true, false, true, false);
-	                }
-	                editor.getWorkspaceEntry().saveMemento();
+					coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+					String expression = "";
+					int lineCount = 0;
+					int prevLineEnd = 0;
+					while (fileIn.hasNextLine()) {
+	                    expression = expression + fileIn.nextLine() + "\n";
+	                    lineCount++;
+					}
+
+					for (int i = 0; i < lineCount; i++) {
+						String exp = expression.substring(prevLineEnd, expression.indexOf("\n") + 1);
+
+						exp = exp.replace("\n", "");
+						exp = exp.replace("\t", " ");
+
+						if (exp.compareTo("") != 0) {
+							expressions.add(exp);
+						}
+
+						expression = expression.substring(expression.indexOf("\n") + 1);
+					}
+					String exp = "";
+					coordinate = getLowestVertex(visualCpog);
+					coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+					for (String s : expressions) {
+						if (!s.contains("=")) {
+							exp = exp + " " + s;
+						} else {
+							if (exp.compareTo("") != 0) {
+								insertExpression(exp, visualCpog, false, false, true, false);
+								exp = "";
+							}
+							exp = s;
+						}
+					}
+					if (exp.compareTo("") != 0) {
+						insertExpression(exp, visualCpog, false, false, true, false);
+					}
+					editor.getWorkspaceEntry().saveMemento();
                 }
             }
         });
