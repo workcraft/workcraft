@@ -191,14 +191,14 @@ public class Config {
 		}
 	}
 
-	public void load(String fileName) {
+	public void load(File file) {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document xmldoc;
 		DocumentBuilder db;
 
 		try {
 			db = dbf.newDocumentBuilder();
-			xmldoc = db.parse(new File(fileName));
+			xmldoc = db.parse(file);
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 			return;
@@ -236,7 +236,7 @@ public class Config {
 		}
 	}
 
-	public void save(String fileName) {
+	public void save(File file) {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document xmldoc;
 		DocumentBuilder db;
@@ -279,7 +279,10 @@ public class Config {
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-			File file = new File(fileName);
+			File parentDir = file.getParentFile();
+			if ((parentDir != null) && !parentDir.exists()) {
+				parentDir.mkdirs();
+			}
 			file.createNewFile();
 			FileOutputStream fos = new FileOutputStream(file);
 			DOMSource source = new DOMSource(xmldoc);

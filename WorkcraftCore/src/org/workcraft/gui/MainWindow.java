@@ -102,6 +102,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -118,8 +119,6 @@ public class MainWindow extends JFrame {
 	public static final String TITLE_TOOL_CONTROLS = "Tool controls";
 	public static final String TITLE_EDITOR_TOOLS = "Editor tools";
 	public static final String TITLE_PLACEHOLDER = "";
-
-	private static final String UILAYOUT_PATH = "./config/uilayout.xml";
 
 	private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
 		public void actionPerformed(Action e) {
@@ -660,7 +659,8 @@ public class MainWindow extends JFrame {
 				pm.getCurrentPerspectiveName(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
 		try {
-			File file = new File(UILAYOUT_PATH);
+			File file = new File(Framework.UILAYOUT_FILE_PATH);
+			LogUtils.logInfoLine("Saving UI layout to " + file.getAbsolutePath());
 			File parentDir = file.getParentFile();
 			if ((parentDir != null) && !parentDir.exists()) {
 				parentDir.mkdirs();
@@ -682,11 +682,12 @@ public class MainWindow extends JFrame {
 				.getLayoutManager();
 		XMLPersister pers = new XMLPersister();
 		try {
-			File f = new File(UILAYOUT_PATH);
-			if (!f.exists())
+			File file = new File(Framework.UILAYOUT_FILE_PATH);
+			if (!file.exists()) {
 				return;
-
-			FileInputStream is = new FileInputStream(f);
+			}
+			LogUtils.logInfoLine("Loading UI layout from " + file.getAbsolutePath());
+			FileInputStream is = new FileInputStream(file);
 
 			PerspectiveModel pmodel = pers.load(is);
 
@@ -1356,7 +1357,7 @@ public class MainWindow extends JFrame {
 				try {
 					final Framework framework = Framework.getInstance();
 					framework.shutdownGUI();
-					new File(UILAYOUT_PATH).delete();
+					new File(Framework.UILAYOUT_FILE_PATH).delete();
 					framework.startGUI();
 				} catch (OperationCancelledException e) {
 				}

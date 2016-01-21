@@ -44,6 +44,7 @@ import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LinkedTwoWayMap;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -492,13 +493,15 @@ public class Workspace {
 			}
 			move(to, newName);
 		}
-
-		System.out.println("moved from " + from + " to " + to);
-		if (openFileFrom != null) {
-			System.out.println("correcting open file path...");
+		String msg = "Work moved from " + from + " to " + to;
+		if (openFileFrom == null) {
+			msg += ".";
+		} else {
+			msg += " and the open file path is corrected.";
 			openFiles.removeKey(from);
 			openFiles.put(to, openFileFrom);
 		}
+		LogUtils.logInfoLine(msg);
 	}
 
 	public MountTree getMountTree(Path<String> path) {

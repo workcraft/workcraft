@@ -86,6 +86,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
@@ -94,7 +95,16 @@ import org.xml.sax.SAXException;
 
 
 public class Framework {
-	 private static Framework instance = null;
+	private static String SETTINGS_DIRECTORY_NAME = ".workcraft";
+	private static String CONFIG_FILE_NAME = "config.xml";
+	private static String PLUGINS_FILE_NAME = "plugins.xml";
+	private static String UILAYOUT_FILE_NAME = "uilayout.xml";
+	private static String SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + File.separator + SETTINGS_DIRECTORY_NAME;
+	public static String CONFIG_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
+	public static String PLUGINS_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
+	public static String UILAYOUT_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
+
+	private static Framework instance = null;
 
 	class ExecuteScriptAction implements ContextAction {
 		private String script;
@@ -235,18 +245,22 @@ public class Framework {
 		}
 	}
 
-	public void loadConfig(String fileName) {
-		config.load(fileName);
+	public void loadConfig() {
+		File file = new File(CONFIG_FILE_PATH);
+		LogUtils.logInfoLine("Loading global preferences from " + file.getAbsolutePath());
+		config.load(file);
 		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
 			info.getSingleton().load(config);
 		}
 	}
 
-	public void saveConfig(String fileName) {
+	public void saveConfig() {
 		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
 			info.getSingleton().save(config);
 		}
-		config.save(fileName);
+		File file = new File(CONFIG_FILE_PATH);
+		LogUtils.logInfoLine("Saving global preferences to " + file.getAbsolutePath());
+		config.save(file);
 	}
 
 	public void setConfigVar (String key, String value) {
@@ -456,7 +470,7 @@ public class Framework {
 			}
 		});
 
-		System.out.println ("Now in GUI mode.");
+		LogUtils.logInfoLine("Now in GUI mode.");
 		inGUIMode = true;
 	}
 
@@ -474,7 +488,7 @@ public class Framework {
 				}
 			});
 		}
-		System.out.println ("Now in console mode.");
+		LogUtils.logInfoLine("Now in console mode.");
 	}
 
 	public void shutdown() {

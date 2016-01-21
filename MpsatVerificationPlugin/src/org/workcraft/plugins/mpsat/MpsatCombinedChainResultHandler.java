@@ -151,7 +151,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					JOptionPane.showMessageDialog(null, errorMessage, "Oops..", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			});
 		}

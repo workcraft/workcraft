@@ -58,11 +58,11 @@ function getConfigVar(k) {
 }
 
 function saveConfig() {
-	framework.saveConfig("config/config.xml");
+	framework.saveConfig();
 }
 
 function loadConfig() {
-	framework.loadConfig("config/config.xml");
+	framework.loadConfig();
 }
 
 function startGUI() {

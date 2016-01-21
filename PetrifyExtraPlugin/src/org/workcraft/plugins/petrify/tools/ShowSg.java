@@ -76,7 +76,7 @@ public class ShowSg implements Tool {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							JOptionPane.showMessageDialog(null, err, "Oops..", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					});
 				}

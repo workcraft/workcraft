@@ -23,9 +23,10 @@ package org.workcraft.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.mozilla.javascript.Context;
@@ -37,44 +38,51 @@ import org.workcraft.Framework;
 public class JavaScriptWindow extends JPanel {
 
 	private JPanel panelInput = null;
-	private JButton btnExecute = null;
 	private JEditTextArea txtScript = null;
+	private boolean isInitState;
 
 	public JavaScriptWindow() {
-		btnExecute = new JButton();
-		btnExecute.setText("Execute [ctrl-Enter]");
-
-		btnExecute.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				execScript();
-			}
-		});
-
 		txtScript = new JEditTextArea();
 		txtScript.setTokenMarker(new JavaScriptTokenMarker());
 		txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
 			@Override
-			public void keyReleased(java.awt.event.KeyEvent e)
-			{
-				if (e.getKeyCode() == KeyEvent.VK_ENTER && e.isControlDown() == true)
+			public void keyReleased(java.awt.event.KeyEvent e) {
+				if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (e.isControlDown() == true)) {
 					execScript();
+				}
+			}
+		});
+		txtScript.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				String text = txtScript.getText().trim();
+				if (text.isEmpty()) {
+					resetScript();
+				}
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (isInitState) {
+					isInitState = false;
+					txtScript.setText("");
+				}
 			}
 		});
 
 		panelInput = new JPanel();
 		panelInput.setLayout(new BorderLayout());
 		panelInput.add(txtScript, BorderLayout.CENTER);
-		//panelInput.add(btnExecute, BorderLayout.SOUTH);
 		panelInput.setMinimumSize(new Dimension(100,100));
 
 		setLayout(new BorderLayout());
 		this.add(panelInput, BorderLayout.CENTER);
-
+		resetScript();
 	}
 
 
 	public void execScript() {
-		if (txtScript.getText().length()>0)
+		if (txtScript.getText().length() > 0)
 			try {
 				final Framework framework = Framework.getInstance();
 				Object result = framework.execJavaScript(txtScript.getText());
@@ -82,16 +90,26 @@ public class JavaScriptWindow extends JPanel {
 				Context.enter();
 				String out = Context.toString(result);
 				Context.exit();
-				if (!out.equals("undefined"))
+				if (!out.equals("undefined")) {
 					System.out.println (out);
-				txtScript.setText("");
+				}
+				resetScript();
 			}
 		catch (org.mozilla.javascript.WrappedException e) {
-			System.err.println(e.getWrappedException().getClass().getName()+" "+e.getWrappedException().getMessage());
+			Throwable we = e.getWrappedException();
+			System.err.println(we.getClass().getName() + " " + we.getMessage());
 		}
 		catch (org.mozilla.javascript.RhinoException e) {
 			System.err.println(e.getMessage());
 		}
 	}
+
+
+	private void resetScript() {
+		isInitState = true;
+		txtScript.setText("// Write a script and press Ctrl-Enter to execute it.");
+	}
+
+
 
 }

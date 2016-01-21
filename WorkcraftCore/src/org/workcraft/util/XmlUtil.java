@@ -79,8 +79,7 @@ public class XmlUtil {
 	}
 
 	public static void writeDocument(Document doc, OutputStream os) throws IOException {
-		try
-		{
+		try {
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			tFactory.setAttribute("indent-number", new Integer(2));
 			Transformer transformer = tFactory.newTransformer();
@@ -89,19 +88,21 @@ public class XmlUtil {
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(new OutputStreamWriter(os));
 			transformer.transform(source, result);
-
 		} catch (TransformerException e) {
 			System.err.println(e.getMessage());
 		}
 	}
 
 	public static void saveDocument(Document doc, File file) throws IOException {
-		writeDocument (doc, new FileOutputStream(file));
+		File parentDir = file.getParentFile();
+		if ((parentDir != null) && !parentDir.exists()) {
+			parentDir.mkdirs();
+		}
+		writeDocument(doc, new FileOutputStream(file));
 	}
 
 	public static void saveDocument(Document doc, File transform, File file) throws IOException {
-		try
-		{
+		try {
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			tFactory.setAttribute("indent-number", new Integer(2));
 			Transformer transformer = tFactory.newTransformer(new StreamSource(transform));

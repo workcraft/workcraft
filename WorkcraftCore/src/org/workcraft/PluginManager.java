@@ -40,10 +40,10 @@ import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.ListMap;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.XmlUtil;
 
 public class PluginManager implements PluginProvider {
-	public static final File DEFAULT_MANIFEST = new File("config"+File.separator+"plugins.xml");
 	public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
 
 	private ListMap <Class<?>, PluginInfo<?>> plugins = new ListMap<Class<?>, PluginInfo<?>>();
@@ -72,12 +72,14 @@ public class PluginManager implements PluginProvider {
 	}
 
 	public void loadManifest() throws IOException, FormatException, PluginInstantiationException {
-		loadManifest(DEFAULT_MANIFEST);
+		File file = new File(Framework.PLUGINS_FILE_PATH);
+		LogUtils.logInfoLine("Loading plugin manifest from " + file.getAbsolutePath());
+		loadManifest(file);
 	}
 
 	public boolean tryLoadManifest(File file) {
 		if(!file.exists()) {
-			System.out.println("Plugin manifest \"" + file.getPath() + "\" does not exist.");
+			System.out.println("Plugin manifest \"" + file.getAbsolutePath() + "\" does not exist.");
 			return false;
 		}
 
@@ -124,11 +126,11 @@ public class PluginManager implements PluginProvider {
 	}
 
 	public void loadManifest(File file) throws IOException, FormatException, PluginInstantiationException {
-
-		if(!tryLoadManifest(file))
+		if(!tryLoadManifest(file)) {
 			reconfigure();
-		else
+		} else {
 			initModules();
+		}
 	}
 
 	private void initModules() {
@@ -146,7 +148,9 @@ public class PluginManager implements PluginProvider {
 	}
 
 	public static void saveManifest(List<LegacyPluginInfo> plugins) throws IOException {
-		saveManifest(DEFAULT_MANIFEST, plugins);
+		File file = new File(Framework.PLUGINS_FILE_PATH);
+		LogUtils.logInfoLine("Saving plugin manifest to " + file.getAbsolutePath());
+		saveManifest(file, plugins);
 	}
 
 	public static void saveManifest(File file, List<LegacyPluginInfo> plugins) throws IOException {
