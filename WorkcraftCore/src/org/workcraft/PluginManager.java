@@ -73,13 +73,13 @@ public class PluginManager implements PluginProvider {
 
 	public void loadManifest() throws IOException, FormatException, PluginInstantiationException {
 		File file = new File(Framework.PLUGINS_FILE_PATH);
-		LogUtils.logInfoLine("Loading plugin manifest from " + file.getAbsolutePath());
+		LogUtils.logMessageLine("Loading plugins configuration from " + file.getAbsolutePath());
 		loadManifest(file);
 	}
 
 	public boolean tryLoadManifest(File file) {
 		if(!file.exists()) {
-			System.out.println("Plugin manifest \"" + file.getAbsolutePath() + "\" does not exist.");
+			LogUtils.logMessageLine("Plugin manifest \"" + file.getAbsolutePath() + "\" does not exist, plugins will be reconfigured.");
 			return false;
 		}
 
@@ -96,17 +96,15 @@ public class PluginManager implements PluginProvider {
 		}
 
 		Element xmlroot = doc.getDocumentElement();
-		if (!xmlroot.getNodeName().equals("workcraft-plugins"))
-		{
-			System.out.println("Bad plugin manifest: root tag should be 'workcraft-plugins'.");
+		if (!xmlroot.getNodeName().equals("workcraft-plugins")) {
+			LogUtils.logWarningLine("Bad plugin manifest: root tag should be 'workcraft-plugins'.");
 			return false;
 		}
 
 		final Element versionElement = XmlUtil.getChildElement("version", xmlroot);
 
-		if(versionElement == null || !XmlUtil.readStringAttr(versionElement, "value").equals(VERSION_STAMP))
-		{
-			System.out.println("Old plugin manifest version detected. Will reconfigure.");
+		if (versionElement == null || !XmlUtil.readStringAttr(versionElement, "value").equals(VERSION_STAMP)) {
+			LogUtils.logWarningLine("Old plugin manifest version detected. Will reconfigure.");
 			return false;
 		}
 
@@ -118,7 +116,7 @@ public class PluginManager implements PluginProvider {
 			try {
 				plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
 			} catch (ClassNotFoundException e) {
-				System.err.println ("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
+				LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
 			}
 		}
 
@@ -138,18 +136,18 @@ public class PluginManager implements PluginProvider {
 		{
 			final Module module = info.newInstance();
 			try {
-				System.out.println("Loading module: " + module.getDescription());
+				LogUtils.logMessageLine("  Loading module: " + module.getDescription());
 				module.init();
 			}
 			catch(Throwable th) {
-				System.err.println("Error during initialisation of module " + module.toString());
+				LogUtils.logErrorLine("Failed initialisation of module " + module.toString());
 			}
 		}
 	}
 
 	public static void saveManifest(List<LegacyPluginInfo> plugins) throws IOException {
 		File file = new File(Framework.PLUGINS_FILE_PATH);
-		LogUtils.logInfoLine("Saving plugin manifest to " + file.getAbsolutePath());
+		LogUtils.logMessageLine("Saving plugins configuration to " + file.getAbsolutePath());
 		saveManifest(file, plugins);
 	}
 
@@ -187,12 +185,12 @@ public class PluginManager implements PluginProvider {
 		try {
 			plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
 		} catch (ClassNotFoundException e) {
-			System.err.println ("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
+			LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
 		}
 	}
 
 	public void reconfigure() throws PluginInstantiationException {
-		System.out.println("Reconfiguring plugins...");
+		LogUtils.logMessageLine("Reconfiguring plugins...");
 		plugins.clear();
 
 		String[] classPathLocations = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
@@ -201,11 +199,11 @@ public class PluginManager implements PluginProvider {
 		ArrayList<LegacyPluginInfo> pluginInfos = new ArrayList<LegacyPluginInfo>();
 
 		for (String s: classPathLocations) {
-			System.out.println ("Processing class path entry: " + s);
+			LogUtils.logMessageLine("  Processing class path entry: " + s);
 			classes.addAll(PluginFinder.search(new File(s)));
 		}
 
-		System.out.println("" + classes.size() + " plugin(s) found.");
+		LogUtils.logMessageLine("" + classes.size() + " plugin(s) found.");
 
 		for(Class<?> cls : classes)
 		{
@@ -216,14 +214,11 @@ public class PluginManager implements PluginProvider {
 
 		try {
 			saveManifest(pluginInfos);
-			System.out.println("Reconfiguration complete.");
 		} catch(IOException e) {
 			System.err.println(e.getMessage());
 		}
 
 		initModules();
-		System.out.println("Plugin initialisation done.");
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -239,7 +234,7 @@ public class PluginManager implements PluginProvider {
 					return cls.newInstance();
 				} catch (InstantiationException e) {
 					Throwable q = e;
-					System.err.println (cls.getCanonicalName());
+					System.err.println(cls.getCanonicalName());
 					while (q != null) {
 						q.printStackTrace();
 						q = q.getCause();
@@ -280,8 +275,9 @@ public class PluginManager implements PluginProvider {
 	}
 
 	public <T> void registerClass(Class<T> interf, Initialiser<? extends T> initialiser) {
-		if(!interf.isInterface())
+		if(!interf.isInterface()) {
 			throw new RuntimeException("'interf' argument must be an interface");
+		}
 		final PluginInfo<T> pluginInfo = new PluginInstanceHolder<T>(initialiser);
 		plugins.put(interf, pluginInfo);
 	}

@@ -35,8 +35,6 @@ import org.workcraft.plugins.stg.VisualSTG;
 public class ConnectionRemoverTest {
 	@Test
 	public void removeMany() throws InvalidConnectionException {
-		//PropertyConfigurator.configure("config/logging.properties");
-
 		STG stg = new STG();
 
 		SignalTransition t1 = stg.createSignalTransition();

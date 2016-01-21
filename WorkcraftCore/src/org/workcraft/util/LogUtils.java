@@ -7,6 +7,10 @@ public class LogUtils {
 	public static final String PREFIX_STDOUT = "[STDOUT] ";
 	public static final String PREFIX_STDERR = "[STDERR] ";
 
+	public static void logMessageLine(String msg) {
+		System.out.println(msg);
+	}
+
 	public static void logInfoLine(String msg) {
 		System.out.println(PREFIX_INFO + msg);
 	}

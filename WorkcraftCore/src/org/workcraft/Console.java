@@ -33,6 +33,7 @@ import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.LogUtils;
 
 
 public class Console {
@@ -50,66 +51,9 @@ public class Console {
 			arglist.push(s);
 		}
 
-		boolean silent = false;
-		for (String s: args) {
-			if (s.equals("-silent")) {
-				silent = true;
-				arglist.remove(s);
-			}
-		}
-
-		if ( !silent ) {
-			System.out.println(Info.getFullTitle());
-			System.out.println(Info.getCopyright());
-			System.out.println();
-			System.out.println("Initialising framework...");
-		}
-
-		File f = new File("config");
-		if (f.exists() && !f.isDirectory()) {
-			System.out.println("\n!!! Error: Workcraft needs to create a directory named 'config' to store configuration files, but a file already exists with such name and is not a directory. Please delete the file and run Workcraft again.");
-			return;
-		}
-
-		if ( !f.exists() ) {
-			f.mkdirs();
-		}
-
-		final Framework framework  = Framework.getInstance();
-		framework.setSilent(silent);
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
-		framework.initJavaScript();
-		framework.initPlugins();
-
-		if (!silent) {
-			System.out.println ("Running startup scripts...");
-		}
-
-		try {
-			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/functions.js"));
-			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/startup.js"));
-		} catch (FileNotFoundException e2) {
-			System.err.println ("! Warning: System script file not found: " + e2.getMessage());
-		} catch (IOException e) {
-			System.err.println ("! Warning: Error reading system script file: " + e.getMessage());
-		} catch (WrappedException e) {
-			System.err.println ("! Startup script failed: " + e.getMessage());
-		} catch (org.mozilla.javascript.EcmaError e) {
-			System.err.println ("! Startup script failed: " + e.getMessage());
-		}
-
-		if ( !silent ) {
-			System.out.println("Startup complete.\n\n");
-		}
 		boolean startGUI = true;
 		String dir = null;
 		for (String arg: args) {
-			if (arg.equals("-gui")) {
-				startGUI = true;
-				arglist.remove(arg);
-			}
 			if (arg.equals("-nogui")) {
 				startGUI = false;
 				arglist.remove(arg);
@@ -118,28 +62,58 @@ public class Console {
 				dir = arg.substring(5);
 				arglist.remove(arg);
 			}
+		}
+
+		System.out.println(Info.getFullTitle());
+		System.out.println(Info.getCopyright());
+		System.out.println();
+
+		LogUtils.logMessageLine("Initialising framework...");
+		final Framework framework  = Framework.getInstance();
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+		framework.initJavaScript();
+
+		if (startGUI) {
+			framework.startGUI();
+		}
+
+		framework.initPlugins();
+
+		LogUtils.logMessageLine("Running startup scripts...");
+		try {
+			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/functions.js"));
+			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/startup.js"));
+		} catch (FileNotFoundException e2) {
+			LogUtils.logWarningLine("System script file not found: " + e2.getMessage());
+		} catch (IOException e) {
+			LogUtils.logErrorLine("Error reading system script file: " + e.getMessage());
+		} catch (WrappedException e) {
+			LogUtils.logErrorLine("Startup script failed: " + e.getMessage());
+		} catch (org.mozilla.javascript.EcmaError e) {
+			LogUtils.logErrorLine("Startup script failed: " + e.getMessage());
+		}
+
+		for (String arg: args) {
 			if (arg.startsWith("-exec:")) {
 				arglist.remove(arg);
 				framework.setArgs(arglist);
 				try {
-					if (!silent) {
-						System.out.println("Executing "+ arg.substring(6) + "...");
-					}
+					LogUtils.logMessageLine("Executing "+ arg.substring(6) + "...");
 					framework.execJavaScript(new File (arg.substring(6)));
 				} catch (FileNotFoundException e) {
-					System.err.println ("Script specified from command line not found: " + arg);
+					LogUtils.logErrorLine("Script specified from command line not found: " + arg);
 				} catch (org.mozilla.javascript.WrappedException e) {
 					e.getWrappedException().printStackTrace();
 					System.exit(1);
 				} catch (org.mozilla.javascript.RhinoException e) {
-					System.err.println(e.getMessage());
+					LogUtils.logErrorLine(e.getMessage());
 					System.exit(1);
 				}
 			}
 		}
 
-		if (startGUI) {
-			framework.startGUI();
+		if (framework.isInGUIMode()) {
 			for (String arg: arglist) {
 				if (arg.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
 					File file = new File(dir, arg);
@@ -147,7 +121,6 @@ public class Console {
 				}
 			}
 		}
-
 
 		while (true) {
 			if (framework.shutdownRequested()) {
@@ -162,18 +135,16 @@ public class Console {
 				}
 
 				try {
-					if ( !silent ) {
-						System.out.println ("Shutting down...");
-					}
+					LogUtils.logMessageLine("Shutting down...");
 					framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/shutdown.js"));
 				} catch (FileNotFoundException e) {
-					System.err.println ("System script file not found: " + e.getMessage());
+					LogUtils.logErrorLine("System script file not found: " + e.getMessage());
 				} catch (IOException e)	{
-					System.err.println ("IO Exception: " + e.getMessage());
+					LogUtils.logErrorLine("IO Exception: " + e.getMessage());
 				} catch (org.mozilla.javascript.EcmaError e) {
-					System.err.println ("! Shutdown script failed: " + e.getMessage());
+					LogUtils.logErrorLine("Shutdown script failed: " + e.getMessage());
 				} catch (WrappedException e) {
-					System.err.println ("! Shutdown script failed: " + e.getMessage());
+					LogUtils.logErrorLine("Shutdown script failed: " + e.getMessage());
 				}
 				System.exit(0);
 			}
@@ -193,8 +164,8 @@ public class Console {
 					Context.enter();
 					String out = Context.toString(result);
 					Context.exit();
-					if (!out.equals("undefined")) {
-						System.out.println (out);
+					if ( !out.equals("undefined") ) {
+						System.out.println(out);
 					}
 				} catch (org.mozilla.javascript.WrappedException e) {
 					System.err.println(e.getWrappedException().getMessage());

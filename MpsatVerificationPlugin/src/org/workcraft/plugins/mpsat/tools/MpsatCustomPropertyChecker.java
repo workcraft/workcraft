@@ -35,7 +35,8 @@ public class MpsatCustomPropertyChecker extends VerificationTool {
 
 	@Override
 	public void run(WorkspaceEntry we) {
-		PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(new File("config/mpsat_presets.xml"), new MpsatSettingsSerialiser());
+		File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat_presets.xml");
+		PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(presetFile, new MpsatSettingsSerialiser());
 		final Framework framework = Framework.getInstance();
 		MainWindow mainWindow = framework.getMainWindow();
 		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);

@@ -99,7 +99,8 @@ public class Framework {
 	private static String CONFIG_FILE_NAME = "config.xml";
 	private static String PLUGINS_FILE_NAME = "plugins.xml";
 	private static String UILAYOUT_FILE_NAME = "uilayout.xml";
-	private static String SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + File.separator + SETTINGS_DIRECTORY_NAME;
+
+	public static String SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + File.separator + SETTINGS_DIRECTORY_NAME;
 	public static String CONFIG_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
 	public static String PLUGINS_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
 	public static String UILAYOUT_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
@@ -194,13 +195,8 @@ public class Framework {
 	private boolean inGUIMode = false;
 	private boolean shutdownRequested = false;
 	private boolean GUIRestartRequested = false;
-
 	private ContextFactory contextFactory = new ContextFactory();
-
-	private boolean silent = false;
-
 	private MainWindow mainWindow;
-
 	public Memento clipboard;
 
 	private Framework() {
@@ -247,7 +243,7 @@ public class Framework {
 
 	public void loadConfig() {
 		File file = new File(CONFIG_FILE_PATH);
-		LogUtils.logInfoLine("Loading global preferences from " + file.getAbsolutePath());
+		LogUtils.logMessageLine("Loading global preferences from " + file.getAbsolutePath());
 		config.load(file);
 		for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
 			info.getSingleton().load(config);
@@ -259,7 +255,7 @@ public class Framework {
 			info.getSingleton().save(config);
 		}
 		File file = new File(CONFIG_FILE_PATH);
-		LogUtils.logInfoLine("Saving global preferences to " + file.getAbsolutePath());
+		LogUtils.logMessageLine("Saving global preferences to " + file.getAbsolutePath());
 		config.save(file);
 	}
 
@@ -309,8 +305,7 @@ public class Framework {
 	}
 
 	public void initJavaScript() {
-		if (!silent)
-			System.out.println ("Initialising javascript...");
+		LogUtils.logInfoLine("Initialising javascript...");
 		contextFactory.call(new ContextAction() {
 			public Object run(Context cx) {
 				ImporterTopLevel importer = new ImporterTopLevel();
@@ -469,8 +464,6 @@ public class Framework {
 
 			}
 		});
-
-		LogUtils.logInfoLine("Now in GUI mode.");
 		inGUIMode = true;
 	}
 
@@ -488,7 +481,6 @@ public class Framework {
 				}
 			});
 		}
-		LogUtils.logInfoLine("Now in console mode.");
 	}
 
 	public void shutdown() {
@@ -529,14 +521,6 @@ public class Framework {
 
 	public boolean isInGUIMode() {
 		return inGUIMode;
-	}
-
-	public boolean isSilent() {
-		return silent;
-	}
-
-	public void setSilent(boolean silent) {
-		this.silent = silent;
 	}
 
 	public void setArgs(List<String> args) {
@@ -817,9 +801,6 @@ public class Framework {
 	}
 
 	public void initPlugins() {
-		if (!silent) {
-			System.out.println ("Loading plugins configuration...");
-		}
 		try {
 			pluginManager.loadManifest();
 		} catch (IOException e) {

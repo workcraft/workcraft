@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
@@ -52,6 +53,9 @@ public class OutputWindow extends JPanel {
 		txtStdOut.setEditable(false);
 		txtStdOut.setWrapStyleWord(true);
 		txtStdOut.addMouseListener(new LogAreaMouseListener());
+
+		DefaultCaret caret = (DefaultCaret)txtStdOut.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		scrollStdOut = new JScrollPane();
 		scrollStdOut.setViewportView(txtStdOut);

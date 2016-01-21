@@ -660,7 +660,7 @@ public class MainWindow extends JFrame {
 		XMLPersister pers = new XMLPersister();
 		try {
 			File file = new File(Framework.UILAYOUT_FILE_PATH);
-			LogUtils.logInfoLine("Saving UI layout to " + file.getAbsolutePath());
+			LogUtils.logMessageLine("Saving UI layout to " + file.getAbsolutePath());
 			File parentDir = file.getParentFile();
 			if ((parentDir != null) && !parentDir.exists()) {
 				parentDir.mkdirs();
@@ -686,7 +686,7 @@ public class MainWindow extends JFrame {
 			if (!file.exists()) {
 				return;
 			}
-			LogUtils.logInfoLine("Loading UI layout from " + file.getAbsolutePath());
+			LogUtils.logMessageLine("Loading UI layout from " + file.getAbsolutePath());
 			FileInputStream is = new FileInputStream(file);
 
 			PerspectiveModel pmodel = pers.load(is);

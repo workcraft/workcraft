@@ -53,7 +53,8 @@ public class ScencoHeuristicTool implements Tool {
 					ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
 		} else {
 			settings = new EncoderSettings(10, GenerationMode.OPTIMAL_ENCODING, false, false);
-			pmgr = new PresetManager<>(new File("config/cpog_presets.xml"), new EncoderSettingsSerialiser());
+			File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "cpog_presets.xml");
+			pmgr = new PresetManager<>(presetFile, new EncoderSettingsSerialiser());
 			dialog = new ScencoConstrainedSearchDialog(mainWindow, pmgr, settings, we, "Heuristic encoding", 0);
 
 			GUI.centerToParent(dialog, mainWindow);

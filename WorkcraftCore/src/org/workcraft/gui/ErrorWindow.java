@@ -41,6 +41,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.DefaultCaret;
 
 import org.workcraft.plugins.shared.CommonLogSettings;
 
@@ -59,6 +60,9 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 		txtStdErr.setWrapStyleWord(true);
 		txtStdErr.setForeground(Color.RED);
 		txtStdErr.addMouseListener(new LogAreaMouseListener());
+
+		DefaultCaret caret = (DefaultCaret)txtStdErr.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 		scrollStdErr = new JScrollPane();
 		scrollStdErr.setViewportView(txtStdErr);
