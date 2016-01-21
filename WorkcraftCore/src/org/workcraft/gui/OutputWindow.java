@@ -22,6 +22,7 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
@@ -83,6 +84,7 @@ public class OutputWindow extends JPanel {
 
 	class OutputStreamView extends FilterOutputStream {
 		private JTextArea target;
+		private boolean newLine = true;
 
 		public OutputStreamView(OutputStream aStream, JTextArea target) {
 			super(aStream);
@@ -106,36 +108,38 @@ public class OutputWindow extends JPanel {
 		}
 
 		private void print(String text) {
-			Highlighter.HighlightPainter highlighter = null;
+			Highlighter.HighlightPainter painter = null;
 			if (text.startsWith(LogUtils.PREFIX_INFO)) {
-				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
+				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_WARNING)) {
-				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
+				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_ERROR)) {
-				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
+				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_STDOUT)) {
 				text = text.substring(LogUtils.PREFIX_STDOUT.length());
-				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
+				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_STDERR)) {
 				text = text.substring(LogUtils.PREFIX_STDERR.length());
-				highlighter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
+				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
+			} else if (newLine) {
+				painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
 			}
-			String suffix = "";
-			if (highlighter != null) {
-				// A text suffix to separate highlighted portions
-				suffix = " ";
-			}
+
+			newLine = text.endsWith("\n");
 			int fromPos = target.getDocument().getLength();
-			target.append(text + suffix);
+			target.append(text);
 			int toPos = target.getDocument().getLength();
 			target.setCaretPosition(toPos);
 
-			target.setForeground(CommonLogSettings.getTextColor());
+			Color textColor = CommonLogSettings.getTextColor();
+			target.setForeground(textColor);
 			target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
 
-			if ((highlighter != null) && (toPos > fromPos)) {
+			if ((painter != null) && (toPos > fromPos)) {
 				try {
-					target.getHighlighter().addHighlight(fromPos, toPos-suffix.length(), highlighter);
+					DefaultHighlighter highlighter = (DefaultHighlighter)target.getHighlighter();
+					highlighter.setDrawsLayeredHighlights(false);
+					highlighter.addHighlight(fromPos, toPos, painter);
 				} catch (BadLocationException e) {
 				}
 			}

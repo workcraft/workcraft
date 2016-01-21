@@ -57,7 +57,6 @@ public class ColorUtils {
         }
     }
 
-
     public static Color getXyzColor(float x, float y, float z) {
     	float[] rgb = convertFromXyzToRgb(new float[] {x, y, z});
     	return new Color(rgb[0], rgb[1], rgb[2]);
@@ -99,4 +98,8 @@ public class ColorUtils {
     	return palette.toArray(new Color[palette.size()]);
 	}
 
+    public static Color invert(Color color) {
+    	float[] rgb = color.getRGBComponents(null);
+    	return new Color(1.0f - rgb[0], 1.0f - rgb[1], 1.0f - rgb[2]);
+    }
 }

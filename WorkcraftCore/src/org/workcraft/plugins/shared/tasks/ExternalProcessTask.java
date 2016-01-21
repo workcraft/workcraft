@@ -1,5 +1,6 @@
 package org.workcraft.plugins.shared.tasks;
 
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -133,8 +134,8 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 
 	private void printData(byte[] data, String prefix) {
 		String text = new String(data);
-		System.out.println(prefix+text);
-		needsExtraNewLine = !text.endsWith("\n");
+		System.out.print(prefix + text);
+		needsExtraNewLine = !text.endsWith(System.lineSeparator());
 	}
 
 }

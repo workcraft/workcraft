@@ -43,7 +43,7 @@ public class CommonLogSettings implements Settings {
 
 	private static final int defaultTextSize = 12;
 	private static final Color defaultTextColor = Color.BLACK;
-	private static final Color defaultInfoBackground = new Color(0.8f, 1.0f, 0.8f);
+	private static final Color defaultInfoBackground = new Color(0.7f, 1.0f, 0.7f);
 	private static final Color defaultWarningBackground = new Color(1.0f, 0.8f, 0.0f);
 	private static final Color defaultErrorBackground = new Color(1.0f, 0.7f, 0.7f);
 	private static final Color defaultStdoutBackground = new Color(0.9f, 0.9f, 0.9f);
