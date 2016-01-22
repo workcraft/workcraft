@@ -15,6 +15,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatCombinedChainResult> {

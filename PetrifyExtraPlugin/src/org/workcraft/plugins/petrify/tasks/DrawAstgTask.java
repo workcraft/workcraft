@@ -49,7 +49,7 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
 		command.add("-o");
 		command.add(outputPath);
 
-		ExternalProcessTask task = new ExternalProcessTask(command, null, false, false);
+		ExternalProcessTask task = new ExternalProcessTask(command, null);
 		Result<? extends ExternalProcessResult> res = task.run(monitor);
 
 		if (res.getOutcome() != Outcome.FINISHED)

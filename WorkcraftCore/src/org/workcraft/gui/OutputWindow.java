@@ -84,7 +84,8 @@ public class OutputWindow extends JPanel {
 
 	class OutputStreamView extends FilterOutputStream {
 		private JTextArea target;
-		private boolean newLine = true;
+		private String oldPrefix = null;
+		private boolean needsNewLine = false;
 
 		public OutputStreamView(OutputStream aStream, JTextArea target) {
 			super(aStream);
@@ -109,23 +110,35 @@ public class OutputWindow extends JPanel {
 
 		private void print(String text) {
 			Highlighter.HighlightPainter painter = null;
+			String prefix = oldPrefix;
 			if (text.startsWith(LogUtils.PREFIX_INFO)) {
+				prefix = LogUtils.PREFIX_INFO;
 				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_WARNING)) {
+				prefix = LogUtils.PREFIX_WARNING;
 				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_ERROR)) {
+				prefix = LogUtils.PREFIX_ERROR;
 				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_STDOUT)) {
-				text = text.substring(LogUtils.PREFIX_STDOUT.length());
+				prefix = LogUtils.PREFIX_STDOUT;
+				text = text.substring(prefix.length());
 				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
 			} else if (text.startsWith(LogUtils.PREFIX_STDERR)) {
-				text = text.substring(LogUtils.PREFIX_STDERR.length());
+				prefix = LogUtils.PREFIX_STDERR;
+				text = text.substring(prefix.length());
 				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
-			} else if (newLine) {
+			} else if ( !text.equals("\n") ) {
+				prefix = null;
 				painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
 			}
 
-			newLine = text.endsWith("\n");
+			if ((oldPrefix != null) && !oldPrefix.equals(prefix) && needsNewLine) {
+				target.append("\n");
+			}
+			oldPrefix = prefix;
+			needsNewLine = !text.endsWith("\n");
+
 			int fromPos = target.getDocument().getLength();
 			target.append(text);
 			int toPos = target.getDocument().getLength();

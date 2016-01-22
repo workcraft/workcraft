@@ -27,6 +27,7 @@ import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -137,13 +138,13 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 		}
 		byte[] eqnOutput = mpsatResult.getOutputFile(MpsatSynthesisTask.EQN_FILE_NAME);
 		if (eqnOutput != null) {
-			System.out.println("MPSat synthesis result in EQN format:");
+			LogUtils.logInfoLine("MPSat synthesis result in EQN format:");
 			System.out.println(new String(eqnOutput));
 			System.out.println();
 		}
 		byte[] verilogOutput = mpsatResult.getOutputFile(MpsatSynthesisTask.VERILOG_FILE_NAME);
 		if (verilogOutput != null) {
-			System.out.println("MPSat synthesis result in Verilog format:");
+			LogUtils.logInfoLine("MPSat synthesis result in Verilog format:");
 			System.out.println(new String(verilogOutput));
 			System.out.println();
 		}
@@ -168,7 +169,13 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 					String title = we.getModelEntry().getModel().getTitle();
 					visualCircuit.setTitle(title);
 					visualCircuit.setEnvironmentFile(we.getFile());
-					framework.getMainWindow().getCurrentEditor().updatePropertyView();
+
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							framework.getMainWindow().getCurrentEditor().updatePropertyView();
+						}
+					});
 				}
 			} catch (DeserialisationException e) {
 				throw new RuntimeException(e);

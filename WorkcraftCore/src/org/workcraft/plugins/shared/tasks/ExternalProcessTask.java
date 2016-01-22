@@ -1,6 +1,5 @@
 package org.workcraft.plugins.shared.tasks;
 
-import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -24,10 +23,13 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 	private volatile int returnCode;
 	private boolean userCancelled = false;
 	private ProgressMonitor<? super ExternalProcessResult> monitor;
-	private boolean needsExtraNewLine = false;
 
 	private DataAccumulator stdoutAccum = new DataAccumulator();
 	private DataAccumulator stderrAccum = new DataAccumulator();
+
+	public ExternalProcessTask(List<String> args, File workingDir) {
+		this(args, workingDir, false, false);
+	}
 
 	public ExternalProcessTask(List<String> args, File workingDir, boolean printStdout, boolean printStderr) {
 		this.args = args;
@@ -118,24 +120,17 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 		if (printStderr) {
 			printData(data, LogUtils.PREFIX_STDERR);
 		}
-
 	}
 
 	@Override
 	public void processFinished(int returnCode) {
 		this.returnCode = returnCode;
 		this.finished = true;
-		System.out.println();
-		if (needsExtraNewLine) {
-			System.out.println();
-			needsExtraNewLine = false;
-		}
 	}
 
 	private void printData(byte[] data, String prefix) {
 		String text = new String(data);
 		System.out.print(prefix + text);
-		needsExtraNewLine = !text.endsWith(System.lineSeparator());
 	}
 
 }

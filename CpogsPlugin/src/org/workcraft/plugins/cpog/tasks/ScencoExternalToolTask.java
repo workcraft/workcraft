@@ -35,7 +35,7 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
 		}
 
 		// Running the tool through external process interface
-		ExternalProcessTask task = new ExternalProcessTask(args, null, false, false);
+		ExternalProcessTask task = new ExternalProcessTask(args, null);
 		SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 		Result<? extends ExternalProcessResult> result = task.run(mon);
 

@@ -20,6 +20,7 @@ import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -42,19 +43,19 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
 
 			String log = result.getReturnValue().getLog();
 			if ((log != null) && !log.isEmpty()) {
-				System.out.println("Petrify synthesis log:");
+				LogUtils.logInfoLine("Petrify synthesis log:");
 				System.out.println(log);
 			}
 
 			String equations = result.getReturnValue().getEquation();
 			if ((equations != null) && !equations.isEmpty()) {
-				System.out.println("Petrify synthesis result in EQN format:");
+				LogUtils.logInfoLine("Petrify synthesis result in EQN format:");
 				System.out.println(equations);
 			}
 
 			String verilog = result.getReturnValue().getVerilog();
 			if (CircuitSettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
-				System.out.println("Petrify synthesis result in Verilog format:");
+				LogUtils.logInfoLine("Petrify synthesis result in Verilog format:");
 				System.out.println(verilog);
 				try {
 					ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
