@@ -21,37 +21,23 @@
 
 package org.workcraft.plugins.workspace.handlers;
 
-import java.awt.Desktop;
 import java.io.File;
-import java.io.IOException;
 
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.workspace.FileHandler;
 
 public class SystemOpen implements FileHandler {
 
+	@Override
 	public boolean accept(File f) {
 		return !f.getName().endsWith(FileFilters.DOCUMENT_EXTENSION);
 	}
 
-
+	@Override
 	public void execute(File f) {
-		open(f);
+		DesktopApi.open(f);
 	}
-
-
-	public static void open(File f) {
-		try {
-			if (System.getProperty ("os.name").contains("Windows")) {
-				Runtime.getRuntime().exec (new String[] {"cmd", "/c", f.getAbsolutePath() });
-			} else {
-				Desktop.getDesktop().open(f);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 	@Override
 	public String getDisplayName() {
