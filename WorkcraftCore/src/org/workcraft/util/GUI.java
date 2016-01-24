@@ -25,10 +25,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Document;
@@ -125,8 +125,7 @@ public class GUI {
 			BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
 			Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
-			if(background!=null)
-			{
+			if (background != null) {
 				g2d.setColor(background);
 				g2d.fillRect(0,0,width, height);
 			}
