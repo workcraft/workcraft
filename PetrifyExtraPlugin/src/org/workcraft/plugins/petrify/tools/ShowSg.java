@@ -5,10 +5,10 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.DrawSgResult;
 import org.workcraft.plugins.petrify.tasks.DrawSgTask;
-import org.workcraft.plugins.workspace.handlers.SystemOpen;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -63,7 +63,8 @@ public class ShowSg implements Tool {
 			@Override
 			public void finished(Result<? extends DrawSgResult> result, String description) {
 				if (result.getOutcome() == Outcome.FINISHED) {
-					SystemOpen.open(result.getReturnValue().getPsFile());
+					DesktopApi.open(result.getReturnValue().getPsFile());
+					//SystemOpen.open(result.getReturnValue().getPsFile());
 				} else  if (result.getOutcome() != Outcome.CANCELLED) {
 					String errorMessage = "Petrify tool chain execution failed :-(";
 					Throwable cause = result.getCause();

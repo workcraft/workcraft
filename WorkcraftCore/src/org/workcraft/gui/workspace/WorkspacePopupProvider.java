@@ -68,10 +68,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
 		final File file = workspace.getFile(path);
 
-		if(file.isDirectory())
-		{
+		if(file.isDirectory()) {
 			popup.addSeparator();
-
 			{
 				final JMenuItem miLink = new JMenuItem("Link external files or directories...");
 				miLink.addActionListener(new ActionListener() {
@@ -125,31 +123,29 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 		{
 			popup.addSeparator();
 			final WorkspaceEntry openFile = workspace.getOpenFile(path);
-			if (openFile==null)
-			{
+			if (openFile==null) {
 				if(file.exists()) {
-					if(file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION))
-					{
+					if(file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
 						final JMenuItem miOpen = new JMenuItem("Open");
-						miOpen.addActionListener(new ActionListener()
-						{
-							@Override public void actionPerformed(ActionEvent e) {
+						miOpen.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
 								framework.getMainWindow().openWork(file);
 							}
-						}
-						);
+						});
 						popup.add(miOpen);
 					}
 
 					for (PluginInfo<? extends FileHandler> info : framework.getPluginManager().getPlugins(FileHandler.class)) {
 						FileHandler handler = info.getSingleton();
 
-						if (!handler.accept(file))
+						if ( !handler.accept(file) ) {
 							continue;
+						}
 						JMenuItem mi = new JMenuItem(handler.getDisplayName());
 						handlers.put(mi, handler);
 						mi.addActionListener(new ActionListener() {
-
+							@Override
 							public void actionPerformed(ActionEvent e) {
 								handlers.get(e.getSource()).execute(file);
 							}
@@ -167,6 +163,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
 				JMenuItem miOpenView = new JMenuItem("Open editor");
 				miOpenView.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						framework.getMainWindow().createEditorWindow(openFile);
 					}
@@ -174,6 +171,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
 				JMenuItem miSave = new JMenuItem("Save");
 				miSave.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
 							framework.getMainWindow().save(openFile);
@@ -184,6 +182,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
 				JMenuItem miSaveAs = new JMenuItem("Save as...");
 				miSaveAs.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
 							framework.getMainWindow().saveAs(openFile);
@@ -238,6 +237,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
 			JMenuItem miRemove = new JMenuItem("Delete");
 			miRemove.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
 						workspace.delete(path);
