@@ -22,7 +22,7 @@ public class PetriNetConnectionTool extends ConnectionTool {
 	public boolean isConnectable(Node node) {
 		return ( (node instanceof VisualPlace)
 			  || (node instanceof VisualReplicaPlace)
-			  || (node instanceof VisualTransition));
+			  || (node instanceof VisualTransition) );
 	}
 
 	@Override

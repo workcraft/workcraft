@@ -5,13 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
@@ -21,7 +18,7 @@ import org.workcraft.plugins.shared.CommonCommentSettings;
 @Hotkey(KeyEvent.VK_N)
 @DisplayName("Text Note")
 @SVGIcon("images/icons/svg/note.svg")
-public class VisualComment extends VisualComponent implements Container {
+public class VisualComment extends VisualComponent {
 	public static final String PROPERTY_TEXT_ALIGNMENT = "Text alignment";
 
 	protected double size = CommonCommentSettings.getBaseSize();
@@ -113,30 +110,6 @@ public class VisualComment extends VisualComponent implements Container {
 	@Override
 	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
 		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
-	}
-
-	@Override
-	public void add(Node node) {
-	}
-
-	@Override
-	public void add(Collection<Node> nodes) {
-	}
-
-	@Override
-	public void remove(Node node) {
-	}
-
-	@Override
-	public void remove(Collection<Node> nodes) {
-	}
-
-	@Override
-	public void reparent(Collection<Node> nodes) {
-	}
-
-	@Override
-	public void reparent(Collection<Node> nodes, Container newParent) {
 	}
 
 }

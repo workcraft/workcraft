@@ -41,6 +41,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -117,7 +118,9 @@ public class ConnectionTool extends AbstractTool {
 	}
 
 	public boolean isConnectable(Node node) {
-		return !(node instanceof VisualConnection);
+		return ( (node != null)
+			  && !(node instanceof VisualConnection)
+			  && !(node instanceof VisualComment) );
 	}
 
 	@Override

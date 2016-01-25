@@ -7,10 +7,12 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
@@ -68,28 +70,48 @@ public class VisualState extends VisualComponent {
 		}
 
 		if (getReferencedState().isInitial()) {
-			double s = size/4;
-			Path2D shape = new Path2D.Double();
-			shape.moveTo(0.0, -size);
-			shape.lineTo(0.0, -size/2);
-			shape.moveTo(-s/2, -size/2 - s);
-			shape.lineTo(0.0, -size/2);
-			shape.lineTo(s/2, -size/2 - s);
 			g.setStroke(new BasicStroke(strokeWidth));
 			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			g.draw(shape);
+			g.draw(getInitialMarkerShape());
 		}
 
 		if (getReferencedState().isFinal()) {
-			double s = 2*size/3;
-			Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
 			g.setStroke(new BasicStroke(strokeWidth/2));
 			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-			g.draw(shape);
+			g.draw(getFinalMarkerShape());
 		}
 
 		drawLabelInLocalSpace(r);
 		drawNameInLocalSpace(r);
+	}
+
+	private Shape getInitialMarkerShape() {
+		double s = size/4;
+		Path2D shape = new Path2D.Double();
+		shape.moveTo(0.0, -size);
+		shape.lineTo(0.0, -size/2);
+		shape.moveTo(-s/2, -size/2 - s);
+		shape.lineTo(0.0, -size/2);
+		shape.lineTo(s/2, -size/2 - s);
+		return shape;
+	}
+
+	private Shape getFinalMarkerShape() {
+		double s = 2*size/3;
+		Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
+		return shape;
+	}
+
+	@Override
+	public Rectangle2D getBoundingBoxInLocalSpace() {
+		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+		if (getReferencedState().isInitial()) {
+			bb = BoundingBoxHelper.union(bb, getInitialMarkerShape().getBounds2D());
+		}
+		if (getReferencedState().isFinal()) {
+			bb = BoundingBoxHelper.union(bb, getFinalMarkerShape().getBounds2D());
+		}
+		return bb;
 	}
 
 	@Override
