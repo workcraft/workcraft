@@ -274,6 +274,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return getOffset(getLabelPositioning());
 	}
 
+	public Alignment getLabelAlignment() {
+        return Alignment.LEFT;
+	}
+
 	protected void cacheLabelRenderedText(DrawRequest r) {
 		if (labelRenderedText.isDifferent(getLabel(), labelFont, getLabelPositioning(), getLabelOffset())) {
 			labelRenderedText = new RenderedText(getLabel(), labelFont, getLabelPositioning(), getLabelOffset());
@@ -286,7 +290,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 			Graphics2D g = r.getGraphics();
 			Decoration d = r.getDecoration();
 			g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
-			labelRenderedText.draw(g);
+			labelRenderedText.draw(g, getLabelAlignment());
 		}
 	}
 

@@ -674,10 +674,10 @@ public class SelectionTool extends AbstractTool {
 		textPane.setText(initialText.replace("|", "\n"));
 
 		// Align the text to centre
-		SimpleAttributeSet center = new SimpleAttributeSet();
-		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		SimpleAttributeSet alignment = new SimpleAttributeSet();
+		StyleConstants.setAlignment(alignment, component.getLabelAlignment().toStyleConstant());
 		StyledDocument document = textPane.getStyledDocument();
-		document.setParagraphAttributes(0, document.getLength(), center, false);
+		document.setParagraphAttributes(0, document.getLength(), alignment, false);
 
 		// Set font size similar to the current editor scale
 		float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();

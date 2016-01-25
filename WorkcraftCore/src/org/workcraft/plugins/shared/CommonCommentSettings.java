@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Config;
+import org.workcraft.dom.visual.Alignment;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -35,18 +36,21 @@ public class CommonCommentSettings implements Settings {
 
 	private static final String keyBaseSize  = prefix + ".baseSize";
 	private static final String keyStrokeWidth  = prefix + ".strokeWidth";
+	private static final String keyTextAlignment = prefix + ".textAlignment";
 	private static final String keyTextColor  = prefix + ".textColor";
 	private static final String keyBorderColor  = prefix + ".borderColor";
 	private static final String keyFillColor  = prefix + ".fillColor";
 
 	private static final double defaultBaseSize = 1.0;
 	private static final double defaultStrokeWidth = 0.02;
+	private static Alignment defaultTextAlignment = Alignment.CENTER;
 	private static final Color defaultTextColor = Color.BLACK;
 	private static final Color defaultBorderColor = Color.GRAY;
 	private static final Color defaultFillColor = new Color(255, 255, 200);
 
 	private static double baseSize = defaultBaseSize;
 	private static double strokeWidth = defaultStrokeWidth;
+	private static Alignment textAlignment = defaultTextAlignment;
 	private static Color textColor = defaultTextColor;
 	private static Color borderColor = defaultBorderColor;
 	private static Color fillColor = defaultFillColor;
@@ -69,6 +73,16 @@ public class CommonCommentSettings implements Settings {
 			}
 			protected Double getter(CommonCommentSettings object) {
 				return getStrokeWidth();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonCommentSettings, Alignment>(
+				this, "Text alignment", Alignment.class, true, false, false) {
+			protected void setter(CommonCommentSettings object, Alignment value) {
+				setTextAlignment(value);
+			}
+			protected Alignment getter(CommonCommentSettings object) {
+				return getTextAlignment();
 			}
 		});
 
@@ -112,6 +126,7 @@ public class CommonCommentSettings implements Settings {
 	public void load(Config config) {
 		setBaseSize(config.getDouble(keyBaseSize, defaultBaseSize));
 		setStrokeWidth(config.getDouble(keyStrokeWidth, defaultStrokeWidth));
+		setTextAlignment(config.getEnum(keyTextAlignment, Alignment.class, defaultTextAlignment));
 		setTextColor(config.getColor(keyTextColor, defaultTextColor));
 		setBorderColor(config.getColor(keyBorderColor, defaultBorderColor));
 		setFillColor(config.getColor(keyFillColor, defaultFillColor));
@@ -121,6 +136,7 @@ public class CommonCommentSettings implements Settings {
 	public void save(Config config) {
 		config.setDouble(keyBaseSize, getBaseSize());
 		config.setDouble(keyStrokeWidth, getStrokeWidth());
+		config.setEnum(keyTextAlignment, Alignment.class, getTextAlignment());
 		config.setColor(keyTextColor, getTextColor());
 		config.setColor(keyBorderColor, getBorderColor());
 		config.setColor(keyFillColor, getFillColor());
@@ -150,6 +166,14 @@ public class CommonCommentSettings implements Settings {
 
 	public static void setStrokeWidth(double value) {
 		strokeWidth = value;
+	}
+
+	public static Alignment getTextAlignment() {
+		return textAlignment;
+	}
+
+	public static void setTextAlignment(Alignment value) {
+		textAlignment = value;
 	}
 
 	public static Color getTextColor() {

@@ -57,12 +57,26 @@ public class RenderedText {
 				|| offset.getX() != this.xOffset || offset.getY() != this.yOffset);
 	}
 
-	public void draw (Graphics2D g) {
+	public void draw(Graphics2D g) {
+		draw(g, Alignment.LEFT);
+	}
+
+	public void draw(Graphics2D g, Alignment alignment) {
 		g.setFont(font);
 		float y = (float)boundingBox.getMinY();
 		for (GlyphVector glyphVector: glyphVectors) {
 			final Rectangle2D lineBoundingBox = glyphVector.getVisualBounds();
-			double xMargin = (boundingBox.getWidth() - lineBoundingBox.getWidth()) / 2.0;
+			double xMargin = 0.0;
+			switch (alignment) {
+			case CENTER :
+				xMargin = (boundingBox.getWidth() - lineBoundingBox.getWidth()) / 2.0;
+				break;
+			case RIGHT:
+				xMargin = (boundingBox.getWidth() - lineBoundingBox.getWidth());
+				break;
+			default:
+				xMargin = 0.0;
+			}
 			double x = boundingBox.getX() - lineBoundingBox.getX() + xMargin * (1.0 - positioning.xSign);
 			y += lineBoundingBox.getHeight();
 			g.drawGlyphVector(glyphVector, (float)x, (float)y);

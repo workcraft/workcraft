@@ -14,14 +14,19 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.shared.CommonCommentSettings;
 
 @Hotkey(KeyEvent.VK_N)
 @DisplayName("Text Note")
 @SVGIcon("images/icons/svg/note.svg")
 public class VisualComment extends VisualComponent implements Container {
+	public static final String PROPERTY_TEXT_ALIGNMENT = "Text alignment";
+
 	protected double size = CommonCommentSettings.getBaseSize();
 	protected double strokeWidth = CommonCommentSettings.getStrokeWidth();
+	protected Alignment textAlignment = CommonCommentSettings.getTextAlignment();
 
 	public VisualComment(CommentNode note) {
 		super(note);
@@ -32,6 +37,30 @@ public class VisualComment extends VisualComponent implements Container {
 		removePropertyDeclarationByName("Label positioning");
 		removePropertyDeclarationByName("Name color");
 		removePropertyDeclarationByName("Name positioning");
+		addPropertyDeclarations();
+	}
+
+	private void addPropertyDeclarations() {
+		addPropertyDeclaration(new PropertyDeclaration<VisualComment, Alignment>(
+				this, PROPERTY_TEXT_ALIGNMENT, Alignment.class, true, true, true) {
+			protected void setter(VisualComment object, Alignment value) {
+				object.setTextAlignment(value);
+			}
+			protected Alignment getter(VisualComment object) {
+				return object.getTextAlignment();
+			}
+		});
+	}
+
+	public Alignment getTextAlignment() {
+		return textAlignment;
+	}
+
+	public void setTextAlignment(Alignment value) {
+		if (value != textAlignment) {
+			textAlignment = value;
+			sendNotification(new PropertyChangedEvent(this, PROPERTY_TEXT_ALIGNMENT));
+		}
 	}
 
 	@Override
@@ -54,6 +83,10 @@ public class VisualComment extends VisualComponent implements Container {
 		return new Point2D.Double(0.0, 0.0);
 	}
 
+	@Override
+	public Alignment getLabelAlignment() {
+        return getTextAlignment();
+	}
 
 	@Override
 	public void draw(DrawRequest r) {
