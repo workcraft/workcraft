@@ -30,34 +30,34 @@ import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.fop.render.ps.EPSTranscoder;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.serialisation.Format;
 
-public class PNGExporter implements Exporter {
+public class EPSExporter implements Exporter {
 
 
 	public void export(Model model, OutputStream out) throws IOException, SerialisationException {
 		InputStream svg = SVGExportUtils.stream(model);
-		Transcoder transcoder = new PNGTranscoder();
+		Transcoder transcoder = new EPSTranscoder();
 		TranscoderInput transcoderInput = new TranscoderInput(svg);
 		TranscoderOutput transcoderOutput = new TranscoderOutput(out);
 		try {
-		    transcoder.transcode(transcoderInput, transcoderOutput);
+			transcoder.transcode(transcoderInput, transcoderOutput);
 		} catch (TranscoderException e) {
 			throw new SerialisationException(e);
 		}
 	}
 
 	public String getDescription() {
-		return ".png (FOP PNG transcoder)";
+		return ".eps (FOP EPS transcoder)";
 	}
 
 	public String getExtenstion() {
-		return ".png";
+		return ".eps";
 	}
 
 	public int getCompatibility(Model model) {
@@ -69,6 +69,6 @@ public class PNGExporter implements Exporter {
 
 	@Override
 	public UUID getTargetFormat() {
-		return Format.PNG;
+		return Format.EPS;
 	}
 }

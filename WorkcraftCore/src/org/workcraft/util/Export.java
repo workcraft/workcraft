@@ -127,35 +127,34 @@ public class Export {
 		exportToFile(exporter, model, file);
 	}
 
-	static public ExportTask createExportTask (Model model, File file, UUID targetFormat, PluginProvider provider) throws SerialisationException {
+	static public ExportTask createExportTask(Model model, File file, UUID targetFormat, PluginProvider provider) throws SerialisationException {
 		Exporter exporter = chooseBestExporter(provider, model, targetFormat);
 		if (exporter == null)
 			throw new SerialisationException("No exporter available for model type " + model.getDisplayName() + " to produce format " + Format.getDescription(targetFormat));
 		return new ExportTask(exporter, model, file.getAbsolutePath());
 	}
 
-	static public void exportToFile (Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {
+	static public void exportToFile(Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {
 		file.createNewFile();
 		FileOutputStream fos = new FileOutputStream(file);
-
 		boolean ok = false;
-
-		try
-		{
-			if (model instanceof VisualModel)
-				if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE)
-					if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE)
-							throw new RuntimeException ("Exporter is not applicable to the model.");
-					else
+		try {
+			if (model instanceof VisualModel) {
+				if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE) {
+					if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
+						throw new RuntimeException ("Exporter is not applicable to the model.");
+					} else {
 						model = ((VisualModel)model).getMathModel();
+					}
+				}
+			}
 			exporter.export(model, fos);
 			ok = true;
-		}
-		finally
-		{
+		} finally {
 			fos.close();
-			if(!ok)
+			if ( !ok ) {
 				file.delete();
+			}
 		}
 	}
 
