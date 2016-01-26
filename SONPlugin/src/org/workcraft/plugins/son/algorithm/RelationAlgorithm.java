@@ -143,7 +143,7 @@ public class RelationAlgorithm{
 	/**
 	 * get all initial states of a given node set
 	 */
-	public Collection<Condition> getInitial(ONGroup group){
+	public Collection<Condition> getONInitial(ONGroup group){
 		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for (Condition node : group.getConditions())
 			if (isInitial(node))
@@ -154,7 +154,7 @@ public class RelationAlgorithm{
 	/**
 	 * get all final states of a given node set
 	 */
-	public Collection<Condition> getFinal(ONGroup group){
+	public Collection<Condition> getONFinal(ONGroup group){
 		ArrayList<Condition> result =  new ArrayList<Condition>();
 		for (Condition node : group.getConditions())
 			if (isFinal(node))

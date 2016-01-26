@@ -56,7 +56,7 @@ public class ASONAlg extends RelationAlgorithm{
 		Map<TransitionNode, ArrayList<Marking>> visited = new HashMap<TransitionNode, ArrayList<Marking>>();
 
 		Marking initial = new Marking();
-		for(Condition c : getInitial(group)){
+		for(Condition c : getONInitial(group)){
 			initial.add(c);
 		}
 

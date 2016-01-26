@@ -35,6 +35,7 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeInconsistencyException;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
@@ -73,12 +74,12 @@ public class TestTool extends AbstractTool implements Tool{
 		SON net=(SON)we.getModelEntry().getMathModel();
 		VisualSON vnet = (VisualSON)we.getModelEntry().getVisualModel();
 		//reachableMarkingsTest(net);
-		//esitmationTest(net);
+		esitmationTest(net);
 		//timeTest(net);
 		//bhvTimeTest(net);
 		//getScenario(net);
 
-		dfsTest(net);
+		//dfsTest(net);
 		//outputBefore(net);
 		//phaseTest(net);
 		//csonCycleTest(net);
@@ -109,9 +110,21 @@ public class TestTool extends AbstractTool implements Tool{
 		}
 	}
 
-//	private void esitmationTest(SON net){
-//		EstimationAlg timeAlg = new EstimationAlg(net, new Interval(10, 10), Granularity.YEAR_YEAR);
-//		BSONAlg bsonAlg = new BSONAlg(net);
+	private void esitmationTest(SON net){
+		EstimationAlg timeAlg = new EstimationAlg(net, new Interval(0, 0), Granularity.YEAR_YEAR, null);
+		BSONAlg bsonAlg = new BSONAlg(net);
+
+		try {
+			timeAlg.entireEst();
+		} catch (TimeOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AlternativeStructureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.out.println(net.getConditions().size() + " "+net.getSONConnections().size());
 //		try {
 //			Interval result = timeAlg.EstimateEndTime(bsonAlg.getInitial(net.getComponents()).iterator().next(), null);
 //		  	System.out.println("result" + result);
@@ -122,7 +135,8 @@ public class TestTool extends AbstractTool implements Tool{
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-//	}
+
+	}
 
 /*	private void timeTest(SON net){
 		TimeAlg timeAlg = new TimeAlg(net);
@@ -202,8 +216,8 @@ public class TestTool extends AbstractTool implements Tool{
 		PathAlgorithm alg = new PathAlgorithm(net);
 		RelationAlgorithm alg2 = new RelationAlgorithm(net);
 		ONGroup g = net.getGroups().iterator().next();
-		Collection<Path> result = alg.getPaths(alg2.getInitial(g).iterator().next(),
-				alg2.getFinal(g).iterator().next(),
+		Collection<Path> result = alg.getPaths(alg2.getONInitial(g).iterator().next(),
+				alg2.getONFinal(g).iterator().next(),
 				net.getGroups().iterator().next().getComponents());
 
 		for(Path path : result){

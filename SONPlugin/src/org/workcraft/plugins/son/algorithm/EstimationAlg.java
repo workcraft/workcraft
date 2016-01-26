@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -51,6 +52,9 @@ public class EstimationAlg extends TimeAlg{
 		this.scenario = s;
 		this.g = g;
 
+		if(scenario == null && !hasConflict())
+			scenario = getUnalterSON();
+
 		if(g == Granularity.YEAR_YEAR){
 			granularity = new YearYear();
 		}else if (g == Granularity.HOUR_MINS){
@@ -62,9 +66,6 @@ public class EstimationAlg extends TimeAlg{
 	}
 
 	public void setDefaultDuration(){
-		if(!hasConflict() && scenario == null){
-			scenario = getUnalterSON();
-		}
 		for(Node n : scenario.getNodes(net)){
 			if(n instanceof PlaceNode || n instanceof Block){
 				Time node = (Time)n;
@@ -89,11 +90,8 @@ public class EstimationAlg extends TimeAlg{
 		ConsistencyAlg alg = new ConsistencyAlg(net);
 		Time node = null;
 
-		if(hasConflict() && scenario == null)
+		if(scenario == null)
 			throw new AlternativeStructureException("select a scenario for "+net.getNodeReference(n) + " first.");
-		else if(!hasConflict() && scenario == null){
-			scenario = getUnalterSON();
-		}
 
 		boolean specifiedDur = alg.hasSpecifiedDur(n, false, scenario);
 		boolean specifiedStart = alg.hasSpecifiedStart(n, scenario);
@@ -318,6 +316,64 @@ public class EstimationAlg extends TimeAlg{
 		bwdPaths.clear();
 
 	}
+
+	public void entireEst() throws TimeOutOfBoundsException, AlternativeStructureException{
+		if(scenario == null)
+			throw new AlternativeStructureException("select a scenario first");
+		//add super initial to SON
+		Condition superIni = net.createCondition(null, null);
+		scenario.add(net.getNodeReference(superIni));
+
+		SONAlg sonAlg = new SONAlg(net);
+
+		//add arcs from super initial to SON initial
+		for(PlaceNode p : sonAlg.getSONInitial()){
+			try {
+				SONConnection con = net.connect(superIni, p, Semantics.PNLINE);
+				scenario.add(net.getNodeReference(con));
+			} catch (InvalidConnectionException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println(scenario.toString());
+		Interval end = null;
+
+		try {
+			end = getEstimatedEndTime(superIni);
+		} catch (TimeEstimationException e) {
+			net.remove(superIni);
+			return;
+		}
+
+		superIni.setEndTime(end);
+
+
+
+		System.out.println(superIni.getEndTime().toString());
+
+		//remove super initial
+		net.remove(superIni);
+	}
+
+    private void forwardDFSEntire(LinkedList<Time> visited, Collection<Node> nodes) throws TimeOutOfBoundsException  {
+        Time last = visited.getLast();
+    	LinkedList<Time> neighbours = getCausalPostset(last, nodes);
+
+        for(Time t : neighbours){
+        	if(!visited.contains(t)){
+     			if(!t.getStartTime().isSpecified()){
+    				t.setStartTime(last.getEndTime());
+    			}
+     			if(!t.getEndTime().isSpecified()){
+     				Interval time = granularity.plusTD(t.getStartTime(), t.getDuration());
+     				t.setEndTime(time);
+     			}
+
+        		visited.add(t);
+        		forwardDFSEntire(visited, nodes);
+        	}
+        }
+    }
 
 	private boolean hasConflict(){
 		RelationAlgorithm alg = new RelationAlgorithm(net);

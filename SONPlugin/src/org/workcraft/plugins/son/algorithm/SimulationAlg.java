@@ -24,6 +24,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
 	private SON net;
 	private BSONAlg bsonAlg;
+	private SONAlg sonAlg;
 
 	private Collection<ONGroup> upperGroups;
 	private Collection<ONGroup> lowerGroups;
@@ -33,6 +34,7 @@ public class SimulationAlg extends RelationAlgorithm {
 		super(net);
 		this.net = net;
 		bsonAlg = new BSONAlg(net);
+		sonAlg = new SONAlg(net);
 
 		upperGroups = bsonAlg.getUpperGroups(net.getGroups());
 		lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
@@ -41,79 +43,32 @@ public class SimulationAlg extends RelationAlgorithm {
 	//get SON initial marking
 	public Map<PlaceNode, Boolean> getInitialMarking(){
 		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
-		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
-		Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
 
-		for(PlaceNode c : net.getPlaceNodes())
-			result.put(c, false);
+		Collection<PlaceNode> initialM = sonAlg.getSONInitial();
 
-		for(ONGroup group : net.getGroups()){
-			if(upperGroups.contains(group))
-				for(Condition c : getInitial(group)){
-					result.put(c, true);
-				}
-			//an initial state of a lower group is the initial state of SON
-			//if all of its upper conditions are the initial states.
-			else if(lowerGroups.contains(group)){
-				for(Condition c : getInitial(group)){
-					boolean isInitial = true;
-					Collection<Condition> set = bsonAlg.getUpperConditions(c);
-					for(Condition c2 : set){
-						if(!isInitial(c2)){
-							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getInitial(group2)))
-								isInitial = false;
-						}
-					}
-					if(isInitial)
-						result.put(c, true);
-				}
-			}
-			else{
-				for(Condition c : getInitial(group)){
-					result.put(c, true);
-				}
-			}
+		for(PlaceNode c : net.getPlaceNodes()){
+			if(initialM.contains(c))
+				result.put(c, true);
+			else
+				result.put(c, false);
 		}
+
 		return result;
 	}
 
 	//get SON final marking
 	public Map<PlaceNode, Boolean> getFinalMarking(){
 		HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
-		Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
-		Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
 
-		for(PlaceNode c : net.getPlaceNodes())
-			result.put(c, false);
+		Collection<PlaceNode> finalM = sonAlg.getSONFinal();
 
-		for(ONGroup group : net.getGroups()){
-			if(upperGroups.contains(group))
-				for(Condition c : getFinal(group)){
-					result.put(c, true);
-				}
-
-			else if(lowerGroups.contains(group)){
-				for(Condition c : getFinal(group)){
-					boolean isFinal = true;
-					Collection<Condition> set = bsonAlg.getUpperConditions(c);
-					for(Condition c2 : set){
-						if(!isInitial(c2)){
-							ONGroup group2 = net.getGroup(c2);
-							if(!set.containsAll(getFinal(group2)))
-								isFinal = false;
-						}
-					}
-					if(isFinal)
-						result.put(c, true);
-				}
-			}
-			else{
-				for(Condition c : getFinal(group)){
-					result.put(c, true);
-				}
-			}
+		for(PlaceNode c : net.getPlaceNodes()){
+			if(finalM.contains(c))
+				result.put(c, true);
+			else
+				result.put(c, false);
 		}
+
 		return result;
 	}
 

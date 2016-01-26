@@ -68,6 +68,18 @@ public class SON extends AbstractMathModel {
 	public void validate() throws ModelValidationException {
 	}
 
+	final public Condition createCondition(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
+		}
+		Condition condition = new Condition();
+		container.add(condition);
+		if (name != null) {
+			setName(condition, name);
+		}
+		return condition;
+	}
+
 	@SuppressWarnings("deprecation")
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
 		throw new org.workcraft.exceptions.NotImplementedException();
