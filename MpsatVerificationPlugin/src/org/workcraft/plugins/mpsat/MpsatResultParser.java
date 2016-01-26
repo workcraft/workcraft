@@ -78,7 +78,7 @@ public class MpsatResultParser {
 			trace = new Trace();
             String[] mpsatFlatTransitions = mpsatTrace.replaceAll("\\s","").split(",");
             for (String mpsatFlatTransition: mpsatFlatTransitions) {
-           		String mpsatTransition = mpsatFlatTransition.replace(NamespaceHelper.flatNameSeparator, NamespaceHelper.hierarchySeparator);
+           		String mpsatTransition = mpsatFlatTransition.replace(NamespaceHelper.getFlatNameSeparator(), NamespaceHelper.getHierarchySeparator());
            		String transition = mpsatTransition.substring(mpsatTransition.indexOf('.') + 1);
            		if ( !transition.isEmpty() ) {
             		trace.add(transition);

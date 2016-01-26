@@ -220,7 +220,7 @@ public class MpsatConfigurationDialog extends JDialog {
 
 	private void createReachPanel() {
 		predicatePanel = new JPanel(new BorderLayout());
-		String title = "Reach predicate (use '" + NamespaceHelper.flatNameSeparator + "' as hierarchy separator)";
+		String title = "Reach predicate (use '" + NamespaceHelper.getFlatNameSeparator() + "' as hierarchy separator)";
 		predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
 		reachText = new JTextArea();

@@ -7,8 +7,7 @@ import org.workcraft.exceptions.NodeCreationException;
 public class CommentGeneratorTool extends NodeGeneratorTool {
 
 	public CommentGeneratorTool() {
-		super(new DefaultNodeGenerator(CommentNode.class)
-		{
+		super(new DefaultNodeGenerator(CommentNode.class) {
 			@Override
 			public MathNode createMathNode() throws NodeCreationException {
 				MathNode node = super.createMathNode();

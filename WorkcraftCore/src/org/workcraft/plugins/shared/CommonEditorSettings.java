@@ -24,6 +24,8 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -59,6 +61,8 @@ public class CommonEditorSettings implements Settings {
 	private static final String keyTitleStyle = prefix + ".titleStyle";
 	private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
 	private static final String keyOpenNonvisual = prefix + ".openNonvisual";
+	private static final String keyHierarchySeparator = prefix + ".hierarchySeparator";
+	private static final String keyFlatNameSeparator = prefix + ".flatNameSeparator";
 
 	private static final Color defaultBackgroundColor = Color.WHITE;
 	private static final boolean defaultShowGrid = true;
@@ -68,6 +72,8 @@ public class CommonEditorSettings implements Settings {
 	private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
 	private static final boolean defaultShowAbsolutePaths = false;
 	private static final boolean defaultOpenNonvisual = true;
+	private static String defaultHierarchySeparator = "/";
+	private static String defaultFlatNameSeparator = "__";
 
 	private static Color backgroundColor = defaultBackgroundColor;
 	private static boolean showGrid = defaultShowGrid;
@@ -77,6 +83,8 @@ public class CommonEditorSettings implements Settings {
 	private static TitleStyle titleStyle = defaultTitleStyle;
 	private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
 	private static boolean openNonvisual = defaultOpenNonvisual;
+	private static String hierarchySeparator = defaultHierarchySeparator;
+	private static String flatNameSeparator = defaultFlatNameSeparator;
 
 	public CommonEditorSettings() {
 		properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
@@ -158,6 +166,52 @@ public class CommonEditorSettings implements Settings {
 				return getOpenNonvisual();
 			}
 		});
+
+		properties.add(new PropertyDeclaration<CommonEditorSettings, String>(
+				this, "Hierarchy separator", String.class, true, false, false) {
+			protected void setter(CommonEditorSettings object, String value) {
+				if ( !value.equals("/") && !value.equals(".") && !value.equals("\\") ) {
+					JOptionPane.showMessageDialog(null,
+							"Suggested hierarchy separators are: / \\ .",
+							"Common editor settings", JOptionPane.WARNING_MESSAGE);
+				}
+				setHierarchySeparator(value);
+			}
+			protected String getter(CommonEditorSettings object) {
+				return getHierarchySeparator();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<CommonEditorSettings, String>(
+				this, "Flat name separator", String.class, true, false, false) {
+			protected void setter(CommonEditorSettings object, String value) {
+				if (value.length() < 2) {
+					JOptionPane.showMessageDialog(null,
+							"Short flat name separator increases the risk of name clashing.\n"
+							+"Consider making it at least two characters long.",
+							"Common editor settings", JOptionPane.WARNING_MESSAGE);
+				}
+				boolean badValue = false;
+				for (int i = 0; i < value.length(); ++i) {
+					char c = value.charAt(i);
+					if ( !Character.isDigit(c) && !Character.isLetter(c) && (c != '_') ) {
+						badValue = true;
+						break;
+					}
+				}
+				if (badValue) {
+					JOptionPane.showMessageDialog(null,
+							"Flat name separator must only consist of letters, numbers and underscores.",
+							"Common editor settings", JOptionPane.ERROR_MESSAGE);
+
+				} else {
+					setFlatNameSeparator(value);
+				}
+			}
+			protected String getter(CommonEditorSettings object) {
+				return getFlatNameSeparator();
+			}
+		});
 	}
 
 	@Override
@@ -175,6 +229,8 @@ public class CommonEditorSettings implements Settings {
 		setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
 		setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
 		setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
+		setHierarchySeparator(config.getString(keyHierarchySeparator, defaultHierarchySeparator));
+		setFlatNameSeparator(config.getString(keyFlatNameSeparator, defaultFlatNameSeparator));
 	}
 
 	@Override
@@ -187,6 +243,8 @@ public class CommonEditorSettings implements Settings {
 		config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
 		config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
 		config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
+		config.set(keyHierarchySeparator, getHierarchySeparator());
+		config.set(keyFlatNameSeparator, getFlatNameSeparator());
 	}
 
 	@Override
@@ -273,6 +331,26 @@ public class CommonEditorSettings implements Settings {
 
 	public static void setOpenNonvisual(Boolean value) {
 		openNonvisual = value;
+	}
+
+	public static String getHierarchySeparator() {
+		return hierarchySeparator;
+	}
+
+	public static void setHierarchySeparator(String value) {
+		if (value.length() > 0) {
+			hierarchySeparator = value;
+		}
+	}
+
+	public static String getFlatNameSeparator() {
+		return flatNameSeparator;
+	}
+
+	public static void setFlatNameSeparator(String value) {
+		if (value.length() > 0) {
+			flatNameSeparator = value;
+		}
 	}
 
 }

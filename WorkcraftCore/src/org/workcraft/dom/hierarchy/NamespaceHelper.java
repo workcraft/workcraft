@@ -14,24 +14,30 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
 public class NamespaceHelper {
-	final static String quoteType = "'";
-	final public static String hierarchySeparator = "/";
-	final public static String hierarchyRoot = hierarchySeparator;
-	final public static String flatNameSeparator = "__";
-
 	// TODO: make it work with the embedded ' characters
 	private static Pattern hPattern = Pattern.compile("(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)");
 
-	public static String hierarchicalToFlatName(String reference) {
-		return hierarchicalToFlatName(reference, flatNameSeparator, true);
+	public static String getHierarchySeparator() {
+		return CommonEditorSettings.getHierarchySeparator();
 	}
 
-	private static String hierarchicalToFlatName(String reference, String flatSeparator, boolean suppressLeadingSeparator) {
-		if (flatSeparator==null) flatSeparator=flatNameSeparator;
+	public static String getFlatNameSeparator() {
+		return CommonEditorSettings.getFlatNameSeparator();
+	}
+
+	public static String hierarchicalToFlatName(String reference) {
+		return hierarchicalToFlatName(reference, getFlatNameSeparator(), true);
+	}
+
+	private static String hierarchicalToFlatName(String reference, String flatNameSeparator, boolean suppressLeadingSeparator) {
+		if (flatNameSeparator == null) {
+			flatNameSeparator = getFlatNameSeparator();
+		}
 
 		// Do not work with implicit places(?)
 		if (reference.startsWith("<")) {
@@ -39,8 +45,8 @@ public class NamespaceHelper {
 		}
 		String ret = "";
 		// In this version the first separator is suppressed
-		if (!suppressLeadingSeparator && reference.startsWith(hierarchySeparator)) {
-			ret=flatSeparator;
+		if (!suppressLeadingSeparator && reference.startsWith(getHierarchySeparator())) {
+			ret = flatNameSeparator;
 		}
 
 		String head = getReferenceHead(reference);
@@ -48,18 +54,18 @@ public class NamespaceHelper {
 		if (tail.isEmpty()) {
 			return ret+head;
 		}
-		return ret + head + hierarchicalToFlatName(tail, flatSeparator, false);
+		return ret + head + hierarchicalToFlatName(tail, flatNameSeparator, false);
 	}
 
 	public static String flatToHierarchicalName(String flatName) {
-		return flatToHierarchicalName(flatName, flatNameSeparator);
+		return flatToHierarchicalName(flatName, getFlatNameSeparator());
 	}
 
 	private static String flatToHierarchicalName(String reference, String flatSeparator) {
-		if (flatSeparator==null) {
-			flatSeparator = flatNameSeparator;
+		if (flatSeparator == null) {
+			flatSeparator = getFlatNameSeparator();
 		}
-		return reference.replaceAll(flatSeparator, hierarchySeparator);
+		return reference.replaceAll(flatSeparator, getHierarchySeparator());
 	}
 
 	public static void splitReference(String reference, LinkedList<String> path) {
@@ -85,7 +91,7 @@ public class NamespaceHelper {
 		for (int i = 0; i < path.size() - 1; i++) {
 			ret += path.get(i);
 			if (i < path.size() - 2) {
-				ret += hierarchySeparator;
+				ret += getHierarchySeparator();
 			}
 		}
 		return ret;
@@ -94,7 +100,7 @@ public class NamespaceHelper {
 	public static String getReferencePath(String reference) {
 		String ret = getParentReference(reference);
 		if (ret.length() > 0) {
-			ret += hierarchySeparator;
+			ret += getHierarchySeparator();
 		}
 		return ret;
 	}
