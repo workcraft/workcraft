@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog.tools;
 
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -78,6 +79,7 @@ import org.workcraft.plugins.cpog.expressions.javacc.TokenMgrError;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.stg.VisualNamedTransition;
+import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 
@@ -107,13 +109,12 @@ public class CpogSelectionTool extends SelectionTool {
 	private GraphEditor editor;
 	protected boolean cancelInPlaceEdit;
 
+	int scenarioNo = 0;
+
 	public CpogSelectionTool() {
-		super();
+		super(false);
 	}
 
-	public CpogSelectionTool(boolean enablePages) {
-		super(enablePages);
-	}
 
 	@Override
 	public void createInterfacePanel(final GraphEditor editor) {
@@ -270,7 +271,52 @@ public class CpogSelectionTool extends SelectionTool {
 		interfacePanel.add(expressionScroll, BorderLayout.CENTER);
 		interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
 
+		scenarioPageGroupButton(getGroupPanel());
+
+
 		renderTypeChangeHandler();
+	}
+
+	public void scenarioPageGroupButton(JPanel groupPanel) {
+		JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
+				"images/icons/svg/selection-page.svg"), "Combine selection as a scenario (Alt+G)");
+		groupPageButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				VisualCPOG visualCpog = (VisualCPOG)editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+				visualCpog.groupScenarioPageSelection("scenario" + scenarioNo);
+				scenarioNo++;
+				editor.requestFocus();
+			}
+		});
+		groupPanel.add(groupPageButton, 1);
+	}
+
+	public JPanel getGroupPanel() {
+		Component[] comps = interfacePanel.getComponents();
+		JPanel groupPanel = null;
+		for (int i = 0; i < comps.length; i++) {
+			if (comps[i] instanceof JPanel) {
+				JPanel panel = (JPanel) comps[i];
+				Component[] cmp = panel.getComponents();
+				for (int j = 0; j < cmp.length; j++) {
+					if (cmp[j] instanceof JPanel) {
+						JPanel pan = (JPanel) cmp[j];
+						Component[] c = pan.getComponents();
+						for (int k = 0; k < c.length; k++) {
+							if (c[k] instanceof JButton) {
+								JButton b = (JButton) c[k];
+								System.out.println(b.getText());
+								if (b.getToolTipText() != null && b.getToolTipText() == "Group selection (Ctrl+G)") {
+									groupPanel = pan;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return groupPanel;
 	}
 
 	public HashMap<String, VisualVertex> insertExpression(String text, final VisualCPOG visualCpog,

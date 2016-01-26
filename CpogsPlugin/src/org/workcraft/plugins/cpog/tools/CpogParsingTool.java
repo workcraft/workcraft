@@ -365,7 +365,8 @@ public class CpogParsingTool {
 			 }
 		 }
 
-
+		 if (total.endsWith("+")) total = total.substring(0, total.length() - 1);
+		 total = total.trim();
 
 
          return total;

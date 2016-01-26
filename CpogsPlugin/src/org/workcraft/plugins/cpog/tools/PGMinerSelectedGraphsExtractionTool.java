@@ -51,6 +51,7 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
 				allGraphs = allGraphs.substring(0, i) + "\n" + allGraphs.substring(i + 2);
 				i = allGraphs.indexOf(" + ");
 			}
+			allGraphs = allGraphs+ "\n";
 			allGraphs = allGraphs.replaceAll(" -> ", " ");
 
 			while (allGraphs.contains("\n")) {
@@ -66,6 +67,13 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
 				int index = graph.indexOf("= ");
 				if (index >= 0) {
 					graph = graph.substring(index + 2);
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Error: A graph which is not a scenario has been selected.\n"
+							+ "Please remove this from the selection, or group this as a page to continue",
+							"Error",
+							JOptionPane.ERROR_MESSAGE);
+							return null;
 				}
 				while (graph.startsWith(" ")) {
 					graph = graph.substring(1);
@@ -87,7 +95,7 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
 				exception.printStackTrace();
 			} catch (ArrayIndexOutOfBoundsException e2) {
 				JOptionPane.showMessageDialog(null,
-						"Error: No graphs have been selected",
+						"Error: No scenarios have been selected",
 						"Error",
 						JOptionPane.ERROR_MESSAGE);
 						throw e2;
@@ -102,6 +110,7 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
 		try {
 
 			File inputFile = getInputFile(we);
+			if (inputFile == null) return;
 			PGMinerTask task = new PGMinerTask(inputFile, false);
 
 			final Framework framework = Framework.getInstance();

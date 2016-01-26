@@ -31,6 +31,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.TransformHelper;
@@ -288,6 +289,26 @@ public class VisualCPOG extends AbstractVisualModel
 		} else if (node.getParent() instanceof VisualGroup) {
 			((VisualGroup) node.getParent()).removeWithoutNotify(node);
 		}
+	}
+
+	public VisualScenarioPage groupScenarioPageSelection(String graphName) {
+		VisualScenarioPage scenario = null;
+		 PageNode pageNode = new PageNode();
+		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
+		if (nodes.size() >= 1) {
+			scenario = new VisualScenarioPage(pageNode);
+			if (graphName != null) {
+				scenario.setLabel(graphName);
+			}
+			getCurrentLevel().add(scenario);
+			getCurrentLevel().reparent(nodes, scenario);
+			Point2D centre = TransformHelper.getSnappedCentre(nodes);
+			VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
+			scenario.setPosition(centre);
+			select(scenario);
+		}
+		return scenario;
+
 	}
 
 }
