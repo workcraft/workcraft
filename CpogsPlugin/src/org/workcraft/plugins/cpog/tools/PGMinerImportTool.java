@@ -53,7 +53,6 @@ public class PGMinerImportTool implements Tool {
 		}
 
 		try {
-
 			File inputFile = File.createTempFile("input", ".tr");
 			int c = 0;
 			File originalFile = new File(dialog.getFilePath());
@@ -73,6 +72,7 @@ public class PGMinerImportTool implements Tool {
 				c++;
 			}
 			k.close();
+
 			HashSet<String> visitedEvents;
 			int i = 0;
 			String[] newLines = new String[lines.length];
@@ -116,45 +116,44 @@ public class PGMinerImportTool implements Tool {
 	@Override
 	public void run(WorkspaceEntry we) {
 
-
 			File inputFile;
 			inputFile = getInputFile(we);
+
+			final Framework framework = Framework.getInstance();
+			final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+			final ToolboxPanel toolbox = editor.getToolBox();
+			final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
+
+
 			try {
 				if (inputFile != null) {
 
 					if (dialog.getExtractConcurrency()) {
 					PGMinerTask task = new PGMinerTask(inputFile, dialog.getSplit());
 
-					final Framework framework = Framework.getInstance();
+
 					PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, false);
 					framework.getTaskManager().queue(task, "PGMiner", result);
 					} else {
+						Scanner k;
 
-					final Framework framework = Framework.getInstance();
-					final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-					final ToolboxPanel toolbox = editor.getToolBox();
-					final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
+						k = new Scanner(inputFile);
+						int i = 0;
+						double yPos = tool.getLowestVertex((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel()).getY() + 3;
+						editor.getWorkspaceEntry().captureMemento();
+						while (k.hasNext()) {
+							String line = k.nextLine();
 
-					Scanner k;
+							tool.insertEventLog((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel(), i++, line.split(" "), yPos);
 
-					k = new Scanner(inputFile);
-					int i = 0;
-					double yPos = tool.getLowestVertex((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel()).getY() + 3;
-					editor.getWorkspaceEntry().captureMemento();
-					while (k.hasNext()) {
-						String line = k.nextLine();
-
-						tool.insertEventLog((VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel(), i++, line.split(" "), yPos);
-
-						yPos = yPos + 5;
-
-					}
-					k.close();
-					editor.getWorkspaceEntry().saveMemento();
+							yPos = yPos + 5;
+						}
+						k.close();
+						editor.getWorkspaceEntry().saveMemento();
 					}
 				}
 			} catch (Exception e) {
-
+				editor.getWorkspaceEntry().cancelMemento();
 			}
 		}
 

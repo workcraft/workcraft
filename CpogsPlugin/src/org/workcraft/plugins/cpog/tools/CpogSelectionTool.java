@@ -335,9 +335,9 @@ public class CpogSelectionTool extends SelectionTool {
 
         if (text.contains("=")) {
         	name = text.substring(0, text.indexOf("="));
-        	while (name.endsWith(" ")) name = name.substring(0, name.length() - 1);
+        	name = name.trim();
         	text = text.substring(text.indexOf("=") + 1);
-        	while (text.startsWith(" ")) text = text.substring(1);
+        	text = text.trim();
         }
 
         CpogFormula f = null;
@@ -960,13 +960,7 @@ public class CpogSelectionTool extends SelectionTool {
 
             String newExpression = parsingTool.getExpressionFromGraph(visualCpog);
             newExpression = newExpression.replace("\n", "");
-            while (newExpression.startsWith(" ")) {
-                newExpression = newExpression.substring(1);
-            }
-            while (newExpression.endsWith(" ")) {
-                newExpression = newExpression.substring(0, newExpression.length() - 1);
-            }
-
+            newExpression = newExpression.trim();
             GraphReference g = referenceMap.get(page.getLabel());
 
             int eqLocation;
