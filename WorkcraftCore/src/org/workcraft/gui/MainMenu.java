@@ -378,27 +378,27 @@ public class MainMenu extends JMenuBar {
 		PluginManager pluginManager = framework.getPluginManager();
 		Collection<PluginInfo<? extends Exporter>> plugins = pluginManager.getPlugins(Exporter.class);
 
-		boolean haveVisual = false;
+		boolean hasVisualModelExporter = false;
 		for (PluginInfo<? extends Exporter> info : plugins) {
 			Exporter exporter = info.getSingleton();
 			if (exporter.getCompatibility(model) > Exporter.NOT_COMPATIBLE) {
-				if (!haveVisual) {
-					addExportSeparator("Visual");
+				if (!hasVisualModelExporter) {
+					addExportSeparator("Visual model");
 				}
 				addExporter(exporter);
-				haveVisual = true;
+				hasVisualModelExporter = true;
 			}
 		}
 
-		boolean haveNonVisual = false;
+		boolean hasMathModelExporter = false;
 		for (PluginInfo<? extends Exporter> info : plugins) {
 			Exporter exporter = info.getSingleton();
 			if (exporter.getCompatibility(model.getMathModel()) > Exporter.NOT_COMPATIBLE) {
-				if (!haveNonVisual) {
-					addExportSeparator("Non-visual");
+				if (!hasMathModelExporter) {
+					addExportSeparator("Math model");
 				}
 				addExporter(exporter);
-				haveNonVisual = true;
+				hasMathModelExporter = true;
 			}
 		}
 		revalidate();
