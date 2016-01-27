@@ -52,7 +52,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
 
 	@Override
 	public String getSecondHintMessage() {
-		return (super.getSecondHintMessage() + " Hold Shift to create a place shadow.");
+		return (super.getSecondHintMessage() + " Hold Shift to create a place proxy.");
 	}
 
 	@Override
