@@ -50,6 +50,7 @@ public class StgUtils {
 				VisualConnection oldPredConnection = (VisualConnection)stg.getConnection(pred, oldTransition);
 				VisualConnection newPredConnection = stg.connect(pred, newTransition);
 				newPredConnection.copyStyle(oldPredConnection);
+				newPredConnection.copyShape(oldPredConnection);
 			} catch (InvalidConnectionException e) {
 				e.printStackTrace();
 			}
