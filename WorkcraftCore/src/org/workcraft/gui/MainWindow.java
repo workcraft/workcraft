@@ -417,6 +417,7 @@ public class MainWindow extends JFrame {
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,	0.5f));
 
 		setVisible(true);
+		loadDockingLayout();
 
 		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
@@ -679,6 +680,9 @@ public class MainWindow extends JFrame {
 				throw new OperationCancelledException("Operation cancelled by user.");
 			}
 		}
+		saveDockingLayout();
+		saveWindowGeometryToConfig();
+		saveRecentFilesToConfig();
 
 		content.remove(rootDockingPort);
 

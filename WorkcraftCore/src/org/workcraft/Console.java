@@ -81,6 +81,7 @@ public class Console {
 
 		framework.loadConfig();
 
+		// Setting recent files and the window geometry is postponed until the configuration is loaded.
 		if (framework.isInGUIMode()) {
 			MainWindow mainWindow = framework.getMainWindow();
 			mainWindow.loadRecentFilesFromConfig();
@@ -136,12 +137,8 @@ public class Console {
 		while (true) {
 			if (framework.shutdownRequested()) {
 				try {
-					MainWindow mainWindow = framework.getMainWindow();
-					mainWindow.saveDockingLayout();
-					mainWindow.saveWindowGeometryToConfig();
-					mainWindow.saveRecentFilesToConfig();
-					framework.saveConfig();
 					framework.shutdownGUI();
+					framework.saveConfig();
 				} catch (OperationCancelledException e) {
 					framework.abortShutdown();
 				}
