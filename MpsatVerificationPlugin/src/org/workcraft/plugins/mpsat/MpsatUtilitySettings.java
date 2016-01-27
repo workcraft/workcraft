@@ -33,25 +33,28 @@ import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
 public class MpsatUtilitySettings implements Settings {
 
 	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
-	private static final String prefix = "Tools.mpsat";
+	private static final String prefix = "Tools.mpsatVerification";
 
 	private static final String keyCommand = prefix + ".command";
 	private static final String keySolutionMode = prefix + ".solutionMode";
-	private static final String keyExtraArgs = prefix + ".args";
+	private static final String keyArgs = prefix + ".args";
+	private static final String keyAdvancedMode= prefix + ".advancedMode";
 	private static final String keyPrintStdout= prefix + ".printStdout";
 	private static final String keyPrintStderr= prefix + ".printStderr";
 	private static final String keyDebugReach = prefix + ".debugReach";
 
 	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat");
 	private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
-	private static final String defaultExtraArgs = "";
+	private static final String defaultArgs = "";
+	private static final Boolean defaultAdvancedMode = false;
 	private static final Boolean defaultPrintStdout = true;
 	private static final Boolean defaultPrintStderr = true;
 	private static final Boolean defaultDebugReach = false;
 
 	private static String command = defaultCommand;
 	private static SolutionMode solutionMode = defaultSolutionMode;
-	private static String extraArgs = defaultExtraArgs;
+	private static String args = defaultArgs;
+	private static Boolean advancedMode = defaultAdvancedMode;
 	private static Boolean printStdout = defaultPrintStdout;
 	private static Boolean printStderr = defaultPrintStderr;
 	private static Boolean debugReach = defaultDebugReach;
@@ -80,10 +83,20 @@ public class MpsatUtilitySettings implements Settings {
 		properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
 				this, "Additional parameters", String.class, true, false, false) {
 			protected void setter(MpsatUtilitySettings object, String value) {
-				setExtraArgs(value);
+				setArgs(value);
 			}
 			protected String getter(MpsatUtilitySettings object) {
-				return getExtraArgs();
+				return getArgs();
+			}
+		});
+
+		properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
+				this, "Edit additional parameters before every call", Boolean.class, true, false, false) {
+			protected void setter(MpsatUtilitySettings object, Boolean value) {
+				setAdvancedMode(value);
+			}
+			protected Boolean getter(MpsatUtilitySettings object) {
+				return getAdvancedMode();
 			}
 		});
 
@@ -127,7 +140,8 @@ public class MpsatUtilitySettings implements Settings {
 	public void load(Config config) {
 		setCommand(config.getString(keyCommand, defaultCommand));
 		setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
-		setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+		setArgs(config.getString(keyArgs, defaultArgs));
+		setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
 		setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
 		setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
 		setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
@@ -137,7 +151,8 @@ public class MpsatUtilitySettings implements Settings {
 	public void save(Config config) {
 		config.set(keyCommand, getCommand());
 		config.setEnum(keySolutionMode, SolutionMode.class, getSolutionMode());
-		config.set(keyExtraArgs, getExtraArgs());
+		config.set(keyArgs, getArgs());
+		config.setBoolean(keyAdvancedMode, getAdvancedMode());
 		config.setBoolean(keyPrintStdout, getPrintStdout());
 		config.setBoolean(keyPrintStderr, getPrintStderr());
 		config.setBoolean(keyDebugReach, getDebugReach());
@@ -161,12 +176,12 @@ public class MpsatUtilitySettings implements Settings {
 		command = value;
 	}
 
-	public static String getExtraArgs() {
-		return extraArgs;
+	public static String getArgs() {
+		return args;
 	}
 
-	public static void setExtraArgs(String value) {
-		extraArgs = value;
+	public static void setArgs(String value) {
+		args = value;
 	}
 
 	public static void setSolutionMode(SolutionMode value) {
@@ -179,6 +194,14 @@ public class MpsatUtilitySettings implements Settings {
 
 	public static int getSolutionCount() {
 		return (solutionMode == SolutionMode.ALL) ? 10 : 1;
+	}
+
+	public static Boolean getAdvancedMode() {
+		return advancedMode;
+	}
+
+	public static void setAdvancedMode(Boolean value) {
+		advancedMode = value;
 	}
 
 	public static Boolean getPrintStdout() {

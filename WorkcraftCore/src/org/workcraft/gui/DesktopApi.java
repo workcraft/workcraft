@@ -115,7 +115,7 @@ public class DesktopApi {
 		List<String> parts = new ArrayList<String>();
 		parts.add(command);
 		if (args != null) {
-			for (String s : args.split(" ")) {
+			for (String s : args.split("\\s")) {
 				s = String.format(s, file);
 				parts.add(s.trim());
 			}

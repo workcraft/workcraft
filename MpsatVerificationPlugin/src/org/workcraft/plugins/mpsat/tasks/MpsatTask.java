@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -50,8 +54,16 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 		}
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : MpsatUtilitySettings.getExtraArgs().split("\\s")) {
-			if (!arg.isEmpty()) {
+		String extraArgs = MpsatUtilitySettings.getArgs();
+		if (MpsatUtilitySettings.getAdvancedMode()) {
+			MainWindow mainWindow = Framework.getInstance().getMainWindow();
+			String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for MPSat:", extraArgs);
+			if (tmp != null) {
+				extraArgs = tmp;
+			}
+		}
+		for (String arg : extraArgs.split("\\s")) {
+			if ( !arg.isEmpty() ) {
 				command.add(arg);
 			}
 		}

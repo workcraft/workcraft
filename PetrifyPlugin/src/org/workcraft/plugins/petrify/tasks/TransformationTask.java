@@ -5,10 +5,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -48,7 +51,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
 		ArrayList<String> command = new ArrayList<String>();
 
 		// Name of the executable
-		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getPetrifyCommand());
+		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
 		command.add(toolName);
 
 		// Built-in arguments
@@ -57,8 +60,16 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
 		}
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" ")) {
-			if (!arg.isEmpty()) {
+		String extraArgs = PetrifyUtilitySettings.getArgs();
+		if (PetrifyUtilitySettings.getAdvancedMode()) {
+			MainWindow mainWindow = Framework.getInstance().getMainWindow();
+			String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
+			if (tmp != null) {
+				extraArgs = tmp;
+			}
+		}
+		for (String arg : extraArgs.split("\\s")) {
+			if ( !arg.isEmpty() ) {
 				command.add(arg);
 			}
 		}
