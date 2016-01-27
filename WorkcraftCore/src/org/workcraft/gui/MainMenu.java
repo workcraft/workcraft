@@ -446,7 +446,7 @@ public class MainMenu extends JMenuBar {
 		miClear.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mainWindow.clearRecentFiles();
+				mainWindow.clearRecentFilesMenu();
 			}
 		});
 		mnRecent.add(miClear);

@@ -32,6 +32,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 
@@ -78,14 +79,23 @@ public class Console {
 			framework.startGUI();
 		}
 
+		framework.loadConfig();
+
+		if (framework.isInGUIMode()) {
+			MainWindow mainWindow = framework.getMainWindow();
+			mainWindow.loadRecentFilesFromConfig();
+			mainWindow.loadWindowGeometryFromConfig();
+			mainWindow.loadDockingLayout();
+		}
+
 		framework.initPlugins();
 
 		LogUtils.logMessageLine("Running startup scripts...");
 		try {
 			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/functions.js"));
 			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/startup.js"));
-		} catch (FileNotFoundException e2) {
-			LogUtils.logWarningLine("System script file not found: " + e2.getMessage());
+		} catch (FileNotFoundException e) {
+			LogUtils.logWarningLine("System script file not found: " + e.getMessage());
 		} catch (IOException e) {
 			LogUtils.logErrorLine("Error reading system script file: " + e.getMessage());
 		} catch (WrappedException e) {
@@ -117,7 +127,8 @@ public class Console {
 			for (String arg: arglist) {
 				if (arg.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
 					File file = new File(dir, arg);
-					framework.getMainWindow().openWork(file);
+					MainWindow mainWindow = framework.getMainWindow();
+					mainWindow.openWork(file);
 				}
 			}
 		}
@@ -125,6 +136,11 @@ public class Console {
 		while (true) {
 			if (framework.shutdownRequested()) {
 				try {
+					MainWindow mainWindow = framework.getMainWindow();
+					mainWindow.saveDockingLayout();
+					mainWindow.saveWindowGeometryToConfig();
+					mainWindow.saveRecentFilesToConfig();
+					framework.saveConfig();
 					framework.shutdownGUI();
 				} catch (OperationCancelledException e) {
 					framework.abortShutdown();

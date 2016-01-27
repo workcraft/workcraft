@@ -185,19 +185,6 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	public void setLookAndFeel(String laf) throws OperationCancelledException {
-		int dialogResult = JOptionPane.showConfirmDialog(this,
-				"Changing Look and Feel requires GUI restart.\n\n"
-				+ "This will cause the visual editor windows to be closed.\n\nProceed?",
-				"Confirm", JOptionPane.YES_NO_OPTION);
-
-		if (dialogResult == JOptionPane.YES_OPTION) {
-			final Framework framework = Framework.getInstance();
-			framework.setConfigVar("gui.lookandfeel", laf);
-			framework.restartGUI();
-		}
-	}
-
 	private int getNextDockableID() {
 		return dockableIDCounter++;
 	}
@@ -361,10 +348,8 @@ public class MainWindow extends JFrame {
 		mainMenu = new MainMenu(this);
 		setJMenuBar(mainMenu);
 
-		final Framework framework = Framework.getInstance();
-		String laf = framework.getConfigVar("gui.lookandfeel");
 		SilverOceanTheme.enable();
-		LookAndFeelHelper.setLookAndFeel(laf);
+		LookAndFeelHelper.setDefaultLookAndFeel();
 		SwingUtilities.updateComponentTreeUI(this);
 
 		content = new JPanel(new BorderLayout(0, 0));
@@ -377,38 +362,13 @@ public class MainWindow extends JFrame {
 		rootDockingPort = new DefaultDockingPort("defaultDockingPort");
 		content.add(rootDockingPort, BorderLayout.CENTER);
 
-		lastSavePath = framework.getConfigVar("gui.main.lastSavePath");
-		lastOpenPath = framework.getConfigVar("gui.main.lastOpenPath");
-		for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
-			String entry = framework.getConfigVar("gui.main.recentFile" + i);
-			pushRecentFile(entry, false);
-		}
-		mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
-
-		String maximisedStr = framework.getConfigVar("gui.main.maximised");
-		String widthStr = framework.getConfigVar("gui.main.width");
-		String heightStr = framework.getConfigVar("gui.main.height");
-
-		boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
-        this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
-
-       	DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
-       	Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
-        int width = mode.getWidth() - insets.right - insets.left;
-        int height = mode.getHeight() - insets.top - insets.bottom;
-        if ((widthStr != null) && (heightStr != null)) {
-        	width = Integer.parseInt(widthStr);
-        	height = Integer.parseInt(heightStr);
-        }
-		this.setSize(width, height);
-
 		createWindows();
 
 		outputWindow.captureStream();
 		errorWindow.captureStream();
 
-		rootDockingPort.setBorderManager(new StandardBorderManager(
-				new ShadowBorder()));
+		StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
+		rootDockingPort.setBorderManager(borderManager);
 
 		float xSplit = 0.88f;
 		float ySplit = 0.82f;
@@ -457,7 +417,6 @@ public class MainWindow extends JFrame {
 		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,	0.5f));
 
 		setVisible(true);
-		loadDockingLayout();
 
 		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
@@ -475,13 +434,11 @@ public class MainWindow extends JFrame {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				// hack to fix the annoying delay occurring when
-				// createGlyphVector is called for the first time
+				// Hack to fix the annoying delay occurring when createGlyphVector is called for the first time.
 				Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
-				font.createGlyphVector(new FontRenderContext(
-						new AffineTransform(), true, true), TITLE_PLACEHOLDER);
-
-				// force svg rendering classes to load
+				FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
+				font.createGlyphVector(frc, TITLE_PLACEHOLDER);
+				// Force SVG rendering classes to load.
 				GUI.createIconFromSVG("images/icons/svg/place.svg");
 			}
 		}).start();
@@ -649,13 +606,11 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	private void saveDockingLayout() {
-		PerspectiveManager pm = (PerspectiveManager) DockingManager
-				.getLayoutManager();
+	public void saveDockingLayout() {
+		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
 		pm.getCurrentPerspective().cacheLayoutState(rootDockingPort);
 		pm.forceDockableUpdate();
-		PerspectiveModel pmodel = new PerspectiveModel(pm
-				.getDefaultPerspective().getPersistentId(),
+		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(),
 				pm.getCurrentPerspectiveName(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
 		try {
@@ -677,29 +632,24 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	private void loadDockingLayout() {
-		PerspectiveManager pm = (PerspectiveManager) DockingManager
-				.getLayoutManager();
+	public void loadDockingLayout() {
+		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
 		XMLPersister pers = new XMLPersister();
 		try {
 			File file = new File(Framework.UILAYOUT_FILE_PATH);
-			if (!file.exists()) {
-				return;
+			if (file.exists()) {
+				LogUtils.logMessageLine("Loading UI layout from " + file.getAbsolutePath());
+				FileInputStream is = new FileInputStream(file);
+				PerspectiveModel pmodel = pers.load(is);
+				pm.remove("defaultWorkspace");
+				pm.setCurrentPerspective("defaultWorkspace");
+				for (Perspective p : pmodel.getPerspectives()) {
+					pm.add(p, false);
+				}
+				pm.reload(rootDockingPort);
+				is.close();
+				DockingManager.display(outputDockable);
 			}
-			LogUtils.logMessageLine("Loading UI layout from " + file.getAbsolutePath());
-			FileInputStream is = new FileInputStream(file);
-
-			PerspectiveModel pmodel = pers.load(is);
-
-			pm.remove("defaultWorkspace");
-			pm.setCurrentPerspective("defaultWorkspace");
-
-			for (Perspective p : pmodel.getPerspectives())
-				pm.add(p, false);
-
-			pm.reload(rootDockingPort);
-
-			is.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -730,15 +680,54 @@ public class MainWindow extends JFrame {
 			}
 		}
 
-		saveDockingLayout();
-
 		content.remove(rootDockingPort);
 
+		outputWindow.releaseStream();
+		errorWindow.releaseStream();
+		setVisible(false);
+	}
+
+	public void loadWindowGeometryFromConfig() {
+		final Framework framework = Framework.getInstance();
+		String maximisedStr = framework.getConfigVar("gui.main.maximised");
+		String widthStr = framework.getConfigVar("gui.main.width");
+		String heightStr = framework.getConfigVar("gui.main.height");
+
+		boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
+        this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
+
+       	DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
+       	Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
+        int width = mode.getWidth() - insets.right - insets.left;
+        int height = mode.getHeight() - insets.top - insets.bottom;
+        if ((widthStr != null) && (heightStr != null)) {
+        	width = Integer.parseInt(widthStr);
+        	height = Integer.parseInt(heightStr);
+        }
+		this.setSize(width, height);
+	}
+
+	public void saveWindowGeometryToConfig() {
+		final Framework framework = Framework.getInstance();
 		boolean maximised = ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0);
 		framework.setConfigVar("gui.main.maximised", Boolean.toString(maximised));
 		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
 		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
+	}
 
+	public void loadRecentFilesFromConfig() {
+		final Framework framework = Framework.getInstance();
+		lastSavePath = framework.getConfigVar("gui.main.lastSavePath");
+		lastOpenPath = framework.getConfigVar("gui.main.lastOpenPath");
+		for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
+			String entry = framework.getConfigVar("gui.main.recentFile" + i);
+			pushRecentFile(entry, false);
+		}
+		updateRecentFilesMenu();
+	}
+
+	public void saveRecentFilesToConfig() {
+		final Framework framework = Framework.getInstance();
 		if (lastSavePath != null) {
 			framework.setConfigVar("gui.main.lastSavePath", lastSavePath);
 		}
@@ -750,10 +739,6 @@ public class MainWindow extends JFrame {
 		for (int i = 0; i < recentCount; i++) {
 			framework.setConfigVar("gui.main.recentFile" + i, tmp[i]);
 		}
-
-		outputWindow.releaseStream();
-		errorWindow.releaseStream();
-		setVisible(false);
 	}
 
 	public void pushRecentFile(String fileName, boolean updateMenu) {
@@ -774,12 +759,16 @@ public class MainWindow extends JFrame {
 			}
 		}
 		if (updateMenu) {
-			mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
+			updateRecentFilesMenu();
 		}
 	}
 
-	public void clearRecentFiles() {
+	public void clearRecentFilesMenu() {
 		recentFiles.clear();
+		mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
+	}
+
+	public void updateRecentFilesMenu() {
 		mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
 	}
 
@@ -1359,6 +1348,8 @@ public class MainWindow extends JFrame {
 					framework.shutdownGUI();
 					new File(Framework.UILAYOUT_FILE_PATH).delete();
 					framework.startGUI();
+					loadWindowGeometryFromConfig();
+					loadDockingLayout();
 				} catch (OperationCancelledException e) {
 				}
 			}

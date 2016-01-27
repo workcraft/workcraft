@@ -35,6 +35,7 @@ public class PetrifyModule implements Module {
 
 	@Override
 	public String getDescription() {
-		return "Petrify tool support";
+		return "Petrify synthesis support";
 	}
+
 }
