@@ -87,13 +87,13 @@ public class TransitionContractorTool extends TransformationTool implements Node
 			PetriNetModel mathModel = (PetriNetModel)visualModel.getMathModel();
 			VisualTransition visualTransition = (VisualTransition)node;
 			Transition mathTransition = visualTransition.getReferencedTransition();
-			if (needsWaitedArcs(mathModel, mathTransition)) {
-				JOptionPane.showMessageDialog(null,
-						"Error: this transformation requires weighted arcs that are currently not supported.",
-						MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
-			} else if (hasSelfLoop(mathModel, mathTransition)) {
+			if (hasSelfLoop(mathModel, mathTransition)) {
 				JOptionPane.showMessageDialog(null,
 						"Error: a transition with a self-loop/read-arc cannot be contracted.",
+						MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
+			} else if (needsWaitedArcs(mathModel, mathTransition)) {
+				JOptionPane.showMessageDialog(null,
+						"Error: this transformation requires weighted arcs that are currently not supported.",
 						MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
 			} else if (isLanguageChanging(mathModel, mathTransition)) {
 				contractTransition(visualModel, visualTransition);

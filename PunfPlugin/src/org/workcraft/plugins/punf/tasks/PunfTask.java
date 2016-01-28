@@ -29,7 +29,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 		command.add(toolName);
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : PunfUtilitySettings.getExtraArgs().split(" ")) {
+		for (String arg : PunfUtilitySettings.getExtraArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}

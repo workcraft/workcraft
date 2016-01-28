@@ -52,7 +52,7 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 		}
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : PetrifyExtraUtilitySettings.getWriteSgArgs().split(" ")) {
+		for (String arg : PetrifyExtraUtilitySettings.getWriteSgArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}

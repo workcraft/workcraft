@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.mpsat.MpsatSynthesisUtilitySettings;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
@@ -74,8 +78,16 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 		}
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : MpsatSynthesisUtilitySettings.getExtraArgs().split("\\s")) {
-			if (!arg.isEmpty()) {
+		String extraArgs = MpsatSynthesisUtilitySettings.getArgs();
+		if (MpsatSynthesisUtilitySettings.getAdvancedMode()) {
+			MainWindow mainWindow = Framework.getInstance().getMainWindow();
+			String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for MPSat:", extraArgs);
+			if (tmp != null) {
+				extraArgs = tmp;
+			}
+		}
+		for (String arg : extraArgs.split("\\s")) {
+			if ( !arg.isEmpty() ) {
 				command.add(arg);
 			}
 		}

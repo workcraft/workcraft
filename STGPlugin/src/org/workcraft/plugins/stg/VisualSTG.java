@@ -37,6 +37,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
@@ -280,7 +281,8 @@ public class VisualSTG extends AbstractVisualModel {
 	public void maybeMakeImplicit(VisualPlace place, boolean preserveConnectionShape) {
 		Collection<Node> preset = getPreset(place);
 		Collection<Node> postset = getPostset(place);
-		if ((preset.size() == 1) && (postset.size() == 1)) {
+		Collection<Replica> replicas = place.getReplicas();
+		if ((preset.size() == 1) && (postset.size() == 1) && replicas.isEmpty()) {
 			final STGPlace stgPlace = (STGPlace)place.getReferencedPlace();
 			stgPlace.setImplicit(true);
 			VisualComponent first = (VisualComponent)preset.iterator().next();

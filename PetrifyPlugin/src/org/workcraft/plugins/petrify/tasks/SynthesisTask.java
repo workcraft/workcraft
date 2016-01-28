@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
@@ -44,10 +47,10 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 
 	@Override
 	public Result<? extends SynthesisResult> run(ProgressMonitor<? super SynthesisResult> monitor) {
-		ArrayList<String> command = new ArrayList<String>();
+		ArrayList<String> command = new ArrayList<>();
 
 		// Name of the executable
-		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getPetrifyCommand());
+		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
 		command.add(toolName);
 
 		// Built-in arguments
@@ -56,8 +59,16 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
 		}
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : PetrifyUtilitySettings.getPetrifyArgs().split(" ")) {
-			if (!arg.isEmpty()) {
+		String extraArgs = PetrifyUtilitySettings.getArgs();
+		if (PetrifyUtilitySettings.getAdvancedMode()) {
+			MainWindow mainWindow = Framework.getInstance().getMainWindow();
+			String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
+			if (tmp != null) {
+				extraArgs = tmp;
+			}
+		}
+		for (String arg : extraArgs.split("\\s")) {
+			if ( !arg.isEmpty() ) {
 				command.add(arg);
 			}
 		}

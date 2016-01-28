@@ -49,11 +49,13 @@ public class LookAndFeelHelper {
 		return Collections.unmodifiableMap(lafMap);
 	}
 
+	public static void setDefaultLookAndFeel() {
+		String laf = UIManager.getCrossPlatformLookAndFeelClassName();
+		//String laf = UIManager.getSystemLookAndFeelClassName();
+		setLookAndFeel(laf);
+	}
+
 	public static void setLookAndFeel(String laf) {
-		if (laf == null) {
-			laf = UIManager.getCrossPlatformLookAndFeelClassName();
-			//laf = UIManager.getSystemLookAndFeelClassName();
-		}
 		try {
 			UIManager.setLookAndFeel(laf);
 		} catch (ClassNotFoundException e) {

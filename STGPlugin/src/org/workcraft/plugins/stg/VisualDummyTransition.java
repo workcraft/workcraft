@@ -44,16 +44,6 @@ public class VisualDummyTransition extends VisualNamedTransition implements Stat
 		return (DummyTransition)getReferencedComponent();
 	}
 
-	@NoAutoSerialisation
-	public String getText() {
-		return getReferencedTransition().getName();
-	}
-
-	@NoAutoSerialisation
-	public void setText(String name) {
-		getReferencedTransition().setName(name);
-	}
-
 	@Override
 	public Color getColor() {
 		return STGSettings.getDummyColor();

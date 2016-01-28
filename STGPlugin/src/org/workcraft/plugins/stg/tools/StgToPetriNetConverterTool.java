@@ -21,6 +21,11 @@ public class StgToPetriNetConverterTool extends ConversionTool {
 	}
 
 	@Override
+	public Position getPosition() {
+		return null;
+	}
+
+	@Override
 	public boolean isApplicableTo(WorkspaceEntry we) {
 		return we.getModelEntry().getMathModel() instanceof STG;
 	}

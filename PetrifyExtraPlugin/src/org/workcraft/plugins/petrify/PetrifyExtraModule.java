@@ -35,6 +35,7 @@ public class PetrifyExtraModule implements Module {
 
 	@Override
 	public String getDescription() {
-		return "Petrify tool support";
+		return "Petrify state graph support";
 	}
+
 }

@@ -36,7 +36,7 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
 		}
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : PetrifyExtraUtilitySettings.getDrawAstgArgs().split(" ")) {
+		for (String arg : PetrifyExtraUtilitySettings.getDrawAstgArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}

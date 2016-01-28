@@ -63,7 +63,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
 		}
 
 		// Extra arguments (should go before the file parameters)
-		for (String arg : PcompUtilitySettings.getExtraArgs().split(" ")) {
+		for (String arg : PcompUtilitySettings.getExtraArgs().split("\\s")) {
 			if (!arg.isEmpty()) {
 				command.add(arg);
 			}

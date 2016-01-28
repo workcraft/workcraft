@@ -431,11 +431,11 @@ public class Framework {
 
 	public void startGUI() {
 		if (inGUIMode) {
-			System.out.println ("Already in GUI mode");
+			System.out.println("Already in GUI mode");
 			return;
 		}
 		GUIRestartRequested = false;
-		System.out.println ("Switching to GUI mode...");
+		System.out.println("Switching to GUI mode...");
 
 		if (SwingUtilities.isEventDispatchThread()) {
 			mainWindow = new MainWindow();
@@ -443,6 +443,7 @@ public class Framework {
 		} else {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
+					@Override
 					public void run() {
 						mainWindow = new MainWindow();
 						mainWindow.startup();
@@ -456,14 +457,15 @@ public class Framework {
 		}
 
 		contextFactory.call(new ContextAction() {
+			@Override
 			public Object run(Context cx) {
 				Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
 				ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
 				systemScope.setAttributes("mainWindow", ScriptableObject.READONLY);
 				return null;
-
 			}
 		});
+
 		inGUIMode = true;
 	}
 
@@ -475,6 +477,7 @@ public class Framework {
 			inGUIMode = false;
 
 			contextFactory.call(new ContextAction() {
+				@Override
 				public Object run(Context cx) {
 					ScriptableObject.deleteProperty(systemScope, "mainWindow");
 					return null;

@@ -1,6 +1,9 @@
 package org.workcraft.plugins.petrify;
 
+import java.util.ArrayList;
+
 import org.workcraft.Framework;
+import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -8,7 +11,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.petrify.tools.PetrifyCscConflictResolution;
 import org.workcraft.plugins.petrify.tools.PetrifyDummyContraction;
 import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesis;
-import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesisWithEr;
+import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesisHide;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisComplexGate;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisGeneralisedCelement;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisTechnologyMapping;
@@ -29,12 +32,49 @@ public class PetrifyModule implements Module {
 		pm.registerClass(Tool.class, PetrifySynthesisGeneralisedCelement.class);
 		pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
 		pm.registerClass(Tool.class, PetrifyDummyContraction.class);
+
 		pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
-		pm.registerClass(Tool.class, PetrifyNetSynthesisWithEr.class);
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new PetrifyNetSynthesis() {
+					@Override
+					public String getDisplayName() {
+						return "Net synthesis [Petrify with -er option]";
+					}
+					@Override
+					public ArrayList<String> getArgs() {
+						ArrayList<String> args = super.getArgs();
+						args.add("-er");
+						return args;
+					}
+				};
+			}
+		});
+
+		pm.registerClass(Tool.class, PetrifyNetSynthesisHide.class);
+		pm.registerClass(Tool.class, new Initialiser<Tool>() {
+			@Override
+			public Tool create() {
+				return new PetrifyNetSynthesisHide() {
+					@Override
+					public String getDisplayName() {
+						return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
+					}
+					@Override
+					public ArrayList<String> getArgs() {
+						ArrayList<String> args = super.getArgs();
+						args.add("-er");
+						return args;
+					}
+				};
+			}
+		});
 	}
 
 	@Override
 	public String getDescription() {
-		return "Petrify tool support";
+		return "Petrify synthesis support";
 	}
+
 }
