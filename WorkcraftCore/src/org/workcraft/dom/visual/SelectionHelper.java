@@ -15,7 +15,7 @@ public class SelectionHelper {
 		Collection<Node> selection = model.getSelection();
 		Container currentLevel = model.getCurrentLevel();
 		for(Node node : currentLevel.getChildren()) {
-			if (model.isGroupable(node) && selection.contains(node)) {
+			if (selection.contains(node)) {
 				result.add(node);
 			}
 		}

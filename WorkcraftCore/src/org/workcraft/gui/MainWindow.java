@@ -420,6 +420,11 @@ public class MainWindow extends JFrame {
 		//EffectsManager.setPreview(new XORPreview());
 		//EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
+		loadRecentFilesFromConfig();
+		loadWindowGeometryFromConfig();
+		// FIXME: Restoring the layout does not work well for FlexDock.
+		//loadDockingLayout();
+
 		DockingManager.display(outputDockable);
 		setVisible(true);
 
@@ -1380,8 +1385,6 @@ public class MainWindow extends JFrame {
 					framework.shutdownGUI();
 					new File(Framework.UILAYOUT_FILE_PATH).delete();
 					framework.startGUI();
-					loadWindowGeometryFromConfig();
-					loadDockingLayout();
 				} catch (OperationCancelledException e) {
 				}
 			}

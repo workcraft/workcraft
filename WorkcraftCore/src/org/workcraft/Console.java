@@ -69,30 +69,20 @@ public class Console {
 		System.out.println(Info.getCopyright());
 		System.out.println();
 
-		LogUtils.logMessageLine("Initialising framework...");
+		//LogUtils.logMessageLine("Initialising framework...");
 		final Framework framework  = Framework.getInstance();
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
+		// NOTE: JavaScript needs to be initilised before GUI
 		framework.initJavaScript();
-
+		// NOTE: Plugins need to be loaded before GUI (because of assigning PropertyProviders)
+		framework.initPlugins();
+		// NOTE: Config needs to be loaded before GUI
+		framework.loadConfig();
 		if (startGUI) {
 			framework.startGUI();
 		}
 
-		framework.loadConfig();
-
-		// Setting recent files and the window geometry is postponed until the configuration is loaded.
-		if (framework.isInGUIMode()) {
-			MainWindow mainWindow = framework.getMainWindow();
-			mainWindow.loadRecentFilesFromConfig();
-			mainWindow.loadWindowGeometryFromConfig();
-			// FIXME: Restoring the layout does not work well.
-			//mainWindow.loadDockingLayout();
-		}
-
-		framework.initPlugins();
-
-		LogUtils.logMessageLine("Running startup scripts...");
+		//LogUtils.logMessageLine("Running startup scripts...");
 		try {
 			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/functions.js"));
 			framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/startup.js"));

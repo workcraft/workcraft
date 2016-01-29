@@ -305,7 +305,7 @@ public class Framework {
 	}
 
 	public void initJavaScript() {
-		LogUtils.logInfoLine("Initialising javascript...");
+		LogUtils.logMessageLine("Initialising javascript...");
 		contextFactory.call(new ContextAction() {
 			public Object run(Context cx) {
 				ImporterTopLevel importer = new ImporterTopLevel();
