@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/ThirdParty/flexdock-0.5.1.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/javaparser-1.0.7.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/jedit.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/js.jar"/>
@@ -36,5 +35,6 @@
 	<classpathentry kind="lib" path="/ThirdParty/batik/batik-anim-1.8.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/batik/xmlgraphics-commons-2.1.jar"/>
 	<classpathentry kind="lib" path="/ThirdParty/batik/fop-transcoder-allinone.jar"/>
+	<classpathentry kind="lib" path="/ThirdParty/flexdock-1.2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

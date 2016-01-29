@@ -86,7 +86,8 @@ public class Console {
 			MainWindow mainWindow = framework.getMainWindow();
 			mainWindow.loadRecentFilesFromConfig();
 			mainWindow.loadWindowGeometryFromConfig();
-			mainWindow.loadDockingLayout();
+			// FIXME: Restoring the layout does not work well.
+			//mainWindow.loadDockingLayout();
 		}
 
 		framework.initPlugins();

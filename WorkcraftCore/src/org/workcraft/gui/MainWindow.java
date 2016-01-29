@@ -22,7 +22,7 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.Insets;
@@ -51,6 +51,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -60,10 +61,13 @@ import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.docking.drag.effects.EffectsManager;
-import org.flexdock.docking.drag.preview.AlphaPreview;
+import org.flexdock.docking.drag.preview.GhostPreview;
+import org.flexdock.docking.props.PropertyManager;
 import org.flexdock.docking.state.PersistenceException;
 import org.flexdock.perspective.Perspective;
 import org.flexdock.perspective.PerspectiveManager;
+import org.flexdock.perspective.persist.FilePersistenceHandler;
+import org.flexdock.perspective.persist.PersistenceHandler;
 import org.flexdock.perspective.persist.PerspectiveModel;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
@@ -110,6 +114,20 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
+	private static final String FLEXDOCK_WORKSPACE = "defaultWorkspace";
+	private static final String FLEXDOCK_DOCKING_PORT = "defaultDockingPort";
+
+	private static final String CONFIG_GUI_MAIN_MAXIMISED = "gui.main.maximised";
+	private static final String CONFIG_GUI_MAIN_WIDTH = "gui.main.width";
+	private static final String CONFIG_GUI_MAIN_HEIGHT = "gui.main.height";
+	private static final String CONFIG_GUI_MAIN_LAST_SAVE_PATH = "gui.main.lastSavePath";
+	private static final String CONFIG_GUI_MAIN_LAST_OPEN_PATH = "gui.main.lastOpenPath";
+	private static final String CONFIG_GUI_MAIN_RECENT_FILE = "gui.main.recentFile";
+
+	private static final int MIN_WIDTH = 800;
+	private static final int MIN_HEIGHT = 450;
+
+	public static final String TITLE_WORKCRAFT = "Workcraft";
 	public static final String TITLE_OUTPUT = "Output";
 	public static final String TITLE_PROBLEMS = "Problems";
 	public static final String TITLE_JAVASCRIPT = "Javascript";
@@ -171,6 +189,7 @@ public class MainWindow extends JFrame {
 		propertyEditorWindow = new PropertyEditorWindow();
 		toolControlsWindow = new SimpleContainer();
 		editorToolsWindow = new SimpleContainer();
+		setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
 	}
 
 	public MainWindow() {
@@ -189,31 +208,25 @@ public class MainWindow extends JFrame {
 		return dockableIDCounter++;
 	}
 
-	private DockableWindow createDockableWindow(JComponent component,
-			String title, Dockable neighbour, int options) {
-		return createDockableWindow(component, title, neighbour, options,
-				DockingConstants.CENTER_REGION, title);
+	private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour, int options) {
+		return createDockableWindow(component, title, neighbour, options, DockingConstants.CENTER_REGION, title);
 	}
 
-	private DockableWindow createDockableWindow(JComponent component,
-			String name, int options, String relativeRegion, float split) {
-		return createDockableWindow(component, name, null, null, options,
-				relativeRegion, split, name);
+	private DockableWindow createDockableWindow(JComponent component, String name, int options, String relativeRegion,
+			float split) {
+		return createDockableWindow(component, name, null, null, options, relativeRegion, split, name);
 	}
 
-	private DockableWindow createDockableWindow(JComponent component,
-			String name, Dockable neighbour, int options, String relativeRegion, float split) {
-		return createDockableWindow(component, name, null, neighbour, options,
-				relativeRegion, split, name);
+	private DockableWindow createDockableWindow(JComponent component, String name, Dockable neighbour, int options,
+			String relativeRegion, float split) {
+		return createDockableWindow(component, name, null, neighbour, options, relativeRegion, split, name);
 	}
 
-	private DockableWindow createDockableWindow(JComponent component,
-			String title, Dockable neighbour, int options,
+	private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour, int options,
 			String relativeRegion, String persistentID) {
 
 		int ID = getNextDockableID();
-		DockableWindowContentPanel panel = new DockableWindowContentPanel(this,
-				ID, title, component, options);
+		DockableWindowContentPanel panel = new DockableWindowContentPanel(this, ID, title, component, options);
 
 		DockableWindow dockable = new DockableWindow(this, panel, persistentID);
 		DockingManager.registerDockable(dockable);
@@ -227,11 +240,10 @@ public class MainWindow extends JFrame {
 		return dockable;
 	}
 
-	private DockableWindow createDockableWindow(JComponent component,
-			String title, String tooltip, Dockable neighbour, int options,
-			String relativeRegion, float split, String persistentID) {
-		DockableWindow dockable = createDockableWindow(component, title,
-				neighbour, options, relativeRegion, persistentID);
+	private DockableWindow createDockableWindow(JComponent component, String title, String tooltip, Dockable neighbour,
+			int options, String relativeRegion, float split, String persistentID) {
+		DockableWindow dockable = createDockableWindow(component, title, neighbour, options, relativeRegion,
+				persistentID);
 		DockingManager.setSplitProportion(dockable, split);
 		return dockable;
 	}
@@ -244,7 +256,7 @@ public class MainWindow extends JFrame {
 		ModelDescriptor descriptor = modelEntry.getDescriptor();
 		VisualModel visualModel = null;
 		if (modelEntry.getModel() instanceof VisualModel) {
-			visualModel = (VisualModel)modelEntry.getModel();
+			visualModel = (VisualModel) modelEntry.getModel();
 			// Ignore saved selection (it is only useful for copy-paste)
 			visualModel.selectNone();
 		}
@@ -253,8 +265,8 @@ public class MainWindow extends JFrame {
 			VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
 			if (vmd == null) {
 				JOptionPane.showMessageDialog(MainWindow.this,
-						"A visual model could not be created for the selected model.\n"
-						+ "Model '" + descriptor.getDisplayName() + "' does not have visual model support.",
+						"A visual model could not be created for the selected model.\n" + "Model '"
+								+ descriptor.getDisplayName() + "' does not have visual model support.",
 						"Error", JOptionPane.ERROR_MESSAGE);
 				return null;
 			}
@@ -282,15 +294,15 @@ public class MainWindow extends JFrame {
 		if (editorWindows.isEmpty()) {
 			editorWindow = createDockableWindow(editor, title, documentPlaceholder,
 					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON,
-					DockingConstants.CENTER_REGION,	"Document" + we.getWorkspacePath());
+					DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
 			DockingManager.close(documentPlaceholder);
 			DockingManager.unregisterDockable(documentPlaceholder);
 			utilityWindows.remove(documentPlaceholder);
 		} else {
 			DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
 			editorWindow = createDockableWindow(editor, title, firstEditorWindow,
-					DockableWindowContentPanel.CLOSE_BUTTON	| DockableWindowContentPanel.MAXIMIZE_BUTTON,
-					DockingConstants.CENTER_REGION,	"Document" + we.getWorkspacePath());
+					DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON,
+					DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
 		}
 		editorWindow.addTabListener(new EditorWindowTabListener(editor));
 		editorWindows.put(we, editorWindow);
@@ -322,29 +334,26 @@ public class MainWindow extends JFrame {
 		utilityWindows.add(dockableWindow);
 	}
 
-	public void setWindowSize(boolean maximised, int width, int height){
-	    if(maximised){
-	        DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
-	        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
-	        this.setMaximizedBounds(new Rectangle(
-	                mode.getWidth() - insets.right - insets.left,
-	                mode.getHeight() - insets.top - insets.bottom
-	        ));
-	        this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-	        this.setSize(mode.getWidth() - insets.right - insets.left, mode.getHeight() - insets.top - insets.bottom);
-	    }else{
-	        this.setExtendedState(JFrame.NORMAL);
-	    }
+	public void setWindowSize(boolean maximised, int width, int height) {
+		if (maximised) {
+			DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
+			Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
+			this.setMaximizedBounds(new Rectangle(mode.getWidth() - insets.right - insets.left,
+					mode.getHeight() - insets.top - insets.bottom));
+			this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+			this.setSize(mode.getWidth() - insets.right - insets.left, mode.getHeight() - insets.top - insets.bottom);
+		} else {
+			this.setExtendedState(JFrame.NORMAL);
+		}
 	}
 
 	public void startup() {
 		MainWindowIconManager.apply(this);
 
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND,
-				TabContentPaneBorderKind.SINGLE_FULL);
+		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 
-		setTitle("Workcraft");
+		setTitle(TITLE_WORKCRAFT);
 		mainMenu = new MainMenu(this);
 		setJMenuBar(mainMenu);
 
@@ -355,11 +364,13 @@ public class MainWindow extends JFrame {
 		content = new JPanel(new BorderLayout(0, 0));
 		setContentPane(content);
 
-		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
-		pm.add(new Perspective("defaultWorkspace", "defaultWorkspace"));
-		pm.setCurrentPerspective("defaultWorkspace", true);
+		PerspectiveManager pm = (PerspectiveManager) DockingManager.getLayoutManager();
+		pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
+		pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
 
-		rootDockingPort = new DefaultDockingPort("defaultDockingPort");
+		PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
+
+		rootDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
 		content.add(rootDockingPort, BorderLayout.CENTER);
 
 		createWindows();
@@ -370,54 +381,47 @@ public class MainWindow extends JFrame {
 		StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
 		rootDockingPort.setBorderManager(borderManager);
 
-		float xSplit = 0.88f;
-		float ySplit = 0.82f;
-		outputDockable = createDockableWindow(
-				outputWindow, TITLE_OUTPUT,
-				DockableWindowContentPanel.CLOSE_BUTTON,
+		float xSplit = 0.888f;
+		float ySplit = 0.8f;
+
+		outputDockable = createDockableWindow(outputWindow, TITLE_OUTPUT, DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, ySplit);
 
-		erroDockable = createDockableWindow(
-				errorWindow, TITLE_PROBLEMS, outputDockable,
+		erroDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
-		javaScriptDockable = createDockableWindow(
-				javaScriptWindow, TITLE_JAVASCRIPT,	outputDockable,
+		javaScriptDockable = createDockableWindow(javaScriptWindow, TITLE_JAVASCRIPT, outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
-		tasksDockable = createDockableWindow(
-				new TaskManagerWindow(), TITLE_TASKS, outputDockable,
+		tasksDockable = createDockableWindow(new TaskManagerWindow(), TITLE_TASKS, outputDockable,
 				DockableWindowContentPanel.CLOSE_BUTTON);
 
-		workspaceDockable = createDockableWindow(
-				workspaceWindow, TITLE_WORKSPACE,
-				DockableWindowContentPanel.CLOSE_BUTTON,
-				DockingManager.EAST_REGION, xSplit);
+		workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
+				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
+				xSplit);
 
-		propertyEditorDockable = createDockableWindow(
-				propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
-				DockableWindowContentPanel.CLOSE_BUTTON,
+		propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
+				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.NORTH_REGION, ySplit);
 
-		toolControlsDockable = createDockableWindow(
-				editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
-				DockableWindowContentPanel.CLOSE_BUTTON,
+		toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
+				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
 				DockingManager.SOUTH_REGION, 0.4f);
 
-		editorToolsDockable = createDockableWindow(
-				toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
+		editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
 				DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-				DockingManager.SOUTH_REGION, 0.82f);
+				DockingManager.SOUTH_REGION, 0.795f);
 
-		documentPlaceholder = createDockableWindow(
-				new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
+		documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
 				0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
 
-		DockingManager.display(outputDockable);
-		EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY,	0.5f));
+		DockingManager.setAutoPersist(true);
+		EffectsManager.setPreview(new GhostPreview());
+		//EffectsManager.setPreview(new XORPreview());
+		//EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
 
+		DockingManager.display(outputDockable);
 		setVisible(true);
-		loadDockingLayout();
 
 		DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
 
@@ -435,7 +439,8 @@ public class MainWindow extends JFrame {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				// Hack to fix the annoying delay occurring when createGlyphVector is called for the first time.
+				// Hack to fix the annoying delay occurring when
+				// createGlyphVector is called for the first time.
 				Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 				FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
 				font.createGlyphVector(frc, TITLE_PLACEHOLDER);
@@ -487,8 +492,7 @@ public class MainWindow extends JFrame {
 			DockingManager.toggleMaximized(dockableWindow);
 			dockableWindow.setMaximized(!dockableWindow.isMaximized());
 		} else {
-			System.err.println("toggleDockableWindowMaximized: window with ID="
-					+ ID + " was not found.");
+			System.err.println("toggleDockableWindowMaximized: window with ID=" + ID + " was not found.");
 		}
 	}
 
@@ -497,8 +501,7 @@ public class MainWindow extends JFrame {
 		if (dockableWindow != null)
 			closeDockableWindow(dockableWindow);
 		else
-			System.err.println("closeDockableWindow: window with ID=" + ID
-					+ " was not found.");
+			System.err.println("closeDockableWindow: window with ID=" + ID + " was not found.");
 	}
 
 	public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
@@ -513,8 +516,8 @@ public class MainWindow extends JFrame {
 
 			if (we.isChanged()) {
 				int result = JOptionPane.showConfirmDialog(this,
-						"Document '" + we.getTitle() + "' has unsaved changes.\nSave before closing?",
-						"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+						"Document '" + we.getTitle() + "' has unsaved changes.\nSave before closing?", "Confirm",
+						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 				switch (result) {
 				case JOptionPane.YES_OPTION:
@@ -567,7 +570,7 @@ public class MainWindow extends JFrame {
 
 	private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
 		JComponent content = dockableWindow.getContentPanel().getContent();
-		return ((content instanceof GraphEditorPanel) ? (GraphEditorPanel)content : null);
+		return ((content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null);
 	}
 
 	/** For use from Javascript **/
@@ -576,8 +579,7 @@ public class MainWindow extends JFrame {
 		if (window != null)
 			toggleDockableWindow(window);
 		else
-			System.err.println("displayDockableWindow: window with ID=" + id
-					+ " was not found.");
+			System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
 	}
 
 	/** For use from Javascript **/
@@ -586,8 +588,7 @@ public class MainWindow extends JFrame {
 		if (window != null)
 			displayDockableWindow(window);
 		else
-			System.err.println("displayDockableWindow: window with ID=" + id
-					+ " was not found.");
+			System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
 	}
 
 	public void displayDockableWindow(DockableWindow window) {
@@ -607,10 +608,10 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void saveDockingLayout() {
-		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
+	public void saveDockingLayout1() {
+		PerspectiveManager pm = (PerspectiveManager) DockingManager.getLayoutManager();
 		pm.getCurrentPerspective().cacheLayoutState(rootDockingPort);
-		pm.forceDockableUpdate();
+		// pm.forceDockableUpdate();
 		PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(),
 				pm.getCurrentPerspectiveName(), pm.getPerspectives());
 		XMLPersister pers = new XMLPersister();
@@ -633,8 +634,11 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void loadDockingLayout() {
-		PerspectiveManager pm = (PerspectiveManager)DockingManager.getLayoutManager();
+	public void saveDockingLayout() {
+	}
+
+	public void loadDockingLayout1() {
+		PerspectiveManager pm = (PerspectiveManager) DockingManager.getLayoutManager();
 		XMLPersister pers = new XMLPersister();
 		try {
 			File file = new File(Framework.UILAYOUT_FILE_PATH);
@@ -642,12 +646,13 @@ public class MainWindow extends JFrame {
 				LogUtils.logMessageLine("Loading UI layout from " + file.getAbsolutePath());
 				FileInputStream is = new FileInputStream(file);
 				PerspectiveModel pmodel = pers.load(is);
-				pm.remove("defaultWorkspace");
-				pm.setCurrentPerspective("defaultWorkspace");
+				pm.remove(FLEXDOCK_WORKSPACE);
+				pm.setCurrentPerspective(FLEXDOCK_WORKSPACE);
 				for (Perspective p : pmodel.getPerspectives()) {
 					pm.add(p, false);
 				}
-				pm.reload(rootDockingPort);
+				// pm.reload(rootDockingPort);
+				DockingManager.restoreLayout();
 				is.close();
 				DockingManager.display(outputDockable);
 			}
@@ -660,20 +665,32 @@ public class MainWindow extends JFrame {
 		}
 	}
 
+	public void loadDockingLayout() {
+		File file = new File(Framework.UILAYOUT_FILE_PATH);
+		PersistenceHandler persister = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
+		PerspectiveManager.setPersistenceHandler(persister);
+		try {
+			DockingManager.restoreLayout(true);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} catch (PersistenceException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	public void shutdown() throws OperationCancelledException {
 		closeEditorWindows();
 
 		final Framework framework = Framework.getInstance();
-		if (framework.getWorkspace().isChanged()
-				&& !framework.getWorkspace().isTemporary()) {
+		if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
 			int result = JOptionPane.showConfirmDialog(this,
-							"Current workspace has unsaved changes.\nSave before closing?",
-							"Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+					"Current workspace has unsaved changes.\nSave before closing?", "Confirm",
+					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 			switch (result) {
 			case JOptionPane.YES_OPTION:
-				 workspaceWindow.saveWorkspace();
-				 break;
+				workspaceWindow.saveWorkspace();
+				break;
 			case JOptionPane.NO_OPTION:
 				break;
 			default:
@@ -693,38 +710,44 @@ public class MainWindow extends JFrame {
 
 	public void loadWindowGeometryFromConfig() {
 		final Framework framework = Framework.getInstance();
-		String maximisedStr = framework.getConfigVar("gui.main.maximised");
-		String widthStr = framework.getConfigVar("gui.main.width");
-		String heightStr = framework.getConfigVar("gui.main.height");
+		String maximisedStr = framework.getConfigVar(CONFIG_GUI_MAIN_MAXIMISED);
+		String widthStr = framework.getConfigVar(CONFIG_GUI_MAIN_WIDTH);
+		String heightStr = framework.getConfigVar(CONFIG_GUI_MAIN_HEIGHT);
 
 		boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
-        this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
+		this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
 
-       	DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
-       	Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
-        int width = mode.getWidth() - insets.right - insets.left;
-        int height = mode.getHeight() - insets.top - insets.bottom;
-        if ((widthStr != null) && (heightStr != null)) {
-        	width = Integer.parseInt(widthStr);
-        	height = Integer.parseInt(heightStr);
-        }
+		DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
+		Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
+		int width = mode.getWidth() - insets.right - insets.left;
+		int height = mode.getHeight() - insets.top - insets.bottom;
+		if ((widthStr != null) && (heightStr != null)) {
+			width = Integer.parseInt(widthStr);
+			if (width < MIN_WIDTH) {
+				width = MIN_WIDTH;
+			}
+			height = Integer.parseInt(heightStr);
+			if (height < MIN_HEIGHT) {
+				height = MIN_HEIGHT;
+			}
+		}
 		this.setSize(width, height);
 	}
 
 	public void saveWindowGeometryToConfig() {
 		final Framework framework = Framework.getInstance();
 		boolean maximised = ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0);
-		framework.setConfigVar("gui.main.maximised", Boolean.toString(maximised));
-		framework.setConfigVar("gui.main.width", Integer.toString(getWidth()));
-		framework.setConfigVar("gui.main.height", Integer.toString(getHeight()));
+		framework.setConfigVar(CONFIG_GUI_MAIN_MAXIMISED, Boolean.toString(maximised));
+		framework.setConfigVar(CONFIG_GUI_MAIN_WIDTH, Integer.toString(getWidth()));
+		framework.setConfigVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()));
 	}
 
 	public void loadRecentFilesFromConfig() {
 		final Framework framework = Framework.getInstance();
-		lastSavePath = framework.getConfigVar("gui.main.lastSavePath");
-		lastOpenPath = framework.getConfigVar("gui.main.lastOpenPath");
+		lastSavePath = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH);
+		lastOpenPath = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH);
 		for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
-			String entry = framework.getConfigVar("gui.main.recentFile" + i);
+			String entry = framework.getConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i);
 			pushRecentFile(entry, false);
 		}
 		updateRecentFilesMenu();
@@ -733,15 +756,15 @@ public class MainWindow extends JFrame {
 	public void saveRecentFilesToConfig() {
 		final Framework framework = Framework.getInstance();
 		if (lastSavePath != null) {
-			framework.setConfigVar("gui.main.lastSavePath", lastSavePath);
+			framework.setConfigVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH, lastSavePath);
 		}
 		if (lastOpenPath != null) {
-			framework.setConfigVar("gui.main.lastOpenPath", lastOpenPath);
+			framework.setConfigVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH, lastOpenPath);
 		}
 		int recentCount = CommonEditorSettings.getRecentCount();
 		String[] tmp = recentFiles.toArray(new String[recentCount]);
 		for (int i = 0; i < recentCount; i++) {
-			framework.setConfigVar("gui.main.recentFile" + i, tmp[i]);
+			framework.setConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, tmp[i]);
 		}
 	}
 
@@ -751,7 +774,7 @@ public class MainWindow extends JFrame {
 			recentFiles.remove(fileName);
 			// Make sure there is not too many entries
 			int recentCount = CommonEditorSettings.getRecentCount();
-			for (String entry: new ArrayList<String>(recentFiles)) {
+			for (String entry : new ArrayList<String>(recentFiles)) {
 				if (recentFiles.size() < recentCount) {
 					break;
 				}
@@ -780,7 +803,7 @@ public class MainWindow extends JFrame {
 		createWork(Path.<String> empty());
 	}
 
-	public void createWork(Path<String> path)	throws OperationCancelledException {
+	public void createWork(Path<String> path) throws OperationCancelledException {
 		final Framework framework = Framework.getInstance();
 		CreateWorkDialog dialog = new CreateWorkDialog(this);
 		dialog.setVisible(true);
@@ -795,7 +818,8 @@ public class MainWindow extends JFrame {
 				if (dialog.createVisualSelected()) {
 					VisualModelDescriptor v = info.getVisualModelDescriptor();
 					if (v == null) {
-						throw new VisualModelInstantiationException("visual model is not defined for '" + info.getDisplayName() + "'.");
+						throw new VisualModelInstantiationException(
+								"visual model is not defined for '" + info.getDisplayName() + "'.");
 					}
 					VisualModel visualModel = v.create(mathModel);
 					ModelEntry me = new ModelEntry(info, visualModel);
@@ -807,8 +831,9 @@ public class MainWindow extends JFrame {
 			} catch (VisualModelInstantiationException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(this,
-					"Visual model could not be created: " + e.getMessage() + "\n\nPlease see the Problems window for details.",
-					"Error", JOptionPane.ERROR_MESSAGE);
+						"Visual model could not be created: " + e.getMessage()
+								+ "\n\nPlease see the Problems window for details.",
+						"Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} else {
 			throw new OperationCancelledException("Create operation cancelled by user.");
@@ -828,8 +853,8 @@ public class MainWindow extends JFrame {
 			final Framework framework = Framework.getInstance();
 
 			framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
-			framework.setJavaScriptProperty("visualModel", sender.getModel(),
-					framework.getJavaScriptGlobalScope(), true);
+			framework.setJavaScriptProperty("visualModel", sender.getModel(), framework.getJavaScriptGlobalScope(),
+					true);
 
 			framework.deleteJavaScriptProperty("model", framework.getJavaScriptGlobalScope());
 			framework.setJavaScriptProperty("model", sender.getModel().getMathModel(),
@@ -911,8 +936,8 @@ public class MainWindow extends JFrame {
 					break;
 				}
 				if (JOptionPane.showConfirmDialog(this,
-						"The file '" + f.getName() + "' already exists. Do you want to overwrite it?",
-						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						"The file '" + f.getName() + "' already exists. Do you want to overwrite it?", "Confirm",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 					break;
 				}
 			} else {
@@ -928,7 +953,7 @@ public class MainWindow extends JFrame {
 			final HashSet<WorkspaceEntry> newWorkspaceEntries = new HashSet<>();
 			for (File f : fc.getSelectedFiles()) {
 				String path = f.getPath();
-				if ( !path.endsWith(FileFilters.DOCUMENT_EXTENSION) ) {
+				if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
 					path += FileFilters.DOCUMENT_EXTENSION;
 					f = new File(path);
 				}
@@ -937,16 +962,18 @@ public class MainWindow extends JFrame {
 					newWorkspaceEntries.add(we);
 				}
 			}
-			// FIXME: Go through the newly open works and update their zoom, in case tabs appeared and changed the viewport size.
+			// FIXME: Go through the newly open works and update their zoom, in
+			// case tabs appeared and changed the viewport size.
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					for (WorkspaceEntry we: newWorkspaceEntries) {
+					for (WorkspaceEntry we : newWorkspaceEntries) {
 						zoomFitWorkspaceEntryEditors(we);
 					}
 				}
+
 				private void zoomFitWorkspaceEntryEditors(WorkspaceEntry we) {
-					for (DockableWindow w: editorWindows.get(we)) {
+					for (DockableWindow w : editorWindows.get(we)) {
 						GraphEditor editor = getGraphEditorPanel(w);
 						if (editor != null) {
 							editor.zoomFit();
@@ -971,10 +998,11 @@ public class MainWindow extends JFrame {
 				pushRecentFile(f.getPath(), true);
 				lastOpenPath = f.getParent();
 			} catch (DeserialisationException e) {
-				JOptionPane.showMessageDialog(this,
-					"A problem was encountered while trying to load '"	+ f.getPath() + "'.\n"
-					+ "Please see Problems window for details.",
-					"Load failed", JOptionPane.ERROR_MESSAGE);
+				JOptionPane
+						.showMessageDialog(this,
+								"A problem was encountered while trying to load '" + f.getPath() + "'.\n"
+										+ "Please see Problems window for details.",
+								"Load failed", JOptionPane.ERROR_MESSAGE);
 				printCause(e);
 			}
 		}
@@ -1007,9 +1035,9 @@ public class MainWindow extends JFrame {
 				framework.getWorkspace().merge(we, f);
 			} catch (DeserialisationException e) {
 				JOptionPane.showMessageDialog(this,
-					"A problem was encountered while trying to merge '"
-					+ f.getPath() + "'.\nPlease see Problems window for details.",
-					"Load failed", JOptionPane.ERROR_MESSAGE);
+						"A problem was encountered while trying to merge '" + f.getPath()
+								+ "'.\nPlease see Problems window for details.",
+						"Load failed", JOptionPane.ERROR_MESSAGE);
 				printCause(e);
 			}
 		}
@@ -1040,11 +1068,12 @@ public class MainWindow extends JFrame {
 					final Framework framework = Framework.getInstance();
 					framework.save(we.getModelEntry(), we.getFile().getPath());
 				} else {
-					throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
+					throw new RuntimeException(
+							"Cannot save workspace entry - it does not have an associated Workcraft model.");
 				}
 			} catch (SerialisationException e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
 			}
 			we.setChanged(false);
 			refreshWorkspaceEntryTitle(we, true);
@@ -1054,9 +1083,8 @@ public class MainWindow extends JFrame {
 	}
 
 	private static String removeSpecialFileNameCharacters(String fileName) {
-		return fileName.replace('\\', '_').replace('/', '_').replace(':', '_')
-				.replace('"', '_').replace('<', '_').replace('>', '_')
-				.replace('|', '_');
+		return fileName.replace('\\', '_').replace('/', '_').replace(':', '_').replace('"', '_').replace('<', '_')
+				.replace('>', '_').replace('|', '_');
 	}
 
 	private String getFileNameForCurrentWork() {
@@ -1097,7 +1125,8 @@ public class MainWindow extends JFrame {
 			if (we.getModelEntry() != null) {
 				framework.save(we.getModelEntry(), path);
 			} else {
-				throw new RuntimeException("Cannot save workspace entry - it does not have an associated Workcraft model.");
+				throw new RuntimeException(
+						"Cannot save workspace entry - it does not have an associated Workcraft model.");
 			}
 			we.setChanged(false);
 			refreshWorkspaceEntryTitle(we, true);
@@ -1105,7 +1134,7 @@ public class MainWindow extends JFrame {
 			pushRecentFile(we.getFile().getPath(), true);
 		} catch (SerialisationException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, e.getMessage(),	"Model export failed", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -1113,7 +1142,8 @@ public class MainWindow extends JFrame {
 
 	public void importFrom() {
 		final Framework framework = Framework.getInstance();
-		Collection<PluginInfo<? extends Importer>> importerInfo = framework.getPluginManager().getPlugins(Importer.class);
+		Collection<PluginInfo<? extends Importer>> importerInfo = framework.getPluginManager()
+				.getPlugins(Importer.class);
 		Importer[] importers = new Importer[importerInfo.size()];
 		int cnt = 0;
 		for (PluginInfo<? extends Importer> info : importerInfo) {
@@ -1143,12 +1173,10 @@ public class MainWindow extends JFrame {
 						break;
 					} catch (IOException e) {
 						e.printStackTrace();
-						JOptionPane.showMessageDialog(this, e.getMessage(),
-								"I/O error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
 					} catch (DeserialisationException e) {
 						e.printStackTrace();
-						JOptionPane.showMessageDialog(this, e.getMessage(),
-								"Import error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this, e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}
@@ -1268,7 +1296,7 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	public void undo()  {
+	public void undo() {
 		if (editorInFocus != null) {
 			editorInFocus.getWorkspaceEntry().undo();
 			editorInFocus.forceRedraw();
@@ -1341,11 +1369,11 @@ public class MainWindow extends JFrame {
 
 	public void resetLayout() {
 		if (JOptionPane.showConfirmDialog(this,
-				"This will reset the GUI to the default layout.\n\n" + "Are you sure you want to do this?",
-				"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				"This will reset the GUI to the default layout.\n\n" + "Are you sure you want to do this?", "Confirm",
+				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 			if (JOptionPane.showConfirmDialog(this,
 					"This action requires GUI restart.\n\n"
-					+ "This will cause the visual editor windows to be closed.\n\nProceed?",
+							+ "This will cause the visual editor windows to be closed.\n\nProceed?",
 					"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				try {
 					final Framework framework = Framework.getInstance();
