@@ -224,13 +224,11 @@ public class EstimationAlg extends TimeAlg{
 			//unspec values for all connections
 			if(start == null)
 				try{
-					clearSets();
 					start = getEstimatedStartTime(node);
 					//System.out.println("start" + start!=null?start.toString():"null");
 				}catch(TimeEstimationException e){}
 			if(end == null)
 				try{
-					clearSets();
 					end = getEstimatedEndTime(node);
 					//System.out.println("end" + end!=null?end.toString():"null");
 				}catch(TimeEstimationException e){}
@@ -317,7 +315,7 @@ public class EstimationAlg extends TimeAlg{
 
 	}
 
-	public void entireEst() throws TimeOutOfBoundsException, AlternativeStructureException{
+	public void entireEst() throws AlternativeStructureException{
 		if(scenario == null)
 			throw new AlternativeStructureException("select a scenario first");
 		//add super initial to SON
@@ -325,9 +323,11 @@ public class EstimationAlg extends TimeAlg{
 		scenario.add(net.getNodeReference(superIni));
 
 		SONAlg sonAlg = new SONAlg(net);
+		Collection<PlaceNode> initial = sonAlg.getSONInitial();
+		Collection<PlaceNode> finalM = sonAlg.getSONFinal();
 
 		//add arcs from super initial to SON initial
-		for(PlaceNode p : sonAlg.getSONInitial()){
+		for(PlaceNode p : initial){
 			try {
 				SONConnection con = net.connect(superIni, p, Semantics.PNLINE);
 				scenario.add(net.getNodeReference(con));
@@ -335,7 +335,7 @@ public class EstimationAlg extends TimeAlg{
 				e.printStackTrace();
 			}
 		}
-		System.out.println(scenario.toString());
+
 		Interval end = null;
 
 		try {
@@ -343,19 +343,54 @@ public class EstimationAlg extends TimeAlg{
 		} catch (TimeEstimationException e) {
 			net.remove(superIni);
 			return;
+		} catch (TimeOutOfBoundsException e){
+			net.remove(superIni);
+			e.printStackTrace();
+			return;
 		}
 
 		superIni.setEndTime(end);
 
+		LinkedList<Time> visited = new LinkedList<Time>();
+		visited.add(superIni);
 
+		try {
+			forwardDFSEntire(visited, scenario.getNodes(net), initial, finalM);
+		} catch (TimeOutOfBoundsException e) {
+			net.remove(superIni);
+			e.printStackTrace();
+			return;
+		}
 
-		System.out.println(superIni.getEndTime().toString());
+		//move estimated time to connections
+		for(SONConnection con : net.getSONConnections()){
+			if(con.getSemantics() == Semantics.PNLINE){
+				if(!con.getTime().isSpecified()){
+					Node first = con.getFirst();
+					if(first instanceof Time){
+						con.setTime(((Time)first).getEndTime());
+						con.setTimeLabelColor(color);
+					}
+				}
+			}
+		}
+
+		for(Time time : net.getTimeNodes()){
+			Interval defTime = new Interval();
+			if(!initial.contains(time)){
+				time.setStartTime(defTime);
+			}
+			if(!finalM.contains(time)){
+				time.setEndTime(defTime);
+			}
+		}
 
 		//remove super initial
+
 		net.remove(superIni);
 	}
 
-    private void forwardDFSEntire(LinkedList<Time> visited, Collection<Node> nodes) throws TimeOutOfBoundsException  {
+    private void forwardDFSEntire(LinkedList<Time> visited, Collection<Node> nodes, Collection<PlaceNode> initial, Collection<PlaceNode> finalM) throws TimeOutOfBoundsException  {
         Time last = visited.getLast();
     	LinkedList<Time> neighbours = getCausalPostset(last, nodes);
 
@@ -363,14 +398,28 @@ public class EstimationAlg extends TimeAlg{
         	if(!visited.contains(t)){
      			if(!t.getStartTime().isSpecified()){
     				t.setStartTime(last.getEndTime());
+    				if(initial.contains(t)){
+    					((Condition)t).setStartTimeColor(color);
+    				}
     			}
+     			if(!t.getDuration().isSpecified()){
+     				t.setDuration(defaultDuration);
+     				if(t instanceof PlaceNode){
+     					((PlaceNode)t).setDurationColor(color);
+     				}else if(t instanceof Block){
+     					((Block)t).setDurationColor(color);
+     				}
+     			}
      			if(!t.getEndTime().isSpecified()){
      				Interval time = granularity.plusTD(t.getStartTime(), t.getDuration());
      				t.setEndTime(time);
+    				if(finalM.contains(t)){
+    					((Condition)t).setEndTimeColor(color);
+    				}
      			}
 
         		visited.add(t);
-        		forwardDFSEntire(visited, nodes);
+        		forwardDFSEntire(visited, nodes, initial, finalM);
         	}
         }
     }
@@ -463,7 +512,6 @@ public class EstimationAlg extends TimeAlg{
 
 	public void setEstimatedEndTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
 		Interval end = null;
-		clearSets();
 
 		if(n instanceof Condition){
 			Condition c = (Condition)n;
@@ -547,7 +595,6 @@ public class EstimationAlg extends TimeAlg{
 
 	public void setEstimatedStartTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
 		Interval start = null;
-		clearSets();
 
 		if(n instanceof Condition){
 			Condition c = (Condition)n;
@@ -647,14 +694,17 @@ public class EstimationAlg extends TimeAlg{
 			result = Interval.getOverlapping(possibleTimes);
 
 		if(result != null){
+			clearSets();
 			if(!result.isSpecified()){
 				throw new TimeEstimationException(
 						"cannot find causally time value (backward).");
 			}else
 				return result;
-		}else
+		}else{
+			clearSets();
 			throw new TimeEstimationException("intervals"+
-		intervals(resultTimeAndDuration)+"are not consistent (backward).");
+			intervals(resultTimeAndDuration)+"are not consistent (backward).");
+		}
 	}
 
 	private Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
@@ -676,15 +726,18 @@ public class EstimationAlg extends TimeAlg{
 			result = Interval.getOverlapping(possibleTimes);
 
 		if(result != null){
+			clearSets();
 			if(!result.isSpecified()){
 				throw new TimeEstimationException(
 						"cannot find causally time value (forward).");
 			}else
 				return result;
-		}else
+		}else{
+			clearSets();
 			throw new TimeEstimationException(
 					"intervals"+
 			intervals(resultTimeAndDuration)+"are not consistent (forward).");
+		}
 
 	}
 
@@ -719,6 +772,7 @@ public class EstimationAlg extends TimeAlg{
             	Path path = new Path();
                 visited.addLast(node);
                 path.addAll(visited);
+                visited.removeLast();
                 fwdPaths.add(path);
             }
         }
@@ -766,6 +820,7 @@ public class EstimationAlg extends TimeAlg{
             	Path path = new Path();
                 visited.addLast(node);
                 path.addAll(visited);
+                visited.removeLast();
                 bwdPaths.add(path);
             }
         }

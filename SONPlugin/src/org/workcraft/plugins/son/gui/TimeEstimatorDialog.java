@@ -49,7 +49,7 @@ public class TimeEstimatorDialog extends JDialog{
 
 	protected JPanel buttonsPanel, durationPanel;
 	protected JButton runButton, cancelButton;
-	protected JCheckBox setDuration, intermediate;
+	protected JCheckBox setDuration, intermediate, entireEst;
 	protected Dimension buttonSize = new Dimension(80, 25);
 	protected int run = 0;
 
@@ -82,6 +82,11 @@ public class TimeEstimatorDialog extends JDialog{
 	}
 
 	protected void createDurationPanel(){
+
+		entireEst = new JCheckBox("Estimate time value for entire SON");
+		entireEst.setSelected(false);
+		entireEst.setLayout(new FlowLayout(FlowLayout.LEFT));
+
 		setDuration = new JCheckBox("Set default duration for all unspecifed nodes");
 		setDuration.setSelected(false);
 		setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -95,10 +100,25 @@ public class TimeEstimatorDialog extends JDialog{
 
 		durationPanel = new JPanel();
 		//durationPanel.setBorder(BorderFactory.createTitledBorder("Default Duration Setting"));
-		durationPanel.setLayout(new GridLayout(3,0));
+		durationPanel.setLayout(new GridLayout(4,0));
 		durationPanel.add(defaultDurationPanel);
+		durationPanel.add(entireEst);
 		durationPanel.add(setDuration);
 		durationPanel.add(intermediate);
+
+		entireEst.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(entireEst.isSelected()){
+					setDuration.setEnabled(false);
+					intermediate.setEnabled(false);
+				}else{
+					setDuration.setEnabled(true);
+					intermediate.setEnabled(true);
+				}
+			}
+		});
 	}
 
 	protected void createScenarioTable(){
@@ -174,19 +194,27 @@ public class TimeEstimatorDialog extends JDialog{
 					EstimationAlg alg = new EstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
 					setVisible(false);
 
-					if(setDuration.isSelected())
-						alg.setDefaultDuration();
+					if(entireEst.isSelected()){
+						try {
+							alg.entireEst();
+						} catch (AlternativeStructureException e1) {
+							errMsg(e1.getMessage());
+						}
+					}else{
+						if(setDuration.isSelected())
+							alg.setDefaultDuration();
 
-					try {
-						alg.twoDirEstimation(selection, intermediate.isSelected());
-					} catch (AlternativeStructureException e1) {
-						errMsg(e1.getMessage());
-					} catch (TimeEstimationException e1) {
-						errMsg(e1.getMessage());
-					} catch (TimeOutOfBoundsException e1) {
-						errMsg(e1.getMessage());
-					} catch (TimeInconsistencyException e1) {
-						errMsg(e1.getMessage());
+						try {
+							alg.twoDirEstimation(selection, intermediate.isSelected());
+						} catch (AlternativeStructureException e1) {
+							errMsg(e1.getMessage());
+						} catch (TimeEstimationException e1) {
+							errMsg(e1.getMessage());
+						} catch (TimeOutOfBoundsException e1) {
+							errMsg(e1.getMessage());
+						} catch (TimeInconsistencyException e1) {
+							errMsg(e1.getMessage());
+						}
 					}
 				}else{
 					defaultDurationPanel.getMin().setForeground(Color.RED);

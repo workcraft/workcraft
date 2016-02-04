@@ -116,9 +116,6 @@ public class TestTool extends AbstractTool implements Tool{
 
 		try {
 			timeAlg.entireEst();
-		} catch (TimeOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (AlternativeStructureException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -163,6 +163,15 @@ public class SON extends AbstractMathModel {
 		return result;
 	}
 
+	public Collection<Time> getTimeNodes(){
+		ArrayList<Time> result =  new ArrayList<Time>();
+		for(Node node : getComponents())
+			if(node instanceof Time)
+				result.add((Time)node);
+
+		return result;
+	}
+
 	public String getComponentLabel(Node n){
 		if(n instanceof PlaceNode)
 			return ((PlaceNode)n).getLabel();
@@ -353,7 +362,7 @@ public class SON extends AbstractMathModel {
 			if (getSONConnections(second).contains(con))
 				connection.add(con);
 		if(connection.size() > 1)
-			throw new RuntimeException("Conection size between"+ first.toString() + "and"+ second.toString()+ "> 1");
+			throw new RuntimeException("Connection size between"+ getNodeReference(first) + "and"+  getNodeReference(first)+ "> 1");
 
 		if(connection.size()  == 0)
 		return null;
