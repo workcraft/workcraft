@@ -109,6 +109,10 @@ public class Interval {
 		return result;
 	}
 
+	public static Interval getOverlapping(Interval first, Interval second){
+		return new Interval(Math.max(first.getMin(), second.getMin()), Math.min(first.getMax(), second.getMax()));
+	}
+
 	public boolean isInInterval(Integer number, Interval other) {
 	    if (number != null && other != null) {
 	        if(other.getMin() == null && other.getMax() != null) {

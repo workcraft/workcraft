@@ -24,6 +24,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
+import org.workcraft.plugins.son.algorithm.EntireEstimationAlg;
 import org.workcraft.plugins.son.algorithm.EstimationAlg;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
@@ -195,10 +196,20 @@ public class TimeEstimatorDialog extends JDialog{
 					setVisible(false);
 
 					if(entireEst.isSelected()){
+						EntireEstimationAlg alg1 = new EntireEstimationAlg
+						(net, getDefaultDuration(), granularity, getScenarioRef(), false, false);
 						try {
-							alg.entireEst();
+							alg1.entireEst();
 						} catch (AlternativeStructureException e1) {
 							errMsg(e1.getMessage());
+						} catch (TimeInconsistencyException e1) {
+							JOptionPane.showMessageDialog(editor.getMainWindow(),
+									e1.getMessage() ,
+									"", JOptionPane.ERROR_MESSAGE);
+						} catch (TimeEstimationException e1) {
+							JOptionPane.showMessageDialog(editor.getMainWindow(),
+									e1.getMessage(),
+									"", JOptionPane.ERROR_MESSAGE);
 						}
 					}else{
 						if(setDuration.isSelected())

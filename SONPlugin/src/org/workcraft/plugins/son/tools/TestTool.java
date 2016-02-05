@@ -114,12 +114,12 @@ public class TestTool extends AbstractTool implements Tool{
 		EstimationAlg timeAlg = new EstimationAlg(net, new Interval(0, 0), Granularity.YEAR_YEAR, null);
 		BSONAlg bsonAlg = new BSONAlg(net);
 
-		try {
-			timeAlg.entireEst();
-		} catch (AlternativeStructureException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			//timeAlg.entireEst();
+//		} catch (AlternativeStructureException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		System.out.println(net.getConditions().size() + " "+net.getSONConnections().size());
 //		try {

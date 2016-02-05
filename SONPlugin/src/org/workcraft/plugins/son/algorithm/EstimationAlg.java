@@ -31,17 +31,17 @@ import org.workcraft.plugins.son.util.ScenarioRef;
 
 public class EstimationAlg extends TimeAlg{
 
-	private SON net;
+	protected SON net;
 	//interval[0] is first found specified time interval, interval[1] is the accumulated durations
 	private Collection<Interval[]> resultTimeAndDuration =new ArrayList<Interval[]>();
 
 	//default duration provided by user
-	private final Interval defaultDuration;
-	private TimeGranularity granularity = null;
-	private ScenarioRef scenario;
+	protected final Interval defaultDuration;
+	protected TimeGranularity granularity = null;
+	protected ScenarioRef scenario;
 	private Before before;
-	private Granularity g;
-	private Color color =Color.ORANGE;
+	protected Granularity g;
+	protected Color color =Color.ORANGE;
 	private Collection<Path> fwdPaths = new ArrayList<Path>();
 	private Collection<Path> bwdPaths = new ArrayList<Path>();
 
@@ -314,115 +314,6 @@ public class EstimationAlg extends TimeAlg{
 		bwdPaths.clear();
 
 	}
-
-	public void entireEst() throws AlternativeStructureException{
-		if(scenario == null)
-			throw new AlternativeStructureException("select a scenario first");
-		//add super initial to SON
-		Condition superIni = net.createCondition(null, null);
-		scenario.add(net.getNodeReference(superIni));
-
-		SONAlg sonAlg = new SONAlg(net);
-		Collection<PlaceNode> initial = sonAlg.getSONInitial();
-		Collection<PlaceNode> finalM = sonAlg.getSONFinal();
-
-		//add arcs from super initial to SON initial
-		for(PlaceNode p : initial){
-			try {
-				SONConnection con = net.connect(superIni, p, Semantics.PNLINE);
-				scenario.add(net.getNodeReference(con));
-			} catch (InvalidConnectionException e) {
-				e.printStackTrace();
-			}
-		}
-
-		Interval end = null;
-
-		try {
-			end = getEstimatedEndTime(superIni);
-		} catch (TimeEstimationException e) {
-			net.remove(superIni);
-			return;
-		} catch (TimeOutOfBoundsException e){
-			net.remove(superIni);
-			e.printStackTrace();
-			return;
-		}
-
-		superIni.setEndTime(end);
-
-		LinkedList<Time> visited = new LinkedList<Time>();
-		visited.add(superIni);
-
-		try {
-			forwardDFSEntire(visited, scenario.getNodes(net), initial, finalM);
-		} catch (TimeOutOfBoundsException e) {
-			net.remove(superIni);
-			e.printStackTrace();
-			return;
-		}
-
-		//move estimated time to connections
-		for(SONConnection con : net.getSONConnections()){
-			if(con.getSemantics() == Semantics.PNLINE){
-				if(!con.getTime().isSpecified()){
-					Node first = con.getFirst();
-					if(first instanceof Time){
-						con.setTime(((Time)first).getEndTime());
-						con.setTimeLabelColor(color);
-					}
-				}
-			}
-		}
-
-		for(Time time : net.getTimeNodes()){
-			Interval defTime = new Interval();
-			if(!initial.contains(time)){
-				time.setStartTime(defTime);
-			}
-			if(!finalM.contains(time)){
-				time.setEndTime(defTime);
-			}
-		}
-
-		//remove super initial
-
-		net.remove(superIni);
-	}
-
-    private void forwardDFSEntire(LinkedList<Time> visited, Collection<Node> nodes, Collection<PlaceNode> initial, Collection<PlaceNode> finalM) throws TimeOutOfBoundsException  {
-        Time last = visited.getLast();
-    	LinkedList<Time> neighbours = getCausalPostset(last, nodes);
-
-        for(Time t : neighbours){
-        	if(!visited.contains(t)){
-     			if(!t.getStartTime().isSpecified()){
-    				t.setStartTime(last.getEndTime());
-    				if(initial.contains(t)){
-    					((Condition)t).setStartTimeColor(color);
-    				}
-    			}
-     			if(!t.getDuration().isSpecified()){
-     				t.setDuration(defaultDuration);
-     				if(t instanceof PlaceNode){
-     					((PlaceNode)t).setDurationColor(color);
-     				}else if(t instanceof Block){
-     					((Block)t).setDurationColor(color);
-     				}
-     			}
-     			if(!t.getEndTime().isSpecified()){
-     				Interval time = granularity.plusTD(t.getStartTime(), t.getDuration());
-     				t.setEndTime(time);
-    				if(finalM.contains(t)){
-    					((Condition)t).setEndTimeColor(color);
-    				}
-     			}
-
-        		visited.add(t);
-        		forwardDFSEntire(visited, nodes, initial, finalM);
-        	}
-        }
-    }
 
 	private boolean hasConflict(){
 		RelationAlgorithm alg = new RelationAlgorithm(net);
@@ -707,7 +598,7 @@ public class EstimationAlg extends TimeAlg{
 		}
 	}
 
-	private Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
+	protected Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
 		Interval result = new Interval();
 
     	LinkedList<Time> visited = new LinkedList<Time>();
@@ -896,7 +787,7 @@ public class EstimationAlg extends TimeAlg{
     	return result;
     }
 
-    private LinkedList<Time> getCausalPostset(Time n, Collection<Node> nodes){
+    protected LinkedList<Time> getCausalPostset(Time n, Collection<Node> nodes){
     	LinkedList<Time> postSet = new LinkedList<Time>();
     	LinkedList<Time> result = new LinkedList<Time>();
 
