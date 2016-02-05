@@ -62,7 +62,7 @@ public class EntireEstimationAlg extends EstimationAlg{
 		}
 		catch (TimeEstimationException e){
 			net.remove(superIni);
-			throw new TimeEstimationException(e.getMessage());
+			throw new TimeEstimationException("");
 		} catch (TimeOutOfBoundsException e){
 			net.remove(superIni);
 			e.printStackTrace();
@@ -73,6 +73,22 @@ public class EntireEstimationAlg extends EstimationAlg{
 
 		LinkedList<Time> visited = new LinkedList<Time>();
 		visited.add(superIni);
+
+		//assign specified value from connections to nodes
+		for(SONConnection con : net.getSONConnections()){
+			if(con.getSemantics() == Semantics.PNLINE){
+				if(con.getTime().isSpecified()){
+					Node first = con.getFirst();
+					if(first instanceof Time){
+						((Time)first).setEndTime(con.getTime());
+					}
+					Node second = con.getSecond();
+					if(second instanceof Time){
+						((Time)second).setStartTime(con.getTime());
+					}
+				}
+			}
+		}
 
 		try {
 			forwardDFSEntire(visited, scenario.getNodes(net), initial, finalM);
@@ -123,6 +139,7 @@ public class EntireEstimationAlg extends EstimationAlg{
     				if(!t.getStartTime().equals(last.getEndTime()))
     					throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
     				if(narrow){
+    					System.out.println("narrow");
     					t.setStartTime(Interval.getOverlapping(t.getStartTime(), last.getStartTime()));
     				}
     			}
@@ -154,12 +171,4 @@ public class EntireEstimationAlg extends EstimationAlg{
         	}
         }
     }
-
-	private String node(Node node){
-		return "("+net.getNodeReference(node)+")";
-	}
-
-	private String value(String value){
-		return "["+value+"]";
-	}
 }

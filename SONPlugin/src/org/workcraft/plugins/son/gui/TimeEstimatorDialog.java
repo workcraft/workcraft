@@ -197,7 +197,7 @@ public class TimeEstimatorDialog extends JDialog{
 
 					if(entireEst.isSelected()){
 						EntireEstimationAlg alg1 = new EntireEstimationAlg
-						(net, getDefaultDuration(), granularity, getScenarioRef(), false, false);
+						(net, getDefaultDuration(), granularity, getScenarioRef(), true, false);
 						try {
 							alg1.entireEst();
 						} catch (AlternativeStructureException e1) {
@@ -208,7 +208,7 @@ public class TimeEstimatorDialog extends JDialog{
 									"", JOptionPane.ERROR_MESSAGE);
 						} catch (TimeEstimationException e1) {
 							JOptionPane.showMessageDialog(editor.getMainWindow(),
-									e1.getMessage(),
+									e1.getMessage()+" pre-initial node",
 									"", JOptionPane.ERROR_MESSAGE);
 						}
 					}else{
