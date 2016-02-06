@@ -68,6 +68,18 @@ public class SON extends AbstractMathModel {
 	public void validate() throws ModelValidationException {
 	}
 
+	final public Condition createCondition(String name, Container container) {
+		if (container == null) {
+			container = getRoot();
+		}
+		Condition condition = new Condition();
+		container.add(condition);
+		if (name != null) {
+			setName(condition, name);
+		}
+		return condition;
+	}
+
 	@SuppressWarnings("deprecation")
 	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
 		throw new org.workcraft.exceptions.NotImplementedException();
@@ -147,6 +159,15 @@ public class SON extends AbstractMathModel {
 		for(Node node : getComponents())
 			if(node instanceof PlaceNode)
 				result.add((PlaceNode)node);
+
+		return result;
+	}
+
+	public Collection<Time> getTimeNodes(){
+		ArrayList<Time> result =  new ArrayList<Time>();
+		for(Node node : getComponents())
+			if(node instanceof Time)
+				result.add((Time)node);
 
 		return result;
 	}
@@ -341,7 +362,7 @@ public class SON extends AbstractMathModel {
 			if (getSONConnections(second).contains(con))
 				connection.add(con);
 		if(connection.size() > 1)
-			throw new RuntimeException("Conection size between"+ first.toString() + "and"+ second.toString()+ "> 1");
+			throw new RuntimeException("Connection size between"+ getNodeReference(first) + "and"+  getNodeReference(first)+ "> 1");
 
 		if(connection.size()  == 0)
 		return null;

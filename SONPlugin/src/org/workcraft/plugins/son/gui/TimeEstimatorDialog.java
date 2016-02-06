@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -24,6 +25,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
+import org.workcraft.plugins.son.algorithm.EntireEstimationAlg;
 import org.workcraft.plugins.son.algorithm.EstimationAlg;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
@@ -49,7 +51,7 @@ public class TimeEstimatorDialog extends JDialog{
 
 	protected JPanel buttonsPanel, durationPanel;
 	protected JButton runButton, cancelButton;
-	protected JCheckBox setDuration, intermediate;
+	protected JCheckBox setDuration, intermediate, entireEst, narrow, twoDir;
 	protected Dimension buttonSize = new Dimension(80, 25);
 	protected int run = 0;
 
@@ -61,7 +63,7 @@ public class TimeEstimatorDialog extends JDialog{
 		this.selection = selection;
 		this.granularity = g;
 
-		createDurationPanel();
+		creatCheckboxPanel();
 		createScenarioTable();
 		createButtonsPanel();
 
@@ -81,24 +83,72 @@ public class TimeEstimatorDialog extends JDialog{
 		pack();
 	}
 
-	protected void createDurationPanel(){
-		setDuration = new JCheckBox("Set default duration for all unspecifed nodes");
-		setDuration.setSelected(false);
-		setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
+	protected void creatCheckboxPanel(){
+
+		defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
+		defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+		JPanel	entirePanel = new JPanel(new BorderLayout());
+		entirePanel.setBorder(BorderFactory.createTitledBorder("Entire estimation"));
+		entirePanel.setLayout(new GridLayout(3,0));
+
+		entireEst = new JCheckBox("Estimate time value for entire SON");
+		entireEst.setSelected(false);
+		entireEst.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+		narrow = new JCheckBox("Narrow down specified values");
+		narrow.setSelected(false);
+		narrow.setLayout(new FlowLayout(FlowLayout.LEFT));
+		narrow.setEnabled(false);
+
+		twoDir = new JCheckBox("Two directions search");
+		twoDir.setSelected(false);
+		twoDir.setLayout(new FlowLayout(FlowLayout.LEFT));
+		twoDir.setEnabled(false);
+
+		entirePanel.add(entireEst);
+		entirePanel.add(narrow);
+		entirePanel.add(twoDir);
+
+		JPanel singlePanel = new JPanel(new BorderLayout());
+		singlePanel.setBorder(BorderFactory.createTitledBorder("Single Node estimation"));
+		singlePanel.setLayout(new GridLayout(2,0));
 
 		intermediate = new  JCheckBox("Set values for intermediate nodes");
 		intermediate.setSelected(false);
 		intermediate.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
-		defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		setDuration = new JCheckBox("Set default duration for all unspecifed nodes");
+		setDuration.setSelected(false);
+		setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+		singlePanel.add(intermediate);
+		singlePanel.add(setDuration);
 
 		durationPanel = new JPanel();
 		//durationPanel.setBorder(BorderFactory.createTitledBorder("Default Duration Setting"));
-		durationPanel.setLayout(new GridLayout(3,0));
-		durationPanel.add(defaultDurationPanel);
-		durationPanel.add(setDuration);
-		durationPanel.add(intermediate);
+		durationPanel.setLayout(new BorderLayout());
+		durationPanel.add(defaultDurationPanel, BorderLayout.NORTH);
+		durationPanel.add(singlePanel, BorderLayout.WEST);
+		durationPanel.add(entirePanel, BorderLayout.EAST);
+
+		entireEst.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(entireEst.isSelected()){
+					setDuration.setEnabled(false);
+					intermediate.setEnabled(false);
+					narrow.setEnabled(true);
+					twoDir.setEnabled(true);
+				}else{
+					setDuration.setEnabled(true);
+					intermediate.setEnabled(true);
+					narrow.setEnabled(false);
+					twoDir.setEnabled(false);
+				}
+			}
+		});
 	}
 
 	protected void createScenarioTable(){
@@ -174,19 +224,40 @@ public class TimeEstimatorDialog extends JDialog{
 					EstimationAlg alg = new EstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
 					setVisible(false);
 
-					if(setDuration.isSelected())
-						alg.setDefaultDuration();
+					if(entireEst.isSelected()){
+						boolean isNarrow = narrow.isSelected() && narrow.isEnabled();
+						boolean isTwodir = twoDir.isSelected() && twoDir.isEnabled();
 
-					try {
-						alg.twoDirEstimation(selection, intermediate.isSelected());
-					} catch (AlternativeStructureException e1) {
-						errMsg(e1.getMessage());
-					} catch (TimeEstimationException e1) {
-						errMsg(e1.getMessage());
-					} catch (TimeOutOfBoundsException e1) {
-						errMsg(e1.getMessage());
-					} catch (TimeInconsistencyException e1) {
-						errMsg(e1.getMessage());
+						EntireEstimationAlg alg1 = new EntireEstimationAlg
+						(net, getDefaultDuration(), granularity, getScenarioRef(), isNarrow, isTwodir);
+						try {
+							alg1.entireEst();
+						} catch (AlternativeStructureException e1) {
+							errMsg(e1.getMessage());
+						} catch (TimeInconsistencyException e1) {
+							JOptionPane.showMessageDialog(editor.getMainWindow(),
+									e1.getMessage() ,
+									"", JOptionPane.ERROR_MESSAGE);
+						} catch (TimeEstimationException e1) {
+							JOptionPane.showMessageDialog(editor.getMainWindow(),
+									e1.getMessage()+" pre-initial node",
+									"", JOptionPane.ERROR_MESSAGE);
+						}
+					}else{
+						if(setDuration.isSelected())
+							alg.setDefaultDuration();
+
+						try {
+							alg.twoDirEstimation(selection, intermediate.isSelected());
+						} catch (AlternativeStructureException e1) {
+							errMsg(e1.getMessage());
+						} catch (TimeEstimationException e1) {
+							errMsg(e1.getMessage());
+						} catch (TimeOutOfBoundsException e1) {
+							errMsg(e1.getMessage());
+						} catch (TimeInconsistencyException e1) {
+							errMsg(e1.getMessage());
+						}
 					}
 				}else{
 					defaultDurationPanel.getMin().setForeground(Color.RED);

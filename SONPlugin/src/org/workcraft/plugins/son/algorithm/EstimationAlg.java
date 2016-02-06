@@ -30,17 +30,17 @@ import org.workcraft.plugins.son.util.ScenarioRef;
 
 public class EstimationAlg extends TimeAlg{
 
-	private SON net;
+	protected SON net;
 	//interval[0] is first found specified time interval, interval[1] is the accumulated durations
 	private Collection<Interval[]> resultTimeAndDuration =new ArrayList<Interval[]>();
 
 	//default duration provided by user
-	private final Interval defaultDuration;
-	private TimeGranularity granularity = null;
-	private ScenarioRef scenario;
+	protected final Interval defaultDuration;
+	protected TimeGranularity granularity = null;
+	protected ScenarioRef scenario;
 	private Before before;
-	private Granularity g;
-	private Color color =Color.ORANGE;
+	protected Granularity g;
+	protected Color color =Color.ORANGE;
 	private Collection<Path> fwdPaths = new ArrayList<Path>();
 	private Collection<Path> bwdPaths = new ArrayList<Path>();
 
@@ -50,6 +50,9 @@ public class EstimationAlg extends TimeAlg{
 		this.defaultDuration = d;
 		this.scenario = s;
 		this.g = g;
+
+		if(scenario == null && !hasConflict())
+			scenario = getUnalterSON();
 
 		if(g == Granularity.YEAR_YEAR){
 			granularity = new YearYear();
@@ -62,9 +65,6 @@ public class EstimationAlg extends TimeAlg{
 	}
 
 	public void setDefaultDuration(){
-		if(!hasConflict() && scenario == null){
-			scenario = getUnalterSON();
-		}
 		for(Node n : scenario.getNodes(net)){
 			if(n instanceof PlaceNode || n instanceof Block){
 				Time node = (Time)n;
@@ -89,11 +89,8 @@ public class EstimationAlg extends TimeAlg{
 		ConsistencyAlg alg = new ConsistencyAlg(net);
 		Time node = null;
 
-		if(hasConflict() && scenario == null)
+		if(scenario == null)
 			throw new AlternativeStructureException("select a scenario for "+net.getNodeReference(n) + " first.");
-		else if(!hasConflict() && scenario == null){
-			scenario = getUnalterSON();
-		}
 
 		boolean specifiedDur = alg.hasSpecifiedDur(n, false, scenario);
 		boolean specifiedStart = alg.hasSpecifiedStart(n, scenario);
@@ -226,13 +223,11 @@ public class EstimationAlg extends TimeAlg{
 			//unspec values for all connections
 			if(start == null)
 				try{
-					clearSets();
 					start = getEstimatedStartTime(node);
 					//System.out.println("start" + start!=null?start.toString():"null");
 				}catch(TimeEstimationException e){}
 			if(end == null)
 				try{
-					clearSets();
 					end = getEstimatedEndTime(node);
 					//System.out.println("end" + end!=null?end.toString():"null");
 				}catch(TimeEstimationException e){}
@@ -407,7 +402,6 @@ public class EstimationAlg extends TimeAlg{
 
 	public void setEstimatedEndTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
 		Interval end = null;
-		clearSets();
 
 		if(n instanceof Condition){
 			Condition c = (Condition)n;
@@ -491,7 +485,6 @@ public class EstimationAlg extends TimeAlg{
 
 	public void setEstimatedStartTime(Node n) throws TimeOutOfBoundsException, TimeEstimationException, TimeEstimationValueException{
 		Interval start = null;
-		clearSets();
 
 		if(n instanceof Condition){
 			Condition c = (Condition)n;
@@ -574,7 +567,7 @@ public class EstimationAlg extends TimeAlg{
 		return true;
 	}
 
-	private Interval getEstimatedStartTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
+	protected Interval getEstimatedStartTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
 		Interval result = new Interval();
 
     	LinkedList<Time> visited = new LinkedList<Time>();
@@ -591,17 +584,20 @@ public class EstimationAlg extends TimeAlg{
 			result = Interval.getOverlapping(possibleTimes);
 
 		if(result != null){
+			clearSets();
 			if(!result.isSpecified()){
 				throw new TimeEstimationException(
 						"cannot find causally time value (backward).");
 			}else
 				return result;
-		}else
+		}else{
+			clearSets();
 			throw new TimeEstimationException("intervals"+
-		intervals(resultTimeAndDuration)+"are not consistent (backward).");
+			intervals(resultTimeAndDuration)+"are not consistent (backward).");
+		}
 	}
 
-	private Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
+	protected Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
 		Interval result = new Interval();
 
     	LinkedList<Time> visited = new LinkedList<Time>();
@@ -620,15 +616,18 @@ public class EstimationAlg extends TimeAlg{
 			result = Interval.getOverlapping(possibleTimes);
 
 		if(result != null){
+			clearSets();
 			if(!result.isSpecified()){
 				throw new TimeEstimationException(
 						"cannot find causally time value (forward).");
 			}else
 				return result;
-		}else
+		}else{
+			clearSets();
 			throw new TimeEstimationException(
 					"intervals"+
 			intervals(resultTimeAndDuration)+"are not consistent (forward).");
+		}
 
 	}
 
@@ -663,6 +662,7 @@ public class EstimationAlg extends TimeAlg{
             	Path path = new Path();
                 visited.addLast(node);
                 path.addAll(visited);
+                visited.removeLast();
                 fwdPaths.add(path);
             }
         }
@@ -710,6 +710,7 @@ public class EstimationAlg extends TimeAlg{
             	Path path = new Path();
                 visited.addLast(node);
                 path.addAll(visited);
+                visited.removeLast();
                 bwdPaths.add(path);
             }
         }
@@ -743,7 +744,7 @@ public class EstimationAlg extends TimeAlg{
     	return result;
     }
 
-    private LinkedList<Time> getCausalPreset(Time n, Collection<Node> nodes){
+    protected LinkedList<Time> getCausalPreset(Time n, Collection<Node> nodes){
     	LinkedList<Time> preSet = new LinkedList<Time>();
     	LinkedList<Time> result = new LinkedList<Time>();
 
@@ -785,7 +786,7 @@ public class EstimationAlg extends TimeAlg{
     	return result;
     }
 
-    private LinkedList<Time> getCausalPostset(Time n, Collection<Node> nodes){
+    protected LinkedList<Time> getCausalPostset(Time n, Collection<Node> nodes){
     	LinkedList<Time> postSet = new LinkedList<Time>();
     	LinkedList<Time> result = new LinkedList<Time>();
 

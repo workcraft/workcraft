@@ -284,11 +284,11 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 						ONGroup lowGroup = net.getGroup(phase.iterator().next());
 						boolean containFinal = false;
 
-						if(!min.containsAll(getRelationAlg().getInitial(lowGroup))){
+						if(!min.containsAll(getRelationAlg().getONInitial(lowGroup))){
 							match = false;
 						}
 						for(ONGroup group : getBSONAlg().getLowerGroups(pre)){
-							if(preMax.containsAll(getRelationAlg().getFinal(group))){
+							if(preMax.containsAll(getRelationAlg().getONFinal(group))){
 								containFinal = true;
 								break;
 							}

@@ -78,9 +78,9 @@ public class BSONAlg extends RelationAlgorithm{
 		for(ONGroup group : getLowerGroups(net.getGroups())){
 			//find all nodes pointing to c
 			Marking min = new Marking();
-			min.addAll(getPathBounding(getInitial(group), c, true));
+			min.addAll(getPathBounding(getONInitial(group), c, true));
 			Marking max = new Marking();
-			max.addAll(getPathBounding(getFinal(group), c, false));
+			max.addAll(getPathBounding(getONFinal(group), c, false));
 
 			if(!min.isEmpty() && !max.isEmpty()){
 				//group does not have alternative behaviours
