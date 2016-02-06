@@ -74,6 +74,7 @@ public class EntireEstimationAlg extends EstimationAlg{
 		LinkedList<Time> visited = new LinkedList<Time>();
 		visited.add(superIni);
 
+
 		//assign specified value from connections to nodes
 		for(SONConnection con : net.getSONConnections()){
 			if(con.getSemantics() == Semantics.PNLINE){
@@ -98,14 +99,60 @@ public class EntireEstimationAlg extends EstimationAlg{
 			return;
 		}
 
-		//move estimated time to connections
+		Condition superFinal = null;
+		//super final
+		if(twoDir){
+			superFinal = net.createCondition(null, null);
+			scenario.add(net.getNodeReference(superFinal));
+
+			for(PlaceNode p : finalM){
+				try {
+					SONConnection con = net.connect(p, superFinal, Semantics.PNLINE);
+					scenario.add(net.getNodeReference(con));
+				} catch (InvalidConnectionException e) {
+					e.printStackTrace();
+				}
+			}
+
+			Interval start = null;
+
+			try {
+				start = getEstimatedStartTime(superFinal);
+			}
+			catch (TimeEstimationException e){
+				net.remove(superFinal);
+				throw new TimeEstimationException("");
+			} catch (TimeOutOfBoundsException e){
+				net.remove(superFinal);
+				e.printStackTrace();
+				return;
+			}
+
+			superFinal.setEndTime(start);
+
+			try {
+				backwardDFSEntire(visited, scenario.getNodes(net), initial, finalM);
+			} catch (TimeOutOfBoundsException e) {
+				net.remove(superFinal);
+				e.printStackTrace();
+				return;
+			}
+		}
+
+		//assign estimated time value from nodes to connections
 		for(SONConnection con : net.getSONConnections()){
 			if(con.getSemantics() == Semantics.PNLINE){
-				if(!con.getTime().isSpecified()){
-					Node first = con.getFirst();
-					if(first instanceof Time){
+				Node first = con.getFirst();
+				if(first instanceof Time){
+				if(narrow){
+					con.setTime(((Time)first).getEndTime());
+					con.setTimeLabelColor(color);
+				}
+				else{
+					if((!con.getTime().isSpecified())){
 						con.setTime(((Time)first).getEndTime());
 						con.setTimeLabelColor(color);
+						}
 					}
 				}
 			}
@@ -122,7 +169,57 @@ public class EntireEstimationAlg extends EstimationAlg{
 		}
 		//remove super initial
 		net.remove(superIni);
+		if(twoDir){
+			net.remove(superFinal);
+		}
 	}
+
+    private void backwardDFSEntire(LinkedList<Time> visited, Collection<Node> nodes, Collection<PlaceNode> initial, Collection<PlaceNode> finalM) throws TimeOutOfBoundsException, TimeInconsistencyException  {
+        Time last = visited.getLast();
+    	LinkedList<Time> neighbours = getCausalPreset(last, nodes);
+
+        for(Time t : neighbours){
+        	if(!visited.contains(t)){
+     			if(!t.getEndTime().isSpecified()){
+    				t.setEndTime(last.getStartTime());
+    				if(finalM.contains(t)){
+    					((Condition)t).setEndTimeColor(color);
+    				}
+    			}else{
+    				if(!t.getEndTime().isOverlapping(last.getStartTime()))
+    					throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
+    				if(narrow){
+    					t.setEndTime(Interval.getOverlapping(t.getEndTime(), last.getEndTime()));
+    				}
+    			}
+     			if(!t.getDuration().isSpecified()){
+     				t.setDuration(defaultDuration);
+     				if(t instanceof PlaceNode){
+     					((PlaceNode)t).setDurationColor(color);
+     				}else if(t instanceof Block){
+     					((Block)t).setDurationColor(color);
+     				}
+     			}
+     			if(!t.getStartTime().isSpecified()){
+     				Interval time = granularity.plusTD(t.getEndTime(), t.getDuration());
+     				t.setStartTime(time);
+    				if(initial.contains(t)){
+    					((Condition)t).setStartTimeColor(color);
+    				}
+     			}else{
+     				ArrayList<String> check= consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
+    				if(!check.isEmpty())
+    					throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
+    				if(narrow){
+    					t.setStartTime(Interval.getOverlapping(t.getEndTime(), last.getEndTime()));
+    				}
+    			}
+
+        		visited.add(t);
+        		backwardDFSEntire(visited, nodes, initial, finalM);
+        	}
+        }
+    }
 
     private void forwardDFSEntire(LinkedList<Time> visited, Collection<Node> nodes, Collection<PlaceNode> initial, Collection<PlaceNode> finalM) throws TimeOutOfBoundsException, TimeInconsistencyException  {
         Time last = visited.getLast();
@@ -136,10 +233,9 @@ public class EntireEstimationAlg extends EstimationAlg{
     					((Condition)t).setStartTimeColor(color);
     				}
     			}else{
-    				if(!t.getStartTime().equals(last.getEndTime()))
+    				if(!t.getStartTime().isOverlapping(last.getEndTime()))
     					throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
     				if(narrow){
-    					System.out.println("narrow");
     					t.setStartTime(Interval.getOverlapping(t.getStartTime(), last.getStartTime()));
     				}
     			}

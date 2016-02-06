@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.dom.Node;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -568,7 +567,7 @@ public class EstimationAlg extends TimeAlg{
 		return true;
 	}
 
-	private Interval getEstimatedStartTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
+	protected Interval getEstimatedStartTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException{
 		Interval result = new Interval();
 
     	LinkedList<Time> visited = new LinkedList<Time>();
@@ -745,7 +744,7 @@ public class EstimationAlg extends TimeAlg{
     	return result;
     }
 
-    private LinkedList<Time> getCausalPreset(Time n, Collection<Node> nodes){
+    protected LinkedList<Time> getCausalPreset(Time n, Collection<Node> nodes){
     	LinkedList<Time> preSet = new LinkedList<Time>();
     	LinkedList<Time> result = new LinkedList<Time>();
 
