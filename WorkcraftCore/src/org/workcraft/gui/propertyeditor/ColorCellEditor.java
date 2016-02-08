@@ -37,70 +37,70 @@ import javax.swing.table.TableCellEditor;
 @SuppressWarnings("serial")
 public class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
-	static class Approximator implements ActionListener {
-		public ActionListener target = null;
+    static class Approximator implements ActionListener {
+        public ActionListener target = null;
 
-		public void actionPerformed(ActionEvent e) {
-			target.actionPerformed(e);
-		}
-	}
+        public void actionPerformed(ActionEvent e) {
+            target.actionPerformed(e);
+        }
+    }
 
-	Color color;
-	JButton button;
+    Color color;
+    JButton button;
 
-	static Approximator approx = new Approximator();
-	static JColorChooser chooser = null;
-	static JDialog dialog = null;
+    static Approximator approx = new Approximator();
+    static JColorChooser chooser = null;
+    static JDialog dialog = null;
 
-	protected static final String TAG_EDIT = "edit";
+    protected static final String TAG_EDIT = "edit";
 
-	public  ColorCellEditor() {
+    public  ColorCellEditor() {
 
-		button = new JButton();
-		button.setActionCommand(TAG_EDIT);
-		button.addActionListener(this);
-		button.setBorderPainted(false);
-		button.setFocusable(false);
+        button = new JButton();
+        button.setActionCommand(TAG_EDIT);
+        button.addActionListener(this);
+        button.setBorderPainted(false);
+        button.setFocusable(false);
 
-		// Set up the dialog that the button brings up.
-		if (chooser == null) {
-			chooser = new JColorChooser();
-		}
-		if (dialog == null) {
-			dialog = JColorChooser.createDialog(null,
-					"Pick a Color",
-					true,  //modal
-					chooser,
-					approx,  //OK button handler
-					null); //no CANCEL button handler
-		}
-	}
+        // Set up the dialog that the button brings up.
+        if (chooser == null) {
+            chooser = new JColorChooser();
+        }
+        if (dialog == null) {
+            dialog = JColorChooser.createDialog(null,
+                    "Pick a Color",
+                    true,  //modal
+                    chooser,
+                    approx,  //OK button handler
+                    null); //no CANCEL button handler
+        }
+    }
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (TAG_EDIT.equals(e.getActionCommand())) {
-			// The user has clicked the cell, so bring up the dialog.
-			approx.target = this;
-			button.setBackground(color);
-			chooser.setColor(color);
-			dialog.setVisible(true);
-			fireEditingStopped(); //Make the renderer reappear.
-		} else {
-			// User pressed dialog's "OK" button.
-			color = chooser.getColor();
-		}
-	}
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (TAG_EDIT.equals(e.getActionCommand())) {
+            // The user has clicked the cell, so bring up the dialog.
+            approx.target = this;
+            button.setBackground(color);
+            chooser.setColor(color);
+            dialog.setVisible(true);
+            fireEditingStopped(); //Make the renderer reappear.
+        } else {
+            // User pressed dialog's "OK" button.
+            color = chooser.getColor();
+        }
+    }
 
-	@Override
-	public Object getCellEditorValue() {
-		return color;
-	}
+    @Override
+    public Object getCellEditorValue() {
+        return color;
+    }
 
-	@Override
-	public Component getTableCellEditorComponent(JTable table,
-			Object value, boolean isSelected, int row, int column) {
-		color = (Color)value;
-		return button;
-	}
+    @Override
+    public Component getTableCellEditorComponent(JTable table,
+            Object value, boolean isSelected, int row, int column) {
+        color = (Color)value;
+        return button;
+    }
 }
 

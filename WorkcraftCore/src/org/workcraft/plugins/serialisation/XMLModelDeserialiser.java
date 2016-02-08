@@ -44,60 +44,60 @@ import org.xml.sax.SAXException;
 
 public class XMLModelDeserialiser implements ModelDeserialiser {
 
-	PluginProvider plugins;
-	public XMLModelDeserialiser(PluginProvider plugins) {
-		this.plugins = plugins;
-	}
+    PluginProvider plugins;
+    public XMLModelDeserialiser(PluginProvider plugins) {
+        this.plugins = plugins;
+    }
 
-	public DeserialisationResult deserialise(InputStream is, ReferenceResolver extRef,
-			Model underlyingModel) throws DeserialisationException {
-		try {
-			XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
-			deserialisation.processPlugins(plugins);
+    public DeserialisationResult deserialise(InputStream is, ReferenceResolver extRef,
+            Model underlyingModel) throws DeserialisationException {
+        try {
+            XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
+            deserialisation.processPlugins(plugins);
 
-			Document doc = XmlUtil.loadDocument(is);
-			Element modelElement = doc.getDocumentElement();
+            Document doc = XmlUtil.loadDocument(is);
+            Element modelElement = doc.getDocumentElement();
 
-			deserialisation.begin(extRef);
+            deserialisation.begin(extRef);
 
-			// 1st pass -- init instances
-			Element rootElement = XmlUtil.getChildElement("root", modelElement);
-			Node root = (Node) deserialisation.initInstance(rootElement);
+            // 1st pass -- init instances
+            Element rootElement = XmlUtil.getChildElement("root", modelElement);
+            Node root = (Node) deserialisation.initInstance(rootElement);
 
-			// 2nd pass -- finalise instances
-			deserialisation.finaliseInstances();
+            // 2nd pass -- finalise instances
+            deserialisation.finaliseInstances();
 
-			// create model
-			String modelClassName = modelElement.getAttribute("class");
-			if (modelClassName == null || modelClassName.isEmpty())
-				throw new DeserialisationException("Class name attribute is not set\n" + modelElement.toString());
-			Class<?> cls = Class.forName(modelClassName);
+            // create model
+            String modelClassName = modelElement.getAttribute("class");
+            if (modelClassName == null || modelClassName.isEmpty())
+                throw new DeserialisationException("Class name attribute is not set\n" + modelElement.toString());
+            Class<?> cls = Class.forName(modelClassName);
 
-			References intRef = deserialisation.getReferenceResolver();
-			Model model = XMLDeserialisationManager.createModel(cls, root, underlyingModel, intRef);
-			deserialisation.deserialiseModelProperties(modelElement, model);
+            References intRef = deserialisation.getReferenceResolver();
+            Model model = XMLDeserialisationManager.createModel(cls, root, underlyingModel, intRef);
+            deserialisation.deserialiseModelProperties(modelElement, model);
 
-			return new DeserialisationResult(model, intRef);
-		} catch (ParserConfigurationException e) {
-			throw new DeserialisationException(e);
-		} catch (SAXException e) {
-			throw new DeserialisationException(e);
-		} catch (IOException e) {
-			throw new DeserialisationException(e);
-		} catch (SecurityException e) {
-			throw new DeserialisationException(e);
-		} catch (IllegalArgumentException e) {
-			throw new DeserialisationException(e);
-		} catch (ClassNotFoundException e) {
-			throw new DeserialisationException(e);
-		}
-	}
+            return new DeserialisationResult(model, intRef);
+        } catch (ParserConfigurationException e) {
+            throw new DeserialisationException(e);
+        } catch (SAXException e) {
+            throw new DeserialisationException(e);
+        } catch (IOException e) {
+            throw new DeserialisationException(e);
+        } catch (SecurityException e) {
+            throw new DeserialisationException(e);
+        } catch (IllegalArgumentException e) {
+            throw new DeserialisationException(e);
+        } catch (ClassNotFoundException e) {
+            throw new DeserialisationException(e);
+        }
+    }
 
-	public String getDescription() {
-		return "Workcraft XML deserialiser";
-	}
+    public String getDescription() {
+        return "Workcraft XML deserialiser";
+    }
 
-	public UUID getFormatUUID() {
-		return Format.workcraftXML;
-	}
+    public UUID getFormatUUID() {
+        return Format.workcraftXML;
+    }
 }

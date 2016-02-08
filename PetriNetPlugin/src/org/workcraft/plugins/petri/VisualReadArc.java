@@ -31,50 +31,50 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
 public class VisualReadArc extends VisualConnection implements Undirected {
-	private MathConnection mathConsumingArc;
-	private MathConnection mathProducingArc;
+    private MathConnection mathConsumingArc;
+    private MathConnection mathProducingArc;
 
-	public VisualReadArc() {
-		this(null, null, null, null);
-	}
+    public VisualReadArc() {
+        this(null, null, null, null);
+    }
 
-	public VisualReadArc(VisualNode place, VisualNode transition,
-			MathConnection mathConsumingArc, MathConnection mathProducingArc) {
-		super(null, place, transition);
-		this.mathConsumingArc = mathConsumingArc;
-		this.mathProducingArc = mathProducingArc;
-		removePropertyDeclarations();
-	}
+    public VisualReadArc(VisualNode place, VisualNode transition,
+            MathConnection mathConsumingArc, MathConnection mathProducingArc) {
+        super(null, place, transition);
+        this.mathConsumingArc = mathConsumingArc;
+        this.mathProducingArc = mathProducingArc;
+        removePropertyDeclarations();
+    }
 
-	private void removePropertyDeclarations() {
-		removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_LENGTH);
-		removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_WIDTH);
-	}
+    private void removePropertyDeclarations() {
+        removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_LENGTH);
+        removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_WIDTH);
+    }
 
-	public MathConnection getMathConsumingArc() {
-		return mathConsumingArc;
-	}
+    public MathConnection getMathConsumingArc() {
+        return mathConsumingArc;
+    }
 
-	public MathConnection getMathProducingArc() {
-		return mathProducingArc;
-	}
+    public MathConnection getMathProducingArc() {
+        return mathProducingArc;
+    }
 
-	@Override
-	public Set<MathNode> getMathReferences() {
-		Set<MathNode> ret = new HashSet<MathNode>();
-		ret.add(mathConsumingArc);
-		ret.add(mathProducingArc);
-		return ret;
-	}
+    @Override
+    public Set<MathNode> getMathReferences() {
+        Set<MathNode> ret = new HashSet<MathNode>();
+        ret.add(mathConsumingArc);
+        ret.add(mathProducingArc);
+        return ret;
+    }
 
-	public void setDependencies(MathConnection mathConsumingArc, MathConnection mathProducingArc) {
-		this.mathConsumingArc = mathConsumingArc;
-		this.mathProducingArc = mathProducingArc;
-	}
+    public void setDependencies(MathConnection mathConsumingArc, MathConnection mathProducingArc) {
+        this.mathConsumingArc = mathConsumingArc;
+        this.mathProducingArc = mathProducingArc;
+    }
 
-	@Override
-	public boolean hasArrow() {
-		return false;
-	}
+    @Override
+    public boolean hasArrow() {
+        return false;
+    }
 
 }

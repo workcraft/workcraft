@@ -15,33 +15,33 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifyNetSynthesis extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Net synthesis [Petrify]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Net synthesis [Petrify]";
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.BOTTOM;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.BOTTOM;
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return (WorkspaceUtils.canHas(we, PetriNetModel.class) || WorkspaceUtils.canHas(we, Fsm.class));
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return (WorkspaceUtils.canHas(we, PetriNetModel.class) || WorkspaceUtils.canHas(we, Fsm.class));
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		ArrayList<String> args = getArgs();
-		final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
-		final Framework framework = Framework.getInstance();
-		boolean hasSignals = (WorkspaceUtils.canHas(we, STGModel.class) || WorkspaceUtils.canHas(we, Fst.class));
-		TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
-		framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        ArrayList<String> args = getArgs();
+        final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
+        final Framework framework = Framework.getInstance();
+        boolean hasSignals = (WorkspaceUtils.canHas(we, STGModel.class) || WorkspaceUtils.canHas(we, Fst.class));
+        TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
+        framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
+    }
 
-	public ArrayList<String> getArgs() {
-		return new ArrayList<>();
-	}
+    public ArrayList<String> getArgs() {
+        return new ArrayList<>();
+    }
 
 }

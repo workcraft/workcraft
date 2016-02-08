@@ -14,76 +14,76 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProcessListener  {
 
-	private final WorkspaceEntry we;
-	private final ScencoSolver solver;
+    private final WorkspaceEntry we;
+    private final ScencoSolver solver;
 
-	public ScencoExternalToolTask(WorkspaceEntry we, ScencoSolver solver) {
-		this.we = we;
-		this.solver = solver;
-	}
+    public ScencoExternalToolTask(WorkspaceEntry we, ScencoSolver solver) {
+        this.we = we;
+        this.solver = solver;
+    }
 
-	@Override
-	public Result<? extends ScencoResult> run(ProgressMonitor<? super ScencoResult> monitor) {
-		ArrayList<String> args = solver.getScencoArguments();
-		String resultDirectoryPath = getResultDirectoryPath(args);
+    @Override
+    public Result<? extends ScencoResult> run(ProgressMonitor<? super ScencoResult> monitor) {
+        ArrayList<String> args = solver.getScencoArguments();
+        String resultDirectoryPath = getResultDirectoryPath(args);
 
-		// Error handling
-		if(args.get(0).contains("ERROR")){
-			we.cancelMemento();
-			ScencoResult result = new ScencoResult(args.get(2), resultDirectoryPath);
-			return new Result<ScencoResult>(Outcome.FAILED, result);
-		}
+        // Error handling
+        if(args.get(0).contains("ERROR")){
+            we.cancelMemento();
+            ScencoResult result = new ScencoResult(args.get(2), resultDirectoryPath);
+            return new Result<ScencoResult>(Outcome.FAILED, result);
+        }
 
-		// Running the tool through external process interface
-		ExternalProcessTask task = new ExternalProcessTask(args, null);
-		SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-		Result<? extends ExternalProcessResult> result = task.run(mon);
+        // Running the tool through external process interface
+        ExternalProcessTask task = new ExternalProcessTask(args, null);
+        SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+        Result<? extends ExternalProcessResult> result = task.run(mon);
 
-		// Handling the result
-		if (result.getOutcome() == Outcome.CANCELLED) {
-			we.cancelMemento();
-			return new Result<ScencoResult>(Outcome.CANCELLED);
-		} else {
-			final Outcome outcome;
-			if (result.getReturnValue().getReturnCode() == 0) {
-				outcome = Outcome.FINISHED;
-			} else {
-				we.cancelMemento();
-				outcome = Outcome.FAILED;
-			}
-			String stdout = new String(result.getReturnValue().getOutput());
-			ScencoResult finalResult = new ScencoResult(stdout, resultDirectoryPath);
-			return new Result<ScencoResult>(outcome, finalResult);
-		}
-	}
+        // Handling the result
+        if (result.getOutcome() == Outcome.CANCELLED) {
+            we.cancelMemento();
+            return new Result<ScencoResult>(Outcome.CANCELLED);
+        } else {
+            final Outcome outcome;
+            if (result.getReturnValue().getReturnCode() == 0) {
+                outcome = Outcome.FINISHED;
+            } else {
+                we.cancelMemento();
+                outcome = Outcome.FAILED;
+            }
+            String stdout = new String(result.getReturnValue().getOutput());
+            ScencoResult finalResult = new ScencoResult(stdout, resultDirectoryPath);
+            return new Result<ScencoResult>(outcome, finalResult);
+        }
+    }
 
-	private String getResultDirectoryPath(ArrayList<String> args) {
-		String result = null;
-		boolean found = false;
-		for (String arg: args) {
-			if (found) {
-				result = arg;
-				break;
-			} else if ("-res".equals(arg)) {
-				found = true;
-			}
-		}
-		return result;
-	}
-	@Override
-	public void processFinished(int returnCode) {
-	}
+    private String getResultDirectoryPath(ArrayList<String> args) {
+        String result = null;
+        boolean found = false;
+        for (String arg: args) {
+            if (found) {
+                result = arg;
+                break;
+            } else if ("-res".equals(arg)) {
+                found = true;
+            }
+        }
+        return result;
+    }
+    @Override
+    public void processFinished(int returnCode) {
+    }
 
-	@Override
-	public void errorData(byte[] data) {
-	}
+    @Override
+    public void errorData(byte[] data) {
+    }
 
-	@Override
-	public void outputData(byte[] data) {
-	}
+    @Override
+    public void outputData(byte[] data) {
+    }
 
-	public ScencoSolver getSolver() {
-		return solver;
-	}
+    public ScencoSolver getSolver() {
+        return solver;
+    }
 
 }

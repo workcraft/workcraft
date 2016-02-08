@@ -24,14 +24,14 @@ import java.util.List;
 
 public class ThermometerBooleanFormula {
 
-	private final List<BooleanVariable> vars;
+    private final List<BooleanVariable> vars;
 
-	public ThermometerBooleanFormula(List<BooleanVariable> vars) {
-		this.vars = vars;
-	}
+    public ThermometerBooleanFormula(List<BooleanVariable> vars) {
+        this.vars = vars;
+    }
 
-	public List<BooleanVariable> getVars() {
-		return vars;
-	}
+    public List<BooleanVariable> getVars() {
+        return vars;
+    }
 
 }

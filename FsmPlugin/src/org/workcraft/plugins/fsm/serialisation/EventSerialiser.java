@@ -30,20 +30,20 @@ import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
 public class EventSerialiser implements CustomXMLSerialiser {
-	@Override
-	public String getClassName() {
-		return Event.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return Event.class.getName();
+    }
 
-	@Override
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
-			throws SerialisationException {
-		Event event = (Event) object;
+    @Override
+    public void serialise(Element element, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
+            throws SerialisationException {
+        Event event = (Event) object;
 
-		element.setAttribute("first", internalReferences.getReference(event.getFirst()));
-		element.setAttribute("second", internalReferences.getReference(event.getSecond()));
-		element.setAttribute("symbol", internalReferences.getReference(event.getSymbol()));
-	}
+        element.setAttribute("first", internalReferences.getReference(event.getFirst()));
+        element.setAttribute("second", internalReferences.getReference(event.getSecond()));
+        element.setAttribute("symbol", internalReferences.getReference(event.getSymbol()));
+    }
 }

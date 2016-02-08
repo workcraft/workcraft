@@ -29,31 +29,31 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkspaceTreeDecorator implements TreeDecorator<Path<String>>
 {
-	private final Workspace workspace;
+    private final Workspace workspace;
 
-	public WorkspaceTreeDecorator(Workspace workspace)
-	{
-		this.workspace = workspace;
-	}
+    public WorkspaceTreeDecorator(Workspace workspace)
+    {
+        this.workspace = workspace;
+    }
 
-	@Override
-	public Icon getIcon(Path<String> node) {
+    @Override
+    public Icon getIcon(Path<String> node) {
 
-/*		try {
-			return GUI.loadIconFromResource("images/place.png");
-		} catch (IOException e) {
-			System.out.println(e.getLocalizedMessage());
-			return null;
-		}*/
-		return null;
-	}
+/*        try {
+            return GUI.loadIconFromResource("images/place.png");
+        } catch (IOException e) {
+            System.out.println(e.getLocalizedMessage());
+            return null;
+        }*/
+        return null;
+    }
 
-	@Override
-	public String getName(Path<String> node) {
-		final WorkspaceEntry openFile = workspace.getOpenFile(node);
-		String name = node.isEmpty() ? "!Workspace" : node.getNode();
-		if(openFile != null && openFile.isChanged())
-			name += " *";
-		return name;
-	}
+    @Override
+    public String getName(Path<String> node) {
+        final WorkspaceEntry openFile = workspace.getOpenFile(node);
+        String name = node.isEmpty() ? "!Workspace" : node.getNode();
+        if(openFile != null && openFile.isChanged())
+            name += " *";
+        return name;
+    }
 }

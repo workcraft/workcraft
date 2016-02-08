@@ -30,16 +30,16 @@ import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
 public class ConnectionSerialiser implements CustomXMLSerialiser {
-	public String getClassName() {
-		return MathConnection.class.getName();
-	}
+    public String getClassName() {
+        return MathConnection.class.getName();
+    }
 
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer incomingReferences,
-			NodeSerialiser nodeSerialiser) throws SerialisationException {
-		Connection con = (Connection)object;
-		element.setAttribute("first", internalReferences.getReference(con.getFirst()));
-		element.setAttribute("second", internalReferences.getReference(con.getSecond()));
-	}
+    public void serialise(Element element, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer incomingReferences,
+            NodeSerialiser nodeSerialiser) throws SerialisationException {
+        Connection con = (Connection)object;
+        element.setAttribute("first", internalReferences.getReference(con.getFirst()));
+        element.setAttribute("second", internalReferences.getReference(con.getSecond()));
+    }
 }

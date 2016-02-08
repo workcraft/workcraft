@@ -26,19 +26,19 @@ import javax.swing.table.TableCellRenderer;
 
 public class BooleanProperty implements PropertyClass {
 
-	public Object fromCellEditorValue(Object editorComponentValue) {
-		return editorComponentValue;
-	}
+    public Object fromCellEditorValue(Object editorComponentValue) {
+        return editorComponentValue;
+    }
 
-	public TableCellEditor getCellEditor() {
-		return new BooleanCellEditor();
-	}
+    public TableCellEditor getCellEditor() {
+        return new BooleanCellEditor();
+    }
 
-	public TableCellRenderer getCellRenderer() {
-		return new BooleanCellRenderer();
-	}
+    public TableCellRenderer getCellRenderer() {
+        return new BooleanCellRenderer();
+    }
 
-	public Object toCellRendererValue(Object value) {
-		return value;
-	}
+    public Object toCellRendererValue(Object value) {
+        return value;
+    }
 }

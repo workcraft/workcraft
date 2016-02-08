@@ -18,53 +18,53 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PnToCpogTask implements Task<PnToCpogResult>{
 
-	private final WorkspaceEntry we;
+    private final WorkspaceEntry we;
 
-	// conversion-related variables
-	private VisualPetriNet pn;
-	private PnToCpogSettings settings;
-	private VisualCPOG cpog;
+    // conversion-related variables
+    private VisualPetriNet pn;
+    private PnToCpogSettings settings;
+    private VisualCPOG cpog;
 
-	public PnToCpogTask(WorkspaceEntry we, PnToCpogSettings settings) {
-		this.we = we;
-		this.settings = settings;
-	}
+    public PnToCpogTask(WorkspaceEntry we, PnToCpogSettings settings) {
+        this.we = we;
+        this.settings = settings;
+    }
 
 
-	@Override
-	public Result<? extends PnToCpogResult> run(
-			ProgressMonitor<? super PnToCpogResult> monitor) {
+    @Override
+    public Result<? extends PnToCpogResult> run(
+            ProgressMonitor<? super PnToCpogResult> monitor) {
 
-		PnToCpogResult result;
-		Outcome outcome;
+        PnToCpogResult result;
+        Outcome outcome;
 
-		// reading Petri net from workspace
-		pn = (VisualPetriNet)(we.getModelEntry().getVisualModel());
+        // reading Petri net from workspace
+        pn = (VisualPetriNet)(we.getModelEntry().getVisualModel());
 
-		// instantiating converter
-		PnToCpogConverter converter = new PnToCpogConverter(pn);
+        // instantiating converter
+        PnToCpogConverter converter = new PnToCpogConverter(pn);
 
-		// get the partial orders from the Petri net introduced
-		cpog = converter.run(settings);
+        // get the partial orders from the Petri net introduced
+        cpog = converter.run(settings);
 
-		// checking that conversion process terminated correctly
-		if (cpog == null){
-			result = new PnToCpogResult("Conversion failed.", null);
-			outcome = Outcome.FAILED;
-		}else{
-			result = new PnToCpogResult("Conversion terminated correctly.", cpog);
-			outcome = Outcome.FINISHED;
+        // checking that conversion process terminated correctly
+        if (cpog == null){
+            result = new PnToCpogResult("Conversion failed.", null);
+            outcome = Outcome.FAILED;
+        }else{
+            result = new PnToCpogResult("Conversion terminated correctly.", cpog);
+            outcome = Outcome.FINISHED;
 
-			final Framework framework = Framework.getInstance();
-			final Workspace workspace = framework.getWorkspace();
-			final Path<String> directory = we.getWorkspacePath().getParent();
-			final ModelEntry me = new ModelEntry(new CpogDescriptor(), cpog);
-			boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-			workspace.add(directory, we.getTitle().concat("_cpog"), me, false, openInEditor);
-		}
+            final Framework framework = Framework.getInstance();
+            final Workspace workspace = framework.getWorkspace();
+            final Path<String> directory = we.getWorkspacePath().getParent();
+            final ModelEntry me = new ModelEntry(new CpogDescriptor(), cpog);
+            boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+            workspace.add(directory, we.getTitle().concat("_cpog"), me, false, openInEditor);
+        }
 
-		return new Result<PnToCpogResult>(outcome, result);
+        return new Result<PnToCpogResult>(outcome, result);
 
-	}
+    }
 
 }

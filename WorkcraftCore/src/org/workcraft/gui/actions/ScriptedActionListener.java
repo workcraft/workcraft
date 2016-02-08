@@ -23,5 +23,5 @@ package org.workcraft.gui.actions;
 
 
 public interface ScriptedActionListener {
-	public void actionPerformed(Action action);
+    public void actionPerformed(Action action);
 }

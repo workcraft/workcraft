@@ -40,35 +40,35 @@ import org.workcraft.serialisation.Format;
 public class PNGExporter implements Exporter {
 
 
-	public void export(Model model, OutputStream out) throws IOException, SerialisationException {
-		InputStream svg = SVGExportUtils.stream(model);
-		Transcoder transcoder = new PNGTranscoder();
-		TranscoderInput transcoderInput = new TranscoderInput(svg);
-		TranscoderOutput transcoderOutput = new TranscoderOutput(out);
-		try {
-		    transcoder.transcode(transcoderInput, transcoderOutput);
-		} catch (TranscoderException e) {
-			throw new SerialisationException(e);
-		}
-	}
+    public void export(Model model, OutputStream out) throws IOException, SerialisationException {
+        InputStream svg = SVGExportUtils.stream(model);
+        Transcoder transcoder = new PNGTranscoder();
+        TranscoderInput transcoderInput = new TranscoderInput(svg);
+        TranscoderOutput transcoderOutput = new TranscoderOutput(out);
+        try {
+            transcoder.transcode(transcoderInput, transcoderOutput);
+        } catch (TranscoderException e) {
+            throw new SerialisationException(e);
+        }
+    }
 
-	public String getDescription() {
-		return ".png (FOP PNG transcoder)";
-	}
+    public String getDescription() {
+        return ".png (FOP PNG transcoder)";
+    }
 
-	public String getExtenstion() {
-		return ".png";
-	}
+    public String getExtenstion() {
+        return ".png";
+    }
 
-	public int getCompatibility(Model model) {
-		if (model instanceof VisualModel)
-			return Exporter.GENERAL_COMPATIBILITY;
-		else
-			return Exporter.NOT_COMPATIBLE;
-	}
+    public int getCompatibility(Model model) {
+        if (model instanceof VisualModel)
+            return Exporter.GENERAL_COMPATIBILITY;
+        else
+            return Exporter.NOT_COMPATIBLE;
+    }
 
-	@Override
-	public UUID getTargetFormat() {
-		return Format.PNG;
-	}
+    @Override
+    public UUID getTargetFormat() {
+        return Format.PNG;
+    }
 }

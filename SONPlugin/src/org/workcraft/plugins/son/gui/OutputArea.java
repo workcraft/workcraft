@@ -25,45 +25,45 @@ import javax.swing.JToolBar;
 
 public class OutputArea extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private Font font = new Font("Calibri", Font.PLAIN, 15);
+    private static final long serialVersionUID = 1L;
+    private Font font = new Font("Calibri", Font.PLAIN, 15);
 
-	private JTextArea textArea;
-	private JMenuBar menu;
-	private JMenu file;
-	private JMenuItem export, exit;
+    private JTextArea textArea;
+    private JMenuBar menu;
+    private JMenu file;
+    private JMenuItem export, exit;
 
-	JToolBar toolBar = new JToolBar();
+    JToolBar toolBar = new JToolBar();
 
-	private void createMenu(){
-		menu = new JMenuBar();
-		file = new JMenu(" File ");
-		export = new JMenuItem ("Export result");
-		exit = new JMenuItem("Exit");
+    private void createMenu(){
+        menu = new JMenuBar();
+        file = new JMenu(" File ");
+        export = new JMenuItem ("Export result");
+        exit = new JMenuItem("Exit");
 
-		menu.add(file);
-		file.add(export);
-		file.add(exit);
-		toolBar.setFloatable(true);
+        menu.add(file);
+        file.add(export);
+        file.add(exit);
+        toolBar.setFloatable(true);
 
-	    class SaveAs implements ActionListener{
-	        public void actionPerformed(ActionEvent e){
-	        	export();
-	        }
-	    }
+        class SaveAs implements ActionListener{
+            public void actionPerformed(ActionEvent e){
+                export();
+            }
+        }
 
-	    class Exit implements ActionListener{
-	        public void actionPerformed(ActionEvent e){
-	        	file_exit();
-	        }
-	    }
+        class Exit implements ActionListener{
+            public void actionPerformed(ActionEvent e){
+                file_exit();
+            }
+        }
 
-	    export.addActionListener(new SaveAs());
-	    exit.addActionListener(new Exit());
-	}
+        export.addActionListener(new SaveAs());
+        exit.addActionListener(new Exit());
+    }
 
 
-	private void export(){
+    private void export(){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
@@ -74,11 +74,11 @@ public class OutputArea extends JFrame {
 
         if (myfile != null && r == JFileChooser.APPROVE_OPTION){
 
-	        Pattern pattern=Pattern.compile(".*\\.[a-z]+",Pattern.CASE_INSENSITIVE);
-	        Matcher matcher = pattern.matcher(myfile.getAbsolutePath());
-	        if(!matcher.find()){
-	        	myfile=new File(myfile.getAbsolutePath().concat(".txt"));
-	        }
+            Pattern pattern=Pattern.compile(".*\\.[a-z]+",Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(myfile.getAbsolutePath());
+            if(!matcher.find()){
+                myfile=new File(myfile.getAbsolutePath().concat(".txt"));
+            }
         }
         if(myfile==null || myfile.getName().isEmpty())
         {
@@ -103,14 +103,14 @@ public class OutputArea extends JFrame {
         {
             JOptionPane.showMessageDialog(this,"Failed to save the file","Error",JOptionPane.ERROR_MESSAGE);
         }
-	}
-
-    public void file_exit(){
-    	this.setVisible(false);
     }
 
-	public OutputArea(JTextArea textArea) {
-		this.textArea = textArea;
+    public void file_exit(){
+        this.setVisible(false);
+    }
+
+    public OutputArea(JTextArea textArea) {
+        this.textArea = textArea;
         textArea.setEditable(false);
         textArea.setFont(font);
 

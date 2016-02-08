@@ -8,13 +8,13 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 
 public class VisualCpogDescriptor implements VisualModelDescriptor {
 
-	@Override
-	public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-		return new VisualCPOG((CPOG)mathModel);
-	}
+    @Override
+    public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
+        return new VisualCPOG((CPOG)mathModel);
+    }
 
-	@Override
-	public Iterable<GraphEditorTool> createTools() {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
+    @Override
+    public Iterable<GraphEditorTool> createTools() {
+        throw new org.workcraft.exceptions.NotImplementedException();
+    }
 }

@@ -16,19 +16,19 @@ import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 
 public class PetriNetToolProvider implements CustomToolsProvider {
 
-	@Override
-	public Iterable<GraphEditorTool> getTools() {
-		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+    @Override
+    public Iterable<GraphEditorTool> getTools() {
+        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new PetriNetSelectionTool());
-		result.add(new CommentGeneratorTool());
-		result.add(new PetriNetConnectionTool());
-		result.add(new ReadArcConnectionTool());
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Place.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Transition.class)));
-		result.add(new PetriNetSimulationTool());
+        result.add(new PetriNetSelectionTool());
+        result.add(new CommentGeneratorTool());
+        result.add(new PetriNetConnectionTool());
+        result.add(new ReadArcConnectionTool());
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Place.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Transition.class)));
+        result.add(new PetriNetSimulationTool());
 
-		return result;
-	}
+        return result;
+    }
 
 }

@@ -27,8 +27,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass(org.workcraft.plugins.xmas.components.VisualSwitchComponent.class)
 public class SwitchComponent extends XmasComponent {
 
-	public static final String PROPERTY_TYPE = "Type";
-	public static final String PROPERTY_VAL = "Val";
+    public static final String PROPERTY_TYPE = "Type";
+    public static final String PROPERTY_VAL = "Val";
 
     public enum Type {
         TYPE_E("==");
@@ -39,10 +39,10 @@ public class SwitchComponent extends XmasComponent {
             this.name = name;
         }
 
-		@Override
-		public String toString() {
-			return name;
-		}
+        @Override
+        public String toString() {
+            return name;
+        }
     };
 
     public enum Val {
@@ -55,34 +55,34 @@ public class SwitchComponent extends XmasComponent {
             this.name = name;
         }
 
-		@Override
-		public String toString() {
-			return name;
-		}
+        @Override
+        public String toString() {
+            return name;
+        }
     };
 
     public Type type = Type.TYPE_E;
     public Val val = Val.VAL_0;
 
-	public void setType(Type value) {
-		if (type != value) {
-			type = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
-		}
-	}
+    public void setType(Type value) {
+        if (type != value) {
+            type = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
+        }
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public void setVal(Val value) {
-		if (val != value) {
-			val = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
-		}
-	}
+    public void setVal(Val value) {
+        if (val != value) {
+            val = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
+        }
+    }
 
-	public Val getVal() {
-		return val;
-	}
+    public Val getVal() {
+        return val;
+    }
 }

@@ -18,21 +18,21 @@ import org.workcraft.plugins.son.tools.TimeValueSetterTool;
 
 public class SONToolProvider implements CustomToolsProvider{
 
-	@Override
-	public Iterable<GraphEditorTool> getTools() {
-		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
-		GraphEditorTool channelPlaceTool = new NodeGeneratorTool(new DefaultNodeGenerator(ChannelPlace.class));
-		result.add(new SONSelectionTool(channelPlaceTool));
-		result.add(new CommentGeneratorTool());
-		result.add(new SONConnectionTool());
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Condition.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Event.class)));
-		result.add(channelPlaceTool);
-		result.add(new SONSimulationTool());
-		result.add(new ScenarioGeneratorTool());
-		GraphEditorTool TimeSettingTool = new TimeValueSetterTool();
-		result.add(TimeSettingTool);
+    @Override
+    public Iterable<GraphEditorTool> getTools() {
+        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+        GraphEditorTool channelPlaceTool = new NodeGeneratorTool(new DefaultNodeGenerator(ChannelPlace.class));
+        result.add(new SONSelectionTool(channelPlaceTool));
+        result.add(new CommentGeneratorTool());
+        result.add(new SONConnectionTool());
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Condition.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Event.class)));
+        result.add(channelPlaceTool);
+        result.add(new SONSimulationTool());
+        result.add(new ScenarioGeneratorTool());
+        GraphEditorTool TimeSettingTool = new TimeValueSetterTool();
+        result.add(TimeSettingTool);
 
-		return result;
-	}
+        return result;
+    }
 }

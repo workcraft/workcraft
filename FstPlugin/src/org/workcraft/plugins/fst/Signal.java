@@ -6,52 +6,52 @@ import org.workcraft.plugins.fsm.Symbol;
 
 public class Signal extends Symbol {
 
-	public static final String PROPERTY_TYPE = "Type";
+    public static final String PROPERTY_TYPE = "Type";
 
-	public enum Type {
-		INPUT("input"),
-		OUTPUT("output"),
-		INTERNAL("internal"),
-		DUMMY("dummy");
+    public enum Type {
+        INPUT("input"),
+        OUTPUT("output"),
+        INTERNAL("internal"),
+        DUMMY("dummy");
 
-		private final String name;
+        private final String name;
 
-		private Type(String name) {
-			this.name = name;
-		}
+        private Type(String name) {
+            this.name = name;
+        }
 
-		public static Type fromString(String s) {
-			for (Type item : Type.values()) {
-				if ((s != null) && (s.equals(item.name))) {
-					return item;
-				}
-			}
-			throw new ArgumentException ("Unexpected string: " + s);
-		}
+        public static Type fromString(String s) {
+            for (Type item : Type.values()) {
+                if ((s != null) && (s.equals(item.name))) {
+                    return item;
+                }
+            }
+            throw new ArgumentException ("Unexpected string: " + s);
+        }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
-	private Type type = Type.DUMMY;
+    private Type type = Type.DUMMY;
 
-	public Signal() {
-	}
+    public Signal() {
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
-	}
+    public void setType(Type type) {
+        this.type = type;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
+    }
 
-	public boolean hasDirection() {
-		return (getType() != Type.DUMMY);
-	}
+    public boolean hasDirection() {
+        return (getType() != Type.DUMMY);
+    }
 
 }
 

@@ -10,64 +10,64 @@ import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
 
 public class DirectionPropertyDescriptor implements PropertyDescriptor {
-	private final Event event;
+    private final Event event;
 
-	public DirectionPropertyDescriptor(Event event) {
-		this.event = event;
-	}
+    public DirectionPropertyDescriptor(Event event) {
+        this.event = event;
+    }
 
-	@Override
-	public String getName() {
-		return SignalEvent.PROPERTY_DIRECTION;
-	}
+    @Override
+    public String getName() {
+        return SignalEvent.PROPERTY_DIRECTION;
+    }
 
-	@Override
-	public Class<?> getType() {
-		return int.class;
-	}
+    @Override
+    public Class<?> getType() {
+        return int.class;
+    }
 
-	@Override
-	public boolean isWritable() {
-		return true;
-	}
+    @Override
+    public boolean isWritable() {
+        return true;
+    }
 
-	@Override
-	public boolean isCombinable() {
-		return true;
-	}
+    @Override
+    public boolean isCombinable() {
+        return true;
+    }
 
-	@Override
-	public boolean isTemplatable() {
-		return true;
-	}
+    @Override
+    public boolean isTemplatable() {
+        return true;
+    }
 
-	@Override
-	public Object getValue() throws InvocationTargetException {
-		if (event instanceof SignalEvent) {
-			SignalEvent signalEvent = (SignalEvent)event;
-			return signalEvent.getDirection();
-		}
-		return null;
-	}
+    @Override
+    public Object getValue() throws InvocationTargetException {
+        if (event instanceof SignalEvent) {
+            SignalEvent signalEvent = (SignalEvent)event;
+            return signalEvent.getDirection();
+        }
+        return null;
+    }
 
-	@Override
-	public void setValue(Object value) throws InvocationTargetException {
-		if (event instanceof SignalEvent) {
-			SignalEvent signalEvent = (SignalEvent)event;
-			signalEvent.setDirection((Direction)value);
-		}
-	}
+    @Override
+    public void setValue(Object value) throws InvocationTargetException {
+        if (event instanceof SignalEvent) {
+            SignalEvent signalEvent = (SignalEvent)event;
+            signalEvent.setDirection((Direction)value);
+        }
+    }
 
-	@Override
-	public Map<Direction, String> getChoice() {
-		Map<Direction, String> result = null;
-		if (event instanceof SignalEvent) {
-			result = new LinkedHashMap<Direction, String>();
-			for (Direction item : Direction.values()) {
-				result.put(item, item.toString());
-			}
-		}
-		return result;
-	}
+    @Override
+    public Map<Direction, String> getChoice() {
+        Map<Direction, String> result = null;
+        if (event instanceof SignalEvent) {
+            result = new LinkedHashMap<Direction, String>();
+            for (Direction item : Direction.values()) {
+                result.put(item, item.toString());
+            }
+        }
+        return result;
+    }
 
 }

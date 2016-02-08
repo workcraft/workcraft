@@ -28,9 +28,9 @@ import org.workcraft.observation.PropertyChangedEvent;
 public class SourceComponent extends XmasComponent {
 
     public static final String PROPERTY_TYPE = "Type";
-	public static final String PROPERTY_MODE = "Mode";
+    public static final String PROPERTY_MODE = "Mode";
 
-	public enum Mode {
+    public enum Mode {
         MODE_0("0"),
         MODE_1("1"),
         MODE_2("2");
@@ -41,10 +41,10 @@ public class SourceComponent extends XmasComponent {
             this.name = name;
         }
 
-		@Override
-		public String toString() {
-			return name;
-		}
+        @Override
+        public String toString() {
+            return name;
+        }
     };
 
     public enum Type {
@@ -58,35 +58,35 @@ public class SourceComponent extends XmasComponent {
             this.name = name;
         }
 
-		@Override
-		public String toString() {
-			return name;
-		}
+        @Override
+        public String toString() {
+            return name;
+        }
     };
 
     public Mode mode = Mode.MODE_1;
     public Type type = Type.TYPE_T;
 
-	public void setMode(Mode value) {
-		if (mode != value) {
-			mode = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_MODE));
-		}
-	}
+    public void setMode(Mode value) {
+        if (mode != value) {
+            mode = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_MODE));
+        }
+    }
 
-	public Mode getMode() {
-		return mode;
-	}
+    public Mode getMode() {
+        return mode;
+    }
 
-	public void setType(Type value) {
-		if (type != value) {
-			type = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
-		}
-	}
+    public void setType(Type value) {
+        if (type != value) {
+            type = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
+        }
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
 }

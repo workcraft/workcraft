@@ -26,12 +26,12 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class IntDeserialiser implements BasicXMLDeserialiser {
-	public Object deserialise(Element element) throws DeserialisationException {
-		return Integer.parseInt(element.getAttribute("value"));
-	}
+    public Object deserialise(Element element) throws DeserialisationException {
+        return Integer.parseInt(element.getAttribute("value"));
+    }
 
-	public String getClassName() {
-		return int.class.getName();
-	}
+    public String getClassName() {
+        return int.class.getName();
+    }
 
 }

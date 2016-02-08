@@ -6,19 +6,19 @@ import org.workcraft.dom.math.MathModel;
 
 public class XmasDescriptor implements ModelDescriptor {
 
-	@Override
-	public MathModel createMathModel() {
-		return new Xmas();
-	}
+    @Override
+    public MathModel createMathModel() {
+        return new Xmas();
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "xMAS Circuit";
-	}
+    @Override
+    public String getDisplayName() {
+        return "xMAS Circuit";
+    }
 
-	@Override
-	public VisualModelDescriptor getVisualModelDescriptor() {
-		return new VisualXmasDescriptor();
-	}
+    @Override
+    public VisualModelDescriptor getVisualModelDescriptor() {
+        return new VisualXmasDescriptor();
+    }
 
 }

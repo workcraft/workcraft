@@ -47,138 +47,138 @@ import org.workcraft.plugins.shared.CommonLogSettings;
 
 @SuppressWarnings("serial")
 public class ErrorWindow extends JPanel implements ComponentListener {
-	protected PrintStream systemErr;
-	protected boolean streamCaptured = false;
-	private JScrollPane scrollStdErr;
-	private JTextArea txtStdErr;
-	private Color colorBack = null;
+    protected PrintStream systemErr;
+    protected boolean streamCaptured = false;
+    private JScrollPane scrollStdErr;
+    private JTextArea txtStdErr;
+    private Color colorBack = null;
 
-	public ErrorWindow () {
-		txtStdErr = new JTextArea();
-		txtStdErr.setLineWrap(true);
-		txtStdErr.setEditable(false);
-		txtStdErr.setWrapStyleWord(true);
-		txtStdErr.setForeground(Color.RED);
-		txtStdErr.addMouseListener(new LogAreaMouseListener());
+    public ErrorWindow () {
+        txtStdErr = new JTextArea();
+        txtStdErr.setLineWrap(true);
+        txtStdErr.setEditable(false);
+        txtStdErr.setWrapStyleWord(true);
+        txtStdErr.setForeground(Color.RED);
+        txtStdErr.addMouseListener(new LogAreaMouseListener());
 
-		DefaultCaret caret = (DefaultCaret)txtStdErr.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        DefaultCaret caret = (DefaultCaret)txtStdErr.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-		scrollStdErr = new JScrollPane();
-		scrollStdErr.setViewportView(txtStdErr);
+        scrollStdErr = new JScrollPane();
+        scrollStdErr.setViewportView(txtStdErr);
 
-		setLayout(new BorderLayout(0,0));
-		this.add(scrollStdErr, BorderLayout.CENTER);
+        setLayout(new BorderLayout(0,0));
+        this.add(scrollStdErr, BorderLayout.CENTER);
 
-		addComponentListener(this);
-	}
+        addComponentListener(this);
+    }
 
-	class ErrorStreamView extends FilterOutputStream implements ChangeListener {
-		JTextArea target;
+    class ErrorStreamView extends FilterOutputStream implements ChangeListener {
+        JTextArea target;
 
-		public ErrorStreamView(OutputStream aStream, JTextArea target) {
-			super(aStream);
-			this.target = target;
-		}
+        public ErrorStreamView(OutputStream aStream, JTextArea target) {
+            super(aStream);
+            this.target = target;
+        }
 
-		public void puts(String s) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					Container parent = 	getParent().getParent().getParent();
-					if (parent instanceof JTabbedPane) {
-						JTabbedPane tab = (JTabbedPane) parent;
-						for (int i=0; i<tab.getTabCount(); i++) {
-							if (tab.getComponentAt(i) == getParent().getParent()) {
-								Component tabComponent = tab.getTabComponentAt(i);
-								if (!tabComponent.getForeground().equals(Color.RED)) {
-									colorBack = tabComponent.getForeground();
-									tabComponent.setForeground(Color.RED);
-									tab.removeChangeListener(ErrorStreamView.this);
-									tab.addChangeListener(ErrorStreamView.this);
-								}
-							}
-						}
-					}
-				}
-			});
-			target.append(s);
-			target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
-		}
+        public void puts(String s) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    Container parent =     getParent().getParent().getParent();
+                    if (parent instanceof JTabbedPane) {
+                        JTabbedPane tab = (JTabbedPane) parent;
+                        for (int i=0; i<tab.getTabCount(); i++) {
+                            if (tab.getComponentAt(i) == getParent().getParent()) {
+                                Component tabComponent = tab.getTabComponentAt(i);
+                                if (!tabComponent.getForeground().equals(Color.RED)) {
+                                    colorBack = tabComponent.getForeground();
+                                    tabComponent.setForeground(Color.RED);
+                                    tab.removeChangeListener(ErrorStreamView.this);
+                                    tab.addChangeListener(ErrorStreamView.this);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            target.append(s);
+            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
+        }
 
-		@Override
-		public void write(byte b[]) throws IOException {
-			if (systemErr != null) {
-				systemErr.write(b);
-			}
-			String s = new String(b);
-			puts(s);
-		}
+        @Override
+        public void write(byte b[]) throws IOException {
+            if (systemErr != null) {
+                systemErr.write(b);
+            }
+            String s = new String(b);
+            puts(s);
+        }
 
-		@Override
-		public void write(byte b[], int off, int len) throws IOException {
-			if (systemErr != null) {
-				systemErr.write(b, off, len);
-			}
-			String s = new String(b , off , len);
-			puts(s);
-		}
+        @Override
+        public void write(byte b[], int off, int len) throws IOException {
+            if (systemErr != null) {
+                systemErr.write(b, off, len);
+            }
+            String s = new String(b , off , len);
+            puts(s);
+        }
 
-		public void stateChanged(ChangeEvent e) {
-			if (colorBack == null) {
-				return;
-			}
-			Container parent = 	getParent().getParent().getParent();
-			if (parent instanceof JTabbedPane) {
-				JTabbedPane tab = (JTabbedPane) parent;
-				if (tab.getSelectedComponent() == getParent().getParent()) {
-					tab.getTabComponentAt(tab.getSelectedIndex()).setForeground(colorBack);
-					colorBack = null;
-					tab.removeChangeListener(ErrorStreamView.this);
-				}
-			}
-		}
-	}
+        public void stateChanged(ChangeEvent e) {
+            if (colorBack == null) {
+                return;
+            }
+            Container parent =     getParent().getParent().getParent();
+            if (parent instanceof JTabbedPane) {
+                JTabbedPane tab = (JTabbedPane) parent;
+                if (tab.getSelectedComponent() == getParent().getParent()) {
+                    tab.getTabComponentAt(tab.getSelectedIndex()).setForeground(colorBack);
+                    colorBack = null;
+                    tab.removeChangeListener(ErrorStreamView.this);
+                }
+            }
+        }
+    }
 
-	public void captureStream() {
-		if (!streamCaptured) {
-			PrintStream errPrintStream = new PrintStream(new ErrorStreamView(
-					new ByteArrayOutputStream(), txtStdErr));
+    public void captureStream() {
+        if (!streamCaptured) {
+            PrintStream errPrintStream = new PrintStream(new ErrorStreamView(
+                    new ByteArrayOutputStream(), txtStdErr));
 
-			systemErr = System.err;
-			System.setErr(errPrintStream);
-			streamCaptured = true;
-		}
-	}
+            systemErr = System.err;
+            System.setErr(errPrintStream);
+            streamCaptured = true;
+        }
+    }
 
-	public void releaseStream() {
-		if (streamCaptured) {
-			System.setErr(systemErr);
-			systemErr = null;
-			streamCaptured = false;
-		}
-	}
+    public void releaseStream() {
+        if (streamCaptured) {
+            System.setErr(systemErr);
+            systemErr = null;
+            streamCaptured = false;
+        }
+    }
 
-	public void componentHidden(ComponentEvent e) {
-	}
+    public void componentHidden(ComponentEvent e) {
+    }
 
-	public void componentMoved(ComponentEvent e) {
-	}
+    public void componentMoved(ComponentEvent e) {
+    }
 
-	public void componentResized(ComponentEvent e) {
-	}
+    public void componentResized(ComponentEvent e) {
+    }
 
-	public void componentShown(ComponentEvent e) {
-		if (colorBack==null)
-			return;
+    public void componentShown(ComponentEvent e) {
+        if (colorBack==null)
+            return;
 
-		Container parent = 	getParent().getParent().getParent();
-		if (parent instanceof JTabbedPane) {
-			JTabbedPane tab = (JTabbedPane) parent;
-			for (int i=0; i<tab.getComponentCount(); i++)
-				if (tab.getComponentAt(i) == ErrorWindow.this.getParent().getParent()) {
-					tab.setForegroundAt(i, colorBack);
-					colorBack = null;
-				}
-		}
-	}
+        Container parent =     getParent().getParent().getParent();
+        if (parent instanceof JTabbedPane) {
+            JTabbedPane tab = (JTabbedPane) parent;
+            for (int i=0; i<tab.getComponentCount(); i++)
+                if (tab.getComponentAt(i) == ErrorWindow.this.getParent().getParent()) {
+                    tab.setForegroundAt(i, colorBack);
+                    colorBack = null;
+                }
+        }
+    }
 }

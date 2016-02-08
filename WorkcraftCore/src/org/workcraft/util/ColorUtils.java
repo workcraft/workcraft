@@ -34,10 +34,10 @@ public class ColorUtils {
     }
 
     public static float[] convertFromLabToXyz(float[] value) {
-    	float i = (value[0] + 16.0f) / 116.0f;
-    	float X = fInv(i + value[1] / 500.0f);
-    	float Y = fInv(i);
-    	float Z = fInv(i - value[2] / 200.0f);
+        float i = (value[0] + 16.0f) / 116.0f;
+        float X = fInv(i + value[1] / 500.0f);
+        float Y = fInv(i);
+        float Z = fInv(i - value[2] / 200.0f);
         return new float[] {(float) X, (float) Y, (float) Z};
     }
 
@@ -58,48 +58,48 @@ public class ColorUtils {
     }
 
     public static Color getXyzColor(float x, float y, float z) {
-    	float[] rgb = convertFromXyzToRgb(new float[] {x, y, z});
-    	return new Color(rgb[0], rgb[1], rgb[2]);
+        float[] rgb = convertFromXyzToRgb(new float[] {x, y, z});
+        return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
     public static Color getLabColor(float L, float a, float b) {
-    	float[] rgb = convertFromLabToRgb(new float[] {100.0f * L, 128.0f - 255.0f * a, 128.0f - 255.0f * b});
-    	return new Color(rgb[0], rgb[1], rgb[2]);
+        float[] rgb = convertFromLabToRgb(new float[] {100.0f * L, 128.0f - 255.0f * a, 128.0f - 255.0f * b});
+        return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
     public static Color[] getLabPalette(int LCount, int aCount, int bCount, float LMin, float LMax) {
-    	ArrayList<Color> palette = new ArrayList<>();
-    	if ((LMax > LMin) && (LCount > 0) && (aCount > 0) && (bCount > 0)) {
-    		float dL = (LMax - LMin) / LCount;
-    		float da = 1.0f / aCount;
-    		float db = 1.0f / bCount;
-    		for (float L = LMax; L >= LMin; L -= dL) {
-    			for (float a = 0.0f; a <= 1.0f; a += da) {
-    				for (float b = 0.0f; b <= 1.0f; b += db) {
-    					palette.add(ColorUtils.getLabColor(L, a, b));
-    				}
-    			}
-    		}
-    	}
-   		Collections.shuffle(palette);
-    	return palette.toArray(new Color[palette.size()]);
-	}
+        ArrayList<Color> palette = new ArrayList<>();
+        if ((LMax > LMin) && (LCount > 0) && (aCount > 0) && (bCount > 0)) {
+            float dL = (LMax - LMin) / LCount;
+            float da = 1.0f / aCount;
+            float db = 1.0f / bCount;
+            for (float L = LMax; L >= LMin; L -= dL) {
+                for (float a = 0.0f; a <= 1.0f; a += da) {
+                    for (float b = 0.0f; b <= 1.0f; b += db) {
+                        palette.add(ColorUtils.getLabColor(L, a, b));
+                    }
+                }
+            }
+        }
+           Collections.shuffle(palette);
+        return palette.toArray(new Color[palette.size()]);
+    }
 
     public static Color[] getHsbPalette(float[] hs, float[] ss, float[] bs) {
-    	ArrayList<Color> palette = new ArrayList<>();
-    	for (float b: bs){
-        	for (float s: ss){
-            	for (float h: hs){
-            		Color color = Color.getHSBColor(h, s, b);
-            		palette.add(color);
-            	}
-        	}
-    	}
-    	return palette.toArray(new Color[palette.size()]);
-	}
+        ArrayList<Color> palette = new ArrayList<>();
+        for (float b: bs){
+            for (float s: ss){
+                for (float h: hs){
+                    Color color = Color.getHSBColor(h, s, b);
+                    palette.add(color);
+                }
+            }
+        }
+        return palette.toArray(new Color[palette.size()]);
+    }
 
     public static Color invert(Color color) {
-    	float[] rgb = color.getRGBComponents(null);
-    	return new Color(1.0f - rgb[0], 1.0f - rgb[1], 1.0f - rgb[2]);
+        float[] rgb = color.getRGBComponents(null);
+        return new Color(1.0f - rgb[0], 1.0f - rgb[1], 1.0f - rgb[2]);
     }
 }

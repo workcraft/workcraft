@@ -6,18 +6,18 @@ import org.workcraft.dom.math.MathModel;
 
 public class StgDescriptor implements ModelDescriptor
 {
-	@Override
-	public String getDisplayName() {
-		return "Signal Transition Graph";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Signal Transition Graph";
+    }
 
-	@Override
-	public MathModel createMathModel() {
-		return new STG();
-	}
+    @Override
+    public MathModel createMathModel() {
+        return new STG();
+    }
 
-	@Override
-	public VisualModelDescriptor getVisualModelDescriptor() {
-		return new VisualStgDescriptor();
-	}
+    @Override
+    public VisualModelDescriptor getVisualModelDescriptor() {
+        return new VisualStgDescriptor();
+    }
 }

@@ -24,18 +24,18 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class One implements BooleanFormula {
 
-	private static final One instance = new One();
+    private static final One instance = new One();
 
-	private One(){
-	}
+    private One(){
+    }
 
-	public static One instance() {
-		return instance;
-	}
+    public static One instance() {
+        return instance;
+    }
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
 }

@@ -53,236 +53,236 @@ import org.workcraft.util.Hierarchy;
 @ShortName("policy")
 @CustomTools ( PolicyNetToolProvider.class )
 public class VisualPolicyNet extends VisualPetriNet {
-	private final ColorGenerator bundleColorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
-			new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
-			new float[]{0.50f},  new float[]{0.9f, 0.7f, 0.5f}));
+    private final ColorGenerator bundleColorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
+            new float[]{0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f},
+            new float[]{0.50f},  new float[]{0.9f, 0.7f, 0.5f}));
 
-	public VisualPolicyNet(PolicyNet model) {
-		this(model, null);
-	}
+    public VisualPolicyNet(PolicyNet model) {
+        this(model, null);
+    }
 
-	public VisualPolicyNet (PolicyNet model, VisualGroup root) {
-		super(model, (root == null ? new VisualLocality((Locality)model.getRoot()) : root));
-		// invalidate spanning trees of all VisualBundles when the the model is changed
-		new StateSupervisor() {
-			@Override
-			public void handleEvent(StateEvent e) {
-				if (e instanceof ModelModifiedEvent
-				 || e instanceof PropertyChangedEvent
-				 || e instanceof TransformChangedEvent)
-				for (VisualBundle b: getVisualBundles()) {
-					b.invalidateSpanningTree();
-				}
-			}
-		}.attach(getRoot());
-	}
+    public VisualPolicyNet (PolicyNet model, VisualGroup root) {
+        super(model, (root == null ? new VisualLocality((Locality)model.getRoot()) : root));
+        // invalidate spanning trees of all VisualBundles when the the model is changed
+        new StateSupervisor() {
+            @Override
+            public void handleEvent(StateEvent e) {
+                if (e instanceof ModelModifiedEvent
+                 || e instanceof PropertyChangedEvent
+                 || e instanceof TransformChangedEvent)
+                for (VisualBundle b: getVisualBundles()) {
+                    b.invalidateSpanningTree();
+                }
+            }
+        }.attach(getRoot());
+    }
 
-	public PolicyNet getPolicyNet() {
-		return (PolicyNet)getMathModel();
-	}
+    public PolicyNet getPolicyNet() {
+        return (PolicyNet)getMathModel();
+    }
 
-	@Override
-	public VisualGroup groupSelection(){
-		ArrayList<Node> selected = new ArrayList<Node>();
-		ArrayList<Node> refSelected = new ArrayList<Node>();
-		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
-			if(node instanceof VisualTransformableNode) {
-				selected.add((VisualTransformableNode)node);
-				if (node instanceof VisualComponent) {
-					refSelected.add(((VisualComponent) node).getReferencedComponent());
-				} else if (node instanceof VisualLocality) {
-					refSelected.add(((VisualLocality) node).getLocality());
-				}
-			}
-		}
-		VisualLocality newLocality = null;
-		if (selected.size() > 0) {
-			VisualLocality curLocality = (VisualLocality)getCurrentLevel();
-			newLocality = new VisualLocality(getPolicyNet().createLocality(refSelected, curLocality.getLocality()));
-			curLocality.add(newLocality);
-			curLocality.reparent(selected, newLocality);
+    @Override
+    public VisualGroup groupSelection(){
+        ArrayList<Node> selected = new ArrayList<Node>();
+        ArrayList<Node> refSelected = new ArrayList<Node>();
+        for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+            if(node instanceof VisualTransformableNode) {
+                selected.add((VisualTransformableNode)node);
+                if (node instanceof VisualComponent) {
+                    refSelected.add(((VisualComponent) node).getReferencedComponent());
+                } else if (node instanceof VisualLocality) {
+                    refSelected.add(((VisualLocality) node).getLocality());
+                }
+            }
+        }
+        VisualLocality newLocality = null;
+        if (selected.size() > 0) {
+            VisualLocality curLocality = (VisualLocality)getCurrentLevel();
+            newLocality = new VisualLocality(getPolicyNet().createLocality(refSelected, curLocality.getLocality()));
+            curLocality.add(newLocality);
+            curLocality.reparent(selected, newLocality);
 
-			ArrayList<Node> connectionsToLocality = new ArrayList<Node>();
-			for (VisualConnection connection : Hierarchy.getChildrenOfType(curLocality, VisualConnection.class)) {
-				if (Hierarchy.isDescendant(connection.getFirst(), newLocality) && Hierarchy.isDescendant(connection.getSecond(), newLocality)) {
-					connectionsToLocality.add(connection);
-				}
-			}
-			curLocality.reparent(connectionsToLocality, newLocality);
-			select(newLocality);
-		}
-		return newLocality;
-	}
+            ArrayList<Node> connectionsToLocality = new ArrayList<Node>();
+            for (VisualConnection connection : Hierarchy.getChildrenOfType(curLocality, VisualConnection.class)) {
+                if (Hierarchy.isDescendant(connection.getFirst(), newLocality) && Hierarchy.isDescendant(connection.getSecond(), newLocality)) {
+                    connectionsToLocality.add(connection);
+                }
+            }
+            curLocality.reparent(connectionsToLocality, newLocality);
+            select(newLocality);
+        }
+        return newLocality;
+    }
 
-	@Override
-	public void ungroupSelection() {
-		int count = 0;
-		for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
-			if(node instanceof VisualLocality) {
-				count++;
-			}
-		}
-		if (count == 1) {
-			ArrayList<Node> toSelect = new ArrayList<Node>();
-			Collection<Node> mathNodes = new ArrayList<Node>();
-			for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
-				if(node instanceof VisualLocality) {
-					VisualLocality locality = (VisualLocality)node;
-					for(Node subNode : locality.unGroup()){
-						toSelect.add(subNode);
-					}
-					for(Node child : locality.getLocality().getChildren()){
-						mathNodes.add(child);
-					}
-					locality.getLocality().reparent(mathNodes, ((VisualLocality)getCurrentLevel()).getLocality());
-					getMathModel().remove(locality.getLocality());
-					getCurrentLevel().remove(locality);
+    @Override
+    public void ungroupSelection() {
+        int count = 0;
+        for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
+            if(node instanceof VisualLocality) {
+                count++;
+            }
+        }
+        if (count == 1) {
+            ArrayList<Node> toSelect = new ArrayList<Node>();
+            Collection<Node> mathNodes = new ArrayList<Node>();
+            for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+                if(node instanceof VisualLocality) {
+                    VisualLocality locality = (VisualLocality)node;
+                    for(Node subNode : locality.unGroup()){
+                        toSelect.add(subNode);
+                    }
+                    for(Node child : locality.getLocality().getChildren()){
+                        mathNodes.add(child);
+                    }
+                    locality.getLocality().reparent(mathNodes, ((VisualLocality)getCurrentLevel()).getLocality());
+                    getMathModel().remove(locality.getLocality());
+                    getCurrentLevel().remove(locality);
 
-				} else {
-					toSelect.add(node);
-				}
-			}
-			select(toSelect);
-		}
-	}
+                } else {
+                    toSelect.add(node);
+                }
+            }
+            select(toSelect);
+        }
+    }
 
-	public Collection<VisualBundledTransition> getVisualBundledTransitions() {
-		return Hierarchy.getDescendantsOfType(getRoot(), VisualBundledTransition.class);
-	}
+    public Collection<VisualBundledTransition> getVisualBundledTransitions() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualBundledTransition.class);
+    }
 
-	public Collection<VisualBundle> getVisualBundles() {
-		return Hierarchy.getDescendantsOfType(getRoot(), VisualBundle.class);
-	}
+    public Collection<VisualBundle> getVisualBundles() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualBundle.class);
+    }
 
-	public Collection<VisualLocality> getVisualLocalities() {
-		return Hierarchy.getDescendantsOfType(getRoot(), VisualLocality.class);
-	}
+    public Collection<VisualLocality> getVisualLocalities() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualLocality.class);
+    }
 
-	public VisualBundle createVisualBundle() {
-		Bundle bundle = getPolicyNet().createBundle();
-		VisualBundle visualBundle = new VisualBundle(bundle);
-		getRoot().add(visualBundle);
-		visualBundle.setColor(bundleColorGenerator.updateColor());
-		return visualBundle;
-	}
+    public VisualBundle createVisualBundle() {
+        Bundle bundle = getPolicyNet().createBundle();
+        VisualBundle visualBundle = new VisualBundle(bundle);
+        getRoot().add(visualBundle);
+        visualBundle.setColor(bundleColorGenerator.updateColor());
+        return visualBundle;
+    }
 
-	public VisualBundle createVisualBundle(String name) {
-		VisualBundle b = createVisualBundle();
-		getPolicyNet().setName(b.getReferencedBundle(), name);
-		return b;
-	}
+    public VisualBundle createVisualBundle(String name) {
+        VisualBundle b = createVisualBundle();
+        getPolicyNet().setName(b.getReferencedBundle(), name);
+        return b;
+    }
 
-	public void bundleTransitions(Collection<VisualBundledTransition> transitions) {
-		if (transitions != null && !transitions.isEmpty()) {
-			VisualBundle bundle = createVisualBundle();
-			for (VisualBundledTransition t: transitions) {
-				bundle.getReferencedBundle().add(t.getReferencedTransition());
-			}
-		}
-	}
+    public void bundleTransitions(Collection<VisualBundledTransition> transitions) {
+        if (transitions != null && !transitions.isEmpty()) {
+            VisualBundle bundle = createVisualBundle();
+            for (VisualBundledTransition t: transitions) {
+                bundle.getReferencedBundle().add(t.getReferencedTransition());
+            }
+        }
+    }
 
-	public void unbundleTransitions(Collection<VisualBundledTransition> transitions) {
-		for (VisualBundledTransition t: transitions) {
-			getPolicyNet().unbundleTransition(t.getReferencedTransition());
-		}
-		for (VisualBundle b: getVisualBundles()) {
-			if (b.getReferencedBundle().isEmpty()) {
-				getRoot().remove(b);
-			}
-		}
-	}
+    public void unbundleTransitions(Collection<VisualBundledTransition> transitions) {
+        for (VisualBundledTransition t: transitions) {
+            getPolicyNet().unbundleTransition(t.getReferencedTransition());
+        }
+        for (VisualBundle b: getVisualBundles()) {
+            if (b.getReferencedBundle().isEmpty()) {
+                getRoot().remove(b);
+            }
+        }
+    }
 
-	public String getBundlesOfTransitionAsString(VisualBundledTransition t) {
-		String result = "";
-		for (VisualBundle b: getBundlesOfTransition(t)) {
-			if (result != "") {
-				result += ", ";
-			}
-			result += getPolicyNet().getName(b.getReferencedBundle());
-		}
-		return result;
-	}
+    public String getBundlesOfTransitionAsString(VisualBundledTransition t) {
+        String result = "";
+        for (VisualBundle b: getBundlesOfTransition(t)) {
+            if (result != "") {
+                result += ", ";
+            }
+            result += getPolicyNet().getName(b.getReferencedBundle());
+        }
+        return result;
+    }
 
-	public void setBundlesOfTransitionAsString(VisualBundledTransition t, String s) {
-		for (Bundle b: getPolicyNet().getBundles()) {
-			b.remove(t.getReferencedTransition());
-		}
-		for (String ref : s.split("\\s*,\\s*")) {
-			Node node = getPolicyNet().getNodeByReference(ref);
-			if (node == null) {
-				node = createVisualBundle(ref).getReferencedBundle();
-			}
-			if (node instanceof Bundle) {
-				((Bundle)node).add(t.getReferencedTransition());
-			}
-		}
-		for (VisualBundle b: getVisualBundles()) {
-			if (b.getReferencedBundle().isEmpty()) {
-				getRoot().remove(b);
-			}
-		}
-	}
+    public void setBundlesOfTransitionAsString(VisualBundledTransition t, String s) {
+        for (Bundle b: getPolicyNet().getBundles()) {
+            b.remove(t.getReferencedTransition());
+        }
+        for (String ref : s.split("\\s*,\\s*")) {
+            Node node = getPolicyNet().getNodeByReference(ref);
+            if (node == null) {
+                node = createVisualBundle(ref).getReferencedBundle();
+            }
+            if (node instanceof Bundle) {
+                ((Bundle)node).add(t.getReferencedTransition());
+            }
+        }
+        for (VisualBundle b: getVisualBundles()) {
+            if (b.getReferencedBundle().isEmpty()) {
+                getRoot().remove(b);
+            }
+        }
+    }
 
-	public String getTransitionsOfBundleAsString(VisualBundle b) {
-		String result = "";
-		for (VisualBundledTransition t: getTransitionsOfBundle(b)) {
-			if (result != "") {
-				result += ", ";
-			}
-			result += getPolicyNet().getName(t.getReferencedTransition());
-		}
-		return result;
-	}
+    public String getTransitionsOfBundleAsString(VisualBundle b) {
+        String result = "";
+        for (VisualBundledTransition t: getTransitionsOfBundle(b)) {
+            if (result != "") {
+                result += ", ";
+            }
+            result += getPolicyNet().getName(t.getReferencedTransition());
+        }
+        return result;
+    }
 
-	public void setTransitionsOfBundleAsString(VisualBundle vb, String s) {
-		Bundle b = vb.getReferencedBundle();
-		for (BundledTransition t: new ArrayList<BundledTransition>(b.getTransitions())) {
-			b.remove(t);
-		}
-		for (String ref : s.split("\\s*,\\s*")) {
-			Node node = getPetriNet().getNodeByReference(ref);
-			if (node instanceof BundledTransition) {
-				b.add((BundledTransition)node);
-			}
-		}
-	}
+    public void setTransitionsOfBundleAsString(VisualBundle vb, String s) {
+        Bundle b = vb.getReferencedBundle();
+        for (BundledTransition t: new ArrayList<BundledTransition>(b.getTransitions())) {
+            b.remove(t);
+        }
+        for (String ref : s.split("\\s*,\\s*")) {
+            Node node = getPetriNet().getNodeByReference(ref);
+            if (node instanceof BundledTransition) {
+                b.add((BundledTransition)node);
+            }
+        }
+    }
 
-	public Collection<VisualBundle> getBundlesOfTransition(VisualBundledTransition t) {
-		Collection<VisualBundle> result = new HashSet<VisualBundle>();
-		if (t != null) {
-			for (VisualBundle b: getVisualBundles()) {
-				if (b.getReferencedBundle().contains(t.getReferencedTransition())) {
-					result.add(b);
-				}
-			}
-		}
-		return result;
-	}
+    public Collection<VisualBundle> getBundlesOfTransition(VisualBundledTransition t) {
+        Collection<VisualBundle> result = new HashSet<VisualBundle>();
+        if (t != null) {
+            for (VisualBundle b: getVisualBundles()) {
+                if (b.getReferencedBundle().contains(t.getReferencedTransition())) {
+                    result.add(b);
+                }
+            }
+        }
+        return result;
+    }
 
-	public Collection<VisualBundledTransition> getTransitionsOfBundle(VisualBundle b) {
-		Collection<VisualBundledTransition> result = new HashSet<VisualBundledTransition>();
-		for(VisualBundledTransition t: getVisualBundledTransitions()) {
-			if (b.getReferencedBundle().contains(t.getReferencedTransition())) {
-				result.add(t);
-			}
-		}
-		return result;
-	}
+    public Collection<VisualBundledTransition> getTransitionsOfBundle(VisualBundle b) {
+        Collection<VisualBundledTransition> result = new HashSet<VisualBundledTransition>();
+        for(VisualBundledTransition t: getVisualBundledTransitions()) {
+            if (b.getReferencedBundle().contains(t.getReferencedTransition())) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public ModelProperties getProperties(Node node) {
-		ModelProperties properties = super.getProperties(node);
-		if (node == null) {
-			for (VisualBundle vb: getVisualBundles()) {
-				properties.add(new BundleNamePropertyDescriptor(this, vb));
-				properties.add(new BundleColorPropertyDescriptor(this, vb));
-				properties.add(new TransitionsOfBundlePropertyDescriptor(this, vb));
-			}
-		} else if (node instanceof VisualBundledTransition) {
-			VisualBundledTransition t = (VisualBundledTransition)node;
-			properties.add(new BundlesOfTransitionPropertyDescriptor(this, t));
-		}
-		return properties;
-	}
+    @Override
+    public ModelProperties getProperties(Node node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node == null) {
+            for (VisualBundle vb: getVisualBundles()) {
+                properties.add(new BundleNamePropertyDescriptor(this, vb));
+                properties.add(new BundleColorPropertyDescriptor(this, vb));
+                properties.add(new TransitionsOfBundlePropertyDescriptor(this, vb));
+            }
+        } else if (node instanceof VisualBundledTransition) {
+            VisualBundledTransition t = (VisualBundledTransition)node;
+            properties.add(new BundlesOfTransitionPropertyDescriptor(this, t));
+        }
+        return properties;
+    }
 
 }

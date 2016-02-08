@@ -30,21 +30,21 @@ import org.workcraft.plugins.cpog.Encoding;
 
 public class EncodingProperty implements PropertyClass {
 
-	public Object fromCellEditorValue(Object editorComponentValue)
-	{
-		return editorComponentValue;
-	}
+    public Object fromCellEditorValue(Object editorComponentValue)
+    {
+        return editorComponentValue;
+    }
 
-	public TableCellEditor getCellEditor() {
-		return new EncodingCellEditor();
-	}
+    public TableCellEditor getCellEditor() {
+        return new EncodingCellEditor();
+    }
 
-	public TableCellRenderer getCellRenderer() {
-		return new DefaultTableCellRenderer();
-	}
+    public TableCellRenderer getCellRenderer() {
+        return new DefaultTableCellRenderer();
+    }
 
-	public Object toCellRendererValue(Object value)
-	{
-		return (Encoding) value;
-	}
+    public Object toCellRendererValue(Object value)
+    {
+        return (Encoding) value;
+    }
 }

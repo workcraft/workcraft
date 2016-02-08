@@ -30,41 +30,41 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 
 
 public interface Model extends NodeContext {
-	public void setTitle(String title);
-	public String getTitle();
+    public void setTitle(String title);
+    public String getTitle();
 
-	/**
-	 * @return a user-friendly display name for this model, which is either
-	 * read from <type>DisplayName</type> annotation, or, if the annotation
-	 * is missing, taken from the name of the model class.
-	 */
-	public String getDisplayName();
+    /**
+     * @return a user-friendly display name for this model, which is either
+     * read from <type>DisplayName</type> annotation, or, if the annotation
+     * is missing, taken from the name of the model class.
+     */
+    public String getDisplayName();
 
-	/**
-	 * @return a short name for this model, which is either read from
-	 * <type>ShortName</type> annotation, or, if the annotation is
-	 * missing, made as an acronym from the geDisplayName.
-	 */
-	public String getShortName();
+    /**
+     * @return a short name for this model, which is either read from
+     * <type>ShortName</type> annotation, or, if the annotation is
+     * missing, made as an acronym from the geDisplayName.
+     */
+    public String getShortName();
 
-	/// methods for work with referenced component names
-	public ReferenceManager getReferenceManager();
-	public Node getNodeByReference(NamespaceProvider provider, String reference);
-	public String getNodeReference(NamespaceProvider provider, Node node);
-	public Node getNodeByReference(String reference);
-	public String getNodeReference(Node node);
-	public String getName(Node node);
-	public void setName(Node node, String name);
+    /// methods for work with referenced component names
+    public ReferenceManager getReferenceManager();
+    public Node getNodeByReference(NamespaceProvider provider, String reference);
+    public String getNodeReference(NamespaceProvider provider, Node node);
+    public Node getNodeByReference(String reference);
+    public String getNodeReference(Node node);
+    public String getName(Node node);
+    public void setName(Node node, String name);
 
-	public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
+    public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
 
-	public Container getRoot();
-	public <R> Set<R> getPreset(Node node, Class<R> type);
-	public <R> Set<R> getPostset(Node node, Class<R> type);
+    public Container getRoot();
+    public <R> Set<R> getPreset(Node node, Class<R> type);
+    public <R> Set<R> getPostset(Node node, Class<R> type);
 
-	public void add (Node node);
-	public void remove (Node node);
-	public void remove (Collection<Node> nodes);
+    public void add (Node node);
+    public void remove (Node node);
+    public void remove (Collection<Node> nodes);
 
-	public ModelProperties getProperties(Node node);
+    public ModelProperties getProperties(Node node);
 }

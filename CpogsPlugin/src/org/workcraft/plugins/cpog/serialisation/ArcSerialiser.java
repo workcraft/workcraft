@@ -26,15 +26,15 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class ArcSerialiser extends BooleanFormulaSerialiser
 {
-	@Override
-	public String getClassName()
-	{
-		return Arc.class.getName();
-	}
+    @Override
+    public String getClassName()
+    {
+        return Arc.class.getName();
+    }
 
-	@Override
-	protected BooleanFormula getFormula(Object serialisee)
-	{
-		return ((Arc) serialisee).getCondition();
-	}
+    @Override
+    protected BooleanFormula getFormula(Object serialisee)
+    {
+        return ((Arc) serialisee).getCondition();
+    }
 }

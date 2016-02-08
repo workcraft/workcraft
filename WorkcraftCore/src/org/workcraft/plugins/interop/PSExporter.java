@@ -40,35 +40,35 @@ import org.workcraft.serialisation.Format;
 public class PSExporter implements Exporter {
 
 
-	public void export(Model model, OutputStream out) throws IOException, SerialisationException {
-		InputStream svg = SVGExportUtils.stream(model);
-		Transcoder transcoder = new PSTranscoder();
-		TranscoderInput transcoderInput = new TranscoderInput(svg);
-		TranscoderOutput transcoderOutput = new TranscoderOutput(out);
-		try {
-			transcoder.transcode(transcoderInput, transcoderOutput);
-		} catch (TranscoderException e) {
-			throw new SerialisationException(e);
-		}
-	}
+    public void export(Model model, OutputStream out) throws IOException, SerialisationException {
+        InputStream svg = SVGExportUtils.stream(model);
+        Transcoder transcoder = new PSTranscoder();
+        TranscoderInput transcoderInput = new TranscoderInput(svg);
+        TranscoderOutput transcoderOutput = new TranscoderOutput(out);
+        try {
+            transcoder.transcode(transcoderInput, transcoderOutput);
+        } catch (TranscoderException e) {
+            throw new SerialisationException(e);
+        }
+    }
 
-	public String getDescription() {
-		return ".ps (FOP PS transcoder)";
-	}
+    public String getDescription() {
+        return ".ps (FOP PS transcoder)";
+    }
 
-	public String getExtenstion() {
-		return ".ps";
-	}
+    public String getExtenstion() {
+        return ".ps";
+    }
 
-	public int getCompatibility(Model model) {
-		if (model instanceof VisualModel)
-			return Exporter.GENERAL_COMPATIBILITY;
-		else
-			return Exporter.NOT_COMPATIBLE;
-	}
+    public int getCompatibility(Model model) {
+        if (model instanceof VisualModel)
+            return Exporter.GENERAL_COMPATIBILITY;
+        else
+            return Exporter.NOT_COMPATIBLE;
+    }
 
-	@Override
-	public UUID getTargetFormat() {
-		return Format.PS;
-	}
+    @Override
+    public UUID getTargetFormat() {
+        return Format.PS;
+    }
 }

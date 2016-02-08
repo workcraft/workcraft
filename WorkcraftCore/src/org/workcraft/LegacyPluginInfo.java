@@ -32,111 +32,111 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.util.XmlUtil;
 
 public class LegacyPluginInfo implements Initialiser<Object> {
-	private String displayName;
-	private String className;
-	private String[] interfaceNames;
+    private String displayName;
+    private String className;
+    private String[] interfaceNames;
 
-	private void addInterfaces (Class<?> cls, Set<String> set) {
-		if (cls == null || cls.equals(Object.class))
-			return;
+    private void addInterfaces (Class<?> cls, Set<String> set) {
+        if (cls == null || cls.equals(Object.class))
+            return;
 
-		for (Class<?> interf : cls.getInterfaces())
-		{
-			set.add(interf.getName());
-			addInterfaces (interf, set);
-		}
+        for (Class<?> interf : cls.getInterfaces())
+        {
+            set.add(interf.getName());
+            addInterfaces (interf, set);
+        }
 
-		addInterfaces(cls.getSuperclass(), set);
-	}
+        addInterfaces(cls.getSuperclass(), set);
+    }
 
-	public LegacyPluginInfo(final Class<?> cls) {
-		className = cls.getName();
+    public LegacyPluginInfo(final Class<?> cls) {
+        className = cls.getName();
 
-		DisplayName name = cls.getAnnotation(DisplayName.class);
+        DisplayName name = cls.getAnnotation(DisplayName.class);
 
-		if(name == null)
-			displayName = className.substring(className.lastIndexOf('.')+1);
-		else
-			displayName = name.value();
+        if(name == null)
+            displayName = className.substring(className.lastIndexOf('.')+1);
+        else
+            displayName = name.value();
 
-		HashSet<String> interfaces = new HashSet<String>();
-		addInterfaces (cls, interfaces);
-		interfaceNames = interfaces.toArray(new String[0]);
-	}
+        HashSet<String> interfaces = new HashSet<String>();
+        addInterfaces (cls, interfaces);
+        interfaceNames = interfaces.toArray(new String[0]);
+    }
 
-	@Override
-	public Object create() {
-			try {
-				return loadClass().getConstructor().newInstance();
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (SecurityException e) {
-				throw new RuntimeException(e);
-			} catch (InstantiationException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			} catch (NoSuchMethodException e) {
-				throw new RuntimeException(e);
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
-	}
+    @Override
+    public Object create() {
+            try {
+                return loadClass().getConstructor().newInstance();
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+    }
 
-	public LegacyPluginInfo(Element element) throws FormatException {
-		className = XmlUtil.readStringAttr(element, "class");
-		if(className==null || className.isEmpty())
-			throw new FormatException();
+    public LegacyPluginInfo(Element element) throws FormatException {
+        className = XmlUtil.readStringAttr(element, "class");
+        if(className==null || className.isEmpty())
+            throw new FormatException();
 
-		displayName = XmlUtil.readStringAttr(element, "displayName");
-		if (displayName.isEmpty())
-			displayName = className.substring(className.lastIndexOf('.')+1);
+        displayName = XmlUtil.readStringAttr(element, "displayName");
+        if (displayName.isEmpty())
+            displayName = className.substring(className.lastIndexOf('.')+1);
 
-		NodeList nl = element.getElementsByTagName("interface");
-		interfaceNames = new String[nl.getLength()];
+        NodeList nl = element.getElementsByTagName("interface");
+        interfaceNames = new String[nl.getLength()];
 
-		for (int i=0; i<nl.getLength(); i++)
-			interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
-	}
+        for (int i=0; i<nl.getLength(); i++)
+            interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
+    }
 
-	public void toXml(Element element) {
-		XmlUtil.writeStringAttr(element, "class", className);
-		XmlUtil.writeStringAttr(element, "displayName", displayName);
+    public void toXml(Element element) {
+        XmlUtil.writeStringAttr(element, "class", className);
+        XmlUtil.writeStringAttr(element, "displayName", displayName);
 
-		for (String i : interfaceNames) {
-			Element e = element.getOwnerDocument().createElement("interface");
-			e.setAttribute("name", i);
-			element.appendChild(e);
-		}
-	}
+        for (String i : interfaceNames) {
+            Element e = element.getOwnerDocument().createElement("interface");
+            e.setAttribute("name", i);
+            element.appendChild(e);
+        }
+    }
 
-	public Class<?> loadClass() throws ClassNotFoundException {
-		return Class.forName(className);
-	}
+    public Class<?> loadClass() throws ClassNotFoundException {
+        return Class.forName(className);
+    }
 
-	public String[] getInterfaces() {
-		return interfaceNames.clone();
-	}
+    public String[] getInterfaces() {
+        return interfaceNames.clone();
+    }
 
-	public boolean isInterfaceImplemented(String interfaceClassName) {
-		for (String s : interfaceNames)
-			if (s.equals(interfaceClassName))
-				return true;
-		return false;
-	}
+    public boolean isInterfaceImplemented(String interfaceClassName) {
+        for (String s : interfaceNames)
+            if (s.equals(interfaceClassName))
+                return true;
+        return false;
+    }
 
-	public String getDisplayName() {
-		return displayName;
-	}
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	public String getClassName() {
-		return className;
-	}
+    public String getClassName() {
+        return className;
+    }
 
-	@Override
-	public String toString() {
-		return displayName;
-	}
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }

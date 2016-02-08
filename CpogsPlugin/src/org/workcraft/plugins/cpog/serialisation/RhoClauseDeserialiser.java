@@ -28,22 +28,22 @@ import org.workcraft.serialisation.ReferenceResolver;
 
 public class RhoClauseDeserialiser extends BooleanFunctionDeserialiser
 {
-	@Override
-	public String getClassName()
-	{
-		return RhoClause.class.getName();
-	}
+    @Override
+    public String getClassName()
+    {
+        return RhoClause.class.getName();
+    }
 
-	@Override
-	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
-			Object... constructorParameters)
-	{
-		return new RhoClause();
-	}
+    @Override
+    public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
+            Object... constructorParameters)
+    {
+        return new RhoClause();
+    }
 
-	@Override
-	protected void setFormula(Object deserialisee, BooleanFormula formula)
-	{
-		((RhoClause)deserialisee).setFormula(formula);
-	}
+    @Override
+    protected void setFormula(Object deserialisee, BooleanFormula formula)
+    {
+        ((RhoClause)deserialisee).setFormula(formula);
+    }
 }

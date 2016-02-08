@@ -32,23 +32,23 @@ import org.workcraft.util.XmlUtil;
 
 public class BezierSerialiser implements CustomXMLSerialiser {
 
-	@Override
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
-			throws SerialisationException {
-		Bezier b = (Bezier)object;
-		BezierControlPoint[] cp = b.getBezierControlPoints();
+    @Override
+    public void serialise(Element element, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
+            throws SerialisationException {
+        Bezier b = (Bezier)object;
+        BezierControlPoint[] cp = b.getBezierControlPoints();
 
-		Element cp1e = XmlUtil.createChildElement("cp1", element);
-		Element cp2e = XmlUtil.createChildElement("cp2", element);
+        Element cp1e = XmlUtil.createChildElement("cp1", element);
+        Element cp2e = XmlUtil.createChildElement("cp2", element);
 
-		nodeSerialiser.serialise(cp1e, cp[0]);
-		nodeSerialiser.serialise(cp2e, cp[1]);
-	}
+        nodeSerialiser.serialise(cp1e, cp[0]);
+        nodeSerialiser.serialise(cp2e, cp[1]);
+    }
 
-	@Override
-	public String getClassName() {
-		return Bezier.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return Bezier.class.getName();
+    }
 }

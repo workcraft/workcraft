@@ -8,23 +8,23 @@ import java.util.Map;
 
 public interface ComponentRenderingResult {
 
-	public enum RenderType {
-		BOX("Box"),
-		GATE("Gate");
+    public enum RenderType {
+        BOX("Box"),
+        GATE("Gate");
 
-		private final String name;
+        private final String name;
 
-		private RenderType(String name) {
-			this.name = name;
-		}
+        private RenderType(String name) {
+            this.name = name;
+        }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
-	Rectangle2D boundingBox();
-	Map<String, Point2D> contactPositions();
-	void draw(Graphics2D graphics);
+    Rectangle2D boundingBox();
+    Map<String, Point2D> contactPositions();
+    void draw(Graphics2D graphics);
 }

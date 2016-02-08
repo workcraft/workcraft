@@ -36,32 +36,32 @@ import org.workcraft.workspace.ModelEntry;
 
 public class DotGImporter implements Importer {
 
-	private static final String STATEGRAPH_KEYWORD = ".state graph";
+    private static final String STATEGRAPH_KEYWORD = ".state graph";
 
-	@Override
-	public boolean accept(File file) {
-		return (file.getName().endsWith(".sg")
-				&& FileUtils.fileContainsKeyword(file, STATEGRAPH_KEYWORD));
-	}
+    @Override
+    public boolean accept(File file) {
+        return (file.getName().endsWith(".sg")
+                && FileUtils.fileContainsKeyword(file, STATEGRAPH_KEYWORD));
+    }
 
-	@Override
-	public String getDescription() {
-		return "State Graph (.sg)";
-	}
+    @Override
+    public String getDescription() {
+        return "State Graph (.sg)";
+    }
 
-	@Override
-	public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-		return new ModelEntry(new FstDescriptor(), importSG(in));
-	}
+    @Override
+    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
+        return new ModelEntry(new FstDescriptor(), importSG(in));
+    }
 
-	public Fst importSG(InputStream in) throws DeserialisationException {
-		try {
-			Fst result = new DotGParser(in).parse();
-			return result;
-		} catch (FormatException e) {
-			throw new DeserialisationException(e);
-		} catch (ParseException e) {
-			throw new DeserialisationException(e);
-		}
-	}
+    public Fst importSG(InputStream in) throws DeserialisationException {
+        try {
+            Fst result = new DotGParser(in).parse();
+            return result;
+        } catch (FormatException e) {
+            throw new DeserialisationException(e);
+        } catch (ParseException e) {
+            throw new DeserialisationException(e);
+        }
+    }
 }

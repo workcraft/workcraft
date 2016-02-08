@@ -38,142 +38,142 @@ import org.workcraft.util.Hierarchy;
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
 public class CircuitComponent extends MathGroup implements Container, ObservableHierarchy {
 
-	public static final String PROPERTY_MODULE = "Module";
-	public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
+    public static final String PROPERTY_MODULE = "Module";
+    public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
-	private String name = "";
-	private String module = "";
-	private boolean isEnvironment;
+    DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+    private String name = "";
+    private String module = "";
+    private boolean isEnvironment;
 
-	public void setName(String name) {
-		this.name = name;
-		sendNotification(new PropertyChangedEvent(this, NamePropertyDescriptor.PROPERTY_NAME));
-	}
+    public void setName(String name) {
+        this.name = name;
+        sendNotification(new PropertyChangedEvent(this, NamePropertyDescriptor.PROPERTY_NAME));
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setModule(String module) {
-		this.module = module;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_MODULE));
-	}
+    public void setModule(String module) {
+        this.module = module;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_MODULE));
+    }
 
-	public String getModule() {
-		return module;
-	}
+    public String getModule() {
+        return module;
+    }
 
-	public void setIsEnvironment(boolean value) {
-		this.isEnvironment = value;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));
-	}
+    public void setIsEnvironment(boolean value) {
+        this.isEnvironment = value;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));
+    }
 
-	public boolean getIsEnvironment() {
-		return isEnvironment;
-	}
+    public boolean getIsEnvironment() {
+        return isEnvironment;
+    }
 
-	@Override
-	public Node getParent() {
-		return groupImpl.getParent();
-	}
+    @Override
+    public Node getParent() {
+        return groupImpl.getParent();
+    }
 
-	@Override
-	public void setParent(Node parent) {
-		groupImpl.setParent(parent);
-	}
+    @Override
+    public void setParent(Node parent) {
+        groupImpl.setParent(parent);
+    }
 
-	@Override
-	public void addObserver(HierarchyObserver obs) {
-		groupImpl.addObserver(obs);
-	}
+    @Override
+    public void addObserver(HierarchyObserver obs) {
+        groupImpl.addObserver(obs);
+    }
 
-	@Override
-	public void removeObserver(HierarchyObserver obs) {
-		groupImpl.removeObserver(obs);
-	}
+    @Override
+    public void removeObserver(HierarchyObserver obs) {
+        groupImpl.removeObserver(obs);
+    }
 
-	@Override
-	public void add(Node node) {
-		groupImpl.add(node);
-	}
+    @Override
+    public void add(Node node) {
+        groupImpl.add(node);
+    }
 
-	@Override
-	public void add(Collection<Node> nodes) {
-		groupImpl.add(nodes);
-	}
+    @Override
+    public void add(Collection<Node> nodes) {
+        groupImpl.add(nodes);
+    }
 
-	@Override
-	public void remove(Node node) {
-		groupImpl.remove(node);
-	}
+    @Override
+    public void remove(Node node) {
+        groupImpl.remove(node);
+    }
 
-	@Override
-	public void remove(Collection<Node> node) {
-		groupImpl.remove(node);
-	}
+    @Override
+    public void remove(Collection<Node> node) {
+        groupImpl.remove(node);
+    }
 
-	@Override
-	public void reparent(Collection<Node> nodes) {
-		groupImpl.reparent(nodes);
-	}
+    @Override
+    public void reparent(Collection<Node> nodes) {
+        groupImpl.reparent(nodes);
+    }
 
-	@Override
-	public void reparent(Collection<Node> nodes, Container newParent) {
-		groupImpl.reparent(nodes, newParent);
-	}
+    @Override
+    public void reparent(Collection<Node> nodes, Container newParent) {
+        groupImpl.reparent(nodes, newParent);
+    }
 
-	@Override
-	public Collection<Node> getChildren() {
-		return groupImpl.getChildren();
-	}
+    @Override
+    public Collection<Node> getChildren() {
+        return groupImpl.getChildren();
+    }
 
-	public Collection<Contact> getContacts() {
-		return Hierarchy.filterNodesByType(getChildren(), Contact.class);
-	}
+    public Collection<Contact> getContacts() {
+        return Hierarchy.filterNodesByType(getChildren(), Contact.class);
+    }
 
-	public Collection<Contact> getInputs() {
-		ArrayList<Contact> result = new ArrayList<Contact>();
-		for (Contact contact: getContacts()) {
-			if (contact.isInput()) {
-				result.add(contact);
-			}
-		}
-		return result;
-	}
+    public Collection<Contact> getInputs() {
+        ArrayList<Contact> result = new ArrayList<Contact>();
+        for (Contact contact: getContacts()) {
+            if (contact.isInput()) {
+                result.add(contact);
+            }
+        }
+        return result;
+    }
 
-	public Collection<Contact> getOutputs() {
-		ArrayList<Contact> result = new ArrayList<Contact>();
-		for (Contact contact: getContacts()) {
-			if (contact.isOutput()) {
-				result.add(contact);
-			}
-		}
-		return result;
-	}
+    public Collection<Contact> getOutputs() {
+        ArrayList<Contact> result = new ArrayList<Contact>();
+        for (Contact contact: getContacts()) {
+            if (contact.isOutput()) {
+                result.add(contact);
+            }
+        }
+        return result;
+    }
 
 
-	public Contact getFirstInput() {
-		Contact result = null;
-		for (Contact contact: getContacts()) {
-			if (contact.isInput()) {
-				result = contact;
-				break;
-			}
-		}
-		return result;
-	}
+    public Contact getFirstInput() {
+        Contact result = null;
+        for (Contact contact: getContacts()) {
+            if (contact.isInput()) {
+                result = contact;
+                break;
+            }
+        }
+        return result;
+    }
 
-	public Contact getFirstOutput() {
-		Contact result = null;
-		for (Contact contact: getContacts()) {
-			if (contact.isOutput()) {
-				result = contact;
-				break;
-			}
-		}
-		return result;
-	}
+    public Contact getFirstOutput() {
+        Contact result = null;
+        for (Contact contact: getContacts()) {
+            if (contact.isOutput()) {
+                result = contact;
+                break;
+            }
+        }
+        return result;
+    }
 
 
 }

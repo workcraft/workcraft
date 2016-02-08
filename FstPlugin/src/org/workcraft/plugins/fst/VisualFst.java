@@ -18,33 +18,33 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(ToolsProvider.class)
 public class VisualFst extends VisualFsm {
 
-	public VisualFst(Fst model) {
-		this(model, null);
-	}
+    public VisualFst(Fst model) {
+        this(model, null);
+    }
 
-	public VisualFst(Fst model, VisualGroup root) {
-		super(model, root);
-	}
+    public VisualFst(Fst model, VisualGroup root) {
+        super(model, root);
+    }
 
-	@Override
-	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
-		validateConnection(first, second);
+    @Override
+    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+        validateConnection(first, second);
 
-		VisualState vState1 = (VisualState)first;
-		VisualState vState2 = (VisualState)second;
-		State mState1 = vState1.getReferencedState();
-		State mState2 = vState2.getReferencedState();
+        VisualState vState1 = (VisualState)first;
+        VisualState vState2 = (VisualState)second;
+        State mState1 = vState1.getReferencedState();
+        State mState2 = vState2.getReferencedState();
 
-		if (mConnection == null) {
-			Signal signal = ((Fst)getMathModel()).createSignal(null, Type.DUMMY);
-			mConnection = ((Fst)getMathModel()).createSignalEvent(mState1, mState2, signal);
-		}
-		VisualSignalEvent vEvent = new VisualSignalEvent((SignalEvent)mConnection, vState1, vState2);
+        if (mConnection == null) {
+            Signal signal = ((Fst)getMathModel()).createSignal(null, Type.DUMMY);
+            mConnection = ((Fst)getMathModel()).createSignalEvent(mState1, mState2, signal);
+        }
+        VisualSignalEvent vEvent = new VisualSignalEvent((SignalEvent)mConnection, vState1, vState2);
 
-		Container container = Hierarchy.getNearestContainer(vState1, vState2);
-		container.add(vEvent);
-		return vEvent;
-	}
+        Container container = Hierarchy.getNearestContainer(vState1, vState2);
+        container.add(vEvent);
+        return vEvent;
+    }
 
 
 }

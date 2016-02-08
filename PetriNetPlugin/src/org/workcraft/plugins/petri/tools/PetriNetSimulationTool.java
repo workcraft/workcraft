@@ -98,913 +98,913 @@ import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
 public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwner {
-	protected VisualModel visualNet;
-	protected PetriNetModel net;
-	protected JPanel interfacePanel;
-	protected JPanel controlPanel;
-	protected JPanel infoPanel;
-	protected JSplitPane splitPane;
-	protected JScrollPane tracePane;
-	protected JScrollPane statePane;
-	protected JTable traceTable;
-
-	private JSlider speedSlider;
-	private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
-	private JButton copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
-
-	// cache of "excited" containers (the ones containing the excited simulation elements)
-	protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
-
-	final double DEFAULT_SIMULATION_DELAY = 0.3;
-	final double EDGE_SPEED_MULTIPLIER = 10;
-
-	protected Map<Place, Integer> initialMarking;
-	protected final Trace mainTrace = new Trace();
-	protected final Trace branchTrace = new Trace();
-
-	private Timer timer = null;
-	private boolean random = false;
-	public HashMap<Place, Integer> savedState = new HashMap<>();
-
-	@Override
-	public void createInterfacePanel(final GraphEditor editor) {
-		super.createInterfacePanel(editor);
-
-		playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Automatic trace playback");
-		stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
-		backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
-		forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
-		randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"), "Random playback");
-
-		speedSlider = new JSlider(-1000, 1000, 0);
-		speedSlider.setToolTipText("Simulation playback speed");
-
-		copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
-		pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
-		mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
-		saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
-
-		int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
-		int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
-		Dimension panelSize = new Dimension(buttonWidth * 5, buttonHeight);
-
-		JPanel simulationControl = new JPanel();
-		simulationControl.setLayout(new FlowLayout());
-		simulationControl.setPreferredSize(panelSize);
-		simulationControl.setMaximumSize(panelSize);
-		simulationControl.add(playButton);
-		simulationControl.add(stopButton);
-		simulationControl.add(backwardButton);
-		simulationControl.add(forwardButton);
-		simulationControl.add(randomButton);
-
-		JPanel speedControl = new JPanel();
-		speedControl.setLayout(new BorderLayout());
-		speedControl.setPreferredSize(panelSize);
-		speedControl.setMaximumSize(panelSize);
-		speedControl.add(speedSlider, BorderLayout.CENTER);
-
-		JPanel traceControl = new JPanel();
-		traceControl.setLayout(new FlowLayout());
-		traceControl.setPreferredSize(panelSize);
-		traceControl.add(new JSeparator());
-		traceControl.add(copyStateButton);
-		traceControl.add(pasteStateButton);
-		traceControl.add(mergeTraceButton);
-		traceControl.add(saveInitStateButton);
-
-		controlPanel = new JPanel();
-		controlPanel.setLayout(new WrapLayout());
-		controlPanel.add(simulationControl);
-		controlPanel.add(speedControl);
-		controlPanel.add(traceControl);
-
-		traceTable = new JTable(new TraceTableModel());
-		traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		traceTable.setRowHeight(FontHelper.getFontSizeInPixels(traceTable.getFont()));
-		traceTable.setDefaultRenderer(Object.class,	new TraceTableCellRendererImplementation());
-
-		tracePane = new JScrollPane();
-		tracePane.setViewportView(traceTable);
-		tracePane.setMinimumSize(new Dimension(1, 50));
-
-		statePane = new JScrollPane();
-		statePane.setMinimumSize(new Dimension(1, 50));
-
-		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tracePane, statePane);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(150);
-		splitPane.setResizeWeight(0.5);
-
-		infoPanel = new JPanel();
-		infoPanel.setLayout(new BorderLayout());
-		infoPanel.add(splitPane, BorderLayout.CENTER);
-
-		interfacePanel = new JPanel();
-		interfacePanel.setLayout(new BorderLayout());
-		interfacePanel.add(controlPanel, BorderLayout.NORTH);
-		interfacePanel.add(infoPanel, BorderLayout.CENTER);
-		interfacePanel.setPreferredSize(new Dimension(0, 0));
-
-		speedSlider.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(timer != null) {
-					timer.stop();
-					timer.setInitialDelay(getAnimationDelay());
-					timer.setDelay(getAnimationDelay());
-					timer.start();
-				}
-				updateState(editor);
-				editor.requestFocus();
-			}
-		});
-
-		randomButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (timer == null) {
-					timer = new Timer(getAnimationDelay(), new ActionListener()	{
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							randomStep(editor);
-						}
-					});
-					timer.start();
-					random = true;
-				} else if (random) {
-					timer.stop();
-					timer = null;
-					random = false;
-				} else {
-					random = true;
-				}
-				updateState(editor);
-				editor.requestFocus();
-			}
-		});
-
-		playButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (timer == null) {
-					timer = new Timer(getAnimationDelay(), new ActionListener()	{
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							step(editor);
-						}
-					});
-					timer.start();
-					random = false;
-				} else if (!random) {
-					timer.stop();
-					timer = null;
-					random = false;
-				} else {
-					random = false;
-				}
-				updateState(editor);
-				editor.requestFocus();
-			}
-		});
-
-		stopButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				clearTraces(editor);
-				editor.requestFocus();
-			}
-		});
-
-		backwardButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				stepBack(editor);
-				editor.requestFocus();
-			}
-		});
-
-		forwardButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				step(editor);
-				editor.requestFocus();
-			}
-		});
-
-		copyStateButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				copyState(editor);
-				editor.requestFocus();
-			}
-		});
-
-		pasteStateButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pasteState(editor);
-				editor.requestFocus();
-			}
-		});
-
-		mergeTraceButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mergeTrace(editor);
-				editor.requestFocus();
-			}
-		});
-
-		saveInitStateButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveInitState(editor);
-				editor.requestFocus();
-			}
-		});
-
-		traceTable.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				int column = traceTable.getSelectedColumn();
-				int row = traceTable.getSelectedRow();
-				if (column == 0) {
-					if (row < mainTrace.size()) {
-						boolean work = true;
-						while (work && (branchTrace.getPosition() > 0)) {
-							work = quietStepBack();
-						}
-						while (work && (mainTrace.getPosition() > row)) {
-							work = quietStepBack();
-						}
-						while (work && (mainTrace.getPosition() < row)) {
-							work = quietStep();
-						}
-					}
-				} else {
-					if ((row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
-						boolean work = true;
-						while (work && (mainTrace.getPosition() + branchTrace.getPosition() > row)) {
-							work = quietStepBack();
-						}
-						while (work && (mainTrace.getPosition() + branchTrace.getPosition() < row)) {
-							work = quietStep();
-						}
-					}
-				}
-				updateState(editor);
-				editor.requestFocus();
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-			}
-		});
-	}
-
-	public void setStatePaneVisibility(boolean visible) {
-		statePane.setVisible(visible);
-		splitPane.setDividerSize(visible ? 10 : 0);
-	}
-
-	@Override
-	public void activated(final GraphEditor editor) {
-				editor.getWorkspaceEntry().captureMemento();
-		editor.getWorkspaceEntry().setCanModify(false);
-		visualNet = getUnderlyingModel(editor.getModel());
-		net = (PetriNetModel)visualNet.getMathModel();
-		initialMarking = readMarking();
-		super.activated(editor);
-		setStatePaneVisibility(false);
-		resetTraces(editor);
-		editor.forceRedraw();
-	}
-
-	@Override
-	public void deactivated(final GraphEditor editor) {
-		super.deactivated(editor);
-		if (timer != null) {
-			timer.stop();
-			timer = null;
-		}
-		editor.getWorkspaceEntry().cancelMemento();
-		applyInitState(editor);
-		savedState.clear();
-		this.visualNet = null;
-		this.net = null;
-	}
-
-	public void resetMarking() {
-		applyMarking(initialMarking);
-	}
-
-	private void applyMarking(Map<Place, Integer> marking) {
-			for (Place p: marking.keySet()) {
-			if (net.getPlaces().contains(p)) {
-				p.setTokens(marking.get(p));
-			} else {
-				ExceptionDialog.show(null, new RuntimeException("Place "+p.toString()+" is not in the model"));
-			}
-		}
-	}
-
-	public void updateState(final GraphEditor editor) {
-		if (timer == null) {
-			playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
-			randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
-		} else {
-			if (random) {
-				playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
-				randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_pause.svg"));
-				timer.setDelay(getAnimationDelay());
-			} else if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
-				playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-pause.svg"));
-				randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
-				timer.setDelay(getAnimationDelay());
-			} else {
-				playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
-				randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
-				timer.stop();
-				timer = null;
-			}
-		}
-		playButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
-		stopButton.setEnabled(!mainTrace.isEmpty() || !branchTrace.isEmpty());
-		backwardButton.setEnabled((mainTrace.getPosition() > 0) || (branchTrace.getPosition() > 0));
-		forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
-		traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
-		editor.repaint();
-	}
-
-	public void scrollTraceToBottom() {
-		JScrollBar verticalScrollBar = tracePane.getVerticalScrollBar();
-		verticalScrollBar.setValue(verticalScrollBar.getMaximum());
-	}
-
-	private boolean quietStepBack() {
-		excitedContainers.clear();
-
-		boolean result = false;
-		String transitionId = null;
-		int mainDec = 0;
-		int branchDec = 0;
-		if (branchTrace.getPosition() > 0) {
-			transitionId = branchTrace.get(branchTrace.getPosition()-1);
-			branchDec = 1;
-		} else if (mainTrace.getPosition() > 0) {
-			transitionId = mainTrace.get(mainTrace.getPosition() - 1);
-			mainDec = 1;
-		}
-		Transition transition = getTransitionToUnfire(transitionId);
-		if (transition != null) {
-			net.unFire(transition);
-			mainTrace.decPosition(mainDec);
-			branchTrace.decPosition(branchDec);
-			if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
-				branchTrace.clear();
-			}
-			result = true;
-		}
-		return result;
-	}
-
-	private Transition getTransitionToUnfire(String ref) {
-		Transition result = null;
-		if (ref != null) {
-			final Node node = net.getNodeByReference(ref);
-			if ((node instanceof Transition) && net.isUnfireEnabled((Transition)node)) {
-				result = (Transition)node;
-			}
-		}
-		return result;
-	}
-
-	private boolean stepBack(final GraphEditor editor) {
-		boolean ret = quietStepBack();
-		updateState(editor);
-		return ret;
-	}
-
-	private boolean quietStep() {
-		excitedContainers.clear();
-
-		boolean result = false;
-		String transitionId = null;
-		int mainInc = 0;
-		int branchInc = 0;
-		if (branchTrace.canProgress()) {
-			transitionId = branchTrace.getCurrent();
-			branchInc = 1;
-		} else if (mainTrace.canProgress()) {
-			transitionId = mainTrace.getCurrent();
-			mainInc = 1;
-		}
-		Transition transition = getTransitionToFire(transitionId);
-		if (transition != null) {
-			net.fire(transition);
-			coloriseTokens(transition);
-			mainTrace.incPosition(mainInc);
-			branchTrace.incPosition(branchInc);
-			result = true;
-		}
-		return result;
-	}
-
-	private Transition getTransitionToFire(String ref) {
-		Transition result = null;
-		if (ref != null) {
-			final Node node = net.getNodeByReference(ref);
-			if ((node instanceof Transition) && net.isEnabled((Transition)node)) {
-				result = (Transition)node;
-			}
-		}
-		return result;
-	}
-
-	protected void coloriseTokens(Transition transition) {
-		VisualTransition vt = ((VisualPetriNet)visualNet).getVisualTransition(transition);
-		if (vt == null) return;
-		Color tokenColor = Color.black;
-		ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
-		if (tokenColorGenerator != null) {
-			// generate token colour
-			tokenColor = tokenColorGenerator.updateColor();
-		} else {
-			// combine preset token colours
-			for (Connection c: visualNet.getConnections(vt)) {
-				if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
-					VisualConnection vc = (VisualConnection)c;
-					if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace)) {
-						VisualPlace vp = (VisualPlace)vc.getFirst();
-						tokenColor = Coloriser.colorise(tokenColor, vp.getTokenColor());
-					}
-				}
-			}
-		}
-		// propagate the colour to postset tokens
-		for (Connection c: visualNet.getConnections(vt)) {
-			if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
-				VisualConnection vc = (VisualConnection)c;
-				if (vc.isTokenColorPropagator() && (vc.getSecond() instanceof VisualPlace)) {
-					VisualPlace vp = (VisualPlace)vc.getFirst();
-					vp.setTokenColor(tokenColor);
-				}
-			}
-		}
-	}
-
-	private boolean step(final GraphEditor editor) {
-		boolean ret = quietStep();
-		updateState(editor);
-		return ret;
-	}
-
-	private boolean randomStep(final GraphEditor editor) {
-		ArrayList<Transition> enabledTransitions = new ArrayList<Transition>();
-		for (Transition transition: net.getTransitions()) {
-			if (net.isEnabled(transition)) {
-				enabledTransitions.add(transition);
-			}
-		}
-		if (enabledTransitions.size() == 0) {
-			return false;
-		}
-		int randomIndex = (int)(Math.random() * enabledTransitions.size());
-		Transition transition = enabledTransitions.get(randomIndex);
-		executeTransition(editor, transition);
-		return true;
-	}
-
-	private void resetTraces(final GraphEditor editor) {
-		resetMarking();
-		mainTrace.setPosition(0);
-		branchTrace.clear();
-		updateState(editor);
-	}
-
-	private void clearTraces(final GraphEditor editor) {
-		resetMarking();
-		mainTrace.clear();
-		branchTrace.clear();
-		if (timer != null) 	{
-			timer.stop();
-			timer = null;
-		}
-		updateState(editor);
-	}
-
-	private void copyState(final GraphEditor editor) {
-		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-		StringSelection stringSelection = new StringSelection(
-				mainTrace.toString() + "\n" + branchTrace.toString() + "\n");
-		clip.setContents(stringSelection, this);
-		updateState(editor);
-	}
-
-	private void pasteState(final GraphEditor editor) {
-		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable contents = clip.getContents(null);
-		boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-		String str="";
-		if (hasTransferableText) {
-			try {
-				str = (String)contents.getTransferData(DataFlavor.stringFlavor);
-			}
-			catch (UnsupportedFlavorException ex){
-				System.out.println(ex);
-				ex.printStackTrace();
-			}
-			catch (IOException ex) {
-				System.out.println(ex);
-				ex.printStackTrace();
-			}
-		}
-
-		resetMarking();
-		mainTrace.clear();
-		branchTrace.clear();
-		boolean first = true;
-		for (String s: str.split("\n")) {
-			if (first) {
-				mainTrace.fromString(s);
-				int mainTracePosition = mainTrace.getPosition();
-				mainTrace.setPosition(0);
-				boolean work = true;
-				while (work && (mainTrace.getPosition() < mainTracePosition)) {
-					work = quietStep();
-				}
-			} else {
-				branchTrace.fromString(s);
-				int branchTracePosition = branchTrace.getPosition();
-				branchTrace.setPosition(0);
-				boolean work = true;
-				while (work && (branchTrace.getPosition() < branchTracePosition)) {
-					work = quietStep();
-				}
-				break;
-			}
-			first = false;
-		}
-		updateState(editor);
-	}
-
-	private void mergeTrace(final GraphEditor editor) {
-		if (!branchTrace.isEmpty()) {
-			while (mainTrace.getPosition() < mainTrace.size()) {
-				mainTrace.removeCurrent();
-			}
-			mainTrace.addAll(branchTrace);
-			mainTrace.incPosition(branchTrace.getPosition());
-			branchTrace.clear();
-		}
-		updateState(editor);
-	}
-
-	private void saveInitState(final GraphEditor editor) {
-		savedState.clear();
-		for (Place place: net.getPlaces()) {
-			savedState.put(place, place.getTokens());
-		}
-		editor.requestFocus();
-	}
-
-	public void applyInitState(final GraphEditor editor) {
-		if ((savedState == null) || savedState.isEmpty()) {
-			return;
-		}
-		MathModel model = editor.getModel().getMathModel();
-		if (model instanceof PetriNetModel) {
-			editor.getWorkspaceEntry().saveMemento();
-			PetriNetModel pn = (PetriNetModel)model;
-			for (Place place: savedState.keySet()) {
-				String ref = net.getNodeReference(place);
-				Node node = pn.getNodeByReference(ref);
-				if (node instanceof Place) {
-					((Place) node).setTokens(savedState.get(place));
-				}
-			}
-		}
-	}
-
-	private int getAnimationDelay() {
-		return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
-	}
-
-	@SuppressWarnings("serial")
-	private final class TraceTableCellRendererImplementation implements TableCellRenderer {
-		private final JLabel label = new JLabel() {
-			@Override
-			public void paint(Graphics g) {
-				g.setColor(getBackground());
-				g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-				super.paint(g);
-			}
-		};
-
-		boolean isActive(int row, int column) {
-			if (column==0) {
-				if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
-					return row == mainTrace.getPosition();
-				}
-			} else {
-				if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition())
-						&& (row < mainTrace.getPosition() + branchTrace.size())) {
-					return (row == mainTrace.getPosition() + branchTrace.getPosition());
-				}
-			}
-			return false;
-		}
-
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value,
-				boolean isSelected, boolean hasFocus,	int row, int column) {
-			JLabel result = null;
-			label.setBorder(PropertyEditorTable.BORDER_RENDER);
-			if ((net != null) && (value instanceof String)) {
-				label.setText((String) value);
-				if (isActive(row, column)) {
-					label.setForeground(table.getSelectionForeground());
-					label.setBackground(table.getSelectionBackground());
-				} else {
-					label.setForeground(table.getForeground());
-					label.setBackground(table.getBackground());
-				}
-				result = label;
-			}
-			return result;
-		}
-	}
-
-	@SuppressWarnings("serial")
-	private class TraceTableModel extends AbstractTableModel {
-		@Override
-		public int getColumnCount() {
-			return 2;
-		}
-
-		@Override
-		public String getColumnName(int column) {
-			if (column == 0) return "Trace";
-			return "Branch";
-		}
-
-		@Override
-		public int getRowCount() {
-			return Math.max(mainTrace.size(), mainTrace.getPosition() + branchTrace.size());
-		}
-
-		@Override
-		public Object getValueAt(int row, int column) {
-			String ref = null;
-			if (column == 0) {
-				if (!mainTrace.isEmpty() && (row < mainTrace.size())) {
-					ref = mainTrace.get(row);
-				}
-			} else {
-				if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
-					ref = branchTrace.get(row - mainTrace.getPosition());
-				}
-			}
-			return getTraceLabelByReference(ref);
-		}
-	};
-
-	protected Map<Place, Integer> readMarking() {
-		HashMap<Place, Integer> result = new HashMap<Place, Integer>();
-		for (Place p : net.getPlaces()) {
-			result.put(p, p.getTokens());
-		}
-		return result;
-	}
-
-	@Override
-	public void keyPressed(GraphEditorKeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) {
-			stepBack(e.getEditor());
-		}
-		if (e.getKeyCode() == KeyEvent.VK_CLOSE_BRACKET) {
-			step(e.getEditor());
-		}
-	}
-
-	public void executeTransition(final GraphEditor editor, Transition t) {
-		if (t == null) return;
-
-		String transitionId = null;
-		// If clicked on the trace event, do the step forward.
-		if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.getPosition() < mainTrace.size())) {
-			transitionId = mainTrace.get(mainTrace.getPosition());
-		}
-		// Otherwise form/use the branch trace.
-		if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
-			transitionId = branchTrace.get(branchTrace.getPosition());
-		}
-		if (transitionId != null) {
-			Node transition = net.getNodeByReference(transitionId);
-			if ((transition != null) && (transition == t)) {
-				step(editor);
-				return;
-			}
-		}
-		while (branchTrace.getPosition() < branchTrace.size()) {
-			branchTrace.removeCurrent();
-		}
-		branchTrace.add(net.getNodeReference(t));
-		step(editor);
-		scrollTraceToBottom();
-	}
-
-	@Override
-	public void mousePressed(GraphEditorMouseEvent e) {
-		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-			new Func<Node, Boolean>() {
-				@Override
-				public Boolean eval(Node node) {
-					return node instanceof VisualTransition
-						&& net.isEnabled(((VisualTransition)node).getReferencedTransition());
-				}
-			});
-
-		if (node instanceof VisualTransition) {
-			executeTransition(e.getEditor(), ((VisualTransition)node).getReferencedTransition());
-		}
-	}
-
-	@Override
-	public String getHintMessage() {
-		return "Click on the highlighted transitions to fire them.";
-	}
-
-	public String getLabel() {
-		return "Simulation";
-	}
-
-	public int getHotKeyCode() {
-		return KeyEvent.VK_M;
-	}
-
-	@Override
-	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/tool-simulation.svg");
-	}
-
-	@Override
-	public JPanel getInterfacePanel() {
-		return interfacePanel;
-	}
-
-	public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
-		this.mainTrace.clear();
-		if (mainTrace != null) {
-			this.mainTrace.addAll(mainTrace);
-		}
-		this.branchTrace.clear();
-		if (branchTrace != null) {
-			this.branchTrace.addAll(branchTrace);
-		}
-		updateState(editor);
-	}
-
-	protected boolean isContainerExcited(Container container) {
-		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-		boolean ret = false;
-		for (Node node: container.getChildren()) {
-			if (node instanceof VisualTransition) {
-				ret = ret || net.isEnabled(((VisualTransition)node).getReferencedTransition());
-			}
-
-			if (node instanceof Container) {
-				ret = ret || isContainerExcited((Container)node);
-			}
-			if (ret) break;
-		}
-		excitedContainers.put(container, ret);
-		return ret;
-	}
-
-	public Node getTraceCurrentNode() {
-		String ref = null;
-		if (branchTrace.canProgress()) {
-			ref = branchTrace.getCurrent();
-		} else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
-			ref = mainTrace.getCurrent();
-		}
-		Node result = null;
-		if (ref != null) {
-			result = net.getNodeByReference(ref);
-		}
-		return result;
-	}
-
-	@Override
-	public Decorator getDecorator(final GraphEditor editor) {
-		return new Decorator() {
-			@Override
-			public Decoration getDecoration(Node node) {
-
-				if (node instanceof VisualTransition) {
-					Transition transition = ((VisualTransition)node).getReferencedTransition();
-					Node currentTraceTransition = getTraceCurrentNode();
-					if (transition == currentTraceTransition) {
-						return new Decoration(){
-							@Override
-							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
-							}
-							@Override
-							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
-							}
-						};
-					}
-
-					if (net.isEnabled(transition)) {
-						return new Decoration(){
-							@Override
-							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
-							}
-							@Override
-							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
-							}
-						};
-					}
-				}
-
-				if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
-					final boolean ret = isContainerExcited((Container)node);
-					return new ContainerDecoration() {
-
-						@Override
-						public Color getColorisation() {
-							return null;
-						}
-
-						@Override
-						public Color getBackground() {
-							return null;
-						}
-
-						@Override
-						public boolean isContainerExcited() {
-							return ret;
-						}
-					};
-				}
-
-				if (node instanceof VisualConnection) {
-					if (isArcExcited((VisualConnection)node)) {
-						return new Decoration() {
-
-							@Override
-							public Color getColorisation() {
-								return CommonSimulationSettings.getEnabledForegroundColor();
-							}
-
-							@Override
-							public Color getBackground() {
-								return CommonSimulationSettings.getEnabledBackgroundColor();
-							}
-						};
-					}
-				}
-
-				return null;
-			}
-		};
-	}
-
-	private boolean isArcExcited(VisualConnection connection) {
-		VisualNode first = connection.getFirst();
-		Place place = null;
-		if (first instanceof VisualPlace) {
-			place = ((VisualPlace)first).getReferencedPlace();
-		} else if (first instanceof VisualReplicaPlace) {
-			place = ((VisualReplicaPlace)first).getReferencedPlace();
-		}
-		return ((place != null) && (place.getTokens() > 0));
-	}
-
-	@Override
-	public void lostOwnership(Clipboard clip, Transferable arg) {
-	}
-
-	public String getTraceLabelByReference(String ref) {
-		return ref;
-	}
+    protected VisualModel visualNet;
+    protected PetriNetModel net;
+    protected JPanel interfacePanel;
+    protected JPanel controlPanel;
+    protected JPanel infoPanel;
+    protected JSplitPane splitPane;
+    protected JScrollPane tracePane;
+    protected JScrollPane statePane;
+    protected JTable traceTable;
+
+    private JSlider speedSlider;
+    private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
+    private JButton copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
+
+    // cache of "excited" containers (the ones containing the excited simulation elements)
+    protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
+
+    final double DEFAULT_SIMULATION_DELAY = 0.3;
+    final double EDGE_SPEED_MULTIPLIER = 10;
+
+    protected Map<Place, Integer> initialMarking;
+    protected final Trace mainTrace = new Trace();
+    protected final Trace branchTrace = new Trace();
+
+    private Timer timer = null;
+    private boolean random = false;
+    public HashMap<Place, Integer> savedState = new HashMap<>();
+
+    @Override
+    public void createInterfacePanel(final GraphEditor editor) {
+        super.createInterfacePanel(editor);
+
+        playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Automatic trace playback");
+        stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
+        backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
+        forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
+        randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"), "Random playback");
+
+        speedSlider = new JSlider(-1000, 1000, 0);
+        speedSlider.setToolTipText("Simulation playback speed");
+
+        copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
+        pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
+        mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
+        saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
+
+        int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
+        int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
+        Dimension panelSize = new Dimension(buttonWidth * 5, buttonHeight);
+
+        JPanel simulationControl = new JPanel();
+        simulationControl.setLayout(new FlowLayout());
+        simulationControl.setPreferredSize(panelSize);
+        simulationControl.setMaximumSize(panelSize);
+        simulationControl.add(playButton);
+        simulationControl.add(stopButton);
+        simulationControl.add(backwardButton);
+        simulationControl.add(forwardButton);
+        simulationControl.add(randomButton);
+
+        JPanel speedControl = new JPanel();
+        speedControl.setLayout(new BorderLayout());
+        speedControl.setPreferredSize(panelSize);
+        speedControl.setMaximumSize(panelSize);
+        speedControl.add(speedSlider, BorderLayout.CENTER);
+
+        JPanel traceControl = new JPanel();
+        traceControl.setLayout(new FlowLayout());
+        traceControl.setPreferredSize(panelSize);
+        traceControl.add(new JSeparator());
+        traceControl.add(copyStateButton);
+        traceControl.add(pasteStateButton);
+        traceControl.add(mergeTraceButton);
+        traceControl.add(saveInitStateButton);
+
+        controlPanel = new JPanel();
+        controlPanel.setLayout(new WrapLayout());
+        controlPanel.add(simulationControl);
+        controlPanel.add(speedControl);
+        controlPanel.add(traceControl);
+
+        traceTable = new JTable(new TraceTableModel());
+        traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        traceTable.setRowHeight(FontHelper.getFontSizeInPixels(traceTable.getFont()));
+        traceTable.setDefaultRenderer(Object.class,    new TraceTableCellRendererImplementation());
+
+        tracePane = new JScrollPane();
+        tracePane.setViewportView(traceTable);
+        tracePane.setMinimumSize(new Dimension(1, 50));
+
+        statePane = new JScrollPane();
+        statePane.setMinimumSize(new Dimension(1, 50));
+
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tracePane, statePane);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(150);
+        splitPane.setResizeWeight(0.5);
+
+        infoPanel = new JPanel();
+        infoPanel.setLayout(new BorderLayout());
+        infoPanel.add(splitPane, BorderLayout.CENTER);
+
+        interfacePanel = new JPanel();
+        interfacePanel.setLayout(new BorderLayout());
+        interfacePanel.add(controlPanel, BorderLayout.NORTH);
+        interfacePanel.add(infoPanel, BorderLayout.CENTER);
+        interfacePanel.setPreferredSize(new Dimension(0, 0));
+
+        speedSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(timer != null) {
+                    timer.stop();
+                    timer.setInitialDelay(getAnimationDelay());
+                    timer.setDelay(getAnimationDelay());
+                    timer.start();
+                }
+                updateState(editor);
+                editor.requestFocus();
+            }
+        });
+
+        randomButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (timer == null) {
+                    timer = new Timer(getAnimationDelay(), new ActionListener()    {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            randomStep(editor);
+                        }
+                    });
+                    timer.start();
+                    random = true;
+                } else if (random) {
+                    timer.stop();
+                    timer = null;
+                    random = false;
+                } else {
+                    random = true;
+                }
+                updateState(editor);
+                editor.requestFocus();
+            }
+        });
+
+        playButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (timer == null) {
+                    timer = new Timer(getAnimationDelay(), new ActionListener()    {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            step(editor);
+                        }
+                    });
+                    timer.start();
+                    random = false;
+                } else if (!random) {
+                    timer.stop();
+                    timer = null;
+                    random = false;
+                } else {
+                    random = false;
+                }
+                updateState(editor);
+                editor.requestFocus();
+            }
+        });
+
+        stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearTraces(editor);
+                editor.requestFocus();
+            }
+        });
+
+        backwardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stepBack(editor);
+                editor.requestFocus();
+            }
+        });
+
+        forwardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                step(editor);
+                editor.requestFocus();
+            }
+        });
+
+        copyStateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                copyState(editor);
+                editor.requestFocus();
+            }
+        });
+
+        pasteStateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pasteState(editor);
+                editor.requestFocus();
+            }
+        });
+
+        mergeTraceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mergeTrace(editor);
+                editor.requestFocus();
+            }
+        });
+
+        saveInitStateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveInitState(editor);
+                editor.requestFocus();
+            }
+        });
+
+        traceTable.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int column = traceTable.getSelectedColumn();
+                int row = traceTable.getSelectedRow();
+                if (column == 0) {
+                    if (row < mainTrace.size()) {
+                        boolean work = true;
+                        while (work && (branchTrace.getPosition() > 0)) {
+                            work = quietStepBack();
+                        }
+                        while (work && (mainTrace.getPosition() > row)) {
+                            work = quietStepBack();
+                        }
+                        while (work && (mainTrace.getPosition() < row)) {
+                            work = quietStep();
+                        }
+                    }
+                } else {
+                    if ((row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
+                        boolean work = true;
+                        while (work && (mainTrace.getPosition() + branchTrace.getPosition() > row)) {
+                            work = quietStepBack();
+                        }
+                        while (work && (mainTrace.getPosition() + branchTrace.getPosition() < row)) {
+                            work = quietStep();
+                        }
+                    }
+                }
+                updateState(editor);
+                editor.requestFocus();
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent arg0) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent arg0) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent arg0) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent arg0) {
+            }
+        });
+    }
+
+    public void setStatePaneVisibility(boolean visible) {
+        statePane.setVisible(visible);
+        splitPane.setDividerSize(visible ? 10 : 0);
+    }
+
+    @Override
+    public void activated(final GraphEditor editor) {
+                editor.getWorkspaceEntry().captureMemento();
+        editor.getWorkspaceEntry().setCanModify(false);
+        visualNet = getUnderlyingModel(editor.getModel());
+        net = (PetriNetModel)visualNet.getMathModel();
+        initialMarking = readMarking();
+        super.activated(editor);
+        setStatePaneVisibility(false);
+        resetTraces(editor);
+        editor.forceRedraw();
+    }
+
+    @Override
+    public void deactivated(final GraphEditor editor) {
+        super.deactivated(editor);
+        if (timer != null) {
+            timer.stop();
+            timer = null;
+        }
+        editor.getWorkspaceEntry().cancelMemento();
+        applyInitState(editor);
+        savedState.clear();
+        this.visualNet = null;
+        this.net = null;
+    }
+
+    public void resetMarking() {
+        applyMarking(initialMarking);
+    }
+
+    private void applyMarking(Map<Place, Integer> marking) {
+            for (Place p: marking.keySet()) {
+            if (net.getPlaces().contains(p)) {
+                p.setTokens(marking.get(p));
+            } else {
+                ExceptionDialog.show(null, new RuntimeException("Place "+p.toString()+" is not in the model"));
+            }
+        }
+    }
+
+    public void updateState(final GraphEditor editor) {
+        if (timer == null) {
+            playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
+            randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
+        } else {
+            if (random) {
+                playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
+                randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_pause.svg"));
+                timer.setDelay(getAnimationDelay());
+            } else if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
+                playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-pause.svg"));
+                randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
+                timer.setDelay(getAnimationDelay());
+            } else {
+                playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
+                randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
+                timer.stop();
+                timer = null;
+            }
+        }
+        playButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
+        stopButton.setEnabled(!mainTrace.isEmpty() || !branchTrace.isEmpty());
+        backwardButton.setEnabled((mainTrace.getPosition() > 0) || (branchTrace.getPosition() > 0));
+        forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
+        traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
+        editor.repaint();
+    }
+
+    public void scrollTraceToBottom() {
+        JScrollBar verticalScrollBar = tracePane.getVerticalScrollBar();
+        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+    }
+
+    private boolean quietStepBack() {
+        excitedContainers.clear();
+
+        boolean result = false;
+        String transitionId = null;
+        int mainDec = 0;
+        int branchDec = 0;
+        if (branchTrace.getPosition() > 0) {
+            transitionId = branchTrace.get(branchTrace.getPosition()-1);
+            branchDec = 1;
+        } else if (mainTrace.getPosition() > 0) {
+            transitionId = mainTrace.get(mainTrace.getPosition() - 1);
+            mainDec = 1;
+        }
+        Transition transition = getTransitionToUnfire(transitionId);
+        if (transition != null) {
+            net.unFire(transition);
+            mainTrace.decPosition(mainDec);
+            branchTrace.decPosition(branchDec);
+            if ((branchTrace.getPosition() == 0) && !mainTrace.isEmpty()) {
+                branchTrace.clear();
+            }
+            result = true;
+        }
+        return result;
+    }
+
+    private Transition getTransitionToUnfire(String ref) {
+        Transition result = null;
+        if (ref != null) {
+            final Node node = net.getNodeByReference(ref);
+            if ((node instanceof Transition) && net.isUnfireEnabled((Transition)node)) {
+                result = (Transition)node;
+            }
+        }
+        return result;
+    }
+
+    private boolean stepBack(final GraphEditor editor) {
+        boolean ret = quietStepBack();
+        updateState(editor);
+        return ret;
+    }
+
+    private boolean quietStep() {
+        excitedContainers.clear();
+
+        boolean result = false;
+        String transitionId = null;
+        int mainInc = 0;
+        int branchInc = 0;
+        if (branchTrace.canProgress()) {
+            transitionId = branchTrace.getCurrent();
+            branchInc = 1;
+        } else if (mainTrace.canProgress()) {
+            transitionId = mainTrace.getCurrent();
+            mainInc = 1;
+        }
+        Transition transition = getTransitionToFire(transitionId);
+        if (transition != null) {
+            net.fire(transition);
+            coloriseTokens(transition);
+            mainTrace.incPosition(mainInc);
+            branchTrace.incPosition(branchInc);
+            result = true;
+        }
+        return result;
+    }
+
+    private Transition getTransitionToFire(String ref) {
+        Transition result = null;
+        if (ref != null) {
+            final Node node = net.getNodeByReference(ref);
+            if ((node instanceof Transition) && net.isEnabled((Transition)node)) {
+                result = (Transition)node;
+            }
+        }
+        return result;
+    }
+
+    protected void coloriseTokens(Transition transition) {
+        VisualTransition vt = ((VisualPetriNet)visualNet).getVisualTransition(transition);
+        if (vt == null) return;
+        Color tokenColor = Color.black;
+        ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
+        if (tokenColorGenerator != null) {
+            // generate token colour
+            tokenColor = tokenColorGenerator.updateColor();
+        } else {
+            // combine preset token colours
+            for (Connection c: visualNet.getConnections(vt)) {
+                if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
+                    VisualConnection vc = (VisualConnection)c;
+                    if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace)) {
+                        VisualPlace vp = (VisualPlace)vc.getFirst();
+                        tokenColor = Coloriser.colorise(tokenColor, vp.getTokenColor());
+                    }
+                }
+            }
+        }
+        // propagate the colour to postset tokens
+        for (Connection c: visualNet.getConnections(vt)) {
+            if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
+                VisualConnection vc = (VisualConnection)c;
+                if (vc.isTokenColorPropagator() && (vc.getSecond() instanceof VisualPlace)) {
+                    VisualPlace vp = (VisualPlace)vc.getFirst();
+                    vp.setTokenColor(tokenColor);
+                }
+            }
+        }
+    }
+
+    private boolean step(final GraphEditor editor) {
+        boolean ret = quietStep();
+        updateState(editor);
+        return ret;
+    }
+
+    private boolean randomStep(final GraphEditor editor) {
+        ArrayList<Transition> enabledTransitions = new ArrayList<Transition>();
+        for (Transition transition: net.getTransitions()) {
+            if (net.isEnabled(transition)) {
+                enabledTransitions.add(transition);
+            }
+        }
+        if (enabledTransitions.size() == 0) {
+            return false;
+        }
+        int randomIndex = (int)(Math.random() * enabledTransitions.size());
+        Transition transition = enabledTransitions.get(randomIndex);
+        executeTransition(editor, transition);
+        return true;
+    }
+
+    private void resetTraces(final GraphEditor editor) {
+        resetMarking();
+        mainTrace.setPosition(0);
+        branchTrace.clear();
+        updateState(editor);
+    }
+
+    private void clearTraces(final GraphEditor editor) {
+        resetMarking();
+        mainTrace.clear();
+        branchTrace.clear();
+        if (timer != null)     {
+            timer.stop();
+            timer = null;
+        }
+        updateState(editor);
+    }
+
+    private void copyState(final GraphEditor editor) {
+        Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection stringSelection = new StringSelection(
+                mainTrace.toString() + "\n" + branchTrace.toString() + "\n");
+        clip.setContents(stringSelection, this);
+        updateState(editor);
+    }
+
+    private void pasteState(final GraphEditor editor) {
+        Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable contents = clip.getContents(null);
+        boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+        String str="";
+        if (hasTransferableText) {
+            try {
+                str = (String)contents.getTransferData(DataFlavor.stringFlavor);
+            }
+            catch (UnsupportedFlavorException ex){
+                System.out.println(ex);
+                ex.printStackTrace();
+            }
+            catch (IOException ex) {
+                System.out.println(ex);
+                ex.printStackTrace();
+            }
+        }
+
+        resetMarking();
+        mainTrace.clear();
+        branchTrace.clear();
+        boolean first = true;
+        for (String s: str.split("\n")) {
+            if (first) {
+                mainTrace.fromString(s);
+                int mainTracePosition = mainTrace.getPosition();
+                mainTrace.setPosition(0);
+                boolean work = true;
+                while (work && (mainTrace.getPosition() < mainTracePosition)) {
+                    work = quietStep();
+                }
+            } else {
+                branchTrace.fromString(s);
+                int branchTracePosition = branchTrace.getPosition();
+                branchTrace.setPosition(0);
+                boolean work = true;
+                while (work && (branchTrace.getPosition() < branchTracePosition)) {
+                    work = quietStep();
+                }
+                break;
+            }
+            first = false;
+        }
+        updateState(editor);
+    }
+
+    private void mergeTrace(final GraphEditor editor) {
+        if (!branchTrace.isEmpty()) {
+            while (mainTrace.getPosition() < mainTrace.size()) {
+                mainTrace.removeCurrent();
+            }
+            mainTrace.addAll(branchTrace);
+            mainTrace.incPosition(branchTrace.getPosition());
+            branchTrace.clear();
+        }
+        updateState(editor);
+    }
+
+    private void saveInitState(final GraphEditor editor) {
+        savedState.clear();
+        for (Place place: net.getPlaces()) {
+            savedState.put(place, place.getTokens());
+        }
+        editor.requestFocus();
+    }
+
+    public void applyInitState(final GraphEditor editor) {
+        if ((savedState == null) || savedState.isEmpty()) {
+            return;
+        }
+        MathModel model = editor.getModel().getMathModel();
+        if (model instanceof PetriNetModel) {
+            editor.getWorkspaceEntry().saveMemento();
+            PetriNetModel pn = (PetriNetModel)model;
+            for (Place place: savedState.keySet()) {
+                String ref = net.getNodeReference(place);
+                Node node = pn.getNodeByReference(ref);
+                if (node instanceof Place) {
+                    ((Place) node).setTokens(savedState.get(place));
+                }
+            }
+        }
+    }
+
+    private int getAnimationDelay() {
+        return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
+    }
+
+    @SuppressWarnings("serial")
+    private final class TraceTableCellRendererImplementation implements TableCellRenderer {
+        private final JLabel label = new JLabel() {
+            @Override
+            public void paint(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
+            }
+        };
+
+        boolean isActive(int row, int column) {
+            if (column==0) {
+                if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
+                    return row == mainTrace.getPosition();
+                }
+            } else {
+                if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition())
+                        && (row < mainTrace.getPosition() + branchTrace.size())) {
+                    return (row == mainTrace.getPosition() + branchTrace.getPosition());
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus,    int row, int column) {
+            JLabel result = null;
+            label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            if ((net != null) && (value instanceof String)) {
+                label.setText((String) value);
+                if (isActive(row, column)) {
+                    label.setForeground(table.getSelectionForeground());
+                    label.setBackground(table.getSelectionBackground());
+                } else {
+                    label.setForeground(table.getForeground());
+                    label.setBackground(table.getBackground());
+                }
+                result = label;
+            }
+            return result;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    private class TraceTableModel extends AbstractTableModel {
+        @Override
+        public int getColumnCount() {
+            return 2;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            if (column == 0) return "Trace";
+            return "Branch";
+        }
+
+        @Override
+        public int getRowCount() {
+            return Math.max(mainTrace.size(), mainTrace.getPosition() + branchTrace.size());
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            String ref = null;
+            if (column == 0) {
+                if (!mainTrace.isEmpty() && (row < mainTrace.size())) {
+                    ref = mainTrace.get(row);
+                }
+            } else {
+                if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
+                    ref = branchTrace.get(row - mainTrace.getPosition());
+                }
+            }
+            return getTraceLabelByReference(ref);
+        }
+    };
+
+    protected Map<Place, Integer> readMarking() {
+        HashMap<Place, Integer> result = new HashMap<Place, Integer>();
+        for (Place p : net.getPlaces()) {
+            result.put(p, p.getTokens());
+        }
+        return result;
+    }
+
+    @Override
+    public void keyPressed(GraphEditorKeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) {
+            stepBack(e.getEditor());
+        }
+        if (e.getKeyCode() == KeyEvent.VK_CLOSE_BRACKET) {
+            step(e.getEditor());
+        }
+    }
+
+    public void executeTransition(final GraphEditor editor, Transition t) {
+        if (t == null) return;
+
+        String transitionId = null;
+        // If clicked on the trace event, do the step forward.
+        if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.getPosition() < mainTrace.size())) {
+            transitionId = mainTrace.get(mainTrace.getPosition());
+        }
+        // Otherwise form/use the branch trace.
+        if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
+            transitionId = branchTrace.get(branchTrace.getPosition());
+        }
+        if (transitionId != null) {
+            Node transition = net.getNodeByReference(transitionId);
+            if ((transition != null) && (transition == t)) {
+                step(editor);
+                return;
+            }
+        }
+        while (branchTrace.getPosition() < branchTrace.size()) {
+            branchTrace.removeCurrent();
+        }
+        branchTrace.add(net.getNodeReference(t));
+        step(editor);
+        scrollTraceToBottom();
+    }
+
+    @Override
+    public void mousePressed(GraphEditorMouseEvent e) {
+        Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
+            new Func<Node, Boolean>() {
+                @Override
+                public Boolean eval(Node node) {
+                    return node instanceof VisualTransition
+                        && net.isEnabled(((VisualTransition)node).getReferencedTransition());
+                }
+            });
+
+        if (node instanceof VisualTransition) {
+            executeTransition(e.getEditor(), ((VisualTransition)node).getReferencedTransition());
+        }
+    }
+
+    @Override
+    public String getHintMessage() {
+        return "Click on the highlighted transitions to fire them.";
+    }
+
+    public String getLabel() {
+        return "Simulation";
+    }
+
+    public int getHotKeyCode() {
+        return KeyEvent.VK_M;
+    }
+
+    @Override
+    public Icon getIcon() {
+        return GUI.createIconFromSVG("images/icons/svg/tool-simulation.svg");
+    }
+
+    @Override
+    public JPanel getInterfacePanel() {
+        return interfacePanel;
+    }
+
+    public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
+        this.mainTrace.clear();
+        if (mainTrace != null) {
+            this.mainTrace.addAll(mainTrace);
+        }
+        this.branchTrace.clear();
+        if (branchTrace != null) {
+            this.branchTrace.addAll(branchTrace);
+        }
+        updateState(editor);
+    }
+
+    protected boolean isContainerExcited(Container container) {
+        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+        boolean ret = false;
+        for (Node node: container.getChildren()) {
+            if (node instanceof VisualTransition) {
+                ret = ret || net.isEnabled(((VisualTransition)node).getReferencedTransition());
+            }
+
+            if (node instanceof Container) {
+                ret = ret || isContainerExcited((Container)node);
+            }
+            if (ret) break;
+        }
+        excitedContainers.put(container, ret);
+        return ret;
+    }
+
+    public Node getTraceCurrentNode() {
+        String ref = null;
+        if (branchTrace.canProgress()) {
+            ref = branchTrace.getCurrent();
+        } else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+            ref = mainTrace.getCurrent();
+        }
+        Node result = null;
+        if (ref != null) {
+            result = net.getNodeByReference(ref);
+        }
+        return result;
+    }
+
+    @Override
+    public Decorator getDecorator(final GraphEditor editor) {
+        return new Decorator() {
+            @Override
+            public Decoration getDecoration(Node node) {
+
+                if (node instanceof VisualTransition) {
+                    Transition transition = ((VisualTransition)node).getReferencedTransition();
+                    Node currentTraceTransition = getTraceCurrentNode();
+                    if (transition == currentTraceTransition) {
+                        return new Decoration(){
+                            @Override
+                            public Color getColorisation() {
+                                return CommonSimulationSettings.getEnabledBackgroundColor();
+                            }
+                            @Override
+                            public Color getBackground() {
+                                return CommonSimulationSettings.getEnabledForegroundColor();
+                            }
+                        };
+                    }
+
+                    if (net.isEnabled(transition)) {
+                        return new Decoration(){
+                            @Override
+                            public Color getColorisation() {
+                                return CommonSimulationSettings.getEnabledForegroundColor();
+                            }
+                            @Override
+                            public Color getBackground() {
+                                return CommonSimulationSettings.getEnabledBackgroundColor();
+                            }
+                        };
+                    }
+                }
+
+                if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
+                    final boolean ret = isContainerExcited((Container)node);
+                    return new ContainerDecoration() {
+
+                        @Override
+                        public Color getColorisation() {
+                            return null;
+                        }
+
+                        @Override
+                        public Color getBackground() {
+                            return null;
+                        }
+
+                        @Override
+                        public boolean isContainerExcited() {
+                            return ret;
+                        }
+                    };
+                }
+
+                if (node instanceof VisualConnection) {
+                    if (isArcExcited((VisualConnection)node)) {
+                        return new Decoration() {
+
+                            @Override
+                            public Color getColorisation() {
+                                return CommonSimulationSettings.getEnabledForegroundColor();
+                            }
+
+                            @Override
+                            public Color getBackground() {
+                                return CommonSimulationSettings.getEnabledBackgroundColor();
+                            }
+                        };
+                    }
+                }
+
+                return null;
+            }
+        };
+    }
+
+    private boolean isArcExcited(VisualConnection connection) {
+        VisualNode first = connection.getFirst();
+        Place place = null;
+        if (first instanceof VisualPlace) {
+            place = ((VisualPlace)first).getReferencedPlace();
+        } else if (first instanceof VisualReplicaPlace) {
+            place = ((VisualReplicaPlace)first).getReferencedPlace();
+        }
+        return ((place != null) && (place.getTokens() > 0));
+    }
+
+    @Override
+    public void lostOwnership(Clipboard clip, Transferable arg) {
+    }
+
+    public String getTraceLabelByReference(String ref) {
+        return ref;
+    }
 
 }

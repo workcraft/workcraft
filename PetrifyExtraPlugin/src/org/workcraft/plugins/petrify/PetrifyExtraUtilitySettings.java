@@ -31,127 +31,127 @@ import org.workcraft.gui.propertyeditor.Settings;
 
 public class PetrifyExtraUtilitySettings implements Settings {
 
-	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
-	private static final String prefix = "Tools";
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final String prefix = "Tools";
 
-	private static final String keyDrawAstgCommand = prefix + ".draw_astg.command";
-	private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
-	private static final String keyWriteSgCommand = prefix + ".write_sg.command";
-	private static final String keyWriteSgArgs = prefix + ".write_sg.args";
+    private static final String keyDrawAstgCommand = prefix + ".draw_astg.command";
+    private static final String keyDrawAstgArgs = prefix + ".draw_astg.args";
+    private static final String keyWriteSgCommand = prefix + ".write_sg.command";
+    private static final String keyWriteSgArgs = prefix + ".write_sg.args";
 
-	private static final String defaultDrawAstgCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\draw_astg.exe" : "tools/PetrifyTools/draw_astg");
-	private static final String defaultDrawAstgArgs = "";
-	private static final String defaultWriteSgCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\write_sg.exe" : "tools/PetrifyTools/write_sg");
-	private static final String defaultWriteSgArgs = "";
+    private static final String defaultDrawAstgCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\draw_astg.exe" : "tools/PetrifyTools/draw_astg");
+    private static final String defaultDrawAstgArgs = "";
+    private static final String defaultWriteSgCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\write_sg.exe" : "tools/PetrifyTools/write_sg");
+    private static final String defaultWriteSgArgs = "";
 
-	private static String drawAstgCommand = defaultDrawAstgCommand;
-	private static String drawAstgArgs = defaultDrawAstgArgs;
-	private static String writeSgCommand = defaultWriteSgCommand;
-	private static String writeSgArgs = defaultWriteSgArgs;
+    private static String drawAstgCommand = defaultDrawAstgCommand;
+    private static String drawAstgArgs = defaultDrawAstgArgs;
+    private static String writeSgCommand = defaultWriteSgCommand;
+    private static String writeSgArgs = defaultWriteSgArgs;
 
-	public PetrifyExtraUtilitySettings() {
-		properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
-				this, "WriteSG command", String.class, true, false, false) {
-			protected void setter(PetrifyExtraUtilitySettings object, String value) {
-				setWriteSgCommand(value);
-			}
-			protected String getter(PetrifyExtraUtilitySettings object) {
-				return getWriteSgCommand();
-			}
-		});
+    public PetrifyExtraUtilitySettings() {
+        properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
+                this, "WriteSG command", String.class, true, false, false) {
+            protected void setter(PetrifyExtraUtilitySettings object, String value) {
+                setWriteSgCommand(value);
+            }
+            protected String getter(PetrifyExtraUtilitySettings object) {
+                return getWriteSgCommand();
+            }
+        });
 
-		properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
-				this, "Additional parameters for WriteSG", String.class, true, false, false) {
-			protected void setter(PetrifyExtraUtilitySettings object, String value) {
-				setWriteSgArgs(value);
-			}
-			protected String getter(PetrifyExtraUtilitySettings object) {
-				return getWriteSgArgs();
-			}
-		});
+        properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
+                this, "Additional parameters for WriteSG", String.class, true, false, false) {
+            protected void setter(PetrifyExtraUtilitySettings object, String value) {
+                setWriteSgArgs(value);
+            }
+            protected String getter(PetrifyExtraUtilitySettings object) {
+                return getWriteSgArgs();
+            }
+        });
 
-		properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
-				this, "DrawASTG command", String.class, true, false, false) {
-			protected void setter(PetrifyExtraUtilitySettings object, String value) {
-				setDrawAstgCommand(value);
-			}
-			protected String getter(PetrifyExtraUtilitySettings object) {
-				return getDrawAstgCommand();
-			}
-		});
+        properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
+                this, "DrawASTG command", String.class, true, false, false) {
+            protected void setter(PetrifyExtraUtilitySettings object, String value) {
+                setDrawAstgCommand(value);
+            }
+            protected String getter(PetrifyExtraUtilitySettings object) {
+                return getDrawAstgCommand();
+            }
+        });
 
-		properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
-				this, "Additional parameters for DrawASTG", String.class, true, false, false) {
-			protected void setter(PetrifyExtraUtilitySettings object, String value) {
-				setDrawAstgArgs(value);
-			}
-			protected String getter(PetrifyExtraUtilitySettings object) {
-				return getDrawAstgArgs();
-			}
-		});
-	}
+        properties.add(new PropertyDeclaration<PetrifyExtraUtilitySettings, String>(
+                this, "Additional parameters for DrawASTG", String.class, true, false, false) {
+            protected void setter(PetrifyExtraUtilitySettings object, String value) {
+                setDrawAstgArgs(value);
+            }
+            protected String getter(PetrifyExtraUtilitySettings object) {
+                return getDrawAstgArgs();
+            }
+        });
+    }
 
-	@Override
-	public List<PropertyDescriptor> getDescriptors() {
-		return properties;
-	}
+    @Override
+    public List<PropertyDescriptor> getDescriptors() {
+        return properties;
+    }
 
-	@Override
-	public void load(Config config) {
-		setDrawAstgCommand(config.getString(keyDrawAstgCommand, defaultDrawAstgCommand));
-		setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
-		setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
-		setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
-	}
+    @Override
+    public void load(Config config) {
+        setDrawAstgCommand(config.getString(keyDrawAstgCommand, defaultDrawAstgCommand));
+        setDrawAstgArgs(config.getString(keyDrawAstgArgs, defaultDrawAstgArgs));
+        setWriteSgCommand(config.getString(keyWriteSgCommand, defaultWriteSgCommand));
+        setWriteSgArgs(config.getString(keyWriteSgArgs, defaultWriteSgArgs));
+    }
 
-	@Override
-	public void save(Config config) {
-		config.set(keyDrawAstgCommand, getDrawAstgCommand());
-		config.set(keyDrawAstgArgs, getDrawAstgArgs());
-		config.set(keyWriteSgCommand, getWriteSgCommand());
-		config.set(keyWriteSgArgs, getWriteSgArgs());
-	}
+    @Override
+    public void save(Config config) {
+        config.set(keyDrawAstgCommand, getDrawAstgCommand());
+        config.set(keyDrawAstgArgs, getDrawAstgArgs());
+        config.set(keyWriteSgCommand, getWriteSgCommand());
+        config.set(keyWriteSgArgs, getWriteSgArgs());
+    }
 
-	@Override
-	public String getSection() {
-		return "External tools";
-	}
+    @Override
+    public String getSection() {
+        return "External tools";
+    }
 
-	@Override
-	public String getName() {
-		return "Petrify extras";
-	}
+    @Override
+    public String getName() {
+        return "Petrify extras";
+    }
 
-	public static String getDrawAstgCommand() {
-		return drawAstgCommand;
-	}
+    public static String getDrawAstgCommand() {
+        return drawAstgCommand;
+    }
 
-	public static void setDrawAstgCommand(String value) {
-		drawAstgCommand = value;
-	}
+    public static void setDrawAstgCommand(String value) {
+        drawAstgCommand = value;
+    }
 
-	public static String getDrawAstgArgs() {
-		return drawAstgArgs;
-	}
+    public static String getDrawAstgArgs() {
+        return drawAstgArgs;
+    }
 
-	public static void setDrawAstgArgs(String value) {
-		drawAstgArgs = value;
-	}
+    public static void setDrawAstgArgs(String value) {
+        drawAstgArgs = value;
+    }
 
-	public static String getWriteSgCommand() {
-		return writeSgCommand;
-	}
+    public static String getWriteSgCommand() {
+        return writeSgCommand;
+    }
 
-	public static void setWriteSgCommand(String value) {
-		writeSgCommand = value;
-	}
+    public static void setWriteSgCommand(String value) {
+        writeSgCommand = value;
+    }
 
-	public static String getWriteSgArgs() {
-		return writeSgArgs;
-	}
+    public static String getWriteSgArgs() {
+        return writeSgArgs;
+    }
 
-	public static void setWriteSgArgs(String value) {
-		writeSgArgs = value;
-	}
+    public static void setWriteSgArgs(String value) {
+        writeSgArgs = value;
+    }
 
 }

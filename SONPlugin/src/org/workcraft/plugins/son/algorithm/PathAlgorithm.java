@@ -13,12 +13,12 @@ import org.workcraft.plugins.son.util.Marking;
 
 public class PathAlgorithm{
 
-	private SON net;
-	private static Collection<Path> pathResult =new ArrayList<Path>();
+    private SON net;
+    private static Collection<Path> pathResult =new ArrayList<Path>();
 
-	public PathAlgorithm(SON net) {
-		this.net = net;
-	}
+    public PathAlgorithm(SON net) {
+        this.net = net;
+    }
 
     private void dfs(Collection<Node> nodes , LinkedList<Node> visited, Node v) {
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
@@ -74,68 +74,68 @@ public class PathAlgorithm{
 
     //get paths between two given nodes. (recursion)
     public Collection<Path> getPaths (Condition s,  Collection<Condition> v, Collection<Node> nodes){
-    	pathResult.clear();
-    	LinkedList<Node> visited = new LinkedList<Node>();
-    	visited.add(s);
-    	DFStest(nodes, visited, v);
-    	return pathResult;
+        pathResult.clear();
+        LinkedList<Node> visited = new LinkedList<Node>();
+        visited.add(s);
+        DFStest(nodes, visited, v);
+        return pathResult;
     }
 
     //get paths between two given nodes. (recursion)
     public Collection<Path> getPaths (Node s, Node v, Collection<Node> nodes){
-    	pathResult.clear();
-    	LinkedList<Node> visited = new LinkedList<Node>();
-    	visited.add(s);
-    	dfs(nodes, visited, v);
-    	return pathResult;
+        pathResult.clear();
+        LinkedList<Node> visited = new LinkedList<Node>();
+        visited.add(s);
+        dfs(nodes, visited, v);
+        return pathResult;
     }
 
     private LinkedList<Node> getPostset(Node n, Collection<Node> nodes){
-    	LinkedList<Node> list = new LinkedList<Node>();
-    	for(Node post : net.getPostset(n))
-    		if(nodes.contains(post))
-    			list.add(post);
-    	return list;
+        LinkedList<Node> list = new LinkedList<Node>();
+        for(Node post : net.getPostset(n))
+            if(nodes.contains(post))
+                list.add(post);
+        return list;
     }
-	//get nodes between two given node sets. (iteration)
-	public static Collection<Node> dfs2 (Marking s, Marking v, SON net){
-		Collection<Node> result = new HashSet<Node>();
-		RelationAlgorithm relation = new RelationAlgorithm(net);
+    //get nodes between two given node sets. (iteration)
+    public static Collection<Node> dfs2 (Marking s, Marking v, SON net){
+        Collection<Node> result = new HashSet<Node>();
+        RelationAlgorithm relation = new RelationAlgorithm(net);
         Stack<Node> stack = new Stack<Node>();
 
-		for(Node s1 : s){
-			Collection<Node> visit = new ArrayList<Node>();
-			stack.push(s1);
-			visit.add(s1);
+        for(Node s1 : s){
+            Collection<Node> visit = new ArrayList<Node>();
+            stack.push(s1);
+            visit.add(s1);
 
             while(!stack.empty()){
-        		s1 = stack.peek();
+                s1 = stack.peek();
 
-            	if(v.contains(s1)){
-            		result.add(s1);
-            	}
+                if(v.contains(s1)){
+                    result.add(s1);
+                }
 
-            	Node post = null;
-    			for (Node n: relation.getPostPNSet(s1)){
-    				if(result.contains(n)){
-    					result.add(s1);
-    				}
-    				if(!visit.contains(n)){
-	    				post = n;
-	    				break;
-    				}
-    			}
+                Node post = null;
+                for (Node n: relation.getPostPNSet(s1)){
+                    if(result.contains(n)){
+                        result.add(s1);
+                    }
+                    if(!visit.contains(n)){
+                        post = n;
+                        break;
+                    }
+                }
 
-    			if(post != null){
-    				visit.add(post);
-    				stack.push(post);
-    			}else{
-    				stack.pop();
-    			}
+                if(post != null){
+                    visit.add(post);
+                    stack.push(post);
+                }else{
+                    stack.pop();
+                }
             }
-		}
-		return result;
-	}
+        }
+        return result;
+    }
 
 }
 

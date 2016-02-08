@@ -9,26 +9,26 @@ import org.workcraft.plugins.cpog.Vertex;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.graph.VisualGraph;
 
-public 	class GraphToCpogConverter extends DefaultModelConverter<VisualGraph, VisualCPOG>  {
+public     class GraphToCpogConverter extends DefaultModelConverter<VisualGraph, VisualCPOG>  {
 
-	public GraphToCpogConverter(VisualGraph srcModel, VisualCPOG dstModel) {
-		super(srcModel, dstModel);
-	}
+    public GraphToCpogConverter(VisualGraph srcModel, VisualCPOG dstModel) {
+        super(srcModel, dstModel);
+    }
 
-	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
-		result.put(org.workcraft.plugins.graph.Vertex.class, Vertex.class);
-		return result;
-	}
+    @Override
+    public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
+        Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
+        result.put(org.workcraft.plugins.graph.Vertex.class, Vertex.class);
+        return result;
+    }
 
-	@Override
-	public VisualConnection convertConnection(VisualConnection srcConnection) {
-		VisualConnection dstConnection = null;
-		if (srcConnection.getFirst() != srcConnection.getSecond()) {
-			dstConnection = super.convertConnection(srcConnection);
-		}
-		return dstConnection;
-	}
+    @Override
+    public VisualConnection convertConnection(VisualConnection srcConnection) {
+        VisualConnection dstConnection = null;
+        if (srcConnection.getFirst() != srcConnection.getSecond()) {
+            dstConnection = super.convertConnection(srcConnection);
+        }
+        return dstConnection;
+    }
 
 }

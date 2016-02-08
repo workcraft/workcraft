@@ -30,100 +30,100 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 @VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
 public class Contact extends MathNode implements BooleanVariable {
 
-	public static final String PROPERTY_INIT_TO_ONE = "Init to one";
-	public static final String PROPERTY_IO_TYPE = "I/O type";
-	public static final String PROPERTY_NAME = "Name";
+    public static final String PROPERTY_INIT_TO_ONE = "Init to one";
+    public static final String PROPERTY_IO_TYPE = "I/O type";
+    public static final String PROPERTY_NAME = "Name";
 
-	public enum IOType {
-		INPUT("Input"),
-		OUTPUT("Output");
+    public enum IOType {
+        INPUT("Input"),
+        OUTPUT("Output");
 
-		private final String name;
+        private final String name;
 
-		private IOType(String name) {
-			this.name = name;
-		}
+        private IOType(String name) {
+            this.name = name;
+        }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	};
+        @Override
+        public String toString() {
+            return name;
+        }
+    };
 
-	private boolean initToOne = false;
-	private IOType ioType = IOType.OUTPUT;
-	private String name = "";
+    private boolean initToOne = false;
+    private IOType ioType = IOType.OUTPUT;
+    private String name = "";
 
-	public Contact() {
-	}
+    public Contact() {
+    }
 
-	public Contact(IOType ioType) {
-		super();
-		setIOType(ioType);
-	}
+    public Contact(IOType ioType) {
+        super();
+        setIOType(ioType);
+    }
 
-	public boolean getInitToOne() {
-		return initToOne;
-	}
+    public boolean getInitToOne() {
+        return initToOne;
+    }
 
-	public void setInitToOne(boolean value) {
-		if (this.initToOne != value) {
-			this.initToOne = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
-		}
-	}
+    public void setInitToOne(boolean value) {
+        if (this.initToOne != value) {
+            this.initToOne = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
+        }
+    }
 
-	public void setIOType(IOType value) {
-		if (this.ioType != value) {
-			this.ioType = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
-		}
-	}
+    public void setIOType(IOType value) {
+        if (this.ioType != value) {
+            this.ioType = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
+        }
+    }
 
-	public IOType getIOType() {
-		return ioType;
-	}
+    public IOType getIOType() {
+        return ioType;
+    }
 
-	// FIXME: This setName method is only to enable accessing contact name via getName. Use setName of Circuit class to set all node names!
-	public void setName(String value) {
-		if (!this.name.equals(value)) {
-			this.name = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
-		}
-	}
+    // FIXME: This setName method is only to enable accessing contact name via getName. Use setName of Circuit class to set all node names!
+    public void setName(String value) {
+        if (!this.name.equals(value)) {
+            this.name = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+        }
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
-	@Override
-	public String getLabel() {
-		return getName();
-	}
+    @Override
+    public String getLabel() {
+        return getName();
+    }
 
-	public boolean isInput() {
-		return (getIOType() == IOType.INPUT);
-	}
+    public boolean isInput() {
+        return (getIOType() == IOType.INPUT);
+    }
 
-	public boolean isOutput() {
-		return (getIOType() == IOType.OUTPUT);
-	}
+    public boolean isOutput() {
+        return (getIOType() == IOType.OUTPUT);
+    }
 
-	public boolean isPort() {
-		return !(getParent() instanceof CircuitComponent);
-	}
+    public boolean isPort() {
+        return !(getParent() instanceof CircuitComponent);
+    }
 
-	public boolean isDriver() {
-		return (isOutput() != isPort());
-	}
+    public boolean isDriver() {
+        return (isOutput() != isPort());
+    }
 
-	public boolean isDriven() {
-		return (isOutput() == isPort());
-	}
+    public boolean isDriven() {
+        return (isOutput() == isPort());
+    }
 
 }

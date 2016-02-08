@@ -26,5 +26,5 @@ import java.util.Collection;
 import org.workcraft.dom.math.MathNode;
 
 public interface Dependent {
-	public Collection<MathNode> getMathReferences();
+    public Collection<MathNode> getMathReferences();
 }

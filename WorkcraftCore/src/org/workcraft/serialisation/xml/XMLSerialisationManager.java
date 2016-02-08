@@ -33,43 +33,43 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.XmlUtil;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
-	private HashMap<String, XMLSerialiser> serialisers = new HashMap<String, XMLSerialiser>();
-	private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this,this);
-	private XMLSerialiserState state = null;
+    private HashMap<String, XMLSerialiser> serialisers = new HashMap<String, XMLSerialiser>();
+    private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this,this);
+    private XMLSerialiserState state = null;
 
-	private void registerSerialiser (XMLSerialiser serialiser) {
-		serialisers.put(serialiser.getClassName(), serialiser);
-	}
+    private void registerSerialiser (XMLSerialiser serialiser) {
+        serialisers.put(serialiser.getClassName(), serialiser);
+    }
 
-	public XMLSerialiser getSerialiserFor(Class<?> cls) throws InstantiationException, IllegalAccessException {
-		return serialisers.get(cls.getName());
-	}
+    public XMLSerialiser getSerialiserFor(Class<?> cls) throws InstantiationException, IllegalAccessException {
+        return serialisers.get(cls.getName());
+    }
 
-	public void begin(ReferenceProducer internalReferenceResolver, ReferenceProducer externalReferenceResolver) {
-		state = new XMLSerialiserState(internalReferenceResolver, externalReferenceResolver);
-	}
+    public void begin(ReferenceProducer internalReferenceResolver, ReferenceProducer externalReferenceResolver) {
+        state = new XMLSerialiserState(internalReferenceResolver, externalReferenceResolver);
+    }
 
-	public void end() {
-		state = null;
-	}
+    public void end() {
+        state = null;
+    }
 
-	public void processPlugins(PluginProvider manager) {
-		for (PluginInfo<? extends XMLSerialiser> info : manager.getPlugins(XMLSerialiser.class)) {
-			final XMLSerialiser newInstance = info.newInstance();
-			registerSerialiser(newInstance);
-		}
-	}
+    public void processPlugins(PluginProvider manager) {
+        for (PluginInfo<? extends XMLSerialiser> info : manager.getPlugins(XMLSerialiser.class)) {
+            final XMLSerialiser newInstance = info.newInstance();
+            registerSerialiser(newInstance);
+        }
+    }
 
-	public void serialise(Element element, Object object) throws SerialisationException
-	{
-		element.setAttribute("class", object.getClass().getName());
+    public void serialise(Element element, Object object) throws SerialisationException
+    {
+        element.setAttribute("class", object.getClass().getName());
 
-		nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);
+        nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);
 
-		if (object instanceof Container)
-			for (Node child : ((Container)object).getChildren()) {
-				Element childElement = XmlUtil.createChildElement("node", element);
-				serialise(childElement, child);
-			}
-	}
+        if (object instanceof Container)
+            for (Node child : ((Container)object).getChildren()) {
+                Element childElement = XmlUtil.createChildElement("node", element);
+                serialise(childElement, child);
+            }
+    }
 }

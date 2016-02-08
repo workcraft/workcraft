@@ -15,38 +15,38 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgToPetriNetConverterTool extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Petri Net";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Petri Net";
+    }
 
-	@Override
-	public Position getPosition() {
-		return null;
-	}
+    @Override
+    public Position getPosition() {
+        return null;
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof STG;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof STG;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		we.captureMemento();
-		try {
-			final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
-			final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
-			final StgToPetriNetConverter converter = new StgToPetriNetConverter(stg, pn);
-			final Framework framework = Framework.getInstance();
-			final Workspace workspace = framework.getWorkspace();
-			final Path<String> directory = we.getWorkspacePath().getParent();
-			final String name = we.getWorkspacePath().getNode();
-			final ModelEntry me = new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
-			boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-			workspace.add(directory, name, me, false, openInEditor);
-		} finally {
-			we.cancelMemento();
-		}
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        we.captureMemento();
+        try {
+            final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
+            final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
+            final StgToPetriNetConverter converter = new StgToPetriNetConverter(stg, pn);
+            final Framework framework = Framework.getInstance();
+            final Workspace workspace = framework.getWorkspace();
+            final Path<String> directory = we.getWorkspacePath().getParent();
+            final String name = we.getWorkspacePath().getNode();
+            final ModelEntry me = new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
+            boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+            workspace.add(directory, name, me, false, openInEditor);
+        } finally {
+            we.cancelMemento();
+        }
+    }
 
 }

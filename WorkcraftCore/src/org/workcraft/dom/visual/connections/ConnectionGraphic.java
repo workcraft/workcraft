@@ -31,16 +31,16 @@ import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.Touchable;
 
 public interface ConnectionGraphic extends Node, Drawable, Touchable, ParametricCurve {
-	public void draw(DrawRequest r);
-	public Rectangle2D getBoundingBox();
-	public PartialCurveInfo getCurveInfo();
+    public void draw(DrawRequest r);
+    public Rectangle2D getBoundingBox();
+    public PartialCurveInfo getCurveInfo();
 
-	public void componentsTransformChanging();
-	public void componentsTransformChanged();
+    public void componentsTransformChanging();
+    public void componentsTransformChanged();
 
-	public void controlPointsChanged();
-	public void invalidate();
+    public void controlPointsChanged();
+    public void invalidate();
 
-	public void setDefaultControlPoints();
-	public List<ControlPoint> getControlPoints();
+    public void setDefaultControlPoints();
+    public List<ControlPoint> getControlPoints();
 }

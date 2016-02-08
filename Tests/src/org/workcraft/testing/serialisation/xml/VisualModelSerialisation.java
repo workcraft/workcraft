@@ -38,40 +38,40 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class VisualModelSerialisation {
 
-	@Test
-	public void SimpleSaveLoad() throws Exception {
+    @Test
+    public void SimpleSaveLoad() throws Exception {
 
-		STG stg = XMLSerialisationTestingUtils.createTestSTG1();
-		VisualSTG visualstg = new VisualSTG(stg);
+        STG stg = XMLSerialisationTestingUtils.createTestSTG1();
+        VisualSTG visualstg = new VisualSTG(stg);
 
-		RandomLayoutTool layout = new RandomLayoutTool();
-		WorkspaceEntry we = new WorkspaceEntry(null);
+        RandomLayoutTool layout = new RandomLayoutTool();
+        WorkspaceEntry we = new WorkspaceEntry(null);
 
-		we.setModelEntry(new ModelEntry(new StgDescriptor(), visualstg));
+        we.setModelEntry(new ModelEntry(new StgDescriptor(), visualstg));
 
-		layout.run(we);
+        layout.run(we);
 
-		// serialise
-		PluginProvider mockPluginManager = XMLSerialisationTestingUtils.createMockPluginManager();
+        // serialise
+        PluginProvider mockPluginManager = XMLSerialisationTestingUtils.createMockPluginManager();
 
-		XMLModelSerialiser serialiser = new XMLModelSerialiser(mockPluginManager);
+        XMLModelSerialiser serialiser = new XMLModelSerialiser(mockPluginManager);
 
-		DataAccumulator mathData = new DataAccumulator();
-		ReferenceProducer mathModelReferences = serialiser.serialise(stg, mathData, null);
+        DataAccumulator mathData = new DataAccumulator();
+        ReferenceProducer mathModelReferences = serialiser.serialise(stg, mathData, null);
 
-		DataAccumulator visualData = new DataAccumulator();
-		serialiser.serialise(visualstg, visualData, mathModelReferences);
+        DataAccumulator visualData = new DataAccumulator();
+        serialiser.serialise(visualstg, visualData, mathModelReferences);
 
-		System.out.println (new String (mathData.getData()));
-		System.out.println ("---------------");
-		System.out.println (new String (visualData.getData()));
+        System.out.println (new String (mathData.getData()));
+        System.out.println ("---------------");
+        System.out.println (new String (visualData.getData()));
 
-		// deserialise
-		XMLModelDeserialiser deserialiser = new XMLModelDeserialiser(mockPluginManager);
+        // deserialise
+        XMLModelDeserialiser deserialiser = new XMLModelDeserialiser(mockPluginManager);
 
-		DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null, null);
-		DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.references, mathResult.model);
+        DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null, null);
+        DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.references, mathResult.model);
 
-		SerialisationTestingUtils.compareNodes(visualstg.getRoot(), visualResult.model.getRoot());
-	}
+        SerialisationTestingUtils.compareNodes(visualstg.getRoot(), visualResult.model.getRoot());
+    }
 }

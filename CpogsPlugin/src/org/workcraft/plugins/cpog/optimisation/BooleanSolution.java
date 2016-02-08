@@ -23,6 +23,6 @@ package org.workcraft.plugins.cpog.optimisation;
 import java.util.Collection;
 
 public interface BooleanSolution {
-	Collection<BooleanVariable> getVariables();
-	public boolean getSolution(BooleanVariable variable);
+    Collection<BooleanVariable> getVariables();
+    public boolean getSolution(BooleanVariable variable);
 }

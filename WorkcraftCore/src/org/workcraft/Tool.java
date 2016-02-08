@@ -24,8 +24,8 @@ package org.workcraft;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public interface Tool {
-	public boolean isApplicableTo(WorkspaceEntry we);
-	public String getSection();
-	public String getDisplayName();
-	public void run(WorkspaceEntry we);
+    public boolean isApplicableTo(WorkspaceEntry we);
+    public String getSection();
+    public String getDisplayName();
+    public void run(WorkspaceEntry we);
 }

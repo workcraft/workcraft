@@ -19,56 +19,56 @@ import org.workcraft.util.GUI;
 
 public class ReadArcConnectionTool extends ConnectionTool {
 
-	public ReadArcConnectionTool() {
-		super(true, false);
-	}
+    public ReadArcConnectionTool() {
+        super(true, false);
+    }
 
-	@Override
-	public boolean isConnectable(Node node) {
-		return ( (node instanceof VisualPlace)
-			  || (node instanceof VisualReplicaPlace)
-			  || (node instanceof VisualTransition) );
-	}
+    @Override
+    public boolean isConnectable(Node node) {
+        return ( (node instanceof VisualPlace)
+              || (node instanceof VisualReplicaPlace)
+              || (node instanceof VisualTransition) );
+    }
 
-	@Override
-	public VisualConnection createDefaultTemplateNode() {
-		return new VisualReadArc();
-	}
+    @Override
+    public VisualConnection createDefaultTemplateNode() {
+        return new VisualReadArc();
+    }
 
-	@Override
-	public Icon getIcon() {
-		return GUI.createIconFromSVG("images/icons/svg/tool-readarc.svg");
-	}
+    @Override
+    public Icon getIcon() {
+        return GUI.createIconFromSVG("images/icons/svg/tool-readarc.svg");
+    }
 
-	@Override
-	public String getLabel() {
-		return "Read-arc";
-	}
+    @Override
+    public String getLabel() {
+        return "Read-arc";
+    }
 
-	@Override
-	public int getHotKeyCode() {
-		return KeyEvent.VK_R;
-	}
+    @Override
+    public int getHotKeyCode() {
+        return KeyEvent.VK_R;
+    }
 
-	@Override
-	public String getSecondHintMessage() {
-		return (super.getSecondHintMessage() + " Hold Shift to create a place proxy.");
-	}
+    @Override
+    public String getSecondHintMessage() {
+        return (super.getSecondHintMessage() + " Hold Shift to create a place proxy.");
+    }
 
-	@Override
-	public VisualConnection finishConnection(GraphEditorMouseEvent e) {
-		VisualConnection connection = super.finishConnection(e);
-		if (connection != null) {
-			if ( (connection.getFirst() instanceof VisualPlace)
-		      || (connection.getSecond() instanceof VisualPlace)) {
+    @Override
+    public VisualConnection finishConnection(GraphEditorMouseEvent e) {
+        VisualConnection connection = super.finishConnection(e);
+        if (connection != null) {
+            if ( (connection.getFirst() instanceof VisualPlace)
+              || (connection.getSecond() instanceof VisualPlace)) {
 
-				if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
-					VisualModel visualModel = e.getEditor().getModel();
-					connection = PetriNetUtils.replicateConnectedPlace(visualModel, connection);
-				}
-			}
-		}
-		return connection;
-	}
+                if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+                    VisualModel visualModel = e.getEditor().getModel();
+                    connection = PetriNetUtils.replicateConnectedPlace(visualModel, connection);
+                }
+            }
+        }
+        return connection;
+    }
 
 }

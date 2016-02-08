@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface BooleanSolver<T> {
-	BooleanSolution solve(T formula);
+    BooleanSolution solve(T formula);
 }

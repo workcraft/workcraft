@@ -17,26 +17,26 @@ import org.workcraft.plugins.mpsat.tools.MpsatUscChecker;
 
 public class MpsatModule implements Module {
 
-	@Override
-	public void init() {
-		final Framework framework = Framework.getInstance();
-		PluginManager pm = framework.getPluginManager();
+    @Override
+    public void init() {
+        final Framework framework = Framework.getInstance();
+        PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(Tool.class, CscResolutionTool.class);
-		pm.registerClass(Tool.class, MpsatDeadlockChecker.class);
-		pm.registerClass(Tool.class, MpsatConsistencyChecker.class);
-		pm.registerClass(Tool.class, MpsatPersistencyChecker.class);
-//		pm.registerClass(Tool.class, MpsatNormalcyChecker.class);
-		pm.registerClass(Tool.class, MpsatCscChecker.class);
-		pm.registerClass(Tool.class, MpsatUscChecker.class);
-		pm.registerClass(Tool.class, MpsatConformationChecker.class);
-		pm.registerClass(Tool.class, MpsatCombinedChecker.class);
-		pm.registerClass(Tool.class, MpsatCustomPropertyChecker.class);
-		pm.registerClass(Settings.class, MpsatUtilitySettings.class);
-	}
+        pm.registerClass(Tool.class, CscResolutionTool.class);
+        pm.registerClass(Tool.class, MpsatDeadlockChecker.class);
+        pm.registerClass(Tool.class, MpsatConsistencyChecker.class);
+        pm.registerClass(Tool.class, MpsatPersistencyChecker.class);
+//        pm.registerClass(Tool.class, MpsatNormalcyChecker.class);
+        pm.registerClass(Tool.class, MpsatCscChecker.class);
+        pm.registerClass(Tool.class, MpsatUscChecker.class);
+        pm.registerClass(Tool.class, MpsatConformationChecker.class);
+        pm.registerClass(Tool.class, MpsatCombinedChecker.class);
+        pm.registerClass(Tool.class, MpsatCustomPropertyChecker.class);
+        pm.registerClass(Settings.class, MpsatUtilitySettings.class);
+    }
 
-	@Override
-	public String getDescription() {
-		return "MPSat verification support";
-	}
+    @Override
+    public String getDescription() {
+        return "MPSat verification support";
+    }
 }

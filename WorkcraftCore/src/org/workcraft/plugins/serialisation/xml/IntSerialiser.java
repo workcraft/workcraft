@@ -26,12 +26,12 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.xml.BasicXMLSerialiser;
 
 public class IntSerialiser implements BasicXMLSerialiser{
-	public String getClassName() {
-		return int.class.getName();
-	}
+    public String getClassName() {
+        return int.class.getName();
+    }
 
-	public void serialise(Element element, Object object)
-			throws SerialisationException {
-		element.setAttribute("value", object.toString());
-	}
+    public void serialise(Element element, Object object)
+            throws SerialisationException {
+        element.setAttribute("value", object.toString());
+    }
 }

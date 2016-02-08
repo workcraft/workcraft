@@ -41,47 +41,47 @@ import org.workcraft.util.ColorGenerator;
 @DisplayName ("Transition")
 @SVGIcon("images/icons/svg/transition.svg")
 public class VisualTransition extends VisualComponent {
-	private ColorGenerator tokenColorGenerator = null;
+    private ColorGenerator tokenColorGenerator = null;
 
-	public VisualTransition(Transition transition) {
-		this(transition, true, true, true);
-	}
+    public VisualTransition(Transition transition) {
+        this(transition, true, true, true);
+    }
 
-	public VisualTransition(Transition transition, boolean hasColorProperties, boolean hasLabelProperties, boolean hasNameProperties) {
-		super(transition, hasColorProperties, hasLabelProperties, hasNameProperties);
-	}
+    public VisualTransition(Transition transition, boolean hasColorProperties, boolean hasLabelProperties, boolean hasNameProperties) {
+        super(transition, hasColorProperties, hasLabelProperties, hasNameProperties);
+    }
 
-	public Transition getReferencedTransition() {
-		return (Transition)getReferencedComponent();
-	}
+    public Transition getReferencedTransition() {
+        return (Transition)getReferencedComponent();
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		double xy = -size / 2 + strokeWidth / 2;
-		double wh = size - strokeWidth;
-		Shape shape = new Rectangle2D.Double (xy, xy, wh, wh);
-		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		g.setStroke(new BasicStroke((float) strokeWidth));
-		g.draw(shape);
-		drawLabelInLocalSpace(r);
-		drawNameInLocalSpace(r);
-	}
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        double xy = -size / 2 + strokeWidth / 2;
+        double wh = size - strokeWidth;
+        Shape shape = new Rectangle2D.Double (xy, xy, wh, wh);
+        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.fill(shape);
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setStroke(new BasicStroke((float) strokeWidth));
+        g.draw(shape);
+        drawLabelInLocalSpace(r);
+        drawNameInLocalSpace(r);
+    }
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)	{
-		return ((Math.abs(pointInLocalSpace.getX()) <= 0.5 * size) && (Math.abs(pointInLocalSpace.getY()) <= 0.5 * size));
-	}
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)    {
+        return ((Math.abs(pointInLocalSpace.getX()) <= 0.5 * size) && (Math.abs(pointInLocalSpace.getY()) <= 0.5 * size));
+    }
 
-	public ColorGenerator getTokenColorGenerator() {
-		return this.tokenColorGenerator;
-	}
+    public ColorGenerator getTokenColorGenerator() {
+        return this.tokenColorGenerator;
+    }
 
-	public void setTokenColorGenerator(ColorGenerator value) {
-		this.tokenColorGenerator = value;
-	}
+    public void setTokenColorGenerator(ColorGenerator value) {
+        this.tokenColorGenerator = value;
+    }
 
 }

@@ -40,35 +40,35 @@ import org.workcraft.serialisation.Format;
 public class PDFExporter implements Exporter {
 
 
-	public void export(Model model, OutputStream out) throws IOException, SerialisationException {
-		InputStream svg = SVGExportUtils.stream(model);
-		Transcoder transcoder = new PDFTranscoder();
-		TranscoderInput transcoderInput = new TranscoderInput(svg);
-		TranscoderOutput transcoderOutput = new TranscoderOutput(out);
-		try {
-			transcoder.transcode(transcoderInput, transcoderOutput);
-		} catch (TranscoderException e) {
-			throw new SerialisationException(e);
-		}
-	}
+    public void export(Model model, OutputStream out) throws IOException, SerialisationException {
+        InputStream svg = SVGExportUtils.stream(model);
+        Transcoder transcoder = new PDFTranscoder();
+        TranscoderInput transcoderInput = new TranscoderInput(svg);
+        TranscoderOutput transcoderOutput = new TranscoderOutput(out);
+        try {
+            transcoder.transcode(transcoderInput, transcoderOutput);
+        } catch (TranscoderException e) {
+            throw new SerialisationException(e);
+        }
+    }
 
-	public String getDescription() {
-		return ".pdf (FOP PDF generator)";
-	}
+    public String getDescription() {
+        return ".pdf (FOP PDF generator)";
+    }
 
-	public String getExtenstion() {
-		return ".pdf";
-	}
+    public String getExtenstion() {
+        return ".pdf";
+    }
 
-	public int getCompatibility(Model model) {
-		if (model instanceof VisualModel)
-			return Exporter.GENERAL_COMPATIBILITY;
-		else
-			return Exporter.NOT_COMPATIBLE;
-	}
+    public int getCompatibility(Model model) {
+        if (model instanceof VisualModel)
+            return Exporter.GENERAL_COMPATIBILITY;
+        else
+            return Exporter.NOT_COMPATIBLE;
+    }
 
-	@Override
-	public UUID getTargetFormat() {
-		return Format.PDF;
-	}
+    @Override
+    public UUID getTargetFormat() {
+        return Format.PDF;
+    }
 }

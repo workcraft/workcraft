@@ -15,27 +15,27 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriNetToPolicyNetConverterTool extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Policy Net";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Policy Net";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return (we.getModelEntry().getMathModel() instanceof PetriNet);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return (we.getModelEntry().getMathModel() instanceof PetriNet);
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final VisualPetriNet srcModel = (VisualPetriNet)we.getModelEntry().getVisualModel();
-		final VisualPolicyNet dstModel = new VisualPolicyNet(new PolicyNet());
-		final PetriNetToPolicyNetConverter converter = new PetriNetToPolicyNetConverter(srcModel, dstModel);
-		final Framework framework = Framework.getInstance();
-		final Workspace workspace = framework.getWorkspace();
-		final Path<String> directory = we.getWorkspacePath().getParent();
-		final String desiredName = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new PolicyNetDescriptor(), converter.getDstModel());
-		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-		workspace.add(directory, desiredName, me, false, openInEditor);
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final VisualPetriNet srcModel = (VisualPetriNet)we.getModelEntry().getVisualModel();
+        final VisualPolicyNet dstModel = new VisualPolicyNet(new PolicyNet());
+        final PetriNetToPolicyNetConverter converter = new PetriNetToPolicyNetConverter(srcModel, dstModel);
+        final Framework framework = Framework.getInstance();
+        final Workspace workspace = framework.getWorkspace();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String desiredName = we.getWorkspacePath().getNode();
+        final ModelEntry me = new ModelEntry(new PolicyNetDescriptor(), converter.getDstModel());
+        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+        workspace.add(directory, desiredName, me, false, openInEditor);
+    }
 }

@@ -32,55 +32,55 @@ import org.workcraft.util.GUI;
 
 public class DefaultNodeGenerator extends AbstractNodeGenerator {
 
-	private Class<?> cls;
-	private Class<?> vcls;
-	private String displayName;
-	private int hk;
-	private Icon icon = null;
+    private Class<?> cls;
+    private Class<?> vcls;
+    private String displayName;
+    private int hk;
+    private Icon icon = null;
 
-	public DefaultNodeGenerator (Class<?> cls) {
-		this.cls = cls;
-		this.vcls = Annotations.getVisualClass(cls);
-		this.displayName = Annotations.getDisplayName(vcls);
-		this.hk = Annotations.getHotKeyCode(vcls);
+    public DefaultNodeGenerator (Class<?> cls) {
+        this.cls = cls;
+        this.vcls = Annotations.getVisualClass(cls);
+        this.displayName = Annotations.getDisplayName(vcls);
+        this.hk = Annotations.getHotKeyCode(vcls);
 
-		String iconPath = Annotations.getSVGIconPath(vcls);
-		if(iconPath != null) {
-			icon = GUI.createIconFromSVG(iconPath);
-			return;
-		}
+        String iconPath = Annotations.getSVGIconPath(vcls);
+        if(iconPath != null) {
+            icon = GUI.createIconFromSVG(iconPath);
+            return;
+        }
 
-		iconPath = Annotations.getIconPath(vcls);
-		if (iconPath != null)
-			icon = GUI.createIconFromImage(iconPath);
-	}
+        iconPath = Annotations.getIconPath(vcls);
+        if (iconPath != null)
+            icon = GUI.createIconFromImage(iconPath);
+    }
 
-	@Override
-	public Icon getIcon() {
-		return icon;
-	}
+    @Override
+    public Icon getIcon() {
+        return icon;
+    }
 
-	@Override
-	public MathNode createMathNode() throws NodeCreationException {
-		MathNode result = null;
-		if (MathNode.class.isAssignableFrom(cls)) {
-			result = (MathNode)NodeFactory.createNode(cls.asSubclass(MathNode.class));
-		}
-		return result;
-	}
+    @Override
+    public MathNode createMathNode() throws NodeCreationException {
+        MathNode result = null;
+        if (MathNode.class.isAssignableFrom(cls)) {
+            result = (MathNode)NodeFactory.createNode(cls.asSubclass(MathNode.class));
+        }
+        return result;
+    }
 
-	@Override
-	public VisualNode createVisualNode(MathNode mathNode) throws NodeCreationException {
-		return NodeFactory.createVisualComponent(mathNode);
-	}
+    @Override
+    public VisualNode createVisualNode(MathNode mathNode) throws NodeCreationException {
+        return NodeFactory.createVisualComponent(mathNode);
+    }
 
-	@Override
-	public int getHotKeyCode() {
-		return hk;
-	}
+    @Override
+    public int getHotKeyCode() {
+        return hk;
+    }
 
-	@Override
-	public String getLabel() {
-		return displayName;
-	}
+    @Override
+    public String getLabel() {
+        return displayName;
+    }
 }

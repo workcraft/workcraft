@@ -37,35 +37,35 @@ import org.workcraft.observation.StateObserver;
  *
  */
 public abstract class MathNode implements Node, ObservableState {
-	private ObservableStateImpl observableStateImpl = new ObservableStateImpl();
+    private ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
-	private Node parent = null;
+    private Node parent = null;
 
-	public Collection<Node> getChildren() {
-		return new HashSet<Node>();
-	}
+    public Collection<Node> getChildren() {
+        return new HashSet<Node>();
+    }
 
-	public Node getParent() {
-		return parent;
-	}
+    public Node getParent() {
+        return parent;
+    }
 
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
 
-	@Override
-	public void addObserver(StateObserver obs) {
-		observableStateImpl.addObserver(obs);
-	}
+    @Override
+    public void addObserver(StateObserver obs) {
+        observableStateImpl.addObserver(obs);
+    }
 
-	@Override
-	public void removeObserver(StateObserver obs) {
-		observableStateImpl.removeObserver(obs);
-	}
+    @Override
+    public void removeObserver(StateObserver obs) {
+        observableStateImpl.removeObserver(obs);
+    }
 
-	@Override
-	final public void sendNotification(StateEvent e) {
-		observableStateImpl.sendNotification(e);
-	}
+    @Override
+    final public void sendNotification(StateEvent e) {
+        observableStateImpl.sendNotification(e);
+    }
 
 }

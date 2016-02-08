@@ -22,13 +22,13 @@ package org.workcraft.plugins.cpog.expressions;
 
 public class Overlay extends BinaryCpogFormula {
 
-	Overlay(CpogFormula x, CpogFormula y)
-	{
-		super(x,y);
-	}
+    Overlay(CpogFormula x, CpogFormula y)
+    {
+        super(x,y);
+    }
 
-	@Override
-	public <T> T accept(CpogVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(CpogVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

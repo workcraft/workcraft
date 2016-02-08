@@ -26,27 +26,27 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.xmas.components.VisualCreditComponent.class)
 public class CreditComponent extends XmasComponent {
-	public static final String PROPERTY_CAPACITY = "Capacity";
-	public static final String PROPERTY_INIT = "Init";
+    public static final String PROPERTY_CAPACITY = "Capacity";
+    public static final String PROPERTY_INIT = "Init";
 
-	public int capacity = 1;
-	public int init = 0;
+    public int capacity = 1;
+    public int init = 0;
 
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_CAPACITY));
-	}
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_CAPACITY));
+    }
 
-	public int getCapacity() {
-		return capacity;
-	}
+    public int getCapacity() {
+        return capacity;
+    }
 
-	public void setInit(int init) {
-		this.init = init;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT));
-	}
+    public void setInit(int init) {
+        this.init = init;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT));
+    }
 
-	public int getInit() {
-		return init;
-	}
+    public int getInit() {
+        return init;
+    }
 }

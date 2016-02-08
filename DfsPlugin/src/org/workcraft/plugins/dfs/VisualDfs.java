@@ -46,165 +46,165 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(DfsToolsProvider.class)
 public class VisualDfs extends AbstractVisualModel {
 
-	public VisualDfs(Dfs model) throws VisualModelInstantiationException {
-		this(model, null);
-	}
+    public VisualDfs(Dfs model) throws VisualModelInstantiationException {
+        this(model, null);
+    }
 
-	public VisualDfs(Dfs model, VisualGroup root) {
-		super(model, root);
-		if (root == null) {
-			try {
-				createDefaultFlatStructure();
-			} catch (NodeCreationException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+    public VisualDfs(Dfs model, VisualGroup root) {
+        super(model, root);
+        if (root == null) {
+            try {
+                createDefaultFlatStructure();
+            } catch (NodeCreationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
-	@Override
-	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (first == null || second == null) {
-			throw new InvalidConnectionException ("Invalid connection");
-		}
-		if (first == second) {
-			throw new InvalidConnectionException ("Self-loops are not allowed");
-		}
-		// Connection from spreadtoken logic
-		if (first instanceof VisualLogic && second instanceof VisualCounterflowLogic) {
-			throw new InvalidConnectionException ("Invalid connection from spreadtoken logic to counterflow logic");
-		}
-		if (first instanceof VisualLogic && second instanceof VisualCounterflowRegister) {
-			throw new InvalidConnectionException ("Invalid connection from spreadtoken logic to counterflow register");
-		}
-		// Connection from spreadtoken register
-		if (first instanceof VisualRegister && second instanceof VisualCounterflowLogic) {
-			throw new InvalidConnectionException ("Invalid connection from spreadtoken register to counterflow logic");
-		}
-		// Connection from counterflow logic
-		if (first instanceof VisualCounterflowLogic && second instanceof VisualLogic) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow logic to spreadtoken logic");
-		}
-		if (first instanceof VisualCounterflowLogic && second instanceof VisualRegister) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow logic to spreadtoken register");
-		}
-		if (first instanceof VisualCounterflowLogic && second instanceof VisualControlRegister) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow logic to control register");
-		}
-		if (first instanceof VisualCounterflowLogic && second instanceof VisualPushRegister) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow logic to push register");
-		}
-		if (first instanceof VisualCounterflowLogic && second instanceof VisualPopRegister) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow logic to pop register");
-		}
-		// Connection from counterflow register
-		if (first instanceof VisualCounterflowRegister && second instanceof VisualLogic) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow register to spreadtoken logic");
-		}
-		if (first instanceof VisualCounterflowRegister && second instanceof VisualControlRegister) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow register to control register");
-		}
-		if (first instanceof VisualCounterflowRegister && second instanceof VisualPushRegister) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow register to push register");
-		}
-		if (first instanceof VisualCounterflowRegister && second instanceof VisualPopRegister) {
-			throw new InvalidConnectionException ("Invalid connection from counterflow register to pop register");
-		}
-		// Connection from control register
-		if (first instanceof VisualControlRegister && second instanceof VisualCounterflowLogic) {
-			throw new InvalidConnectionException ("Invalid connection from control register to counterflow logic");
-		}
-		if (first instanceof VisualControlRegister && second instanceof VisualCounterflowRegister) {
-			throw new InvalidConnectionException ("Invalid connection from control register to counterflow register");
-		}
-		// Connection from push register
-		if (first instanceof VisualPushRegister && second instanceof VisualCounterflowLogic) {
-			throw new InvalidConnectionException ("Invalid connection from push register to counterflow logic");
-		}
-		if (first instanceof VisualPushRegister && second instanceof VisualCounterflowRegister) {
-			throw new InvalidConnectionException ("Invalid connection from push register to counterflow register");
-		}
-		// Connection from pop register
-		if (first instanceof VisualPopRegister && second instanceof VisualCounterflowLogic) {
-			throw new InvalidConnectionException ("Invalid connection from pop register to counterflow logic");
-		}
-		if (first instanceof VisualPopRegister && second instanceof VisualCounterflowRegister) {
-			throw new InvalidConnectionException ("Invalid connection from pop register to counterflow register");
-		}
-	}
+    @Override
+    public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
+        if (first == null || second == null) {
+            throw new InvalidConnectionException ("Invalid connection");
+        }
+        if (first == second) {
+            throw new InvalidConnectionException ("Self-loops are not allowed");
+        }
+        // Connection from spreadtoken logic
+        if (first instanceof VisualLogic && second instanceof VisualCounterflowLogic) {
+            throw new InvalidConnectionException ("Invalid connection from spreadtoken logic to counterflow logic");
+        }
+        if (first instanceof VisualLogic && second instanceof VisualCounterflowRegister) {
+            throw new InvalidConnectionException ("Invalid connection from spreadtoken logic to counterflow register");
+        }
+        // Connection from spreadtoken register
+        if (first instanceof VisualRegister && second instanceof VisualCounterflowLogic) {
+            throw new InvalidConnectionException ("Invalid connection from spreadtoken register to counterflow logic");
+        }
+        // Connection from counterflow logic
+        if (first instanceof VisualCounterflowLogic && second instanceof VisualLogic) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow logic to spreadtoken logic");
+        }
+        if (first instanceof VisualCounterflowLogic && second instanceof VisualRegister) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow logic to spreadtoken register");
+        }
+        if (first instanceof VisualCounterflowLogic && second instanceof VisualControlRegister) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow logic to control register");
+        }
+        if (first instanceof VisualCounterflowLogic && second instanceof VisualPushRegister) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow logic to push register");
+        }
+        if (first instanceof VisualCounterflowLogic && second instanceof VisualPopRegister) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow logic to pop register");
+        }
+        // Connection from counterflow register
+        if (first instanceof VisualCounterflowRegister && second instanceof VisualLogic) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow register to spreadtoken logic");
+        }
+        if (first instanceof VisualCounterflowRegister && second instanceof VisualControlRegister) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow register to control register");
+        }
+        if (first instanceof VisualCounterflowRegister && second instanceof VisualPushRegister) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow register to push register");
+        }
+        if (first instanceof VisualCounterflowRegister && second instanceof VisualPopRegister) {
+            throw new InvalidConnectionException ("Invalid connection from counterflow register to pop register");
+        }
+        // Connection from control register
+        if (first instanceof VisualControlRegister && second instanceof VisualCounterflowLogic) {
+            throw new InvalidConnectionException ("Invalid connection from control register to counterflow logic");
+        }
+        if (first instanceof VisualControlRegister && second instanceof VisualCounterflowRegister) {
+            throw new InvalidConnectionException ("Invalid connection from control register to counterflow register");
+        }
+        // Connection from push register
+        if (first instanceof VisualPushRegister && second instanceof VisualCounterflowLogic) {
+            throw new InvalidConnectionException ("Invalid connection from push register to counterflow logic");
+        }
+        if (first instanceof VisualPushRegister && second instanceof VisualCounterflowRegister) {
+            throw new InvalidConnectionException ("Invalid connection from push register to counterflow register");
+        }
+        // Connection from pop register
+        if (first instanceof VisualPopRegister && second instanceof VisualCounterflowLogic) {
+            throw new InvalidConnectionException ("Invalid connection from pop register to counterflow logic");
+        }
+        if (first instanceof VisualPopRegister && second instanceof VisualCounterflowRegister) {
+            throw new InvalidConnectionException ("Invalid connection from pop register to counterflow register");
+        }
+    }
 
-	@Override
-	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
-		validateConnection(first, second);
-		VisualComponent c1 = (VisualComponent) first;
-		VisualComponent c2 = (VisualComponent) second;
-		MathNode ref1 = c1.getReferencedComponent();
-		MathNode ref2 = c2.getReferencedComponent();
-		VisualConnection ret = null;
-		if (first instanceof VisualControlRegister) {
-			if (mConnection == null) {
-				mConnection = ((Dfs)getMathModel()).controlConnect(ref1, ref2);
-			}
-			ret = new VisualControlConnection((ControlConnection)mConnection, c1, c2);
-		} else {
-			if (mConnection == null) {
-				mConnection = ((Dfs)getMathModel()).connect(ref1, ref2);
-			}
-			ret = new VisualConnection(mConnection, c1, c2);
-		}
-		if (ret != null) {
-			Hierarchy.getNearestContainer(c1, c2).add(ret);
-		}
-		return ret;
-	}
+    @Override
+    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+        validateConnection(first, second);
+        VisualComponent c1 = (VisualComponent) first;
+        VisualComponent c2 = (VisualComponent) second;
+        MathNode ref1 = c1.getReferencedComponent();
+        MathNode ref2 = c2.getReferencedComponent();
+        VisualConnection ret = null;
+        if (first instanceof VisualControlRegister) {
+            if (mConnection == null) {
+                mConnection = ((Dfs)getMathModel()).controlConnect(ref1, ref2);
+            }
+            ret = new VisualControlConnection((ControlConnection)mConnection, c1, c2);
+        } else {
+            if (mConnection == null) {
+                mConnection = ((Dfs)getMathModel()).connect(ref1, ref2);
+            }
+            ret = new VisualConnection(mConnection, c1, c2);
+        }
+        if (ret != null) {
+            Hierarchy.getNearestContainer(c1, c2).add(ret);
+        }
+        return ret;
+    }
 
-	public String getName(VisualComponent component) {
-		return ((Dfs)getMathModel()).getName(component.getReferencedComponent());
-	}
+    public String getName(VisualComponent component) {
+        return ((Dfs)getMathModel()).getName(component.getReferencedComponent());
+    }
 
-	public <R> Set<R> getRPostset(Node node, Class<R> rType) {
-		Set<R> result = new HashSet<R>();
-		Set<Node> visited = new HashSet<Node>();
-		Queue<Node> queue = new LinkedList<Node>();
-		queue.add(node);
-		while (!queue.isEmpty()) {
-			Node cur = queue.remove();
-			if (visited.contains(cur)) continue;
-			visited.add(cur);
-			for (Node succ: getPostset(cur)) {
-				if ( !(succ instanceof VisualComponent) ) continue;
-				try {
-					result.add(rType.cast(succ));
-				} catch (ClassCastException e) {
-					if ((succ instanceof VisualLogic) || (succ instanceof VisualCounterflowLogic)) {
-						queue.add(succ);
-					}
-				}
-			}
-		}
-		return result;
-	}
+    public <R> Set<R> getRPostset(Node node, Class<R> rType) {
+        Set<R> result = new HashSet<R>();
+        Set<Node> visited = new HashSet<Node>();
+        Queue<Node> queue = new LinkedList<Node>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            Node cur = queue.remove();
+            if (visited.contains(cur)) continue;
+            visited.add(cur);
+            for (Node succ: getPostset(cur)) {
+                if ( !(succ instanceof VisualComponent) ) continue;
+                try {
+                    result.add(rType.cast(succ));
+                } catch (ClassCastException e) {
+                    if ((succ instanceof VisualLogic) || (succ instanceof VisualCounterflowLogic)) {
+                        queue.add(succ);
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
-	public <R> Set<R> getRPreset(Node node, Class<R> rType) {
-		Set<R> result = new HashSet<R>();
-		Set<Node> visited = new HashSet<Node>();
-		Queue<Node> queue = new LinkedList<Node>();
-		queue.add(node);
-		while (!queue.isEmpty()) {
-			Node cur = queue.remove();
-			if (visited.contains(cur)) continue;
-			visited.add(cur);
-			for (Node pred: getPreset(cur)) {
-				if ( !(pred instanceof VisualComponent) ) continue;
-				try {
-					result.add(rType.cast(pred));
-				} catch (ClassCastException e) {
-					if ((pred instanceof VisualLogic) || (pred instanceof VisualCounterflowLogic)) {
-						queue.add(pred);
-					}
-				}
-			}
-		}
-		return result;
-	}
+    public <R> Set<R> getRPreset(Node node, Class<R> rType) {
+        Set<R> result = new HashSet<R>();
+        Set<Node> visited = new HashSet<Node>();
+        Queue<Node> queue = new LinkedList<Node>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            Node cur = queue.remove();
+            if (visited.contains(cur)) continue;
+            visited.add(cur);
+            for (Node pred: getPreset(cur)) {
+                if ( !(pred instanceof VisualComponent) ) continue;
+                try {
+                    result.add(rType.cast(pred));
+                } catch (ClassCastException e) {
+                    if ((pred instanceof VisualLogic) || (pred instanceof VisualCounterflowLogic)) {
+                        queue.add(pred);
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
 }

@@ -29,24 +29,24 @@ package org.workcraft.gui.graph;
  *
  */
 public class Guideline {
-	enum GuidelineType {
-		HORIZONTAL_GUIDE,
-		VERTICAL_GUIDE
-	}
+    enum GuidelineType {
+        HORIZONTAL_GUIDE,
+        VERTICAL_GUIDE
+    }
 
-	protected GuidelineType type;
-	protected double position;
+    protected GuidelineType type;
+    protected double position;
 
-	public Guideline(GuidelineType type, double position) {
-		this.type = type;
-		this.position = position;
-	}
+    public Guideline(GuidelineType type, double position) {
+        this.type = type;
+        this.position = position;
+    }
 
-	public double getPosition() {
-		return position;
-	}
+    public double getPosition() {
+        return position;
+    }
 
-	public GuidelineType getType() {
-		return type;
-	}
+    public GuidelineType getType() {
+        return type;
+    }
 }

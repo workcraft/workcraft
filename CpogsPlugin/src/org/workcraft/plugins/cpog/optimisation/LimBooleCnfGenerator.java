@@ -30,29 +30,29 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 
 public class LimBooleCnfGenerator implements RawCnfGenerator<BooleanFormula> {
 
-	private static final String limboolePath = "C:\\Cygwin\\bin\\limboole.exe";
+    private static final String limboolePath = "C:\\Cygwin\\bin\\limboole.exe";
 
-	class VariableCollector extends RecursiveBooleanVisitor<Object>
-	{
-		private final Map<String, BooleanVariable> vars = new HashMap<String, BooleanVariable>();
-		@Override
-		public Object visit(BooleanVariable variable) {
-			vars.put(variable.getLabel(), variable);
-			return null;
-		}
-		public Map<String, BooleanVariable> getVars() {
-			return vars;
-		}
-	}
+    class VariableCollector extends RecursiveBooleanVisitor<Object>
+    {
+        private final Map<String, BooleanVariable> vars = new HashMap<String, BooleanVariable>();
+        @Override
+        public Object visit(BooleanVariable variable) {
+            vars.put(variable.getLabel(), variable);
+            return null;
+        }
+        public Map<String, BooleanVariable> getVars() {
+            return vars;
+        }
+    }
 
-	@Override
-	public CnfTask getCnf(BooleanFormula formula)
-	{
-		VariableCollector collector = new VariableCollector();
-		formula.accept(collector);
-		Map<String, BooleanVariable> vars = collector.getVars();
+    @Override
+    public CnfTask getCnf(BooleanFormula formula)
+    {
+        VariableCollector collector = new VariableCollector();
+        formula.accept(collector);
+        Map<String, BooleanVariable> vars = collector.getVars();
 
-		return new CnfTask(ProcessIO.runViaStreams(FormulaToString.toString(BooleanOperations.not(formula))+"|0|!1", new String[]{limboolePath, "-d"}), vars);
-	}
+        return new CnfTask(ProcessIO.runViaStreams(FormulaToString.toString(BooleanOperations.not(formula))+"|0|!1", new String[]{limboolePath, "-d"}), vars);
+    }
 
 }

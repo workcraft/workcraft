@@ -35,29 +35,29 @@ import org.workcraft.serialisation.xml.NodeSerialiser;
 
 public class VisualCPOGGroupSerialiser implements CustomXMLSerialiser
 {
-	@Override
-	public String getClassName()
-	{
-		return VisualScenario.class.getName();
-	}
+    @Override
+    public String getClassName()
+    {
+        return VisualScenario.class.getName();
+    }
 
-	@Override
-	public void serialise(Element element, Object object, ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException
-	{
-		Encoding encoding = ((VisualScenario) object).getEncoding();
+    @Override
+    public void serialise(Element element, Object object, ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException
+    {
+        Encoding encoding = ((VisualScenario) object).getEncoding();
 
-		Map<Variable, VariableState> states = encoding.getStates();
+        Map<Variable, VariableState> states = encoding.getStates();
 
-		for(Variable var : states.keySet())
-		{
-			VariableState state = states.get(var);
+        for(Variable var : states.keySet())
+        {
+            VariableState state = states.get(var);
 
-			Element subelement = element.getOwnerDocument().createElement("encoding");
-			subelement.setAttribute("variable", externalReferences.getReference(var));
-			subelement.setAttribute("state", state.name());
+            Element subelement = element.getOwnerDocument().createElement("encoding");
+            subelement.setAttribute("variable", externalReferences.getReference(var));
+            subelement.setAttribute("state", state.name());
 
-			element.appendChild(subelement);
-		}
-	}
+            element.appendChild(subelement);
+        }
+    }
 }

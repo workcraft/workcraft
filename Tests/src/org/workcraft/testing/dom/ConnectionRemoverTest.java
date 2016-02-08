@@ -33,38 +33,38 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSTG;
 
 public class ConnectionRemoverTest {
-	@Test
-	public void removeMany() throws InvalidConnectionException {
-		STG stg = new STG();
+    @Test
+    public void removeMany() throws InvalidConnectionException {
+        STG stg = new STG();
 
-		SignalTransition t1 = stg.createSignalTransition();
-		Place p1 = stg.createPlace();
-		SignalTransition t2 = stg.createSignalTransition();
-		Place p2 = stg.createPlace();
-		SignalTransition t3 = stg.createSignalTransition();
+        SignalTransition t1 = stg.createSignalTransition();
+        Place p1 = stg.createPlace();
+        SignalTransition t2 = stg.createSignalTransition();
+        Place p2 = stg.createPlace();
+        SignalTransition t3 = stg.createSignalTransition();
 
-		stg.connect(t3, p2);
-		stg.connect(p2, t2);
-		stg.connect(t2, p1);
-		stg.connect(p1, t1);
+        stg.connect(t3, p2);
+        stg.connect(p2, t2);
+        stg.connect(t2, p1);
+        stg.connect(p1, t1);
 
-		VisualSTG vstg = new VisualSTG(stg);
+        VisualSTG vstg = new VisualSTG(stg);
 
-		LinkedList<Node> toDelete = new LinkedList<Node>();
-		LinkedList<Node> toDeleteThen = new LinkedList<Node>();
+        LinkedList<Node> toDelete = new LinkedList<Node>();
+        LinkedList<Node> toDeleteThen = new LinkedList<Node>();
 
-		for (Node n : vstg.getRoot().getChildren()) {
-			Dependent dn = (Dependent)n;
-			if (!dn.getMathReferences().contains(t1))
-				toDelete.add(n);
-			else
-				toDeleteThen.add(n);
-		}
+        for (Node n : vstg.getRoot().getChildren()) {
+            Dependent dn = (Dependent)n;
+            if (!dn.getMathReferences().contains(t1))
+                toDelete.add(n);
+            else
+                toDeleteThen.add(n);
+        }
 
-		vstg.select(toDelete);
-		vstg.deleteSelection();
+        vstg.select(toDelete);
+        vstg.deleteSelection();
 
-		vstg.select(toDeleteThen);
-		vstg.deleteSelection();
-	}
+        vstg.select(toDeleteThen);
+        vstg.deleteSelection();
+    }
 }

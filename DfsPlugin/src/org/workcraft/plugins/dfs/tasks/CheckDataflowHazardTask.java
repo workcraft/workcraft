@@ -30,91 +30,91 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 
 public class CheckDataflowHazardTask extends MpsatChainTask {
-	private final MpsatSettings settings;
-	private final WorkspaceEntry we;
+    private final MpsatSettings settings;
+    private final WorkspaceEntry we;
 
-	public CheckDataflowHazardTask(WorkspaceEntry we) {
-		super (we, null);
-		this.we = we;
-		this.settings = new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
-				MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-				MpsatSettings.reachSemimodularity, true);
-	}
+    public CheckDataflowHazardTask(WorkspaceEntry we) {
+        super (we, null);
+        this.we = we;
+        this.settings = new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
+                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+                MpsatSettings.reachSemimodularity, true);
+    }
 
-	@Override
-	public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
-		final Framework framework = Framework.getInstance();
-		File directory = null;
-		try {
-			String prefix = FileUtils.getTempPrefix(we.getTitle());
-			directory = FileUtils.createTempDirectory(prefix);
+    @Override
+    public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+        final Framework framework = Framework.getInstance();
+        File directory = null;
+        try {
+            String prefix = FileUtils.getTempPrefix(we.getTitle());
+            directory = FileUtils.createTempDirectory(prefix);
 
-			StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
-			STGModel model = (STGModel)generator.getStgModel().getMathModel();
-			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
-			if (exporter == null) {
-				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
-			}
-			monitor.progressUpdate(0.10);
+            StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
+            STGModel model = (STGModel)generator.getStgModel().getMathModel();
+            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
+            if (exporter == null) {
+                throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
+            }
+            monitor.progressUpdate(0.10);
 
-			File netFile = new File(directory, "net" + exporter.getExtenstion());
-			ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
-			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-			Result<? extends Object> exportResult = framework.getTaskManager().execute(
-					exportTask, "Exporting .g", mon);
+            File netFile = new File(directory, "net" + exporter.getExtenstion());
+            ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+            SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+            Result<? extends Object> exportResult = framework.getTaskManager().execute(
+                    exportTask, "Exporting .g", mon);
 
-			if (exportResult.getOutcome() != Outcome.FINISHED) {
-				if (exportResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				}
-				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, null, null, settings));
-			}
-			monitor.progressUpdate(0.20);
+            if (exportResult.getOutcome() != Outcome.FINISHED) {
+                if (exportResult.getOutcome() == Outcome.CANCELLED) {
+                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                }
+                return new Result<MpsatChainResult>(Outcome.FAILED,
+                        new MpsatChainResult(exportResult, null, null, null, settings));
+            }
+            monitor.progressUpdate(0.20);
 
-			File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(true));
-			PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
-					punfTask, "Unfolding .g", mon);
+            File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(true));
+            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
+                    punfTask, "Unfolding .g", mon);
 
-			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				if (punfResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				}
-				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, punfResult, null, settings));
-			}
-			monitor.progressUpdate(0.40);
+            if (punfResult.getOutcome() != Outcome.FINISHED) {
+                if (punfResult.getOutcome() == Outcome.CANCELLED) {
+                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                }
+                return new Result<MpsatChainResult>(Outcome.FAILED,
+                        new MpsatChainResult(exportResult, null, punfResult, null, settings));
+            }
+            monitor.progressUpdate(0.40);
 
-			MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-					unfoldingFile.getAbsolutePath(), directory, true);
-			Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
-					mpsatTask, "Running semimodularity checking [MPSat]", mon);
+            MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
+                    unfoldingFile.getAbsolutePath(), directory, true);
+            Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
+                    mpsatTask, "Running semimodularity checking [MPSat]", mon);
 
-			if (mpsatResult.getOutcome() != Outcome.FINISHED) {
-				if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatChainResult>(Outcome.CANCELLED);
-				}
-				return new Result<MpsatChainResult>(Outcome.FAILED,
-						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
-			}
-			monitor.progressUpdate(0.90);
+            if (mpsatResult.getOutcome() != Outcome.FINISHED) {
+                if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
+                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                }
+                return new Result<MpsatChainResult>(Outcome.FAILED,
+                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
+            }
+            monitor.progressUpdate(0.90);
 
-			MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
-			if (!mdp.getSolutions().isEmpty()) {
-				return new Result<MpsatChainResult>(Outcome.FINISHED,
-						new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow has hazard(s)"));
-			}
-			monitor.progressUpdate(1.0);
+            MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
+            if (!mdp.getSolutions().isEmpty()) {
+                return new Result<MpsatChainResult>(Outcome.FINISHED,
+                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow has hazard(s)"));
+            }
+            monitor.progressUpdate(1.0);
 
-			return new Result<MpsatChainResult>(Outcome.FINISHED,
-					new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is hazard-free"));
+            return new Result<MpsatChainResult>(Outcome.FINISHED,
+                    new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is hazard-free"));
 
-		} catch (Throwable e) {
-			return new Result<MpsatChainResult>(e);
-		} finally {
-			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
-		}
-	}
+        } catch (Throwable e) {
+            return new Result<MpsatChainResult>(e);
+        } finally {
+            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+        }
+    }
 
 }

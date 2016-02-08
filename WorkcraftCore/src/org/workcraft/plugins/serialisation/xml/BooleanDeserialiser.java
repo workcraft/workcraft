@@ -27,12 +27,12 @@ import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class BooleanDeserialiser implements BasicXMLDeserialiser {
 
-	public String getClassName() {
-		return boolean.class.getName();
-	}
+    public String getClassName() {
+        return boolean.class.getName();
+    }
 
-	public Object deserialise(Element element) throws DeserialisationException {
-		return Boolean.parseBoolean(element.getAttribute("value"));
-	}
+    public Object deserialise(Element element) throws DeserialisationException {
+        return Boolean.parseBoolean(element.getAttribute("value"));
+    }
 
 }

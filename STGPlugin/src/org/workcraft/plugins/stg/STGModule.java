@@ -30,102 +30,102 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class STGModule implements Module {
 
-	@Override
-	public String getDescription() {
-		return "Signal Transition Graphs";
-	}
+    @Override
+    public String getDescription() {
+        return "Signal Transition Graphs";
+    }
 
-	@Override
-	public void init() {
-		initPluginManager();
-		initCompatibilityManager();
-	}
+    @Override
+    public void init() {
+        initPluginManager();
+        initCompatibilityManager();
+    }
 
-	private void initPluginManager() {
-		final Framework framework = Framework.getInstance();
-		final PluginManager pm = framework.getPluginManager();
-		pm.registerClass(ModelDescriptor.class, StgDescriptor.class);
+    private void initPluginManager() {
+        final Framework framework = Framework.getInstance();
+        final PluginManager pm = framework.getPluginManager();
+        pm.registerClass(ModelDescriptor.class, StgDescriptor.class);
 
-		pm.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
-		pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
+        pm.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
+        pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
 
-		pm.registerClass(Exporter.class, DotGExporter.class);
-		pm.registerClass(Importer.class, DotGImporter.class);
+        pm.registerClass(Exporter.class, DotGExporter.class);
+        pm.registerClass(Importer.class, DotGImporter.class);
 
-		pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
-		pm.registerClass(Settings.class, STGSettings.class);
+        pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
+        pm.registerClass(Settings.class, STGSettings.class);
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new SignalMirrorTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new SignalMirrorTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new MakePlacesImplicitTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new MakePlacesImplicitTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new MakePlacesExplicitTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new MakePlacesExplicitTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new SignalToDummyTransitionConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new SignalToDummyTransitionConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new DummyToSignalTransitionConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DummyToSignalTransitionConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new NamedTransitionContractorTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new NamedTransitionContractorTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new PetriNetToStgConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new PetriNetToStgConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new StgToPetriNetConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new StgToPetriNetConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new TransitionMergerTool();
-			}
-		});
-	}
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new TransitionMergerTool();
+            }
+        });
+    }
 
-	private void initCompatibilityManager() {
-		final Framework framework = Framework.getInstance();
-		final CompatibilityManager cm = framework.getCompatibilityManager();
+    private void initCompatibilityManager() {
+        final Framework framework = Framework.getInstance();
+        final CompatibilityManager cm = framework.getCompatibilityManager();
 
-		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.stg.STGModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.stg.StgDescriptor\"/>");
-	}
+        cm.registerMetaReplacement(
+                "<descriptor class=\"org.workcraft.plugins.stg.STGModelDescriptor\"/>",
+                "<descriptor class=\"org.workcraft.plugins.stg.StgDescriptor\"/>");
+    }
 
 }

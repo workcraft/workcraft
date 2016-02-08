@@ -32,31 +32,31 @@ import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
 public class GenericCellEditor extends AbstractCellEditor implements TableCellEditor {
-	private JTextField textField;
+    private JTextField textField;
 
-	public GenericCellEditor() {
-		textField = new JTextField();
-		textField.setFocusable(true);
-		textField.setBorder(PropertyEditorTable.BORDER_EDIT);
-		textField.addFocusListener(new FocusAdapter() {
-			@Override
-		    public void focusLost(FocusEvent e) {
-				if ( !e.isTemporary() ) {
-					stopCellEditing();
-				}
-			}
-		});
-	}
+    public GenericCellEditor() {
+        textField = new JTextField();
+        textField.setFocusable(true);
+        textField.setBorder(PropertyEditorTable.BORDER_EDIT);
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if ( !e.isTemporary() ) {
+                    stopCellEditing();
+                }
+            }
+        });
+    }
 
-	public Object getCellEditorValue() {
-		return textField.getText();
-	}
+    public Object getCellEditorValue() {
+        return textField.getText();
+    }
 
-	public Component getTableCellEditorComponent(JTable table, Object value,
-			boolean isSelected,	int row, int column) {
-		textField.setText(value.toString());
-		textField.setFont(table.getFont());
-		return textField;
-	}
+    public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected,    int row, int column) {
+        textField.setText(value.toString());
+        textField.setFont(table.getFont());
+        return textField;
+    }
 }
 

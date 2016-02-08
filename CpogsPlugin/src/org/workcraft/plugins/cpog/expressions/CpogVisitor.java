@@ -21,8 +21,8 @@
 package org.workcraft.plugins.cpog.expressions;
 
 public interface CpogVisitor<T> {
-	public T visit(Overlay node);
-	public T visit(Sequence node);
+    public T visit(Overlay node);
+    public T visit(Sequence node);
 
-	public T visit(CpogFormulaVariable variable);
+    public T visit(CpogFormulaVariable variable);
 }

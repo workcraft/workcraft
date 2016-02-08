@@ -25,8 +25,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Iff;
 import org.workcraft.plugins.cpog.optimisation.expressions.Not;
 
 public interface ReducedBooleanVisitor {
-	void visit(And node);
-	void visit(Not node);
-	void visit(Iff node);
-	void visit(BooleanVariable node);
+    void visit(And node);
+    void visit(Not node);
+    void visit(Iff node);
+    void visit(BooleanVariable node);
 }

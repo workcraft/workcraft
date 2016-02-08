@@ -12,20 +12,20 @@ import org.workcraft.plugins.mpsat.tools.MpsatSynthesisTechnologyMapping;
 
 public class MpsatSynthesisModule implements Module {
 
-	@Override
-	public void init() {
-		final Framework framework = Framework.getInstance();
-		PluginManager pm = framework.getPluginManager();
+    @Override
+    public void init() {
+        final Framework framework = Framework.getInstance();
+        PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(Tool.class, MpsatSynthesisComplexGate.class);
-		pm.registerClass(Tool.class, MpsatSynthesisGeneralisedCelement.class);
-		pm.registerClass(Tool.class, MpsatSynthesisStandardCelement.class);
-		pm.registerClass(Tool.class, MpsatSynthesisTechnologyMapping.class);
-		pm.registerClass(Settings.class, MpsatSynthesisUtilitySettings.class);
-	}
+        pm.registerClass(Tool.class, MpsatSynthesisComplexGate.class);
+        pm.registerClass(Tool.class, MpsatSynthesisGeneralisedCelement.class);
+        pm.registerClass(Tool.class, MpsatSynthesisStandardCelement.class);
+        pm.registerClass(Tool.class, MpsatSynthesisTechnologyMapping.class);
+        pm.registerClass(Settings.class, MpsatSynthesisUtilitySettings.class);
+    }
 
-	@Override
-	public String getDescription() {
-		return "MPSat synthesis support";
-	}
+    @Override
+    public String getDescription() {
+        return "MPSat synthesis support";
+    }
 }

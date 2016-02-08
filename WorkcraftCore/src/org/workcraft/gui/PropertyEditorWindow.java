@@ -31,40 +31,40 @@ import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 
 @SuppressWarnings("serial")
 public class PropertyEditorWindow extends JPanel {
-	private PropertyEditorTable propertyTable;
-	private JScrollPane scrollProperties;
+    private PropertyEditorTable propertyTable;
+    private JScrollPane scrollProperties;
 
-	public PropertyEditorWindow() {
-		propertyTable = new PropertyEditorTable();
+    public PropertyEditorWindow() {
+        propertyTable = new PropertyEditorTable();
 
-		scrollProperties = new JScrollPane();
-		scrollProperties.setViewportView(propertyTable);
+        scrollProperties = new JScrollPane();
+        scrollProperties.setViewportView(propertyTable);
 
-		setLayout(new BorderLayout(0,0));
-		add(new DisabledPanel(), BorderLayout.CENTER);
-		validate();
-	}
+        setLayout(new BorderLayout(0,0));
+        add(new DisabledPanel(), BorderLayout.CENTER);
+        validate();
+    }
 
-	public Properties getObject() {
-		return propertyTable.getObject();
-	}
+    public Properties getObject() {
+        return propertyTable.getObject();
+    }
 
-	public void setObject(Properties o) {
-		removeAll();
-		propertyTable.setObject(o);
-		add(scrollProperties, BorderLayout.CENTER);
-		validate();
-		repaint();
-	}
+    public void setObject(Properties o) {
+        removeAll();
+        propertyTable.setObject(o);
+        add(scrollProperties, BorderLayout.CENTER);
+        validate();
+        repaint();
+    }
 
-	public void clearObject() {
-		if (propertyTable.getObject() != null) {
-			removeAll();
-			propertyTable.clearObject();
-			add(new DisabledPanel(), BorderLayout.CENTER);
-			validate();
-			repaint();
-		}
-	}
+    public void clearObject() {
+        if (propertyTable.getObject() != null) {
+            removeAll();
+            propertyTable.clearObject();
+            add(new DisabledPanel(), BorderLayout.CENTER);
+            validate();
+            repaint();
+        }
+    }
 
 }

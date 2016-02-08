@@ -14,19 +14,19 @@ import org.workcraft.plugins.policy.tools.PolicySimulationTool;
 
 public class PolicyNetToolProvider implements CustomToolsProvider {
 
-	@Override
-	public Iterable<GraphEditorTool> getTools() {
-		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+    @Override
+    public Iterable<GraphEditorTool> getTools() {
+        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new SelectionTool(false));
-		result.add(new CommentGeneratorTool());
-		result.add(new ConnectionTool());
+        result.add(new SelectionTool(false));
+        result.add(new CommentGeneratorTool());
+        result.add(new ConnectionTool());
 
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Place.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(BundledTransition.class)));
-		result.add(new PolicySimulationTool());
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Place.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(BundledTransition.class)));
+        result.add(new PolicySimulationTool());
 
-		return result;
-	}
+        return result;
+    }
 
 }

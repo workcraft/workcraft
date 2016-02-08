@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface RawCnfGenerator<T> {
-	CnfTask getCnf(T t);
+    CnfTask getCnf(T t);
 }

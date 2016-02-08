@@ -30,7 +30,7 @@ public class CycleAlgorithm {
 
         for (int v = 0; v < V; v++)
             if (!visited[v])
-            	dfs(v);
+                dfs(v);
         return sccComp;
 
     }
@@ -47,7 +47,7 @@ public class CycleAlgorithm {
                 dfs(w);
 
             if (low[w] < min)
-            	min = low[w];
+                min = low[w];
         }
         if (min < low[v]) {
             low[v] = min;
@@ -57,7 +57,7 @@ public class CycleAlgorithm {
         List<Integer> component = new ArrayList<Integer>();
         int w;
         do{
-        	w = stack.pop();
+            w = stack.pop();
             component.add(w);
             low[w] = V;
         } while (w != v);

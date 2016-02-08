@@ -26,8 +26,8 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 
 public interface CustomXMLSerialiser extends XMLSerialiser {
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences,
-			NodeSerialiser nodeSerialiser) throws SerialisationException;
+    public void serialise(Element element, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences,
+            NodeSerialiser nodeSerialiser) throws SerialisationException;
 }

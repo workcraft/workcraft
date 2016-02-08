@@ -13,31 +13,31 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CscResolutionTool implements Tool {
 
-	@Override
-	public String getSection() {
-		return "Encoding conflicts";
-	}
+    @Override
+    public String getSection() {
+        return "Encoding conflicts";
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "Resolve CSC conflicts [MPSat]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Resolve CSC conflicts [MPSat]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STGModel.class);
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		MpsatSettings settings = new MpsatSettings("Resolution of CSC conflicts",
-				MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
+    @Override
+    public void run(WorkspaceEntry we) {
+        MpsatSettings settings = new MpsatSettings("Resolution of CSC conflicts",
+                MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
 
-		MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
+        MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
 
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(mpsatTask, "Resolution of CSC conflicts",
-				new MpsatChainResultHandler(mpsatTask));
-	}
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(mpsatTask, "Resolution of CSC conflicts",
+                new MpsatChainResultHandler(mpsatTask));
+    }
 
 }

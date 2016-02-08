@@ -31,106 +31,106 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @VisualClass(org.workcraft.plugins.stg.VisualSignalTransition.class)
 public class SignalTransition extends NamedTransition
 {
-	public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
-	public static final String PROPERTY_SIGNAL_NAME = "Signal name";
-	public static final String PROPERTY_DIRECTION = "Direction";
+    public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
+    public static final String PROPERTY_SIGNAL_NAME = "Signal name";
+    public static final String PROPERTY_DIRECTION = "Direction";
 
-	public enum Type {
-		INPUT("input"),
-		OUTPUT("output"),
-		INTERNAL("internal");
+    public enum Type {
+        INPUT("input"),
+        OUTPUT("output"),
+        INTERNAL("internal");
 
-		private final String name;
+        private final String name;
 
-		private Type(String name) {
-			this.name = name;
-		}
+        private Type(String name) {
+            this.name = name;
+        }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
-	public enum Direction {
-		PLUS("+"),
-		MINUS("-"),
-		TOGGLE("~");
+    public enum Direction {
+        PLUS("+"),
+        MINUS("-"),
+        TOGGLE("~");
 
-		private final String name;
+        private final String name;
 
-		private Direction(String name) {
-			this.name = name;
-		}
+        private Direction(String name) {
+            this.name = name;
+        }
 
-		public static Direction fromString(String s) {
-			for (Direction item : Direction.values()) {
-				if ((s != null) && (s.equals(item.name))) {
-					return item;
-				}
-			}
-			throw new ArgumentException ("Unexpected string: " + s);
-		}
+        public static Direction fromString(String s) {
+            for (Direction item : Direction.values()) {
+                if ((s != null) && (s.equals(item.name))) {
+                    return item;
+                }
+            }
+            throw new ArgumentException ("Unexpected string: " + s);
+        }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
-	private Type type = Type.INTERNAL;
-	private Direction direction = Direction.TOGGLE;
-	private String signalName = null;
+    private Type type = Type.INTERNAL;
+    private Direction direction = Direction.TOGGLE;
+    private String signalName = null;
 
-	public Type getSignalType() {
-		return type;
-	}
+    public Type getSignalType() {
+        return type;
+    }
 
-	public void setSignalType(Type type) {
-		if (this.type != type) {
-			this.type = type;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_TYPE));
-		}
-	}
+    public void setSignalType(Type type) {
+        if (this.type != type) {
+            this.type = type;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_TYPE));
+        }
+    }
 
-	public Direction getDirection() {
-		return direction;
-	}
+    public Direction getDirection() {
+        return direction;
+    }
 
-	public void setDirection(Direction direction) {
-		if (this.direction != direction) {
-			this.direction = direction;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
-		}
-	}
+    public void setDirection(Direction direction) {
+        if (this.direction != direction) {
+            this.direction = direction;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
+        }
+    }
 
-	@NoAutoSerialisation
-	public String getSignalName() {
-		return signalName;
-	}
+    @NoAutoSerialisation
+    public String getSignalName() {
+        return signalName;
+    }
 
-	@NoAutoSerialisation
-	public void setSignalName(String signalName) {
-		this.signalName = signalName;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_NAME));
-	}
+    @NoAutoSerialisation
+    public void setSignalName(String signalName) {
+        this.signalName = signalName;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_NAME));
+    }
 
-	@NoAutoSerialisation
-	@Override
-	public String getName() {
-		final StringBuffer result = new StringBuffer(signalName);
-		switch (direction) {
-		case PLUS:
-			result.append("+");
-			break;
-		case MINUS:
-			result.append("-");
-			break;
-		case TOGGLE:
-			result.append("~");
-			break;
-		}
-		return result.toString();
-	}
+    @NoAutoSerialisation
+    @Override
+    public String getName() {
+        final StringBuffer result = new StringBuffer(signalName);
+        switch (direction) {
+        case PLUS:
+            result.append("+");
+            break;
+        case MINUS:
+            result.append("-");
+            break;
+        case TOGGLE:
+            result.append("~");
+            break;
+        }
+        return result.toString();
+    }
 
 }

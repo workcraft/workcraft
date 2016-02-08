@@ -6,14 +6,14 @@ import org.workcraft.plugins.cpog.propertyeditor.EncodingProperty;
 
 public class EncodingPropertyProvider implements PropertyClassProvider {
 
-	@Override
-	public Class<?> getPropertyType() {
-		return Encoding.class;
-	}
+    @Override
+    public Class<?> getPropertyType() {
+        return Encoding.class;
+    }
 
-	@Override
-	public PropertyClass getPropertyGui() {
-		return new EncodingProperty();
-	}
+    @Override
+    public PropertyClass getPropertyGui() {
+        return new EncodingProperty();
+    }
 
 }

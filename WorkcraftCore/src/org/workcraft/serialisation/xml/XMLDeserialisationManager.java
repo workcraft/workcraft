@@ -38,108 +38,108 @@ import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
 public class XMLDeserialisationManager implements DeserialiserFactory, NodeInitialiser, NodeFinaliser {
-	private HashMap<String, XMLDeserialiser> deserialisers = new HashMap<String, XMLDeserialiser>();
-	private DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
-	private XMLDeserialiserState state = null;
+    private HashMap<String, XMLDeserialiser> deserialisers = new HashMap<String, XMLDeserialiser>();
+    private DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
+    private XMLDeserialiserState state = null;
 
-	private void registerDeserialiser (XMLDeserialiser deserialiser) {
-		deserialisers.put(deserialiser.getClassName(), deserialiser);
-	}
+    private void registerDeserialiser (XMLDeserialiser deserialiser) {
+        deserialisers.put(deserialiser.getClassName(), deserialiser);
+    }
 
-	 public XMLDeserialiser getDeserialiserFor(String className) throws InstantiationException, IllegalAccessException {
-		return deserialisers.get(className);
-	}
+     public XMLDeserialiser getDeserialiserFor(String className) throws InstantiationException, IllegalAccessException {
+        return deserialisers.get(className);
+    }
 
-	public void begin(ReferenceResolver externalReferenceResolver) {
-		state = new XMLDeserialiserState(externalReferenceResolver);
-	}
+    public void begin(ReferenceResolver externalReferenceResolver) {
+        state = new XMLDeserialiserState(externalReferenceResolver);
+    }
 
-	public References getReferenceResolver() {
-		return state;
-	}
+    public References getReferenceResolver() {
+        return state;
+    }
 
-	public void processPlugins(PluginProvider manager) {
-		for (PluginInfo<? extends XMLDeserialiser> info : manager.getPlugins(XMLDeserialiser.class))
-			registerDeserialiser(info.newInstance());
-	}
+    public void processPlugins(PluginProvider manager) {
+        for (PluginInfo<? extends XMLDeserialiser> info : manager.getPlugins(XMLDeserialiser.class))
+            registerDeserialiser(info.newInstance());
+    }
 
-	public Object initInstance (Element element, Object ... constructorParameters) throws DeserialisationException
-	{
-		Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
+    public Object initInstance (Element element, Object ... constructorParameters) throws DeserialisationException
+    {
+        Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
-		state.setInstanceElement(instance, element);
-		state.setObject(element.getAttribute("ref"), instance);
+        state.setInstanceElement(instance, element);
+        state.setObject(element.getAttribute("ref"), instance);
 
-		if (instance instanceof Container) {
-			for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {
-				Object subNode = initInstance (subNodeElement);
+        if (instance instanceof Container) {
+            for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {
+                Object subNode = initInstance (subNodeElement);
 
-				 if (subNode instanceof Node)
-					 state.addChildNode((Container)instance, (Node)subNode);
-			}
-		}
-		return instance;
-	}
+                 if (subNode instanceof Node)
+                     state.addChildNode((Container)instance, (Node)subNode);
+            }
+        }
+        return instance;
+    }
 
-	public static Model createModel (Class<?> cls, Node root, Object underlyingModel, References rr) throws DeserialisationException {
-		Model result;
-		try {
+    public static Model createModel (Class<?> cls, Node root, Object underlyingModel, References rr) throws DeserialisationException {
+        Model result;
+        try {
 
-			Constructor<?> ctor;
-			if (underlyingModel == null) {
-				try {
-					ctor = new ConstructorParametersMatcher().match(cls, root.getClass(), References.class);
-					result = (Model) ctor.newInstance(root, rr);
-				} catch (NoSuchMethodException e) {
-					ctor = new ConstructorParametersMatcher().match(cls, root.getClass());
-					result = (Model) ctor.newInstance(root);
-				}
+            Constructor<?> ctor;
+            if (underlyingModel == null) {
+                try {
+                    ctor = new ConstructorParametersMatcher().match(cls, root.getClass(), References.class);
+                    result = (Model) ctor.newInstance(root, rr);
+                } catch (NoSuchMethodException e) {
+                    ctor = new ConstructorParametersMatcher().match(cls, root.getClass());
+                    result = (Model) ctor.newInstance(root);
+                }
 
-			}
-			else {
-				try {
-					ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass(), References.class);
-					result = (Model) ctor.newInstance(underlyingModel, root, rr);
-				} catch (NoSuchMethodException e) {
-					ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass());
-					result = (Model) ctor.newInstance(underlyingModel, root);
-				}
-			}
-		} catch (InstantiationException e) {
-			throw new DeserialisationException(e);
-		} catch (IllegalAccessException e) {
-			throw new DeserialisationException(e);
-		} catch (NoSuchMethodException e) {
-			throw new DeserialisationException("Missing appropriate constructor for model deserealisation.", e);
-		} catch (IllegalArgumentException e) {
-			throw new DeserialisationException(e);
-		} catch (InvocationTargetException e) {
-			throw new DeserialisationException(e);
-		}
+            }
+            else {
+                try {
+                    ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass(), References.class);
+                    result = (Model) ctor.newInstance(underlyingModel, root, rr);
+                } catch (NoSuchMethodException e) {
+                    ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass());
+                    result = (Model) ctor.newInstance(underlyingModel, root);
+                }
+            }
+        } catch (InstantiationException e) {
+            throw new DeserialisationException(e);
+        } catch (IllegalAccessException e) {
+            throw new DeserialisationException(e);
+        } catch (NoSuchMethodException e) {
+            throw new DeserialisationException("Missing appropriate constructor for model deserealisation.", e);
+        } catch (IllegalArgumentException e) {
+            throw new DeserialisationException(e);
+        } catch (InvocationTargetException e) {
+            throw new DeserialisationException(e);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public void deserialiseModelProperties(Element element, Model model) throws DeserialisationException {
-		nodeDeserialiser.doInitialisation(element, model, model.getClass(), state.getExternalReferences());
-		nodeDeserialiser.doFinalisation(element, model, state.getInternalReferences(), state.getExternalReferences(), model.getClass().getSuperclass());
-	}
+    public void deserialiseModelProperties(Element element, Model model) throws DeserialisationException {
+        nodeDeserialiser.doInitialisation(element, model, model.getClass(), state.getExternalReferences());
+        nodeDeserialiser.doFinalisation(element, model, state.getInternalReferences(), state.getExternalReferences(), model.getClass().getSuperclass());
+    }
 
-	public void finaliseInstances() throws DeserialisationException {
-		// finalise all instances
-		for (Object o : state.instanceElements.keySet())
-			finaliseInstance(o);
+    public void finaliseInstances() throws DeserialisationException {
+        // finalise all instances
+        for (Object o : state.instanceElements.keySet())
+            finaliseInstance(o);
 
-		// now add children to their respective containers
-		for (Object o : state.instanceElements.keySet()) {
-			if (o instanceof Container) {
-				Container c = (Container)o;
-				c.add(state.getChildren(c));
-			}
-		}
-	}
+        // now add children to their respective containers
+        for (Object o : state.instanceElements.keySet()) {
+            if (o instanceof Container) {
+                Container c = (Container)o;
+                c.add(state.getChildren(c));
+            }
+        }
+    }
 
-	public void finaliseInstance(Object instance) throws DeserialisationException {
-		nodeDeserialiser.finaliseInstance(state.getInstanceElement(instance), instance, state.getInternalReferences(), state.getExternalReferences());
-	}
+    public void finaliseInstance(Object instance) throws DeserialisationException {
+        nodeDeserialiser.finaliseInstance(state.getInstanceElement(instance), instance, state.getInternalReferences(), state.getExternalReferences());
+    }
 }

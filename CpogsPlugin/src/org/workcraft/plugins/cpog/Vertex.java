@@ -29,17 +29,17 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 @VisualClass(org.workcraft.plugins.cpog.VisualVertex.class)
 public class Vertex extends MathNode {
-	public static final String PROPERTY_CONDITION = "Condition";
+    public static final String PROPERTY_CONDITION = "Condition";
 
-	private BooleanFormula condition = One.instance();
+    private BooleanFormula condition = One.instance();
 
-	public void setCondition(BooleanFormula condition) {
-		this.condition = condition;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
-	}
+    public void setCondition(BooleanFormula condition) {
+        this.condition = condition;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
+    }
 
-	public BooleanFormula getCondition() {
-		return condition;
-	}
+    public BooleanFormula getCondition() {
+        return condition;
+    }
 
 }

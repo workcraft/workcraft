@@ -26,15 +26,15 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class RhoClauseSerialiser extends BooleanFormulaSerialiser
 {
-	@Override
-	public String getClassName()
-	{
-		return RhoClause.class.getName();
-	}
+    @Override
+    public String getClassName()
+    {
+        return RhoClause.class.getName();
+    }
 
-	@Override
-	protected BooleanFormula getFormula(Object serialisee)
-	{
-		return ((RhoClause) serialisee).getFormula();
-	}
+    @Override
+    protected BooleanFormula getFormula(Object serialisee)
+    {
+        return ((RhoClause) serialisee).getFormula();
+    }
 }

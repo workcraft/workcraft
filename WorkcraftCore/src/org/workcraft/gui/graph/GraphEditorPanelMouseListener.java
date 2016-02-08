@@ -36,116 +36,116 @@ import org.workcraft.gui.graph.tools.ToolProvider;
 import org.workcraft.observation.PropertyChangedEvent;
 
 class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
-	protected GraphEditor editor;
-	protected boolean panDrag = false;
-	private ToolProvider toolProvider;
+    protected GraphEditor editor;
+    protected boolean panDrag = false;
+    private ToolProvider toolProvider;
 
-	protected Point lastMouseCoords = new Point();
-	private Point2D prevPosition = new Point2D.Double(0, 0);
-	private Point2D startPosition = null;
+    protected Point lastMouseCoords = new Point();
+    private Point2D prevPosition = new Point2D.Double(0, 0);
+    private Point2D startPosition = null;
 
-	public GraphEditorPanelMouseListener(GraphEditor editor, ToolProvider toolProvider) {
-		this.editor = editor;
-		this.toolProvider = toolProvider;
-	}
+    public GraphEditorPanelMouseListener(GraphEditor editor, ToolProvider toolProvider) {
+        this.editor = editor;
+        this.toolProvider = toolProvider;
+    }
 
-	private GraphEditorMouseEvent adaptEvent(MouseEvent e) {
-		return new GraphEditorMouseEvent(editor, e, startPosition, prevPosition);
-	}
+    private GraphEditorMouseEvent adaptEvent(MouseEvent e) {
+        return new GraphEditorMouseEvent(editor, e, startPosition, prevPosition);
+    }
 
-	private boolean isPanCombo(MouseEvent e) {
-		return (e.getButton() == MouseEvent.BUTTON2) || (e.isControlDown() && e.getButton() == MouseEvent.BUTTON3);
-	}
+    private boolean isPanCombo(MouseEvent e) {
+        return (e.getButton() == MouseEvent.BUTTON2) || (e.isControlDown() && e.getButton() == MouseEvent.BUTTON3);
+    }
 
-	public void mouseDragged(MouseEvent e) {
-		mouseMoved(e);
-	}
+    public void mouseDragged(MouseEvent e) {
+        mouseMoved(e);
+    }
 
-	public void mouseMoved(MouseEvent e) {
-		Point currentMouseCoords = e.getPoint();
-		if (panDrag) {
-			editor.getViewport().pan(currentMouseCoords.x - lastMouseCoords.x,
-					currentMouseCoords.y - lastMouseCoords.y);
-			editor.repaint();
-		} else {
-			GraphEditorTool tool = toolProvider.getTool();
-			if (tool != null) {
-				if(!tool.isDragging() && startPosition!=null) {
-					tool.startDrag(adaptEvent(e));
-				}
-				tool.mouseMoved(adaptEvent(e));
-			}
-		}
-		prevPosition = editor.getViewport().screenToUser(currentMouseCoords);
-		lastMouseCoords = currentMouseCoords;
-	}
+    public void mouseMoved(MouseEvent e) {
+        Point currentMouseCoords = e.getPoint();
+        if (panDrag) {
+            editor.getViewport().pan(currentMouseCoords.x - lastMouseCoords.x,
+                    currentMouseCoords.y - lastMouseCoords.y);
+            editor.repaint();
+        } else {
+            GraphEditorTool tool = toolProvider.getTool();
+            if (tool != null) {
+                if(!tool.isDragging() && startPosition!=null) {
+                    tool.startDrag(adaptEvent(e));
+                }
+                tool.mouseMoved(adaptEvent(e));
+            }
+        }
+        prevPosition = editor.getViewport().screenToUser(currentMouseCoords);
+        lastMouseCoords = currentMouseCoords;
+    }
 
-	public void mouseClicked(MouseEvent e) {
-		if (!editor.hasFocus()) {
-			editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
-		}
-		if (!isPanCombo(e)) {
-			toolProvider.getTool().mouseClicked(adaptEvent(e));
-		}
-	}
+    public void mouseClicked(MouseEvent e) {
+        if (!editor.hasFocus()) {
+            editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
+        }
+        if (!isPanCombo(e)) {
+            toolProvider.getTool().mouseClicked(adaptEvent(e));
+        }
+    }
 
-	public void mouseEntered(MouseEvent e) {
-		if (editor.hasFocus()) {
-			GraphEditorTool tool = toolProvider.getTool();
-			if (tool != null) {
-				tool.mouseEntered(adaptEvent(e));
-			}
-		}
-	}
+    public void mouseEntered(MouseEvent e) {
+        if (editor.hasFocus()) {
+            GraphEditorTool tool = toolProvider.getTool();
+            if (tool != null) {
+                tool.mouseEntered(adaptEvent(e));
+            }
+        }
+    }
 
-	public void mouseExited(MouseEvent e) {
-		if (editor.hasFocus()) {
-			toolProvider.getTool().mouseExited(adaptEvent(e));
-		}
-	}
+    public void mouseExited(MouseEvent e) {
+        if (editor.hasFocus()) {
+            toolProvider.getTool().mouseExited(adaptEvent(e));
+        }
+    }
 
-	public void mousePressed(MouseEvent e) {
-		if (!editor.hasFocus()) {
-			editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
-		}
-		if (isPanCombo(e)) {
-			panDrag = true;
-		} else {
-			GraphEditorTool tool = toolProvider.getTool();
-			if (tool != null) {
-				if(!tool.isDragging()) {
-					startPosition = editor.getViewport().screenToUser(e.getPoint());
-				}
-				tool.mousePressed(adaptEvent(e));
-			}
-			else {
-				startPosition = editor.getViewport().screenToUser(e.getPoint());
-			}
-		}
-	}
+    public void mousePressed(MouseEvent e) {
+        if (!editor.hasFocus()) {
+            editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
+        }
+        if (isPanCombo(e)) {
+            panDrag = true;
+        } else {
+            GraphEditorTool tool = toolProvider.getTool();
+            if (tool != null) {
+                if(!tool.isDragging()) {
+                    startPosition = editor.getViewport().screenToUser(e.getPoint());
+                }
+                tool.mousePressed(adaptEvent(e));
+            }
+            else {
+                startPosition = editor.getViewport().screenToUser(e.getPoint());
+            }
+        }
+    }
 
-	public void mouseReleased(MouseEvent e) {
-		if (isPanCombo(e)) {
-			panDrag = false;
-		} else {
-			GraphEditorTool tool = toolProvider.getTool();
-			if (tool != null) {
-				if(tool.isDragging())
-					tool.finishDrag(adaptEvent(e));
-				tool.mouseReleased(adaptEvent(e));
-			}
-			startPosition = null;
+    public void mouseReleased(MouseEvent e) {
+        if (isPanCombo(e)) {
+            panDrag = false;
+        } else {
+            GraphEditorTool tool = toolProvider.getTool();
+            if (tool != null) {
+                if(tool.isDragging())
+                    tool.finishDrag(adaptEvent(e));
+                tool.mouseReleased(adaptEvent(e));
+            }
+            startPosition = null;
 
 
-		}
-	}
+        }
+    }
 
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (editor.hasFocus()) {
-			editor.getViewport().zoom(-e.getWheelRotation(), e.getPoint());
-			editor.repaint();
-		}
-	}
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (editor.hasFocus()) {
+            editor.getViewport().zoom(-e.getWheelRotation(), e.getPoint());
+            editor.repaint();
+        }
+    }
 }
 
 

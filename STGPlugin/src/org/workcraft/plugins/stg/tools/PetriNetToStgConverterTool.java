@@ -15,28 +15,28 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriNetToStgConverterTool extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Signal Transition Graph";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Signal Transition Graph";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof PetriNet;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof PetriNet;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final VisualPetriNet pn = (VisualPetriNet)we.getModelEntry().getVisualModel();
-		final VisualSTG stg = new VisualSTG(new STG());
-		final PetriNetToStgConverter converter = new PetriNetToStgConverter(pn, stg);
-		final Framework framework = Framework.getInstance();
-		final Workspace workspace = framework.getWorkspace();
-		final Path<String> directory = we.getWorkspacePath().getParent();
-		final String name = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new StgDescriptor(), converter.getDstModel());
-		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-		workspace.add(directory, name, me, false, openInEditor);
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final VisualPetriNet pn = (VisualPetriNet)we.getModelEntry().getVisualModel();
+        final VisualSTG stg = new VisualSTG(new STG());
+        final PetriNetToStgConverter converter = new PetriNetToStgConverter(pn, stg);
+        final Framework framework = Framework.getInstance();
+        final Workspace workspace = framework.getWorkspace();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String name = we.getWorkspacePath().getNode();
+        final ModelEntry me = new ModelEntry(new StgDescriptor(), converter.getDstModel());
+        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+        workspace.add(directory, name, me, false, openInEditor);
+    }
 
 }

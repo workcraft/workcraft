@@ -32,35 +32,35 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 
 public class BundleDeserialiser implements CustomXMLDeserialiser {
 
-	@Override
-	public void finaliseInstance(Element element, Object instance,
-			ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver,
-			NodeFinaliser nodeFinaliser) throws DeserialisationException {
+    @Override
+    public void finaliseInstance(Element element, Object instance,
+            ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver,
+            NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-		Bundle b = (Bundle)instance;
-		String s = element.getAttribute("transitions");
-		for (String ref : s.split("\\s*,\\s*")) {
-			b.add((BundledTransition)internalReferenceResolver.getObject(ref));
-		}
-	}
+        Bundle b = (Bundle)instance;
+        String s = element.getAttribute("transitions");
+        for (String ref : s.split("\\s*,\\s*")) {
+            b.add((BundledTransition)internalReferenceResolver.getObject(ref));
+        }
+    }
 
-	@Override
-	public Object createInstance(Element element,
-			ReferenceResolver externalReferenceResolver,
-			Object... constructorParameters) {
-		return new Bundle();
-	}
+    @Override
+    public Object createInstance(Element element,
+            ReferenceResolver externalReferenceResolver,
+            Object... constructorParameters) {
+        return new Bundle();
+    }
 
-	@Override
-	public void initInstance(Element element, Object instance,	ReferenceResolver externalReferenceResolver,
-			NodeInitialiser nodeInitialiser) throws DeserialisationException {
+    @Override
+    public void initInstance(Element element, Object instance,    ReferenceResolver externalReferenceResolver,
+            NodeInitialiser nodeInitialiser) throws DeserialisationException {
 
-	}
+    }
 
-	@Override
-	public String getClassName() {
-		return Bundle.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return Bundle.class.getName();
+    }
 
 }

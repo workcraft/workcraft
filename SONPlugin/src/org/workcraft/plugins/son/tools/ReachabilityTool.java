@@ -10,26 +10,26 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityTool implements Tool{
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, SON.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, SON.class);
+    }
 
-	@Override
-	public String getSection() {
-		return "Verification";
-	}
+    @Override
+    public String getSection() {
+        return "Verification";
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "Reachability";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Reachability";
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		ReachabilityTask task = new ReachabilityTask(we);
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Verification");
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        ReachabilityTask task = new ReachabilityTask(we);
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(task, "Verification");
+    }
 
 }

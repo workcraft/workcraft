@@ -27,5 +27,5 @@ import org.workcraft.plugins.PluginInfo;
 
 
 public interface PluginProvider {
-	public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interfaceType);
+    public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interfaceType);
 }

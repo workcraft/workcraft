@@ -16,60 +16,60 @@ import javax.swing.table.TableCellRenderer;
 
 @SuppressWarnings("serial")
 public class FileCellRenderer extends JPanel implements TableCellRenderer {
-	    Border unselectedBorder = null;
-	    Border selectedBorder = null;
+        Border unselectedBorder = null;
+        Border selectedBorder = null;
 
-		final private JButton chooseButton;
-		final private JButton clearButton;
+        final private JButton chooseButton;
+        final private JButton clearButton;
 
-	    public FileCellRenderer() {
-			chooseButton = new JButton();
-			chooseButton.setBorderPainted(false);
-			chooseButton.setFocusable(false);
-			chooseButton.setOpaque(true);
-			chooseButton.setMargin(new Insets(1, 1, 1, 1));
-			chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
+        public FileCellRenderer() {
+            chooseButton = new JButton();
+            chooseButton.setBorderPainted(false);
+            chooseButton.setFocusable(false);
+            chooseButton.setOpaque(true);
+            chooseButton.setMargin(new Insets(1, 1, 1, 1));
+            chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-			clearButton = new JButton("x");
-			clearButton.setFocusable(false);
-			clearButton.setMargin(new Insets(1, 1, 1, 1));
+            clearButton = new JButton("x");
+            clearButton.setFocusable(false);
+            clearButton.setMargin(new Insets(1, 1, 1, 1));
 
-	    	setLayout(new BorderLayout());
-	    	add(chooseButton, BorderLayout.CENTER);
-	    	add(clearButton, BorderLayout.EAST);
-	        setFocusable(false);
-	    }
+            setLayout(new BorderLayout());
+            add(chooseButton, BorderLayout.CENTER);
+            add(clearButton, BorderLayout.EAST);
+            setFocusable(false);
+        }
 
-	    @Override
-	    public Component getTableCellRendererComponent(JTable table, Object value,
-	    		boolean isSelected, boolean hasFocus, int row, int column) {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
 
-	    	chooseButton.setFont(table.getFont());
-	    	if (value == null) {
-	    		chooseButton.setText("");
-	    	} else {
-	    		File file = (File)value;
-	    		if (file.exists()) {
-	    			chooseButton.setForeground(Color.BLACK);
-	    		} else {
-	    			chooseButton.setForeground(Color.RED);
-	    		}
-	    		chooseButton.setText(".../" + file.getName());
+            chooseButton.setFont(table.getFont());
+            if (value == null) {
+                chooseButton.setText("");
+            } else {
+                File file = (File)value;
+                if (file.exists()) {
+                    chooseButton.setForeground(Color.BLACK);
+                } else {
+                    chooseButton.setForeground(Color.RED);
+                }
+                chooseButton.setText(".../" + file.getName());
 
-	    		if (isSelected) {
-	    			if (selectedBorder == null) {
-	    				selectedBorder = BorderFactory.createMatteBorder(
-	    						0, 0, 0, 0,	table.getSelectionBackground());
-	    			}
-	    			setBorder(selectedBorder);
-	    		} else {
-	    			if (unselectedBorder == null) {
-	    				unselectedBorder = BorderFactory.createMatteBorder(
-	    						0, 0, 0, 0, table.getBackground());
-	    			}
-	    			setBorder(unselectedBorder);
-	    		}
-	    	}
-	        return this;
-	    }
+                if (isSelected) {
+                    if (selectedBorder == null) {
+                        selectedBorder = BorderFactory.createMatteBorder(
+                                0, 0, 0, 0,    table.getSelectionBackground());
+                    }
+                    setBorder(selectedBorder);
+                } else {
+                    if (unselectedBorder == null) {
+                        unselectedBorder = BorderFactory.createMatteBorder(
+                                0, 0, 0, 0, table.getBackground());
+                    }
+                    setBorder(unselectedBorder);
+                }
+            }
+            return this;
+        }
 }

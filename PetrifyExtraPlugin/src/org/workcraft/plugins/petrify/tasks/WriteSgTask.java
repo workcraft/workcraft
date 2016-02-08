@@ -16,98 +16,98 @@ import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.ToolUtils;
 
 public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcessListener {
-	private String inputPath, outputPath;
-	private final List<String> options;
+    private String inputPath, outputPath;
+    private final List<String> options;
 
-	private volatile boolean finished;
-	private volatile int returnCode;
-	private boolean userCancelled = false;
+    private volatile boolean finished;
+    private volatile int returnCode;
+    private boolean userCancelled = false;
 
-	private ProgressMonitor<? super ExternalProcessResult> monitor;
+    private ProgressMonitor<? super ExternalProcessResult> monitor;
 
-	private DataAccumulator stdoutAccum = new DataAccumulator();
-	private DataAccumulator stderrAccum = new DataAccumulator();
-
-
-	public WriteSgTask(String inputPath, String outputPath, List<String> options) {
-		this.inputPath = inputPath;
-		this.outputPath = outputPath;
-		this.options = options;
-	}
-
-	@Override
-	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
-		this.monitor = monitor;
-		ArrayList<String> command = new ArrayList<String>();
-
-		// Name of the executable
-		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getWriteSgCommand());
-		command.add(toolName);
-
-		// Built-in arguments
-		if (options != null) {
-			for (String arg : options) {
-				command.add(arg);
-			}
-		}
-
-		// Extra arguments (should go before the file parameters)
-		for (String arg : PetrifyExtraUtilitySettings.getWriteSgArgs().split("\\s")) {
-			if (!arg.isEmpty()) {
-				command.add(arg);
-			}
-		}
-
-		// Input file
-		if ((inputPath != null) && !inputPath.isEmpty()) {
-			command.add(inputPath);
-		}
-
-		// Output file
-		if ((outputPath != null) && !outputPath.isEmpty()) {
-			command.add("-o");
-			command.add(outputPath);
-		}
-
-		ExternalProcessTask task = new ExternalProcessTask(command, null);
-		Result<? extends ExternalProcessResult> res = task.run(monitor);
-		if (res.getOutcome() != Outcome.FINISHED) {
-			return res;
-		}
-
-		ExternalProcessResult retVal = res.getReturnValue();
-		if (retVal.getReturnCode() == 0) {
-			return Result.finished(retVal);
-		} else {
-			return Result.failed(retVal);
-		}
-	}
+    private DataAccumulator stdoutAccum = new DataAccumulator();
+    private DataAccumulator stderrAccum = new DataAccumulator();
 
 
-	@Override
-	public void errorData(byte[] data) {
-		try {
-			stderrAccum.write(data);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		monitor.stderr(data);
-	}
+    public WriteSgTask(String inputPath, String outputPath, List<String> options) {
+        this.inputPath = inputPath;
+        this.outputPath = outputPath;
+        this.options = options;
+    }
 
-	@Override
-	public void outputData(byte[] data) {
-		try {
-			stdoutAccum.write(data);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		monitor.stdout(data);
-	}
+    @Override
+    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+        this.monitor = monitor;
+        ArrayList<String> command = new ArrayList<String>();
 
-	@Override
-	public void processFinished(int returnCode) {
-		this.returnCode = returnCode;
-		this.finished = true;
-	}
+        // Name of the executable
+        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getWriteSgCommand());
+        command.add(toolName);
+
+        // Built-in arguments
+        if (options != null) {
+            for (String arg : options) {
+                command.add(arg);
+            }
+        }
+
+        // Extra arguments (should go before the file parameters)
+        for (String arg : PetrifyExtraUtilitySettings.getWriteSgArgs().split("\\s")) {
+            if (!arg.isEmpty()) {
+                command.add(arg);
+            }
+        }
+
+        // Input file
+        if ((inputPath != null) && !inputPath.isEmpty()) {
+            command.add(inputPath);
+        }
+
+        // Output file
+        if ((outputPath != null) && !outputPath.isEmpty()) {
+            command.add("-o");
+            command.add(outputPath);
+        }
+
+        ExternalProcessTask task = new ExternalProcessTask(command, null);
+        Result<? extends ExternalProcessResult> res = task.run(monitor);
+        if (res.getOutcome() != Outcome.FINISHED) {
+            return res;
+        }
+
+        ExternalProcessResult retVal = res.getReturnValue();
+        if (retVal.getReturnCode() == 0) {
+            return Result.finished(retVal);
+        } else {
+            return Result.failed(retVal);
+        }
+    }
+
+
+    @Override
+    public void errorData(byte[] data) {
+        try {
+            stderrAccum.write(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        monitor.stderr(data);
+    }
+
+    @Override
+    public void outputData(byte[] data) {
+        try {
+            stdoutAccum.write(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        monitor.stdout(data);
+    }
+
+    @Override
+    public void processFinished(int returnCode) {
+        this.returnCode = returnCode;
+        this.finished = true;
+    }
 
 }

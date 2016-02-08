@@ -38,41 +38,41 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(ToolsProvider.class)
 public class VisualGraph extends AbstractVisualModel {
 
-	public VisualGraph(Graph model) {
-		this(model, null);
-	}
+    public VisualGraph(Graph model) {
+        this(model, null);
+    }
 
-	public VisualGraph(Graph model, VisualGroup root) {
-		super(model, root);
-		if (root == null) {
-			try {
-				createDefaultFlatStructure();
-			} catch (NodeCreationException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+    public VisualGraph(Graph model, VisualGroup root) {
+        super(model, root);
+        if (root == null) {
+            try {
+                createDefaultFlatStructure();
+            } catch (NodeCreationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
 
-	@Override
-	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
-	}
+    @Override
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+    }
 
-	@Override
-	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
-		validateConnection(first, second);
+    @Override
+    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+        validateConnection(first, second);
 
-		VisualComponent v1 = (VisualComponent)first;
-		VisualComponent v2 = (VisualComponent)second;
-		Node m1 = v1.getReferencedComponent();
-		Node m2 = v2.getReferencedComponent();
+        VisualComponent v1 = (VisualComponent)first;
+        VisualComponent v2 = (VisualComponent)second;
+        Node m1 = v1.getReferencedComponent();
+        Node m2 = v2.getReferencedComponent();
 
-		if (mConnection == null) {
-			mConnection = ((Graph)getMathModel()).connect(m1, m2);
-		}
-		VisualConnection vConnection = new VisualConnection(mConnection, v1, v2);
-		Container container = Hierarchy.getNearestContainer(v1, v2);
-		container.add(vConnection);
-		return vConnection;
-	}
+        if (mConnection == null) {
+            mConnection = ((Graph)getMathModel()).connect(m1, m2);
+        }
+        VisualConnection vConnection = new VisualConnection(mConnection, v1, v2);
+        Container container = Hierarchy.getNearestContainer(v1, v2);
+        container.add(vConnection);
+        return vConnection;
+    }
 }

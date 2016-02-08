@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface CpogSATProblemGenerator<T> {
-	CpogOptimisationTask<T> getFormula(String [] scenarios, BooleanVariable [] variables, int derivedVariables);
+    CpogOptimisationTask<T> getFormula(String [] scenarios, BooleanVariable [] variables, int derivedVariables);
 }

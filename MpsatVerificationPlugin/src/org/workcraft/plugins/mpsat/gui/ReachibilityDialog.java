@@ -22,67 +22,67 @@ import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class ReachibilityDialog extends JDialog {
-	private JPanel contents;
-	private JPanel solutionsPanel;
-	private JPanel buttonsPanel;
+    private JPanel contents;
+    private JPanel solutionsPanel;
+    private JPanel buttonsPanel;
 
-	public ReachibilityDialog(WorkspaceEntry we, String title, String message, List<Solution> solutions) {
+    public ReachibilityDialog(WorkspaceEntry we, String title, String message, List<Solution> solutions) {
 
-		double sizes[][] = {
-				{ TableLayout.FILL },
-				{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED }
-		};
-
-
-		solutionsPanel = new JPanel();
-		solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
-		for (Solution solution : solutions) {
-			solutionsPanel.add(new SolutionPanel(we, solution, new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					ReachibilityDialog.this.setVisible(false);
-				}
-			}));
-		}
-
-		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-		JButton closeButton = new JButton("Close");
-		getRootPane().setDefaultButton(closeButton);
-
-		closeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				close();
-			}
-		});
+        double sizes[][] = {
+                { TableLayout.FILL },
+                { TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED }
+        };
 
 
-	    getRootPane().registerKeyboardAction(new ActionListener() {
-	    	@Override
-	    	public void actionPerformed(ActionEvent e) {
-				close();
-	    	}
-	    },
-	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+        solutionsPanel = new JPanel();
+        solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
+        for (Solution solution : solutions) {
+            solutionsPanel.add(new SolutionPanel(we, solution, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ReachibilityDialog.this.setVisible(false);
+                }
+            }));
+        }
+
+        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        JButton closeButton = new JButton("Close");
+        getRootPane().setDefaultButton(closeButton);
+
+        closeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                close();
+            }
+        });
 
 
-		buttonsPanel.add(closeButton);
+        getRootPane().registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                close();
+            }
+        },
+        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-		contents = new JPanel(new TableLayout(sizes));
-		contents.add(new JLabel(message), "0 0");
-		contents.add(solutionsPanel, "0 1");
-		contents.add(buttonsPanel, "0 2");
 
-		this.setTitle(title);
-		this.setContentPane(contents);
-		setMinimumSize(new Dimension(350, 150));
-		setSize(new Dimension(500, 300));
-		this.setModal(true);
-	}
+        buttonsPanel.add(closeButton);
 
-	private void close() {
-		ReachibilityDialog.this.setVisible(false);
-	}
+        contents = new JPanel(new TableLayout(sizes));
+        contents.add(new JLabel(message), "0 0");
+        contents.add(solutionsPanel, "0 1");
+        contents.add(buttonsPanel, "0 2");
+
+        this.setTitle(title);
+        this.setContentPane(contents);
+        setMinimumSize(new Dimension(350, 150));
+        setSize(new Dimension(500, 300));
+        this.setModal(true);
+    }
+
+    private void close() {
+        ReachibilityDialog.this.setVisible(false);
+    }
 
 }

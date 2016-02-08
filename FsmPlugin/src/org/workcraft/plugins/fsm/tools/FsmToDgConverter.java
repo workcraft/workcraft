@@ -9,17 +9,17 @@ import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.plugins.graph.VisualGraph;
 
-public 	class FsmToDgConverter extends DefaultModelConverter<VisualFsm, VisualGraph>  {
+public     class FsmToDgConverter extends DefaultModelConverter<VisualFsm, VisualGraph>  {
 
-	public FsmToDgConverter(VisualFsm srcModel, VisualGraph dstModel) {
-		super(srcModel, dstModel);
-	}
+    public FsmToDgConverter(VisualFsm srcModel, VisualGraph dstModel) {
+        super(srcModel, dstModel);
+    }
 
-	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
-		result.put(State.class, Vertex.class);
-		return result;
-	}
+    @Override
+    public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
+        Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
+        result.put(State.class, Vertex.class);
+        return result;
+    }
 
 }

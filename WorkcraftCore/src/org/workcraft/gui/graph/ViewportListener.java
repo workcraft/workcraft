@@ -28,18 +28,18 @@ package org.workcraft.gui.graph;
  *
  */
 public interface ViewportListener {
-	/**
-	 * Called when viewport parameters (width, height or position) change.
-	 * @param sender
-	 * The viewport that has sent the notification.
-	 */
-	public void shapeChanged (Viewport sender);
+    /**
+     * Called when viewport parameters (width, height or position) change.
+     * @param sender
+     * The viewport that has sent the notification.
+     */
+    public void shapeChanged (Viewport sender);
 
 
-	/**
-	 * Called when viewport parameters (pan or zoom) change.
-	 * @param sender
-	 * The viewport that has sent the notification
-	 */
-	public void viewChanged (Viewport sender);
+    /**
+     * Called when viewport parameters (pan or zoom) change.
+     * @param sender
+     * The viewport that has sent the notification
+     */
+    public void viewChanged (Viewport sender);
 }

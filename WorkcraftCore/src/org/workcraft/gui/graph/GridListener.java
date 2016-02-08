@@ -28,10 +28,10 @@ package org.workcraft.gui.graph;
  *
  */
 public interface GridListener {
-	/**
-	 * The grid parameters (such as number of visible lines, major and minor line intervals, etc.) have changed.
-	 * @param sender
-	 * The grid that sent the event.
-	 */
-	public void gridChanged(Grid sender);
+    /**
+     * The grid parameters (such as number of visible lines, major and minor line intervals, etc.) have changed.
+     * @param sender
+     * The grid that sent the event.
+     */
+    public void gridChanged(Grid sender);
 }

@@ -39,53 +39,53 @@ import org.workcraft.gui.graph.tools.Decoration;
 @SVGIcon("images/icons/svg/terminal.svg")
 public class VisualReplicaPlace extends VisualReplica {
 
-	public VisualReplicaPlace() {
-		super();
-		removePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR);
-		removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
-		removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
-	}
+    public VisualReplicaPlace() {
+        super();
+        removePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR);
+        removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
+        removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+    }
 
-	public VisualReplicaPlace(VisualComponent master) {
-		super();
-		setMaster(master);
-	}
+    public VisualReplicaPlace(VisualComponent master) {
+        super();
+        setMaster(master);
+    }
 
-	@Override
-	public void draw(DrawRequest r)	{
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		cacheRenderedText(r);  // needed to better estimate the bounding box
-		Color colorisation = d.getColorisation();
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		drawNameInLocalSpace(r);
-	}
+    @Override
+    public void draw(DrawRequest r)    {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        cacheRenderedText(r);  // needed to better estimate the bounding box
+        Color colorisation = d.getColorisation();
+        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        drawNameInLocalSpace(r);
+    }
 
-	@Override
-	public boolean getNameVisibility() {
-		return true;
-	}
+    @Override
+    public boolean getNameVisibility() {
+        return true;
+    }
 
-	@Override
-	public Positioning getNamePositioning() {
-		return Positioning.CENTER;
-	}
+    @Override
+    public Positioning getNamePositioning() {
+        return Positioning.CENTER;
+    }
 
-	public Place getReferencedPlace() {
-		if (getMaster() instanceof VisualPlace) {
-			VisualPlace visualPlace = (VisualPlace)getMaster();
-			return visualPlace.getReferencedPlace();
-		}
-		return null;
-	}
+    public Place getReferencedPlace() {
+        if (getMaster() instanceof VisualPlace) {
+            VisualPlace visualPlace = (VisualPlace)getMaster();
+            return visualPlace.getReferencedPlace();
+        }
+        return null;
+    }
 
-	@Override
+    @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
         Rectangle2D nameBoundingBox = getNameBoundingBox();
         if (nameBoundingBox == null) {
-        	nameBoundingBox = new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
+            nameBoundingBox = new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
         }
-		return BoundingBoxHelper.expand(nameBoundingBox, 0.2, 0.2);
+        return BoundingBoxHelper.expand(nameBoundingBox, 0.2, 0.2);
     }
 
 }

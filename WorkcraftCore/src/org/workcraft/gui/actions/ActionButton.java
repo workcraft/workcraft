@@ -29,44 +29,44 @@ import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class ActionButton extends JButton implements Actor {
-	class ActionForwarder implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			ActionButton.this.fireActionPerformed();
-		}
-	}
+    class ActionForwarder implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            ActionButton.this.fireActionPerformed();
+        }
+    }
 
-	private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
-	private Action action = null;
+    private LinkedList<ScriptedActionListener> listeners = new LinkedList<ScriptedActionListener>();
+    private Action action = null;
 
-	public ActionButton(Action action, String text) {
-		super(text);
-		this.action = action;
-		action.addActor(this);
-		setEnabled(action.isEnabled());
+    public ActionButton(Action action, String text) {
+        super(text);
+        this.action = action;
+        action.addActor(this);
+        setEnabled(action.isEnabled());
 
-		addActionListener(new ActionForwarder());
-	}
+        addActionListener(new ActionForwarder());
+    }
 
-	public ActionButton(Action action) {
-		this(action, action.getText());
+    public ActionButton(Action action) {
+        this(action, action.getText());
 
-	}
+    }
 
-	private void fireActionPerformed() {
-		if (action != null)
-			for (ScriptedActionListener l : listeners)
-				l.actionPerformed(action);
-	}
+    private void fireActionPerformed() {
+        if (action != null)
+            for (ScriptedActionListener l : listeners)
+                l.actionPerformed(action);
+    }
 
-	public void addScriptedActionListener(ScriptedActionListener listener) {
-		listeners.add(listener);
-	}
+    public void addScriptedActionListener(ScriptedActionListener listener) {
+        listeners.add(listener);
+    }
 
-	public void removeScriptedActionListener(ScriptedActionListener listener) {
-		listeners.remove(listener);
-	}
+    public void removeScriptedActionListener(ScriptedActionListener listener) {
+        listeners.remove(listener);
+    }
 
-	public void actionEnableStateChanged(boolean actionEnableState) {
-		this.setEnabled(actionEnableState);
-	}
+    public void actionEnableStateChanged(boolean actionEnableState) {
+        this.setEnabled(actionEnableState);
+    }
 }

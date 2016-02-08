@@ -26,34 +26,34 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class SolutionPrettifier
 {
-	public static <T> CpogEncoding prettifySolution(CpogOptimisationTask<T> task, BooleanSolution solution)
-	{
-		if(solution==null)
-			return null;
+    public static <T> CpogEncoding prettifySolution(CpogOptimisationTask<T> task, BooleanSolution solution)
+    {
+        if(solution==null)
+            return null;
 
-		BooleanFormula[][] encodingVars = task.getEncodingVars();
-		BooleanFormula[] functionVars = task.getFunctionVars();
-		if(functionVars == null)
-			throw new RuntimeException("functionVars is null");
-		if(encodingVars == null)
-			throw new RuntimeException("encodingVars is null");
+        BooleanFormula[][] encodingVars = task.getEncodingVars();
+        BooleanFormula[] functionVars = task.getFunctionVars();
+        if(functionVars == null)
+            throw new RuntimeException("functionVars is null");
+        if(encodingVars == null)
+            throw new RuntimeException("encodingVars is null");
 
-		BooleanVisitor<BooleanFormula> substitutor = new SolutionSubstitutor(solution);
-		BooleanVisitor<Boolean> evaluator = new BooleanEvaluator();
+        BooleanVisitor<BooleanFormula> substitutor = new SolutionSubstitutor(solution);
+        BooleanVisitor<Boolean> evaluator = new BooleanEvaluator();
 
-		BooleanFormula[] functions = new BooleanFormula[functionVars.length];
+        BooleanFormula[] functions = new BooleanFormula[functionVars.length];
 
-		for(int i=0;i<functions.length;i++)
-			functions[i] = functionVars[i].accept(substitutor);
+        for(int i=0;i<functions.length;i++)
+            functions[i] = functionVars[i].accept(substitutor);
 
-		boolean[][] encoding = new boolean[encodingVars.length][];
-		for(int i=0;i<encodingVars.length;i++)
-		{
-			encoding[i] = new boolean[encodingVars[i].length];
-			for(int j=0;j<encodingVars[i].length;j++)
-				encoding[i][j] = encodingVars[i][j].accept(substitutor).accept(evaluator);
-		}
+        boolean[][] encoding = new boolean[encodingVars.length][];
+        for(int i=0;i<encodingVars.length;i++)
+        {
+            encoding[i] = new boolean[encodingVars[i].length];
+            for(int j=0;j<encodingVars[i].length;j++)
+                encoding[i][j] = encodingVars[i][j].accept(substitutor).accept(evaluator);
+        }
 
-		return new CpogEncoding(encoding, functions);
-	}
+        return new CpogEncoding(encoding, functions);
+    }
 }

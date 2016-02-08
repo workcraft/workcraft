@@ -14,15 +14,15 @@ import org.workcraft.plugins.fst.tools.FstSimulationTool;
 
 public class ToolsProvider implements CustomToolsProvider {
 
-	@Override
-	public Iterable<GraphEditorTool> getTools() {
-		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+    @Override
+    public Iterable<GraphEditorTool> getTools() {
+        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new SelectionTool(false));
-		result.add(new CommentGeneratorTool());
-		result.add(new ConnectionTool(false, true));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
-		result.add(new FstSimulationTool());
-		return result;
-	}
+        result.add(new SelectionTool(false));
+        result.add(new CommentGeneratorTool());
+        result.add(new ConnectionTool(false, true));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
+        result.add(new FstSimulationTool());
+        return result;
+    }
 }

@@ -41,48 +41,48 @@ import org.workcraft.plugins.petri.VisualTransition;
 @SVGIcon("images/icons/svg/transition.svg")
 public class VisualBundledTransition extends VisualTransition {
 
-	public VisualBundledTransition(BundledTransition transition) {
-		super(transition);
-	}
+    public VisualBundledTransition(BundledTransition transition) {
+        super(transition);
+    }
 
-	public BundledTransition getReferencedTransition() {
-		return (BundledTransition)getReferencedComponent();
-	}
+    public BundledTransition getReferencedTransition() {
+        return (BundledTransition)getReferencedComponent();
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		VisualPolicyNet model = (VisualPolicyNet)r.getModel();
-		double w = size - strokeWidth;
-		double h = size - strokeWidth;
-		double w2 = w / 2;
-		double h2 = h / 2;
-		Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        VisualPolicyNet model = (VisualPolicyNet)r.getModel();
+        double w = size - strokeWidth;
+        double h = size - strokeWidth;
+        double w2 = w / 2;
+        double h2 = h / 2;
+        Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
 
-		Collection<VisualBundle> bundles = model.getBundlesOfTransition(this);
-		if (bundles.size() > 0) {
-			h = (h - strokeWidth) /bundles.size();
-			h2 = h/2;
-		}
+        Collection<VisualBundle> bundles = model.getBundlesOfTransition(this);
+        if (bundles.size() > 0) {
+            h = (h - strokeWidth) /bundles.size();
+            h2 = h/2;
+        }
 
-		if (bundles.isEmpty()) {
-			g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-			g.fill(shape);
-		} else {
-			double y = -size/2 + strokeWidth + h2;
-			for (VisualBundle b: bundles) {
-				Shape bundleShape = new Rectangle2D.Double (-w2, y-h2, w, h);
-				g.setColor(Coloriser.colorise(b.getColor(), d.getBackground()));
-				g.fill(bundleShape);
-				y += h;
-			}
-		}
-		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		g.setStroke(new BasicStroke((float) strokeWidth));
-		g.draw(shape);
-		drawLabelInLocalSpace(r);
-		drawNameInLocalSpace(r);
-	}
+        if (bundles.isEmpty()) {
+            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.fill(shape);
+        } else {
+            double y = -size/2 + strokeWidth + h2;
+            for (VisualBundle b: bundles) {
+                Shape bundleShape = new Rectangle2D.Double (-w2, y-h2, w, h);
+                g.setColor(Coloriser.colorise(b.getColor(), d.getBackground()));
+                g.fill(bundleShape);
+                y += h;
+            }
+        }
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.setStroke(new BasicStroke((float) strokeWidth));
+        g.draw(shape);
+        drawLabelInLocalSpace(r);
+        drawNameInLocalSpace(r);
+    }
 
 }

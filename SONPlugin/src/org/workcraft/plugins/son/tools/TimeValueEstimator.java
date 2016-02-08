@@ -8,26 +8,26 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class TimeValueEstimator implements Tool{
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, SON.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, SON.class);
+    }
 
-	@Override
-	public String getSection(){
-		return "Time analysis";
-	}
+    @Override
+    public String getSection(){
+        return "Time analysis";
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "Estimate unspecified values";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Estimate unspecified values";
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
-		final TimeValueSetterTool tool = toolbox.getToolInstance(TimeValueSetterTool.class);
-		toolbox.selectTool(tool);
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
+        final TimeValueSetterTool tool = toolbox.getToolInstance(TimeValueSetterTool.class);
+        toolbox.selectTool(tool);
+    }
 
 }

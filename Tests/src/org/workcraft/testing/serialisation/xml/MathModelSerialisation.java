@@ -40,44 +40,44 @@ import org.workcraft.util.DataAccumulator;
 
 public class MathModelSerialisation {
 
-	public static void compareMathModels(Model model1, Model model2) {
-		Assert.assertTrue(model1.getTitle().equals(model2.getTitle()));
-		SerialisationTestingUtils.compareNodes (model1.getRoot(), model2.getRoot());
-	}
+    public static void compareMathModels(Model model1, Model model2) {
+        Assert.assertTrue(model1.getTitle().equals(model2.getTitle()));
+        SerialisationTestingUtils.compareNodes (model1.getRoot(), model2.getRoot());
+    }
 
-	public void runTest (STG stg) {
-		try {
-			PluginProvider mock = XMLSerialisationTestingUtils.createMockPluginManager();
+    public void runTest (STG stg) {
+        try {
+            PluginProvider mock = XMLSerialisationTestingUtils.createMockPluginManager();
 
-			// serialise
-			XMLModelSerialiser serialiser = new XMLModelSerialiser(mock);
+            // serialise
+            XMLModelSerialiser serialiser = new XMLModelSerialiser(mock);
 
-			DataAccumulator accum = new DataAccumulator();
-			serialiser.serialise(stg, accum, null);
+            DataAccumulator accum = new DataAccumulator();
+            serialiser.serialise(stg, accum, null);
 
-			System.out.println (new String(accum.getData()));
+            System.out.println (new String(accum.getData()));
 
-			// deserialise
-			XMLModelDeserialiser deserisaliser = new XMLModelDeserialiser(mock);
+            // deserialise
+            XMLModelDeserialiser deserisaliser = new XMLModelDeserialiser(mock);
 
-			STG stg2 = (STG)deserisaliser.deserialise(accum.getInputStream(), null, null).model;
+            STG stg2 = (STG)deserisaliser.deserialise(accum.getInputStream(), null, null).model;
 
-			compareMathModels(stg, stg2);
-		} catch (SerialisationException e) {
-			throw new RuntimeException(e);
-		} catch (DeserialisationException e) {
-			throw new RuntimeException(e);
-		}
-	}
+            compareMathModels(stg, stg2);
+        } catch (SerialisationException e) {
+            throw new RuntimeException(e);
+        } catch (DeserialisationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Test
-	public void SimpleSaveLoad() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
-		runTest (XMLSerialisationTestingUtils.createTestSTG1());
-	}
+    @Test
+    public void SimpleSaveLoad() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
+        runTest (XMLSerialisationTestingUtils.createTestSTG1());
+    }
 
-	@Test
-	public void SaveLoadWithGroups() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
-		runTest (XMLSerialisationTestingUtils.createTestSTG2());
-	}
+    @Test
+    public void SaveLoadWithGroups() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
+        runTest (XMLSerialisationTestingUtils.createTestSTG2());
+    }
 
 }

@@ -5,11 +5,11 @@ import org.workcraft.dom.math.MathNode;
 
 public class XmasConnection extends MathConnection {
 
-	public XmasConnection() {
-	}
+    public XmasConnection() {
+    }
 
-	public XmasConnection(MathNode first, MathNode second) {
-		super(first, second);
-	}
+    public XmasConnection(MathNode first, MathNode second) {
+        super(first, second);
+    }
 
 }

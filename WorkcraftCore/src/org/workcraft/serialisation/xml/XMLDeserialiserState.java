@@ -38,63 +38,63 @@ import org.workcraft.util.GeneralTwoWayMap;
 import org.workcraft.util.TwoWayMap;
 
 class XMLDeserialiserState implements References {
-	private final ReferenceResolver externalReferences;
-	private GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<String, Object>();
-	public HashMap<Object, Element> instanceElements = new HashMap<Object, Element>();
-	private ListMap<Container, Node> children = new ListMap<Container, Node>();
+    private final ReferenceResolver externalReferences;
+    private GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<String, Object>();
+    public HashMap<Object, Element> instanceElements = new HashMap<Object, Element>();
+    private ListMap<Container, Node> children = new ListMap<Container, Node>();
 
-	public XMLDeserialiserState(ReferenceResolver externalReferences) {
-		this.externalReferences = externalReferences;
-	}
+    public XMLDeserialiserState(ReferenceResolver externalReferences) {
+        this.externalReferences = externalReferences;
+    }
 
-	public ReferenceResolver getExternalReferences() {
-		return externalReferences;
-	}
+    public ReferenceResolver getExternalReferences() {
+        return externalReferences;
+    }
 
-	public References getInternalReferences() {
-		return this;
-	}
+    public References getInternalReferences() {
+        return this;
+    }
 
-	public void addChildNode (Container parent, Node child) {
-		children.put(parent, child);
-	}
+    public void addChildNode (Container parent, Node child) {
+        children.put(parent, child);
+    }
 
-	public List<Node> getChildren(Container parent) {
-		return children.get(parent);
-	}
+    public List<Node> getChildren(Container parent) {
+        return children.get(parent);
+    }
 
-	public void setInstanceElement (Object instance, Element element) {
-		instanceElements.put(instance, element);
-	}
+    public void setInstanceElement (Object instance, Element element) {
+        instanceElements.put(instance, element);
+    }
 
-	public Element getInstanceElement (Object instance) {
-		return instanceElements.get(instance);
-	}
+    public Element getInstanceElement (Object instance) {
+        return instanceElements.get(instance);
+    }
 
-	public void setObject (String reference, Object obj) {
-		internalReferenceMap.put(reference, obj);
-	}
+    public void setObject (String reference, Object obj) {
+        internalReferenceMap.put(reference, obj);
+    }
 
-	@Override
-	public Object getObject(String reference) {
-		if (reference.isEmpty()) return null;
+    @Override
+    public Object getObject(String reference) {
+        if (reference.isEmpty()) return null;
 
-		return internalReferenceMap.getValue(reference);
-	}
+        return internalReferenceMap.getValue(reference);
+    }
 
-	@Override
-	public String getReference(Object obj) {
-		return internalReferenceMap.getKey(obj);
-	}
+    @Override
+    public String getReference(Object obj) {
+        return internalReferenceMap.getKey(obj);
+    }
 
-	@Override
-	public Set<Object> getObjects() {
-		return internalReferenceMap.getValues();
-	}
+    @Override
+    public Set<Object> getObjects() {
+        return internalReferenceMap.getValues();
+    }
 
-	@Override
-	public Set<String> getReferences() {
-		return internalReferenceMap.getKeys();
-	}
+    @Override
+    public Set<String> getReferences() {
+        return internalReferenceMap.getKeys();
+    }
 
 }

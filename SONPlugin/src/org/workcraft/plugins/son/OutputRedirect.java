@@ -11,34 +11,34 @@ import org.workcraft.plugins.son.gui.TextAreaAppender;
 
 public class OutputRedirect {
 
-	public static void Redirect(int height, int width){
+    public static void Redirect(int height, int width){
 
-    	JTextArea jTextArea = new JTextArea(height, width);
+        JTextArea jTextArea = new JTextArea(height, width);
 
-    	JFrame win = new OutputArea(jTextArea);
+        JFrame win = new OutputArea(jTextArea);
 
-       	win.setVisible(true);
+           win.setVisible(true);
 
-       	setupLog4JAppender(jTextArea);
+           setupLog4JAppender(jTextArea);
 
-	}
+    }
 
-	private static void setupLog4JAppender(JTextArea jTextArea) {
+    private static void setupLog4JAppender(JTextArea jTextArea) {
 
-		TextAreaAppender.setTextArea(jTextArea);
+        TextAreaAppender.setTextArea(jTextArea);
 
-		Properties logProperties = new Properties();
-		logProperties.put("log4j.rootLogger", "INFO, CONSOLE, TEXTAREA");
+        Properties logProperties = new Properties();
+        logProperties.put("log4j.rootLogger", "INFO, CONSOLE, TEXTAREA");
 
-		logProperties.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender"); // A standard console appender
-		logProperties.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
-		logProperties.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%m%n");
+        logProperties.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender"); // A standard console appender
+        logProperties.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+        logProperties.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%m%n");
 
-		logProperties.put("log4j.appender.TEXTAREA", "org.workcraft.plugins.son.gui.TextAreaAppender");
-		logProperties.put("log4j.appender.TEXTAREA.layout", "org.apache.log4j.PatternLayout");
-		logProperties.put("log4j.appender.TEXTAREA.layout.ConversionPattern", "%m%n");
+        logProperties.put("log4j.appender.TEXTAREA", "org.workcraft.plugins.son.gui.TextAreaAppender");
+        logProperties.put("log4j.appender.TEXTAREA.layout", "org.apache.log4j.PatternLayout");
+        logProperties.put("log4j.appender.TEXTAREA.layout.ConversionPattern", "%m%n");
 
-		PropertyConfigurator.configure(logProperties);
-	}
+        PropertyConfigurator.configure(logProperties);
+    }
 
 }

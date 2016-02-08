@@ -34,19 +34,19 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class SolutionSubstitutor extends BooleanReplacer {
 
-	private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
+    private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
-	public SolutionSubstitutor(BooleanSolution solution) {
-		super(buildMap(solution), WORKER);
-	}
+    public SolutionSubstitutor(BooleanSolution solution) {
+        super(buildMap(solution), WORKER);
+    }
 
-	private static Map<BooleanVariable, BooleanFormula> buildMap(BooleanSolution solution) {
-		Map<BooleanVariable, BooleanFormula> result = new HashMap<BooleanVariable, BooleanFormula>();
-		for(BooleanVariable var : solution.getVariables()) {
-			BooleanFormula value = solution.getSolution(var) ? One.instance() : Zero.instance();
-			result.put(var, value);
-		}
-		return result;
-	}
+    private static Map<BooleanVariable, BooleanFormula> buildMap(BooleanSolution solution) {
+        Map<BooleanVariable, BooleanFormula> result = new HashMap<BooleanVariable, BooleanFormula>();
+        for(BooleanVariable var : solution.getVariables()) {
+            BooleanFormula value = solution.getSolution(var) ? One.instance() : Zero.instance();
+            result.put(var, value);
+        }
+        return result;
+    }
 
 }

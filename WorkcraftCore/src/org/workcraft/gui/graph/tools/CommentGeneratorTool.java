@@ -6,18 +6,18 @@ import org.workcraft.exceptions.NodeCreationException;
 
 public class CommentGeneratorTool extends NodeGeneratorTool {
 
-	public CommentGeneratorTool() {
-		super(new DefaultNodeGenerator(CommentNode.class) {
-			@Override
-			public MathNode createMathNode() throws NodeCreationException {
-				MathNode node = super.createMathNode();
-				return node;
-			}
-		});
-	}
+    public CommentGeneratorTool() {
+        super(new DefaultNodeGenerator(CommentNode.class) {
+            @Override
+            public MathNode createMathNode() throws NodeCreationException {
+                MathNode node = super.createMathNode();
+                return node;
+            }
+        });
+    }
 
-	@Override
-	public String getHintMessage() {
-		return "Click to create a text label.";
-	}
+    @Override
+    public String getHintMessage() {
+        return "Click to create a text label.";
+    }
 }

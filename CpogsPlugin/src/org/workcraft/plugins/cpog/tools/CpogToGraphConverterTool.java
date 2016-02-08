@@ -16,34 +16,34 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CpogToGraphConverterTool extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Directed Graph";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Directed Graph";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		MathModel mathModel = we.getModelEntry().getMathModel();
-		return mathModel.getClass().equals(CPOG.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        MathModel mathModel = we.getModelEntry().getMathModel();
+        return mathModel.getClass().equals(CPOG.class);
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		we.captureMemento();
-		try {
-			final VisualCPOG cpog = (VisualCPOG)we.getModelEntry().getVisualModel();
-			final VisualGraph graph = new VisualGraph(new Graph());
-			final CpogToGraphConverter converter = new CpogToGraphConverter(cpog, graph);
-			final Framework framework = Framework.getInstance();
-			final Workspace workspace = framework.getWorkspace();
-			final Path<String> directory = we.getWorkspacePath().getParent();
-			final String name = we.getWorkspacePath().getNode();
-			final ModelEntry me = new ModelEntry(new CpogDescriptor(), converter.getDstModel());
-			boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-			workspace.add(directory, name, me, false, openInEditor);
-		} finally {
-			we.cancelMemento();
-		}
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        we.captureMemento();
+        try {
+            final VisualCPOG cpog = (VisualCPOG)we.getModelEntry().getVisualModel();
+            final VisualGraph graph = new VisualGraph(new Graph());
+            final CpogToGraphConverter converter = new CpogToGraphConverter(cpog, graph);
+            final Framework framework = Framework.getInstance();
+            final Workspace workspace = framework.getWorkspace();
+            final Path<String> directory = we.getWorkspacePath().getParent();
+            final String name = we.getWorkspacePath().getNode();
+            final ModelEntry me = new ModelEntry(new CpogDescriptor(), converter.getDstModel());
+            boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+            workspace.add(directory, name, me, false, openInEditor);
+        } finally {
+            we.cancelMemento();
+        }
+    }
 
 }

@@ -28,44 +28,44 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
 public class Place extends MathNode {
-	public static final String PROPERTY_CAPACITY = "Capacity";
-	public static final String PROPERTY_TOKENS = "Tokens";
+    public static final String PROPERTY_CAPACITY = "Capacity";
+    public static final String PROPERTY_TOKENS = "Tokens";
 
-	protected int tokens = 0;
-	protected int capacity = 1;
+    protected int tokens = 0;
+    protected int capacity = 1;
 
-	public int getTokens() {
-		return tokens;
-	}
+    public int getTokens() {
+        return tokens;
+    }
 
-	public void setTokens(int value) {
-		if (value != tokens) {
-			if (value < 0) {
-				throw new ArgumentException("The number of tokens cannot be negative.");
-			}
-			if (value > capacity) {
-				setCapacity(value);
-			}
-			this.tokens = value;
-			sendNotification( new PropertyChangedEvent(this, PROPERTY_TOKENS) );
-		}
-	}
+    public void setTokens(int value) {
+        if (value != tokens) {
+            if (value < 0) {
+                throw new ArgumentException("The number of tokens cannot be negative.");
+            }
+            if (value > capacity) {
+                setCapacity(value);
+            }
+            this.tokens = value;
+            sendNotification( new PropertyChangedEvent(this, PROPERTY_TOKENS) );
+        }
+    }
 
-	public int getCapacity() {
-		return capacity;
-	}
+    public int getCapacity() {
+        return capacity;
+    }
 
-	public void setCapacity(int value) {
-		if (value != capacity) {
-			if (value < 1) {
-				throw new ArgumentException("Negative or zero capacity is not allowed.");
-			}
-			if (tokens > value) {
-				throw new ArgumentException("The place capacity "+ value + " is too small for the current number of tokens " + tokens + " .");
-			}
-			this.capacity = value;
-			sendNotification ( new PropertyChangedEvent (this, PROPERTY_CAPACITY));
-		}
-	}
+    public void setCapacity(int value) {
+        if (value != capacity) {
+            if (value < 1) {
+                throw new ArgumentException("Negative or zero capacity is not allowed.");
+            }
+            if (tokens > value) {
+                throw new ArgumentException("The place capacity "+ value + " is too small for the current number of tokens " + tokens + " .");
+            }
+            this.capacity = value;
+            sendNotification ( new PropertyChangedEvent (this, PROPERTY_CAPACITY));
+        }
+    }
 
 }

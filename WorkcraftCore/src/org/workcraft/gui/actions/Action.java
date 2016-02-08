@@ -24,29 +24,29 @@ package org.workcraft.gui.actions;
 import java.util.LinkedList;
 
 public abstract class Action/* extends AbstractAction */{
-	private static final long serialVersionUID = -2235480226869966860L;
-	private LinkedList<Actor> actors = new LinkedList<Actor>();
-	private boolean enabled = true;
+    private static final long serialVersionUID = -2235480226869966860L;
+    private LinkedList<Actor> actors = new LinkedList<Actor>();
+    private boolean enabled = true;
 
-	public abstract String getText();
-	public abstract void run();
+    public abstract String getText();
+    public abstract void run();
 
-	void addActor(Actor actor) {
-		actors.add(actor);
-	}
+    void addActor(Actor actor) {
+        actors.add(actor);
+    }
 
-	void removeActor(Actor actor) {
-		actors.remove(actor);
-	}
+    void removeActor(Actor actor) {
+        actors.remove(actor);
+    }
 
-	public void setEnabled(boolean enabled) {
-		if (this.enabled != enabled) {
-			this.enabled = enabled;
-			for (Actor actor : actors)
-				actor.actionEnableStateChanged(enabled);
-		}
-	}
-	public boolean isEnabled() {
-		return enabled;
-	}
+    public void setEnabled(boolean enabled) {
+        if (this.enabled != enabled) {
+            this.enabled = enabled;
+            for (Actor actor : actors)
+                actor.actionEnableStateChanged(enabled);
+        }
+    }
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

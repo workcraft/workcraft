@@ -31,23 +31,23 @@ import org.workcraft.util.XmlUtil;
 
 public class VisualConnectionSerialiser implements CustomXMLSerialiser {
 
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences,
-			NodeSerialiser nodeSerialiser) throws SerialisationException {
+    public void serialise(Element element, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences,
+            NodeSerialiser nodeSerialiser) throws SerialisationException {
 
-		VisualConnection vcon = (VisualConnection) object;
+        VisualConnection vcon = (VisualConnection) object;
 
-		element.setAttribute("first", internalReferences.getReference(vcon.getFirst()));
-		element.setAttribute("second", internalReferences.getReference(vcon.getSecond()));
-		element.setAttribute("ref", externalReferences.getReference(vcon.getReferencedConnection()));
+        element.setAttribute("first", internalReferences.getReference(vcon.getFirst()));
+        element.setAttribute("second", internalReferences.getReference(vcon.getSecond()));
+        element.setAttribute("ref", externalReferences.getReference(vcon.getReferencedConnection()));
 
-		Element graphicElement = XmlUtil.createChildElement("graphic", element);
+        Element graphicElement = XmlUtil.createChildElement("graphic", element);
 
-		nodeSerialiser.serialise(graphicElement, vcon.getGraphic());
-	}
+        nodeSerialiser.serialise(graphicElement, vcon.getGraphic());
+    }
 
-	public String getClassName() {
-		return VisualConnection.class.getName();
-	}
+    public String getClassName() {
+        return VisualConnection.class.getName();
+    }
 }

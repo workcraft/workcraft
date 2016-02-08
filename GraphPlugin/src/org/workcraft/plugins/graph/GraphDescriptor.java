@@ -6,19 +6,19 @@ import org.workcraft.dom.math.MathModel;
 
 public class GraphDescriptor implements ModelDescriptor {
 
-	@Override
-	public String getDisplayName() {
-		return "Directed Graph";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Directed Graph";
+    }
 
-	@Override
-	public MathModel createMathModel() {
-		return new Graph();
-	}
+    @Override
+    public MathModel createMathModel() {
+        return new Graph();
+    }
 
-	@Override
-	public VisualModelDescriptor getVisualModelDescriptor() {
-		return new VisualGraphDescriptor();
-	}
+    @Override
+    public VisualModelDescriptor getVisualModelDescriptor() {
+        return new VisualGraphDescriptor();
+    }
 
 }

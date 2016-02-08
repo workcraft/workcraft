@@ -34,42 +34,42 @@ import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ModelSerialiser;
 
 public class BuiltinSerialisers implements Module {
-	@Override
-	public void init() {
-		final Framework framework = Framework.getInstance();
-		final PluginManager pm = framework.getPluginManager();
-		pm.registerClass(ModelDeserialiser.class, new Initialiser<ModelDeserialiser>(){public ModelDeserialiser create(){return new XMLModelDeserialiser(framework.getPluginManager());}});
-		pm.registerClass(ModelSerialiser.class, new Initialiser<ModelSerialiser>(){public ModelSerialiser create(){return new XMLModelSerialiser(framework.getPluginManager());}});
+    @Override
+    public void init() {
+        final Framework framework = Framework.getInstance();
+        final PluginManager pm = framework.getPluginManager();
+        pm.registerClass(ModelDeserialiser.class, new Initialiser<ModelDeserialiser>(){public ModelDeserialiser create(){return new XMLModelDeserialiser(framework.getPluginManager());}});
+        pm.registerClass(ModelSerialiser.class, new Initialiser<ModelSerialiser>(){public ModelSerialiser create(){return new XMLModelSerialiser(framework.getPluginManager());}});
 
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, AffineTransformSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BooleanSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, DoubleSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, EnumSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, IntSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ColorSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, StringSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BezierSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ConnectionSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, VisualConnectionSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, VisualReplicaSerialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, FileSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, AffineTransformSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BooleanSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, DoubleSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, EnumSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, IntSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ColorSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, StringSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BezierSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, ConnectionSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, VisualConnectionSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, VisualReplicaSerialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, FileSerialiser.class);
 
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, AffineTransformDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, BooleanDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, DoubleDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, EnumDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, IntDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, ColorDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, StringDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, BezierDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, ConnectionDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, VisualConnectionDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, VisualReplicaDeserialiser.class);
-		pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, FileDeserialiser.class);
-	}
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, AffineTransformDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, BooleanDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, DoubleDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, EnumDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, IntDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, ColorDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, StringDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, BezierDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, ConnectionDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, VisualConnectionDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, VisualReplicaDeserialiser.class);
+        pm.registerClass(org.workcraft.serialisation.xml.XMLDeserialiser.class, FileDeserialiser.class);
+    }
 
-	@Override
-	public String getDescription() {
-		return "Built-in XML serialisers for basic data types";
-	}
+    @Override
+    public String getDescription() {
+        return "Built-in XML serialisers for basic data types";
+    }
 }

@@ -24,9 +24,9 @@ package org.workcraft.gui.propertyeditor;
 import org.workcraft.Config;
 
 public interface Settings extends Properties  {
-	public void save(Config config);
-	public void load(Config config);
+    public void save(Config config);
+    public void load(Config config);
 
-	public String getSection();
-	public String getName();
+    public String getSection();
+    public String getName();
 }

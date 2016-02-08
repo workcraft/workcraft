@@ -13,55 +13,55 @@ import org.workcraft.util.LogUtils;
 
 public class GenlibUtils {
 
-	public static FunctionComponent instantiateGate(final Gate gate, final String instanceName, final Circuit circuit) {
-		final FunctionComponent component = new FunctionComponent();
-		component.setModule(gate.name);
-		circuit.add(component);
-		if (instanceName != null) {
-			try {
-				circuit.setName(component, instanceName);
-			} catch (ArgumentException e) {
-				LogUtils.logWarningLine("Cannot set name '" + instanceName +"' for component '" + circuit.getName(component) + "'.");
-			}
-		}
+    public static FunctionComponent instantiateGate(final Gate gate, final String instanceName, final Circuit circuit) {
+        final FunctionComponent component = new FunctionComponent();
+        component.setModule(gate.name);
+        circuit.add(component);
+        if (instanceName != null) {
+            try {
+                circuit.setName(component, instanceName);
+            } catch (ArgumentException e) {
+                LogUtils.logWarningLine("Cannot set name '" + instanceName +"' for component '" + circuit.getName(component) + "'.");
+            }
+        }
 
-		FunctionContact contact = new FunctionContact(IOType.OUTPUT);
-		component.add(contact);
-		circuit.setName(contact, gate.function.name);
-		String setFunction = getSetFunction(gate);
-		String resetFunction = getResetFunction(gate);
-		if (CommonDebugSettings.getVerboseImport()) {
-			LogUtils.logInfoLine("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
-			LogUtils.logInfoLine("  Set function: " + setFunction);
-			LogUtils.logInfoLine("  Reset function: " + resetFunction);
-		}
-		try {
-			BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setFunction);
-			contact.setSetFunction(setFormula);
-			BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetFunction);
-			contact.setResetFunction(resetFormula);
-		} catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e) {
-			throw new RuntimeException(e);
-		}
-		return component;
-	}
+        FunctionContact contact = new FunctionContact(IOType.OUTPUT);
+        component.add(contact);
+        circuit.setName(contact, gate.function.name);
+        String setFunction = getSetFunction(gate);
+        String resetFunction = getResetFunction(gate);
+        if (CommonDebugSettings.getVerboseImport()) {
+            LogUtils.logInfoLine("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
+            LogUtils.logInfoLine("  Set function: " + setFunction);
+            LogUtils.logInfoLine("  Reset function: " + resetFunction);
+        }
+        try {
+            BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setFunction);
+            contact.setSetFunction(setFormula);
+            BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetFunction);
+            contact.setResetFunction(resetFormula);
+        } catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return component;
+    }
 
-	private static String getSetFunction(Gate gate) {
-		String result = null;
-		if (gate.isSequential()) {
-			result = ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq);
-		} else {
-			result = gate.function.formula;
-		}
-		return result;
-	}
+    private static String getSetFunction(Gate gate) {
+        String result = null;
+        if (gate.isSequential()) {
+            result = ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq);
+        } else {
+            result = gate.function.formula;
+        }
+        return result;
+    }
 
-	private static String getResetFunction(Gate gate) {
-		String result = null;
-		if (gate.isSequential()) {
-			result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq);
-		}
-		return result;
-	}
+    private static String getResetFunction(Gate gate) {
+        String result = null;
+        if (gate.isSequential()) {
+            result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq);
+        }
+        return result;
+    }
 
 }

@@ -29,42 +29,42 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public abstract class Nf<C> implements BooleanFormula {
 
-	private List<C> clauses = new ArrayList<C>();
+    private List<C> clauses = new ArrayList<C>();
 
-	public Nf()
-	{
-	}
+    public Nf()
+    {
+    }
 
-	public Nf(C... clauses)
-	{
-		this(Arrays.asList(clauses));
-	}
+    public Nf(C... clauses)
+    {
+        this(Arrays.asList(clauses));
+    }
 
-	public Nf(List<C> clauses) {
-		this.clauses = new ArrayList<C>(clauses);
-	}
+    public Nf(List<C> clauses) {
+        this.clauses = new ArrayList<C>(clauses);
+    }
 
-	public void setClauses(List<C> clauses) {
-		this.clauses = new ArrayList<C>(clauses);
-	}
+    public void setClauses(List<C> clauses) {
+        this.clauses = new ArrayList<C>(clauses);
+    }
 
-	public List<C> getClauses() {
-		return clauses;
-	}
+    public List<C> getClauses() {
+        return clauses;
+    }
 
-	public void add(List<C> list)
-	{
-		clauses.addAll(list);
-	}
+    public void add(List<C> list)
+    {
+        clauses.addAll(list);
+    }
 
-	public void add(C... arr)
-	{
-		clauses.addAll(Arrays.asList(arr));
-	}
+    public void add(C... arr)
+    {
+        clauses.addAll(Arrays.asList(arr));
+    }
 
-	public abstract <T> T accept(BooleanVisitor<T> visitor);
+    public abstract <T> T accept(BooleanVisitor<T> visitor);
 
-	public void add(Nf<C> nf) {
-		add(nf.getClauses());
-	}
+    public void add(Nf<C> nf) {
+        add(nf.getClauses());
+    }
 }

@@ -30,17 +30,17 @@ import org.workcraft.history.HistoryEvent;
 
 @SuppressWarnings("serial")
 public class HistoryListModel extends AbstractListModel {
-	List <HistoryEvent> events;
+    List <HistoryEvent> events;
 
-	public HistoryListModel (List<HistoryEvent> events) {
-		super();
-	}
+    public HistoryListModel (List<HistoryEvent> events) {
+        super();
+    }
 
-	public Object getElementAt(int index) {
-		return events.get(index).getEventDescription();
-	}
+    public Object getElementAt(int index) {
+        return events.get(index).getEventDescription();
+    }
 
-	public int getSize() {
-		return events.size();
-	}
+    public int getSize() {
+        return events.size();
+    }
 }

@@ -6,21 +6,21 @@ import javax.swing.text.PlainDocument;
 
 @SuppressWarnings("serial")
 public class IntDocument extends PlainDocument {
-	private int limit;
+    private int limit;
 
-	public IntDocument(int limit) {
-		super();
-		this.limit = limit;
-	}
+    public IntDocument(int limit) {
+        super();
+        this.limit = limit;
+    }
 
-	@Override
-	public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-		if (str != null) {
-			String s =  str.replaceAll("\\D++", "");
-			if (getLength() + s.length() <= limit) {
-				super.insertString(offset, s, attr);
-			}
-		}
-	}
+    @Override
+    public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+        if (str != null) {
+            String s =  str.replaceAll("\\D++", "");
+            if (getLength() + s.length() <= limit) {
+                super.insertString(offset, s, attr);
+            }
+        }
+    }
 
 }

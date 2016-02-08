@@ -43,130 +43,130 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualImplicitPlaceArc extends VisualConnection {
-	private STGPlace implicitPlace;
-	private MathConnection refCon1;
-	private MathConnection refCon2;
+    private STGPlace implicitPlace;
+    private MathConnection refCon1;
+    private MathConnection refCon2;
 
-	private static double tokenSpaceSize = 0.8;
-	private static double singleTokenSize = tokenSpaceSize / 1.9;
-	private static double multipleTokenSeparation = 0.0125;
+    private static double tokenSpaceSize = 0.8;
+    private static double singleTokenSize = tokenSpaceSize / 1.9;
+    private static double multipleTokenSeparation = 0.0125;
 
-	protected Color tokenColor = CommonVisualSettings.getBorderColor();
+    protected Color tokenColor = CommonVisualSettings.getBorderColor();
 
-	public VisualImplicitPlaceArc () {
-		super();
-		addPropertyDeclarations();
-	}
+    public VisualImplicitPlaceArc () {
+        super();
+        addPropertyDeclarations();
+    }
 
-	public VisualImplicitPlaceArc (VisualComponent first, VisualComponent second,
-			MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
-		super(null, first, second);
-		this.refCon1 = refCon1;
-		this.refCon2 = refCon2;
-		this.implicitPlace = implicitPlace;
+    public VisualImplicitPlaceArc (VisualComponent first, VisualComponent second,
+            MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
+        super(null, first, second);
+        this.refCon1 = refCon1;
+        this.refCon2 = refCon2;
+        this.implicitPlace = implicitPlace;
 
-		addPlaceObserver(implicitPlace);
-		addPropertyDeclarations();
-	}
+        addPlaceObserver(implicitPlace);
+        addPropertyDeclarations();
+    }
 
-	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-				this, Place.PROPERTY_TOKENS, Integer.class, true, true, true) {
-			public void setter(VisualImplicitPlaceArc object, Integer value) {
-				object.getImplicitPlace().setTokens(value);
-			}
-			public Integer getter(VisualImplicitPlaceArc object) {
-				return object.getImplicitPlace().getTokens();
-			}
-		});
+    private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
+                this, Place.PROPERTY_TOKENS, Integer.class, true, true, true) {
+            public void setter(VisualImplicitPlaceArc object, Integer value) {
+                object.getImplicitPlace().setTokens(value);
+            }
+            public Integer getter(VisualImplicitPlaceArc object) {
+                return object.getImplicitPlace().getTokens();
+            }
+        });
 
-		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
-				this, Place.PROPERTY_CAPACITY, Integer.class, true, true, true) {
-			public void setter(VisualImplicitPlaceArc object, Integer value) {
-				object.getImplicitPlace().setCapacity(value);
-			}
-			public Integer getter(VisualImplicitPlaceArc object) {
-				return object.getImplicitPlace().getCapacity();
-			}
-		});
+        addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Integer>(
+                this, Place.PROPERTY_CAPACITY, Integer.class, true, true, true) {
+            public void setter(VisualImplicitPlaceArc object, Integer value) {
+                object.getImplicitPlace().setCapacity(value);
+            }
+            public Integer getter(VisualImplicitPlaceArc object) {
+                return object.getImplicitPlace().getCapacity();
+            }
+        });
 
-		addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Color>(
-				this, VisualPlace.PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
-			public void setter(VisualImplicitPlaceArc object, Color value) {
-				object.setTokenColor(value);
-			}
-			public Color getter(VisualImplicitPlaceArc object) {
-				return object.getTokenColor();
-			}
-		});
-	}
+        addPropertyDeclaration(new PropertyDeclaration<VisualImplicitPlaceArc, Color>(
+                this, VisualPlace.PROPERTY_TOKEN_COLOR, Color.class, true, true, true) {
+            public void setter(VisualImplicitPlaceArc object, Color value) {
+                object.setTokenColor(value);
+            }
+            public Color getter(VisualImplicitPlaceArc object) {
+                return object.getTokenColor();
+            }
+        });
+    }
 
-	private void addPlaceObserver(Place implicitPlace) {
-		implicitPlace.addObserver( new StateObserver() {
-			public void notify(StateEvent e) {
-				observableStateImpl.sendNotification(e);
-			}
-		});
-	}
+    private void addPlaceObserver(Place implicitPlace) {
+        implicitPlace.addObserver( new StateObserver() {
+            public void notify(StateEvent e) {
+                observableStateImpl.sendNotification(e);
+            }
+        });
+    }
 
-	public void setImplicitPlaceArcDependencies(MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
-		this.refCon1 = refCon1;
-		this.refCon2 = refCon2;
-		this.implicitPlace = implicitPlace;
+    public void setImplicitPlaceArcDependencies(MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
+        this.refCon1 = refCon1;
+        this.refCon2 = refCon2;
+        this.implicitPlace = implicitPlace;
 
-		addPlaceObserver(implicitPlace);
-	}
+        addPlaceObserver(implicitPlace);
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		super.draw(r);
-		int tokens = implicitPlace.getTokens();
-		Point2D p = getPointOnConnection(0.5);
-		Graphics2D g = r.getGraphics();
-		g.translate(p.getX(), p.getY());
-		VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, tokenColor);
-	}
+    @Override
+    public void draw(DrawRequest r) {
+        super.draw(r);
+        int tokens = implicitPlace.getTokens();
+        Point2D p = getPointOnConnection(0.5);
+        Graphics2D g = r.getGraphics();
+        g.translate(p.getX(), p.getY());
+        VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, tokenColor);
+    }
 
-	@NoAutoSerialisation
-	public STGPlace getImplicitPlace() {
-		return implicitPlace;
-	}
+    @NoAutoSerialisation
+    public STGPlace getImplicitPlace() {
+        return implicitPlace;
+    }
 
-	public MathConnection getRefCon1() {
-		return refCon1;
-	}
+    public MathConnection getRefCon1() {
+        return refCon1;
+    }
 
-	public MathConnection getRefCon2() {
-		return refCon2;
-	}
+    public MathConnection getRefCon2() {
+        return refCon2;
+    }
 
-	@Override
-	public Set<MathNode> getMathReferences() {
-		Set<MathNode> ret = new HashSet<MathNode>();
-		ret.add(implicitPlace);
-		ret.add(refCon1);
-		ret.add(refCon2);
-		return ret;
-	}
+    @Override
+    public Set<MathNode> getMathReferences() {
+        Set<MathNode> ret = new HashSet<MathNode>();
+        ret.add(implicitPlace);
+        ret.add(refCon1);
+        ret.add(refCon2);
+        return ret;
+    }
 
-	public Color getTokenColor() {
-		return tokenColor;
-	}
+    public Color getTokenColor() {
+        return tokenColor;
+    }
 
-	public void setTokenColor(Color tokenColor) {
-		this.tokenColor = tokenColor;
-		sendNotification(new PropertyChangedEvent(this, VisualPlace.PROPERTY_TOKEN_COLOR));
-	}
+    public void setTokenColor(Color tokenColor) {
+        this.tokenColor = tokenColor;
+        sendNotification(new PropertyChangedEvent(this, VisualPlace.PROPERTY_TOKEN_COLOR));
+    }
 
-	@Override
-	public void copyStyle(Stylable src) {
-		super.copyStyle(src);
-		if (src instanceof VisualImplicitPlaceArc) {
-			VisualImplicitPlaceArc srcImplicitPlaceArc = (VisualImplicitPlaceArc)src;
-			setTokenColor(srcImplicitPlaceArc.getTokenColor());
-			STGPlace srcPlace = srcImplicitPlaceArc.getImplicitPlace();
-			getImplicitPlace().setTokens(srcPlace.getTokens());
-			getImplicitPlace().setCapacity(srcPlace.getCapacity());
-		}
-	}
+    @Override
+    public void copyStyle(Stylable src) {
+        super.copyStyle(src);
+        if (src instanceof VisualImplicitPlaceArc) {
+            VisualImplicitPlaceArc srcImplicitPlaceArc = (VisualImplicitPlaceArc)src;
+            setTokenColor(srcImplicitPlaceArc.getTokenColor());
+            STGPlace srcPlace = srcImplicitPlaceArc.getImplicitPlace();
+            getImplicitPlace().setTokens(srcPlace.getTokens());
+            getImplicitPlace().setCapacity(srcPlace.getCapacity());
+        }
+    }
 }

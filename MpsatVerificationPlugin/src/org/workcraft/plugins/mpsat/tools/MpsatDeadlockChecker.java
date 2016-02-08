@@ -7,29 +7,29 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatDeadlockChecker extends AbstractMpsatChecker  {
 
-	@Override
-	public String getDisplayName() {
-		return "Deadlock freeness [MPSat]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Deadlock freeness [MPSat]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, PetriNetModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, PetriNetModel.class);
+    }
 
-	@Override
-	public int getPriority() {
-		return 3;
-	}
+    @Override
+    public int getPriority() {
+        return 3;
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.TOP;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.TOP;
+    }
 
-	@Override
-	public MpsatSettings getSettings() {
-		return MpsatSettings.getDeadlockSettings();
-	}
+    @Override
+    public MpsatSettings getSettings() {
+        return MpsatSettings.getDeadlockSettings();
+    }
 
 }

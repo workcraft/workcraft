@@ -34,51 +34,51 @@ import org.workcraft.util.Hierarchy;
 
 public class CPOG extends AbstractMathModel {
 
-	public CPOG() {
-		this(null, null);
-	}
+    public CPOG() {
+        this(null, null);
+    }
 
-	public CPOG(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-			@Override
-			public String getPrefix(Node node) {
-				if (node instanceof Vertex) return "v";
-				if (node instanceof Variable) return "var";
-				if (node instanceof RhoClause) return "rho";
-				return super.getPrefix(node);
-			}
-		});
+    public CPOG(Container root, References refs) {
+        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+            @Override
+            public String getPrefix(Node node) {
+                if (node instanceof Vertex) return "v";
+                if (node instanceof Variable) return "var";
+                if (node instanceof RhoClause) return "rho";
+                return super.getPrefix(node);
+            }
+        });
 
-		new ConditionConsistencySupervisor(this).attach(getRoot());
-	}
+        new ConditionConsistencySupervisor(this).attach(getRoot());
+    }
 
-	public Arc connect(Vertex first, Vertex second) {
-		Arc con = new Arc(first, second);
-		getRoot().add(con);
-		return con;
-	}
+    public Arc connect(Vertex first, Vertex second) {
+        Arc con = new Arc(first, second);
+        getRoot().add(con);
+        return con;
+    }
 
-	public DynamicVariableConnection connect(Vertex first, Variable second) throws InvalidConnectionException {
-		DynamicVariableConnection con = new DynamicVariableConnection(first, second);
-		getRoot().add(con);
-		return con;
-	}
+    public DynamicVariableConnection connect(Vertex first, Variable second) throws InvalidConnectionException {
+        DynamicVariableConnection con = new DynamicVariableConnection(first, second);
+        getRoot().add(con);
+        return con;
+    }
 
-	public Collection<Variable> getVariables() {
-		return Hierarchy.getChildrenOfType(getRoot(), Variable.class);
-	}
+    public Collection<Variable> getVariables() {
+        return Hierarchy.getChildrenOfType(getRoot(), Variable.class);
+    }
 
-	public Collection<Vertex> getVertices() {
-		return Hierarchy.getChildrenOfType(getRoot(), Vertex.class);
-	}
+    public Collection<Vertex> getVertices() {
+        return Hierarchy.getChildrenOfType(getRoot(), Vertex.class);
+    }
 
-	@Override
-	public ModelProperties getProperties(Node node) {
-		ModelProperties properties = super.getProperties(node);
-		if (node != null)  {
-			properties.removeByName("Name");
-		}
-		return properties;
-	}
+    @Override
+    public ModelProperties getProperties(Node node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node != null)  {
+            properties.removeByName("Name");
+        }
+        return properties;
+    }
 
 }

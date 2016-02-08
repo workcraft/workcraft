@@ -24,19 +24,19 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class Zero implements BooleanFormula {
 
-	private static final Zero instance = new Zero();
+    private static final Zero instance = new Zero();
 
-	private Zero() {
-	}
+    private Zero() {
+    }
 
 
-	public static Zero instance() {
-		return instance;
-	}
+    public static Zero instance() {
+        return instance;
+    }
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
 }

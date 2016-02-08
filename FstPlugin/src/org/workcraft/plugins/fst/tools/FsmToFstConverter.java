@@ -19,46 +19,46 @@ import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualSignalEvent;
 
-public 	class FsmToFstConverter extends DefaultModelConverter<VisualFsm, VisualFst>  {
+public     class FsmToFstConverter extends DefaultModelConverter<VisualFsm, VisualFst>  {
 
-	public FsmToFstConverter(VisualFsm srcModel, VisualFst dstModel) {
-		super(srcModel, dstModel);
-	}
+    public FsmToFstConverter(VisualFsm srcModel, VisualFst dstModel) {
+        super(srcModel, dstModel);
+    }
 
-	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
-		result.put(State.class, State.class);
-		return result;
-	}
+    @Override
+    public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
+        Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
+        result.put(State.class, State.class);
+        return result;
+    }
 
-	@Override
-	public VisualConnection convertConnection(VisualConnection srcConnection) {
-		VisualConnection dstConnection = super.convertConnection(srcConnection);
-		if ((srcConnection instanceof VisualEvent) && (dstConnection instanceof VisualSignalEvent)) {
-			Event srcEvent = (Event)srcConnection.getReferencedConnection();
-			Symbol srcSymbol = srcEvent.getSymbol();
-			Fsm fsm = (Fsm)getSrcModel().getMathModel();
-			String name = fsm.getName(srcSymbol);
-			Fst fst = (Fst)getDstModel().getMathModel();
-			Signal dstSignal = fst.getOrCreateSignal(name, Type.DUMMY);
-			SignalEvent dstSignalEvent = (SignalEvent)dstConnection.getReferencedConnection();
-			dstSignalEvent.setSymbol(dstSignal);
-		}
-		return dstConnection;
-	}
+    @Override
+    public VisualConnection convertConnection(VisualConnection srcConnection) {
+        VisualConnection dstConnection = super.convertConnection(srcConnection);
+        if ((srcConnection instanceof VisualEvent) && (dstConnection instanceof VisualSignalEvent)) {
+            Event srcEvent = (Event)srcConnection.getReferencedConnection();
+            Symbol srcSymbol = srcEvent.getSymbol();
+            Fsm fsm = (Fsm)getSrcModel().getMathModel();
+            String name = fsm.getName(srcSymbol);
+            Fst fst = (Fst)getDstModel().getMathModel();
+            Signal dstSignal = fst.getOrCreateSignal(name, Type.DUMMY);
+            SignalEvent dstSignalEvent = (SignalEvent)dstConnection.getReferencedConnection();
+            dstSignalEvent.setSymbol(dstSignal);
+        }
+        return dstConnection;
+    }
 
-	@Override
-	public void postprocessing() {
-		VisualFsm fsm = getSrcModel();
-		for (VisualState srcState: fsm.getVisualStates()) {
-			if (srcState.getReferencedState().isInitial()) {
-				VisualState dstState = (VisualState)getSrcToDstNode(srcState);
-				if (dstState != null) {
-					dstState.getReferencedState().setInitial(true);
-				}
-			}
-		}
-	}
+    @Override
+    public void postprocessing() {
+        VisualFsm fsm = getSrcModel();
+        for (VisualState srcState: fsm.getVisualStates()) {
+            if (srcState.getReferencedState().isInitial()) {
+                VisualState dstState = (VisualState)getSrcToDstNode(srcState);
+                if (dstState != null) {
+                    dstState.getReferencedState().setInitial(true);
+                }
+            }
+        }
+    }
 
 }

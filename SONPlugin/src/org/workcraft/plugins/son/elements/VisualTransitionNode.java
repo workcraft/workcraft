@@ -7,14 +7,14 @@ import org.workcraft.dom.visual.DrawRequest;
 
 public interface VisualTransitionNode{
 
-	public void setFillColor(Color color);
+    public void setFillColor(Color color);
 
-	public void setForegroundColor(Color foregroundColor);
+    public void setForegroundColor(Color foregroundColor);
 
-	public TransitionNode getMathTransitionNode();
+    public TransitionNode getMathTransitionNode();
 
-	public void drawFault(DrawRequest r);
+    public void drawFault(DrawRequest r);
 
-	public boolean isFaulty();
+    public boolean isFaulty();
 
 }

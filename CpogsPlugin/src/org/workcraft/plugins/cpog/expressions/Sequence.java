@@ -22,13 +22,13 @@ package org.workcraft.plugins.cpog.expressions;
 
 public class Sequence extends BinaryCpogFormula {
 
-	Sequence(CpogFormula x, CpogFormula y)
-	{
-		super(x,y);
-	}
+    Sequence(CpogFormula x, CpogFormula y)
+    {
+        super(x,y);
+    }
 
-	@Override
-	public <T> T accept(CpogVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(CpogVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

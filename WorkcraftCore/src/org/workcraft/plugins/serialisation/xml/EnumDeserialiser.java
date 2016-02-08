@@ -26,17 +26,17 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class EnumDeserialiser implements BasicXMLDeserialiser {
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object deserialise(Element element) throws DeserialisationException {
-		try {
-			Class<? extends Enum> cls = Class.forName(element.getAttribute("enum-class")).asSubclass(Enum.class);
-			return Enum.valueOf(cls, element.getAttribute("value"));
-		} catch (ClassNotFoundException e) {
-			throw new DeserialisationException(e);
-		}
-	}
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Object deserialise(Element element) throws DeserialisationException {
+        try {
+            Class<? extends Enum> cls = Class.forName(element.getAttribute("enum-class")).asSubclass(Enum.class);
+            return Enum.valueOf(cls, element.getAttribute("value"));
+        } catch (ClassNotFoundException e) {
+            throw new DeserialisationException(e);
+        }
+    }
 
-	public String getClassName() {
-		return Enum.class.getName();
-	}
+    public String getClassName() {
+        return Enum.class.getName();
+    }
 }

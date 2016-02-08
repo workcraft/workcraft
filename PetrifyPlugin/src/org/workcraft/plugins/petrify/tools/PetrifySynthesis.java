@@ -10,18 +10,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 abstract public class PetrifySynthesis extends SynthesisTool {
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STGModel.class);
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		SynthesisTask task = new SynthesisTask(we, getSynthesisParameter());
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Petrify logic synthesis", new SynthesisResultHandler(we));
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        SynthesisTask task = new SynthesisTask(we, getSynthesisParameter());
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(task, "Petrify logic synthesis", new SynthesisResultHandler(we));
+    }
 
-	abstract public String[] getSynthesisParameter();
+    abstract public String[] getSynthesisParameter();
 
 }

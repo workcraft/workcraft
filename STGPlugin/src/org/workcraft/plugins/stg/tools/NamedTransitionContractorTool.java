@@ -25,58 +25,58 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class NamedTransitionContractorTool extends TransitionContractorTool {
 
-	HashSet<VisualPlace> convertedImplicitPlaces = new HashSet<>();
+    HashSet<VisualPlace> convertedImplicitPlaces = new HashSet<>();
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof STG;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof STG;
+    }
 
-	@Override
-	public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
-		super.beforeContraction(visualModel, visualTransition);
-		convertedImplicitPlaces.clear();
-		if (visualModel instanceof VisualSTG) {
-			VisualSTG visualStg = (VisualSTG)visualModel;
-			Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
-			for (Connection connection: adjacentConnections) {
-				if (connection instanceof VisualImplicitPlaceArc) {
-					VisualPlace formerImplicitPlace = visualStg.makeExplicit((VisualImplicitPlaceArc)connection);
-					convertedImplicitPlaces.add(formerImplicitPlace);
-				}
-			}
-		}
-	}
+    @Override
+    public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
+        super.beforeContraction(visualModel, visualTransition);
+        convertedImplicitPlaces.clear();
+        if (visualModel instanceof VisualSTG) {
+            VisualSTG visualStg = (VisualSTG)visualModel;
+            Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
+            for (Connection connection: adjacentConnections) {
+                if (connection instanceof VisualImplicitPlaceArc) {
+                    VisualPlace formerImplicitPlace = visualStg.makeExplicit((VisualImplicitPlaceArc)connection);
+                    convertedImplicitPlaces.add(formerImplicitPlace);
+                }
+            }
+        }
+    }
 
-	@Override
-	public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
-			HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap) {
-		super.afterContraction(visualModel, visualTransition, productPlaceMap);
-		if (visualModel instanceof VisualSTG) {
-			VisualSTG visualStg = (VisualSTG)visualModel;
-			for (VisualPlace productPlace: productPlaceMap.keySet()) {
-				Pair<VisualPlace, VisualPlace> originalPlacePair = productPlaceMap.get(productPlace);
-				VisualPlace predPlace = originalPlacePair.getFirst();
-				VisualPlace succPlace = originalPlacePair.getSecond();
-				if (convertedImplicitPlaces.contains(predPlace) && convertedImplicitPlaces.contains(succPlace)) {
-					visualStg.maybeMakeImplicit(productPlace, true);
-				}
-			}
-		}
-	}
+    @Override
+    public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
+            HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap) {
+        super.afterContraction(visualModel, visualTransition, productPlaceMap);
+        if (visualModel instanceof VisualSTG) {
+            VisualSTG visualStg = (VisualSTG)visualModel;
+            for (VisualPlace productPlace: productPlaceMap.keySet()) {
+                Pair<VisualPlace, VisualPlace> originalPlacePair = productPlaceMap.get(productPlace);
+                VisualPlace predPlace = originalPlacePair.getFirst();
+                VisualPlace succPlace = originalPlacePair.getSecond();
+                if (convertedImplicitPlaces.contains(predPlace) && convertedImplicitPlaces.contains(succPlace)) {
+                    visualStg.maybeMakeImplicit(productPlace, true);
+                }
+            }
+        }
+    }
 
-	@Override
-	public VisualPlace createProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace) {
-		Container visualContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
-		Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
-		MathModel mathModel = visualModel.getMathModel();
-		HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)mathModel.getReferenceManager();
-		NameManager nameManagerer = refManager.getNameManager((NamespaceProvider)mathContainer);
-		String predName = visualModel.getMathName(predPlace);
-		String succName = visualModel.getMathName(succPlace);
-		String productName = nameManagerer.getDerivedName(null, predName + succName);
-		STGPlace mathPlace = mathModel.createNode(productName, mathContainer, STGPlace.class);
-		return visualModel.createVisualComponent(mathPlace, visualContainer, VisualPlace.class);
-	}
+    @Override
+    public VisualPlace createProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace) {
+        Container visualContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
+        Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
+        MathModel mathModel = visualModel.getMathModel();
+        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)mathModel.getReferenceManager();
+        NameManager nameManagerer = refManager.getNameManager((NamespaceProvider)mathContainer);
+        String predName = visualModel.getMathName(predPlace);
+        String succName = visualModel.getMathName(succPlace);
+        String productName = nameManagerer.getDerivedName(null, predName + succName);
+        STGPlace mathPlace = mathModel.createNode(productName, mathContainer, STGPlace.class);
+        return visualModel.createVisualComponent(mathPlace, visualContainer, VisualPlace.class);
+    }
 
 }

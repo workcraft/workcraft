@@ -10,20 +10,20 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifyUntoggle extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Untoggle signal transitions [Petrify]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Untoggle signal transitions [Petrify]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STGModel.class);
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final TransformationTask task = new TransformationTask(we, "Signal transition untoggle", new String[] {"-untog"});
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Petrify signal transition untoggle", new TransformationResultHandler(we));
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final TransformationTask task = new TransformationTask(we, "Signal transition untoggle", new String[] {"-untog"});
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(task, "Petrify signal transition untoggle", new TransformationResultHandler(we));
+    }
 }

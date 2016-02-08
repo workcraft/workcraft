@@ -34,33 +34,33 @@ import org.workcraft.util.Hierarchy;
 @VisualClass (org.workcraft.plugins.dfs.VisualDfs.class)
 public class Dfs extends AbstractMathModel {
 
-	public Dfs() {
-		this(null, null);
-	}
+    public Dfs() {
+        this(null, null);
+    }
 
-	public Dfs(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-			@Override
-			public String getPrefix(Node node) {
-				if ((node instanceof Logic) || (node instanceof CounterflowLogic)) return "l";
-				if ((node instanceof Register) || (node instanceof CounterflowRegister)) return "r";
-				if ((node instanceof ControlRegister)) return "c";
-				if ((node instanceof PushRegister) || (node instanceof PopRegister)) return "p";
-				return super.getPrefix(node);
-			}
-		});
-	}
+    public Dfs(Container root, References refs) {
+        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+            @Override
+            public String getPrefix(Node node) {
+                if ((node instanceof Logic) || (node instanceof CounterflowLogic)) return "l";
+                if ((node instanceof Register) || (node instanceof CounterflowRegister)) return "r";
+                if ((node instanceof ControlRegister)) return "c";
+                if ((node instanceof PushRegister) || (node instanceof PopRegister)) return "p";
+                return super.getPrefix(node);
+            }
+        });
+    }
 
-	public MathConnection connect(Node first, Node second) {
-		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
-		Hierarchy.getNearestContainer(first, second).add(con);
-		return con;
-	}
+    public MathConnection connect(Node first, Node second) {
+        MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+        Hierarchy.getNearestContainer(first, second).add(con);
+        return con;
+    }
 
-	public ControlConnection controlConnect(Node first, Node second) {
-		ControlConnection con = new ControlConnection((MathNode)first, (MathNode)second);
-		Hierarchy.getNearestContainer(first, second).add(con);
-		return con;
-	}
+    public ControlConnection controlConnect(Node first, Node second) {
+        ControlConnection con = new ControlConnection((MathNode)first, (MathNode)second);
+        Hierarchy.getNearestContainer(first, second).add(con);
+        return con;
+    }
 
 }

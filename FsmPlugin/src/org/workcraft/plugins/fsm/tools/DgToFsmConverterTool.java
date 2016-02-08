@@ -15,27 +15,27 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class DgToFsmConverterTool extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Finite State Machine";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Finite State Machine";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return (we.getModelEntry().getMathModel() instanceof Graph);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return (we.getModelEntry().getMathModel() instanceof Graph);
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final VisualGraph dg = (VisualGraph)we.getModelEntry().getVisualModel();
-		final VisualFsm fsm = new VisualFsm(new Fsm());
-		final DgToFsmConverter converter = new DgToFsmConverter(dg, fsm);
-		final Framework framework = Framework.getInstance();
-		final Workspace workspace = framework.getWorkspace();
-		final Path<String> directory = we.getWorkspacePath().getParent();
-		final String desiredName = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new FsmDescriptor(), converter.getDstModel());
-		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-		workspace.add(directory, desiredName, me, false, openInEditor);
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final VisualGraph dg = (VisualGraph)we.getModelEntry().getVisualModel();
+        final VisualFsm fsm = new VisualFsm(new Fsm());
+        final DgToFsmConverter converter = new DgToFsmConverter(dg, fsm);
+        final Framework framework = Framework.getInstance();
+        final Workspace workspace = framework.getWorkspace();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String desiredName = we.getWorkspacePath().getNode();
+        final ModelEntry me = new ModelEntry(new FsmDescriptor(), converter.getDstModel());
+        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+        workspace.add(directory, desiredName, me, false, openInEditor);
+    }
 }

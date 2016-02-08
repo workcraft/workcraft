@@ -50,99 +50,99 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 @SVGIcon("images/icons/svg/rho.svg")
 public class VisualRhoClause extends VisualComponent
 {
-	private static float strokeWidth = 0.038f;
+    private static float strokeWidth = 0.038f;
 
-	private Rectangle2D boudingBox = new Rectangle2D.Float(0, 0, 0, 0);
+    private Rectangle2D boudingBox = new Rectangle2D.Float(0, 0, 0, 0);
 
-	private static Font font;
+    private static Font font;
 
-	static {
-		try {
-			font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
-		} catch (FontFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    static {
+        try {
+            font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
+        } catch (FontFormatException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	public VisualRhoClause(RhoClause rhoClause) {
-		super(rhoClause);
-		removePropertyDeclarationByName("Name positioning");
-		removePropertyDeclarationByName("Name color");
-	}
+    public VisualRhoClause(RhoClause rhoClause) {
+        super(rhoClause);
+        removePropertyDeclarationByName("Name positioning");
+        removePropertyDeclarationByName("Name color");
+    }
 
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-		Color background = r.getDecoration().getBackground();
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Color colorisation = r.getDecoration().getColorisation();
+        Color background = r.getDecoration().getBackground();
 
-		FormulaRenderingResult result = FormulaToGraphics.render(getFormula(), g.getFontRenderContext(), font);
+        FormulaRenderingResult result = FormulaToGraphics.render(getFormula(), g.getFontRenderContext(), font);
 
-		Rectangle2D textBB = result.boundingBox;
+        Rectangle2D textBB = result.boundingBox;
 
-		float textX = (float)-textBB.getCenterX();
-		float textY = (float)-textBB.getCenterY();
+        float textX = (float)-textBB.getCenterX();
+        float textY = (float)-textBB.getCenterY();
 
-		float width = (float)textBB.getWidth() + 0.4f;
-		float height = (float)textBB.getHeight() + 0.2f;
+        float width = (float)textBB.getWidth() + 0.4f;
+        float height = (float)textBB.getHeight() + 0.2f;
 
-		boudingBox = new Rectangle2D.Float(-width / 2, -height / 2, width, height);
+        boudingBox = new Rectangle2D.Float(-width / 2, -height / 2, width, height);
 
-		g.setStroke(new BasicStroke(strokeWidth));
+        g.setStroke(new BasicStroke(strokeWidth));
 
-		g.setColor(Coloriser.colorise(getFillColor(), background));
-		g.fill(boudingBox);
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		g.draw(boudingBox);
+        g.setColor(Coloriser.colorise(getFillColor(), background));
+        g.fill(boudingBox);
+        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.draw(boudingBox);
 
-		AffineTransform transform = g.getTransform();
-		g.translate(textX, textY);
-		g.setColor(Coloriser.colorise(getColor(), colorisation));
-		result.draw(g);
+        AffineTransform transform = g.getTransform();
+        g.translate(textX, textY);
+        g.setColor(Coloriser.colorise(getColor(), colorisation));
+        result.draw(g);
 
-		g.setTransform(transform);
-	}
+        g.setTransform(transform);
+    }
 
-	private Color getColor() {
-		BooleanFormula value = evaluate();
-		if(value == One.instance())
-			return new Color(0x00cc00);
-		else
-			if(value == Zero.instance())
-				return Color.RED;
-			else
-				return getForegroundColor();
-	}
+    private Color getColor() {
+        BooleanFormula value = evaluate();
+        if(value == One.instance())
+            return new Color(0x00cc00);
+        else
+            if(value == Zero.instance())
+                return Color.RED;
+            else
+                return getForegroundColor();
+    }
 
-	private BooleanFormula evaluate() {
-		return getFormula().accept(new PrettifyBooleanReplacer());
-	}
+    private BooleanFormula evaluate() {
+        return getFormula().accept(new PrettifyBooleanReplacer());
+    }
 
-	public Rectangle2D getBoundingBoxInLocalSpace()
-	{
-		return boudingBox;
-	}
+    public Rectangle2D getBoundingBoxInLocalSpace()
+    {
+        return boudingBox;
+    }
 
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-	{
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
-	}
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
+    {
+        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+    }
 
-	public RhoClause getMathRhoClause()
-	{
-		return (RhoClause)getReferencedComponent();
-	}
+    public RhoClause getMathRhoClause()
+    {
+        return (RhoClause)getReferencedComponent();
+    }
 
-	public BooleanFormula getFormula()
-	{
-		return getMathRhoClause().getFormula();
-	}
+    public BooleanFormula getFormula()
+    {
+        return getMathRhoClause().getFormula();
+    }
 
-	public void setFormula(BooleanFormula formula)
-	{
-		getMathRhoClause().setFormula(formula);
-	}
+    public void setFormula(BooleanFormula formula)
+    {
+        getMathRhoClause().setFormula(formula);
+    }
 }

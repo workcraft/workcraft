@@ -34,32 +34,32 @@ import javax.swing.table.TableCellEditor;
 @SuppressWarnings("serial")
 public class BooleanCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener{
 
-	private JCheckBox checkBox;
+    private JCheckBox checkBox;
 
-	public BooleanCellEditor() {
-		 checkBox = new JCheckBox();
-		 checkBox.setFocusable(false);
-		 checkBox.addItemListener(this);
-		 checkBox.setBorderPainted(false);
-	}
+    public BooleanCellEditor() {
+         checkBox = new JCheckBox();
+         checkBox.setFocusable(false);
+         checkBox.addItemListener(this);
+         checkBox.setBorderPainted(false);
+    }
 
-	public Component getTableCellEditorComponent(
-			JTable table, Object value,	boolean isSelected, int row, int column) {
-		if (value != null) {
-			checkBox.setSelected((Boolean)value);
-		}
-		checkBox.setOpaque(value == null);
-		checkBox.setFont(table.getFont());
-		return checkBox;
-	}
+    public Component getTableCellEditorComponent(
+            JTable table, Object value,    boolean isSelected, int row, int column) {
+        if (value != null) {
+            checkBox.setSelected((Boolean)value);
+        }
+        checkBox.setOpaque(value == null);
+        checkBox.setFont(table.getFont());
+        return checkBox;
+    }
 
-	public Object getCellEditorValue() {
-		return checkBox.isSelected();
-	}
+    public Object getCellEditorValue() {
+        return checkBox.isSelected();
+    }
 
 
-	public void itemStateChanged(ItemEvent e) {
-		fireEditingStopped();
-	}
+    public void itemStateChanged(ItemEvent e) {
+        fireEditingStopped();
+    }
 
 }

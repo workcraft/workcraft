@@ -53,262 +53,262 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(CustomToolsProvider.class)
 public class VisualCPOG extends AbstractVisualModel
 {
-	private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
-		private final Node node;
+    private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
+        private final Node node;
 
-		private BooleanFormulaPropertyDescriptor(Node node) {
-			this.node = node;
-		}
+        private BooleanFormulaPropertyDescriptor(Node node) {
+            this.node = node;
+        }
 
-		@Override
-		public Map<Object, String> getChoice() {
-			return null;
-		}
+        @Override
+        public Map<Object, String> getChoice() {
+            return null;
+        }
 
-		@Override
-		public String getName() {
-			if (node instanceof VisualRhoClause) return "Function";
-			return "Condition";
-		}
+        @Override
+        public String getName() {
+            if (node instanceof VisualRhoClause) return "Function";
+            return "Condition";
+        }
 
-		@Override
-		public Class<?> getType() {
-			return String.class;
-		}
+        @Override
+        public Class<?> getType() {
+            return String.class;
+        }
 
-		@Override
-		public Object getValue() throws InvocationTargetException {
-			if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause)node).getFormula());
-			if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex)node).getCondition());
-			return FormulaToString.toString(((VisualArc)node).getCondition());
-		}
+        @Override
+        public Object getValue() throws InvocationTargetException {
+            if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause)node).getFormula());
+            if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex)node).getCondition());
+            return FormulaToString.toString(((VisualArc)node).getCondition());
+        }
 
-		@Override
-		public void setValue(Object value) throws InvocationTargetException {
-			try {
-				if (node instanceof VisualRhoClause) {
-					((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
-				} else if (node instanceof VisualArc) {
-					((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
-				} else if (node instanceof VisualVertex) {
-					((VisualVertex)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
-				}
-			} catch (ParseException e) {
-				throw new InvocationTargetException(e);
-			}
-		}
+        @Override
+        public void setValue(Object value) throws InvocationTargetException {
+            try {
+                if (node instanceof VisualRhoClause) {
+                    ((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
+                } else if (node instanceof VisualArc) {
+                    ((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+                } else if (node instanceof VisualVertex) {
+                    ((VisualVertex)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+                }
+            } catch (ParseException e) {
+                throw new InvocationTargetException(e);
+            }
+        }
 
-		@Override
-		public boolean isWritable() {
-			return true;
-		}
+        @Override
+        public boolean isWritable() {
+            return true;
+        }
 
-		@Override
-		public boolean isCombinable() {
-			return true;
-		}
+        @Override
+        public boolean isCombinable() {
+            return true;
+        }
 
-		@Override
-		public boolean isTemplatable() {
-			return true;
-		}
-	}
+        @Override
+        public boolean isTemplatable() {
+            return true;
+        }
+    }
 
-	private CPOG mathModel;
-	private CpogSelectionTool selectionTool;
+    private CPOG mathModel;
+    private CpogSelectionTool selectionTool;
 
-	public VisualCPOG(CPOG model) {
-		this(model, null);
-	}
+    public VisualCPOG(CPOG model) {
+        this(model, null);
+    }
 
-	public VisualCPOG(CPOG model, VisualGroup root) {
-		super(model, root);
-		this.mathModel = model;
+    public VisualCPOG(CPOG model, VisualGroup root) {
+        super(model, root);
+        this.mathModel = model;
 
-		if (root == null) {
-			try {
-				createDefaultFlatStructure();
-			} catch (NodeCreationException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		new ConsistencyEnforcer(this).attach(getRoot());
-	}
+        if (root == null) {
+            try {
+                createDefaultFlatStructure();
+            } catch (NodeCreationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        new ConsistencyEnforcer(this).attach(getRoot());
+    }
 
-	@Override
-	public void validateConnection(Node first, Node second) throws InvalidConnectionException {
-		if (first == second) {
-			throw new InvalidConnectionException("Self loops are not allowed.");
-		}
-		if (first instanceof VisualVariable && !getPreset(first).isEmpty()) {
-			throw new InvalidConnectionException("Variables do not support multiple connections.");
-		}
-		if (second instanceof VisualVariable && !getPreset(second).isEmpty()) {
-			throw new InvalidConnectionException("Variables do not support multiple connections.");
-		}
+    @Override
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
+        if (first == second) {
+            throw new InvalidConnectionException("Self loops are not allowed.");
+        }
+        if (first instanceof VisualVariable && !getPreset(first).isEmpty()) {
+            throw new InvalidConnectionException("Variables do not support multiple connections.");
+        }
+        if (second instanceof VisualVariable && !getPreset(second).isEmpty()) {
+            throw new InvalidConnectionException("Variables do not support multiple connections.");
+        }
 
-		if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) return;
-		if ((first instanceof VisualVertex) && (second instanceof VisualVariable)) return;
-		if ((first instanceof VisualVariable) && (second instanceof VisualVertex)) return;
+        if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) return;
+        if ((first instanceof VisualVertex) && (second instanceof VisualVariable)) return;
+        if ((first instanceof VisualVariable) && (second instanceof VisualVertex)) return;
 
-		throw new InvalidConnectionException("Invalid connection.");
-	}
+        throw new InvalidConnectionException("Invalid connection.");
+    }
 
-	@Override
-	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
-		validateConnection(first, second);
-		VisualConnection ret = null;
-		if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) {
-			VisualVertex v = (VisualVertex) first;
-			VisualVertex u = (VisualVertex) second;
-			ret = connect(v, u);
-		} else {
-			VisualVertex v;
-			VisualVariable u;
-			if (first instanceof VisualVertex) {
-				v = (VisualVertex) first;
-				u = (VisualVariable) second;
-			} else {
-				v = (VisualVertex) second;
-				u = (VisualVariable) first;
-			}
-			if (mConnection == null) {
-				mConnection = mathModel.connect(v.getMathVertex(), u.getMathVariable());
-			}
-			ret = new VisualDynamicVariableConnection((DynamicVariableConnection)mConnection, v, u);
-			Hierarchy.getNearestContainer(v, u).add(ret);
-		}
-		return ret;
-	}
+    @Override
+    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+        validateConnection(first, second);
+        VisualConnection ret = null;
+        if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) {
+            VisualVertex v = (VisualVertex) first;
+            VisualVertex u = (VisualVertex) second;
+            ret = connect(v, u);
+        } else {
+            VisualVertex v;
+            VisualVariable u;
+            if (first instanceof VisualVertex) {
+                v = (VisualVertex) first;
+                u = (VisualVariable) second;
+            } else {
+                v = (VisualVertex) second;
+                u = (VisualVariable) first;
+            }
+            if (mConnection == null) {
+                mConnection = mathModel.connect(v.getMathVertex(), u.getMathVariable());
+            }
+            ret = new VisualDynamicVariableConnection((DynamicVariableConnection)mConnection, v, u);
+            Hierarchy.getNearestContainer(v, u).add(ret);
+        }
+        return ret;
+    }
 
-	public VisualArc connect(VisualVertex v, VisualVertex u) {
-		Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
-		VisualArc arc = new VisualArc(con, v, u);
-		Hierarchy.getNearestContainer(v, u).add(arc);
-		return arc;
-	}
+    public VisualArc connect(VisualVertex v, VisualVertex u) {
+        Arc con = mathModel.connect(v.getMathVertex(), u.getMathVertex());
+        VisualArc arc = new VisualArc(con, v, u);
+        Hierarchy.getNearestContainer(v, u).add(arc);
+        return arc;
+    }
 
-	@Override
-	public boolean isGroupable(Node node) {
-		return ((node instanceof VisualVertex) || (node instanceof VisualVariable));
-	}
+    @Override
+    public boolean isGroupable(Node node) {
+        return ((node instanceof VisualVertex) || (node instanceof VisualVariable));
+    }
 
-	@Override
-	public VisualGroup groupSelection() {
-		return groupSelection(null);
-	}
+    @Override
+    public VisualGroup groupSelection() {
+        return groupSelection(null);
+    }
 
-	public VisualScenario groupSelection(String graphName) {
-		VisualScenario scenario = null;
-		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
-		if (nodes.size() >= 1) {
-			scenario = new VisualScenario();
-			if (graphName != null) {
-				scenario.setLabel(graphName);
-			}
-			getCurrentLevel().add(scenario);
-			getCurrentLevel().reparent(nodes, scenario);
-			Point2D centre = TransformHelper.getSnappedCentre(nodes);
-			VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
-			scenario.setPosition(centre);
-			select(scenario);
-		}
-		return scenario;
-	}
+    public VisualScenario groupSelection(String graphName) {
+        VisualScenario scenario = null;
+        Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
+        if (nodes.size() >= 1) {
+            scenario = new VisualScenario();
+            if (graphName != null) {
+                scenario.setLabel(graphName);
+            }
+            getCurrentLevel().add(scenario);
+            getCurrentLevel().reparent(nodes, scenario);
+            Point2D centre = TransformHelper.getSnappedCentre(nodes);
+            VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
+            scenario.setPosition(centre);
+            select(scenario);
+        }
+        return scenario;
+    }
 
-	// TODO: Add safe versions of these methods; see getVertices(Container root).
-	@Deprecated
-	public Collection<VisualScenario> getGroups() {
-		return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
-	}
+    // TODO: Add safe versions of these methods; see getVertices(Container root).
+    @Deprecated
+    public Collection<VisualScenario> getGroups() {
+        return Hierarchy.getChildrenOfType(getRoot(), VisualScenario.class);
+    }
 
-	@Deprecated
-	public Collection<VisualVariable> getVariables() {
-		return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
-	}
+    @Deprecated
+    public Collection<VisualVariable> getVariables() {
+        return Hierarchy.getChildrenOfType(getRoot(), VisualVariable.class);
+    }
 
-	@Deprecated
-	public Collection<VisualVertex> getVertices() {
-		return Hierarchy.getChildrenOfType(getRoot(), VisualVertex.class);
-	}
+    @Deprecated
+    public Collection<VisualVertex> getVertices() {
+        return Hierarchy.getChildrenOfType(getRoot(), VisualVertex.class);
+    }
 
-	public Collection<VisualVertex> getVertices(Container root) {
-		return Hierarchy.getChildrenOfType(root, VisualVertex.class);
-	}
+    public Collection<VisualVertex> getVertices(Container root) {
+        return Hierarchy.getChildrenOfType(root, VisualVertex.class);
+    }
 
-	public Collection<VisualVariable> getVariables(Container root) {
-		return Hierarchy.getChildrenOfType(root, VisualVariable.class);
-	}
+    public Collection<VisualVariable> getVariables(Container root) {
+        return Hierarchy.getChildrenOfType(root, VisualVariable.class);
+    }
 
-	public Collection<VisualArc> getArcs(Container root) {
-		return Hierarchy.getChildrenOfType(root, VisualArc.class);
-	}
+    public Collection<VisualArc> getArcs(Container root) {
+        return Hierarchy.getChildrenOfType(root, VisualArc.class);
+    }
 
-	public VisualVertex createVisualVertex(Container container) {
-		Vertex mathVertex = new Vertex();
-		mathModel.add(mathVertex);
+    public VisualVertex createVisualVertex(Container container) {
+        Vertex mathVertex = new Vertex();
+        mathModel.add(mathVertex);
 
-		VisualVertex vertex = new VisualVertex(mathVertex);
-		container.add(vertex);
-		return vertex;
-	}
+        VisualVertex vertex = new VisualVertex(mathVertex);
+        container.add(vertex);
+        return vertex;
+    }
 
-	public VisualVariable createVisualVariable() {
-		Variable mathVariable = new Variable();
-		mathModel.add(mathVariable);
+    public VisualVariable createVisualVariable() {
+        Variable mathVariable = new Variable();
+        mathModel.add(mathVariable);
 
-		VisualVariable variable = new VisualVariable(mathVariable);
+        VisualVariable variable = new VisualVariable(mathVariable);
 
-		getRoot().add(variable);
+        getRoot().add(variable);
 
-		return variable;
-	}
+        return variable;
+    }
 
-	public VisualScenario createVisualScenario() {
-		VisualScenario scenario = new VisualScenario();
-		getRoot().add(scenario);
-		return scenario;
-	}
+    public VisualScenario createVisualScenario() {
+        VisualScenario scenario = new VisualScenario();
+        getRoot().add(scenario);
+        return scenario;
+    }
 
-	@Override
-	public ModelProperties getProperties(Node node) {
-		ModelProperties properties = super.getProperties(node);
-		if (node != null) {
-			if (node instanceof VisualRhoClause ||
-				node instanceof VisualVertex ||
-				node instanceof VisualArc) {
-				properties.add(new BooleanFormulaPropertyDescriptor(node));
-			}
-		}
-		return properties;
-	}
+    @Override
+    public ModelProperties getProperties(Node node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node != null) {
+            if (node instanceof VisualRhoClause ||
+                node instanceof VisualVertex ||
+                node instanceof VisualArc) {
+                properties.add(new BooleanFormulaPropertyDescriptor(node));
+            }
+        }
+        return properties;
+    }
 
-	public void removeWithoutNotify(Node node) {
-		if (node.getParent() instanceof VisualPage) {
-			((VisualPage) node.getParent()).removeWithoutNotify(node);
-		} else if (node.getParent() instanceof VisualGroup) {
-			((VisualGroup) node.getParent()).removeWithoutNotify(node);
-		}
-	}
+    public void removeWithoutNotify(Node node) {
+        if (node.getParent() instanceof VisualPage) {
+            ((VisualPage) node.getParent()).removeWithoutNotify(node);
+        } else if (node.getParent() instanceof VisualGroup) {
+            ((VisualGroup) node.getParent()).removeWithoutNotify(node);
+        }
+    }
 
-	public VisualScenarioPage groupScenarioPageSelection(String graphName) {
-		VisualScenarioPage scenario = null;
-		 PageNode pageNode = new PageNode();
-		Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
-		if (nodes.size() >= 1) {
-			scenario = new VisualScenarioPage(pageNode);
-			if (graphName != null) {
-				scenario.setLabel(graphName);
-			}
-			getCurrentLevel().add(scenario);
-			getCurrentLevel().reparent(nodes, scenario);
-			Point2D centre = TransformHelper.getSnappedCentre(nodes);
-			VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
-			scenario.setPosition(centre);
-			select(scenario);
-		}
-		return scenario;
+    public VisualScenarioPage groupScenarioPageSelection(String graphName) {
+        VisualScenarioPage scenario = null;
+         PageNode pageNode = new PageNode();
+        Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
+        if (nodes.size() >= 1) {
+            scenario = new VisualScenarioPage(pageNode);
+            if (graphName != null) {
+                scenario.setLabel(graphName);
+            }
+            getCurrentLevel().add(scenario);
+            getCurrentLevel().reparent(nodes, scenario);
+            Point2D centre = TransformHelper.getSnappedCentre(nodes);
+            VisualModelTransformer.translateNodes(nodes, -centre.getX(), -centre.getY());
+            scenario.setPosition(centre);
+            select(scenario);
+        }
+        return scenario;
 
-	}
+    }
 
 }
