@@ -1,3 +1,11 @@
+sourceSets {
+    main {
+        resources {
+            srcDir 'src'
+        }
+    }
+}
+
 jar {
     // Include all dependencies in the jar
     from {
