@@ -13,9 +13,7 @@ classpath for Workcraft plugins.
 
 ### Help and Tutorials
 
-To familiarise yourself with the Workcraft please read the help
-(help/start.html) and practice using the tutorial material
-(tutorial/start.html). Also look through a collection of tips and
-tricks (help/tips.html) to make use of mouse and keyboard shortcuts.
+Help and tutorial pages are available in the
+[workcraft-doc](https://github.com/tuura/workcraft-doc) repo.
 
 For more information about Workcraft loot at [workcraft.org](http://workcraft.org/).
