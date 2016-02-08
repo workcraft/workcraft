@@ -1,0 +1,7 @@
+dependencies {
+    compile project(':WorkcraftCore')
+    compile project(':CircuitPlugin')
+    compile project(':FstPlugin')
+    compile project(':PunfPlugin')
+    compile project(':STGPlugin')
+}

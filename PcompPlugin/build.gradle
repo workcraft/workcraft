@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':WorkcraftCore')
+    compile project(':STGPlugin')
+}
