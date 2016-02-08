@@ -1,7 +1,10 @@
+# gradle
+.gradle/
+build/
+
 bin
 jar
 distr
-build
 config
 *.log
 *.dot
