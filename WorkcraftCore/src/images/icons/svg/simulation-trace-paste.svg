@@ -1,253 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48px"
-   height="48px"
-   id="svg2888"
-   version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="simulation-trace-paste.svg"
-   inkscape:export-filename="/home/mech/workspace/Workcraft/images/icons/connect16.png"
-   inkscape:export-xdpi="30"
-   inkscape:export-ydpi="30">
-  <defs
-     id="defs2890">
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 24 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="48 : 24 : 1"
-       inkscape:persp3d-origin="24 : 16 : 1"
-       id="perspective2896" />
-    <inkscape:perspective
-       id="perspective2835"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <filter
-       id="filter3959"
-       inkscape:label="Drop shadow"
-       width="1.5"
-       height="1.5"
-       x="-.25"
-       y="-.25">
-      <feGaussianBlur
-         id="feGaussianBlur3961"
-         in="SourceAlpha"
-         stdDeviation="1.500000"
-         result="blur" />
-      <feColorMatrix
-         id="feColorMatrix3963"
-         result="bluralpha"
-         type="matrix"
-         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.750000 0 " />
-      <feOffset
-         id="feOffset3965"
-         in="bluralpha"
-         dx="1.000000"
-         dy="1.000000"
-         result="offsetBlur" />
-      <feMerge
-         id="feMerge3967">
-        <feMergeNode
-           id="feMergeNode3969"
-           in="offsetBlur" />
-        <feMergeNode
-           id="feMergeNode3971"
-           in="SourceGraphic" />
-      </feMerge>
-    </filter>
-    <inkscape:perspective
-       id="perspective3987"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <filter
-       id="filter4013"
-       inkscape:label="Drop shadow"
-       width="1.5"
-       height="1.5"
-       x="-.25"
-       y="-.25">
-      <feGaussianBlur
-         id="feGaussianBlur4015"
-         in="SourceAlpha"
-         stdDeviation="1.500000"
-         result="blur" />
-      <feColorMatrix
-         id="feColorMatrix4017"
-         result="bluralpha"
-         type="matrix"
-         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.750000 0 " />
-      <feOffset
-         id="feOffset4019"
-         in="bluralpha"
-         dx="1.000000"
-         dy="1.000000"
-         result="offsetBlur" />
-      <feMerge
-         id="feMerge4021">
-        <feMergeNode
-           id="feMergeNode4023"
-           in="offsetBlur" />
-        <feMergeNode
-           id="feMergeNode4025"
-           in="SourceGraphic" />
-      </feMerge>
-    </filter>
-    <inkscape:perspective
-       id="perspective3634"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective3634-7"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective3634-0"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="11.647708"
-     inkscape:cx="42.189203"
-     inkscape:cy="26.525575"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     inkscape:window-width="1908"
-     inkscape:window-height="1145"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1">
-    <inkscape:grid
-       type="xygrid"
-       id="grid2834" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata2893">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
-    <g
-       id="g3137"
-       transform="translate(-1.6593051,0)">
-      <text
-         xml:space="preserve"
-         style="font-size:16px;font-style:normal;font-weight:normal;text-align:center;line-height:85%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         x="43.980831"
-         y="14.927188"
-         id="text3165"
-         sodipodi:linespacing="85%"><tspan
-           sodipodi:role="line"
-           id="tspan3167"
-           x="43.980831"
-           y="14.927188">a</tspan><tspan
-           sodipodi:role="line"
-           x="43.980831"
-           y="28.367188"
-           id="tspan3016">↓</tspan><tspan
-           sodipodi:role="line"
-           x="43.980831"
-           y="41.807186"
-           id="tspan3022">b</tspan></text>
-      <g
-         transform="translate(0,-0.18275254)"
-         id="g3126">
-        <rect
-           rx="2"
-           ry="2"
-           y="6.7265663"
-           x="3.8346541"
-           height="30.799999"
-           width="26.6"
-           id="rect3838"
-           style="fill:#d4aa00;fill-opacity:1;stroke:#000000;stroke-width:1.39999998" />
-        <g
-           transform="matrix(1.4,0,0,1.4,80.834654,-7.2734337)"
-           id="g3078-9">
-          <path
-             style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.87481779"
-             d="m -45,18 10,0 4,4 0,13 -14,0 z"
-             id="rect3039-2-8"
-             inkscape:connector-curvature="0"
-             sodipodi:nodetypes="cccccc" />
-        </g>
-        <path
-           inkscape:connector-curvature="0"
-           id="path3049-6"
-           d="m 20.634654,23.526567 8.4,0"
-           style="fill:none;stroke:#000000;stroke-width:1.39999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-        <path
-           inkscape:connector-curvature="0"
-           id="path3051-6"
-           d="m 20.634654,29.126567 12.6,0"
-           style="fill:none;stroke:#000000;stroke-width:1.39999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-        <path
-           inkscape:connector-curvature="0"
-           id="path3053-9"
-           d="m 20.634654,33.326567 12.6,0"
-           style="fill:none;stroke:#000000;stroke-width:1.39999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-        <path
-           sodipodi:nodetypes="cc"
-           inkscape:connector-curvature="0"
-           id="path3055-9"
-           d="m 20.634654,37.526567 12.6,0"
-           style="fill:none;stroke:#000000;stroke-width:1.39999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-        <path
-           sodipodi:nodetypes="ccc"
-           inkscape:connector-curvature="0"
-           id="path3076-6"
-           d="m 31.834654,17.926567 0,5.6 5.6,0"
-           style="fill:none;stroke:#000000;stroke-width:1.39999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-        <rect
-           ry="0"
-           y="6.7265663"
-           x="10.834655"
-           height="5.5999999"
-           width="12.6"
-           id="rect3840"
-           style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:1.39999998" />
-      </g>
+<svg id="svg2888" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="48px" width="48px" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata2893">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1">
+  <g id="g3137" transform="translate(-1.6593)">
+   <text id="text3165" style="word-spacing:0px;letter-spacing:0px;text-anchor:middle;text-align:center" xml:space="preserve" font-size="16px" line-height="85%" y="14.927188" x="43.980831" font-family="Sans" fill="#000000"><tspan id="tspan3167" x="43.980831" y="14.927188">a</tspan><tspan id="tspan3016" x="43.980831" y="28.367188">↓</tspan><tspan id="tspan3022" x="43.980831" y="41.807186">b</tspan></text>
+   <g id="g3126" transform="translate(0 -.18275)">
+    <rect id="rect3838" rx="2" ry="2" height="30.8" width="26.6" stroke="#000" y="6.7266" x="3.8347" stroke-width="1.4" fill="#d4aa00"/>
+    <g id="g3078-9" transform="matrix(1.4 0 0 1.4 80.835 -7.2734)">
+     <path id="rect3039-2-8" d="m-45 18h10l4 4v13h-14z" stroke="#000" stroke-width=".87482" fill="#fff"/>
     </g>
+    <path id="path3049-6" d="m20.635 23.527h8.4" stroke="#000" stroke-width="1.4px" fill="none"/>
+    <path id="path3051-6" d="m20.635 29.127h12.6" stroke="#000" stroke-width="1.4px" fill="none"/>
+    <path id="path3053-9" d="m20.635 33.327h12.6" stroke="#000" stroke-width="1.4px" fill="none"/>
+    <path id="path3055-9" d="m20.635 37.527h12.6" stroke="#000" stroke-width="1.4px" fill="none"/>
+    <path id="path3076-6" d="m31.835 17.927v5.6h5.6" stroke="#000" stroke-width="1.4px" fill="none"/>
+    <rect id="rect3840" ry="0" height="5.6" width="12.6" stroke="#000" y="6.7266" x="10.835" stroke-width="1.4" fill="#ccc"/>
+   </g>
   </g>
+ </g>
 </svg>
