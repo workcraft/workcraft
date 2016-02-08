@@ -1,0 +1,29 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.7
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
+    compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
+}
+
+jar {
+    // Include all dependencies in the jar
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    // Main class to run
+    manifest {
+        attributes 'Main-Class': 'org.workcraft.Console'
+    }
+}
