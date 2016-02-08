@@ -1,139 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48px"
-   height="48px"
-   id="svg2888"
-   version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="selection-group.svg"
-   inkscape:export-filename="/home/mech/workspace/Workcraft/images/icons/signal_transition22.png"
-   inkscape:export-xdpi="41.25"
-   inkscape:export-ydpi="41.25">
-  <defs
-     id="defs2890">
-    <linearGradient
-       id="linearGradient3788"
-       osb:paint="solid">
-      <stop
-         style="stop-color:#000000;stop-opacity:1;"
-         offset="0"
-         id="stop3790" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient3754"
-       osb:paint="solid">
-      <stop
-         style="stop-color:#ffffff;stop-opacity:1;"
-         offset="0"
-         id="stop3756" />
-    </linearGradient>
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 24 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="48 : 24 : 1"
-       inkscape:persp3d-origin="24 : 16 : 1"
-       id="perspective2896" />
-    <inkscape:perspective
-       id="perspective2835"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="9.8994949"
-     inkscape:cx="7.2654122"
-     inkscape:cy="32.150982"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1150"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1" />
-  <metadata
-     id="metadata2893">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
-    <rect
-       style="fill:#a7a7a7;fill-opacity:1;stroke:#000000;stroke-width:1.12991667;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="rect3762"
-       width="23.46961"
-       height="23.46961"
-       x="7.1639252"
-       y="17.46748" />
-    <g
-       id="g2416"
-       transform="translate(-2.2893027,-5.7236442)" />
-    <path
-       sodipodi:type="arc"
-       style="fill:#a7a7a7;stroke:#000000;stroke-width:0.87053718999999996;stroke-linecap:butt;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
-       id="path3760"
-       sodipodi:cx="44.345695"
-       sodipodi:cy="20.220804"
-       sodipodi:rx="10.707617"
-       sodipodi:ry="10.707617"
-       d="m 55.053312,20.220804 a 10.707617,10.707617 0 1 1 -21.415233,0 10.707617,10.707617 0 1 1 21.415233,0 z"
-       transform="matrix(1.148716,0,0,1.148716,-22.302786,-3.9668016)" />
-    <rect
-       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
-       id="rect3824"
-       width="1.5152289"
-       height="1.5152289"
-       x="4.5"
-       y="4.5" />
-    <rect
-       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
-       id="rect3824-7"
-       width="1.5152289"
-       height="1.5152289"
-       x="4.5"
-       y="41.984772" />
-    <rect
-       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
-       id="rect3824-1"
-       width="1.5152289"
-       height="1.5152289"
-       x="41.984772"
-       y="41.984772" />
-    <rect
-       style="fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
-       id="rect3824-0"
-       width="1.5152289"
-       height="1.5152289"
-       x="41.984772"
-       y="4.5" />
-  </g>
+<svg id="svg2888" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" height="48px" width="48px" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata2893">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1" stroke="#000">
+  <rect id="rect3762" height="23.47" width="23.47" y="17.467" x="7.1639" stroke-width="1.1299" fill="#a7a7a7"/>
+  <path id="path3760" d="m55.053 20.221a10.708 10.708 0 1 1 -21.415 0 10.708 10.708 0 1 1 21.415 0z" transform="matrix(1.1487 0 0 1.1487 -22.303 -3.9668)" stroke-width=".87054" fill="#a7a7a7"/>
+  <rect id="rect3824" height="1.5152" width="1.5152" y="4.5" x="4.5"/>
+  <rect id="rect3824-7" height="1.5152" width="1.5152" y="41.985" x="4.5"/>
+  <rect id="rect3824-1" height="1.5152" width="1.5152" y="41.985" x="41.985"/>
+  <rect id="rect3824-0" height="1.5152" width="1.5152" y="4.5" x="41.985"/>
+ </g>
 </svg>
