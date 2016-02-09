@@ -1,0 +1,6 @@
+# Normalize line endings on text files
+*.java   text
+*.sh     text
+*.yml    text
+*.md     text
+*.gradle text
