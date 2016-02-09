@@ -11,13 +11,13 @@ public class DefaultCpogSolver<T>
                 this.cnfConverter = simpleCnfTaskProvider;
     }
 
-    public CpogOptimisationTask<? extends T> getTask(String[] scenarios, BooleanVariable [] variables, int derivedVars)
+    public CpogOptimisationTask<? extends T> getTask(String[] scenarios, BooleanVariable[] variables, int derivedVars)
     {
         CpogOptimisationTask<? extends T> task = problemGenerator.getFormula(scenarios, variables, derivedVars);
         return task;
     }
 
-    public CpogEncoding solve(String[] scenarios, BooleanVariable [] variables, int derivedVars)
+    public CpogEncoding solve(String[] scenarios, BooleanVariable[] variables, int derivedVars)
     {
         CpogOptimisationTask<? extends T> task = problemGenerator.getFormula(scenarios, variables, derivedVars);
 

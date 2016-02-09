@@ -111,7 +111,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
     });
   }
 
-  public static void main(String [] args) throws ParseException
+  public static void main(String[] args) throws ParseException
   {
   }
 

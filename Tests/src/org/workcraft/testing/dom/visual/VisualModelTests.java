@@ -164,7 +164,7 @@ public class VisualModelTests {
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
 
-        TestGroup(model, new VisualNode[] { node1, node2 });
+        TestGroup(model, new VisualNode[] {node1, node2 });
     }
 
     @Test
@@ -212,7 +212,7 @@ public class VisualModelTests {
         root.add(sq4);
         root.add(sq5);
 
-        TestGroup(model, new VisualNode[] { node1, node3, sq1, sq5 });
+        TestGroup(model, new VisualNode[] {node1, node3, sq1, sq5 });
     }
 
     @Test
@@ -461,7 +461,7 @@ public class VisualModelTests {
         model.addToSelection(con2);
         model.groupSelection();
 
-        Assert.assertArrayEquals(new VisualNode[] { c1, c2, c3, con1, con2 },
+        Assert.assertArrayEquals(new VisualNode[] {c1, c2, c3, con1, con2 },
                 root.getChildren().toArray(new VisualNode[0]));
     }
 

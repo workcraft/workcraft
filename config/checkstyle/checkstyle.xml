@@ -25,5 +25,8 @@
 
         <module name="UnusedImports" />
         <module name="RedundantImport" />
+
+        <module name="NoWhitespaceAfter" />
     </module>
+
 </module>

@@ -150,7 +150,7 @@ public class PresetManagerPanel<T> extends JPanel {
     {
         String desc = JOptionPane.showInputDialog(dialogOwner, "Please enter the description of the new preset:");
 
-        if (! (desc == null || desc.isEmpty())) {
+        if (!(desc == null || desc.isEmpty())) {
             T settings = guiMapper.getSettingsFromControls();
             Preset<T> preset = presetManager.save(settings, desc);
             presetCombo.addItem(preset);

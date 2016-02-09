@@ -74,7 +74,7 @@ public class BooleanParser implements BooleanParserConstants {
     });
   }
 
-  public static void main(String [] args) throws Exception
+  public static void main(String[] args) throws Exception
   {
     System.out.println(FormulaToString.toString(new BooleanParser(System.in).formula()));
   }

@@ -344,7 +344,7 @@ public class STG extends AbstractMathModel implements STGModel {
             MathConnection con2 = new MathConnection(p, (Transition) second);
 
             Hierarchy.getNearestContainer(first, second).add(
-                    Arrays.asList(new Node[] { p, con1, con2 }));
+                    Arrays.asList(new Node[] {p, con1, con2 }));
 
             ComplexResult complexResult = new ComplexResult(p, con1, con2);
             return complexResult;

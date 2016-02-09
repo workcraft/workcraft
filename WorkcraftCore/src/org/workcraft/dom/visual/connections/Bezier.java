@@ -86,11 +86,11 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
     @Override
     public List<ControlPoint> getControlPoints() {
-        return Arrays.asList( new ControlPoint[] { cp1, cp2 });
+        return Arrays.asList( new ControlPoint[] {cp1, cp2 });
     }
 
     public BezierControlPoint[] getBezierControlPoints() {
-        return new BezierControlPoint[] { cp1, cp2 };
+        return new BezierControlPoint[] {cp1, cp2 };
     }
 
     @Override
@@ -175,7 +175,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
     @Override
     public Collection<Node> getChildren() {
-        return Arrays.asList( new Node[] { cp1, cp2 });
+        return Arrays.asList( new Node[] {cp1, cp2 });
     }
 
     @Override

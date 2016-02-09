@@ -96,7 +96,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
     @Override
     public BooleanFormula select(BooleanFormula[] vars, OneHotIntBooleanFormula number) {
         List<BooleanVariable> params = new ArrayList<BooleanVariable>();
-        Literal []literals = new Literal[vars.length];
+        Literal[]literals = new Literal[vars.length];
 
         for(int i=0;i<vars.length;i++)
         {

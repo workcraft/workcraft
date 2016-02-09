@@ -60,7 +60,7 @@ public class XMLSerialisationTestingUtils {
         @SuppressWarnings("unchecked")
         @Override
         public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interfaceType) {
-            Initialiser<Object> [] legacy = getLegacyPlugins(interfaceType);
+            Initialiser<Object>[] legacy = getLegacyPlugins(interfaceType);
             ArrayList<PluginInfo<? extends T>> result = new ArrayList<PluginInfo<? extends T>>();
             for(Initialiser<Object> l : legacy)
                 result.add(new PluginManager.PluginInstanceHolder<T>((Initialiser<? extends T>) l));

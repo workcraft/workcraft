@@ -95,8 +95,8 @@ public class SatBasedSolver {
         int n = cpogBuilder.scanScenarios(m, scenarios, events, positions, count);
 
         // construct constraints
-        char [][][] constraints = new char[m][n][n];
-        int [][] graph = new int[n][n];
+        char[][][] constraints = new char[m][n][n];
+        int[][] graph = new int[n][n];
         check = cpogBuilder.constructConstraints(constraints,graph,m,n,
                 scenarios, events, positions, count);
         if(check.get(0).contains("ERROR")){
@@ -184,9 +184,9 @@ public class SatBasedSolver {
         HashMap<String, Integer> task = new HashMap<String, Integer>();
         cpogBuilder.groupConstraints(n,m,constraints,task);
 
-        char [][] matrix = new char[m][task.size()];
+        char[][] matrix = new char[m][task.size()];
 
-        String [] instance = new String[m];
+        String[] instance = new String[m];
         for(String s : task.keySet())
             for(int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
 
@@ -205,7 +205,7 @@ public class SatBasedSolver {
             predicatives[pr++] = variable;
         }
 
-        Variable [] vars = new Variable[freeVariables + pr];
+        Variable[] vars = new Variable[freeVariables + pr];
         for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
         for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
 
@@ -333,7 +333,7 @@ public class SatBasedSolver {
             // CREATE RESULT PART
             VisualScenario resultCpog = cpog.createVisualScenario();
             resultCpog.setLabel("Composition");
-            VisualVertex [] vertices = new VisualVertex[n];
+            VisualVertex[] vertices = new VisualVertex[n];
 
             cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,
                     events, vertices, cpog, resultCpog, positions, count, formulaeName);

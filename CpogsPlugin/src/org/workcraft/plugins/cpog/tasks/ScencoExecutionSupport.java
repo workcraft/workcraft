@@ -63,7 +63,7 @@ public class ScencoExecutionSupport {
 
 
     // BUILD CONSTRAINT FOR EACH ELEMENTS LOOPING ON THE SCENARIOS
-    protected String generateConstraint(char [][][] constraints, int numScenarios, int event1, int event2)
+    protected String generateConstraint(char[][][] constraints, int numScenarios, int event1, int event2)
     {
         StringBuilder s = new StringBuilder();
         for(int k = 0; k < numScenarios; k++) s.append(constraints[k][event1][event2]);
@@ -71,7 +71,7 @@ public class ScencoExecutionSupport {
     }
 
     // FUNCTION FOR SEEKING ALL TRIVIAL CONSTRAINTS
-    protected char trivialEncoding(char [][][] constraints, int numScenarios, int event1, int event2)
+    protected char trivialEncoding(char[][][] constraints, int numScenarios, int event1, int event2)
     {
         char trivial = '-';
 
@@ -346,7 +346,7 @@ public class ScencoExecutionSupport {
                 if(settings.isCustomEncMode()){
                         PrintStream Output1 = new PrintStream(encodingFile);
 
-                        String [] enc = settings.getCustomEnc();
+                        String[] enc = settings.getCustomEnc();
                         for(int k = 0; k < m; k++)
                         {
                             if(enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
@@ -476,10 +476,10 @@ public class ScencoExecutionSupport {
     // FUNCTION TO INSTANTIATE THE MAP FOR CONNECTING EACH VISUAL ELEMENT IN WORKCRAFT
     // INTO THE CORRESPONDING FORMULA. THE KEY IS REPRESENTED BY THE NAME OF THE ELEMENT,
     // FOR THE ARCS, THE NAME CORRESPOND TO NAME OF SOURCE -> NAME OF DEST
-    protected void connectFormulaeToVisualVertex(int v, int a, Variable [] vars, HashMap<String,
+    protected void connectFormulaeToVisualVertex(int v, int a, Variable[] vars, HashMap<String,
             BooleanFormula> formulaeName, String[] opt_formulaeVertices, String[] opt_vertices,
             String[] opt_formulaeArcs, String[] arcNames) throws ParseException{
-        final Variable [] variables = vars;
+        final Variable[] variables = vars;
         for(int i=0; i<v; i++){
             if(opt_formulaeVertices[i].contains("x")){
                 BooleanFormula formula_opt = null;

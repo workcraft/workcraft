@@ -29,8 +29,8 @@ public class ReachibilityDialog extends JDialog {
     public ReachibilityDialog(WorkspaceEntry we, String title, String message, List<Solution> solutions) {
 
         double sizes[][] = {
-                { TableLayout.FILL },
-                { TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED }
+                {TableLayout.FILL },
+                {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED }
         };
 
 

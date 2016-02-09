@@ -212,7 +212,7 @@ public class Config {
         Element xmlroot = xmldoc.getDocumentElement();
         NodeList nl =  xmlroot.getChildNodes(), nl2;
         for (int i=0; i<nl.getLength(); i++) {
-            if (! (nl.item(i) instanceof Element)) {
+            if (!(nl.item(i) instanceof Element)) {
                 continue;
             }
             Element e = (Element)nl.item(i);
@@ -224,7 +224,7 @@ public class Config {
                     String name = e.getAttribute("name");
                     nl2 = e.getChildNodes();
                     for (int j=0; j<nl2.getLength(); j++) {
-                        if (! (nl2.item(j) instanceof Element)) {
+                        if (!(nl2.item(j) instanceof Element)) {
                             continue;
                         }
                         Element e2 = (Element)nl2.item(j);

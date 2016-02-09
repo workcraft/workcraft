@@ -219,7 +219,7 @@ public class FileUtils {
             if (postponeTillExit) {
                 file.deleteOnExit();
             }
-            File [] files = file.listFiles();
+            File[] files = file.listFiles();
             if (files != null) {
                 for(File f: files) {
                     deleteFile(f, postponeTillExit);

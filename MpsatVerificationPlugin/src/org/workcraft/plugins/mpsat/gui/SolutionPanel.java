@@ -27,7 +27,7 @@ public class SolutionPanel extends JPanel {
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
         super (new TableLayout(new double[][]
-                { { TableLayout.FILL, TableLayout.PREFERRED },
+                {{TableLayout.FILL, TableLayout.PREFERRED },
                 {TableLayout.FILL} }
         ));
 

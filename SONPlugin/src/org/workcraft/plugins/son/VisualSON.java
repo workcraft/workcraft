@@ -281,7 +281,7 @@ public class VisualSON extends AbstractVisualModel {
     private boolean isPure (Collection<Node> nodes) {
         for (VisualSONConnection connect : getVisualSONConnections()){
             if(nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
-                && ! nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
+                && !nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
             return false;
 
             if(!nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)

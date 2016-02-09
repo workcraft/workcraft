@@ -204,7 +204,7 @@ public class TreeWindow<Node> extends JPanel
             private JPanel cellRenderer;
 
             {
-                cellRenderer = new JPanel(new TableLayout(new double[][] { { TableLayout.PREFERRED, TableLayout.PREFERRED }, { TableLayout.PREFERRED} } ));
+                cellRenderer = new JPanel(new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.PREFERRED }, {TableLayout.PREFERRED} } ));
             }
 
 

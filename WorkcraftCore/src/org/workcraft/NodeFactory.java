@@ -119,12 +119,12 @@ public class NodeFactory {
         try {
             Class<?> visualClass = vcat.value();
 
-            Object [] args = new Object[constructorParameters.length+1];
+            Object[] args = new Object[constructorParameters.length+1];
             args[0] = component;
             for(int i=0;i<constructorParameters.length;i++) {
                 args[i+1] = constructorParameters[i];
             }
-            Class <?> [] types = new Class <?> [args.length];
+            Class <?>[] types = new Class <?>[args.length];
             for(int i=0;i<args.length;i++) {
                 types[i] = args[i].getClass();
             }

@@ -51,8 +51,8 @@ public class Grid implements ViewportListener {
     protected double[][] majorLinePositions;
     protected double[][] minorLinePositions;
 
-    protected int [][] majorLinePositionsScreen;
-    protected int [][] minorLinePositionsScreen;
+    protected int[][] majorLinePositionsScreen;
+    protected int[][] minorLinePositionsScreen;
 
     protected Stroke stroke;
 

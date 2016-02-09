@@ -102,8 +102,8 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             height = 110;
         }
 
-        double size[][] = new double[][] { { TableLayout.FILL },
-                { 60, height,  TableLayout.FILL, 39 } };
+        double size[][] = new double[][] {{TableLayout.FILL },
+                {60, height, TableLayout.FILL, 39 } };
 
         layout = new TableLayout(size);
         layout.setHGap(3);
@@ -220,7 +220,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         circuitSizeText.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeText);
         modifyCircuitSize(false);
 
-        String[] columnNames = { ScencoDialogSupport.textFirstColumnTable, ScencoDialogSupport.textSecondColumnTable };
+        String[] columnNames = {ScencoDialogSupport.textFirstColumnTable, ScencoDialogSupport.textSecondColumnTable };
         Object[][] data = new Object[m][3];
         for (int i = 0; i < m; i++) {
             String name;

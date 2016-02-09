@@ -487,7 +487,7 @@ public class CpogSelectionTool extends SelectionTool {
                     boolean[][] c = parsingTool.convertToArrayForm(vertexMap.values(), visualCpog);
                     parsingTool.computeTransitiveClosure(c);
                     if (!parsingTool.hasSelfLoops(c)) {
-                        boolean [][] t = parsingTool.findTransitives(c);
+                        boolean[][] t = parsingTool.findTransitives(c);
                         parsingTool.convertFromArrayForm(t, vertexMap.values(), visualCpog);
                     }
                 }

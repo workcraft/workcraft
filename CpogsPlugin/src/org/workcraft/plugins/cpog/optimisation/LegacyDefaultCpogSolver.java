@@ -34,7 +34,7 @@ public class LegacyDefaultCpogSolver<T> implements LegacyCpogSolver
     @Override
     public CpogEncoding solve(String[] scenarios, int freeVars, int derivedVars) {
 
-        BooleanVariable [] vars = new BooleanVariable[freeVars];
+        BooleanVariable[] vars = new BooleanVariable[freeVars];
 
         char nextVar = 'z';
         for(int i = 0; i < freeVars; i++)

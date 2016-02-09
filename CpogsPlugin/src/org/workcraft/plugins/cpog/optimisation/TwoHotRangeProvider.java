@@ -105,7 +105,7 @@ public class TwoHotRangeProvider
         throw new RuntimeException("incorrect");
 
         /*List<FreeVariable> params = new ArrayList<FreeVariable>();
-        CnfLiteral []literals = new CnfLiteral[vars.length];
+        CnfLiteral[]literals = new CnfLiteral[vars.length];
 
         for(int i=0;i<vars.length;i++)
         {

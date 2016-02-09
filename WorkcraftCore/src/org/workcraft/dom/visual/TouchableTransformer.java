@@ -41,7 +41,7 @@ public class TouchableTransformer implements Touchable {
         this.inverseTransformation = Geometry.optimisticInverse(transformation);
     }
 
-    private void minMax(double [] x, double [] minMax)
+    private void minMax(double[] x, double[] minMax)
     {
         minMax[0] = minMax[1] = x[0];
         for(int i=1;i<x.length;i++)
@@ -60,7 +60,7 @@ public class TouchableTransformer implements Touchable {
         if(bb == null)
             return null;
 
-        Point2D [] corners = new Point2D [4];
+        Point2D[] corners = new Point2D[4];
         corners[0] = new Point2D.Double(bb.getMinX(), bb.getMinY());
         corners[1] = new Point2D.Double(bb.getMaxX(), bb.getMinY());
         corners[2] = new Point2D.Double(bb.getMinX(), bb.getMaxY());
@@ -68,11 +68,11 @@ public class TouchableTransformer implements Touchable {
 
         transformation.transform(corners, 0, corners, 0, 4);
 
-        double [] minMaxY = new double [2];
-        double [] minMaxX = new double [2];
+        double[] minMaxY = new double[2];
+        double[] minMaxX = new double[2];
 
-        double [] x = new double []{corners[0].getX(), corners[1].getX(), corners[2].getX(), corners[3].getX()};
-        double [] y = new double []{corners[0].getY(), corners[1].getY(), corners[2].getY(), corners[3].getY()};
+        double[] x = new double[]{corners[0].getX(), corners[1].getX(), corners[2].getX(), corners[3].getX()};
+        double[] y = new double[]{corners[0].getY(), corners[1].getY(), corners[2].getY(), corners[3].getY()};
 
         minMax(x, minMaxX);
         minMax(y, minMaxY);

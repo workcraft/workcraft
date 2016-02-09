@@ -68,7 +68,7 @@ public class VisualONGroup extends VisualPage {
                 g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
                 g.fill(labelBB);
                 g.setStroke(new BasicStroke( strokeWidth-0.005f , BasicStroke.CAP_BUTT,
-                        BasicStroke.JOIN_ROUND, 3.0f, new float[]{  0.1f ,  0.05f,}, 0f));
+                        BasicStroke.JOIN_ROUND, 3.0f, new float[]{0.1f ,  0.05f,}, 0f));
                 g.setColor(Coloriser.colorise(getLabelColor(), colorisation));
                 g.draw(labelBB);
                 drawLabelInLocalSpace(r);

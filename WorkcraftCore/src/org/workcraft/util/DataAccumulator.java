@@ -60,12 +60,12 @@ public class DataAccumulator extends OutputStream {
         dataChunks.add(data);
     }
 
-    public byte [] getData () {
+    public byte[] getData () {
         int len = 0;
         for (byte[] dataChunk : dataChunks)
             len += dataChunk.length;
 
-        byte [] result = new byte[len];
+        byte[] result = new byte[len];
 
         int cur = 0;
         for (byte[] dataChunk : dataChunks)
@@ -80,7 +80,7 @@ public class DataAccumulator extends OutputStream {
     }
 
     public void write(int b) throws IOException {
-        addDataChunk(new byte[] { (byte)b} );
+        addDataChunk(new byte[] {(byte)b} );
     }
 
     public void write(byte[] b, int off, int len) throws IOException {

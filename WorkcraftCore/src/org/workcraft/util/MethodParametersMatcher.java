@@ -89,7 +89,7 @@ public class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInf
         return true;
     }
 
-    boolean [] filtered;
+    boolean[] filtered;
 
     private void filterByParameter(int parameterNumber) {
         Class<?> best = null;
