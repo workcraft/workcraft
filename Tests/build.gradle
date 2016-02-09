@@ -1,0 +1,21 @@
+sourceSets {
+    main {
+        java {
+            srcDir 'none'
+        }
+    }
+    test {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'src'
+        }
+    }
+}
+
+dependencies {
+    compile project(':WorkcraftCore')
+    compile project(':STGPlugin')
+    compile project(':PetriNetPlugin')
+}
