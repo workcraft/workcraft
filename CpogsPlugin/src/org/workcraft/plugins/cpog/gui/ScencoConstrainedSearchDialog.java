@@ -103,7 +103,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         }
 
         double[][] size = new double[][] {{TableLayout.FILL },
-                {60, height, TableLayout.FILL, 39 } };
+                {60, height, TableLayout.FILL, 39 }, };
 
         layout = new TableLayout(size);
         layout.setHGap(3);

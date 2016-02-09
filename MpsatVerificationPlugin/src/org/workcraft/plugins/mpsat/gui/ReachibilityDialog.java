@@ -30,7 +30,7 @@ public class ReachibilityDialog extends JDialog {
 
         double[][] sizes = {
                 {TableLayout.FILL },
-                {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED }
+                {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED },
         };
 
 

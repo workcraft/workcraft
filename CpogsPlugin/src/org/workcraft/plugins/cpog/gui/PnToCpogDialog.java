@@ -56,7 +56,7 @@ public class PnToCpogDialog extends JDialog {
 
         double[][] size = new double[][] {
                 {TableLayout.FILL},
-                {110, TableLayout.FILL}
+                {110, TableLayout.FILL},
         };
 
         layout = new TableLayout(size);

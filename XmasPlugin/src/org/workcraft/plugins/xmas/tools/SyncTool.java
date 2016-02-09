@@ -790,7 +790,7 @@ public class SyncTool implements Tool {
         String[] choices = {
                  "asynchronous",
                  "mesochronous",
-                 "pausible"
+                 "pausible",
         };
 
         mainFrame = new JFrame("Configure Synchronisation");

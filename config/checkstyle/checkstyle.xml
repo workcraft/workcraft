@@ -30,6 +30,7 @@
         <module name="NoWhitespaceBefore" />
 
         <module name="ArrayTypeStyle" />
+        <module name="ArrayTrailingComma" />
     </module>
 
 </module>

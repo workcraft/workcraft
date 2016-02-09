@@ -72,7 +72,7 @@ public class ScencoSatBasedDialog extends JDialog {
         createButtonPanel();
 
         double[][] size = new double[][] {{TableLayout.FILL },
-                {60, TableLayout.FILL, 39 } };
+                {60, TableLayout.FILL, 39 }, };
 
         layout = new TableLayout(size);
         layout.setHGap(3);
