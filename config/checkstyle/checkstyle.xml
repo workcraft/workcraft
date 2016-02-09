@@ -18,10 +18,11 @@
     </module>
 
     <module name="TreeWalker">
-        <!--<module name="OuterTypeFilename"/>-->
+        <module name="OuterTypeFilename"/>
         <!--<module name="OneTopLevelClass"/>-->
         <module name="NoLineWrap" />
         <module name="PackageName" />
+
         <module name="UnusedImports" />
         <module name="RedundantImport" />
     </module>
