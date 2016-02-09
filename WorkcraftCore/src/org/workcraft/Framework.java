@@ -297,7 +297,7 @@ public class Framework {
 
     public String[] getModelNames() {
         LinkedList<Class<?>> list = modelManager.getModelList();
-        String a[] = new String[list.size()];
+        String[] a = new String[list.size()];
         int i=0;
         for (Class<?> cls : list)
             a[i++] = cls.getName();

@@ -16,8 +16,8 @@ public class TestCycles {
      * @param args
      */
     public static void main(String[] args) {
-        String nodes[] = new String[10];
-        boolean adjMatrix[][] = new boolean[10][10];
+        String[] nodes = new String[10];
+        boolean[][] adjMatrix = new boolean[10][10];
 
         for (int i = 0; i < 10; i++) {
             nodes[i] = "Node " + i;

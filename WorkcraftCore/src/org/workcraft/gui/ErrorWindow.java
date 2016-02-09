@@ -106,7 +106,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         }
 
         @Override
-        public void write(byte b[]) throws IOException {
+        public void write(byte[] b) throws IOException {
             if (systemErr != null) {
                 systemErr.write(b);
             }
@@ -115,7 +115,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         }
 
         @Override
-        public void write(byte b[], int off, int len) throws IOException {
+        public void write(byte[] b, int off, int len) throws IOException {
             if (systemErr != null) {
                 systemErr.write(b, off, len);
             }

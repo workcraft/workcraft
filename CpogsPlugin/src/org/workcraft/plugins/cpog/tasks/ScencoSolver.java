@@ -334,7 +334,7 @@ public class ScencoSolver {
             settings.getCircuitSize();
 
             // GET PREDICATES FROM WORKCRAFT ENVIRONMENT
-            VisualVariable predicatives[] = new VisualVariable[n];
+            VisualVariable[] predicatives = new VisualVariable[n];
             int pr = 0;
             for(VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
                 predicatives[pr++] = variable;

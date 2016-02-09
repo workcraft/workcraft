@@ -58,7 +58,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
         createStandardPanel();
         createButtonPanel(string);
 
-        double size[][] = new double[][] {
+        double[][] size = new double[][] {
                 {TableLayout.FILL},
                 {60, TableLayout.FILL}
         };
@@ -178,7 +178,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
                 settings.setNumPO(m);
                 if(settings.getGenMode() == GenerationMode.SEQUENTIAL){
                     settings.setCustomEncMode(true);
-                    String encodings[] = new String[m];
+                    String[] encodings = new String[m];
                     for(int i = 0; i<m; i++)
                         encodings[i] = Integer.toBinaryString(i);
                     settings.setCustomEnc(encodings);

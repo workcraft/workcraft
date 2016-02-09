@@ -74,7 +74,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                         we.captureMemento();
                         byte[] output = result.getReturnValue().getOutputFile("output.cpog");
                         String text = new String(output);
-                        String line[] = text.split("\r\n");
+                        String[] line = text.split("\r\n");
                         tool.getLowestVertex(visualCpog);
                         for (int i = 0; i < line.length; i++) {
                             tool.insertExpression(line[i], visualCpog, false, false, false, true);

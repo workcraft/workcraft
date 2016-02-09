@@ -54,7 +54,7 @@ public class PnToCpogDialog extends JDialog {
         createSettingPanel();
         createButtonPanel(settings);
 
-        double size[][] = new double[][] {
+        double[][] size = new double[][] {
                 {TableLayout.FILL},
                 {110, TableLayout.FILL}
         };

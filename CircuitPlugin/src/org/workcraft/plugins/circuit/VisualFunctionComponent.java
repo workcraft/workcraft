@@ -319,7 +319,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             }
         }
         if ((inputPos != null) && (outputPos != null)) {
-            float dash[] = {0.05f, 0.05f};
+            float[] dash = {0.05f, 0.05f};
             g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
                 BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 
@@ -368,7 +368,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             if (!getIsEnvironment()) {
                 g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth()));
             } else {
-                float dash[] = {0.05f, 0.05f};
+                float[] dash = {0.05f, 0.05f};
                 g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
                     BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
             }

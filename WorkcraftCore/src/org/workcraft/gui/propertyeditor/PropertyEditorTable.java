@@ -50,8 +50,8 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
     public static final Border BORDER_EDIT = BorderFactory.createEmptyBorder(1, 3, 1, 1);
 
     HashMap<Class<?>, PropertyClass> propertyClasses;
-    TableCellRenderer cellRenderers[];
-    TableCellEditor cellEditors[];
+    TableCellRenderer[] cellRenderers;
+    TableCellEditor[] cellEditors;
     PropertyEditorTableModel model;
 
     public PropertyEditorTable() {

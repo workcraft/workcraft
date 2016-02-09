@@ -28,6 +28,8 @@
 
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
+
+        <module name="ArrayTypeStyle" />
     </module>
 
 </module>

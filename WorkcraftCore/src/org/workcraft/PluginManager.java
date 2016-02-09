@@ -252,7 +252,7 @@ public class PluginManager implements PluginProvider {
             @Override
             public T create() {
                 try {
-                    Class<?> classes[] = new Class<?>[constructorArgs.length];
+                    Class<?>[] classes = new Class<?>[constructorArgs.length];
                     for (int i=0; i<constructorArgs.length; i++) {
                         classes[i] = constructorArgs[i].getClass();
                     }
