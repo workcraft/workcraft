@@ -55,7 +55,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
         private BooleanVisitor<Literal> dumbGenerator;
         private Cnf result;
 
-        public ConstantExpectingCnfGenerator(Cnf result, BooleanVisitor<Literal> dumbGenerator)
+        ConstantExpectingCnfGenerator(Cnf result, BooleanVisitor<Literal> dumbGenerator)
         {
             this.result = result;
             this.dumbGenerator = dumbGenerator;
@@ -102,7 +102,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
         static class BiClauseGenerator implements BooleanVisitor<Literal[][]>
         {
             BooleanVisitor<Literal> dumbGenerator;
-            public BiClauseGenerator(BooleanVisitor<Literal> dumbGenerator)
+            BiClauseGenerator(BooleanVisitor<Literal> dumbGenerator)
             {
                 this.dumbGenerator = dumbGenerator;
             }

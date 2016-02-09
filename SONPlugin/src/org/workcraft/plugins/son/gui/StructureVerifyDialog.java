@@ -60,7 +60,7 @@ public class StructureVerifyDialog extends JDialog{
         public int value;
         public String description;
 
-        public typeMode(int value, String description) {
+        typeMode(int value, String description) {
             this.value = value;
             this.description = description;
         }
@@ -76,7 +76,7 @@ public class StructureVerifyDialog extends JDialog{
         private boolean isSelected = true;
         private Object obj;
 
-        public ListItem(String label, Object obj){
+        ListItem(String label, Object obj){
             this.label = label;
             this.obj = obj;
         }

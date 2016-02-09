@@ -79,7 +79,7 @@ public class SettingsEditorDialog extends JDialog {
     static class SettingsPageNode {
         private Settings page;
 
-        public SettingsPageNode(Settings page) {
+        SettingsPageNode(Settings page) {
             this.page = page;
         }
 

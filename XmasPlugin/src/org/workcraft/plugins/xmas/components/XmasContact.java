@@ -38,7 +38,7 @@ public class XmasContact extends MathNode {
 
         private final String name;
 
-        private IOType(String name) {
+        IOType(String name) {
             this.name = name;
         }
 

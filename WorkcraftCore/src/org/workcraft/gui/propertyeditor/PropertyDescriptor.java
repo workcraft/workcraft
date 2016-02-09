@@ -25,12 +25,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public interface PropertyDescriptor {
-    public String getName();
-    public Class<?> getType();
-    public boolean isWritable();
-    public boolean isCombinable();
-    public boolean isTemplatable();
-    public Object getValue() throws InvocationTargetException;
-    public void setValue(Object value) throws InvocationTargetException;
-    public Map<? extends Object, String> getChoice();
+    String getName();
+    Class<?> getType();
+    boolean isWritable();
+    boolean isCombinable();
+    boolean isTemplatable();
+    Object getValue() throws InvocationTargetException;
+    void setValue(Object value) throws InvocationTargetException;
+    Map<? extends Object, String> getChoice();
 }

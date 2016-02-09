@@ -43,7 +43,7 @@ class DefaultNodeDeserialiser {
     private NodeInitialiser initialiser;
     private NodeFinaliser finaliser;
 
-    public DefaultNodeDeserialiser(DeserialiserFactory factory, NodeInitialiser initialiser, NodeFinaliser finaliser) {
+    DefaultNodeDeserialiser(DeserialiserFactory factory, NodeInitialiser initialiser, NodeFinaliser finaliser) {
         this.fac = factory;
         this.initialiser = initialiser;
         this.finaliser = finaliser;

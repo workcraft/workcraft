@@ -36,7 +36,7 @@ class ConnectionByComponentsIdentifier implements
         private final Object o1;
         private final Object o2;
 
-        public Pair(Object o1, Object o2)
+        Pair(Object o1, Object o2)
         {
             this.o1 = o1;
             this.o2 = o2;
@@ -57,7 +57,7 @@ class ConnectionByComponentsIdentifier implements
         }
     }
 
-    public ConnectionByComponentsIdentifier(
+    ConnectionByComponentsIdentifier(
             KeyProvider<MathNode> componentKeyProvider) {
                 this.componentKeyProvider = componentKeyProvider;
     }
@@ -71,7 +71,7 @@ class ConnectionByComponentsIdentifier implements
 
 interface KeyProvider<T>
 {
-    public Object getKey(T item);
+    Object getKey(T item);
 }
 
 class Finder<T>
@@ -79,7 +79,7 @@ class Finder<T>
     private final HashMap<Object, T> map;
     private final KeyProvider<T> keyProvider;
 
-    public Finder(Iterable<T> items, KeyProvider<T> keyProvider)
+    Finder(Iterable<T> items, KeyProvider<T> keyProvider)
     {
         this.keyProvider = keyProvider;
         map = new HashMap<Object, T>();

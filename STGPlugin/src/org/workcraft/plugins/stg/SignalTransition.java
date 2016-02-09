@@ -42,7 +42,7 @@ public class SignalTransition extends NamedTransition
 
         private final String name;
 
-        private Type(String name) {
+        Type(String name) {
             this.name = name;
         }
 
@@ -59,7 +59,7 @@ public class SignalTransition extends NamedTransition
 
         private final String name;
 
-        private Direction(String name) {
+        Direction(String name) {
             this.name = name;
         }
 

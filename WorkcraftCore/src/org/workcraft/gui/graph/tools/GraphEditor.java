@@ -32,29 +32,29 @@ import org.workcraft.gui.graph.Viewport;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public interface GraphEditor {
-    public Viewport getViewport();
-    public MainWindow getMainWindow();
-    public EditorOverlay getOverlay();
-    public WorkspaceEntry getWorkspaceEntry();
-    public VisualModel getModel();
-    public int getWidth();
-    public int getHeight();
-    public Set<Point2D> getSnaps(VisualNode node);
-    public Point2D snap(Point2D pos, Set<Point2D> snaps);
-    public void repaint();
-    public void forceRedraw();
-    public boolean hasFocus();
-    public void requestFocus();
+    Viewport getViewport();
+    MainWindow getMainWindow();
+    EditorOverlay getOverlay();
+    WorkspaceEntry getWorkspaceEntry();
+    VisualModel getModel();
+    int getWidth();
+    int getHeight();
+    Set<Point2D> getSnaps(VisualNode node);
+    Point2D snap(Point2D pos, Set<Point2D> snaps);
+    void repaint();
+    void forceRedraw();
+    boolean hasFocus();
+    void requestFocus();
 
-    public void zoomIn();
-    public void zoomOut();
-    public void zoomDefault();
-    public void zoomFit();
+    void zoomIn();
+    void zoomOut();
+    void zoomDefault();
+    void zoomFit();
 
-    public void panLeft();
-    public void panUp();
-    public void panRight();
-    public void panDown();
-    public void panCenter();
+    void panLeft();
+    void panUp();
+    void panRight();
+    void panDown();
+    void panCenter();
 
 }

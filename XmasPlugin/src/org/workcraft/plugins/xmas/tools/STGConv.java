@@ -63,7 +63,7 @@ public class STGConv {
         public final VisualSignalTransition t0;
         public final VisualSTG stg;
 
-        public STGSignal(String name, int x, int y, VisualSTG stg) throws InvalidConnectionException {
+        STGSignal(String name, int x, int y, VisualSTG stg) throws InvalidConnectionException {
 
             SignalTransition.Type type = SignalTransition.Type.INTERNAL;
             this.p0 = stg.createPlace(name.concat("_I1"), null);
@@ -272,7 +272,7 @@ public class STGConv {
         public final STGInv i3;
         public final STGAnd a3;
 
-        public genSTG_(String name, int x, int offset) throws InvalidConnectionException {
+        genSTG_(String name, int x, int offset) throws InvalidConnectionException {
 
             Collection<VisualPlace> p=null;
 

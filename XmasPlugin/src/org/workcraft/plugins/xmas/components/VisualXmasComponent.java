@@ -65,7 +65,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         private final String name;
         private final int quadrant;
 
-        private Orientation(String name, int quadrant) {
+        Orientation(String name, int quadrant) {
             this.name = name;
             this.quadrant = quadrant;
         }

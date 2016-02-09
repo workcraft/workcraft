@@ -23,16 +23,16 @@ package org.workcraft.history;
 import java.util.List;
 
 public interface HistoryProvider {
-    public List<HistoryEvent> getHistory();
+    List<HistoryEvent> getHistory();
 
-    public boolean canUndo();
-    public void undo();
-    public boolean canRedo();
-    public void redo();
+    boolean canUndo();
+    void undo();
+    boolean canRedo();
+    void redo();
 
-    public void moveToState (int index);
-    public int getCurrentStateIndex();
+    void moveToState (int index);
+    int getCurrentStateIndex();
 
-    public void addHistoryListener(HistoryListener listener);
-    public void removeHistoryListener(HistoryListener listener);
+    void addHistoryListener(HistoryListener listener);
+    void removeHistoryListener(HistoryListener listener);
 }

@@ -69,7 +69,7 @@ public class ParallelSimDialog  extends JDialog{
         private boolean isSelected = false;
         private TransitionNode event;
 
-        public EventItem(String label, TransitionNode event, List<TransitionNode> postEvents){
+        EventItem(String label, TransitionNode event, List<TransitionNode> postEvents){
             this.label = label;
             this.event = event;
         }

@@ -24,6 +24,6 @@ package org.workcraft.dom.visual;
 import org.workcraft.dom.Node;
 
 public interface Rotatable extends Node {
-    public void rotateClockwise();
-    public void rotateCounterclockwise();
+    void rotateClockwise();
+    void rotateCounterclockwise();
 }

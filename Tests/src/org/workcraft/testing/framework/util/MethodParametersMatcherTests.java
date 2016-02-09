@@ -127,7 +127,7 @@ public class MethodParametersMatcherTests {
     {
         private final Method method;
 
-        public TestMethodInfo(Method method) {
+        TestMethodInfo(Method method) {
             this.method = method;
         }
 

@@ -60,7 +60,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
         private final String name;
 
-        private Direction(String name) {
+        Direction(String name) {
             this.name = name;
         }
 

@@ -37,7 +37,7 @@ public class SourceComponent extends XmasComponent {
 
         private final String name;
 
-        private Mode(String name) {
+        Mode(String name) {
             this.name = name;
         }
 
@@ -54,7 +54,7 @@ public class SourceComponent extends XmasComponent {
 
         private final String name;
 
-        private Type(String name) {
+        Type(String name) {
             this.name = name;
         }
 

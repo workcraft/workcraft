@@ -93,7 +93,7 @@ public class SyncTool implements Tool {
            String g1;
            String g2;
 
-           public sync_(String s1,String s2,String s3,String s4,int gr,int cno) {
+           sync_(String s1,String s2,String s3,String s4,int gr,int cno) {
              name1 = s1;
              name2 = s2;
              name3 = s3;

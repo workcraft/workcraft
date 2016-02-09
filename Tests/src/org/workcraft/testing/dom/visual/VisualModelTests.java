@@ -53,7 +53,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 public class VisualModelTests {
 
     private class MockMathModel extends AbstractModel implements MathModel{
-        public MockMathModel() {
+        MockMathModel() {
             super(new MathGroup());
         }
 
@@ -69,7 +69,7 @@ public class VisualModelTests {
 
     private class MockConcreteVisualModel extends AbstractVisualModel {
 
-        public MockConcreteVisualModel() {
+        MockConcreteVisualModel() {
             super(new MockMathModel());
         }
 
@@ -468,7 +468,7 @@ public class VisualModelTests {
     class GroupNodeEqualityTest {
         private VisualNode[] expected;
 
-        public GroupNodeEqualityTest(VisualNode[] expected) {
+        GroupNodeEqualityTest(VisualNode[] expected) {
             this.expected = expected;
         }
 

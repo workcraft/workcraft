@@ -22,7 +22,7 @@
 package org.workcraft;
 
 public interface MenuOrdering {
-    public enum Position {TOP, MIDDLE, BOTTOM};
-    public int getPriority();
-    public Position getPosition();
+    enum Position {TOP, MIDDLE, BOTTOM};
+    int getPriority();
+    Position getPosition();
 }

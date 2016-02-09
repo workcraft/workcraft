@@ -15,7 +15,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 {
     private final List<CnfClause> rho = new ArrayList<CnfClause>();
 
-    public CnfGeneratingOneHotNumberProvider()
+    CnfGeneratingOneHotNumberProvider()
     {
     }
 

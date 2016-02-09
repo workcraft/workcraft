@@ -31,7 +31,7 @@ import org.junit.Test;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @interface Bojo {
-    public String value();
+    String value();
 }
 
 @Bojo("qwe")

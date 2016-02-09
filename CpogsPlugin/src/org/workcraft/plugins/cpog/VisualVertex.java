@@ -65,7 +65,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
 
         private final String name;
 
-        private RenderType(String name) {
+        RenderType(String name) {
             this.name = name;
         }
 

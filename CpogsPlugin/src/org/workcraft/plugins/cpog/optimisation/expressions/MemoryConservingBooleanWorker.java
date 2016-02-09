@@ -107,7 +107,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     }
 
     class IntPair {
-        public IntPair(Integer x, Integer y) {
+        IntPair(Integer x, Integer y) {
             if (y < x) {
                 Integer tmp = x;
                 x = y;

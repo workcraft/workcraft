@@ -60,7 +60,7 @@ public class MpsatConfigurationDialog extends JDialog {
         private final int value;
         private final String description;
 
-        public IntMode(int value, String description) {
+        IntMode(int value, String description) {
             this.value = value;
             this.description = description;
         }

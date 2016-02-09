@@ -31,5 +31,5 @@ import org.workcraft.gui.graph.tools.GraphEditorMouseListener;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface MouseListeners {
-    public Class<? extends GraphEditorMouseListener>[] value();
+    Class<? extends GraphEditorMouseListener>[] value();
 }

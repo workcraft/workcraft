@@ -33,7 +33,7 @@ public class HierarchyHelperTests {
     static class MockHierarchyNode implements Node
     {
         private Node parent;
-        public MockHierarchyNode(Node parent) {
+        MockHierarchyNode(Node parent) {
             this.parent = parent;
         }
         @Override

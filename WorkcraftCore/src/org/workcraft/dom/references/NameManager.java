@@ -4,17 +4,17 @@ import org.workcraft.dom.Node;
 
 public interface NameManager {
 
-    public String getPrefix(Node node);
-    public void setPrefixCount(String prefix, Integer count);
-    public Integer getPrefixCount(String prefix);
+    String getPrefix(Node node);
+    void setPrefixCount(String prefix, Integer count);
+    Integer getPrefixCount(String prefix);
 
-    public void setName(Node node, String name);
-    public String getName(Node node);
-    public boolean isNamed(Node node);
-    public boolean isUnusedName(String name);
-    public Node getNode(String name);
-    public void remove(Node node);
+    void setName(Node node, String name);
+    String getName(Node node);
+    boolean isNamed(Node node);
+    boolean isUnusedName(String name);
+    Node getNode(String name);
+    void remove(Node node);
 
-    public void setDefaultNameIfUnnamed(Node node);
-    public String getDerivedName(Node node, String candidate);
+    void setDefaultNameIfUnnamed(Node node);
+    String getDerivedName(Node node, String candidate);
 }

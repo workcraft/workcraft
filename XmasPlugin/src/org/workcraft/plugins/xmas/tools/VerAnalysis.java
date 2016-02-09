@@ -55,7 +55,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
            String name;
            int chk;
 
-           public qslist(String s1,int n) {
+           qslist(String s1,int n) {
              name = s1;
              chk=n;
            }

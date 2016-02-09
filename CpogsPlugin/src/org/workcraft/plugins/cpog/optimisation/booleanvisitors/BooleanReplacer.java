@@ -48,7 +48,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
 
     interface BinaryOperation {
-        public BooleanFormula apply(BooleanFormula x, BooleanFormula y);
+        BooleanFormula apply(BooleanFormula x, BooleanFormula y);
     }
 
     private final HashMap<BooleanFormula, BooleanFormula> map;

@@ -253,7 +253,7 @@ public class VisualComponentGroupTests {
 
     class DummyNode extends VisualComponent
     {
-        public DummyNode(VisualGroup parent) {
+        DummyNode(VisualGroup parent) {
             super(null);
             parent.add(this);
         }

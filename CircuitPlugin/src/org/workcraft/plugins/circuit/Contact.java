@@ -40,7 +40,7 @@ public class Contact extends MathNode implements BooleanVariable {
 
         private final String name;
 
-        private IOType(String name) {
+        IOType(String name) {
             this.name = name;
         }
 

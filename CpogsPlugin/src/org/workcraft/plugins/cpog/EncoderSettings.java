@@ -13,7 +13,7 @@ public class EncoderSettings {
 
         public final String name;
 
-        private GenerationMode(String name){
+        GenerationMode(String name){
             this.name = name;
         }
 

@@ -39,15 +39,15 @@ public class HitmanTests {
     class DummyNode implements Node
     {
         Collection<Node> children;
-        public DummyNode()
+        DummyNode()
         {
             children = Collections.emptyList();
         }
-        public DummyNode(Node[] children)
+        DummyNode(Node[] children)
         {
             this.children = new ArrayList<Node>(Arrays.asList(children));
         }
-        public DummyNode(Collection<Node> children)
+        DummyNode(Collection<Node> children)
         {
             this.children = children;
         }

@@ -111,7 +111,7 @@ public final class Framework {
         private String script;
         private Scriptable scope;
 
-        public ExecuteScriptAction(String script, Scriptable scope) {
+        ExecuteScriptAction(String script, Scriptable scope) {
             this.script = script;
             this.scope = scope;
         }
@@ -125,7 +125,7 @@ public final class Framework {
         private Script script;
         private Scriptable scope;
 
-        public ExecuteCompiledScriptAction(Script script, Scriptable scope) {
+        ExecuteCompiledScriptAction(Script script, Scriptable scope) {
             this.script = script;
             this.scope = scope;
         }
@@ -139,7 +139,7 @@ public final class Framework {
         private String sourceName;
         private BufferedReader reader;
 
-        public CompileScriptFromReaderAction(BufferedReader reader, String sourceName) {
+        CompileScriptFromReaderAction(BufferedReader reader, String sourceName) {
             this.sourceName = sourceName;
             this.reader = reader;
         }
@@ -156,7 +156,7 @@ public final class Framework {
     class CompileScriptAction implements ContextAction {
         private String source, sourceName;
 
-        public CompileScriptAction(String source, String sourceName) {
+        CompileScriptAction(String source, String sourceName) {
             this.source = source;
             this.sourceName = sourceName;
         }
@@ -367,7 +367,7 @@ public final class Framework {
         private static final long serialVersionUID = 8906492547355596206L;
         private final String scriptTrace;
 
-        public JavascriptPassThroughException(Throwable wrapped, String scriptTrace)
+        JavascriptPassThroughException(Throwable wrapped, String scriptTrace)
         {
             super(wrapped);
             this.scriptTrace = scriptTrace;

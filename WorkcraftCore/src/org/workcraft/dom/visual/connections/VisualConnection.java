@@ -75,7 +75,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
         private final String name;
 
-        private ConnectionType(String name) {
+        ConnectionType(String name) {
             this.name = name;
         }
 
@@ -94,7 +94,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
         private final String name;
 
-        private ScaleMode(String name) {
+        ScaleMode(String name) {
             this.name = name;
         }
 

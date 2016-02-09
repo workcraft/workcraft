@@ -1,6 +1,6 @@
 package org.workcraft.dom.visual;
 
 public interface Replica {
-    public void setMaster(VisualComponent value);
-    public VisualComponent getMaster();
+    void setMaster(VisualComponent value);
+    VisualComponent getMaster();
 }

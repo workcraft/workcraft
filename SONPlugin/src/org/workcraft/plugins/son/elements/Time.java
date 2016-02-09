@@ -5,12 +5,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.util.Interval;
 
 public interface Time extends Node{
-    public void setStartTime (Interval value);
-    public Interval getStartTime();
+    void setStartTime (Interval value);
+    Interval getStartTime();
 
-    public void setEndTime (Interval value);
-    public Interval getEndTime();
+    void setEndTime (Interval value);
+    Interval getEndTime();
 
-    public void setDuration(Interval value);
-    public Interval getDuration();
+    void setDuration(Interval value);
+    Interval getDuration();
 }

@@ -39,51 +39,51 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.plugins.layout.AbstractLayoutTool;
 
 public interface VisualModel extends Model, ObservableState {
-    public void createDefaultFlatStructure() throws NodeCreationException;
-    public void draw(Graphics2D g, Decorator decorator);
+    void createDefaultFlatStructure() throws NodeCreationException;
+    void draw(Graphics2D g, Decorator decorator);
 
-    public void setCurrentLevel(Container group);
-    public Container getCurrentLevel();
-    public MathModel getMathModel();
+    void setCurrentLevel(Container group);
+    Container getCurrentLevel();
+    MathModel getMathModel();
 
-    public String getNodeMathReference(Node node);
-    public String getMathName(Node node);
-    public void setMathName(Node node, String name);
+    String getNodeMathReference(Node node);
+    String getMathName(Node node);
+    void setMathName(Node node, String name);
 
-    public void validateConnection(Node first, Node second) throws InvalidConnectionException;
-    public VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
-    public VisualConnection connect(Node first, Node second, MathConnection connection) throws InvalidConnectionException;
+    void validateConnection(Node first, Node second) throws InvalidConnectionException;
+    VisualConnection connect(Node first, Node second) throws InvalidConnectionException;
+    VisualConnection connect(Node first, Node second, MathConnection connection) throws InvalidConnectionException;
 
-    public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException;
-    public VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException;
+    void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException;
+    VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException;
 
-    public <T extends VisualComponent> T createVisualComponent(MathNode refNode, Container container, Class<T> type);
-    public <T extends VisualComponent> T getVisualComponent(MathNode refNode, Class<T> type);
+    <T extends VisualComponent> T createVisualComponent(MathNode refNode, Container container, Class<T> type);
+    <T extends VisualComponent> T getVisualComponent(MathNode refNode, Class<T> type);
 
-    public <T extends VisualReplica> T createVisualReplica(VisualComponent master, Container container, Class<T> type);
+    <T extends VisualReplica> T createVisualReplica(VisualComponent master, Container container, Class<T> type);
 
-    public void selectAll();
-    public void selectNone();
-    public void selectInverse();
-    public void select(Node node);
-    public void select(Collection<Node> nodes);
-    public void addToSelection(Node node);
-    public void addToSelection(Collection<Node> nodes);
-    public void removeFromSelection(Node node);
-    public void removeFromSelection(Collection<Node> nodes);
-    public void deleteSelection();
+    void selectAll();
+    void selectNone();
+    void selectInverse();
+    void select(Node node);
+    void select(Collection<Node> nodes);
+    void addToSelection(Node node);
+    void addToSelection(Collection<Node> nodes);
+    void removeFromSelection(Node node);
+    void removeFromSelection(Collection<Node> nodes);
+    void deleteSelection();
 
-    public Collection<Node> getSelection();
+    Collection<Node> getSelection();
 
-    public boolean isGroupable(Node node);
-    public VisualGroup groupSelection();
-    public VisualPage groupPageSelection();
-    public void ungroupSelection();
+    boolean isGroupable(Node node);
+    VisualGroup groupSelection();
+    VisualPage groupPageSelection();
+    void ungroupSelection();
 
-    public Collection<Node> boxHitTest(Point2D p1, Point2D p2);
+    Collection<Node> boxHitTest(Point2D p1, Point2D p2);
 
-    public void setTemplateNode(VisualNode node);
-    public VisualNode getTemplateNode();
-    public AbstractLayoutTool getBestLayoutTool();
+    void setTemplateNode(VisualNode node);
+    VisualNode getTemplateNode();
+    AbstractLayoutTool getBestLayoutTool();
 
 }

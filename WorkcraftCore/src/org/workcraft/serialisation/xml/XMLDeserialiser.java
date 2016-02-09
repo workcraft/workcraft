@@ -23,5 +23,5 @@ package org.workcraft.serialisation.xml;
 
 
 public interface XMLDeserialiser {
-    public String getClassName();
+    String getClassName();
 }

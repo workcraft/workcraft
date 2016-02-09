@@ -30,7 +30,7 @@ class XMLSerialiserState {
     ReferenceProducer externalReferences = null;
     ReferenceProducer internalReferences = null;
 
-    public XMLSerialiserState(ReferenceProducer internalReferences, ReferenceProducer externalReferences) {
+    XMLSerialiserState(ReferenceProducer internalReferences, ReferenceProducer externalReferences) {
         this.externalReferences = externalReferences;
         this.internalReferences = internalReferences;
     }

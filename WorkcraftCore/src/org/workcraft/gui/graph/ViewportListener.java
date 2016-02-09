@@ -33,7 +33,7 @@ public interface ViewportListener {
      * @param sender
      * The viewport that has sent the notification.
      */
-    public void shapeChanged (Viewport sender);
+    void shapeChanged (Viewport sender);
 
 
     /**
@@ -41,5 +41,5 @@ public interface ViewportListener {
      * @param sender
      * The viewport that has sent the notification
      */
-    public void viewChanged (Viewport sender);
+    void viewChanged (Viewport sender);
 }

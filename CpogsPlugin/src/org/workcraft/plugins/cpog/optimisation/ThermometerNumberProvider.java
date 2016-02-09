@@ -9,7 +9,7 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
 {
     private final List<BooleanFormula> rho = new ArrayList<BooleanFormula>();
 
-    public ThermometerNumberProvider()
+    ThermometerNumberProvider()
     {
     }
 

@@ -18,7 +18,7 @@ final class OperationCancelDialog<T> extends JDialog implements
     private static final long serialVersionUID = 4633136071864781499L;
     TaskControl taskControl;
 
-    public OperationCancelDialog(Window parent, String description) {
+    OperationCancelDialog(Window parent, String description) {
         setModal(true);
         taskControl = new TaskControl(description);
         Container content = this.getContentPane();

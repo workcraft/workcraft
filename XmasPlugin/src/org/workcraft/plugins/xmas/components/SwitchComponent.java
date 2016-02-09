@@ -35,7 +35,7 @@ public class SwitchComponent extends XmasComponent {
 
         private final String name;
 
-        private Type(String name) {
+        Type(String name) {
             this.name = name;
         }
 
@@ -51,7 +51,7 @@ public class SwitchComponent extends XmasComponent {
 
         private final String name;
 
-        private Val(String name) {
+        Val(String name) {
             this.name = name;
         }
 

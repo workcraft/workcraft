@@ -123,7 +123,7 @@ public class DesktopApi {
         return parts.toArray(new String[parts.size()]);
     }
 
-    public static enum OsType {
+    public enum OsType {
         LINUX,
         MACOS,
         SOLARIS,

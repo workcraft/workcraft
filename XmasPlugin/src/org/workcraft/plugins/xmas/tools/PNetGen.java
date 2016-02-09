@@ -48,7 +48,7 @@ public class PNetGen implements Tool {
            String a;
            String b;
 
-            public Ids(String s1,String s2) {
+            Ids(String s1,String s2) {
               a = s1;
               b = s2;
             }
@@ -61,7 +61,7 @@ public class PNetGen implements Tool {
            String c;
            String d;
 
-            public Info(String s1,String s2,String s3,String s4) {
+            Info(String s1,String s2,String s3,String s4) {
               a = s1;
               b = s2;
               c = s3;

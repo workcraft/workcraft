@@ -10,11 +10,11 @@ import org.workcraft.util.Func;
 
 public interface GraphFunc <Arg, Result> extends Func<Arg, Result>{
 
-    public GraphFunc<Arg, Result> removeGraphName(String graphName);
+    GraphFunc<Arg, Result> removeGraphName(String graphName);
 
     CpogFormula eval(String label, String boolExpression) throws org.workcraft.plugins.cpog.expressions.javacc.ParseException;
 
-    public void setSequenceCondition(CpogFormula formula, String boolForm);
+    void setSequenceCondition(CpogFormula formula, String boolForm);
 
 //    public boolean getRef();
 }

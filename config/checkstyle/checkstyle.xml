@@ -29,6 +29,8 @@
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
 
+        <module name="RedundantModifier" />
+
         <module name="FinalClass" />
 
         <module name="ArrayTypeStyle" />

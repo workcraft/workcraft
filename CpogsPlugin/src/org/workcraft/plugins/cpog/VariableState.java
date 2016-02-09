@@ -31,7 +31,7 @@ public enum VariableState
     public final char value;
     private final String name;
 
-    private VariableState(char value, String name) {
+    VariableState(char value, String name) {
         this.value = value;
         this.name = name;
     }

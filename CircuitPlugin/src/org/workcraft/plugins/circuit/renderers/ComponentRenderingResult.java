@@ -8,13 +8,13 @@ import java.util.Map;
 
 public interface ComponentRenderingResult {
 
-    public enum RenderType {
+    enum RenderType {
         BOX("Box"),
         GATE("Gate");
 
         private final String name;
 
-        private RenderType(String name) {
+        RenderType(String name) {
             this.name = name;
         }
 

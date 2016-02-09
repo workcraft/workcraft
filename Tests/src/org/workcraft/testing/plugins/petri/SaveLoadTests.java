@@ -185,7 +185,7 @@ public class SaveLoadTests {
     {
         private final Writer output;
 
-        public Base16Writer(Writer output)
+        Base16Writer(Writer output)
         {
             this.output = output;
         }

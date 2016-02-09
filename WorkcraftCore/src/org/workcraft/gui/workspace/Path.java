@@ -49,7 +49,7 @@ class RootPath<Node> extends Path<Node>
 {
     private final Node root;
 
-    public RootPath(Node root) {
+    RootPath(Node root) {
         this.root = root;
     }
 
@@ -75,7 +75,7 @@ class NormalPath<Node> extends Path<Node>
     private final Path<Node> parent;
     private final Node node;
 
-    public NormalPath(Path<Node> parent, Node node) {
+    NormalPath(Path<Node> parent, Node node) {
         if(node == null || parent == null)
             throw new NullPointerException();
         this.parent = parent;

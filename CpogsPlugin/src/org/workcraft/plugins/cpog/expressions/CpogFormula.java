@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.expressions;
 
 public interface CpogFormula {
-    abstract <T> T accept(CpogVisitor<T> visitor);
+    <T> T accept(CpogVisitor<T> visitor);
 }

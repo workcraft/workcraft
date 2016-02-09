@@ -29,22 +29,22 @@ import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 
 public interface VisualConnectionProperties {
-    public Stroke getStroke();
-    public Color getDrawColor();
+    Stroke getStroke();
+    Color getDrawColor();
 
-    public double getArrowWidth();
-    public double getArrowLength();
-    public boolean hasArrow();
+    double getArrowWidth();
+    double getArrowLength();
+    boolean hasArrow();
 
-    public double getBubbleSize();
-    public boolean hasBubble();
+    double getBubbleSize();
+    boolean hasBubble();
 
-    public Point2D getFirstCenter();
-    public Touchable getFirstShape();
+    Point2D getFirstCenter();
+    Touchable getFirstShape();
 
-    public Point2D getSecondCenter();
-    public Touchable getSecondShape();
-    public ScaleMode getScaleMode();
+    Point2D getSecondCenter();
+    Touchable getSecondShape();
+    ScaleMode getScaleMode();
 
-    public boolean isTokenColorPropagator();
+    boolean isTokenColorPropagator();
 }

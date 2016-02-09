@@ -3,9 +3,9 @@ package org.workcraft.gui;
 import javax.swing.JTabbedPane;
 
 public interface DockableWindowTabListener {
-    public void dockedInTab(JTabbedPane pane, int index);
-    public void dockedStandalone();
-    public void tabSelected(JTabbedPane pane, int index);
-    public void tabDeselected(JTabbedPane pane, int index);
-    public void headerClicked ();
+    void dockedInTab(JTabbedPane pane, int index);
+    void dockedStandalone();
+    void tabSelected(JTabbedPane pane, int index);
+    void tabDeselected(JTabbedPane pane, int index);
+    void headerClicked ();
 }
