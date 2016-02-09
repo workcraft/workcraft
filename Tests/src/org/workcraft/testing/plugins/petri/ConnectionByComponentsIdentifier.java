@@ -26,30 +26,6 @@ import java.util.HashMap;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 
-interface KeyProvider<T>
-{
-    public Object getKey(T item);
-}
-
-class Finder<T>
-{
-    private final HashMap<Object, T> map;
-    private final KeyProvider<T> keyProvider;
-
-    public Finder(Iterable<T> items, KeyProvider<T> keyProvider)
-    {
-        this.keyProvider = keyProvider;
-        map = new HashMap<Object, T>();
-        for(T item : items)
-            map.put(keyProvider.getKey(item), item);
-    }
-
-    public T getMatching(T item)
-    {
-        return map.get(keyProvider.getKey(item));
-    }
-}
-
 class ConnectionByComponentsIdentifier implements
         KeyProvider<MathConnection> {
 
@@ -90,5 +66,29 @@ class ConnectionByComponentsIdentifier implements
 
         return new Pair(componentKeyProvider.getKey(item.getFirst()),
                 componentKeyProvider.getKey(item.getSecond()));
+    }
+}
+
+interface KeyProvider<T>
+{
+    public Object getKey(T item);
+}
+
+class Finder<T>
+{
+    private final HashMap<Object, T> map;
+    private final KeyProvider<T> keyProvider;
+
+    public Finder(Iterable<T> items, KeyProvider<T> keyProvider)
+    {
+        this.keyProvider = keyProvider;
+        map = new HashMap<Object, T>();
+        for(T item : items)
+            map.put(keyProvider.getKey(item), item);
+    }
+
+    public T getMatching(T item)
+    {
+        return map.get(keyProvider.getKey(item));
     }
 }
