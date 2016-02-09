@@ -85,7 +85,7 @@ public class SimpleFlowLayout implements LayoutManager {
             int x = insets.left, y = insets.top + vgap;
             int rowh = 0;
 
-            for (int i = 0 ; i < nmembers ; i++) {
+            for (int i = 0; i < nmembers; i++) {
                 Component m = target.getComponent(i);
 
                 if (m instanceof LineBreak) {

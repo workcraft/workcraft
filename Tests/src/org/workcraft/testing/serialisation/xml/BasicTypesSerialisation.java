@@ -145,7 +145,7 @@ public class BasicTypesSerialisation {
             (
                     Math.random(), Math.random(), Math.random(),
                     Math.random(), Math.random(), Math.random()
-                ) ;
+                );
 
             Element e = doc.createElement("property");
             s.serialise(e, t);

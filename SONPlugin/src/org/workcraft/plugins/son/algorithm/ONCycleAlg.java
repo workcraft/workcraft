@@ -20,8 +20,8 @@ public class ONCycleAlg{
 
     /**
      * create Integer Graph for a nodes set
-     * G<(a,b,c,d) , (<a,b> <b,c> <c,d> <d,b> <b,d>)> would be
-     * a = 0 ; b = 1, c = 2, d = 3
+     * G<(a,b,c,d), (<a,b> <b,c> <c,d> <d,b> <b,d>)> would be
+     * a = 0; b = 1, c = 2, d = 3
      * result[0] = <1>
      * result[1] = <2, 3>
      * result[2] = <3>

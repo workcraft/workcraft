@@ -30,7 +30,7 @@ public class ReversibilityCheckerTool extends VerificationTool {
         final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
         HashSet<State> irreversibleStates = checkReversibility(fsm);
         if (irreversibleStates.isEmpty()) {
-            JOptionPane.showMessageDialog(null,    "The model is reversible." ,
+            JOptionPane.showMessageDialog(null,    "The model is reversible.",
                     "Verification result", JOptionPane.INFORMATION_MESSAGE);
         } else {
             String stateStr = FsmUtils.statesToString(fsm, irreversibleStates);

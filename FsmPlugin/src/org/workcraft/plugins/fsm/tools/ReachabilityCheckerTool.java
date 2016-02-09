@@ -30,7 +30,7 @@ public class ReachabilityCheckerTool extends VerificationTool {
         final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
         HashSet<State> unreachableStates = checkReachability(fsm);
         if (unreachableStates.isEmpty()) {
-            JOptionPane.showMessageDialog(null,    "The model does not have unreachable states." ,
+            JOptionPane.showMessageDialog(null,    "The model does not have unreachable states.",
                     "Verification result", JOptionPane.INFORMATION_MESSAGE);
         } else {
             String stateStr = FsmUtils.statesToString(fsm, unreachableStates);

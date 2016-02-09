@@ -94,7 +94,7 @@ public class DotGImporterTests {
         int explicitPlaces = 0;
         for(Place p : imported.getPlaces())
         {
-            if(!((STGPlace)p).isImplicit()) explicitPlaces ++;
+            if(!((STGPlace)p).isImplicit()) explicitPlaces++;
         }
 
         Assert.assertEquals(2, explicitPlaces);

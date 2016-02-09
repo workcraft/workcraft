@@ -96,7 +96,7 @@ public class VisualSuperGroup extends VisualGroup{
 
             Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
 
-            g.drawGlyphVector(glyphVector, (float)labelPosition.getX() , (float)labelPosition.getY());
+            g.drawGlyphVector(glyphVector, (float)labelPosition.getX(), (float)labelPosition.getY());
 
         }
     }

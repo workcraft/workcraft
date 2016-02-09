@@ -74,8 +74,8 @@ public class ScencoSolver {
     private int v;
     private int a;
     private int n,m;
-    private char [][][] constraints;
-    private int [][] graph;
+    private char[][][] constraints;
+    private int[][] graph;
     private ArrayList<VisualTransformableNode> scenarios;
     private HashMap<String, Integer> events;
     private ArrayList<Point2D> positions;
@@ -119,7 +119,7 @@ public class ScencoSolver {
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         directory = FileUtils.createTempDirectory(prefix);
-        File scenarioFile = new File(directory , "scenarios.cpog");
+        File scenarioFile = new File(directory, "scenarios.cpog");
         File encodingFile = new File(directory, "custom.enc");
         File resultDirectory = new File(directory, "result");
         resultDirectory.mkdir();
@@ -318,8 +318,8 @@ public class ScencoSolver {
 
             cpogBuilder.groupConstraints(n,m,constraints,task);
 
-            char [][] matrix = new char[m][task.size()];
-            String [] instance = new String[m];
+            char[][] matrix = new char[m][task.size()];
+            String[] instance = new String[m];
             for(String s : task.keySet())
                 for(int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
 
@@ -340,7 +340,7 @@ public class ScencoSolver {
                 predicatives[pr++] = variable;
             }
 
-            Variable [] vars = new Variable[freeVariables + pr];
+            Variable[] vars = new Variable[freeVariables + pr];
             for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
             for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
 
@@ -396,7 +396,7 @@ public class ScencoSolver {
             // CREATE RESULT PART
             VisualScenario resultCpog = cpog.createVisualScenario();
             resultCpog.setLabel("Composition");
-            VisualVertex [] vertices = new VisualVertex[n];
+            VisualVertex[] vertices = new VisualVertex[n];
 
             //INSTANTIATING THE ENCODING INTO GRAPHS IN WORKCRAFT
             cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,

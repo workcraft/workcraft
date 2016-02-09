@@ -30,7 +30,7 @@ public class DeadlockCheckerTool extends VerificationTool {
         final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
         HashSet<State> deadlockStates = checkDeadlock(fsm);
         if (deadlockStates.isEmpty()) {
-            JOptionPane.showMessageDialog(null,    "The model is deadlock-free." ,
+            JOptionPane.showMessageDialog(null,    "The model is deadlock-free.",
                     "Verification result", JOptionPane.INFORMATION_MESSAGE);
         } else {
             HashSet<State> finalDeadlockStates = new HashSet<State>();

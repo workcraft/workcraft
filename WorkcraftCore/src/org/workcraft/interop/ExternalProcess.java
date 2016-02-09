@@ -40,7 +40,7 @@ public class ExternalProcess {
             this.channel = channel;
         }
 
-        abstract void handleData(byte [] data);
+        abstract void handleData(byte[] data);
 
         @Override
         public void run() {

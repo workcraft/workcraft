@@ -105,7 +105,7 @@ public class OutputWindow extends JPanel {
             if (systemOut != null) {
                 systemOut.write(b, off, len);
             }
-            print(new String(b , off , len));
+            print(new String(b, off, len));
         }
 
         private void print(String text) {

@@ -73,13 +73,13 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
             if(!getRelationAlg().hasInitial(groupComponents)){
                 errMsg("ERROR : Invalid initial state (no initial state).");
-                errNumber ++;
+                errNumber++;
                 continue;
             }
 
             if(!getRelationAlg().hasFinal(groupComponents)){
                 errMsg("ERROR : Invalid final state (no final state).");
-                errNumber ++;
+                errNumber++;
                 continue;
             }
 

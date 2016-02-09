@@ -262,9 +262,9 @@ public class ParallelSimDialog  extends JDialog{
         dataVal[0][1] = this.clickedEvent.getLabel();
 
         if(!minFire.isEmpty()){
-            for(int i=1 ; i < minFire.size()+1; i++)
+            for(int i=1; i < minFire.size()+1; i++)
                 dataVal[i][0]=net.getNodeReference(minFire.get(i-1));
-            for(int i=1 ; i < minFire.size()+1; i++)
+            for(int i=1; i < minFire.size()+1; i++)
                 dataVal[i][1] = minFire.get(i-1).getLabel();
         }
 

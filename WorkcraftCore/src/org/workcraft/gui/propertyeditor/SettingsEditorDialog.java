@@ -139,7 +139,7 @@ public class SettingsEditorDialog extends JDialog {
 
         for (int i=0; i < node.getChildCount(); i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-            if (! (child.getUserObject() instanceof String)) {
+            if (!(child.getUserObject() instanceof String)) {
                 continue;
             }
             if (((String)child.getUserObject()).equals(thisLevel)) {

@@ -487,7 +487,7 @@ public class CpogSelectionTool extends SelectionTool {
                     boolean[][] c = parsingTool.convertToArrayForm(vertexMap.values(), visualCpog);
                     parsingTool.computeTransitiveClosure(c);
                     if (!parsingTool.hasSelfLoops(c)) {
-                        boolean [][] t = parsingTool.findTransitives(c);
+                        boolean[][] t = parsingTool.findTransitives(c);
                         parsingTool.convertFromArrayForm(t, vertexMap.values(), visualCpog);
                     }
                 }
@@ -993,7 +993,7 @@ public class CpogSelectionTool extends SelectionTool {
     public void insertEventLog(VisualCPOG visualCpog, int i, String[] events, double yPos) {
 
         final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
-        VisualVertex vertex1 , vertex2;
+        VisualVertex vertex1, vertex2;
 
         for (int c = 0; c < events.length - 1; c++) {
             String first = "";

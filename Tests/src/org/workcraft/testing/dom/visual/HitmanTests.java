@@ -88,7 +88,7 @@ public class HitmanTests {
         final HitableNode toHit = new HitableNode();
         Node node = new DummyNode(
             new Node[]{
-                    new DummyNode(new Node[]{ toHit }),
+                    new DummyNode(new Node[]{toHit }),
                     new DummyNode(),
             }
         );

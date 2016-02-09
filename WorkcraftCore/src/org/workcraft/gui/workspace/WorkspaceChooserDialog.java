@@ -36,8 +36,8 @@ public class WorkspaceChooserDialog extends JDialog {
     private Container createContents() {
 
         double[][] sizes = {
-                { TableLayout.FILL } ,
-                { TableLayout.FILL, TableLayout.PREFERRED }
+                {TableLayout.FILL },
+                {TableLayout.FILL, TableLayout.PREFERRED }
         };
 
         JPanel contents = new JPanel(new TableLayout(sizes));

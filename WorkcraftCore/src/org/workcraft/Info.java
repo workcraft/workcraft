@@ -51,7 +51,7 @@ public class Info {
     }
 
     public static String getHomepage() {
-        return homepage ;
+        return homepage;
     }
 
 }

@@ -37,42 +37,42 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
 public class SolverTestsWithForcedVars
 {
-    String [] smallTest1 = new String []
+    String[] smallTest1 = new String[]
                                        {
                "a",
 };
-    String [] smallTest2 = new String []
+    String[] smallTest2 = new String[]
                                        {
                "a",
                "b",
 };
 
-    String [] smallTest3 = new String []
+    String[] smallTest3 = new String[]
                                        {
                "a",
                "1",
 };
 
-    String [] smallTest4 = new String []
+    String[] smallTest4 = new String[]
                                        {
                "0",
                "a",
 };
 
-    String [] smallTest5 = new String []
+    String[] smallTest5 = new String[]
                                        {
                "0",
                "1",
                "a",
 };
-    String [] smallTest6 = new String []
+    String[] smallTest6 = new String[]
                                        {
                "0",
                "1",
                "a",
                "A",
 };
-    String [] processor = new String[]
+    String[] processor = new String[]
                                      {
 
             "1---00001100",
@@ -347,7 +347,7 @@ public class SolverTestsWithForcedVars
             assertNull(solution);
     }
 
-    private void testSolve(String[] scenarios, int free, int [] levels, boolean solutionExists) {
+    private void testSolve(String[] scenarios, int free, int[] levels, boolean solutionExists) {
         CpogEncoding solution = createSolver(levels).solve(scenarios,free,0);
         printSolution(solution);
         if(solutionExists)

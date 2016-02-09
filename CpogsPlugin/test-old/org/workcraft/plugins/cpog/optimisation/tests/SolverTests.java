@@ -133,14 +133,14 @@ public abstract class SolverTests
     {
         testSolve(processor,4,5,false);
     }
-    static String [] smallscenarios =
+    static String[] smallscenarios =
     {
         "110",
         "101",
         "011",
     };
 
-    static String [] xorscenarios =
+    static String[] xorscenarios =
     {
         "000",
         "011",
@@ -148,7 +148,7 @@ public abstract class SolverTests
         "110",
     };
 
-    static String [] processor =
+    static String[] processor =
     {
         "1---000000011",
         "1--0-00011111",
@@ -160,7 +160,7 @@ public abstract class SolverTests
         "0111110100111",
     };
 
-    static String [] processorIncorrect =
+    static String[] processorIncorrect =
     {
         "11111100",
         "------01",
@@ -329,7 +329,7 @@ public abstract class SolverTests
             assertNull(solution);
     }
 
-    private void testSolve(String[] scenarios, int free, int [] levels, boolean solutionExists) {
+    private void testSolve(String[] scenarios, int free, int[] levels, boolean solutionExists) {
         CpogEncoding solution = createSolver(levels).solve(scenarios,free,0);
         printSolution(solution);
         if(solutionExists)

@@ -255,7 +255,7 @@ public class GateRenderer {
                                     Point2D p = res.contactPositions().get(v);
                                     double xofs = 0;
                                     if (res.boundingBox().getHeight() <= 0.5) {
-                                        xofs = + getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
+                                        xofs = +getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
                                     }
                                     positions.put(v, new Point2D.Double(
                                             p.getX() + x - rec.getWidth()/2  +xofs,
@@ -348,7 +348,7 @@ public class GateRenderer {
                                 for(String v : res.contactPositions().keySet()) {
                                     double xofs = 0;
                                     if (res.boundingBox().getHeight() <= 0.5) {
-                                        xofs = + getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
+                                        xofs = +getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
                                     }
                                     Point2D p = res.contactPositions().get(v);
                                     positions.put(v, new Point2D.Double(p.getX() + x - rec.getWidth()/2 + xofs, p.getY() + y + rec.getHeight()/2));
@@ -393,7 +393,7 @@ public class GateRenderer {
                             Rectangle2D rec = res.boundingBox();
                             double xofs = 0;
                             if (res.boundingBox().getHeight() <= 0.5) {
-                                xofs = + getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
+                                xofs = +getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);
                             }
                             g.translate(x-rec.getWidth()/2+xofs, y+rec.getHeight()/2);
                             res.draw(g);

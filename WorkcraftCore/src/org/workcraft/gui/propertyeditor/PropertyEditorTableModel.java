@@ -28,7 +28,7 @@ import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
-    static final String [] columnNames = { "property", "value" };
+    static final String[] columnNames = {"property", "value" };
     PropertyDescriptor[] declarations = null;
     PropertyClass[] rowClasses = null;
     Properties object = null;

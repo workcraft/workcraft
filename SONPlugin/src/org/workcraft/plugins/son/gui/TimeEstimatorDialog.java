@@ -236,7 +236,7 @@ public class TimeEstimatorDialog extends JDialog{
                             errMsg(e1.getMessage());
                         } catch (TimeInconsistencyException e1) {
                             JOptionPane.showMessageDialog(editor.getMainWindow(),
-                                    e1.getMessage() ,
+                                    e1.getMessage(),
                                     "", JOptionPane.ERROR_MESSAGE);
                         } catch (TimeEstimationException e1) {
                             JOptionPane.showMessageDialog(editor.getMainWindow(),

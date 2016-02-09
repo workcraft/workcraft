@@ -52,12 +52,12 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
     }
 
     @Override
-    public CpogOptimisationTask<Cnf> getFormula(String [] scenarios, BooleanVariable[] variables, int derivedVariables)
+    public CpogOptimisationTask<Cnf> getFormula(String[] scenarios, BooleanVariable[] variables, int derivedVariables)
     {
         int nonDerivedVariables = variables.length;
 
         //Generate all possible encodings...
-        Literal [][] encodings = new Literal [scenarios.length][];
+        Literal[][] encodings = new Literal[scenarios.length][];
         for(int i=0;i<scenarios.length;i++)
         {
             encodings[i] = new Literal[nonDerivedVariables];
@@ -70,14 +70,14 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
         }
 
         //... and all possible functions.
-        TwoHotRange [] derivedFunctions = new TwoHotRange[derivedVariables];
+        TwoHotRange[] derivedFunctions = new TwoHotRange[derivedVariables];
         for(int i=0;i<derivedVariables;i++)
             derivedFunctions[i] = generateBinaryFunction((nonDerivedVariables/*+i*/)*2, i);
 
         orderFunctions(derivedFunctions);
 
         //Evaluate all functions for all scenarios.
-        Literal [][] functionSpace = new Literal [scenarios.length][];
+        Literal[][] functionSpace = new Literal[scenarios.length][];
         int totalVariables = nonDerivedVariables*2 + derivedVariables*2;
         for(int i=0;i<scenarios.length;i++)
         {
@@ -109,7 +109,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 
         List<CnfClause> tableConditions = new ArrayList<CnfClause>();
 
-        OneHotIntBooleanFormula [] cpogSelections = new OneHotIntBooleanFormula[functionCount];
+        OneHotIntBooleanFormula[] cpogSelections = new OneHotIntBooleanFormula[functionCount];
         //Try to match CPOG functions with generated functions.
         for(int i=0;i<functionCount;i++)
         {

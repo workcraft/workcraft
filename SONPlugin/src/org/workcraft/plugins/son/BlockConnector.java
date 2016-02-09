@@ -129,8 +129,8 @@ public class BlockConnector {
 
                 JOptionPane.showMessageDialog(mainWindow, "Incorrect block connection"
                         + "Error may due to lost block information, " +
-                        "reconnect block components again. " + net.getNodeReference(block)
-                        , "Block connection error", JOptionPane.WARNING_MESSAGE);
+                        "reconnect block components again. " + net.getNodeReference(block),
+                        "Block connection error", JOptionPane.WARNING_MESSAGE);
             }
         }
 

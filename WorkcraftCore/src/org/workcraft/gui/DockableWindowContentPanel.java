@@ -127,14 +127,14 @@ public class DockableWindowContentPanel extends JPanel {
                         new ViewAction(id, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 btnMin.setToolTipText("Toggle minimized");
                 buttonPanel.add(btnMin);
-                icons ++;
+                icons++;
             }
 
             if ( (options & MAXIMIZE_BUTTON) != 0) {
                 btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
                         new ViewAction(id, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 buttonPanel.add(btnMax);
-                icons ++;
+                icons++;
             }
 
             if ( (options & CLOSE_BUTTON) != 0) {
@@ -143,7 +143,7 @@ public class DockableWindowContentPanel extends JPanel {
                         new ViewAction(id, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
                 btnClose.setToolTipText("Close window");
                 buttonPanel.add(btnClose);
-                icons ++;
+                icons++;
             }
 
             if (icons != 0) {

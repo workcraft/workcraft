@@ -104,7 +104,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
         infoMsg("Running phase structure task...");
         Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
 
-        Map<Condition , String> phaseResult = phaseMainTask(upperGroups);
+        Map<Condition, String> phaseResult = phaseMainTask(upperGroups);
         if(!phaseResult.keySet().isEmpty()){
             for(Condition c : phaseResult.keySet()){
                 errMsg(phaseResult.get(c));
@@ -187,7 +187,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
             for(Node node : connectedNodes){
                 for(ONGroup group : upperGroups){
                     if(group.getComponents().contains(node))
-                        inUpperGroup ++;
+                        inUpperGroup++;
                 }
             }
 
@@ -198,7 +198,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
         return result;
     }
 
-    private Map<Condition , String> phaseMainTask(Collection<ONGroup> upperGroups){
+    private Map<Condition, String> phaseMainTask(Collection<ONGroup> upperGroups){
         Map<Condition, String> result = new HashMap<Condition, String>();
 
         for(ONGroup uGroup : upperGroups){
@@ -213,7 +213,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
     }
 
     //check for upper level condition
-    private Map<Condition , String> phaseTask1(ONGroup upperGroup){
+    private Map<Condition, String> phaseTask1(ONGroup upperGroup){
         Map<Condition, String> result = new HashMap<Condition, String>();
 
         for(Condition c : upperGroup.getConditions()){
@@ -225,7 +225,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
     }
 
     //check for upper level initial/final state
-    private Map<Condition , String> phaseTask2(ONGroup upperGroup){
+    private Map<Condition, String> phaseTask2(ONGroup upperGroup){
         Map<Condition, String> result = new HashMap<Condition, String>();
 
         for(Condition c : upperGroup.getConditions()){

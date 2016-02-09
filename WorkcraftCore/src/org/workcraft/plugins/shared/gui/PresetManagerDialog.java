@@ -31,9 +31,9 @@ public class PresetManagerDialog<T> extends JDialog {
     public PresetManagerDialog(Window owner, final PresetManager<T> presetManager) {
         super(owner, "Manage presets");
 
-        double [][] size = {
-                { TableLayout.FILL, 100 },
-                { 20, 20, TableLayout.FILL, 20 }
+        double[][] size = {
+                {TableLayout.FILL, 100 },
+                {20, 20, TableLayout.FILL, 20 }
         };
 
         TableLayout layout = new TableLayout(size);

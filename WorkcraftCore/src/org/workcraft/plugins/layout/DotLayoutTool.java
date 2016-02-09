@@ -76,9 +76,9 @@ public class DotLayoutTool extends AbstractLayoutTool {
         try    {
             ArrayList<Point2D> result = new ArrayList<Point2D>();
             Point2D end = null;
-            String [] split = pos.split(" ");
+            String[] split = pos.split(" ");
             for (String s : split) {
-                String [] ss = s.split(",");
+                String[] ss = s.split(",");
                 if ( (ss.length < 2) || (ss.length > 3) ) {
                     throw new ParseException("Bad connection position format.");
                 }
@@ -123,7 +123,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
                         VisualTransformableNode m = (VisualTransformableNode)node;
                         String posStr = properties.get("pos");
                         if (posStr!=null) {
-                            String [] posParts = posStr.split(",");
+                            String[] posParts = posStr.split(",");
                             if(posParts.length==2) {
                                 // FIXME: MovableHelper.translate does not work with groups and pages. setRootSpacePosition may be a solution.
                                 double x = Double.parseDouble(posParts[0])*1.0/72;

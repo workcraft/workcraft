@@ -33,8 +33,8 @@ public class WorkspaceChooser extends JPanel {
 
         double[][] sizes =
         {
-                { TableLayout.FILL },
-                { TableLayout.PREFERRED, TableLayout.FILL }
+                {TableLayout.FILL },
+                {TableLayout.PREFERRED, TableLayout.FILL }
         };
 
         final TableLayout mgr = new TableLayout(sizes);

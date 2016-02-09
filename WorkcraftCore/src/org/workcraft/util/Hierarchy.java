@@ -65,14 +65,14 @@ public class Hierarchy {
         return result;
     }
 
-    public static Node [] getPath(Node node) {
+    public static Node[] getPath(Node node) {
         Node n = node;
         int i = 0;
         while(n!=null) {
             i++;
             n = n.getParent();
         }
-        Node [] result = new Node[i];
+        Node[] result = new Node[i];
         n = node;
         while(n!=null) {
             result[--i] = n;

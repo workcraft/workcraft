@@ -41,7 +41,7 @@ public class NullLayoutTool extends AbstractLayoutTool {
     }
 
     private void setChildrenNullPosition(Container container) {
-        Point2D.Double pos = new Point2D.Double(0.0 ,0.0);
+        Point2D.Double pos = new Point2D.Double(0.0,0.0);
         for (Node node : container.getChildren()) {
             if (node instanceof VisualTransformableNode) {
                 VisualTransformableNode transformableNode = (VisualTransformableNode)node;

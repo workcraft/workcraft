@@ -57,7 +57,7 @@ public class BinaryNumberProvider implements
     {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 9);
-        BooleanFormula [] f = new BooleanFormula [9];
+        BooleanFormula[] f = new BooleanFormula[9];
         f[0] = new FreeVariable("a");
         f[1] = new FreeVariable("b");
         f[2] = new FreeVariable("c");
@@ -93,7 +93,7 @@ public class BinaryNumberProvider implements
     {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 1);
-        BooleanFormula [] f = new BooleanFormula [1];
+        BooleanFormula[] f = new BooleanFormula[1];
         f[0] = new FreeVariable("x");
         BooleanFormula result = p.select(f, num);
         Assert.assertEquals("x", result.accept(new FormulaToString()));
@@ -104,7 +104,7 @@ public class BinaryNumberProvider implements
     {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 2);
-        BooleanFormula [] f = new BooleanFormula [2];
+        BooleanFormula[] f = new BooleanFormula[2];
         f[0] = new FreeVariable("x");
         f[1] = new FreeVariable("y");
         BooleanFormula result = p.select(f, num);
@@ -116,7 +116,7 @@ public class BinaryNumberProvider implements
     {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 3);
-        BooleanFormula [] f = new BooleanFormula [3];
+        BooleanFormula[] f = new BooleanFormula[3];
         f[0] = new FreeVariable("x");
         f[1] = new FreeVariable("y");
         f[2] = new FreeVariable("z");

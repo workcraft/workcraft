@@ -186,7 +186,7 @@ public class Framework {
     private ModelManager modelManager;
     private TaskManager taskManager;
     private CompatibilityManager compatibilityManager;
-    private Config config ;
+    private Config config;
     private Workspace workspace;
 
     private ScriptableObject systemScope;
@@ -736,7 +736,7 @@ public class Framework {
 
     public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
         Model model = modelEntry.getModel();
-        VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null ;
+        VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null;
         Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
         ZipOutputStream zos = new ZipOutputStream(out);
         try {

@@ -20,7 +20,7 @@ public class PathAlgorithm{
         this.net = net;
     }
 
-    private void dfs(Collection<Node> nodes , LinkedList<Node> visited, Node v) {
+    private void dfs(Collection<Node> nodes, LinkedList<Node> visited, Node v) {
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
 
         if (visited.getLast().equals(v)) {
@@ -55,7 +55,7 @@ public class PathAlgorithm{
         }
     }
 
-    private void DFStest (Collection<Node> nodes , LinkedList<Node> visited, Collection<Condition> v){
+    private void DFStest (Collection<Node> nodes, LinkedList<Node> visited, Collection<Condition> v){
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
         for(Node node : post){
             visited.add(node);

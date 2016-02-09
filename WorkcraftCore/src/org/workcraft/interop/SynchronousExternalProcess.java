@@ -91,12 +91,12 @@ public class SynchronousExternalProcess {
         return returnCode;
     }
 
-    private static byte [] mergeChunksToArray(LinkedList<byte[]> chunks) {
+    private static byte[] mergeChunksToArray(LinkedList<byte[]> chunks) {
         int len = 0;
         for (byte[] dataChunk : chunks) {
             len += dataChunk.length;
         }
-        byte [] result = new byte[len];
+        byte[] result = new byte[len];
         int cur = 0;
         for (byte[] dataChunk : chunks) {
             for(int i=0;i<dataChunk.length;i++) {
@@ -106,11 +106,11 @@ public class SynchronousExternalProcess {
         return result;
     }
 
-    public byte [] getOutputData() {
+    public byte[] getOutputData() {
         return mergeChunksToArray(outputData);
     }
 
-    public byte [] getErrorData() {
+    public byte[] getErrorData() {
         return mergeChunksToArray(errorData);
     }
 

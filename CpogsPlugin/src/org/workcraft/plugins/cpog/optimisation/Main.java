@@ -26,7 +26,7 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
 @SuppressWarnings("all")
 public class Main {
-    static String [] scenarios =
+    static String[] scenarios =
     {
         "0000",
         "0100",
@@ -38,7 +38,7 @@ public class Main {
         "1111",
     };
 
-    static String [] paper_simple =
+    static String[] paper_simple =
     {
         "011--",
         "10---",
@@ -46,7 +46,7 @@ public class Main {
         "11-01",
     };
 
-    static String [] phase_encoder_3 =
+    static String[] phase_encoder_3 =
     {
         "1010-0",
         "-00110",
@@ -56,7 +56,7 @@ public class Main {
         "01010-",
     };
 
-    static String [] phase_encoder_4 =
+    static String[] phase_encoder_4 =
     {
     "---000000111",
     "-11000001--0",
@@ -84,14 +84,14 @@ public class Main {
     "000--1-11000",
     };
 
-    static String [] smallscenarios =
+    static String[] smallscenarios =
     {
         "110",
         "101",
         "011",
     };
 
-    static String [] processor =
+    static String[] processor =
     {
         "11111100",
         "------01",
@@ -108,7 +108,7 @@ public class Main {
         "11110111",
     };
 
-    static String [] withGe = new String[]
+    static String[] withGe = new String[]
                                      {
 
             "1---00001100",

@@ -161,7 +161,7 @@ public class VisualNodeTests {
 
     private void ensureShiftX(AffineTransform transform, double i) {
 
-        double [] matrix = new double[6];
+        double[] matrix = new double[6];
         transform.getMatrix(matrix);
         asserArrayEquals(new double[]{1, 0, 0, 1, i, 0}, matrix);
     }
