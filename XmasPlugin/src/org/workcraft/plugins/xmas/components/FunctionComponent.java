@@ -28,7 +28,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 public class FunctionComponent extends XmasComponent {
     public static final String PROPERTY_TYPE = "Type";
 
-	public enum Type {
+    public enum Type {
         TYPE_T("t"),
         TYPE_NOT("!");
 
@@ -38,23 +38,23 @@ public class FunctionComponent extends XmasComponent {
             this.name = name;
         }
 
-		@Override
-		public String toString() {
-			return name;
-		}
+        @Override
+        public String toString() {
+            return name;
+        }
     };
 
     public Type type = Type.TYPE_T;
 
-	public void setType(Type value) {
-		if (type != value) {
-			type = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
-		}
-	}
+    public void setType(Type value) {
+        if (type != value) {
+            type = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
+        }
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
 }

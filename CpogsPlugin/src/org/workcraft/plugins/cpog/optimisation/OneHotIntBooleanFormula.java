@@ -23,18 +23,18 @@ package org.workcraft.plugins.cpog.optimisation;
 import java.util.List;
 
 public class OneHotIntBooleanFormula {
-	private final List<BooleanVariable> vars;
+    private final List<BooleanVariable> vars;
 
-	public OneHotIntBooleanFormula(List<BooleanVariable> vars) {
-		this.vars = vars;
-	}
+    public OneHotIntBooleanFormula(List<BooleanVariable> vars) {
+        this.vars = vars;
+    }
 
-	BooleanVariable get(int index)
-	{
-		return vars.get(index);
-	}
+    BooleanVariable get(int index)
+    {
+        return vars.get(index);
+    }
 
-	public int getRange() {
-		return vars.size();
-	}
+    public int getRange() {
+        return vars.size();
+    }
 }

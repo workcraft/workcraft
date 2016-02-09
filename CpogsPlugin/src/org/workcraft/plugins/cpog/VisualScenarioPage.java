@@ -7,33 +7,33 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 public class VisualScenarioPage extends VisualPage {
 
-	public static final String PROPERTY_ENCODING = "Encoding";
+    public static final String PROPERTY_ENCODING = "Encoding";
 
-	public VisualScenarioPage(MathNode refNode) {
-		super(refNode);
-		// TODO Auto-generated constructor stub
+    public VisualScenarioPage(MathNode refNode) {
+        super(refNode);
+        // TODO Auto-generated constructor stub
 
-		addPropertyDeclaration(new PropertyDeclaration<VisualScenarioPage, Encoding>(
-				this, PROPERTY_ENCODING, Encoding.class, true, true, true) {
-			public void setter(VisualScenarioPage object, Encoding value) {
-				object.setEncoding(value);
-			}
-			public Encoding getter(VisualScenarioPage object) {
-				return object.getEncoding();
-			}
-		});
-	}
+        addPropertyDeclaration(new PropertyDeclaration<VisualScenarioPage, Encoding>(
+                this, PROPERTY_ENCODING, Encoding.class, true, true, true) {
+            public void setter(VisualScenarioPage object, Encoding value) {
+                object.setEncoding(value);
+            }
+            public Encoding getter(VisualScenarioPage object) {
+                return object.getEncoding();
+            }
+        });
+    }
 
-	private Encoding encoding = new Encoding();
+    private Encoding encoding = new Encoding();
 
-	public void setEncoding(Encoding encoding) {
-		this.encoding = encoding;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
-	}
+    public void setEncoding(Encoding encoding) {
+        this.encoding = encoding;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
+    }
 
-	public Encoding getEncoding() {
-		return encoding;
-	}
+    public Encoding getEncoding() {
+        return encoding;
+    }
 
 
 

@@ -5,19 +5,19 @@ import java.awt.Color;
 
 public interface TransitionNode extends Time{
 
-	public boolean isFaulty();
+    public boolean isFaulty();
 
-	public void setFaulty(boolean fault);
+    public void setFaulty(boolean fault);
 
-	public void setLabel(String label);
+    public void setLabel(String label);
 
-	public String getLabel();
+    public String getLabel();
 
-	public void setFillColor (Color fillColor);
+    public void setFillColor (Color fillColor);
 
-	public Color getFillColor();
+    public Color getFillColor();
 
-	public void setForegroundColor(Color foregroundColor);
+    public void setForegroundColor(Color foregroundColor);
 
-	public Color getForegroundColor();
+    public Color getForegroundColor();
 }

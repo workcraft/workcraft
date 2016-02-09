@@ -10,28 +10,28 @@ import org.workcraft.plugins.stg.generator.NodeStg;
 import org.workcraft.plugins.stg.generator.SignalStg;
 
 public class SinkStg extends NodeStg {
-	public final ContactStg i;
-	public final SignalStg oracle;
+    public final ContactStg i;
+    public final SignalStg oracle;
 
-	public SinkStg(ContactStg i, SignalStg oracle) {
-		this.i = i;
-		this.oracle = oracle;
-	}
+    public SinkStg(ContactStg i, SignalStg oracle) {
+        this.i = i;
+        this.oracle = oracle;
+    }
 
-	@Override
-	public Collection<VisualSignalTransition> getAllTransitions() {
-		List<VisualSignalTransition> result = new ArrayList<>();
-		result.addAll(i.getAllTransitions());
-		result.addAll(oracle.getAllTransitions());
-		return result;
-	}
+    @Override
+    public Collection<VisualSignalTransition> getAllTransitions() {
+        List<VisualSignalTransition> result = new ArrayList<>();
+        result.addAll(i.getAllTransitions());
+        result.addAll(oracle.getAllTransitions());
+        return result;
+    }
 
-	@Override
-	public Collection<VisualPlace> getAllPlaces() {
-		List<VisualPlace> result = new ArrayList<>();
-		result.addAll(i.getAllPlaces());
-		result.addAll(oracle.getAllPlaces());
-		return result;
-	}
+    @Override
+    public Collection<VisualPlace> getAllPlaces() {
+        List<VisualPlace> result = new ArrayList<>();
+        result.addAll(i.getAllPlaces());
+        result.addAll(oracle.getAllPlaces());
+        return result;
+    }
 
 }

@@ -25,6 +25,6 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
 
 public interface NodeDeserialiser {
-	public Object initInstance (Element element, Object ... constructorParameters) throws DeserialisationException;
-	public void finaliseInstance (Object instance) throws DeserialisationException;
+    public Object initInstance (Element element, Object ... constructorParameters) throws DeserialisationException;
+    public void finaliseInstance (Object instance) throws DeserialisationException;
 }

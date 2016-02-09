@@ -9,26 +9,26 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public final class TransitionMergerTool extends AbstractMergerTool {
-	@Override
-	public String getDisplayName() {
-		return "Merge selected transitions";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Merge selected transitions";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof PetriNet;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof PetriNet;
+    }
 
-	@Override
-	public Position getPosition() {
-		return null;
-	}
+    @Override
+    public Position getPosition() {
+        return null;
+    }
 
-	@Override
-	public Set<Class<? extends VisualComponent>> getMergableClasses() {
-		Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
-		result.add(VisualTransition.class);
-		return result;
-	}
+    @Override
+    public Set<Class<? extends VisualComponent>> getMergableClasses() {
+        Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
+        result.add(VisualTransition.class);
+        return result;
+    }
 
 }

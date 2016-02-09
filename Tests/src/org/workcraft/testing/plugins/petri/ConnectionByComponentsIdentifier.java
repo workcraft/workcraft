@@ -28,67 +28,67 @@ import org.workcraft.dom.math.MathNode;
 
 interface KeyProvider<T>
 {
-	public Object getKey(T item);
+    public Object getKey(T item);
 }
 
 class Finder<T>
 {
-	private final HashMap<Object, T> map;
-	private final KeyProvider<T> keyProvider;
+    private final HashMap<Object, T> map;
+    private final KeyProvider<T> keyProvider;
 
-	public Finder(Iterable<T> items, KeyProvider<T> keyProvider)
-	{
-		this.keyProvider = keyProvider;
-		map = new HashMap<Object, T>();
-		for(T item : items)
-			map.put(keyProvider.getKey(item), item);
-	}
+    public Finder(Iterable<T> items, KeyProvider<T> keyProvider)
+    {
+        this.keyProvider = keyProvider;
+        map = new HashMap<Object, T>();
+        for(T item : items)
+            map.put(keyProvider.getKey(item), item);
+    }
 
-	public T getMatching(T item)
-	{
-		return map.get(keyProvider.getKey(item));
-	}
+    public T getMatching(T item)
+    {
+        return map.get(keyProvider.getKey(item));
+    }
 }
 
 class ConnectionByComponentsIdentifier implements
-		KeyProvider<MathConnection> {
+        KeyProvider<MathConnection> {
 
-	private final KeyProvider<MathNode> componentKeyProvider;
+    private final KeyProvider<MathNode> componentKeyProvider;
 
-	class Pair
-	{
-		private final Object o1;
-		private final Object o2;
+    class Pair
+    {
+        private final Object o1;
+        private final Object o2;
 
-		public Pair(Object o1, Object o2)
-		{
-			this.o1 = o1;
-			this.o2 = o2;
-		}
+        public Pair(Object o1, Object o2)
+        {
+            this.o1 = o1;
+            this.o2 = o2;
+        }
 
-		@Override
-		public int hashCode() {
-			int result = 17;
-			result = 37 * result + o1.hashCode();
-			result = 37 * result + o2.hashCode();
-			return result;
-		}
+        @Override
+        public int hashCode() {
+            int result = 17;
+            result = 37 * result + o1.hashCode();
+            result = 37 * result + o2.hashCode();
+            return result;
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			Pair other = (Pair)obj;
-			return o1.equals(other.o1) && o2.equals(other.o2);
-		}
-	}
+        @Override
+        public boolean equals(Object obj) {
+            Pair other = (Pair)obj;
+            return o1.equals(other.o1) && o2.equals(other.o2);
+        }
+    }
 
-	public ConnectionByComponentsIdentifier(
-			KeyProvider<MathNode> componentKeyProvider) {
-				this.componentKeyProvider = componentKeyProvider;
-	}
+    public ConnectionByComponentsIdentifier(
+            KeyProvider<MathNode> componentKeyProvider) {
+                this.componentKeyProvider = componentKeyProvider;
+    }
 
-	public Object getKey(MathConnection item) {
+    public Object getKey(MathConnection item) {
 
-		return new Pair(componentKeyProvider.getKey(item.getFirst()),
-				componentKeyProvider.getKey(item.getSecond()));
-	}
+        return new Pair(componentKeyProvider.getKey(item.getFirst()),
+                componentKeyProvider.getKey(item.getSecond()));
+    }
 }

@@ -24,19 +24,19 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class Not implements BooleanFormula {
 
-	private final BooleanFormula x;
+    private final BooleanFormula x;
 
-	public Not(BooleanFormula x) {
-		this.x = x;
-	}
+    public Not(BooleanFormula x) {
+        this.x = x;
+    }
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
-	public BooleanFormula getX() {
-		return x;
-	}
+    public BooleanFormula getX() {
+        return x;
+    }
 
 }

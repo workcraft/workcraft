@@ -10,25 +10,25 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckDeadlockTool extends VerificationTool {
 
-	public String getDisplayName() {
-		return " Deadlock with bundels [MPSat]";
-	}
+    public String getDisplayName() {
+        return " Deadlock with bundels [MPSat]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof PolicyNet;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof PolicyNet;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final CheckDeadlockTask task = new CheckDeadlockTask(we);
-		String description = "MPSat tool chain";
-		String title = we.getTitle();
-		if (!title.isEmpty()) {
-			description += "(" + title +")";
-		}
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final CheckDeadlockTask task = new CheckDeadlockTask(we);
+        String description = "MPSat tool chain";
+        String title = we.getTitle();
+        if (!title.isEmpty()) {
+            description += "(" + title +")";
+        }
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
+    }
 
 }

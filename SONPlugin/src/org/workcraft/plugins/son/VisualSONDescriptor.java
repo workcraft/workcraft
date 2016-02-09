@@ -8,13 +8,13 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 
 public class VisualSONDescriptor implements VisualModelDescriptor{
 
-	public VisualModel create (MathModel mathModel) throws VisualModelInstantiationException{
-		return new VisualSON((SON)mathModel);
-	}
+    public VisualModel create (MathModel mathModel) throws VisualModelInstantiationException{
+        return new VisualSON((SON)mathModel);
+    }
 
-	@SuppressWarnings("deprecation")
-	public Iterable<GraphEditorTool> createTools(){
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
+    @SuppressWarnings("deprecation")
+    public Iterable<GraphEditorTool> createTools(){
+        throw new org.workcraft.exceptions.NotImplementedException();
+    }
 
 }

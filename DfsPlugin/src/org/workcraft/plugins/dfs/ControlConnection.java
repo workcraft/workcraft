@@ -7,23 +7,23 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.dfs.VisualControlConnection.class)
 public class ControlConnection extends MathConnection {
-	public static final String PROPERTY_INVERTING = "Inverting";
-	private boolean inverting = false;
+    public static final String PROPERTY_INVERTING = "Inverting";
+    private boolean inverting = false;
 
-	public ControlConnection() {
-	}
+    public ControlConnection() {
+    }
 
-	public ControlConnection (MathNode first, MathNode second) {
-		super(first, second);
-	}
+    public ControlConnection (MathNode first, MathNode second) {
+        super(first, second);
+    }
 
-	public boolean isInverting() {
-		return inverting;
-	}
+    public boolean isInverting() {
+        return inverting;
+    }
 
-	public void setInverting(boolean value) {
-		this.inverting = value;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_INVERTING));
-	}
+    public void setInverting(boolean value) {
+        this.inverting = value;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_INVERTING));
+    }
 
 }

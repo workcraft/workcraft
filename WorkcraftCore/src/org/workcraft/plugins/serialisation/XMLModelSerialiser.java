@@ -41,66 +41,66 @@ import org.workcraft.serialisation.xml.XMLSerialisationManager;
 import org.workcraft.util.XmlUtil;
 
 public class XMLModelSerialiser implements ModelSerialiser {
-	XMLSerialisationManager serialisation = new XMLSerialisationManager();
+    XMLSerialisationManager serialisation = new XMLSerialisationManager();
 
-	public XMLModelSerialiser(PluginProvider mock) {
-		serialisation.processPlugins(mock);
-	}
+    public XMLModelSerialiser(PluginProvider mock) {
+        serialisation.processPlugins(mock);
+    }
 
-	public String getDescription() {
-		return "Workcraft XML serialiser";
-	}
+    public String getDescription() {
+        return "Workcraft XML serialiser";
+    }
 
-	public boolean isApplicableTo(Model model) {
-		return true;
-	}
+    public boolean isApplicableTo(Model model) {
+        return true;
+    }
 
-	public boolean isApplicableTo(VisualModel model) {
-		return true;
-	}
+    public boolean isApplicableTo(VisualModel model) {
+        return true;
+    }
 
-	public UUID getFormatUUID() {
-		return Format.workcraftXML;
-	}
+    public UUID getFormatUUID() {
+        return Format.workcraftXML;
+    }
 
-	public String getExtension() {
-		return ".xml";
-	}
+    public String getExtension() {
+        return ".xml";
+    }
 
-	public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer externalReferences)
-	throws SerialisationException {
-		try{
+    public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer externalReferences)
+    throws SerialisationException {
+        try{
 
-			ReferenceProducer internalReferences = new ReferenceProducer() {
-				public String getReference(Object obj) {
-					if (obj instanceof Node)
-						return model.getNodeReference((Node)obj);
-					else
-						return null;
-				}
-			};
+            ReferenceProducer internalReferences = new ReferenceProducer() {
+                public String getReference(Object obj) {
+                    if (obj instanceof Node)
+                        return model.getNodeReference((Node)obj);
+                    else
+                        return null;
+                }
+            };
 
-			Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtil.createDocument();
 
-			Element modelElement = doc.createElement("model");
-			Element rootElement = doc.createElement("root");
+            Element modelElement = doc.createElement("model");
+            Element rootElement = doc.createElement("root");
 
-			serialisation.begin(internalReferences, externalReferences);
+            serialisation.begin(internalReferences, externalReferences);
 
-			serialisation.serialise(modelElement, model);
-			serialisation.serialise(rootElement, model.getRoot());
+            serialisation.serialise(modelElement, model);
+            serialisation.serialise(rootElement, model.getRoot());
 
-			serialisation.end();
+            serialisation.end();
 
-			doc.appendChild(modelElement);
-			modelElement.appendChild(rootElement);
-			XmlUtil.writeDocument(doc, out);
+            doc.appendChild(modelElement);
+            modelElement.appendChild(rootElement);
+            XmlUtil.writeDocument(doc, out);
 
-			return internalReferences;
-		} catch (ParserConfigurationException e) {
-			throw new SerialisationException(e);
-		} catch (IOException e) {
-			throw new SerialisationException(e);
-		}
-	}
+            return internalReferences;
+        } catch (ParserConfigurationException e) {
+            throw new SerialisationException(e);
+        } catch (IOException e) {
+            throw new SerialisationException(e);
+        }
+    }
 }

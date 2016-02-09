@@ -9,37 +9,37 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 
 public class XmasModelDescriptor implements ModelDescriptor {
 
-	@Override
-	public MathModel createMathModel() {
-		return new Xmas();
-	}
+    @Override
+    public MathModel createMathModel() {
+        return new Xmas();
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "xMAS Circuit";
-	}
+    @Override
+    public String getDisplayName() {
+        return "xMAS Circuit";
+    }
 
-	@Override
-	public VisualModelDescriptor getVisualModelDescriptor() {
-		return new VisualModelDescriptor()
-		{
-			@Override
-			public VisualModel create(MathModel mathModel)
-					throws VisualModelInstantiationException {
-				return new VisualXmas((Xmas)mathModel);
-			}
+    @Override
+    public VisualModelDescriptor getVisualModelDescriptor() {
+        return new VisualModelDescriptor()
+        {
+            @Override
+            public VisualModel create(MathModel mathModel)
+                    throws VisualModelInstantiationException {
+                return new VisualXmas((Xmas)mathModel);
+            }
 
-			@Override
-			public Iterable<GraphEditorTool> createTools() {
-				try {
-					throw new VisualModelInstantiationException();
-				} catch (VisualModelInstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
-			}
-		};
-	}
+            @Override
+            public Iterable<GraphEditorTool> createTools() {
+                try {
+                    throw new VisualModelInstantiationException();
+                } catch (VisualModelInstantiationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+    }
 
 }

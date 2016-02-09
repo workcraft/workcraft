@@ -30,37 +30,37 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 @VisualClass(org.workcraft.plugins.cpog.VisualVariable.class)
 public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable {
 
-	public static final String PROPERTY_STATE = "State";
+    public static final String PROPERTY_STATE = "State";
 
-	private VariableState state = VariableState.UNDEFINED;
+    private VariableState state = VariableState.UNDEFINED;
 
-	private String label = "";
+    private String label = "";
 
-	public void setState(VariableState state) {
-		this.state = state;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_STATE));
-	}
+    public void setState(VariableState state) {
+        this.state = state;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_STATE));
+    }
 
-	public VariableState getState() {
-		return state;
-	}
+    public VariableState getState() {
+        return state;
+    }
 
-	@Override
-	public int compareTo(Variable o) {
-		return label.compareTo(o.label);
-	}
+    @Override
+    public int compareTo(Variable o) {
+        return label.compareTo(o.label);
+    }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
 }

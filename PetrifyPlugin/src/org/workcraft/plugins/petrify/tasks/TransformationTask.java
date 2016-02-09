@@ -34,136 +34,136 @@ import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationTask implements Task<TransformationResult>, ExternalProcessListener {
-	private WorkspaceEntry we;
-	String[] args;
+    private WorkspaceEntry we;
+    String[] args;
 
-	public TransformationTask(WorkspaceEntry we, String description, String[] args) {
-		this.we = we;
-		this.args = args;
-	}
+    public TransformationTask(WorkspaceEntry we, String description, String[] args) {
+        this.we = we;
+        this.args = args;
+    }
 
-	public WorkspaceEntry getWorkspaceEntry() {
-		return we;
-	}
+    public WorkspaceEntry getWorkspaceEntry() {
+        return we;
+    }
 
-	@Override
-	public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
-		ArrayList<String> command = new ArrayList<String>();
+    @Override
+    public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
+        ArrayList<String> command = new ArrayList<String>();
 
-		// Name of the executable
-		String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
-		command.add(toolName);
+        // Name of the executable
+        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
+        command.add(toolName);
 
-		// Built-in arguments
-		for (String arg : args) {
-			command.add(arg);
-		}
+        // Built-in arguments
+        for (String arg : args) {
+            command.add(arg);
+        }
 
-		// Extra arguments (should go before the file parameters)
-		String extraArgs = PetrifyUtilitySettings.getArgs();
-		if (PetrifyUtilitySettings.getAdvancedMode()) {
-			MainWindow mainWindow = Framework.getInstance().getMainWindow();
-			String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
-			if (tmp != null) {
-				extraArgs = tmp;
-			}
-		}
-		for (String arg : extraArgs.split("\\s")) {
-			if ( !arg.isEmpty() ) {
-				command.add(arg);
-			}
-		}
+        // Extra arguments (should go before the file parameters)
+        String extraArgs = PetrifyUtilitySettings.getArgs();
+        if (PetrifyUtilitySettings.getAdvancedMode()) {
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
+            if (tmp != null) {
+                extraArgs = tmp;
+            }
+        }
+        for (String arg : extraArgs.split("\\s")) {
+            if ( !arg.isEmpty() ) {
+                command.add(arg);
+            }
+        }
 
-		String prefix = FileUtils.getTempPrefix(we.getTitle());
-		File directory = FileUtils.createTempDirectory(prefix);
-		try {
-			File logFile = new File(directory, "petrify.log");
-			command.add("-log");
-			command.add(logFile.getAbsolutePath());
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
+        try {
+            File logFile = new File(directory, "petrify.log");
+            command.add("-log");
+            command.add(logFile.getAbsolutePath());
 
-			File outFile = new File(directory, "result.g");
-			command.add("-o");
-			command.add(outFile.getAbsolutePath());
+            File outFile = new File(directory, "result.g");
+            command.add("-o");
+            command.add(outFile.getAbsolutePath());
 
-			// Input file
-			Model model = we.getModelEntry().getMathModel();
-			File modelFile = getInputFile(model, directory);
-			command.add(modelFile.getAbsolutePath());
+            // Input file
+            Model model = we.getModelEntry().getMathModel();
+            File modelFile = getInputFile(model, directory);
+            command.add(modelFile.getAbsolutePath());
 
-			boolean printStdout = PetrifyUtilitySettings.getPrintStdout();
-			boolean printStderr = PetrifyUtilitySettings.getPrintStderr();
-			ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
-			Result<? extends ExternalProcessResult> res = task.run(mon);
+            boolean printStdout = PetrifyUtilitySettings.getPrintStdout();
+            boolean printStderr = PetrifyUtilitySettings.getPrintStderr();
+            ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
+            SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+            Result<? extends ExternalProcessResult> res = task.run(mon);
 
-			if (res.getOutcome() == Outcome.CANCELLED) {
-				return new Result<TransformationResult>(Outcome.CANCELLED);
-			} else {
-				final Outcome outcome;
-				STGModel outStg = null;
-				if (res.getReturnValue().getReturnCode() == 0) {
-					outcome = Outcome.FINISHED;
-				} else {
-					outcome = Outcome.FAILED;
-				}
-				try {
-					String out = (outFile.exists() ? FileUtils.readAllText(outFile) : "");
-					ByteArrayInputStream outStream = new ByteArrayInputStream(out.getBytes());
-					outStg = new DotGImporter().importSTG(outStream);
-				} catch (DeserialisationException e) {
-					return Result.exception(e);
-				}
-				TransformationResult result = new TransformationResult(res, outStg);
-				return new Result<TransformationResult>(outcome, result);
-			}
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
-		} finally {
-			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
-		}
-	}
+            if (res.getOutcome() == Outcome.CANCELLED) {
+                return new Result<TransformationResult>(Outcome.CANCELLED);
+            } else {
+                final Outcome outcome;
+                STGModel outStg = null;
+                if (res.getReturnValue().getReturnCode() == 0) {
+                    outcome = Outcome.FINISHED;
+                } else {
+                    outcome = Outcome.FAILED;
+                }
+                try {
+                    String out = (outFile.exists() ? FileUtils.readAllText(outFile) : "");
+                    ByteArrayInputStream outStream = new ByteArrayInputStream(out.getBytes());
+                    outStg = new DotGImporter().importSTG(outStream);
+                } catch (DeserialisationException e) {
+                    return Result.exception(e);
+                }
+                TransformationResult result = new TransformationResult(res, outStg);
+                return new Result<TransformationResult>(outcome, result);
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+        }
+    }
 
-	private File getInputFile(Model model, File directory) {
-		final Framework framework = Framework.getInstance();
-		UUID format = null;
-		String extension = null;
-		if (model instanceof PetriNetModel) {
-			format = Format.STG;
-			extension = ".g";
-		} else if (model instanceof Fsm) {
-			format = Format.SG;
-			extension = ".sg";
-		}
-		if (format == null) {
-			throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
-		}
+    private File getInputFile(Model model, File directory) {
+        final Framework framework = Framework.getInstance();
+        UUID format = null;
+        String extension = null;
+        if (model instanceof PetriNetModel) {
+            format = Format.STG;
+            extension = ".g";
+        } else if (model instanceof Fsm) {
+            format = Format.SG;
+            extension = ".sg";
+        }
+        if (format == null) {
+            throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
+        }
 
-		File modelFile = new File(directory, "original" + extension);
-		try {
-			ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
-			final Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
-			if (exportResult.getOutcome() != Outcome.FINISHED) {
-				modelFile = null;
-			}
-		} catch (SerialisationException e) {
-			throw new RuntimeException("Unable to export the model.");
-		}
-		return modelFile;
-	}
+        File modelFile = new File(directory, "original" + extension);
+        try {
+            ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
+            final Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
+            if (exportResult.getOutcome() != Outcome.FINISHED) {
+                modelFile = null;
+            }
+        } catch (SerialisationException e) {
+            throw new RuntimeException("Unable to export the model.");
+        }
+        return modelFile;
+    }
 
 
-	@Override
-	public void processFinished(int returnCode) {
-	}
+    @Override
+    public void processFinished(int returnCode) {
+    }
 
-	@Override
-	public void errorData(byte[] data) {
-		System.out.print(data);
-	}
+    @Override
+    public void errorData(byte[] data) {
+        System.out.print(data);
+    }
 
-	@Override
-	public void outputData(byte[] data) {
-		System.out.print(data);
-	}
+    @Override
+    public void outputData(byte[] data) {
+        System.out.print(data);
+    }
 
 }

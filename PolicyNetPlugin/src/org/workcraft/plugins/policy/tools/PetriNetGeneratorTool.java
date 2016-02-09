@@ -13,26 +13,26 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriNetGeneratorTool extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Petri Net";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Petri Net";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof PolicyNet;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof PolicyNet;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final VisualPolicyNet visualModel = (VisualPolicyNet)we.getModelEntry().getVisualModel();
-		final PetriNetGenerator generator = new PetriNetGenerator(visualModel);
-		final Framework framework = Framework.getInstance();
-		final Workspace workspace = framework.getWorkspace();
-		final Path<String> directory = we.getWorkspacePath().getParent();
-		final String desiredName = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new PetriNetDescriptor(), generator.getPetriNet());
-		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-		workspace.add(directory, desiredName, me, false, openInEditor);
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final VisualPolicyNet visualModel = (VisualPolicyNet)we.getModelEntry().getVisualModel();
+        final PetriNetGenerator generator = new PetriNetGenerator(visualModel);
+        final Framework framework = Framework.getInstance();
+        final Workspace workspace = framework.getWorkspace();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String desiredName = we.getWorkspacePath().getNode();
+        final ModelEntry me = new ModelEntry(new PetriNetDescriptor(), generator.getPetriNet());
+        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+        workspace.add(directory, desiredName, me, false, openInEditor);
+    }
 }

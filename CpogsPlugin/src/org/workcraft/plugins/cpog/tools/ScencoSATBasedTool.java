@@ -19,49 +19,49 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoSATBasedTool implements Tool {
 
-	private EncoderSettings settings;
-	private ScencoSatBasedDialog dialog;
-	PresetManager<EncoderSettings> pmgr;
+    private EncoderSettings settings;
+    private ScencoSatBasedDialog dialog;
+    PresetManager<EncoderSettings> pmgr;
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		if (we.getModelEntry() == null) return false;
-		if (we.getModelEntry().getVisualModel() instanceof VisualCPOG) return true;
-		return false;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        if (we.getModelEntry() == null) return false;
+        if (we.getModelEntry().getVisualModel() instanceof VisualCPOG) return true;
+        return false;
+    }
 
-	@Override
-	public String getSection() {
-		return "!Encoding";
-	}
+    @Override
+    public String getSection() {
+        return "!Encoding";
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "SAT-based optimal encoding";
-	}
+    @Override
+    public String getDisplayName() {
+        return "SAT-based optimal encoding";
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final Framework framework = Framework.getInstance();
-		MainWindow mainWindow = framework.getMainWindow();
-		if ( !CpogParsingTool.hasEnoughScenarios(we) ) {
-			JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS,
-					ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
-		}  else if ( CpogParsingTool.hasTooScenarios(we) ) {
-			JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_TOO_MANY_SCENARIOS,
-					ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
-		} else {
-			settings = new EncoderSettings(10, GenerationMode.SCENCO, false, false);
-			File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "cpog_presets.xml");
-			pmgr = new PresetManager<>(presetFile, new EncoderSettingsSerialiser());
-			dialog = new ScencoSatBasedDialog(mainWindow, pmgr, settings, we);
+    @Override
+    public void run(WorkspaceEntry we) {
+        final Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
+        if ( !CpogParsingTool.hasEnoughScenarios(we) ) {
+            JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS,
+                    ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
+        }  else if ( CpogParsingTool.hasTooScenarios(we) ) {
+            JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_TOO_MANY_SCENARIOS,
+                    ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
+        } else {
+            settings = new EncoderSettings(10, GenerationMode.SCENCO, false, false);
+            File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "cpog_presets.xml");
+            pmgr = new PresetManager<>(presetFile, new EncoderSettingsSerialiser());
+            dialog = new ScencoSatBasedDialog(mainWindow, pmgr, settings, we);
 
-			GUI.centerToParent(dialog, mainWindow);
-			dialog.setVisible(true);
-			// TASK INSERTION
-			/*final ScencoChainTask scencoTask = new ScencoChainTask(we, dialog.getSettings(), framework);
-			framework.getTaskManager().queue(scencoTask, "Scenco tool chain", new ScencoChainResultHandler(scencoTask));*/
-		}
-	}
+            GUI.centerToParent(dialog, mainWindow);
+            dialog.setVisible(true);
+            // TASK INSERTION
+            /*final ScencoChainTask scencoTask = new ScencoChainTask(we, dialog.getSettings(), framework);
+            framework.getTaskManager().queue(scencoTask, "Scenco tool chain", new ScencoChainResultHandler(scencoTask));*/
+        }
+    }
 
 }

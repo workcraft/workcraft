@@ -1,4 +1,9 @@
 subprojects {
+
+    repositories {
+        jcenter()
+    }
+
     apply plugin: 'java'
 
     sourceCompatibility = 1.7
@@ -14,5 +19,12 @@ subprojects {
     dependencies {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
+    }
+
+    apply plugin: 'checkstyle'
+
+    checkstyle {
+        toolVersion = "6.15"
+        configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 }

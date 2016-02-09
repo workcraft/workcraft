@@ -25,12 +25,12 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class Or extends BinaryBooleanFormula
 {
-	public Or(BooleanFormula x, BooleanFormula y) {
-		super(x,y);
-	}
+    public Or(BooleanFormula x, BooleanFormula y) {
+        super(x,y);
+    }
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return visitor.visit(this);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

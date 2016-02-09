@@ -29,16 +29,16 @@ import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 
 public class OneHotSolver_CleverCnfGenerator_Tests extends SolverTests {
-	public OneHotSolver_CleverCnfGenerator_Tests()
-	{
-	}
+    public OneHotSolver_CleverCnfGenerator_Tests()
+    {
+    }
 
-	protected LegacyCpogSolver createSolver()
-	{
-		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new CleverCnfGenerator());
-	}
-	@Override
-	protected LegacyCpogSolver createSolver(int[] levels) {
-		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider(), levels), new CleverCnfGenerator());
-	}
+    protected LegacyCpogSolver createSolver()
+    {
+        return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new CleverCnfGenerator());
+    }
+    @Override
+    protected LegacyCpogSolver createSolver(int[] levels) {
+        return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider(), levels), new CleverCnfGenerator());
+    }
 }

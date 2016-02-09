@@ -8,19 +8,19 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatNormalcyChecker extends AbstractMpsatChecker implements Tool {
 
-	@Override
-	public String getDisplayName() {
-		return " Normalcy [MPSat]";
-	}
+    @Override
+    public String getDisplayName() {
+        return " Normalcy [MPSat]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STGModel.class);
+    }
 
-	@Override
-	public MpsatSettings getSettings() {
-		return MpsatSettings.getNormalcySettings();
-	}
+    @Override
+    public MpsatSettings getSettings() {
+        return MpsatSettings.getNormalcySettings();
+    }
 
 }

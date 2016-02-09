@@ -11,36 +11,36 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 
 public class ReadArcDeserialiser implements CustomXMLDeserialiser {
 
-	@Override
-	public String getClassName() {
-		return VisualReadArc.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return VisualReadArc.class.getName();
+    }
 
-	@Override
-	public void finaliseInstance(Element element, Object instance,
-			ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver,
-			NodeFinaliser nodeFinaliser) throws DeserialisationException {
+    @Override
+    public void finaliseInstance(Element element, Object instance,
+            ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver,
+            NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-		VisualReadArc arc = (VisualReadArc)instance;
+        VisualReadArc arc = (VisualReadArc)instance;
 
-		arc.setDependencies(
-				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon1")),
-				(MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon2"))
-		);
-	}
+        arc.setDependencies(
+                (MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon1")),
+                (MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon2"))
+        );
+    }
 
-	@Override
-	public Object createInstance(Element element,
-			ReferenceResolver externalReferenceResolver,
-			Object... constructorParameters) {
-		return new VisualReadArc();
-	}
+    @Override
+    public Object createInstance(Element element,
+            ReferenceResolver externalReferenceResolver,
+            Object... constructorParameters) {
+        return new VisualReadArc();
+    }
 
-	@Override
-	public void initInstance(Element element, Object instance,
-			ReferenceResolver externalReferenceResolver,
-			NodeInitialiser nodeInitialiser) throws DeserialisationException {
-	}
+    @Override
+    public void initInstance(Element element, Object instance,
+            ReferenceResolver externalReferenceResolver,
+            NodeInitialiser nodeInitialiser) throws DeserialisationException {
+    }
 
 }

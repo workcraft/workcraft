@@ -8,21 +8,21 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class ErrTracingReset implements Tool{
 
 
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, SON.class);
-	}
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, SON.class);
+    }
 
-	public String getSection(){
-		return "Error tracing";
-	}
+    public String getSection(){
+        return "Error tracing";
+    }
 
-	public String getDisplayName(){
-		return "Reset fault/error states";
-	}
+    public String getDisplayName(){
+        return "Reset fault/error states";
+    }
 
-	public void run(WorkspaceEntry we){
-		SON net=(SON)we.getModelEntry().getMathModel();
-		net.resetErrStates();
-	}
+    public void run(WorkspaceEntry we){
+        SON net=(SON)we.getModelEntry().getMathModel();
+        net.resetErrStates();
+    }
 
 }

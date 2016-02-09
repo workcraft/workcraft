@@ -5,9 +5,9 @@ import java.awt.Toolkit;
 
 public class FontHelper {
 
-	public static int getFontSizeInPixels(Font font) {
-		int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
-		return (int)Math.round(font.getSize2D() * screenDpi / 72.0);
-	}
+    public static int getFontSizeInPixels(Font font) {
+        int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
+        return (int)Math.round(font.getSize2D() * screenDpi / 72.0);
+    }
 
 }

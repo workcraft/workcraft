@@ -9,27 +9,27 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgToFstConverterTool extends ConversionTool {
-	private final boolean binary;
+    private final boolean binary;
 
-	public StgToFstConverterTool(boolean binary) {
-		this.binary = binary;
-	}
+    public StgToFstConverterTool(boolean binary) {
+        this.binary = binary;
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STG.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STG.class);
+    }
 
-	@Override
-	public String getDisplayName() {
-		return (binary ? "Finate State Transducer (binary-encoded) [Petrify]" : "Finate State Transducer (basic) [Petrify]");
-	}
+    @Override
+    public String getDisplayName() {
+        return (binary ? "Finate State Transducer (binary-encoded) [Petrify]" : "Finate State Transducer (basic) [Petrify]");
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		WriteSgConversionTask task = new WriteSgConversionTask(we, binary);
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Building state graph", new StgToFstConversionResultHandler(task));
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        WriteSgConversionTask task = new WriteSgConversionTask(we, binary);
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(task, "Building state graph", new StgToFstConversionResultHandler(task));
+    }
 
 }

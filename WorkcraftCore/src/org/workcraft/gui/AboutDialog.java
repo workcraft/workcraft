@@ -32,120 +32,120 @@ import org.workcraft.Info;
 import org.workcraft.util.GUI;
 
 public class AboutDialog extends JDialog {
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JLabel logoLabel;
-	private JEditorPane infoPane;
-	private JPanel buttonsPane;
-	private JButton okButton;
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JLabel logoLabel;
+    private JEditorPane infoPane;
+    private JPanel buttonsPane;
+    private JButton okButton;
 
-	public AboutDialog(final MainWindow owner) {
-		super(owner);
+    public AboutDialog(final MainWindow owner) {
+        super(owner);
 
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setModal(true);
-		setTitle("About");
-		addWindowListener(new WindowAdapter(){
-			@Override
-			public void windowClosing(WindowEvent e) {
-				ok();
-			}
-		});
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setModal(true);
+        setTitle("About");
+        addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e) {
+                ok();
+            }
+        });
 
-		Dimension parentSize = owner.getSize();
-		this.setSize(600, 320);
-		Dimension mySize = getSize();
-		this.setLocation(((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
+        Dimension parentSize = owner.getSize();
+        this.setSize(600, 320);
+        Dimension mySize = getSize();
+        this.setLocation(((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
 
-		owner.getLocationOnScreen();
-
-
-		BufferedImage logoImage = null;
-		try {
-			logoImage = GUI.loadImageFromResource("images/logo.png");
-		} catch (IOException e) {
-			logoImage = null;
-		}
-
-		if (logoImage != null) {
-			logoLabel = new JLabel(new ImageIcon(logoImage), SwingConstants.CENTER);
-		} else {
-			logoLabel = new JLabel("Workcraft", SwingConstants.CENTER);
-			Font font = logoLabel.getFont();
-			logoLabel.setFont(font.deriveFont(72.0f));
-		}
-		logoLabel.setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
-
-		infoPane = new JEditorPane();
-		infoPane.setFocusable(false);
-
-		infoPane.setContentType("text/html");
+        owner.getLocationOnScreen();
 
 
-		infoPane.setEditable(false);
-		infoPane.setOpaque(false);
+        BufferedImage logoImage = null;
+        try {
+            logoImage = GUI.loadImageFromResource("images/logo.png");
+        } catch (IOException e) {
+            logoImage = null;
+        }
 
-		String homepage = Info.getHomepage();
-		infoPane.setText("<p center>" + Info.getFullTitle() + "</p>"
-				+ "<p center>" + Info.getCopyright() + "</p>"
-				+ "<p center><a href='" + homepage + "'>" + homepage + "</a></p>");
+        if (logoImage != null) {
+            logoLabel = new JLabel(new ImageIcon(logoImage), SwingConstants.CENTER);
+        } else {
+            logoLabel = new JLabel("Workcraft", SwingConstants.CENTER);
+            Font font = logoLabel.getFont();
+            logoLabel.setFont(font.deriveFont(72.0f));
+        }
+        logoLabel.setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
 
-		infoPane.addHyperlinkListener(new HyperlinkListener() {
-	        @Override
-	        public void hyperlinkUpdate(HyperlinkEvent event) {
-	        	if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {
-    				try {
-    					URI uri = event.getURL().toURI();
-    					DesktopApi.browse(uri);
-    				} catch (URISyntaxException e) {
-    					System.out.println(e);
-	    			}
-	        	}
-	        }
-	    });
+        infoPane = new JEditorPane();
+        infoPane.setFocusable(false);
 
-		okButton = new JButton();
-		okButton.setPreferredSize(new Dimension(100, 25));
-		okButton.setText("OK");
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ok();
-			}
-		});
+        infoPane.setContentType("text/html");
 
-		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-		buttonsPane.add(okButton);
 
-		contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout(10, 10));
-		contentPane.add(logoLabel, BorderLayout.NORTH);
-		contentPane.add(infoPane, BorderLayout.CENTER);
-		contentPane.add(buttonsPane, BorderLayout.SOUTH);
-		setContentPane(contentPane);
-		getRootPane().setDefaultButton(okButton);
+        infoPane.setEditable(false);
+        infoPane.setOpaque(false);
 
-		getRootPane().registerKeyboardAction(new ActionListener() {
-	    	@Override
-	    	public void actionPerformed(ActionEvent e) {
-				ok();
-	    	}
-	    },
-	    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+        String homepage = Info.getHomepage();
+        infoPane.setText("<p center>" + Info.getFullTitle() + "</p>"
+                + "<p center>" + Info.getCopyright() + "</p>"
+                + "<p center><a href='" + homepage + "'>" + homepage + "</a></p>");
 
-	    getRootPane().registerKeyboardAction(new ActionListener() {
-	    	@Override
-	    	public void actionPerformed(ActionEvent e) {
-				ok();
-	    	}
-	    },
-	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+        infoPane.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent event) {
+                if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {
+                    try {
+                        URI uri = event.getURL().toURI();
+                        DesktopApi.browse(uri);
+                    } catch (URISyntaxException e) {
+                        System.out.println(e);
+                    }
+                }
+            }
+        });
 
-	}
+        okButton = new JButton();
+        okButton.setPreferredSize(new Dimension(100, 25));
+        okButton.setText("OK");
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ok();
+            }
+        });
 
-	private void ok() {
-		setVisible(false);
-	}
+        buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonsPane.add(okButton);
+
+        contentPane = new JPanel();
+        contentPane.setLayout(new BorderLayout(10, 10));
+        contentPane.add(logoLabel, BorderLayout.NORTH);
+        contentPane.add(infoPane, BorderLayout.CENTER);
+        contentPane.add(buttonsPane, BorderLayout.SOUTH);
+        setContentPane(contentPane);
+        getRootPane().setDefaultButton(okButton);
+
+        getRootPane().registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ok();
+            }
+        },
+        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+        JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        getRootPane().registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ok();
+            }
+        },
+        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+    }
+
+    private void ok() {
+        setVisible(false);
+    }
 
 }

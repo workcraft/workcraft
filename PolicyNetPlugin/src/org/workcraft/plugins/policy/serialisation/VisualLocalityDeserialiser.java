@@ -11,34 +11,34 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 
 public class VisualLocalityDeserialiser implements CustomXMLDeserialiser{
 
-	@Override
-	public String getClassName()
-	{
-		return VisualLocality.class.getName();
-	}
+    @Override
+    public String getClassName()
+    {
+        return VisualLocality.class.getName();
+    }
 
-	@Override
-	public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
-	{
-		VisualLocality visualLocality = (VisualLocality)instance;
-		String ref = element.getAttribute("ref");
-		Locality locality = (Locality)externalReferenceResolver.getObject(ref);
-		visualLocality.setLocality(locality);
-	}
+    @Override
+    public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
+    {
+        VisualLocality visualLocality = (VisualLocality)instance;
+        String ref = element.getAttribute("ref");
+        Locality locality = (Locality)externalReferenceResolver.getObject(ref);
+        visualLocality.setLocality(locality);
+    }
 
-	@Override
-	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
-			Object... constructorParameters)
-	{
-		String ref = element.getAttribute("ref");
-		Locality locality = (Locality)externalReferenceResolver.getObject(ref);
-		return new VisualLocality(locality);
-	}
+    @Override
+    public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
+            Object... constructorParameters)
+    {
+        String ref = element.getAttribute("ref");
+        Locality locality = (Locality)externalReferenceResolver.getObject(ref);
+        return new VisualLocality(locality);
+    }
 
-	@Override
-	public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
-			NodeInitialiser nodeInitialiser) throws DeserialisationException
-	{
-	}
+    @Override
+    public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
+            NodeInitialiser nodeInitialiser) throws DeserialisationException
+    {
+    }
 }

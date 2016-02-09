@@ -25,187 +25,187 @@ import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 @SVGIcon("images/icons/svg/dfs-control_register.svg")
 public class VisualControlRegister extends VisualBinaryRegister {
 
-	public VisualControlRegister(ControlRegister register) {
-		super(register);
-		addPropertyDeclarations();
-	}
+    public VisualControlRegister(ControlRegister register) {
+        super(register);
+        addPropertyDeclarations();
+    }
 
-	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, Double>(
-				this, ControlRegister.PROPERTY_PROBABILITY, Double.class, true, true, true) {
-			public void setter(VisualControlRegister object, Double value) {
-				object.getReferencedControlRegister().setProbability(value);
-			}
-			public Double getter(VisualControlRegister object) {
-				return object.getReferencedControlRegister().getProbability();
-			}
-		});
+    private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, Double>(
+                this, ControlRegister.PROPERTY_PROBABILITY, Double.class, true, true, true) {
+            public void setter(VisualControlRegister object, Double value) {
+                object.getReferencedControlRegister().setProbability(value);
+            }
+            public Double getter(VisualControlRegister object) {
+                return object.getReferencedControlRegister().getProbability();
+            }
+        });
 
-		addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, SynchronisationType>(
-				this, ControlRegister.PROPERTY_SYNCHRONISATION_TYPE, SynchronisationType.class, true, true, true) {
-			public void setter(VisualControlRegister object, SynchronisationType value) {
-				object.getReferencedControlRegister().setSynchronisationType(value);
-			}
-			public SynchronisationType getter(VisualControlRegister object) {
-				return object.getReferencedControlRegister().getSynchronisationType();
-			}
-		});
-	}
+        addPropertyDeclaration(new PropertyDeclaration<VisualControlRegister, SynchronisationType>(
+                this, ControlRegister.PROPERTY_SYNCHRONISATION_TYPE, SynchronisationType.class, true, true, true) {
+            public void setter(VisualControlRegister object, SynchronisationType value) {
+                object.getReferencedControlRegister().setSynchronisationType(value);
+            }
+            public SynchronisationType getter(VisualControlRegister object) {
+                return object.getReferencedControlRegister().getSynchronisationType();
+            }
+        });
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		double w = size - strokeWidth;
-		double h = size - strokeWidth;
-		double w2 = w/2;
-		double w4 = w/4;
-		double h2 = h/2;
-		double dx = size / 5;
-		double dy = strokeWidth / 4;
-		float strokeWidth1 = (float)strokeWidth;
-		float strokeWidth2 = strokeWidth1 / 2;
-		float strokeWidth4 = strokeWidth1 / 4;
-		int kd = 6;
-		double dd = (size - strokeWidth1 - strokeWidth1) / (4 * kd);
-		double tr = (size - strokeWidth1 - strokeWidth1) / 6;
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        double w = size - strokeWidth;
+        double h = size - strokeWidth;
+        double w2 = w/2;
+        double w4 = w/4;
+        double h2 = h/2;
+        double dx = size / 5;
+        double dy = strokeWidth / 4;
+        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth2 = strokeWidth1 / 2;
+        float strokeWidth4 = strokeWidth1 / 4;
+        int kd = 6;
+        double dd = (size - strokeWidth1 - strokeWidth1) / (4 * kd);
+        double tr = (size - strokeWidth1 - strokeWidth1) / 6;
 
-		Path2D shape = new Path2D.Double();
-		shape.moveTo(-w2,  0);
-		shape.lineTo(-w2 + dx - strokeWidth2, -h2);
-		shape.lineTo(+w2 - dx + strokeWidth2, -h2);
-		shape.lineTo(+w2,   0);
-		shape.lineTo(+w2 - dx + strokeWidth2, +h2);
-		shape.lineTo(-w2 + dx - strokeWidth2, +h2);
-		shape.closePath();
+        Path2D shape = new Path2D.Double();
+        shape.moveTo(-w2,  0);
+        shape.lineTo(-w2 + dx - strokeWidth2, -h2);
+        shape.lineTo(+w2 - dx + strokeWidth2, -h2);
+        shape.lineTo(+w2,   0);
+        shape.lineTo(+w2 - dx + strokeWidth2, +h2);
+        shape.lineTo(-w2 + dx - strokeWidth2, +h2);
+        shape.closePath();
 
-		Path2D trueInnerShape = new Path2D.Double();
-		trueInnerShape.moveTo(-w2 + dx, -dy);
-		trueInnerShape.lineTo(-w2 + dx, -h2);
-		trueInnerShape.lineTo( w2 - dx, -h2);
-		trueInnerShape.lineTo( w2 - dx, -dy);
+        Path2D trueInnerShape = new Path2D.Double();
+        trueInnerShape.moveTo(-w2 + dx, -dy);
+        trueInnerShape.lineTo(-w2 + dx, -h2);
+        trueInnerShape.lineTo( w2 - dx, -h2);
+        trueInnerShape.lineTo( w2 - dx, -dy);
 
-		Path2D falseInnerShape = new Path2D.Double();
-		falseInnerShape.moveTo( w2 - dx, dy);
-		falseInnerShape.lineTo( w2 - dx, h2);
-		falseInnerShape.lineTo(-w2 + dx, h2);
-		falseInnerShape.lineTo(-w2 + dx, dy);
+        Path2D falseInnerShape = new Path2D.Double();
+        falseInnerShape.moveTo( w2 - dx, dy);
+        falseInnerShape.lineTo( w2 - dx, h2);
+        falseInnerShape.lineTo(-w2 + dx, h2);
+        falseInnerShape.lineTo(-w2 + dx, dy);
 
-		Path2D trueMarkerShape = new Path2D.Double();
-		trueMarkerShape.moveTo(-dd, (-kd-2) * dd);
-		trueMarkerShape.lineTo(+dd, (-kd-2) * dd);
-		trueMarkerShape.moveTo(  0, (-kd-2) * dd);
-		trueMarkerShape.lineTo(  0, (-kd+2) * dd);
+        Path2D trueMarkerShape = new Path2D.Double();
+        trueMarkerShape.moveTo(-dd, (-kd-2) * dd);
+        trueMarkerShape.lineTo(+dd, (-kd-2) * dd);
+        trueMarkerShape.moveTo(  0, (-kd-2) * dd);
+        trueMarkerShape.lineTo(  0, (-kd+2) * dd);
 
-		Path2D falseMarkerShape = new Path2D.Double();
-		falseMarkerShape.moveTo(+dd, (+kd-2) * dd);
-		falseMarkerShape.lineTo(-dd, (+kd-2) * dd);
-		falseMarkerShape.lineTo(-dd, (+kd+2) * dd);
-		falseMarkerShape.moveTo(+dd, (+kd+0) * dd);
-		falseMarkerShape.lineTo(-dd, (+kd+0) * dd);
+        Path2D falseMarkerShape = new Path2D.Double();
+        falseMarkerShape.moveTo(+dd, (+kd-2) * dd);
+        falseMarkerShape.lineTo(-dd, (+kd-2) * dd);
+        falseMarkerShape.lineTo(-dd, (+kd+2) * dd);
+        falseMarkerShape.moveTo(+dd, (+kd+0) * dd);
+        falseMarkerShape.lineTo(-dd, (+kd+0) * dd);
 
-		Shape trueTokenShape = new Ellipse2D.Double( -tr, -w4 - tr + strokeWidth4, 2*tr, 2*tr);
-		Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
-		Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
+        Shape trueTokenShape = new Ellipse2D.Double( -tr, -w4 - tr + strokeWidth4, 2*tr, 2*tr);
+        Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
+        Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
 
-		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-		Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
-		boolean trueMarked = getReferencedControlRegister().isTrueMarked();
-		boolean trueExcited = false;
-		boolean falseMarked = getReferencedControlRegister().isFalseMarked();
-		boolean falseExcited = false;
-		if (d instanceof BinaryRegisterDecoration) {
-			defaultColor = getForegroundColor();
-			tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
-			trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
-			trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
-			falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
-			falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
-		}
+        Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+        Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
+        boolean trueMarked = getReferencedControlRegister().isTrueMarked();
+        boolean trueExcited = false;
+        boolean falseMarked = getReferencedControlRegister().isFalseMarked();
+        boolean falseExcited = false;
+        if (d instanceof BinaryRegisterDecoration) {
+            defaultColor = getForegroundColor();
+            tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
+            trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
+            trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
+            falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
+            falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
+        }
 
-		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-		g.fill(shape);
+        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.fill(shape);
 
-		g.setColor(Coloriser.colorise(DfsSettings.getSynchronisationRegisterColor(), d.getBackground()));
-		if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND) {
-			g.fill(falseInnerShape);
-		}
-		if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
-			g.fill(trueInnerShape);
-		}
+        g.setColor(Coloriser.colorise(DfsSettings.getSynchronisationRegisterColor(), d.getBackground()));
+        if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND) {
+            g.fill(falseInnerShape);
+        }
+        if (getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
+            g.fill(trueInnerShape);
+        }
 
-		g.setColor(defaultColor);
-		if (!trueExcited) {
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(trueInnerShape);
-			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(trueMarkerShape);
-		}
-		if (!falseExcited) {
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(falseInnerShape);
-			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(falseMarkerShape);
-		}
+        g.setColor(defaultColor);
+        if (!trueExcited) {
+            g.setStroke(new BasicStroke(strokeWidth2));
+            g.draw(trueInnerShape);
+            g.setStroke(new BasicStroke(strokeWidth4));
+            g.draw(trueMarkerShape);
+        }
+        if (!falseExcited) {
+            g.setStroke(new BasicStroke(strokeWidth2));
+            g.draw(falseInnerShape);
+            g.setStroke(new BasicStroke(strokeWidth4));
+            g.draw(falseMarkerShape);
+        }
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		if (trueExcited) {
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(trueInnerShape);
-			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(trueMarkerShape);
-		}
-		if (falseExcited) {
-			g.setStroke(new BasicStroke(strokeWidth2));
-			g.draw(falseInnerShape);
-			g.setStroke(new BasicStroke(strokeWidth4));
-			g.draw(falseMarkerShape);
-		}
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        if (trueExcited) {
+            g.setStroke(new BasicStroke(strokeWidth2));
+            g.draw(trueInnerShape);
+            g.setStroke(new BasicStroke(strokeWidth4));
+            g.draw(trueMarkerShape);
+        }
+        if (falseExcited) {
+            g.setStroke(new BasicStroke(strokeWidth2));
+            g.draw(falseInnerShape);
+            g.setStroke(new BasicStroke(strokeWidth4));
+            g.draw(falseMarkerShape);
+        }
 
-		if (trueExcited || falseExcited) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		} else {
-			g.setColor(defaultColor);
-		}
-		g.setStroke(new BasicStroke(strokeWidth2));
-		g.draw(separatorShape);
+        if (trueExcited || falseExcited) {
+            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        } else {
+            g.setColor(defaultColor);
+        }
+        g.setStroke(new BasicStroke(strokeWidth2));
+        g.draw(separatorShape);
 
-		g.setStroke(new BasicStroke(strokeWidth1));
-		g.draw(shape);
+        g.setStroke(new BasicStroke(strokeWidth1));
+        g.draw(shape);
 
-		g.setColor(tokenColor);
-		g.setStroke(new BasicStroke(strokeWidth2));
-		if (trueMarked) {
-			g.draw(trueTokenShape);
-		}
-		if (falseMarked) {
-			g.draw(falseTokenShape);
-		}
+        g.setColor(tokenColor);
+        g.setStroke(new BasicStroke(strokeWidth2));
+        if (trueMarked) {
+            g.draw(trueTokenShape);
+        }
+        if (falseMarked) {
+            g.draw(falseTokenShape);
+        }
 
-		drawLabelInLocalSpace(r);
-		drawNameInLocalSpace(r);
-	}
+        drawLabelInLocalSpace(r);
+        drawNameInLocalSpace(r);
+    }
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		double w2 = size/2;
-		double h2 = size/2;
-		double dx = size / 5 - strokeWidth / 2;
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        double w2 = size/2;
+        double h2 = size/2;
+        double dx = size / 5 - strokeWidth / 2;
 
-		Path2D shape = new Path2D.Double();
-		shape.moveTo(-w2,  0);
-		shape.lineTo(-w2 + dx, -h2);
-		shape.lineTo(+w2 - dx, -h2);
-		shape.lineTo(+w2,   0);
-		shape.lineTo(+w2 - dx, +h2);
-		shape.lineTo(-w2 + dx, +h2);
-		shape.closePath();
+        Path2D shape = new Path2D.Double();
+        shape.moveTo(-w2,  0);
+        shape.lineTo(-w2 + dx, -h2);
+        shape.lineTo(+w2 - dx, -h2);
+        shape.lineTo(+w2,   0);
+        shape.lineTo(+w2 - dx, +h2);
+        shape.lineTo(-w2 + dx, +h2);
+        shape.closePath();
 
-		return shape.contains(pointInLocalSpace);
-	}
+        return shape.contains(pointInLocalSpace);
+    }
 
-	public ControlRegister getReferencedControlRegister() {
-		return (ControlRegister)getReferencedComponent();
-	}
+    public ControlRegister getReferencedControlRegister() {
+        return (ControlRegister)getReferencedComponent();
+    }
 
 }

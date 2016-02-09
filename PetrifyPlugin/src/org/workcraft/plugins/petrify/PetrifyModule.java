@@ -19,62 +19,62 @@ import org.workcraft.plugins.petrify.tools.PetrifyUntoggle;
 
 public class PetrifyModule implements Module {
 
-	@Override
-	public void init() {
-		final Framework framework = Framework.getInstance();
-		PluginManager pm = framework.getPluginManager();
+    @Override
+    public void init() {
+        final Framework framework = Framework.getInstance();
+        PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(Settings.class, PetrifyUtilitySettings.class);
+        pm.registerClass(Settings.class, PetrifyUtilitySettings.class);
 
-		pm.registerClass(Tool.class, PetrifyUntoggle.class);
-		pm.registerClass(Tool.class, PetrifyCscConflictResolution.class);
-		pm.registerClass(Tool.class, PetrifySynthesisComplexGate.class);
-		pm.registerClass(Tool.class, PetrifySynthesisGeneralisedCelement.class);
-		pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
-		pm.registerClass(Tool.class, PetrifyDummyContraction.class);
+        pm.registerClass(Tool.class, PetrifyUntoggle.class);
+        pm.registerClass(Tool.class, PetrifyCscConflictResolution.class);
+        pm.registerClass(Tool.class, PetrifySynthesisComplexGate.class);
+        pm.registerClass(Tool.class, PetrifySynthesisGeneralisedCelement.class);
+        pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
+        pm.registerClass(Tool.class, PetrifyDummyContraction.class);
 
-		pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new PetrifyNetSynthesis() {
-					@Override
-					public String getDisplayName() {
-						return "Net synthesis [Petrify with -er option]";
-					}
-					@Override
-					public ArrayList<String> getArgs() {
-						ArrayList<String> args = super.getArgs();
-						args.add("-er");
-						return args;
-					}
-				};
-			}
-		});
+        pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new PetrifyNetSynthesis() {
+                    @Override
+                    public String getDisplayName() {
+                        return "Net synthesis [Petrify with -er option]";
+                    }
+                    @Override
+                    public ArrayList<String> getArgs() {
+                        ArrayList<String> args = super.getArgs();
+                        args.add("-er");
+                        return args;
+                    }
+                };
+            }
+        });
 
-		pm.registerClass(Tool.class, PetrifyNetSynthesisHide.class);
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new PetrifyNetSynthesisHide() {
-					@Override
-					public String getDisplayName() {
-						return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
-					}
-					@Override
-					public ArrayList<String> getArgs() {
-						ArrayList<String> args = super.getArgs();
-						args.add("-er");
-						return args;
-					}
-				};
-			}
-		});
-	}
+        pm.registerClass(Tool.class, PetrifyNetSynthesisHide.class);
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new PetrifyNetSynthesisHide() {
+                    @Override
+                    public String getDisplayName() {
+                        return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
+                    }
+                    @Override
+                    public ArrayList<String> getArgs() {
+                        ArrayList<String> args = super.getArgs();
+                        args.add("-er");
+                        return args;
+                    }
+                };
+            }
+        });
+    }
 
-	@Override
-	public String getDescription() {
-		return "Petrify synthesis support";
-	}
+    @Override
+    public String getDescription() {
+        return "Petrify synthesis support";
+    }
 
 }

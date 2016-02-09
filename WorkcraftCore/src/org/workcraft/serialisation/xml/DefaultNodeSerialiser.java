@@ -36,117 +36,117 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 
 public class DefaultNodeSerialiser {
-	private SerialiserFactory fac;
-	private NodeSerialiser serialiser;
+    private SerialiserFactory fac;
+    private NodeSerialiser serialiser;
 
-	public DefaultNodeSerialiser(SerialiserFactory factory, NodeSerialiser serialiser) {
-		this.fac = factory;
-		this.serialiser = serialiser;
-	}
-
-
-	private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
-		// type explicitly requested to be excluded from auto serialisation
-		if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
-			return;
-
-		BeanInfo info = getBeanInfo(currentLevel);
-
-		for (PropertyDescriptor desc : info.getPropertyDescriptors())
-		{
-			if (desc.getPropertyType() == null)
-				continue;
-
-			if (desc.getWriteMethod() == null || desc.getReadMethod() == null)
-				continue;
-
-			// property explicitly requested to be excluded from auto serialisation
-			if (
-					desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
-					desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null
-					)
-				continue;
+    public DefaultNodeSerialiser(SerialiserFactory factory, NodeSerialiser serialiser) {
+        this.fac = factory;
+        this.serialiser = serialiser;
+    }
 
 
-			// the property is writable and is not of array type, try to get a serialiser
-			XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
+    private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
+        // type explicitly requested to be excluded from auto serialisation
+        if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
+            return;
 
-			if (!(serialiser instanceof BasicXMLSerialiser))
-			{
-				// no serialiser, try to use the special case enum serialiser
-				if (desc.getPropertyType().isEnum())
-				{
-					serialiser = fac.getSerialiserFor(Enum.class);
-					if (serialiser == null)
-						continue;
-				} else
-					continue;
-			}
+        BeanInfo info = getBeanInfo(currentLevel);
 
-			Element propertyElement = element.getOwnerDocument().createElement("property");
-			element.appendChild(propertyElement);
-			propertyElement.setAttribute("class", desc.getPropertyType().getName());
-			propertyElement.setAttribute("name", desc.getName());
+        for (PropertyDescriptor desc : info.getPropertyDescriptors())
+        {
+            if (desc.getPropertyType() == null)
+                continue;
 
-			((BasicXMLSerialiser)serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
-		}
-	}
+            if (desc.getWriteMethod() == null || desc.getReadMethod() == null)
+                continue;
 
-	private void doSerialisation(Element parentElement, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences, Class<?> currentLevel)
-			throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, IntrospectionException,
-			SerialisationException, InvocationTargetException {
-
-		Element curLevelElement = parentElement.getOwnerDocument()
-				.createElement(currentLevel.getSimpleName());
+            // property explicitly requested to be excluded from auto serialisation
+            if (
+                    desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
+                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null
+                    )
+                continue;
 
 
-		autoSerialiseProperties(curLevelElement, object, currentLevel);
+            // the property is writable and is not of array type, try to get a serialiser
+            XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
 
-		XMLSerialiser serialiser = fac.getSerialiserFor(currentLevel);
+            if (!(serialiser instanceof BasicXMLSerialiser))
+            {
+                // no serialiser, try to use the special case enum serialiser
+                if (desc.getPropertyType().isEnum())
+                {
+                    serialiser = fac.getSerialiserFor(Enum.class);
+                    if (serialiser == null)
+                        continue;
+                } else
+                    continue;
+            }
 
-		if (serialiser != null) {
-			if (serialiser instanceof BasicXMLSerialiser)
-				((BasicXMLSerialiser)serialiser).serialise(curLevelElement, object);
-			else if (serialiser instanceof CustomXMLSerialiser)
-				((CustomXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
-		} else {
-			if (object.getClass().equals(currentLevel) && (object instanceof Dependent)) {
-				Collection<MathNode> refs = ((Dependent)object).getMathReferences();
-				if (refs.size() == 1) {
-					curLevelElement.setAttribute("ref", externalReferences.getReference(refs.iterator().next()));
-				}
-			}
-		}
+            Element propertyElement = element.getOwnerDocument().createElement("property");
+            element.appendChild(propertyElement);
+            propertyElement.setAttribute("class", desc.getPropertyType().getName());
+            propertyElement.setAttribute("name", desc.getName());
 
-		if (curLevelElement.getAttributes().getLength() > 0 || curLevelElement.getChildNodes().getLength() > 0)
-			parentElement.appendChild(curLevelElement);
+            ((BasicXMLSerialiser)serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
+        }
+    }
 
-		if (currentLevel.getSuperclass() != Object.class)
-			doSerialisation(parentElement, object, internalReferences, externalReferences, currentLevel.getSuperclass());
-	}
+    private void doSerialisation(Element parentElement, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, Class<?> currentLevel)
+            throws InstantiationException, IllegalAccessException,
+            IllegalArgumentException, IntrospectionException,
+            SerialisationException, InvocationTargetException {
 
-	public void serialise(Element parentElement, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences) throws SerialisationException {
-		try {
-			doSerialisation(parentElement, object, internalReferences, externalReferences, object.getClass());
+        Element curLevelElement = parentElement.getOwnerDocument()
+                .createElement(currentLevel.getSimpleName());
 
-			parentElement.setAttribute("ref", internalReferences.getReference(object));
-		} catch (IllegalArgumentException e) {
-			throw new SerialisationException(e);
-		} catch (InstantiationException e) {
-			throw new SerialisationException(e);
-		} catch (IllegalAccessException e) {
-			throw new SerialisationException(e);
-		} catch (IntrospectionException e) {
-			throw new SerialisationException(e);
-		} catch (SerialisationException e) {
-			throw new SerialisationException(e);
-		} catch (InvocationTargetException e) {
-			throw new SerialisationException(e);
-		}
-	}
+
+        autoSerialiseProperties(curLevelElement, object, currentLevel);
+
+        XMLSerialiser serialiser = fac.getSerialiserFor(currentLevel);
+
+        if (serialiser != null) {
+            if (serialiser instanceof BasicXMLSerialiser)
+                ((BasicXMLSerialiser)serialiser).serialise(curLevelElement, object);
+            else if (serialiser instanceof CustomXMLSerialiser)
+                ((CustomXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
+        } else {
+            if (object.getClass().equals(currentLevel) && (object instanceof Dependent)) {
+                Collection<MathNode> refs = ((Dependent)object).getMathReferences();
+                if (refs.size() == 1) {
+                    curLevelElement.setAttribute("ref", externalReferences.getReference(refs.iterator().next()));
+                }
+            }
+        }
+
+        if (curLevelElement.getAttributes().getLength() > 0 || curLevelElement.getChildNodes().getLength() > 0)
+            parentElement.appendChild(curLevelElement);
+
+        if (currentLevel.getSuperclass() != Object.class)
+            doSerialisation(parentElement, object, internalReferences, externalReferences, currentLevel.getSuperclass());
+    }
+
+    public void serialise(Element parentElement, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences) throws SerialisationException {
+        try {
+            doSerialisation(parentElement, object, internalReferences, externalReferences, object.getClass());
+
+            parentElement.setAttribute("ref", internalReferences.getReference(object));
+        } catch (IllegalArgumentException e) {
+            throw new SerialisationException(e);
+        } catch (InstantiationException e) {
+            throw new SerialisationException(e);
+        } catch (IllegalAccessException e) {
+            throw new SerialisationException(e);
+        } catch (IntrospectionException e) {
+            throw new SerialisationException(e);
+        } catch (SerialisationException e) {
+            throw new SerialisationException(e);
+        } catch (InvocationTargetException e) {
+            throw new SerialisationException(e);
+        }
+    }
 }

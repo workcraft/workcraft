@@ -27,23 +27,23 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class CnfClause extends Clause {
 
-	public CnfClause()
-	{
-	}
+    public CnfClause()
+    {
+    }
 
-	public CnfClause(Literal... literals)
-	{
-		super(literals);
-	}
+    public CnfClause(Literal... literals)
+    {
+        super(literals);
+    }
 
-	public CnfClause(List<Literal> literals) {
-		super(literals);
-	}
+    public CnfClause(List<Literal> literals) {
+        super(literals);
+    }
 
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return BooleanOperations.or(getLiterals()).accept(visitor);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return BooleanOperations.or(getLiterals()).accept(visitor);
+    }
 
 }

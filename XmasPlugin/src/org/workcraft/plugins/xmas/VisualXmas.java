@@ -58,71 +58,71 @@ import org.workcraft.util.Hierarchy;
 @CustomTools ( XmasToolsProvider.class )
 public class VisualXmas extends AbstractVisualModel {
 
-	private Xmas circuit;
+    private Xmas circuit;
 
-	@Override
-	public void validateConnection(Node first, Node second)	throws InvalidConnectionException {
-		if (!(first instanceof VisualXmasContact) || !(second instanceof VisualXmasContact)) {
-			throw new InvalidConnectionException ("Connection is only allowed between ports");
-		} else {
-			if (((VisualXmasContact)first).getIOType() != IOType.OUTPUT) {
-				throw new InvalidConnectionException ("Connection is only allowed from output port.");
-			}
-			if (((VisualXmasContact)second).getIOType() != IOType.INPUT) {
-				throw new InvalidConnectionException ("Connection is only allowed to input port.");
-			}
-			for (Connection c: this.getConnections(first)) {
-				if (c.getFirst() == first) {
-					throw new InvalidConnectionException ("Only one connection is allowed from port.");
-				}
-			}
-			for (Connection c: this.getConnections(second)) {
-				if (c.getSecond() == second) {
-					throw new InvalidConnectionException ("Only one connection is allowed to port.");
-				}
-			}
-		}
-	}
+    @Override
+    public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
+        if (!(first instanceof VisualXmasContact) || !(second instanceof VisualXmasContact)) {
+            throw new InvalidConnectionException ("Connection is only allowed between ports");
+        } else {
+            if (((VisualXmasContact)first).getIOType() != IOType.OUTPUT) {
+                throw new InvalidConnectionException ("Connection is only allowed from output port.");
+            }
+            if (((VisualXmasContact)second).getIOType() != IOType.INPUT) {
+                throw new InvalidConnectionException ("Connection is only allowed to input port.");
+            }
+            for (Connection c: this.getConnections(first)) {
+                if (c.getFirst() == first) {
+                    throw new InvalidConnectionException ("Only one connection is allowed from port.");
+                }
+            }
+            for (Connection c: this.getConnections(second)) {
+                if (c.getSecond() == second) {
+                    throw new InvalidConnectionException ("Only one connection is allowed to port.");
+                }
+            }
+        }
+    }
 
-	public VisualXmas(Xmas model, VisualGroup root)
-	{
-		super(model, root);
-		circuit=model;
-	}
+    public VisualXmas(Xmas model, VisualGroup root)
+    {
+        super(model, root);
+        circuit=model;
+    }
 
-	public VisualXmas(Xmas model) throws VisualModelInstantiationException {
-		super(model);
-		circuit=model;
-		try {
-			createDefaultFlatStructure();
-		} catch (NodeCreationException e) {
-			throw new VisualModelInstantiationException(e);
-		}
-	}
+    public VisualXmas(Xmas model) throws VisualModelInstantiationException {
+        super(model);
+        circuit=model;
+        try {
+            createDefaultFlatStructure();
+        } catch (NodeCreationException e) {
+            throw new VisualModelInstantiationException(e);
+        }
+    }
 
-	@Override
-	public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
-		validateConnection(first, second);
-		VisualXmasConnection connection = null;
-		if (first instanceof VisualComponent && second instanceof VisualComponent) {
-			VisualComponent c1 = (VisualComponent)first;
-			VisualComponent c2 = (VisualComponent)second;
-			if (mConnection == null) {
-				mConnection = circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
-			}
-			connection = new VisualXmasConnection(mConnection, c1, c2);
-			Node parent = Hierarchy.getCommonParent(c1, c2);
-			VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
-			nearestAncestor.add(connection);
-		}
-		return connection;
-	}
+    @Override
+    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
+        validateConnection(first, second);
+        VisualXmasConnection connection = null;
+        if (first instanceof VisualComponent && second instanceof VisualComponent) {
+            VisualComponent c1 = (VisualComponent)first;
+            VisualComponent c2 = (VisualComponent)second;
+            if (mConnection == null) {
+                mConnection = circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
+            }
+            connection = new VisualXmasConnection(mConnection, c1, c2);
+            Node parent = Hierarchy.getCommonParent(c1, c2);
+            VisualGroup nearestAncestor = Hierarchy.getNearestAncestor (parent, VisualGroup.class);
+            nearestAncestor.add(connection);
+        }
+        return connection;
+    }
 
     public VisualGroup getGroup(VisualComponent vsc) {
         return Hierarchy.getNearestAncestor(vsc, VisualGroup.class);
     }
 
-	public Collection<Node> getNodes() {
+    public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)){
             if ( (node instanceof VisualSourceComponent)
@@ -139,5 +139,5 @@ public class VisualXmas extends AbstractVisualModel {
             }
         }
         return result;
-	}
+    }
 }

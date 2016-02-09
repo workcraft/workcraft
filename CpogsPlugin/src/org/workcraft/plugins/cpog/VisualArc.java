@@ -49,126 +49,126 @@ import org.workcraft.util.Geometry;
 
 public class VisualArc extends VisualConnection {
 
-	public static final String PROPERTY_CONDITION = "condition";
-	private static Font labelFont;
-	private Rectangle2D labelBB = null;
+    public static final String PROPERTY_CONDITION = "condition";
+    private static Font labelFont;
+    private Rectangle2D labelBB = null;
 
-	Arc mathConnection;
+    Arc mathConnection;
 
-	static {
-		try {
-			labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
-		} catch (FontFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    static {
+        try {
+            labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
+        } catch (FontFormatException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	public VisualArc(Arc mathConnection) {
-		super();
-		this.mathConnection = mathConnection;
-	}
+    public VisualArc(Arc mathConnection) {
+        super();
+        this.mathConnection = mathConnection;
+    }
 
-	public VisualArc(Arc mathConnection, VisualVertex first, VisualVertex second) {
-		super(mathConnection, first, second);
-		this.mathConnection = mathConnection;
-	}
+    public VisualArc(Arc mathConnection, VisualVertex first, VisualVertex second) {
+        super(mathConnection, first, second);
+        this.mathConnection = mathConnection;
+    }
 
-	public BooleanFormula getCondition()
-	{
-		return mathConnection.getCondition();
-	}
+    public BooleanFormula getCondition()
+    {
+        return mathConnection.getCondition();
+    }
 
-	@Override
-	public Stroke getStroke() {
-		BooleanFormula value = evaluate();
+    @Override
+    public Stroke getStroke() {
+        BooleanFormula value = evaluate();
 
-		if (value == Zero.instance())
-			return new BasicStroke((float) super.getLineWidth(), BasicStroke.CAP_BUTT,
-		        BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f);
+        if (value == Zero.instance())
+            return new BasicStroke((float) super.getLineWidth(), BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f);
 
-		return super.getStroke();
-	}
+        return super.getStroke();
+    }
 
-	@Override
-	public Color getDrawColor() {
+    @Override
+    public Color getDrawColor() {
 // FIXME: Gray colour of arcs with undecided conditions is confusing.
-//		BooleanFormula value = evaluate();
-//		if ((value != Zero.instance() && (value != One.instance())) {
-//			return Color.LIGHT_GRAY;
-//		}
-		return super.getDrawColor();
-	}
+//        BooleanFormula value = evaluate();
+//        if ((value != Zero.instance() && (value != One.instance())) {
+//            return Color.LIGHT_GRAY;
+//        }
+        return super.getDrawColor();
+    }
 
-	private BooleanFormula evaluate() {
-		BooleanFormula condition = getCondition();
+    private BooleanFormula evaluate() {
+        BooleanFormula condition = getCondition();
 
-		condition = BooleanOperations.and(condition, ((VisualVertex) getFirst()).evaluate());
-		condition = BooleanOperations.and(condition, ((VisualVertex) getSecond()).evaluate());
+        condition = BooleanOperations.and(condition, ((VisualVertex) getFirst()).evaluate());
+        condition = BooleanOperations.and(condition, ((VisualVertex) getSecond()).evaluate());
 
-		return condition.accept(new PrettifyBooleanReplacer());
-	}
+        return condition.accept(new PrettifyBooleanReplacer());
+    }
 
-	public void setCondition(BooleanFormula condition) {
-		mathConnection.setCondition(condition);
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
-	}
+    public void setCondition(BooleanFormula condition) {
+        mathConnection.setCondition(condition);
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		labelBB = null;
+    @Override
+    public void draw(DrawRequest r) {
+        labelBB = null;
 
-		if (getCondition() == One.instance()) return;
+        if (getCondition() == One.instance()) return;
 
-		Graphics2D g = r.getGraphics();
+        Graphics2D g = r.getGraphics();
 
-		FormulaRenderingResult result = FormulaToGraphics.render(getCondition(), g.getFontRenderContext(), labelFont);
+        FormulaRenderingResult result = FormulaToGraphics.render(getCondition(), g.getFontRenderContext(), labelFont);
 
-		labelBB = result.boundingBox;
+        labelBB = result.boundingBox;
 
-		ConnectionGraphic graphic = getGraphic();
+        ConnectionGraphic graphic = getGraphic();
 
-		Point2D p = graphic.getPointOnCurve(0.5);
-		Point2D d = graphic.getDerivativeAt(0.5);
-		Point2D dd = graphic.getSecondDerivativeAt(0.5);
+        Point2D p = graphic.getPointOnCurve(0.5);
+        Point2D d = graphic.getDerivativeAt(0.5);
+        Point2D dd = graphic.getSecondDerivativeAt(0.5);
 
-		if (d.getX() < 0) {
-			d = Geometry.multiply(d, -1);
-			//dd = Geometry.multiply(dd, -1);
-		}
+        if (d.getX() < 0) {
+            d = Geometry.multiply(d, -1);
+            //dd = Geometry.multiply(dd, -1);
+        }
 
-		Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getMaxY());
-		if (Geometry.crossProduct(d, dd) < 0) labelPosition.setLocation(labelPosition.getX(), labelBB.getMinY());
+        Point2D labelPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getMaxY());
+        if (Geometry.crossProduct(d, dd) < 0) labelPosition.setLocation(labelPosition.getX(), labelBB.getMinY());
 
-		AffineTransform oldTransform = g.getTransform();
-		AffineTransform transform = AffineTransform.getTranslateInstance(p.getX() - labelPosition.getX(), p.getY() - labelPosition.getY());
-		transform.concatenate(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
+        AffineTransform oldTransform = g.getTransform();
+        AffineTransform transform = AffineTransform.getTranslateInstance(p.getX() - labelPosition.getX(), p.getY() - labelPosition.getY());
+        transform.concatenate(AffineTransform.getRotateInstance(d.getX(), d.getY(), labelPosition.getX(), labelPosition.getY()));
 
-		g.transform(transform);
-		g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
-		result.draw(g);
-		g.setTransform(oldTransform);
+        g.transform(transform);
+        g.setColor(Coloriser.colorise(Color.BLACK, r.getDecoration().getColorisation()));
+        result.draw(g);
+        g.setTransform(oldTransform);
 
-		labelBB = BoundingBoxHelper.transform(labelBB, transform);
-	}
+        labelBB = BoundingBoxHelper.transform(labelBB, transform);
+    }
 
-	@Override
-	public Rectangle2D getBoundingBox() {
-		return BoundingBoxHelper.union(super.getBoundingBox(), labelBB);
-	}
+    @Override
+    public Rectangle2D getBoundingBox() {
+        return BoundingBoxHelper.union(super.getBoundingBox(), labelBB);
+    }
 
-	public Rectangle2D getLabelBoundingBox() {
-		return labelBB;
-	}
+    public Rectangle2D getLabelBoundingBox() {
+        return labelBB;
+    }
 
-	@Override
-	public boolean hitTest(Point2D pointInParentSpace) {
-		if (labelBB != null && labelBB.contains(pointInParentSpace)) return true;
+    @Override
+    public boolean hitTest(Point2D pointInParentSpace) {
+        if (labelBB != null && labelBB.contains(pointInParentSpace)) return true;
 
-		return super.hitTest(pointInParentSpace);
-	}
+        return super.hitTest(pointInParentSpace);
+    }
 
 }

@@ -9,18 +9,18 @@ import org.workcraft.plugins.circuit.VisualJoint;
 
 public class CircuitConnectionTool extends ConnectionTool {
 
-	@Override
-	public boolean isConnectable(Node node) {
-		return ( (node instanceof VisualContact)
-			  || (node instanceof VisualJoint)
-			  || (node instanceof VisualCircuitConnection));
-	}
+    @Override
+    public boolean isConnectable(Node node) {
+        return ( (node instanceof VisualContact)
+              || (node instanceof VisualJoint)
+              || (node instanceof VisualCircuitConnection));
+    }
 
-	@Override
-	public VisualConnection createDefaultTemplateNode() {
-		VisualCircuitConnection result = new VisualCircuitConnection();
-		result.setArrowLength(0.0);
-		return result;
-	}
+    @Override
+    public VisualConnection createDefaultTemplateNode() {
+        VisualCircuitConnection result = new VisualCircuitConnection();
+        result.setArrowLength(0.0);
+        return result;
+    }
 
 }

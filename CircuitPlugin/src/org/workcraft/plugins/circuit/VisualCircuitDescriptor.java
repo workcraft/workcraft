@@ -10,18 +10,18 @@ import org.workcraft.util.Hierarchy;
 
 public class VisualCircuitDescriptor implements VisualModelDescriptor {
 
-	@Override
-	public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-		VisualCircuit result = new VisualCircuit((Circuit)mathModel);
-		for (VisualFunctionComponent component: Hierarchy.getDescendantsOfType(result.getRoot(), VisualFunctionComponent.class)) {
-			component.setRenderType(RenderType.GATE);
-		}
-		return result;
-	}
+    @Override
+    public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
+        VisualCircuit result = new VisualCircuit((Circuit)mathModel);
+        for (VisualFunctionComponent component: Hierarchy.getDescendantsOfType(result.getRoot(), VisualFunctionComponent.class)) {
+            component.setRenderType(RenderType.GATE);
+        }
+        return result;
+    }
 
-	@Override
-	public Iterable<GraphEditorTool> createTools() {
-		throw new org.workcraft.exceptions.NotImplementedException();
-	}
+    @Override
+    public Iterable<GraphEditorTool> createTools() {
+        throw new org.workcraft.exceptions.NotImplementedException();
+    }
 
 }

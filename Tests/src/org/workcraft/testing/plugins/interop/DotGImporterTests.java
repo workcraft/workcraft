@@ -43,68 +43,68 @@ import org.workcraft.util.Import;
 import org.workcraft.workspace.ModelEntry;
 
 public class DotGImporterTests {
-	@Test
-	public void Test1() throws IOException, DeserialisationException
-	{
-		File tempFile = File.createTempFile("test", ".g");
+    @Test
+    public void Test1() throws IOException, DeserialisationException
+    {
+        File tempFile = File.createTempFile("test", ".g");
 
-		FileOutputStream fileStream = new FileOutputStream(tempFile);
+        FileOutputStream fileStream = new FileOutputStream(tempFile);
 
-		OutputStreamWriter writer = new OutputStreamWriter(fileStream);
+        OutputStreamWriter writer = new OutputStreamWriter(fileStream);
 
-//		writer.write("\n");
-//		writer.write(" #test \n");
-//		writer.write(" \t# for DotGImporter\n");
-		writer.write(" \n");
-		writer.write(" \n");
-		writer.write(".outputs  x\t y   z\n");
-		writer.write("\n");
-		writer.write(".inputs  a\tb \tc\n");
-		writer.write("\n");
-		writer.write(" \t.graph\n");
-		writer.write("a+ p1 p2\n");
-		writer.write("b+ p1 p2\n");
-		writer.write(" c+  p1 \t p2\n");
-		writer.write("\n");
-		writer.write("p1 z+ y+ x+\n");
-		writer.write("p2 z+ y+ x+\n");
-		writer.write("\n");
-		writer.write(".marking { }\n");
-		writer.write(".end\n");
+//        writer.write("\n");
+//        writer.write(" #test \n");
+//        writer.write(" \t# for DotGImporter\n");
+        writer.write(" \n");
+        writer.write(" \n");
+        writer.write(".outputs  x\t y   z\n");
+        writer.write("\n");
+        writer.write(".inputs  a\tb \tc\n");
+        writer.write("\n");
+        writer.write(" \t.graph\n");
+        writer.write("a+ p1 p2\n");
+        writer.write("b+ p1 p2\n");
+        writer.write(" c+  p1 \t p2\n");
+        writer.write("\n");
+        writer.write("p1 z+ y+ x+\n");
+        writer.write("p2 z+ y+ x+\n");
+        writer.write("\n");
+        writer.write(".marking { }\n");
+        writer.write(".end\n");
 
-		writer.close();
-		fileStream.close();
+        writer.close();
+        fileStream.close();
 
-		ModelEntry importedEntry =  Import.importFromFile(new DotGImporter(), tempFile);
-		STG imported = (STG)importedEntry.getModel();
+        ModelEntry importedEntry =  Import.importFromFile(new DotGImporter(), tempFile);
+        STG imported = (STG)importedEntry.getModel();
 
-		Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());
-		Assert.assertEquals(2, Hierarchy.getChildrenOfType(imported.getRoot(), Place.class).size());
-		Assert.assertEquals(12, Hierarchy.getChildrenOfType(imported.getRoot(), Connection.class).size());
-	}
+        Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());
+        Assert.assertEquals(2, Hierarchy.getChildrenOfType(imported.getRoot(), Place.class).size());
+        Assert.assertEquals(12, Hierarchy.getChildrenOfType(imported.getRoot(), Connection.class).size());
+    }
 
-	@Test
-	public void Test2() throws Throwable
-	{
-		final InputStream test = ClassLoader.getSystemClassLoader().getResourceAsStream("org/workcraft/testing/plugins/interop/test2.g");
-		STGModel imported = new DotGImporter().importSTG(test);//DotGImporterTests.class.getClassLoader().getResourceAsStream("test2.g"));
-		Assert.assertEquals(17, imported.getTransitions().size());
-		Assert.assertEquals(0, imported.getDummyTransitions().size());
+    @Test
+    public void Test2() throws Throwable
+    {
+        final InputStream test = ClassLoader.getSystemClassLoader().getResourceAsStream("org/workcraft/testing/plugins/interop/test2.g");
+        STGModel imported = new DotGImporter().importSTG(test);//DotGImporterTests.class.getClassLoader().getResourceAsStream("test2.g"));
+        Assert.assertEquals(17, imported.getTransitions().size());
+        Assert.assertEquals(0, imported.getDummyTransitions().size());
 
-		int explicitPlaces = 0;
-		for(Place p : imported.getPlaces())
-		{
-			if(!((STGPlace)p).isImplicit()) explicitPlaces ++;
-		}
+        int explicitPlaces = 0;
+        for(Place p : imported.getPlaces())
+        {
+            if(!((STGPlace)p).isImplicit()) explicitPlaces ++;
+        }
 
-		Assert.assertEquals(2, explicitPlaces);
+        Assert.assertEquals(2, explicitPlaces);
 
-		Assert.assertEquals(18, imported.getPlaces().size());
+        Assert.assertEquals(18, imported.getPlaces().size());
 
-		for(Transition t : imported.getTransitions())
-		{
-			Assert.assertTrue(imported.getPreset(t).size()>0);
-			Assert.assertTrue(imported.getPostset(t).size()>0);
-		}
-	}
+        for(Transition t : imported.getTransitions())
+        {
+            Assert.assertTrue(imported.getPreset(t).size()>0);
+            Assert.assertTrue(imported.getPostset(t).size()>0);
+        }
+    }
 }

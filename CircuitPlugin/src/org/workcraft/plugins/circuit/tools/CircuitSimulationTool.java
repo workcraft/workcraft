@@ -40,264 +40,264 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Pair;
 
 public class CircuitSimulationTool extends StgSimulationTool {
-	private CircuitToStgConverter converter;
+    private CircuitToStgConverter converter;
 
-	@Override
-	public VisualModel getUnderlyingModel(VisualModel model) {
-		VisualCircuit circuit = (VisualCircuit)model;
-		converter = new CircuitToStgConverter(circuit);
-		return converter.getStg();
-	}
+    @Override
+    public VisualModel getUnderlyingModel(VisualModel model) {
+        VisualCircuit circuit = (VisualCircuit)model;
+        converter = new CircuitToStgConverter(circuit);
+        return converter.getStg();
+    }
 
-	@Override
-	public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
-		Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
-		if (circuitMainTrace != null) {
-			System.out.println("Main trace convertion:");
-			System.out.println("  original: " + mainTrace);
-			System.out.println("  circuit:  " + circuitMainTrace);
-		}
-		Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
-		if (circuitBranchTrace != null) {
-			System.out.println("Branch trace convertion:");
-			System.out.println("  original: " + branchTrace);
-			System.out.println("  circuit:  " + circuitBranchTrace);
-		}
-		super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
-	}
+    @Override
+    public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
+        Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
+        if (circuitMainTrace != null) {
+            System.out.println("Main trace convertion:");
+            System.out.println("  original: " + mainTrace);
+            System.out.println("  circuit:  " + circuitMainTrace);
+        }
+        Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
+        if (circuitBranchTrace != null) {
+            System.out.println("Branch trace convertion:");
+            System.out.println("  original: " + branchTrace);
+            System.out.println("  circuit:  " + circuitBranchTrace);
+        }
+        super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
+    }
 
-	private Trace convertStgTraceToCircuitTrace(Trace trace) {
-		Trace circuitTrace = null;
-		if (trace != null) {
-			circuitTrace = new Trace();
-			for (String ref: trace) {
-				Transition t = getBestTransitionToFire(ref);
-				if (t != null) {
-					String circuitRef = net.getNodeReference(t);
-					circuitTrace.add(circuitRef);
-					net.fire(t);
-				}
-			}
-			resetMarking();
-		}
-		return circuitTrace;
-	}
+    private Trace convertStgTraceToCircuitTrace(Trace trace) {
+        Trace circuitTrace = null;
+        if (trace != null) {
+            circuitTrace = new Trace();
+            for (String ref: trace) {
+                Transition t = getBestTransitionToFire(ref);
+                if (t != null) {
+                    String circuitRef = net.getNodeReference(t);
+                    circuitTrace.add(circuitRef);
+                    net.fire(t);
+                }
+            }
+            resetMarking();
+        }
+        return circuitTrace;
+    }
 
-	private Transition getBestTransitionToFire(String ref) {
-		Transition result = null;
-		if (ref != null) {
-			String parentName = NamespaceHelper.getParentReference(ref);
-			Node parent = net.getNodeByReference(parentName);
-			String nameWithInstance = NamespaceHelper.getReferenceName(ref);
-			String requiredName = LabelParser.getTransitionName(nameWithInstance);
-			if ((parent instanceof NamespaceProvider) && (requiredName != null)) {
-				for (Transition transition: net.getTransitions()) {
-					if (transition.getParent() != parent) continue;
-					if (!net.isEnabled(transition)) continue;
-					String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
-					String existingName = LabelParser.getTransitionName(existingRef);
-					if (requiredName.equals(existingName)) {
-						result = transition;
-						break;
-					}
-				}
-			}
-		}
-		return result;
-	}
+    private Transition getBestTransitionToFire(String ref) {
+        Transition result = null;
+        if (ref != null) {
+            String parentName = NamespaceHelper.getParentReference(ref);
+            Node parent = net.getNodeByReference(parentName);
+            String nameWithInstance = NamespaceHelper.getReferenceName(ref);
+            String requiredName = LabelParser.getTransitionName(nameWithInstance);
+            if ((parent instanceof NamespaceProvider) && (requiredName != null)) {
+                for (Transition transition: net.getTransitions()) {
+                    if (transition.getParent() != parent) continue;
+                    if (!net.isEnabled(transition)) continue;
+                    String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
+                    String existingName = LabelParser.getTransitionName(existingRef);
+                    if (requiredName.equals(existingName)) {
+                        result = transition;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public void applyInitState(final GraphEditor editor) {
-		if ((savedState == null) || savedState.isEmpty()) {
-			return;
-		}
-		MathModel model = editor.getModel().getMathModel();
-		if (model instanceof Circuit) {
-			editor.getWorkspaceEntry().saveMemento();
-			Circuit circuit = (Circuit)model;
-			for (FunctionContact contact : circuit.getFunctionContacts()) {
-				String contactName = CircuitUtils.getSignalName(circuit, contact);
-				String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
-				Node node = net.getNodeByReference(ref);
-				if ((node instanceof Place) && savedState.containsKey(node)) {
-					boolean initToOne = (savedState.get(node) > 0);
-					contact.setInitToOne(initToOne);
-				}
-			}
-		}
-	}
+    @Override
+    public void applyInitState(final GraphEditor editor) {
+        if ((savedState == null) || savedState.isEmpty()) {
+            return;
+        }
+        MathModel model = editor.getModel().getMathModel();
+        if (model instanceof Circuit) {
+            editor.getWorkspaceEntry().saveMemento();
+            Circuit circuit = (Circuit)model;
+            for (FunctionContact contact : circuit.getFunctionContacts()) {
+                String contactName = CircuitUtils.getSignalName(circuit, contact);
+                String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
+                Node node = net.getNodeByReference(ref);
+                if ((node instanceof Place) && savedState.containsKey(node)) {
+                    boolean initToOne = (savedState.get(node) > 0);
+                    contact.setInitToOne(initToOne);
+                }
+            }
+        }
+    }
 
-	@Override
-	public void initialiseSignalState() {
-		super.initialiseSignalState();
-		for (String signalName: stateMap.keySet()) {
-			SignalState signalState = stateMap.get(signalName);
-			Node zeroNode = net.getNodeByReference(signalName + "_0");
-			if (zeroNode instanceof Place) {
-				Place zeroPlace = (Place)zeroNode;
-				signalState.value = ((zeroPlace.getTokens() > 0) ? 0 : 1);
-			}
-			Node oneNode= net.getNodeByReference(signalName + "_1");
-			if (oneNode instanceof Place) {
-				Place onePlace = (Place)oneNode;
-				signalState.value = ((onePlace.getTokens() > 0) ? 1 : 0);
-			}
-		}
-	}
+    @Override
+    public void initialiseSignalState() {
+        super.initialiseSignalState();
+        for (String signalName: stateMap.keySet()) {
+            SignalState signalState = stateMap.get(signalName);
+            Node zeroNode = net.getNodeByReference(signalName + "_0");
+            if (zeroNode instanceof Place) {
+                Place zeroPlace = (Place)zeroNode;
+                signalState.value = ((zeroPlace.getTokens() > 0) ? 0 : 1);
+            }
+            Node oneNode= net.getNodeByReference(signalName + "_1");
+            if (oneNode instanceof Place) {
+                Place onePlace = (Place)oneNode;
+                signalState.value = ((onePlace.getTokens() > 0) ? 1 : 0);
+            }
+        }
+    }
 
-	// return first enabled transition
-	public SignalTransition getContactExcitedTransition(VisualContact contact) {
-		SignalTransition result = null;
-		if ((converter != null) && contact.isDriver()) {
-			SignalStg signalStg = converter.getSignalStg(contact);
-			if (signalStg != null) {
-				for (VisualSignalTransition transition : signalStg.getAllTransitions()) {
-					if (net.isEnabled(transition.getReferencedTransition())) {
-						result = transition.getReferencedTransition();
-						break;
-					}
-				}
-			}
-		}
-		return result;
-	}
+    // return first enabled transition
+    public SignalTransition getContactExcitedTransition(VisualContact contact) {
+        SignalTransition result = null;
+        if ((converter != null) && contact.isDriver()) {
+            SignalStg signalStg = converter.getSignalStg(contact);
+            if (signalStg != null) {
+                for (VisualSignalTransition transition : signalStg.getAllTransitions()) {
+                    if (net.isEnabled(transition.getReferencedTransition())) {
+                        result = transition.getReferencedTransition();
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public void mousePressed(GraphEditorMouseEvent e) {
-		Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-			new Func<Node, Boolean>() {
-				@Override
-				public Boolean eval(Node node) {
-					return node instanceof VisualContact;
-				}
-			});
+    @Override
+    public void mousePressed(GraphEditorMouseEvent e) {
+        Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
+            new Func<Node, Boolean>() {
+                @Override
+                public Boolean eval(Node node) {
+                    return node instanceof VisualContact;
+                }
+            });
 
-		if (node != null) {
-			SignalTransition st = getContactExcitedTransition((VisualContact) node);
-			if (st != null) {
-				executeTransition(e.getEditor(), st);
-			}
-		}
-	}
+        if (node != null) {
+            SignalTransition st = getContactExcitedTransition((VisualContact) node);
+            if (st != null) {
+                executeTransition(e.getEditor(), st);
+            }
+        }
+    }
 
-	@Override
-	protected boolean isContainerExcited(Container container) {
-		if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-		boolean ret = false;
-		for (Node node: container.getChildren()) {
-			if (node instanceof VisualContact) {
-				SignalTransition transition = getContactExcitedTransition((VisualContact)node);
-				ret=ret || (transition != null);
-			}
-			if (node instanceof Container) {
-				ret = ret || isContainerExcited((Container)node);
-			}
-			if (ret) {
-				break;
-			}
-		}
-		excitedContainers.put(container, ret);
-		return ret;
-	}
+    @Override
+    protected boolean isContainerExcited(Container container) {
+        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+        boolean ret = false;
+        for (Node node: container.getChildren()) {
+            if (node instanceof VisualContact) {
+                SignalTransition transition = getContactExcitedTransition((VisualContact)node);
+                ret=ret || (transition != null);
+            }
+            if (node instanceof Container) {
+                ret = ret || isContainerExcited((Container)node);
+            }
+            if (ret) {
+                break;
+            }
+        }
+        excitedContainers.put(container, ret);
+        return ret;
+    }
 
-	@Override
-	public Decorator getDecorator(final GraphEditor editor) {
-		return new Decorator() {
-			@Override
-			public Decoration getDecoration(Node node) {
-				if (converter == null) return null;
-				if (node instanceof VisualContact) {
-					VisualContact contact = (VisualContact)node;
-					Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
-					if (signalStgAndInversion != null) {
-						boolean isZeroDelay = false;
-						Node parent = contact.getParent();
-						if (parent instanceof VisualFunctionComponent) {
-							isZeroDelay = ((VisualFunctionComponent)parent).getIsZeroDelay();
-						}
-						Node traceCurrentNode = getTraceCurrentNode();
-						SignalStg signalStg = signalStgAndInversion.getFirst();
-						boolean isInverting = signalStgAndInversion.getSecond();
-						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
-						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
-						final boolean isExcited = ((getContactExcitedTransition(contact) != null) && !isZeroDelay);
-						final boolean isInTrace = (signalStg.contains(traceCurrentNode) && !isZeroDelay);
-						return new Decoration() {
-								@Override
-							public Color getColorisation() {
-								if (isExcited) {
-									if (isInTrace) {
-										return CommonSimulationSettings.getEnabledBackgroundColor();
-									} else {
-										return CommonSimulationSettings.getEnabledForegroundColor();
-									}
-								}
-								return null;
-							}
-							@Override
-							public Color getBackground() {
-								if (isExcited) {
-									if (isInTrace) {
-										return CommonSimulationSettings.getEnabledForegroundColor();
-									} else {
-										return CommonSimulationSettings.getEnabledBackgroundColor();
-									}
-								} else {
-									if (isOne && !isZero) {
-										return CircuitSettings.getActiveWireColor();
-									}
-									if (!isOne && isZero) {
-										return CircuitSettings.getInactiveWireColor();
-									}
-								}
-								return null;
-							}
-						};
-					}
-				} else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
-					Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion((VisualNode)node);
-					if (signalStgAndInversion != null) {
-						SignalStg signalStg = signalStgAndInversion.getFirst();
-						boolean isInverting = signalStgAndInversion.getSecond();
-						final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
-						final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
-						return new Decoration() {
-							@Override
-							public Color getColorisation() {
-								if (isOne && !isZero) {
-									return CircuitSettings.getActiveWireColor();
-								}
-								if (!isOne && isZero) {
-									return CircuitSettings.getInactiveWireColor();
-								}
-								return null;
-							}
-							@Override
-							public Color getBackground() {
-								return null;
-							}
-						};
-					}
-				} else if (node instanceof VisualPage || node instanceof VisualGroup) {
-					final boolean ret = isContainerExcited((Container)node);
-					return new ContainerDecoration() {
-						@Override
-						public Color getColorisation() {
-							return null;
-						}
-						@Override
-						public Color getBackground() {
-							return null;
-						}
-						@Override
-						public boolean isContainerExcited() {
-							return ret;
-						}
-					};
-				}
-				return null;
-			}
-		};
-	}
+    @Override
+    public Decorator getDecorator(final GraphEditor editor) {
+        return new Decorator() {
+            @Override
+            public Decoration getDecoration(Node node) {
+                if (converter == null) return null;
+                if (node instanceof VisualContact) {
+                    VisualContact contact = (VisualContact)node;
+                    Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
+                    if (signalStgAndInversion != null) {
+                        boolean isZeroDelay = false;
+                        Node parent = contact.getParent();
+                        if (parent instanceof VisualFunctionComponent) {
+                            isZeroDelay = ((VisualFunctionComponent)parent).getIsZeroDelay();
+                        }
+                        Node traceCurrentNode = getTraceCurrentNode();
+                        SignalStg signalStg = signalStgAndInversion.getFirst();
+                        boolean isInverting = signalStgAndInversion.getSecond();
+                        final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
+                        final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
+                        final boolean isExcited = ((getContactExcitedTransition(contact) != null) && !isZeroDelay);
+                        final boolean isInTrace = (signalStg.contains(traceCurrentNode) && !isZeroDelay);
+                        return new Decoration() {
+                                @Override
+                            public Color getColorisation() {
+                                if (isExcited) {
+                                    if (isInTrace) {
+                                        return CommonSimulationSettings.getEnabledBackgroundColor();
+                                    } else {
+                                        return CommonSimulationSettings.getEnabledForegroundColor();
+                                    }
+                                }
+                                return null;
+                            }
+                            @Override
+                            public Color getBackground() {
+                                if (isExcited) {
+                                    if (isInTrace) {
+                                        return CommonSimulationSettings.getEnabledForegroundColor();
+                                    } else {
+                                        return CommonSimulationSettings.getEnabledBackgroundColor();
+                                    }
+                                } else {
+                                    if (isOne && !isZero) {
+                                        return CircuitSettings.getActiveWireColor();
+                                    }
+                                    if (!isOne && isZero) {
+                                        return CircuitSettings.getInactiveWireColor();
+                                    }
+                                }
+                                return null;
+                            }
+                        };
+                    }
+                } else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
+                    Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion((VisualNode)node);
+                    if (signalStgAndInversion != null) {
+                        SignalStg signalStg = signalStgAndInversion.getFirst();
+                        boolean isInverting = signalStgAndInversion.getSecond();
+                        final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
+                        final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
+                        return new Decoration() {
+                            @Override
+                            public Color getColorisation() {
+                                if (isOne && !isZero) {
+                                    return CircuitSettings.getActiveWireColor();
+                                }
+                                if (!isOne && isZero) {
+                                    return CircuitSettings.getInactiveWireColor();
+                                }
+                                return null;
+                            }
+                            @Override
+                            public Color getBackground() {
+                                return null;
+                            }
+                        };
+                    }
+                } else if (node instanceof VisualPage || node instanceof VisualGroup) {
+                    final boolean ret = isContainerExcited((Container)node);
+                    return new ContainerDecoration() {
+                        @Override
+                        public Color getColorisation() {
+                            return null;
+                        }
+                        @Override
+                        public Color getBackground() {
+                            return null;
+                        }
+                        @Override
+                        public boolean isContainerExcited() {
+                            return ret;
+                        }
+                    };
+                }
+                return null;
+            }
+        };
+    }
 
 }

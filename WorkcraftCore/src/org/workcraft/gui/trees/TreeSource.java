@@ -26,10 +26,10 @@ import org.workcraft.gui.workspace.Path;
 
 public interface TreeSource<Node>
 {
-	public void addListener(TreeListener<Node> listener);
-	public void removeListener(TreeListener<Node> listener);
-	public Node getRoot();
-	public boolean isLeaf(Node node);
-	public List<Node> getChildren(Node node);
-	public Path<Node> getPath(Node node);
+    public void addListener(TreeListener<Node> listener);
+    public void removeListener(TreeListener<Node> listener);
+    public Node getRoot();
+    public boolean isLeaf(Node node);
+    public List<Node> getChildren(Node node);
+    public Path<Node> getPath(Node node);
 }

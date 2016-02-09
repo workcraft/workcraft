@@ -35,51 +35,51 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 
 public class SelectionEventPropagator extends HierarchySupervisor implements StateObserver {
-	private LinkedList<SelectionObserver> selectionObservers = new LinkedList<SelectionObserver>();
+    private LinkedList<SelectionObserver> selectionObservers = new LinkedList<SelectionObserver>();
 
-	public SelectionEventPropagator (VisualModel model) {
-		model.addObserver(this);
-	}
+    public SelectionEventPropagator (VisualModel model) {
+        model.addObserver(this);
+    }
 
-	@Override
-	public void handleEvent(HierarchyEvent e) {
-		if (e instanceof NodesAddedEvent || e instanceof NodesReparentedEvent) {
-			for (Node n:e.getAffectedNodes())
-				nodeAdded(n);
-		} else if (e instanceof NodesDeletedEvent) {
-			for (Node n:e.getAffectedNodes())
-				nodeRemoved(n);
-		}
-	}
+    @Override
+    public void handleEvent(HierarchyEvent e) {
+        if (e instanceof NodesAddedEvent || e instanceof NodesReparentedEvent) {
+            for (Node n:e.getAffectedNodes())
+                nodeAdded(n);
+        } else if (e instanceof NodesDeletedEvent) {
+            for (Node n:e.getAffectedNodes())
+                nodeRemoved(n);
+        }
+    }
 
-	private void nodeRemoved(Node node) {
-		if (node instanceof SelectionObserver) {
-			//System.out.println ("Removing observer " + node);
-			SelectionObserver so = (SelectionObserver)node;
-			selectionObservers.remove(so);
-		}
+    private void nodeRemoved(Node node) {
+        if (node instanceof SelectionObserver) {
+            //System.out.println ("Removing observer " + node);
+            SelectionObserver so = (SelectionObserver)node;
+            selectionObservers.remove(so);
+        }
 
-		for (Node n : node.getChildren())
-			nodeRemoved(n);
-	}
+        for (Node n : node.getChildren())
+            nodeRemoved(n);
+    }
 
-	private void nodeAdded(Node node) {
-		if (node instanceof SelectionObserver) {
-			//System.out.println ("Adding observer " + node);
-			SelectionObserver so = (SelectionObserver) node;
-			selectionObservers.add(so);
-		}
+    private void nodeAdded(Node node) {
+        if (node instanceof SelectionObserver) {
+            //System.out.println ("Adding observer " + node);
+            SelectionObserver so = (SelectionObserver) node;
+            selectionObservers.add(so);
+        }
 
-		for (Node n : node.getChildren())
-			nodeAdded(n);
-	}
+        for (Node n : node.getChildren())
+            nodeAdded(n);
+    }
 
-	@Override
-	public void notify(StateEvent e) {
-		if (e instanceof SelectionChangedEvent) {
-			//System.out.println ("Propagating event");
-			for (SelectionObserver so : selectionObservers)
-				so.notify((SelectionChangedEvent)e);
-		}
-	}
+    @Override
+    public void notify(StateEvent e) {
+        if (e instanceof SelectionChangedEvent) {
+            //System.out.println ("Propagating event");
+            for (SelectionObserver so : selectionObservers)
+                so.notify((SelectionChangedEvent)e);
+        }
+    }
 }

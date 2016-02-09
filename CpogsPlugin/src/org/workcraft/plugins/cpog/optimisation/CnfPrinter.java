@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface CnfPrinter {
-	String print(Cnf cnf);
+    String print(Cnf cnf);
 }

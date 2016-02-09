@@ -9,52 +9,52 @@ import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 
 public final class BundlesOfTransitionPropertyDescriptor implements PropertyDescriptor {
-	private final VisualPolicyNet model;
-	private final VisualBundledTransition transition;
+    private final VisualPolicyNet model;
+    private final VisualBundledTransition transition;
 
-	public BundlesOfTransitionPropertyDescriptor(VisualPolicyNet model, VisualBundledTransition transition) {
-		this.model = model;
-		this.transition = transition;
-	}
+    public BundlesOfTransitionPropertyDescriptor(VisualPolicyNet model, VisualBundledTransition transition) {
+        this.model = model;
+        this.transition = transition;
+    }
 
-	@Override
-	public Map<Object, String> getChoice() {
-		return null;
-	}
+    @Override
+    public Map<Object, String> getChoice() {
+        return null;
+    }
 
-	@Override
-	public String getName() {
-		return "Bundles";
-	}
+    @Override
+    public String getName() {
+        return "Bundles";
+    }
 
-	@Override
-	public Class<?> getType() {
-		return String.class;
-	}
+    @Override
+    public Class<?> getType() {
+        return String.class;
+    }
 
-	@Override
-	public Object getValue() throws InvocationTargetException {
-		return model.getBundlesOfTransitionAsString(transition);
-	}
+    @Override
+    public Object getValue() throws InvocationTargetException {
+        return model.getBundlesOfTransitionAsString(transition);
+    }
 
-	@Override
-	public void setValue(Object value) throws InvocationTargetException {
-		model.setBundlesOfTransitionAsString(transition, (String)value);
-	}
+    @Override
+    public void setValue(Object value) throws InvocationTargetException {
+        model.setBundlesOfTransitionAsString(transition, (String)value);
+    }
 
-	@Override
-	public boolean isWritable() {
-		return true;
-	}
+    @Override
+    public boolean isWritable() {
+        return true;
+    }
 
-	@Override
-	public boolean isCombinable() {
-		return false;
-	}
+    @Override
+    public boolean isCombinable() {
+        return false;
+    }
 
-	@Override
-	public boolean isTemplatable() {
-		return false;
-	}
+    @Override
+    public boolean isTemplatable() {
+        return false;
+    }
 
 }

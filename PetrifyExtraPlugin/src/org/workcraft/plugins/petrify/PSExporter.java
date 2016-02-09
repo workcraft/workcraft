@@ -43,71 +43,71 @@ import org.workcraft.util.FileUtils;
 
 public class PSExporter implements Exporter {
 
-	public void export(Model model, OutputStream out) throws IOException,
-	ModelValidationException, SerialisationException {
+    public void export(Model model, OutputStream out) throws IOException,
+    ModelValidationException, SerialisationException {
 
-		if (model == null)
-			throw new IllegalArgumentException("Model is null");
+        if (model == null)
+            throw new IllegalArgumentException("Model is null");
 
-		File dotG = File.createTempFile("workcraft", ".g");
+        File dotG = File.createTempFile("workcraft", ".g");
 
-		final Framework framework = Framework.getInstance();
-		final Result<? extends Object> result = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g");
+        final Framework framework = Framework.getInstance();
+        final Result<? extends Object> result = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g");
 
-		if (result.getOutcome() != Outcome.FINISHED) {
-			if (result.getOutcome() == Outcome.CANCELLED) {
-				return;
-			} else {
-				if (result.getCause() != null) {
-					throw new SerialisationException (result.getCause());
-				} else {
-					throw new SerialisationException ("Could not export model as .g");
-				}
-			}
-		}
+        if (result.getOutcome() != Outcome.FINISHED) {
+            if (result.getOutcome() == Outcome.CANCELLED) {
+                return;
+            } else {
+                if (result.getCause() != null) {
+                    throw new SerialisationException (result.getCause());
+                } else {
+                    throw new SerialisationException ("Could not export model as .g");
+                }
+            }
+        }
 
-		File ps = File.createTempFile("workcraft", ".ps");
+        File ps = File.createTempFile("workcraft", ".ps");
 
-		DrawAstgTask task = new DrawAstgTask(dotG.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>());
+        DrawAstgTask task = new DrawAstgTask(dotG.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>());
 
-		final Result<? extends ExternalProcessResult> draw_astgResult = framework.getTaskManager().execute(task, "Executing draw_astg");
+        final Result<? extends ExternalProcessResult> draw_astgResult = framework.getTaskManager().execute(task, "Executing draw_astg");
 
-		if (draw_astgResult.getOutcome() != Outcome.FINISHED) {
-			if (draw_astgResult.getOutcome() == Outcome.CANCELLED) {
-				return;
-			} else {
-				if (draw_astgResult.getCause() != null) {
-					throw new SerialisationException (draw_astgResult.getCause());
-				} else {
-					throw new SerialisationException ("draw_astg failed with return code " + draw_astgResult.getReturnValue().getReturnCode() + "\n\n" +
-							new String(draw_astgResult.getReturnValue().getErrors()) +"\n");
-				}
-			}
-		}
-		FileUtils.copyFileToStream(ps, out);
-		dotG.delete();
-		ps.delete();
-	}
+        if (draw_astgResult.getOutcome() != Outcome.FINISHED) {
+            if (draw_astgResult.getOutcome() == Outcome.CANCELLED) {
+                return;
+            } else {
+                if (draw_astgResult.getCause() != null) {
+                    throw new SerialisationException (draw_astgResult.getCause());
+                } else {
+                    throw new SerialisationException ("draw_astg failed with return code " + draw_astgResult.getReturnValue().getReturnCode() + "\n\n" +
+                            new String(draw_astgResult.getReturnValue().getErrors()) +"\n");
+                }
+            }
+        }
+        FileUtils.copyFileToStream(ps, out);
+        dotG.delete();
+        ps.delete();
+    }
 
-	public String getDescription() {
-		return ".ps (Petrify draw_astg)";
-	}
+    public String getDescription() {
+        return ".ps (Petrify draw_astg)";
+    }
 
-	public String getExtenstion() {
-		return ".ps";
-	}
+    public String getExtenstion() {
+        return ".ps";
+    }
 
-	public int getCompatibility(Model model) {
-		if (model instanceof STGModel) {
-			return Exporter.GENERAL_COMPATIBILITY;
-		} else {
-			return Exporter.NOT_COMPATIBLE;
-		}
-	}
+    public int getCompatibility(Model model) {
+        if (model instanceof STGModel) {
+            return Exporter.GENERAL_COMPATIBILITY;
+        } else {
+            return Exporter.NOT_COMPATIBLE;
+        }
+    }
 
-	@Override
-	public UUID getTargetFormat() {
-		return Format.PS;
-	}
+    @Override
+    public UUID getTargetFormat() {
+        return Format.PS;
+    }
 
 }

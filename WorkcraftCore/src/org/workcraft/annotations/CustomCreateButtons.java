@@ -31,5 +31,5 @@ import org.workcraft.gui.graph.tools.NodeGenerator;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface CustomCreateButtons {
-	public Class<? extends NodeGenerator>[] value();
+    public Class<? extends NodeGenerator>[] value();
 }

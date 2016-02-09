@@ -30,27 +30,27 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 
 public class NullLayoutTool extends AbstractLayoutTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Reset";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Reset";
+    }
 
-	@Override
-	public void layout(VisualModel model) {
-		setChildrenNullPosition(model.getRoot());
-	}
+    @Override
+    public void layout(VisualModel model) {
+        setChildrenNullPosition(model.getRoot());
+    }
 
-	private void setChildrenNullPosition(Container container) {
-		Point2D.Double pos = new Point2D.Double(0.0 ,0.0);
-		for (Node node : container.getChildren()) {
-			if (node instanceof VisualTransformableNode) {
-				VisualTransformableNode transformableNode = (VisualTransformableNode)node;
-				transformableNode.setRootSpacePosition(pos);
-			}
-			if (node instanceof Container) {
-				setChildrenNullPosition((Container)node);
-			}
-		}
-	}
+    private void setChildrenNullPosition(Container container) {
+        Point2D.Double pos = new Point2D.Double(0.0 ,0.0);
+        for (Node node : container.getChildren()) {
+            if (node instanceof VisualTransformableNode) {
+                VisualTransformableNode transformableNode = (VisualTransformableNode)node;
+                transformableNode.setRootSpacePosition(pos);
+            }
+            if (node instanceof Container) {
+                setChildrenNullPosition((Container)node);
+            }
+        }
+    }
 
 }

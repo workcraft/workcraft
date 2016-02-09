@@ -23,8 +23,8 @@ package org.workcraft.gui.trees;
 import org.workcraft.gui.workspace.Path;
 
 public interface TreeListener<Node> {
-	public void added(Path<Node> path);
-	public void removed(Path<Node> path);
-	public void changed(Path<Node> path);
-	public void restructured(Path<Node> path);
+    public void added(Path<Node> path);
+    public void removed(Path<Node> path);
+    public void changed(Path<Node> path);
+    public void restructured(Path<Node> path);
 }

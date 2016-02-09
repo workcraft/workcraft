@@ -6,6 +6,6 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 
 public interface VisualModelDescriptor {
-	public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException;
-	public Iterable<GraphEditorTool> createTools();
+    public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException;
+    public Iterable<GraphEditorTool> createTools();
 }

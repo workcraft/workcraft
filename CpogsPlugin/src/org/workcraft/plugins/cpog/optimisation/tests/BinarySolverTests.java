@@ -29,12 +29,12 @@ import org.workcraft.plugins.cpog.optimisation.LimBooleCnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 
 public class BinarySolverTests extends SolverTests {
-	public BinarySolverTests()
-	{
-	}
+    public BinarySolverTests()
+    {
+    }
 
-	protected LegacyCpogSolver createSolver()
-	{
-		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider()), new LimBooleCnfGenerator());
-	}
+    protected LegacyCpogSolver createSolver()
+    {
+        return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider()), new LimBooleCnfGenerator());
+    }
 }

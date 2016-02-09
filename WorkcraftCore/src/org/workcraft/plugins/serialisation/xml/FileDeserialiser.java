@@ -8,13 +8,13 @@ import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class FileDeserialiser implements BasicXMLDeserialiser{
 
-	public String getClassName() {
-		return File.class.getName();
-	}
+    public String getClassName() {
+        return File.class.getName();
+    }
 
-	public Object deserialise(Element element) throws DeserialisationException {
-		String path = element.getAttribute("path");
-		return new File(path);
-	}
+    public Object deserialise(Element element) throws DeserialisationException {
+        String path = element.getAttribute("path");
+        return new File(path);
+    }
 
 }

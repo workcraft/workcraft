@@ -86,106 +86,106 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CpogSelectionTool extends SelectionTool {
 
-	final int margin = 4;
-	final double minRadius = 2.0;
-	final double expandRadius = 2.0;
-	double maxX = 0, maxY = 0;
-	Point2D.Double coordinate = new Point2D.Double(0,0);
-	int xpos = 0;
-	boolean transitivesActive = true;
+    final int margin = 4;
+    final double minRadius = 2.0;
+    final double expandRadius = 2.0;
+    double maxX = 0, maxY = 0;
+    Point2D.Double coordinate = new Point2D.Double(0,0);
+    int xpos = 0;
+    boolean transitivesActive = true;
 
-	private JTextArea expressionText;
-	HashMap<String, CpogFormula> graphMap = new HashMap<String, CpogFormula>();
-	final HashMap<String, Variable> variableMap = new HashMap<>();
+    private JTextArea expressionText;
+    HashMap<String, CpogFormula> graphMap = new HashMap<String, CpogFormula>();
+    final HashMap<String, Variable> variableMap = new HashMap<>();
     private HashMap<String, GraphReference> referenceMap = new HashMap<>();
-	private Checkbox insertTransitives;
+    private Checkbox insertTransitives;
     private final HashMap<String, Point2D> prevPoints = new HashMap<>();
-	private double highestY = 0; //Sets first graph at y co-ordinate of 0
+    private double highestY = 0; //Sets first graph at y co-ordinate of 0
 
-	private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, referenceMap);
+    private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, referenceMap);
 
-	private ArrayList<VisualPage> refPages = new ArrayList<>();
+    private ArrayList<VisualPage> refPages = new ArrayList<>();
 
-	private GraphEditor editor;
-	protected boolean cancelInPlaceEdit;
+    private GraphEditor editor;
+    protected boolean cancelInPlaceEdit;
 
-	int scenarioNo = 0;
+    int scenarioNo = 0;
 
-	public CpogSelectionTool() {
-		super(false);
-	}
-
-
-	@Override
-	public void createInterfacePanel(final GraphEditor editor) {
-		this.editor = editor;
-		super.createInterfacePanel(editor);
-		expressionText = new JTextArea();
-		expressionText.setLineWrap(false);
-		expressionText.setEditable(true);
-		expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-		JScrollPane expressionScroll = new JScrollPane(expressionText);
-
-		JPanel buttonPanel = new JPanel();
-
-		JButton btnInsert = new JButton("Insert");
-		btnInsert.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int prevLineEnd = 0;
-				ArrayList<String> expressions = new ArrayList<String>();
-				editor.getWorkspaceEntry().captureMemento();
-				try {
-					for (int i = 0; i < expressionText.getLineCount(); i++) {
-						String exp = expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i));
-
-						exp = exp.replace("\n", "");
-						exp = exp.replace("\t", " ");
-
-						if (exp.compareTo("") != 0) {
-							expressions.add(exp);
-						}
-
-						prevLineEnd = expressionText.getLineEndOffset(i);
-					}
-					WorkspaceEntry we = editor.getWorkspaceEntry();
-					VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
-					String exp = "";
-					coordinate = getLowestVertex(visualCpog);
-					coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
-					for (String s : expressions) {
-						if (!s.contains("=")) {
-							exp = exp + " " + s;
-						} else {
-							if (exp.compareTo("") != 0) {
-								insertExpression(exp, visualCpog, false, false, true, false);
-								exp = "";
-							}
-							exp = s;
-						}
-					}
-					if (exp.compareTo("") != 0) {
-						insertExpression(exp, visualCpog, false, false, true, false);
-					}
-					editor.getWorkspaceEntry().saveMemento();
-				} catch (BadLocationException e1) {
-					editor.getWorkspaceEntry().cancelMemento();
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-			}
-		});
-		buttonPanel.add(btnInsert);
+    public CpogSelectionTool() {
+        super(false);
+    }
 
 
+    @Override
+    public void createInterfacePanel(final GraphEditor editor) {
+        this.editor = editor;
+        super.createInterfacePanel(editor);
+        expressionText = new JTextArea();
+        expressionText.setLineWrap(false);
+        expressionText.setEditable(true);
+        expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JScrollPane expressionScroll = new JScrollPane(expressionText);
 
-		final JButton btnTextInsert = new JButton("Text File");
-		btnTextInsert.addActionListener(new ActionListener() {
+        JPanel buttonPanel = new JPanel();
+
+        JButton btnInsert = new JButton("Insert");
+        btnInsert.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int prevLineEnd = 0;
+                ArrayList<String> expressions = new ArrayList<String>();
+                editor.getWorkspaceEntry().captureMemento();
+                try {
+                    for (int i = 0; i < expressionText.getLineCount(); i++) {
+                        String exp = expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i));
+
+                        exp = exp.replace("\n", "");
+                        exp = exp.replace("\t", " ");
+
+                        if (exp.compareTo("") != 0) {
+                            expressions.add(exp);
+                        }
+
+                        prevLineEnd = expressionText.getLineEndOffset(i);
+                    }
+                    WorkspaceEntry we = editor.getWorkspaceEntry();
+                    VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+                    String exp = "";
+                    coordinate = getLowestVertex(visualCpog);
+                    coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+                    for (String s : expressions) {
+                        if (!s.contains("=")) {
+                            exp = exp + " " + s;
+                        } else {
+                            if (exp.compareTo("") != 0) {
+                                insertExpression(exp, visualCpog, false, false, true, false);
+                                exp = "";
+                            }
+                            exp = s;
+                        }
+                    }
+                    if (exp.compareTo("") != 0) {
+                        insertExpression(exp, visualCpog, false, false, true, false);
+                    }
+                    editor.getWorkspaceEntry().saveMemento();
+                } catch (BadLocationException e1) {
+                    editor.getWorkspaceEntry().cancelMemento();
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
+            }
+        });
+        buttonPanel.add(btnInsert);
+
+
+
+        final JButton btnTextInsert = new JButton("Text File");
+        btnTextInsert.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-            	editor.getWorkspaceEntry().captureMemento();
+                editor.getWorkspaceEntry().captureMemento();
                 JFileChooser chooser = new JFileChooser();
                 File textFile;
                 Scanner fileIn = null;
@@ -196,131 +196,131 @@ public class CpogSelectionTool extends SelectionTool {
                 chooser.setFileFilter(filter);
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
                 {
-                	ArrayList<String> expressions = new ArrayList<String>();
+                    ArrayList<String> expressions = new ArrayList<String>();
 
-	                textFile = chooser.getSelectedFile();
-	                try {
-	                    fileIn = new Scanner(textFile);
-	                } catch (FileNotFoundException e1) {
-	                    // TODO Auto-generated catch block
-	                    JOptionPane.showMessageDialog(null, e1.getMessage(),
-	                            "File not found error", JOptionPane.ERROR_MESSAGE);
-	                }
-	                WorkspaceEntry we = editor.getWorkspaceEntry();
-					VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
-					coordinate = getLowestVertex(visualCpog);
-					coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
-					String expression = "";
-					int lineCount = 0;
-					int prevLineEnd = 0;
-					while (fileIn.hasNextLine()) {
-	                    expression = expression + fileIn.nextLine() + "\n";
-	                    lineCount++;
-					}
+                    textFile = chooser.getSelectedFile();
+                    try {
+                        fileIn = new Scanner(textFile);
+                    } catch (FileNotFoundException e1) {
+                        // TODO Auto-generated catch block
+                        JOptionPane.showMessageDialog(null, e1.getMessage(),
+                                "File not found error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    WorkspaceEntry we = editor.getWorkspaceEntry();
+                    VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+                    coordinate = getLowestVertex(visualCpog);
+                    coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+                    String expression = "";
+                    int lineCount = 0;
+                    int prevLineEnd = 0;
+                    while (fileIn.hasNextLine()) {
+                        expression = expression + fileIn.nextLine() + "\n";
+                        lineCount++;
+                    }
 
-					for (int i = 0; i < lineCount; i++) {
-						String exp = expression.substring(prevLineEnd, expression.indexOf("\n") + 1);
+                    for (int i = 0; i < lineCount; i++) {
+                        String exp = expression.substring(prevLineEnd, expression.indexOf("\n") + 1);
 
-						exp = exp.replace("\n", "");
-						exp = exp.replace("\t", " ");
+                        exp = exp.replace("\n", "");
+                        exp = exp.replace("\t", " ");
 
-						if (exp.compareTo("") != 0) {
-							expressions.add(exp);
-						}
+                        if (exp.compareTo("") != 0) {
+                            expressions.add(exp);
+                        }
 
-						expression = expression.substring(expression.indexOf("\n") + 1);
-					}
-					String exp = "";
-					coordinate = getLowestVertex(visualCpog);
-					coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
-					for (String s : expressions) {
-						if (!s.contains("=")) {
-							exp = exp + " " + s;
-						} else {
-							if (exp.compareTo("") != 0) {
-								insertExpression(exp, visualCpog, false, false, true, false);
-								exp = "";
-							}
-							exp = s;
-						}
-					}
-					if (exp.compareTo("") != 0) {
-						insertExpression(exp, visualCpog, false, false, true, false);
-					}
-					editor.getWorkspaceEntry().saveMemento();
+                        expression = expression.substring(expression.indexOf("\n") + 1);
+                    }
+                    String exp = "";
+                    coordinate = getLowestVertex(visualCpog);
+                    coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+                    for (String s : expressions) {
+                        if (!s.contains("=")) {
+                            exp = exp + " " + s;
+                        } else {
+                            if (exp.compareTo("") != 0) {
+                                insertExpression(exp, visualCpog, false, false, true, false);
+                                exp = "";
+                            }
+                            exp = s;
+                        }
+                    }
+                    if (exp.compareTo("") != 0) {
+                        insertExpression(exp, visualCpog, false, false, true, false);
+                    }
+                    editor.getWorkspaceEntry().saveMemento();
                 }
             }
         });
-		buttonPanel.add(btnTextInsert);
+        buttonPanel.add(btnTextInsert);
 
-		final JButton btnGetGraphExpression = new JButton("Get expression");
-		btnGetGraphExpression.addActionListener(new ActionListener() {
+        final JButton btnGetGraphExpression = new JButton("Get expression");
+        btnGetGraphExpression.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
-				expressionText.setText(parsingTool.getExpressionFromGraph(visualCpog));
-			}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+                expressionText.setText(parsingTool.getExpressionFromGraph(visualCpog));
+            }
 
-		});
-		buttonPanel.add(btnGetGraphExpression);
+        });
+        buttonPanel.add(btnGetGraphExpression);
 
-		insertTransitives = new Checkbox("Insert Transitives", false);
-		controlPanel.add(insertTransitives);
+        insertTransitives = new Checkbox("Insert Transitives", false);
+        controlPanel.add(insertTransitives);
 
-		interfacePanel.add(expressionScroll, BorderLayout.CENTER);
-		interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
+        interfacePanel.add(expressionScroll, BorderLayout.CENTER);
+        interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
 
-		scenarioPageGroupButton(getGroupPanel());
+        scenarioPageGroupButton(getGroupPanel());
 
 
-		renderTypeChangeHandler();
-	}
+        renderTypeChangeHandler();
+    }
 
-	public void scenarioPageGroupButton(JPanel groupPanel) {
-		JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-				"images/icons/svg/selection-page.svg"), "Combine selection as a scenario (Alt+G)");
-		groupPageButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				VisualCPOG visualCpog = (VisualCPOG)editor.getWorkspaceEntry().getModelEntry().getVisualModel();
-				visualCpog.groupScenarioPageSelection("scenario" + scenarioNo);
-				scenarioNo++;
-				editor.requestFocus();
-			}
-		});
-		groupPanel.add(groupPageButton, 1);
-	}
+    public void scenarioPageGroupButton(JPanel groupPanel) {
+        JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
+                "images/icons/svg/selection-page.svg"), "Combine selection as a scenario (Alt+G)");
+        groupPageButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VisualCPOG visualCpog = (VisualCPOG)editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+                visualCpog.groupScenarioPageSelection("scenario" + scenarioNo);
+                scenarioNo++;
+                editor.requestFocus();
+            }
+        });
+        groupPanel.add(groupPageButton, 1);
+    }
 
-	public JPanel getGroupPanel() {
-		Component[] comps = interfacePanel.getComponents();
-		JPanel groupPanel = null;
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof JPanel) {
-				JPanel panel = (JPanel) comps[i];
-				Component[] cmp = panel.getComponents();
-				for (int j = 0; j < cmp.length; j++) {
-					if (cmp[j] instanceof JPanel) {
-						JPanel pan = (JPanel) cmp[j];
-						Component[] c = pan.getComponents();
-						for (int k = 0; k < c.length; k++) {
-							if (c[k] instanceof JButton) {
-								JButton b = (JButton) c[k];
-								System.out.println(b.getText());
-								if (b.getToolTipText() != null && b.getToolTipText() == "Group selection (Ctrl+G)") {
-									groupPanel = pan;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return groupPanel;
-	}
+    public JPanel getGroupPanel() {
+        Component[] comps = interfacePanel.getComponents();
+        JPanel groupPanel = null;
+        for (int i = 0; i < comps.length; i++) {
+            if (comps[i] instanceof JPanel) {
+                JPanel panel = (JPanel) comps[i];
+                Component[] cmp = panel.getComponents();
+                for (int j = 0; j < cmp.length; j++) {
+                    if (cmp[j] instanceof JPanel) {
+                        JPanel pan = (JPanel) cmp[j];
+                        Component[] c = pan.getComponents();
+                        for (int k = 0; k < c.length; k++) {
+                            if (c[k] instanceof JButton) {
+                                JButton b = (JButton) c[k];
+                                System.out.println(b.getText());
+                                if (b.getToolTipText() != null && b.getToolTipText() == "Group selection (Ctrl+G)") {
+                                    groupPanel = pan;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return groupPanel;
+    }
 
-	public HashMap<String, VisualVertex> insertExpression(String text, final VisualCPOG visualCpog,
-			final boolean createDuplicates, boolean getVertList, boolean zoomFit, boolean blockTransitiveRemoval) {
+    public HashMap<String, VisualVertex> insertExpression(String text, final VisualCPOG visualCpog,
+            final boolean createDuplicates, boolean getVertList, boolean zoomFit, boolean blockTransitiveRemoval) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
 
         String name = "";
@@ -334,10 +334,10 @@ public class CpogSelectionTool extends SelectionTool {
         text = parsingTool.replaceReferences(text);
 
         if (text.contains("=")) {
-        	name = text.substring(0, text.indexOf("="));
-        	name = name.trim();
-        	text = text.substring(text.indexOf("=") + 1);
-        	text = text.trim();
+            name = text.substring(0, text.indexOf("="));
+            name = name.trim();
+            text = text.substring(text.indexOf("=") + 1);
+            text = text.trim();
         }
 
         CpogFormula f = null;
@@ -477,64 +477,64 @@ public class CpogSelectionTool extends SelectionTool {
             VisualPage inserted = null;
             if (!ref) {//If this graph is not for reference
 
-            	graphMap.put(name, f);
+                graphMap.put(name, f);
 
-            	parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
+                parsingTool.setArcConditions(arcConditionList, visualCpog, vertexMap);
 
-            	LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());
+                LinkedHashSet<Node> roots = getRootNodes(visualCpog, vertexMap.values());
 
-            	if (!(insertTransitives.getState()) && (!blockTransitiveRemoval)) {
-            		boolean[][] c = parsingTool.convertToArrayForm(vertexMap.values(), visualCpog);
-            		parsingTool.computeTransitiveClosure(c);
-            		if (!parsingTool.hasSelfLoops(c)) {
-            			boolean [][] t = parsingTool.findTransitives(c);
-            			parsingTool.convertFromArrayForm(t, vertexMap.values(), visualCpog);
-            		}
-            	}
+                if (!(insertTransitives.getState()) && (!blockTransitiveRemoval)) {
+                    boolean[][] c = parsingTool.convertToArrayForm(vertexMap.values(), visualCpog);
+                    parsingTool.computeTransitiveClosure(c);
+                    if (!parsingTool.hasSelfLoops(c)) {
+                        boolean [][] t = parsingTool.findTransitives(c);
+                        parsingTool.convertFromArrayForm(t, vertexMap.values(), visualCpog);
+                    }
+                }
 
-            	ArrayList<Node> prevSelection = new ArrayList<>();
-            	for (Node n1 : vertexMap.values()) {
-            		prevSelection.add(n1);
-            	}
-
-
-            	ArrayList<String> usedReferences = parsingTool.getUsedReferences();
-
-            	addUsedReferences(visualCpog, editor, usedReferences, localVertices, prevSelection);
-
-            	if (roots.isEmpty()) {
-            		noRootLayout(vertexMap, n, i);
-            	} else {
-            		bfsLayout(visualCpog, roots);
-            	}
-
-            	editor.requestFocus();
+                ArrayList<Node> prevSelection = new ArrayList<>();
+                for (Node n1 : vertexMap.values()) {
+                    prevSelection.add(n1);
+                }
 
 
-            	if (name != "") {
-            		inserted = insertAsPage(visualCpog, name, coordinate, editor);
-            		coordinate = new Point2D.Double(coordinate.getX(), coordinate.getY() + 2);
-            	} else {
-            		insertLoose(visualCpog, coordinate);
-            	}
+                ArrayList<String> usedReferences = parsingTool.getUsedReferences();
+
+                addUsedReferences(visualCpog, editor, usedReferences, localVertices, prevSelection);
+
+                if (roots.isEmpty()) {
+                    noRootLayout(vertexMap, n, i);
+                } else {
+                    bfsLayout(visualCpog, roots);
+                }
+
+                editor.requestFocus();
+
+
+                if (name != "") {
+                    inserted = insertAsPage(visualCpog, name, coordinate, editor);
+                    coordinate = new Point2D.Double(coordinate.getX(), coordinate.getY() + 2);
+                } else {
+                    insertLoose(visualCpog, coordinate);
+                }
 
             }
             if (inserted != null) {
-            	String normalForm = getNormalForm(arcConditionList, localVertices);
-            	String graphName = name;
-            	graphName = graphName.replace("{", "");
-            	graphName = graphName.replace("}", "");
-            	LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
-            	bfsLayout(visualCpog, roots);
-            	if (referenceMap.containsKey(graphName)) {
-            		referenceMap.remove(graphName);
-            	}
-            	GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
-            	g.addRefPage(inserted);
-            	referenceMap.put(graphName, g);
-            	if (ref) {
-            		visualCpog.remove(visualCpog.getSelection());
-            	}
+                String normalForm = getNormalForm(arcConditionList, localVertices);
+                String graphName = name;
+                graphName = graphName.replace("{", "");
+                graphName = graphName.replace("}", "");
+                LinkedHashSet<Node> roots = getRootNodes(visualCpog, localVertices.values());
+                bfsLayout(visualCpog, roots);
+                if (referenceMap.containsKey(graphName)) {
+                    referenceMap.remove(graphName);
+                }
+                GraphReference g = new GraphReference(graphName, normalForm, (HashMap<String, VisualVertex>) localVertices.clone());
+                g.addRefPage(inserted);
+                referenceMap.put(graphName, g);
+                if (ref) {
+                    visualCpog.remove(visualCpog.getSelection());
+                }
             }
             Collection<Node> prevSelection = visualCpog.getSelection();
             visualCpog.selectNone();
@@ -543,12 +543,12 @@ public class CpogSelectionTool extends SelectionTool {
             //Doesn't allow zoomFit when creating a new CPOG model
             //Such as when extracting concurrency
             if (zoomFit) {
-            	editor.zoomFit();
+                editor.zoomFit();
             }
             visualCpog.select(prevSelection);
             return null;
         }
-	}
+    }
 
     public String getNormalForm(HashSet<ArcCondition> arcConditionList, HashMap<String, VisualVertex> localVertices) {
         String normalForm = "";
@@ -670,31 +670,31 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     @Override
-	public void mouseClicked(GraphEditorMouseEvent e) {
-		boolean processed = false;
+    public void mouseClicked(GraphEditorMouseEvent e) {
+        boolean processed = false;
 
-		if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 1) {
-			VisualModel model = e.getEditor().getModel();
-			VisualNode node = (VisualNode) HitMan.hitTestForSelection(
-					e.getPosition(), model);
-			if (node != null) {
-				if (node instanceof VisualVariable) {
-					VisualVariable var = (VisualVariable) node;
-					var.toggle();
-					processed = true;
-				} else if (node instanceof VisualVertex) {
-					VisualVertex vertex = (VisualVertex) node;
-					editNameInPlace(editor, vertex, vertex.getLabel());
-					processed = true;
-				}
-			}
-		}
+        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 1) {
+            VisualModel model = e.getEditor().getModel();
+            VisualNode node = (VisualNode) HitMan.hitTestForSelection(
+                    e.getPosition(), model);
+            if (node != null) {
+                if (node instanceof VisualVariable) {
+                    VisualVariable var = (VisualVariable) node;
+                    var.toggle();
+                    processed = true;
+                } else if (node instanceof VisualVertex) {
+                    VisualVertex vertex = (VisualVertex) node;
+                    editNameInPlace(editor, vertex, vertex.getLabel());
+                    processed = true;
+                }
+            }
+        }
 
-		if (!processed) {
-			super.mouseClicked(e);
+        if (!processed) {
+            super.mouseClicked(e);
 
-		}
-	}
+        }
+    }
 
     @Override
     public void mouseReleased(GraphEditorMouseEvent e) {
@@ -791,8 +791,8 @@ public class CpogSelectionTool extends SelectionTool {
     public void attatchRefEventHandler(final VisualCPOG visualCpog, final Container page, final GraphEditor editor) {
         new HierarchySupervisor() {
 
-        	ArrayList<Node> toBeRemoved = new ArrayList<>();
-        	String refKey = "";
+            ArrayList<Node> toBeRemoved = new ArrayList<>();
+            String refKey = "";
             @Override
             public void handleEvent(HierarchyEvent e) {
                 ArrayList<VisualPage> relaventPages = new ArrayList<>();
@@ -864,12 +864,12 @@ public class CpogSelectionTool extends SelectionTool {
                                 visualCpog.removeFromSelection(n);
                                 visualCpog.removeWithoutNotify(n);
                                 while (n.getParent() != null) {
-                                	try {
-										this.wait(5);
-									} catch (InterruptedException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
+                                    try {
+                                        this.wait(5);
+                                    } catch (InterruptedException e1) {
+                                        // TODO Auto-generated catch block
+                                        e1.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -941,10 +941,10 @@ public class CpogSelectionTool extends SelectionTool {
 
 
         for (VisualPage p : refPages) {
-        	if (p.getLabel().compareTo(refKey) == 0) {
-        		result.add(p);
+            if (p.getLabel().compareTo(refKey) == 0) {
+                result.add(p);
 
-        	}
+            }
         }
         return result;
     }
@@ -992,51 +992,51 @@ public class CpogSelectionTool extends SelectionTool {
 
     public void insertEventLog(VisualCPOG visualCpog, int i, String[] events, double yPos) {
 
-    	final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
-    	VisualVertex vertex1 , vertex2;
+        final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
+        VisualVertex vertex1 , vertex2;
 
-    	for (int c = 0; c < events.length - 1; c++) {
-    		String first = "";
-    		String second = "";
+        for (int c = 0; c < events.length - 1; c++) {
+            String first = "";
+            String second = "";
 
-    		first = events[c];
-    		second = events[c+1];
+            first = events[c];
+            second = events[c+1];
 
-    		if (vertexMap.containsKey(first)) {
-    			vertex1 = vertexMap.get(first);
-    		} else {
-    			vertex1 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+            if (vertexMap.containsKey(first)) {
+                vertex1 = vertexMap.get(first);
+            } else {
+                vertex1 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
                 vertex1.setLabel(first);
                 vertexMap.put(first, vertex1);
-    		}
+            }
 
 
-    		if (vertexMap.containsKey(second)) {
-    			int d = 1;
-    			while (vertexMap.containsKey(second + "_" + d)) {
-    				d++;
-    			}
-    			vertex2 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+            if (vertexMap.containsKey(second)) {
+                int d = 1;
+                while (vertexMap.containsKey(second + "_" + d)) {
+                    d++;
+                }
+                vertex2 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
                 vertex2.setLabel(second + "_" + d);
                 vertexMap.put(second + "_" + d, vertex2);
 
                 events[c+1] = second + "_" + d;
-    		} else {
-    			vertex2 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
+            } else {
+                vertex2 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
                 vertex2.setLabel(second);
                 vertexMap.put(second, vertex2);
-    		}
+            }
 
-    		visualCpog.connect(vertex1, vertex2);
+            visualCpog.connect(vertex1, vertex2);
 
-    	}
+        }
 
-    	double xPos = vertexMap.values().size();
-    	xPos = xPos*2.5;
-    	xPos = 0 - xPos/2;
+        double xPos = vertexMap.values().size();
+        xPos = xPos*2.5;
+        xPos = 0 - xPos/2;
 
 
-    	PageNode pageNode = new PageNode();
+        PageNode pageNode = new PageNode();
         visualCpog.getMathModel().add(pageNode);
         VisualScenarioPage page = new VisualScenarioPage(pageNode);
         visualCpog.getCurrentLevel().add(page);
@@ -1046,132 +1046,132 @@ public class CpogSelectionTool extends SelectionTool {
         HashSet<Node> nodes = new HashSet<>();
 
 
-    	visualCpog.selectNone();
-    	for (VisualVertex v : vertexMap.values()) {
-    		v.setPosition(new Point2D.Double(xPos, yPos));
-    		xPos = xPos + 2.5;
-    		nodes.add(v);
-    	}
+        visualCpog.selectNone();
+        for (VisualVertex v : vertexMap.values()) {
+            v.setPosition(new Point2D.Double(xPos, yPos));
+            xPos = xPos + 2.5;
+            nodes.add(v);
+        }
 
-    	visualCpog.reparent(page, visualCpog, container, nodes);
-    	includeArcsInPage(visualCpog);
+        visualCpog.reparent(page, visualCpog, container, nodes);
+        includeArcsInPage(visualCpog);
 
     }
 
     public Point2D.Double getLowestVertex(VisualCPOG visualCpog) {
-    	return parsingTool.getLowestVertex(visualCpog);
+        return parsingTool.getLowestVertex(visualCpog);
     }
 
     private void editNameInPlace (final GraphEditor editor, final VisualVertex vertex, String initialText) {
-		final JTextField text = new JTextField(initialText);
-		AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(vertex);
-		Rectangle2D bbRoot = TransformHelper.transform(vertex, localToRootTransform).getBoundingBox();
-		Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
-		float fontSize = VisualNamedTransition.font.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
-		text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
-		text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-		text.setHorizontalAlignment(JTextField.CENTER);
-		text.selectAll();
-		editor.getOverlay().add(text);
-		text.requestFocusInWindow();
-		final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+        final JTextField text = new JTextField(initialText);
+        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(vertex);
+        Rectangle2D bbRoot = TransformHelper.transform(vertex, localToRootTransform).getBoundingBox();
+        Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
+        float fontSize = VisualNamedTransition.font.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+        text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
+        text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
+        text.setHorizontalAlignment(JTextField.CENTER);
+        text.selectAll();
+        editor.getOverlay().add(text);
+        text.requestFocusInWindow();
+        final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
 
 
 
-		text.addKeyListener( new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-					editor.requestFocus();
-				}
-				else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					cancelInPlaceEdit = true;
-					editor.requestFocus();
-				}
-			}
+        text.addKeyListener( new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent arg0) {
+                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+                    editor.requestFocus();
+                }
+                else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    cancelInPlaceEdit = true;
+                    editor.requestFocus();
+                }
+            }
 
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-			}
+            @Override
+            public void keyReleased(KeyEvent arg0) {
+            }
 
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-			}
-		});
+            @Override
+            public void keyTyped(KeyEvent arg0) {
+            }
+        });
 
-		text.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent arg0) {
-				editor.getWorkspaceEntry().setCanModify(false);
-				cancelInPlaceEdit = false;
-			}
+        text.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent arg0) {
+                editor.getWorkspaceEntry().setCanModify(false);
+                cancelInPlaceEdit = false;
+            }
 
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				final String newName = text.getText();
-				text.getParent().remove(text);
-				if (!cancelInPlaceEdit) {
-					try {
-						editor.getWorkspaceEntry().saveMemento();
-						vertex.setLabel(newName);
-						correctConnectionLengths(visualCpog, vertex);
-					} catch (ArgumentException e) {
-						JOptionPane.showMessageDialog(null, e.getMessage());
-						editNameInPlace(editor, vertex, newName);
-					} catch (InvalidConnectionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+            @Override
+            public void focusLost(FocusEvent arg0) {
+                final String newName = text.getText();
+                text.getParent().remove(text);
+                if (!cancelInPlaceEdit) {
+                    try {
+                        editor.getWorkspaceEntry().saveMemento();
+                        vertex.setLabel(newName);
+                        correctConnectionLengths(visualCpog, vertex);
+                    } catch (ArgumentException e) {
+                        JOptionPane.showMessageDialog(null, e.getMessage());
+                        editNameInPlace(editor, vertex, newName);
+                    } catch (InvalidConnectionException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
 
 
-				}
-				editor.getWorkspaceEntry().setCanModify(true);
-				editor.repaint();
-			}
-		});
-	}
+                }
+                editor.getWorkspaceEntry().setCanModify(true);
+                editor.repaint();
+            }
+        });
+    }
 
     private void correctConnectionLengths(VisualCPOG visualCpog, VisualVertex vertex) throws InvalidConnectionException {
-    	ArrayList<Node> cons = parsingTool.getChildren(visualCpog, vertex);
-		cons.addAll(parsingTool.getParents(visualCpog, vertex));
-		for (Node n : cons) {
-			Node f, s;
-			if (visualCpog.getConnection(n, vertex) != null) {
-				f = n;
-				s = vertex;
-			} else {
-				f = vertex;
-				s = n;
-			}
-			Connection c = visualCpog.getConnection(f, s);
-			VisualArc a = (VisualArc) c;
-			BooleanFormula b = a.getCondition();
-			visualCpog.remove(c);
-			a = (VisualArc) visualCpog.connect(f, s);
-			a.setCondition(b);
-		}
+        ArrayList<Node> cons = parsingTool.getChildren(visualCpog, vertex);
+        cons.addAll(parsingTool.getParents(visualCpog, vertex));
+        for (Node n : cons) {
+            Node f, s;
+            if (visualCpog.getConnection(n, vertex) != null) {
+                f = n;
+                s = vertex;
+            } else {
+                f = vertex;
+                s = n;
+            }
+            Connection c = visualCpog.getConnection(f, s);
+            VisualArc a = (VisualArc) c;
+            BooleanFormula b = a.getCondition();
+            visualCpog.remove(c);
+            a = (VisualArc) visualCpog.connect(f, s);
+            a.setCondition(b);
+        }
     }
 
     private void renderTypeChangeHandler() {
-    	final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+        final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
 
-    	final class renderTypeChangedHandler extends StateSupervisor {
+        final class renderTypeChangedHandler extends StateSupervisor {
 
-			@Override
-			public void handleEvent(StateEvent e) {
-				if (e instanceof PropertyChangedEvent) {
+            @Override
+            public void handleEvent(StateEvent e) {
+                if (e instanceof PropertyChangedEvent) {
                     PropertyChangedEvent pce = (PropertyChangedEvent) e;
                     if (pce.getPropertyName().compareTo("Render type") == 0) {
-                    	try {
-							correctConnectionLengths(visualCpog, (VisualVertex) pce.getSender());
-						} catch (InvalidConnectionException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+                        try {
+                            correctConnectionLengths(visualCpog, (VisualVertex) pce.getSender());
+                        } catch (InvalidConnectionException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
                     }
-				}
+                }
 
-			}
+            }
     }
     new renderTypeChangedHandler().attach(visualCpog.getRoot());
 

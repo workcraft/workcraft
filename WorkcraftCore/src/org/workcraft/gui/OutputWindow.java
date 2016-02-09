@@ -43,120 +43,120 @@ import org.workcraft.util.LogUtils;
 
 @SuppressWarnings("serial")
 public class OutputWindow extends JPanel {
-	protected PrintStream systemOut;
-	protected boolean streamCaptured = false;
-	private JScrollPane scrollStdOut;
-	private JTextArea txtStdOut;
+    protected PrintStream systemOut;
+    protected boolean streamCaptured = false;
+    private JScrollPane scrollStdOut;
+    private JTextArea txtStdOut;
 
-	public OutputWindow() {
-		txtStdOut = new JTextArea();
-		txtStdOut.setLineWrap(true);
-		txtStdOut.setEditable(false);
-		txtStdOut.setWrapStyleWord(true);
-		txtStdOut.addMouseListener(new LogAreaMouseListener());
+    public OutputWindow() {
+        txtStdOut = new JTextArea();
+        txtStdOut.setLineWrap(true);
+        txtStdOut.setEditable(false);
+        txtStdOut.setWrapStyleWord(true);
+        txtStdOut.addMouseListener(new LogAreaMouseListener());
 
-		DefaultCaret caret = (DefaultCaret)txtStdOut.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        DefaultCaret caret = (DefaultCaret)txtStdOut.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-		scrollStdOut = new JScrollPane();
-		scrollStdOut.setViewportView(txtStdOut);
-		setLayout(new BorderLayout(0,0));
-		this.add(scrollStdOut, BorderLayout.CENTER);
-	}
+        scrollStdOut = new JScrollPane();
+        scrollStdOut.setViewportView(txtStdOut);
+        setLayout(new BorderLayout(0,0));
+        this.add(scrollStdOut, BorderLayout.CENTER);
+    }
 
-	public void captureStream() {
-		if ( !streamCaptured ) {
-			OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), txtStdOut);
-			PrintStream outStream = new PrintStream(outView);
-			systemOut = System.out;
-			System.setOut(outStream);
-			streamCaptured = true;
-		}
-	}
+    public void captureStream() {
+        if ( !streamCaptured ) {
+            OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), txtStdOut);
+            PrintStream outStream = new PrintStream(outView);
+            systemOut = System.out;
+            System.setOut(outStream);
+            streamCaptured = true;
+        }
+    }
 
-	public void releaseStream() {
-		if (streamCaptured) {
-			System.setOut(systemOut);
-			systemOut = null;
-			streamCaptured = false;
-		}
-	}
+    public void releaseStream() {
+        if (streamCaptured) {
+            System.setOut(systemOut);
+            systemOut = null;
+            streamCaptured = false;
+        }
+    }
 
-	class OutputStreamView extends FilterOutputStream {
-		private JTextArea target;
-		private String oldPrefix = null;
-		private boolean needsNewLine = false;
+    class OutputStreamView extends FilterOutputStream {
+        private JTextArea target;
+        private String oldPrefix = null;
+        private boolean needsNewLine = false;
 
-		public OutputStreamView(OutputStream aStream, JTextArea target) {
-			super(aStream);
-			this.target = target;
-		}
+        public OutputStreamView(OutputStream aStream, JTextArea target) {
+            super(aStream);
+            this.target = target;
+        }
 
-		@Override
-		public void write(byte b[]) throws IOException {
-			if (systemOut != null) {
-				systemOut.write(b);
-			}
-			print(new String(b));
-		}
+        @Override
+        public void write(byte b[]) throws IOException {
+            if (systemOut != null) {
+                systemOut.write(b);
+            }
+            print(new String(b));
+        }
 
-		@Override
-		public void write(byte b[], int off, int len) throws IOException {
-			if (systemOut != null) {
-				systemOut.write(b, off, len);
-			}
-			print(new String(b , off , len));
-		}
+        @Override
+        public void write(byte b[], int off, int len) throws IOException {
+            if (systemOut != null) {
+                systemOut.write(b, off, len);
+            }
+            print(new String(b , off , len));
+        }
 
-		private void print(String text) {
-			Highlighter.HighlightPainter painter = null;
-			String prefix = oldPrefix;
-			if (text.startsWith(LogUtils.PREFIX_INFO)) {
-				prefix = LogUtils.PREFIX_INFO;
-				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
-			} else if (text.startsWith(LogUtils.PREFIX_WARNING)) {
-				prefix = LogUtils.PREFIX_WARNING;
-				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
-			} else if (text.startsWith(LogUtils.PREFIX_ERROR)) {
-				prefix = LogUtils.PREFIX_ERROR;
-				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
-			} else if (text.startsWith(LogUtils.PREFIX_STDOUT)) {
-				prefix = LogUtils.PREFIX_STDOUT;
-				text = text.substring(prefix.length());
-				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
-			} else if (text.startsWith(LogUtils.PREFIX_STDERR)) {
-				prefix = LogUtils.PREFIX_STDERR;
-				text = text.substring(prefix.length());
-				painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
-			} else if ( !text.equals("\n") ) {
-				prefix = null;
-				painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
-			}
+        private void print(String text) {
+            Highlighter.HighlightPainter painter = null;
+            String prefix = oldPrefix;
+            if (text.startsWith(LogUtils.PREFIX_INFO)) {
+                prefix = LogUtils.PREFIX_INFO;
+                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
+            } else if (text.startsWith(LogUtils.PREFIX_WARNING)) {
+                prefix = LogUtils.PREFIX_WARNING;
+                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
+            } else if (text.startsWith(LogUtils.PREFIX_ERROR)) {
+                prefix = LogUtils.PREFIX_ERROR;
+                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
+            } else if (text.startsWith(LogUtils.PREFIX_STDOUT)) {
+                prefix = LogUtils.PREFIX_STDOUT;
+                text = text.substring(prefix.length());
+                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
+            } else if (text.startsWith(LogUtils.PREFIX_STDERR)) {
+                prefix = LogUtils.PREFIX_STDERR;
+                text = text.substring(prefix.length());
+                painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
+            } else if ( !text.equals("\n") ) {
+                prefix = null;
+                painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
+            }
 
-			if ((oldPrefix != null) && !oldPrefix.equals(prefix) && needsNewLine) {
-				target.append("\n");
-			}
-			oldPrefix = prefix;
-			needsNewLine = !text.endsWith("\n");
+            if ((oldPrefix != null) && !oldPrefix.equals(prefix) && needsNewLine) {
+                target.append("\n");
+            }
+            oldPrefix = prefix;
+            needsNewLine = !text.endsWith("\n");
 
-			int fromPos = target.getDocument().getLength();
-			target.append(text);
-			int toPos = target.getDocument().getLength();
-			target.setCaretPosition(toPos);
+            int fromPos = target.getDocument().getLength();
+            target.append(text);
+            int toPos = target.getDocument().getLength();
+            target.setCaretPosition(toPos);
 
-			Color textColor = CommonLogSettings.getTextColor();
-			target.setForeground(textColor);
-			target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
+            Color textColor = CommonLogSettings.getTextColor();
+            target.setForeground(textColor);
+            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
 
-			if ((painter != null) && (toPos > fromPos)) {
-				try {
-					DefaultHighlighter highlighter = (DefaultHighlighter)target.getHighlighter();
-					highlighter.setDrawsLayeredHighlights(false);
-					highlighter.addHighlight(fromPos, toPos, painter);
-				} catch (BadLocationException e) {
-				}
-			}
-		}
-	}
+            if ((painter != null) && (toPos > fromPos)) {
+                try {
+                    DefaultHighlighter highlighter = (DefaultHighlighter)target.getHighlighter();
+                    highlighter.setDrawsLayeredHighlights(false);
+                    highlighter.addHighlight(fromPos, toPos, painter);
+                } catch (BadLocationException e) {
+                }
+            }
+        }
+    }
 
 }

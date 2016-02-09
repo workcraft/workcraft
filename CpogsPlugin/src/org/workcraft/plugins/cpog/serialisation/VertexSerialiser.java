@@ -26,15 +26,15 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class VertexSerialiser extends BooleanFormulaSerialiser
 {
-	@Override
-	public String getClassName()
-	{
-		return Vertex.class.getName();
-	}
+    @Override
+    public String getClassName()
+    {
+        return Vertex.class.getName();
+    }
 
-	@Override
-	protected BooleanFormula getFormula(Object serialisee)
-	{
-		return ((Vertex) serialisee).getCondition();
-	}
+    @Override
+    protected BooleanFormula getFormula(Object serialisee)
+    {
+        return ((Vertex) serialisee).getCondition();
+    }
 }

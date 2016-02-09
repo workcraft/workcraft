@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface Generator<Res, Task> {
-	Res generate(Task task);
+    Res generate(Task task);
 }

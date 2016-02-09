@@ -57,219 +57,219 @@ import org.workcraft.util.GUI;
 
 public class CreateWorkDialog extends JDialog {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JPanel optionsPane;
-	private JPanel buttonsPane;
-	private JSplitPane splitPane;
-	private JList modelList;
-	private JButton okButton;
-	private JButton cancelButton;
-	private JScrollPane modelScroll ;
-	private JCheckBox chkVisual;
-	private JCheckBox chkOpen;
-	private JTextField txtTitle;
-	private int modalResult = 0;
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JPanel optionsPane;
+    private JPanel buttonsPane;
+    private JSplitPane splitPane;
+    private JList modelList;
+    private JButton okButton;
+    private JButton cancelButton;
+    private JScrollPane modelScroll ;
+    private JCheckBox chkVisual;
+    private JCheckBox chkOpen;
+    private JTextField txtTitle;
+    private int modalResult = 0;
 
-	public CreateWorkDialog(MainWindow owner) {
-		super(owner);
+    public CreateWorkDialog(MainWindow owner) {
+        super(owner);
 
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setModal(true);
-		setTitle("New work");
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        setModal(true);
+        setTitle("New work");
 
-		GUI.centerAndSizeToParent(this, owner);
-		initComponents();
-	}
+        GUI.centerAndSizeToParent(this, owner);
+        initComponents();
+    }
 
-	static class ListElement implements Comparable<ListElement> {
-		public ModelDescriptor descriptor;
+    static class ListElement implements Comparable<ListElement> {
+        public ModelDescriptor descriptor;
 
-		public ListElement(ModelDescriptor descriptor) {
-			this.descriptor = descriptor;
-		}
+        public ListElement(ModelDescriptor descriptor) {
+            this.descriptor = descriptor;
+        }
 
-		@Override
-		public String toString() {
-			return descriptor.getDisplayName();
-		}
+        @Override
+        public String toString() {
+            return descriptor.getDisplayName();
+        }
 
-		@Override
-		public int compareTo(ListElement o) {
-			return toString().compareTo(o.toString());
-		}
-	}
+        @Override
+        public int compareTo(ListElement o) {
+            return toString().compareTo(o.toString());
+        }
+    }
 
-	private void initComponents() {
-		contentPane = new JPanel(new BorderLayout());
-		setContentPane(contentPane);
+    private void initComponents() {
+        contentPane = new JPanel(new BorderLayout());
+        setContentPane(contentPane);
 
-		modelScroll = new JScrollPane();
-		DefaultListModel listModel = new DefaultListModel();
+        modelScroll = new JScrollPane();
+        DefaultListModel listModel = new DefaultListModel();
 
-		modelList = new JList(listModel);
-		modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
-		modelList.setVisibleRowCount(0);
+        modelList = new JList(listModel);
+        modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
+        modelList.setVisibleRowCount(0);
 
-		modelList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-			@Override
-			public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-				if (modelList.getSelectedIndex() == -1) {
-					okButton.setEnabled(false);
-				} else {
-					okButton.setEnabled(true);
-				}
-			}
-		}
-		);
+        modelList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            @Override
+            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
+                if (modelList.getSelectedIndex() == -1) {
+                    okButton.setEnabled(false);
+                } else {
+                    okButton.setEnabled(true);
+                }
+            }
+        }
+        );
 
-		modelList.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if ((e.getClickCount() == 2 ) && (modelList.getSelectedIndex() != -1)) {
-					ok();
-				}
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-		});
+        modelList.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if ((e.getClickCount() == 2 ) && (modelList.getSelectedIndex() != -1)) {
+                    ok();
+                }
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+        });
 
-		final Framework framework = Framework.getInstance();
-		final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
-		ArrayList<ListElement> elements = new ArrayList<ListElement>();
+        final Framework framework = Framework.getInstance();
+        final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
+        ArrayList<ListElement> elements = new ArrayList<ListElement>();
 
-		for(PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
-			elements.add(new ListElement(plugin.newInstance()));
-		}
+        for(PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
+            elements.add(new ListElement(plugin.newInstance()));
+        }
 
-		Collections.sort(elements);
-		for (ListElement element : elements) {
-			listModel.addElement(element);
-		}
+        Collections.sort(elements);
+        for (ListElement element : elements) {
+            listModel.addElement(element);
+        }
 
-		modelScroll.setViewportView(modelList);
-		modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
-		modelScroll.setMinimumSize(new Dimension(150,0));
-		modelScroll.setPreferredSize(new Dimension(250,0));
+        modelScroll.setViewportView(modelList);
+        modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
+        modelScroll.setMinimumSize(new Dimension(150,0));
+        modelScroll.setPreferredSize(new Dimension(250,0));
 
-		optionsPane = new JPanel();
-		optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
-		optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
-		optionsPane.setMinimumSize(new Dimension(150,0));
-		optionsPane.setPreferredSize(new Dimension(250,0));
+        optionsPane = new JPanel();
+        optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
+        optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
+        optionsPane.setMinimumSize(new Dimension(150,0));
+        optionsPane.setPreferredSize(new Dimension(250,0));
 
-		chkVisual = new JCheckBox("create visual model");
+        chkVisual = new JCheckBox("create visual model");
 
-		chkVisual.setSelected(true);
+        chkVisual.setSelected(true);
 
-		chkOpen = new JCheckBox("open in editor");
-		chkOpen.setSelected(true);
+        chkOpen = new JCheckBox("open in editor");
+        chkOpen.setSelected(true);
 
-		optionsPane.add(chkVisual);
-		optionsPane.add(chkOpen);
-		optionsPane.add(new JLabel("Title: "));
-		txtTitle = new JTextField();
-		//txtTitle.setMaximumSize(new Dimension(1000,20));
-		optionsPane.add(txtTitle);
+        optionsPane.add(chkVisual);
+        optionsPane.add(chkOpen);
+        optionsPane.add(new JLabel("Title: "));
+        txtTitle = new JTextField();
+        //txtTitle.setMaximumSize(new Dimension(1000,20));
+        optionsPane.add(txtTitle);
 
-		JPanel dummy = new JPanel();
-		dummy.setPreferredSize(new Dimension(200, 1000));
-		dummy.setMaximumSize(new Dimension(200, 1000));
-		optionsPane.add(dummy);
+        JPanel dummy = new JPanel();
+        dummy.setPreferredSize(new Dimension(200, 1000));
+        dummy.setMaximumSize(new Dimension(200, 1000));
+        optionsPane.add(dummy);
 
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPane, modelScroll);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(250);
-		splitPane.setResizeWeight(0.1);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPane, modelScroll);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(250);
+        splitPane.setResizeWeight(0.1);
 
-		buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-		okButton = new JButton();
-		okButton.setPreferredSize(new Dimension(100, 25));
-		okButton.setEnabled(false);
-		okButton.setText("OK");
-		okButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				ok();
-			}
-		});
+        okButton = new JButton();
+        okButton.setPreferredSize(new Dimension(100, 25));
+        okButton.setEnabled(false);
+        okButton.setText("OK");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                ok();
+            }
+        });
 
-		cancelButton = new JButton();
-		cancelButton.setPreferredSize(new Dimension(100, 25));
-		cancelButton.setText("Cancel");
-		cancelButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				cancel();
-			}
-		});
+        cancelButton = new JButton();
+        cancelButton.setPreferredSize(new Dimension(100, 25));
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                cancel();
+            }
+        });
 
-		buttonsPane.add(okButton);
-		buttonsPane.add(cancelButton);
-		contentPane.add(splitPane, BorderLayout.CENTER);
-		contentPane.add(buttonsPane, BorderLayout.SOUTH);
-		getRootPane().setDefaultButton(okButton);
+        buttonsPane.add(okButton);
+        buttonsPane.add(cancelButton);
+        contentPane.add(splitPane, BorderLayout.CENTER);
+        contentPane.add(buttonsPane, BorderLayout.SOUTH);
+        getRootPane().setDefaultButton(okButton);
 
-		getRootPane().registerKeyboardAction(new ActionListener() {
-	    	@Override
-	    	public void actionPerformed(ActionEvent e) {
-				ok();
-	    	}
-	    },
-	    KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-	    JComponent.WHEN_IN_FOCUSED_WINDOW);
+        getRootPane().registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ok();
+            }
+        },
+        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+        JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-	    getRootPane().registerKeyboardAction(new ActionListener() {
-	    	@Override
-	    	public void actionPerformed(ActionEvent e) {
-				cancel();
-	    	}
-	    },
-	    KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-	    JComponent.WHEN_IN_FOCUSED_WINDOW);
-	}
+        getRootPane().registerKeyboardAction(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancel();
+            }
+        },
+        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
 
-	private void ok() {
-		if (okButton.isEnabled()) {
-			modalResult = 1;
-			setVisible(false);
-		}
-	}
+    private void ok() {
+        if (okButton.isEnabled()) {
+            modalResult = 1;
+            setVisible(false);
+        }
+    }
 
-	private void cancel() {
-		if (cancelButton.isEnabled()) {
-			modalResult = 0;
-			setVisible(false);
-		}
-	}
+    private void cancel() {
+        if (cancelButton.isEnabled()) {
+            modalResult = 0;
+            setVisible(false);
+        }
+    }
 
-	public ModelDescriptor getSelectedModel() {
-		return ((ListElement)modelList.getSelectedValue()).descriptor;
-	}
+    public ModelDescriptor getSelectedModel() {
+        return ((ListElement)modelList.getSelectedValue()).descriptor;
+    }
 
-	public int getModalResult() {
-		return modalResult;
-	}
+    public int getModalResult() {
+        return modalResult;
+    }
 
-	public boolean createVisualSelected(){
-		return chkVisual.isSelected();
-	}
+    public boolean createVisualSelected(){
+        return chkVisual.isSelected();
+    }
 
-	public boolean openInEditorSelected() {
-		return chkOpen.isSelected();
-	}
+    public boolean openInEditorSelected() {
+        return chkOpen.isSelected();
+    }
 
-	public String getModelTitle() {
-		return txtTitle.getText();
-	}
+    public String getModelTitle() {
+        return txtTitle.getText();
+    }
 }

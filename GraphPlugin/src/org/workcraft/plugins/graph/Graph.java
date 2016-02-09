@@ -34,24 +34,24 @@ import org.workcraft.util.Hierarchy;
 @VisualClass(org.workcraft.plugins.graph.VisualGraph.class)
 public class Graph extends AbstractMathModel {
 
-	public Graph() {
-		this(null, null);
-	}
+    public Graph() {
+        this(null, null);
+    }
 
-	public Graph(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-			@Override
-			public String getPrefix(Node node) {
-				if (node instanceof Vertex) return "v";
-				return super.getPrefix(node);
-			}
-		});
-	}
+    public Graph(Container root, References refs) {
+        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+            @Override
+            public String getPrefix(Node node) {
+                if (node instanceof Vertex) return "v";
+                return super.getPrefix(node);
+            }
+        });
+    }
 
-	public MathConnection connect(Node first, Node second) {
-		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
-		Hierarchy.getNearestContainer(first, second).add(con);
-		return con;
-	}
+    public MathConnection connect(Node first, Node second) {
+        MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+        Hierarchy.getNearestContainer(first, second).add(con);
+        return con;
+    }
 
 }

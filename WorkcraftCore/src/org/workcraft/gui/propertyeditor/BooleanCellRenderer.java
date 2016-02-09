@@ -39,12 +39,12 @@ public class BooleanCellRenderer extends JCheckBox implements TableCellRenderer 
                             JTable table, Object value,
                             boolean isSelected, boolean hasFocus,
                             int row, int column) {
-		if (value != null) {
-			setSelected((Boolean)value);
-		}
-		setOpaque(value == null);
-		return this;
-	}
+        if (value != null) {
+            setSelected((Boolean)value);
+        }
+        setOpaque(value == null);
+        return this;
+    }
 
 
 

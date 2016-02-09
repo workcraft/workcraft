@@ -40,35 +40,35 @@ import org.workcraft.gui.graph.tools.Decoration;
 @Hotkey(KeyEvent.VK_J)
 @SVGIcon("images/icons/svg/circuit-joint.svg")
 public class VisualJoint extends VisualComponent {
-	static public double size = 0.25;
-	final static public Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
+    static public double size = 0.25;
+    final static public Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
 
-	public VisualJoint(Joint joint) {
-		super(joint);
-		removePropertyDeclarationByName("Fill color");
-		removePropertyDeclarationByName("Label");
-		removePropertyDeclarationByName("Label color");
-		removePropertyDeclarationByName("Label positioning");
-		removePropertyDeclarationByName("Name color");
-		removePropertyDeclarationByName("Name positioning");
-	}
+    public VisualJoint(Joint joint) {
+        super(joint);
+        removePropertyDeclarationByName("Fill color");
+        removePropertyDeclarationByName("Label");
+        removePropertyDeclarationByName("Label color");
+        removePropertyDeclarationByName("Label positioning");
+        removePropertyDeclarationByName("Name color");
+        removePropertyDeclarationByName("Name positioning");
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		g.fill(shape);
-	}
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.fill(shape);
+    }
 
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return new Rectangle2D.Double(-size/2, -size/2, size, size);
-	}
+    @Override
+    public Rectangle2D getBoundingBoxInLocalSpace() {
+        return new Rectangle2D.Double(-size/2, -size/2, size, size);
+    }
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
-	}
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
+    }
 
 }

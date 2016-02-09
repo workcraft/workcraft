@@ -20,32 +20,32 @@ import org.workcraft.plugins.transform.CopyLablesTool;
 import org.workcraft.plugins.transform.StraightenConnectionsTool;
 
 public class BuiltinTools implements Module {
-	@Override
-	public void init() {
-		final Framework framework = Framework.getInstance();
-		final PluginManager pm = framework.getPluginManager();
+    @Override
+    public void init() {
+        final Framework framework = Framework.getInstance();
+        final PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(Settings.class, CommonEditorSettings.class);
-		pm.registerClass(Settings.class, CommonVisualSettings.class);
-		pm.registerClass(Settings.class, CommonSimulationSettings.class);
-		pm.registerClass(Settings.class, CommonCommentSettings.class);
-		pm.registerClass(Settings.class, CommonDebugSettings.class);
-		pm.registerClass(Settings.class, CommonLogSettings.class);
+        pm.registerClass(Settings.class, CommonEditorSettings.class);
+        pm.registerClass(Settings.class, CommonVisualSettings.class);
+        pm.registerClass(Settings.class, CommonSimulationSettings.class);
+        pm.registerClass(Settings.class, CommonCommentSettings.class);
+        pm.registerClass(Settings.class, CommonDebugSettings.class);
+        pm.registerClass(Settings.class, CommonLogSettings.class);
 
-		pm.registerClass(Settings.class, DotLayoutSettings.class);
-		pm.registerClass(Settings.class, RandomLayoutSettings.class);
+        pm.registerClass(Settings.class, DotLayoutSettings.class);
+        pm.registerClass(Settings.class, RandomLayoutSettings.class);
 
-		pm.registerClass(Tool.class, DotLayoutTool.class);
-		pm.registerClass(Tool.class, NullLayoutTool.class);
-		pm.registerClass(Tool.class, RandomLayoutTool.class);
+        pm.registerClass(Tool.class, DotLayoutTool.class);
+        pm.registerClass(Tool.class, NullLayoutTool.class);
+        pm.registerClass(Tool.class, RandomLayoutTool.class);
 
-		pm.registerClass(Tool.class, CopyLablesTool.class);
-		pm.registerClass(Tool.class, StraightenConnectionsTool.class);
-	}
+        pm.registerClass(Tool.class, CopyLablesTool.class);
+        pm.registerClass(Tool.class, StraightenConnectionsTool.class);
+    }
 
-	@Override
-	public String getDescription() {
-		return "Built-in tools";
-	}
+    @Override
+    public String getDescription() {
+        return "Built-in tools";
+    }
 
 }

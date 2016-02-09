@@ -42,55 +42,55 @@ import org.workcraft.plugins.xmas.XmasSettings;
 @SVGIcon("images/icons/svg/xmas-sink.svg")
 public class VisualSinkComponent extends VisualXmasComponent {
 
-	public final double tokenSize = 0.18 * size;
+    public final double tokenSize = 0.18 * size;
 
-	public VisualSinkComponent(SinkComponent component) {
-		super(component);
-		if (component.getChildren().isEmpty()) {
-			this.addInput("i", Positioning.CENTER);
-		}
-	}
+    public VisualSinkComponent(SinkComponent component) {
+        super(component);
+        if (component.getChildren().isEmpty()) {
+            this.addInput("i", Positioning.CENTER);
+        }
+    }
 
-	public SinkComponent getReferencedSinkComponent() {
-		return (SinkComponent)getReferencedComponent();
-	}
+    public SinkComponent getReferencedSinkComponent() {
+        return (SinkComponent)getReferencedComponent();
+    }
 
-	@Override
-	public Shape getShape() {
-		Path2D shape = new Path2D.Double();
+    @Override
+    public Shape getShape() {
+        Path2D shape = new Path2D.Double();
 
-		shape.moveTo(0.00, +0.00);
-		shape.lineTo(0.00, +0.40 * size);
+        shape.moveTo(0.00, +0.00);
+        shape.lineTo(0.00, +0.40 * size);
 
-		shape.moveTo(-0.35 * size, 0.40 * size);
-		shape.lineTo(+0.35 * size, 0.40 * size);
+        shape.moveTo(-0.35 * size, 0.40 * size);
+        shape.lineTo(+0.35 * size, 0.40 * size);
 
-		shape.moveTo(-0.20 * size, +0.55 * size);
-		shape.lineTo(+0.20 * size, +0.55 * size);
+        shape.moveTo(-0.20 * size, +0.55 * size);
+        shape.lineTo(+0.20 * size, +0.55 * size);
 
-		shape.moveTo(-0.05 * size, +0.70 * size);
-		shape.lineTo(+0.05 * size, +0.70 * size);
+        shape.moveTo(-0.05 * size, +0.70 * size);
+        shape.lineTo(+0.05 * size, +0.70 * size);
 
-		return shape;
-	}
+        return shape;
+    }
 
-	public Shape getTokenShape() {
-		return new Ellipse2D.Double(+1.4 * tokenSize, +0.6 * tokenSize, tokenSize, tokenSize);
-	}
+    public Shape getTokenShape() {
+        return new Ellipse2D.Double(+1.4 * tokenSize, +0.6 * tokenSize, tokenSize, tokenSize);
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		super.draw(r);
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		if (d instanceof StateDecoration) {
-			if (((StateDecoration)d).getState()) {
-				g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
-				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-				Shape shape = transformShape(getTokenShape());
-				g.draw(shape);
-			}
-		}
-	}
+    @Override
+    public void draw(DrawRequest r) {
+        super.draw(r);
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        if (d instanceof StateDecoration) {
+            if (((StateDecoration)d).getState()) {
+                g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+                g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+                Shape shape = transformShape(getTokenShape());
+                g.draw(shape);
+            }
+        }
+    }
 
 }

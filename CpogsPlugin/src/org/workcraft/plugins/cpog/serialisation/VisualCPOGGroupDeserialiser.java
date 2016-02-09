@@ -35,42 +35,42 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 
 public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser
 {
-	@Override
-	public String getClassName()
-	{
-		return VisualScenario.class.getName();
-	}
+    @Override
+    public String getClassName()
+    {
+        return VisualScenario.class.getName();
+    }
 
-	@Override
-	public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
-			ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
-	{
-		Encoding encoding = ((VisualScenario) instance).getEncoding();
+    @Override
+    public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
+    {
+        Encoding encoding = ((VisualScenario) instance).getEncoding();
 
-		NodeList subelements = element.getElementsByTagName("encoding");
+        NodeList subelements = element.getElementsByTagName("encoding");
 
-		for (int i = 0; i < subelements.getLength(); i++)
-		{
-			Element subelement = (Element) subelements.item(i);
+        for (int i = 0; i < subelements.getLength(); i++)
+        {
+            Element subelement = (Element) subelements.item(i);
 
-			Variable var = (Variable) externalReferenceResolver.getObject(subelement.getAttribute("variable"));
-			VariableState state = Enum.valueOf(VariableState.class, subelement.getAttribute("state"));
+            Variable var = (Variable) externalReferenceResolver.getObject(subelement.getAttribute("variable"));
+            VariableState state = Enum.valueOf(VariableState.class, subelement.getAttribute("state"));
 
-			encoding.setState(var, state);
-		}
-	}
+            encoding.setState(var, state);
+        }
+    }
 
-	@Override
-	public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
-			Object... constructorParameters)
-	{
-		return new VisualScenario();
-	}
+    @Override
+    public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
+            Object... constructorParameters)
+    {
+        return new VisualScenario();
+    }
 
-	@Override
-	public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
-			NodeInitialiser nodeInitialiser) throws DeserialisationException
-	{
+    @Override
+    public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
+            NodeInitialiser nodeInitialiser) throws DeserialisationException
+    {
 
-	}
+    }
 }

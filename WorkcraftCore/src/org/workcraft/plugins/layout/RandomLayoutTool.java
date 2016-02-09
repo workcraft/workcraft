@@ -34,46 +34,46 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.util.Hierarchy;
 
 public class RandomLayoutTool extends AbstractLayoutTool {
-	Random r = new Random();
+    Random r = new Random();
 
-	@Override
-	public String getDisplayName() {
-		return "Random";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Random";
+    }
 
-	@Override
-	public void layout(VisualModel model) {
-		Point2D start = new Point2D.Double(RandomLayoutSettings.getStartX(), RandomLayoutSettings.getStartY());
-		Point2D range = new Point2D.Double(RandomLayoutSettings.getRangeX(), RandomLayoutSettings.getRangeY());
-		setChildrenRandomPosition(model.getRoot(), start, range);
-		setPolylineConnections(model.getRoot());
-	}
+    @Override
+    public void layout(VisualModel model) {
+        Point2D start = new Point2D.Double(RandomLayoutSettings.getStartX(), RandomLayoutSettings.getStartY());
+        Point2D range = new Point2D.Double(RandomLayoutSettings.getRangeX(), RandomLayoutSettings.getRangeY());
+        setChildrenRandomPosition(model.getRoot(), start, range);
+        setPolylineConnections(model.getRoot());
+    }
 
-	private void setChildrenRandomPosition(Container container, Point2D start, Point2D range) {
-		for (Node node : container.getChildren()) {
-			double x = start.getX() + r.nextDouble() * range.getX();
-			double y = start.getY() + r.nextDouble() * range.getY();
-			Point2D pos = new Point2D.Double(x, y);
-			if (node instanceof VisualTransformableNode) {
-				VisualTransformableNode transformableNode = (VisualTransformableNode)node;
-				transformableNode.setRootSpacePosition(pos);
-			}
-			if (node instanceof Container) {
-				Point2D childrenRange = new Point2D.Double(range.getX()/2.0, range.getY()/2.0);
-				double childenX = pos.getX() - childrenRange.getX()/2.0;
-				double childenY = pos.getY() - childrenRange.getY()/2.0;
-				Point2D childrenStart = new Point2D.Double(childenX, childenY);
-				setChildrenRandomPosition((Container)node, childrenStart, childrenRange);
-			}
-		}
-	}
+    private void setChildrenRandomPosition(Container container, Point2D start, Point2D range) {
+        for (Node node : container.getChildren()) {
+            double x = start.getX() + r.nextDouble() * range.getX();
+            double y = start.getY() + r.nextDouble() * range.getY();
+            Point2D pos = new Point2D.Double(x, y);
+            if (node instanceof VisualTransformableNode) {
+                VisualTransformableNode transformableNode = (VisualTransformableNode)node;
+                transformableNode.setRootSpacePosition(pos);
+            }
+            if (node instanceof Container) {
+                Point2D childrenRange = new Point2D.Double(range.getX()/2.0, range.getY()/2.0);
+                double childenX = pos.getX() - childrenRange.getX()/2.0;
+                double childenY = pos.getY() - childrenRange.getY()/2.0;
+                Point2D childrenStart = new Point2D.Double(childenX, childenY);
+                setChildrenRandomPosition((Container)node, childrenStart, childrenRange);
+            }
+        }
+    }
 
-	private void setPolylineConnections(Container container) {
-		Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(container, VisualConnection.class);
-		for (VisualConnection connection: connections) {
-			connection.setConnectionType(ConnectionType.POLYLINE);
-			connection.getGraphic().setDefaultControlPoints();
-		}
-	}
+    private void setPolylineConnections(Container container) {
+        Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(container, VisualConnection.class);
+        for (VisualConnection connection: connections) {
+            connection.setConnectionType(ConnectionType.POLYLINE);
+            connection.getGraphic().setDefaultControlPoints();
+        }
+    }
 
 }

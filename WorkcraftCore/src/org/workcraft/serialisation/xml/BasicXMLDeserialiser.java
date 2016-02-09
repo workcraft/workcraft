@@ -25,5 +25,5 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
 
 public interface BasicXMLDeserialiser extends XMLDeserialiser {
-	public Object deserialise (Element element) throws DeserialisationException;
+    public Object deserialise (Element element) throws DeserialisationException;
 }

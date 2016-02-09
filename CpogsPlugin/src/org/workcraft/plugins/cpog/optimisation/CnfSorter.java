@@ -26,55 +26,55 @@ import java.util.List;
 import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class CnfSorter {
-	public static Cnf sortRound(List<Literal> result, List<Literal> x)
-	{
-		if(x.size() != result.size())
-			throw new RuntimeException("sizes do not match");
+    public static Cnf sortRound(List<Literal> result, List<Literal> x)
+    {
+        if(x.size() != result.size())
+            throw new RuntimeException("sizes do not match");
 
-		List<Literal> s = new ArrayList<Literal>();
-		for(Literal var : x)
-			s.add(new Literal(var.getVariable().getLabel()+"_th"));
+        List<Literal> s = new ArrayList<Literal>();
+        for(Literal var : x)
+            s.add(new Literal(var.getVariable().getLabel()+"_th"));
 
-		return sortRound(result, s, x);
-	}
+        return sortRound(result, s, x);
+    }
 
-	private static Cnf makeThermometer(List<Literal> s, List<Literal> x) {
-		// s[i] = s[i-1] + x[i]
-		// (!s[i] + s[i-1] + x[i]) (!s[i-1] + s[i]) (!x[i] + s[i])
-		Cnf result = new Cnf();
+    private static Cnf makeThermometer(List<Literal> s, List<Literal> x) {
+        // s[i] = s[i-1] + x[i]
+        // (!s[i] + s[i-1] + x[i]) (!s[i-1] + s[i]) (!x[i] + s[i])
+        Cnf result = new Cnf();
 
-		result.add(or(not(s.get(0)), x.get(0)));
-		result.add(or(not(x.get(0)), s.get(0)));
-		for(int i=1;i<s.size();i++)
-		{
-			result.add(or(not(s.get(i)), s.get(i-1), x.get(i)));
-			result.add(or(not(s.get(i-1)), s.get(i)));
-			result.add(or(not(x.get(i)), s.get(i)));
-		}
+        result.add(or(not(s.get(0)), x.get(0)));
+        result.add(or(not(x.get(0)), s.get(0)));
+        for(int i=1;i<s.size();i++)
+        {
+            result.add(or(not(s.get(i)), s.get(i-1), x.get(i)));
+            result.add(or(not(s.get(i-1)), s.get(i)));
+            result.add(or(not(x.get(i)), s.get(i)));
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static Cnf sortRound(List<Literal> result, List<Literal> s, List<Literal> x) {
+    public static Cnf sortRound(List<Literal> result, List<Literal> s, List<Literal> x) {
 
-		List<CnfClause> clauses = new ArrayList<CnfClause>();
+        List<CnfClause> clauses = new ArrayList<CnfClause>();
 
-		Cnf thermoCnf = makeThermometer(s, x);
-		clauses.addAll(thermoCnf.getClauses());
+        Cnf thermoCnf = makeThermometer(s, x);
+        clauses.addAll(thermoCnf.getClauses());
 
-		// y[x] = s[i] x[i+1]
-		// (!y[i] + s[i]) (!y[i] + x[i+1]) (!s[i] + !x[i+1] + y[i])
-		for(int i=0;i<x.size()-1;i++)
-		{
-			clauses.add(or(not(result.get(i)), s.get(i)));
-			clauses.add(or(not(result.get(i)), x.get(i+1)));
-			clauses.add(or(not(s.get(i)), not(x.get(i+1)), result.get(i)));
-		}
+        // y[x] = s[i] x[i+1]
+        // (!y[i] + s[i]) (!y[i] + x[i+1]) (!s[i] + !x[i+1] + y[i])
+        for(int i=0;i<x.size()-1;i++)
+        {
+            clauses.add(or(not(result.get(i)), s.get(i)));
+            clauses.add(or(not(result.get(i)), x.get(i+1)));
+            clauses.add(or(not(s.get(i)), not(x.get(i+1)), result.get(i)));
+        }
 
-		int n = x.size()-1;
-		clauses.add(or(not(result.get(n)), s.get(n)));
-		clauses.add(or(not(s.get(n)), result.get(n)));
+        int n = x.size()-1;
+        clauses.add(or(not(result.get(n)), s.get(n)));
+        clauses.add(or(not(s.get(n)), result.get(n)));
 
-		return new Cnf(clauses);
-	}
+        return new Cnf(clauses);
+    }
 }

@@ -35,18 +35,18 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @SVGIcon("images/icons/svg/transition.svg")
 public class VisualDummyTransition extends VisualNamedTransition implements StateObserver {
 
-	public VisualDummyTransition(DummyTransition dummyTransition) {
-		super(dummyTransition);
-	}
+    public VisualDummyTransition(DummyTransition dummyTransition) {
+        super(dummyTransition);
+    }
 
-	@NoAutoSerialisation
-	public DummyTransition getReferencedTransition() {
-		return (DummyTransition)getReferencedComponent();
-	}
+    @NoAutoSerialisation
+    public DummyTransition getReferencedTransition() {
+        return (DummyTransition)getReferencedComponent();
+    }
 
-	@Override
-	public Color getColor() {
-		return STGSettings.getDummyColor();
-	}
+    @Override
+    public Color getColor() {
+        return STGSettings.getDummyColor();
+    }
 
 }

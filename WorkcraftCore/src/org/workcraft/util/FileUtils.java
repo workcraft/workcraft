@@ -38,198 +38,198 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Scanner;
 
 public class FileUtils {
-	public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
+    public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
-	public static void copyFile(File in, File out)  throws IOException {
-		out.getParentFile().mkdirs();
-		FileOutputStream outStream = new FileOutputStream(out);
-		try {
-			copyFileToStream(in, outStream);
-		} finally {
-			outStream.close();
-		}
-	}
+    public static void copyFile(File in, File out)  throws IOException {
+        out.getParentFile().mkdirs();
+        FileOutputStream outStream = new FileOutputStream(out);
+        try {
+            copyFileToStream(in, outStream);
+        } finally {
+            outStream.close();
+        }
+    }
 
-	public static String getFileNameWithoutExtension(File file) {
-		String name = file.getName();
-		int k = name.lastIndexOf('.');
-		if (k==-1) {
-			return name;
-		} else {
-			return name.substring(0, k);
-		}
-	}
+    public static String getFileNameWithoutExtension(File file) {
+        String name = file.getName();
+        int k = name.lastIndexOf('.');
+        if (k==-1) {
+            return name;
+        } else {
+            return name.substring(0, k);
+        }
+    }
 
-	public static void dumpString (File out, String string) throws IOException {
-		FileOutputStream fos = new FileOutputStream(out);
-		fos.write(string.getBytes());
-		fos.close();
-	}
+    public static void dumpString (File out, String string) throws IOException {
+        FileOutputStream fos = new FileOutputStream(out);
+        fos.write(string.getBytes());
+        fos.close();
+    }
 
-	public static void copyFileToStream(File in, OutputStream out)  throws IOException {
-	    FileInputStream is = new FileInputStream(in);
-		FileChannel inChannel = is.getChannel();
-	    WritableByteChannel outChannel = Channels.newChannel(out);
-	    try {
-	        inChannel.transferTo(0, inChannel.size(), outChannel);
-	    }
-	    catch (IOException e) {
-	        throw e;
-	    }
-	    finally {
-	    	if (is != null) is.close();
-	        if (inChannel != null) inChannel.close();
-	        if (outChannel != null) outChannel.close();
-	    }
-	}
+    public static void copyFileToStream(File in, OutputStream out)  throws IOException {
+        FileInputStream is = new FileInputStream(in);
+        FileChannel inChannel = is.getChannel();
+        WritableByteChannel outChannel = Channels.newChannel(out);
+        try {
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        }
+        catch (IOException e) {
+            throw e;
+        }
+        finally {
+            if (is != null) is.close();
+            if (inChannel != null) inChannel.close();
+            if (outChannel != null) outChannel.close();
+        }
+    }
 
-	public static String getTempPrefix(String title) {
-		String s = TEMP_DIRECTORY_PREFIX;
-		if ((title != null) && !title.isEmpty()) {
-			s = TEMP_DIRECTORY_PREFIX + title + "-";
-		}
-		// Prefix must be at least 3 symbols long (prepend short prefix with underscores).
-		while (s.length() < 3) {
-			s = "_" + s;
-		}
-		// Prefix must be without spaces (replace spaces with underscores).
-		return s.replaceAll("\\s", "_");
-	}
+    public static String getTempPrefix(String title) {
+        String s = TEMP_DIRECTORY_PREFIX;
+        if ((title != null) && !title.isEmpty()) {
+            s = TEMP_DIRECTORY_PREFIX + title + "-";
+        }
+        // Prefix must be at least 3 symbols long (prepend short prefix with underscores).
+        while (s.length() < 3) {
+            s = "_" + s;
+        }
+        // Prefix must be without spaces (replace spaces with underscores).
+        return s.replaceAll("\\s", "_");
+    }
 
-	public static File createTempDirectory(String prefix) {
-		File tempDir;
-		try {
-			tempDir = File.createTempFile(prefix, "");
-		} catch (IOException e) {
-			throw new RuntimeException("can't create a temp file");
-		}
-		tempDir.delete();
-		if (!tempDir.mkdir()) {
-			throw new RuntimeException("can't create a temp directory");
-		}
-		return tempDir;
-	}
+    public static File createTempDirectory(String prefix) {
+        File tempDir;
+        try {
+            tempDir = File.createTempFile(prefix, "");
+        } catch (IOException e) {
+            throw new RuntimeException("can't create a temp file");
+        }
+        tempDir.delete();
+        if (!tempDir.mkdir()) {
+            throw new RuntimeException("can't create a temp directory");
+        }
+        return tempDir;
+    }
 
-	public static void copyAll(File source, File targetDir) throws IOException {
-		if (!targetDir.isDirectory()) {
-			throw new RuntimeException ("Cannot copy files to a file that is not a directory.");
-		}
-		File target = new File(targetDir, source.getName());
+    public static void copyAll(File source, File targetDir) throws IOException {
+        if (!targetDir.isDirectory()) {
+            throw new RuntimeException ("Cannot copy files to a file that is not a directory.");
+        }
+        File target = new File(targetDir, source.getName());
 
-		if (source.isDirectory()) {
-			if (!target.mkdir()) {
-				throw new RuntimeException ("Cannot create directory " + target.getAbsolutePath());
-			}
-			for (File f : source.listFiles()) {
-				copyAll (f, target);
-			}
-		} else {
-			copyFile(source, target);
-		}
-	}
+        if (source.isDirectory()) {
+            if (!target.mkdir()) {
+                throw new RuntimeException ("Cannot create directory " + target.getAbsolutePath());
+            }
+            for (File f : source.listFiles()) {
+                copyAll (f, target);
+            }
+        } else {
+            copyFile(source, target);
+        }
+    }
 
-	public static void writeAllText(File file, String source) throws IOException {
-		FileWriter writer = new FileWriter(file);
-		writer.write(source);
-		writer.close();
-	}
+    public static void writeAllText(File file, String source) throws IOException {
+        FileWriter writer = new FileWriter(file);
+        writer.write(source);
+        writer.close();
+    }
 
-	public static String readAllText (File file) throws IOException {
-		InputStream stream = new FileInputStream(file);
-		try {
-			return readAllText(stream);
-		} finally {
-			stream.close();
-		}
-	}
+    public static String readAllText (File file) throws IOException {
+        InputStream stream = new FileInputStream(file);
+        try {
+            return readAllText(stream);
+        } finally {
+            stream.close();
+        }
+    }
 
-	/**
-	 * Reads all text from the stream using the default charset.
-	 * Does not close the stream.
-	 */
-	public static String readAllText(InputStream stream) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-		StringBuilder result = new StringBuilder();
-		while (true) {
-		 String s = reader.readLine();
-		 if (s==null) {
-			 return result.toString();
-		 }
-		 result.append(s);
-		 result.append('\n');
-		}
-	}
+    /**
+     * Reads all text from the stream using the default charset.
+     * Does not close the stream.
+     */
+    public static String readAllText(InputStream stream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder result = new StringBuilder();
+        while (true) {
+         String s = reader.readLine();
+         if (s==null) {
+             return result.toString();
+         }
+         result.append(s);
+         result.append('\n');
+        }
+    }
 
-	public static void moveFile(File from, File to) throws IOException {
-		copyFile(from, to);
-		from.delete();
-	}
+    public static void moveFile(File from, File to) throws IOException {
+        copyFile(from, to);
+        from.delete();
+    }
 
-	public static byte[] readAllBytes(File in) throws IOException {
-		ByteArrayOutputStream mem = new ByteArrayOutputStream();
-		copyFileToStream(in, mem);
-		return mem.toByteArray();
-	}
+    public static byte[] readAllBytes(File in) throws IOException {
+        ByteArrayOutputStream mem = new ByteArrayOutputStream();
+        copyFileToStream(in, mem);
+        return mem.toByteArray();
+    }
 
-	public static void writeAllBytes(byte[] bytes, File out) throws IOException {
-		OutputStream stream = new FileOutputStream(out);
-		stream.write(bytes);
-		stream.close();
-	}
+    public static void writeAllBytes(byte[] bytes, File out) throws IOException {
+        OutputStream stream = new FileOutputStream(out);
+        stream.write(bytes);
+        stream.close();
+    }
 
-	public static void appendAllText(File file, String text) throws IOException {
-		FileWriter writer = new FileWriter(file, true);
-		writer.write(text);
-		writer.close();
-	}
+    public static void appendAllText(File file, String text) throws IOException {
+        FileWriter writer = new FileWriter(file, true);
+        writer.write(text);
+        writer.close();
+    }
 
-	public static String readAllTextFromSystemResource(String path) throws IOException {
-		InputStream stream = ClassLoader.getSystemResourceAsStream(path);
-		try {
-			return readAllText(stream);
-		} finally {
-			stream.close();
-		}
-	}
+    public static String readAllTextFromSystemResource(String path) throws IOException {
+        InputStream stream = ClassLoader.getSystemResourceAsStream(path);
+        try {
+            return readAllText(stream);
+        } finally {
+            stream.close();
+        }
+    }
 
-	public static boolean fileContainsKeyword(File file, String keyword) {
-		boolean result = false;
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(file);
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine().trim();
-				if (line.contains(keyword)) {
-					result = true;
-					break;
-				}
-			}
-		} catch (FileNotFoundException e) {
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-		}
-		return result;
-	}
+    public static boolean fileContainsKeyword(File file, String keyword) {
+        boolean result = false;
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.contains(keyword)) {
+                    result = true;
+                    break;
+                }
+            }
+        } catch (FileNotFoundException e) {
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+        return result;
+    }
 
-	public static void deleteFile(File file, boolean postponeTillExit) {
-		if (file != null) {
-			// Note that deleteOnExit() for a directory needs to be called BEFORE the deletion of its content.
-			if (postponeTillExit) {
-				file.deleteOnExit();
-			}
-			File [] files = file.listFiles();
-			if (files != null) {
-				for(File f: files) {
-					deleteFile(f, postponeTillExit);
-				}
-			}
-			// Note that delete() for a directory should be called AFTER the deletion of its content.
-			if (!postponeTillExit) {
-				file.delete();
-			}
-		}
-	}
+    public static void deleteFile(File file, boolean postponeTillExit) {
+        if (file != null) {
+            // Note that deleteOnExit() for a directory needs to be called BEFORE the deletion of its content.
+            if (postponeTillExit) {
+                file.deleteOnExit();
+            }
+            File [] files = file.listFiles();
+            if (files != null) {
+                for(File f: files) {
+                    deleteFile(f, postponeTillExit);
+                }
+            }
+            // Note that delete() for a directory should be called AFTER the deletion of its content.
+            if (!postponeTillExit) {
+                file.delete();
+            }
+        }
+    }
 
 }

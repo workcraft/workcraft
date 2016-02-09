@@ -22,25 +22,25 @@ package org.workcraft.plugins.cpog.optimisation;
 
 public class CpogOptimisationTask<T>
 {
-	private final BooleanFormula[][] encodingVars;
-	private final BooleanFormula[] functionVars;
-	private final T task;
+    private final BooleanFormula[][] encodingVars;
+    private final BooleanFormula[] functionVars;
+    private final T task;
 
-	public CpogOptimisationTask(BooleanFormula[] functionVars, BooleanFormula[][] encodingVars, T task)
-	{
-		this.functionVars = functionVars;
-		this.encodingVars = encodingVars;
-		this.task = task;
-	}
+    public CpogOptimisationTask(BooleanFormula[] functionVars, BooleanFormula[][] encodingVars, T task)
+    {
+        this.functionVars = functionVars;
+        this.encodingVars = encodingVars;
+        this.task = task;
+    }
 
-	public BooleanFormula[][] getEncodingVars() {
-		return encodingVars;
-	}
-	public BooleanFormula[] getFunctionVars() {
-		return functionVars;
-	}
+    public BooleanFormula[][] getEncodingVars() {
+        return encodingVars;
+    }
+    public BooleanFormula[] getFunctionVars() {
+        return functionVars;
+    }
 
-	public T getTask() {
-		return task;
-	}
+    public T getTask() {
+        return task;
+    }
 }

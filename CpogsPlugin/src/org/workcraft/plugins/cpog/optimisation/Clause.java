@@ -29,39 +29,39 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public abstract class Clause implements BooleanFormula {
 
-	private List<Literal> literals = new ArrayList<Literal>();
+    private List<Literal> literals = new ArrayList<Literal>();
 
-	public Clause()
-	{
-	}
+    public Clause()
+    {
+    }
 
-	public Clause(Literal... literals)
-	{
-		this(Arrays.asList(literals));
-	}
+    public Clause(Literal... literals)
+    {
+        this(Arrays.asList(literals));
+    }
 
-	public Clause(List<Literal> literals) {
-		this.setLiterals(literals);
-	}
+    public Clause(List<Literal> literals) {
+        this.setLiterals(literals);
+    }
 
-	public void setLiterals(List<Literal> literals) {
-		this.literals = literals;
-	}
+    public void setLiterals(List<Literal> literals) {
+        this.literals = literals;
+    }
 
-	public List<Literal> getLiterals() {
-		return literals;
-	}
+    public List<Literal> getLiterals() {
+        return literals;
+    }
 
-	public void add(List<Literal> list)
-	{
-		literals.addAll(list);
-	}
+    public void add(List<Literal> list)
+    {
+        literals.addAll(list);
+    }
 
-	public void add(Literal... arr)
-	{
-		literals.addAll(Arrays.asList(arr));
-	}
+    public void add(Literal... arr)
+    {
+        literals.addAll(Arrays.asList(arr));
+    }
 
-	public abstract <T> T accept(BooleanVisitor<T> visitor);
+    public abstract <T> T accept(BooleanVisitor<T> visitor);
 
 }

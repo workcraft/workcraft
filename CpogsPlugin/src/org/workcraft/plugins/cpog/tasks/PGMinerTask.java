@@ -20,73 +20,73 @@ import org.workcraft.util.ToolUtils;
 
 public class PGMinerTask implements Task<ExternalProcessResult> {
 
-	private File inputFile;
-	private boolean split;
+    private File inputFile;
+    private boolean split;
 
-	public PGMinerTask(File inputFile, boolean split) {
-		this.inputFile = inputFile;
-		this.split = split;
-	}
+    public PGMinerTask(File inputFile, boolean split) {
+        this.inputFile = inputFile;
+        this.split = split;
+    }
 
-	@Override
-	public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
-		//Build the commands for PGMiner
-		try {
-			ArrayList<String> command = new ArrayList<>();
-			String toolName = ToolUtils.getAbsoluteCommandPath(CpogSettings.getPgminerCommand());
-			command.add(toolName);
+    @Override
+    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+        //Build the commands for PGMiner
+        try {
+            ArrayList<String> command = new ArrayList<>();
+            String toolName = ToolUtils.getAbsoluteCommandPath(CpogSettings.getPgminerCommand());
+            command.add(toolName);
 
-			if (split) {
-				command.add("-split");
-			}
-			command.add(inputFile.getAbsolutePath());
+            if (split) {
+                command.add("-split");
+            }
+            command.add(inputFile.getAbsolutePath());
 
-			//Call PGMiner
-			ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
-			SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+            //Call PGMiner
+            ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
+            SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
 
-			Result<? extends ExternalProcessResult> result = task.run(mon);
+            Result<? extends ExternalProcessResult> result = task.run(mon);
 
-			if (result.getOutcome() != Outcome.FINISHED) {
+            if (result.getOutcome() != Outcome.FINISHED) {
 
-				return result;
-			}
-			Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
-			try {
-				File outputFile = getOutputFile(inputFile);
-				if(outputFile.exists()) {
-					outputFiles.put("output.cpog", FileUtils.readAllBytes(outputFile));
-				}
-			} catch (IOException e) {
-				return new Result<ExternalProcessResult>(e);
-			}
+                return result;
+            }
+            Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
+            try {
+                File outputFile = getOutputFile(inputFile);
+                if(outputFile.exists()) {
+                    outputFiles.put("output.cpog", FileUtils.readAllBytes(outputFile));
+                }
+            } catch (IOException e) {
+                return new Result<ExternalProcessResult>(e);
+            }
 
-			ExternalProcessResult retVal = result.getReturnValue();
-			ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
-			if (retVal.getReturnCode() == 0) {
-				return Result.finished(finalResult);
-			} else {
-				return Result.failed(finalResult);
-			}
-		} catch (NullPointerException e) {
-			//Open window dialog was cancelled, do nothing
-		}
+            ExternalProcessResult retVal = result.getReturnValue();
+            ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+            if (retVal.getReturnCode() == 0) {
+                return Result.finished(finalResult);
+            } else {
+                return Result.failed(finalResult);
+            }
+        } catch (NullPointerException e) {
+            //Open window dialog was cancelled, do nothing
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public File getOutputFile(File inputFile) {
+    public File getOutputFile(File inputFile) {
 
-		String filePath = inputFile.getAbsolutePath();
+        String filePath = inputFile.getAbsolutePath();
 
-		int index = filePath.lastIndexOf('/');
-		String fileName = filePath.substring(index + 1);
-		String suffix = fileName.substring(fileName.indexOf('.'));
-		fileName = fileName.replace(suffix, "") + ".cpog";
-		filePath = filePath.substring(0, index + 1);
-		File outputFile = new File(filePath + fileName);
+        int index = filePath.lastIndexOf('/');
+        String fileName = filePath.substring(index + 1);
+        String suffix = fileName.substring(fileName.indexOf('.'));
+        fileName = fileName.replace(suffix, "") + ".cpog";
+        filePath = filePath.substring(0, index + 1);
+        File outputFile = new File(filePath + fileName);
 
-		return outputFile;
-	}
+        return outputFile;
+    }
 
 }

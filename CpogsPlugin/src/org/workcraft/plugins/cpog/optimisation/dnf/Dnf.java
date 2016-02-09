@@ -29,21 +29,21 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class Dnf extends Nf<DnfClause> {
 
-	public Dnf()
-	{
-	}
+    public Dnf()
+    {
+    }
 
-	public Dnf(DnfClause... clauses)
-	{
-		super(clauses);
-	}
+    public Dnf(DnfClause... clauses)
+    {
+        super(clauses);
+    }
 
-	public Dnf(List<DnfClause> clauses) {
-		super(clauses);
-	}
+    public Dnf(List<DnfClause> clauses) {
+        super(clauses);
+    }
 
-	@Override
-	public <T> T accept(BooleanVisitor<T> visitor) {
-		return BooleanOperations.or(getClauses()).accept(visitor);
-	}
+    @Override
+    public <T> T accept(BooleanVisitor<T> visitor) {
+        return BooleanOperations.or(getClauses()).accept(visitor);
+    }
 }

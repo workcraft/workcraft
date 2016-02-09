@@ -10,18 +10,18 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.policy.BundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 
-public 	class PetriNetToPolicyNetConverter extends DefaultModelConverter<VisualPetriNet, VisualPolicyNet>  {
+public     class PetriNetToPolicyNetConverter extends DefaultModelConverter<VisualPetriNet, VisualPolicyNet>  {
 
-	public PetriNetToPolicyNetConverter(VisualPetriNet srcModel, VisualPolicyNet dstModel) {
-		super(srcModel, dstModel);
-	}
+    public PetriNetToPolicyNetConverter(VisualPetriNet srcModel, VisualPolicyNet dstModel) {
+        super(srcModel, dstModel);
+    }
 
-	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
-		result.put(Place.class, Place.class);
-		result.put(Transition.class, BundledTransition.class);
-		return result;
-	}
+    @Override
+    public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
+        Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
+        result.put(Place.class, Place.class);
+        result.put(Transition.class, BundledTransition.class);
+        return result;
+    }
 
 }

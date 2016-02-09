@@ -30,216 +30,216 @@ import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf>
 {
-	private List<CnfClause> rho = new ArrayList<CnfClause>();
+    private List<CnfClause> rho = new ArrayList<CnfClause>();
 
-	TwoHotRange generateBinaryFunction(int variablesCount, int funcId)
-	{
-		TwoHotRangeProvider prov = new TwoHotRangeProvider();
-		TwoHotRange result = prov.generate("f"+funcId, variablesCount);
-		rho.addAll(prov.getConstraints().getClauses());
-		return result;
-	}
+    TwoHotRange generateBinaryFunction(int variablesCount, int funcId)
+    {
+        TwoHotRangeProvider prov = new TwoHotRangeProvider();
+        TwoHotRange result = prov.generate("f"+funcId, variablesCount);
+        rho.addAll(prov.getConstraints().getClauses());
+        return result;
+    }
 
-	private OneHotIntBooleanFormula generateInt(String varPrefix, int variablesCount) {
-		return numberProvider.generate(varPrefix, variablesCount);
-	}
+    private OneHotIntBooleanFormula generateInt(String varPrefix, int variablesCount) {
+        return numberProvider.generate(varPrefix, variablesCount);
+    }
 
-	CnfGeneratingOneHotNumberProvider numberProvider;
+    CnfGeneratingOneHotNumberProvider numberProvider;
 
-	public CnfGeneratingOptimiser()
-	{
-		this.numberProvider = new CnfGeneratingOneHotNumberProvider();
-	}
+    public CnfGeneratingOptimiser()
+    {
+        this.numberProvider = new CnfGeneratingOneHotNumberProvider();
+    }
 
-	@Override
-	public CpogOptimisationTask<Cnf> getFormula(String [] scenarios, BooleanVariable[] variables, int derivedVariables)
-	{
-		int nonDerivedVariables = variables.length;
+    @Override
+    public CpogOptimisationTask<Cnf> getFormula(String [] scenarios, BooleanVariable[] variables, int derivedVariables)
+    {
+        int nonDerivedVariables = variables.length;
 
-		//Generate all possible encodings...
-		Literal [][] encodings = new Literal [scenarios.length][];
-		for(int i=0;i<scenarios.length;i++)
-		{
-			encodings[i] = new Literal[nonDerivedVariables];
-			if(i == 0)
-				for(int j=0;j<nonDerivedVariables;j++)
-					encodings[i][j] = Literal.Zero;
-			else
-				for(int j=0;j<nonDerivedVariables;j++)
-					encodings[i][j] = literal(new FreeVariable("x"+j+"_s"+i));
-		}
+        //Generate all possible encodings...
+        Literal [][] encodings = new Literal [scenarios.length][];
+        for(int i=0;i<scenarios.length;i++)
+        {
+            encodings[i] = new Literal[nonDerivedVariables];
+            if(i == 0)
+                for(int j=0;j<nonDerivedVariables;j++)
+                    encodings[i][j] = Literal.Zero;
+            else
+                for(int j=0;j<nonDerivedVariables;j++)
+                    encodings[i][j] = literal(new FreeVariable("x"+j+"_s"+i));
+        }
 
-		//... and all possible functions.
-		TwoHotRange [] derivedFunctions = new TwoHotRange[derivedVariables];
-		for(int i=0;i<derivedVariables;i++)
-			derivedFunctions[i] = generateBinaryFunction((nonDerivedVariables/*+i*/)*2, i);
+        //... and all possible functions.
+        TwoHotRange [] derivedFunctions = new TwoHotRange[derivedVariables];
+        for(int i=0;i<derivedVariables;i++)
+            derivedFunctions[i] = generateBinaryFunction((nonDerivedVariables/*+i*/)*2, i);
 
-		orderFunctions(derivedFunctions);
+        orderFunctions(derivedFunctions);
 
-		//Evaluate all functions for all scenarios.
-		Literal [][] functionSpace = new Literal [scenarios.length][];
-		int totalVariables = nonDerivedVariables*2 + derivedVariables*2;
-		for(int i=0;i<scenarios.length;i++)
-		{
-			functionSpace[i] = new Literal[totalVariables];
-			for(int j=0;j<nonDerivedVariables;j++)
-			{
-				functionSpace[i][j*2] = encodings[i][j];
-				functionSpace[i][j*2+1] = not(encodings[i][j]);
-			}
-			for(int j=0;j<derivedVariables;j++)
-			{
-				int jj = j+nonDerivedVariables;
-				List<Literal> availableFormulas = new ArrayList<Literal>();
+        //Evaluate all functions for all scenarios.
+        Literal [][] functionSpace = new Literal [scenarios.length][];
+        int totalVariables = nonDerivedVariables*2 + derivedVariables*2;
+        for(int i=0;i<scenarios.length;i++)
+        {
+            functionSpace[i] = new Literal[totalVariables];
+            for(int j=0;j<nonDerivedVariables;j++)
+            {
+                functionSpace[i][j*2] = encodings[i][j];
+                functionSpace[i][j*2+1] = not(encodings[i][j]);
+            }
+            for(int j=0;j<derivedVariables;j++)
+            {
+                int jj = j+nonDerivedVariables;
+                List<Literal> availableFormulas = new ArrayList<Literal>();
 
-				for(int k=0;k</*j+*/nonDerivedVariables;k++)
-				{
-					availableFormulas.add(functionSpace[i][k*2]);
-					availableFormulas.add(functionSpace[i][k*2+1]);
-				}
+                for(int k=0;k</*j+*/nonDerivedVariables;k++)
+                {
+                    availableFormulas.add(functionSpace[i][k*2]);
+                    availableFormulas.add(functionSpace[i][k*2+1]);
+                }
 
-				Literal value = new Literal("f"+j+"_s"+i);
-				selectAnd(value, derivedFunctions[j], availableFormulas.toArray(new Literal[0]));
-				functionSpace[i][jj*2] = value;
-				functionSpace[i][jj*2+1] = not(value);
-			}
-		}
+                Literal value = new Literal("f"+j+"_s"+i);
+                selectAnd(value, derivedFunctions[j], availableFormulas.toArray(new Literal[0]));
+                functionSpace[i][jj*2] = value;
+                functionSpace[i][jj*2+1] = not(value);
+            }
+        }
 
-		int functionCount = scenarios[0].length();
+        int functionCount = scenarios[0].length();
 
-		List<CnfClause> tableConditions = new ArrayList<CnfClause>();
+        List<CnfClause> tableConditions = new ArrayList<CnfClause>();
 
-		OneHotIntBooleanFormula [] cpogSelections = new OneHotIntBooleanFormula[functionCount];
-		//Try to match CPOG functions with generated functions.
-		for(int i=0;i<functionCount;i++)
-		{
-			OneHotIntBooleanFormula varId = generateInt("cpog_f"+i+"_",totalVariables);
-			cpogSelections[i] = varId;
-			for(int j=0;j<scenarios.length;j++)
-			{
-				boolean inverse;
-				char ch = scenarios[j].charAt(i);
-				if(ch=='-')
-					continue;
-				else if(ch=='1')
-					inverse = false;
-				else if(ch=='0')
-					inverse = true;
-				else throw new RuntimeException("unknown symbol: " + parseBoolean(ch));
+        OneHotIntBooleanFormula [] cpogSelections = new OneHotIntBooleanFormula[functionCount];
+        //Try to match CPOG functions with generated functions.
+        for(int i=0;i<functionCount;i++)
+        {
+            OneHotIntBooleanFormula varId = generateInt("cpog_f"+i+"_",totalVariables);
+            cpogSelections[i] = varId;
+            for(int j=0;j<scenarios.length;j++)
+            {
+                boolean inverse;
+                char ch = scenarios[j].charAt(i);
+                if(ch=='-')
+                    continue;
+                else if(ch=='1')
+                    inverse = false;
+                else if(ch=='0')
+                    inverse = true;
+                else throw new RuntimeException("unknown symbol: " + parseBoolean(ch));
 
-				List<CnfClause> value = select(functionSpace[j], varId, inverse);
+                List<CnfClause> value = select(functionSpace[j], varId, inverse);
 
-				tableConditions.addAll(value);
-			}
-		}
+                tableConditions.addAll(value);
+            }
+        }
 
-		List<CnfClause> numberConstraints = numberProvider.getConstraintClauses();
-		tableConditions.addAll(numberConstraints);
-		tableConditions.addAll(rho);
+        List<CnfClause> numberConstraints = numberProvider.getConstraintClauses();
+        tableConditions.addAll(numberConstraints);
+        tableConditions.addAll(rho);
 
-		// Forming solution output here
+        // Forming solution output here
 
-		BooleanFormula[] funcs = new BooleanFormula[totalVariables];
-		for(int j=0;j<nonDerivedVariables;j++)
-		{
-			funcs[j*2] = variables[j];
-			funcs[j*2+1] = BooleanOperations.not(variables[j]);
-		}
-		for(int j=0;j<derivedVariables;j++)
-		{
-			int jj = j+nonDerivedVariables;
-			List<BooleanFormula> availableFormulas = new ArrayList<BooleanFormula>();
+        BooleanFormula[] funcs = new BooleanFormula[totalVariables];
+        for(int j=0;j<nonDerivedVariables;j++)
+        {
+            funcs[j*2] = variables[j];
+            funcs[j*2+1] = BooleanOperations.not(variables[j]);
+        }
+        for(int j=0;j<derivedVariables;j++)
+        {
+            int jj = j+nonDerivedVariables;
+            List<BooleanFormula> availableFormulas = new ArrayList<BooleanFormula>();
 
-			for(int k=0;k</*j+*/nonDerivedVariables;k++)
-			{
-				availableFormulas.add(funcs[k*2]);
-				availableFormulas.add(funcs[k*2+1]);
-			}
-			BooleanFormula value = TwoHotRangeProvider.selectAnd(availableFormulas.toArray(new BooleanFormula[0]), derivedFunctions[j]);
-			funcs[jj*2] = value;
-			funcs[jj*2+1] = BooleanOperations.not(value);
-		}
+            for(int k=0;k</*j+*/nonDerivedVariables;k++)
+            {
+                availableFormulas.add(funcs[k*2]);
+                availableFormulas.add(funcs[k*2+1]);
+            }
+            BooleanFormula value = TwoHotRangeProvider.selectAnd(availableFormulas.toArray(new BooleanFormula[0]), derivedFunctions[j]);
+            funcs[jj*2] = value;
+            funcs[jj*2+1] = BooleanOperations.not(value);
+        }
 
-		BooleanFormula[] functionVars = new BooleanFormula[functionCount];
-		for(int i=0;i<functionCount;i++)
-		{
-			functionVars[i] = numberProvider.select(funcs, cpogSelections[i]);
-		}
-		BooleanFormula[][] enc = new BooleanFormula[encodings.length][];
-		for(int i=0;i<enc.length;i++)
-		{
-			enc[i] = new BooleanFormula[encodings[i].length];
-			for(int j=0;j<enc[i].length;j++)
-				enc[i][j] = encodings[i][j];
-		}
+        BooleanFormula[] functionVars = new BooleanFormula[functionCount];
+        for(int i=0;i<functionCount;i++)
+        {
+            functionVars[i] = numberProvider.select(funcs, cpogSelections[i]);
+        }
+        BooleanFormula[][] enc = new BooleanFormula[encodings.length][];
+        for(int i=0;i<enc.length;i++)
+        {
+            enc[i] = new BooleanFormula[encodings[i].length];
+            for(int j=0;j<enc[i].length;j++)
+                enc[i][j] = encodings[i][j];
+        }
 
-		return new CpogOptimisationTask<Cnf>(functionVars,enc,new Cnf(tableConditions));
-	}
+        return new CpogOptimisationTask<Cnf>(functionVars,enc,new Cnf(tableConditions));
+    }
 
-	private void orderFunctions(TwoHotRange[] derivedFunctions) {
-		if(derivedFunctions.length>0)
-		{
-			rho.add(or(derivedFunctions[0].get(0),derivedFunctions[0].get(1)));
-			rho.add(or(derivedFunctions[0].get(2),derivedFunctions[0].get(3)));
-			if(derivedFunctions.length>1)
-			{
-				//rho.add(or(derivedFunctions[1].get(0),derivedFunctions[1].get(1),derivedFunctions[1].get(2),derivedFunctions[1].get(3),derivedFunctions[1].get(4),derivedFunctions[1].get(5)));
-				//rho.add(or(derivedFunctions[1].get(0),derivedFunctions[1].get(1),derivedFunctions[1].get(2),derivedFunctions[1].get(3),derivedFunctions[1].get(4),derivedFunctions[1].get(5)));
-			}
-		}
+    private void orderFunctions(TwoHotRange[] derivedFunctions) {
+        if(derivedFunctions.length>0)
+        {
+            rho.add(or(derivedFunctions[0].get(0),derivedFunctions[0].get(1)));
+            rho.add(or(derivedFunctions[0].get(2),derivedFunctions[0].get(3)));
+            if(derivedFunctions.length>1)
+            {
+                //rho.add(or(derivedFunctions[1].get(0),derivedFunctions[1].get(1),derivedFunctions[1].get(2),derivedFunctions[1].get(3),derivedFunctions[1].get(4),derivedFunctions[1].get(5)));
+                //rho.add(or(derivedFunctions[1].get(0),derivedFunctions[1].get(1),derivedFunctions[1].get(2),derivedFunctions[1].get(3),derivedFunctions[1].get(4),derivedFunctions[1].get(5)));
+            }
+        }
 
-		for(int i=0;i<derivedFunctions.length;i++)
-		{
-			int bits = derivedFunctions[i].size();
-			for(int j=i+1;j<derivedFunctions.length;j++)
-			{
-				int bitsj = derivedFunctions[j].size();
-				if(bits != bitsj)
-					throw new RuntimeException("Functions have different widths: "+bits+" and " + bitsj);
-				List<Literal> si = derivedFunctions[i].getThermometer();
-				List<Literal> xj = derivedFunctions[j];
-				for(int k=0;k<bits;k++)
-				{
-					rho.add(or(si.get(k), not(xj.get(k))));
-				}
-			}
-		}
-	}
+        for(int i=0;i<derivedFunctions.length;i++)
+        {
+            int bits = derivedFunctions[i].size();
+            for(int j=i+1;j<derivedFunctions.length;j++)
+            {
+                int bitsj = derivedFunctions[j].size();
+                if(bits != bitsj)
+                    throw new RuntimeException("Functions have different widths: "+bits+" and " + bitsj);
+                List<Literal> si = derivedFunctions[i].getThermometer();
+                List<Literal> xj = derivedFunctions[j];
+                for(int k=0;k<bits;k++)
+                {
+                    rho.add(or(si.get(k), not(xj.get(k))));
+                }
+            }
+        }
+    }
 
-	private Literal parseBoolean(char ch) {
-		if(ch == '0')
-			return Literal.Zero;
-		else
-			if(ch=='1')
-				return Literal.One;
-			else
-				throw new RuntimeException("o_O");
-	}
+    private Literal parseBoolean(char ch) {
+        if(ch == '0')
+            return Literal.Zero;
+        else
+            if(ch=='1')
+                return Literal.One;
+            else
+                throw new RuntimeException("o_O");
+    }
 
-	@SuppressWarnings("unused")
-	private void evaluate(Literal result, AndFunction<OneHotIntBooleanFormula> function, Literal[] f)
-	{
-		Literal sel1 = new Literal(result.getVariable().getLabel() + "_sel1");
-		Literal sel2 = new Literal(result.getVariable().getLabel() + "_sel2");
-		OneHotIntBooleanFormula x = function.getVar1Number();
-		OneHotIntBooleanFormula y = function.getVar2Number();
-		List<CnfClause> sel1C = CnfGeneratingOneHotNumberProvider.select(sel1, f, x);
-		List<CnfClause> sel2C = CnfGeneratingOneHotNumberProvider.select(sel2, f, y);
+    @SuppressWarnings("unused")
+    private void evaluate(Literal result, AndFunction<OneHotIntBooleanFormula> function, Literal[] f)
+    {
+        Literal sel1 = new Literal(result.getVariable().getLabel() + "_sel1");
+        Literal sel2 = new Literal(result.getVariable().getLabel() + "_sel2");
+        OneHotIntBooleanFormula x = function.getVar1Number();
+        OneHotIntBooleanFormula y = function.getVar2Number();
+        List<CnfClause> sel1C = CnfGeneratingOneHotNumberProvider.select(sel1, f, x);
+        List<CnfClause> sel2C = CnfGeneratingOneHotNumberProvider.select(sel2, f, y);
 
-		rho.add(or(result, not(sel1), not(sel2)));
-		rho.add(or(not(result), sel1));
-		rho.add(or(not(result), sel2));
-		rho.addAll(sel1C);
-		rho.addAll(sel2C);
-	}
+        rho.add(or(result, not(sel1), not(sel2)));
+        rho.add(or(not(result), sel1));
+        rho.add(or(not(result), sel2));
+        rho.addAll(sel1C);
+        rho.addAll(sel2C);
+    }
 
-	private void selectAnd(Literal result, TwoHotRange function, Literal[] f)
-	{
-		List<CnfClause> sel = TwoHotRangeProvider.selectAnd(result, f, function);
-		rho.addAll(sel);
-	}
+    private void selectAnd(Literal result, TwoHotRange function, Literal[] f)
+    {
+        List<CnfClause> sel = TwoHotRangeProvider.selectAnd(result, f, function);
+        rho.addAll(sel);
+    }
 
-	private List<CnfClause> select(Literal[] vars, OneHotIntBooleanFormula number, boolean inverse) {
-		return CnfGeneratingOneHotNumberProvider.select(vars, number, inverse);
-	}
+    private List<CnfClause> select(Literal[] vars, OneHotIntBooleanFormula number, boolean inverse) {
+        return CnfGeneratingOneHotNumberProvider.select(vars, number, inverse);
+    }
 }

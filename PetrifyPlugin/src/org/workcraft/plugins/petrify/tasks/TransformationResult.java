@@ -5,19 +5,19 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.tasks.Result;
 
 public class TransformationResult {
-	private Result<? extends ExternalProcessResult> petrifyResult;
-	private STGModel result;
+    private Result<? extends ExternalProcessResult> petrifyResult;
+    private STGModel result;
 
-	public TransformationResult(Result<? extends ExternalProcessResult> petrifyResult, STGModel result) {
-		this.petrifyResult = petrifyResult;
-		this.result = result;
-	}
+    public TransformationResult(Result<? extends ExternalProcessResult> petrifyResult, STGModel result) {
+        this.petrifyResult = petrifyResult;
+        this.result = result;
+    }
 
-	public  Result<? extends ExternalProcessResult> getPetrifyResult() {
-		return petrifyResult;
-	}
+    public  Result<? extends ExternalProcessResult> getPetrifyResult() {
+        return petrifyResult;
+    }
 
-	public STGModel getResult() {
-		return result;
-	}
+    public STGModel getResult() {
+        return result;
+    }
 }

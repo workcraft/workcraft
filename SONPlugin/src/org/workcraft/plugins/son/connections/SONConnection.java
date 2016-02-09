@@ -11,71 +11,71 @@ import org.workcraft.plugins.son.util.Interval;
 
 public class SONConnection extends MathConnection{
 
-	private Interval time = new Interval(0000, 9999);
-	private Color timeColor = Color.BLACK;
-	private Color color=CommonVisualSettings.getBorderColor();
+    private Interval time = new Interval(0000, 9999);
+    private Color timeColor = Color.BLACK;
+    private Color color=CommonVisualSettings.getBorderColor();
 
-	public enum Semantics {
-		PNLINE("Petri net connection"),
-		SYNCLINE("Synchronous communication"),
-		ASYNLINE("Asynchronous communication"),
-		BHVLINE("Behavioural abstraction");
+    public enum Semantics {
+        PNLINE("Petri net connection"),
+        SYNCLINE("Synchronous communication"),
+        ASYNLINE("Asynchronous communication"),
+        BHVLINE("Behavioural abstraction");
 
-		private final String name;
+        private final String name;
 
-		private Semantics(String name) {
-			this.name = name;
-		}
+        private Semantics(String name) {
+            this.name = name;
+        }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 
-	private Semantics semantics = Semantics.PNLINE;
+    private Semantics semantics = Semantics.PNLINE;
 
-	public SONConnection(){
-	}
+    public SONConnection(){
+    }
 
-	public Color getColor() {
-		return color;
-	}
+    public Color getColor() {
+        return color;
+    }
 
-	public void setColor(Color color) {
-		this.color = color;
-		sendNotification(new PropertyChangedEvent(this, "color"));
-	}
+    public void setColor(Color color) {
+        this.color = color;
+        sendNotification(new PropertyChangedEvent(this, "color"));
+    }
 
-	public SONConnection(MathNode first, MathNode second, Semantics semantics) {
-		super(first, second);
-		this.setSemantics(semantics);
-	}
+    public SONConnection(MathNode first, MathNode second, Semantics semantics) {
+        super(first, second);
+        this.setSemantics(semantics);
+    }
 
-	public Semantics getSemantics() {
-		return semantics;
-	}
+    public Semantics getSemantics() {
+        return semantics;
+    }
 
-	public void setSemantics(Semantics semantics) {
-		this.semantics = semantics;
-		sendNotification(new PropertyChangedEvent(this, "semantics"));
-	}
+    public void setSemantics(Semantics semantics) {
+        this.semantics = semantics;
+        sendNotification(new PropertyChangedEvent(this, "semantics"));
+    }
 
-	public Interval getTime(){
-		return time;
-	}
+    public Interval getTime(){
+        return time;
+    }
 
-	public void setTime(Interval time){
-		this.time = time;
-		sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
-	}
+    public void setTime(Interval time){
+        this.time = time;
+        sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
+    }
 
 
-	public Color getTimeLabelColor() {
-		return timeColor;
-	}
+    public Color getTimeLabelColor() {
+        return timeColor;
+    }
 
-	public void setTimeLabelColor(Color value) {
-		this.timeColor = value;
-	}
+    public void setTimeLabelColor(Color value) {
+        this.timeColor = value;
+    }
 }

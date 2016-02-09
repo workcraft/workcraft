@@ -22,56 +22,56 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class PetriNetToStgConverter extends DefaultModelConverter<VisualPetriNet, VisualSTG> {
 
-	public PetriNetToStgConverter(VisualPetriNet srcModel, VisualSTG dstModel) {
-		super(srcModel, dstModel);
-	}
+    public PetriNetToStgConverter(VisualPetriNet srcModel, VisualSTG dstModel) {
+        super(srcModel, dstModel);
+    }
 
-	@Override
-	public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
-		Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
-		result.put(Place.class, STGPlace.class);
-		result.put(Transition.class, DummyTransition.class);
-		return result;
-	}
+    @Override
+    public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap() {
+        Map<Class<? extends MathNode>, Class<? extends MathNode>> result = super.getComponentClassMap();
+        result.put(Place.class, STGPlace.class);
+        result.put(Transition.class, DummyTransition.class);
+        return result;
+    }
 
-	@Override
-	public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap() {
-		Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> result = super.getReplicaClassMap();
-		result.put(VisualReplicaPlace.class, VisualReplicaPlace.class);
-		return result;
-	}
+    @Override
+    public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap() {
+        Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> result = super.getReplicaClassMap();
+        result.put(VisualReplicaPlace.class, VisualReplicaPlace.class);
+        return result;
+    }
 
-	@Override
-	public VisualComponent convertComponent(VisualComponent srcComponent) {
-		VisualComponent dstComponent = super.convertComponent(srcComponent);
-		if ( (dstComponent instanceof VisualDummyTransition) || (dstComponent instanceof VisualSignalTransition) ) {
-			dstComponent.setLabel("");
-		}
-		return dstComponent;
-	}
+    @Override
+    public VisualComponent convertComponent(VisualComponent srcComponent) {
+        VisualComponent dstComponent = super.convertComponent(srcComponent);
+        if ( (dstComponent instanceof VisualDummyTransition) || (dstComponent instanceof VisualSignalTransition) ) {
+            dstComponent.setLabel("");
+        }
+        return dstComponent;
+    }
 
-	@Override
-	public VisualConnection convertConnection(VisualConnection srcConnection) {
-		VisualConnection dstConnection = null;
-		if (srcConnection instanceof VisualReadArc) {
-			VisualNode srcFirst = srcConnection.getFirst();
-			VisualNode srcSecond = srcConnection.getSecond();
-			VisualNode dstFirst = getSrcToDstNode(srcFirst);
-			VisualNode dstSecond = getSrcToDstNode(srcSecond);
-			if ((dstFirst != null) && (dstSecond != null)) {
-				try {
-					dstConnection = getDstModel().connectUndirected(dstFirst, dstSecond);
-					dstConnection.copyStyle(srcConnection);
-					dstConnection.copyShape(srcConnection);
-				} catch (InvalidConnectionException e) {
-					e.printStackTrace();
-				}
-			}
+    @Override
+    public VisualConnection convertConnection(VisualConnection srcConnection) {
+        VisualConnection dstConnection = null;
+        if (srcConnection instanceof VisualReadArc) {
+            VisualNode srcFirst = srcConnection.getFirst();
+            VisualNode srcSecond = srcConnection.getSecond();
+            VisualNode dstFirst = getSrcToDstNode(srcFirst);
+            VisualNode dstSecond = getSrcToDstNode(srcSecond);
+            if ((dstFirst != null) && (dstSecond != null)) {
+                try {
+                    dstConnection = getDstModel().connectUndirected(dstFirst, dstSecond);
+                    dstConnection.copyStyle(srcConnection);
+                    dstConnection.copyShape(srcConnection);
+                } catch (InvalidConnectionException e) {
+                    e.printStackTrace();
+                }
+            }
 
-		} else {
-			dstConnection = super.convertConnection(srcConnection);
-		}
-		return dstConnection;
-	}
+        } else {
+            dstConnection = super.convertConnection(srcConnection);
+        }
+        return dstConnection;
+    }
 
 }

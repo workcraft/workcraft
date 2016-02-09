@@ -23,96 +23,96 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class PetriNetModule implements Module {
 
-	@Override
-	public String getDescription() {
-		return "Petri Net";
-	}
+    @Override
+    public String getDescription() {
+        return "Petri Net";
+    }
 
-	@Override
-	public void init() {
-		initPluginManager();
-		initCompatibilityManager();
-	}
+    @Override
+    public void init() {
+        initPluginManager();
+        initCompatibilityManager();
+    }
 
-	private void initPluginManager() {
-		final Framework framework = Framework.getInstance();
-		final PluginManager pm = framework.getPluginManager();
-		pm.registerClass(ModelDescriptor.class, PetriNetDescriptor.class);
+    private void initPluginManager() {
+        final Framework framework = Framework.getInstance();
+        final PluginManager pm = framework.getPluginManager();
+        pm.registerClass(ModelDescriptor.class, PetriNetDescriptor.class);
 
-		pm.registerClass(XMLSerialiser.class, ReadArcSerialiser.class);
-		pm.registerClass(XMLDeserialiser.class, ReadArcDeserialiser.class);
+        pm.registerClass(XMLSerialiser.class, ReadArcSerialiser.class);
+        pm.registerClass(XMLDeserialiser.class, ReadArcDeserialiser.class);
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new TransitionContractorTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new TransitionContractorTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new DirectedArcToReadArcConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DirectedArcToReadArcConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new DualArcToReadArcConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DualArcToReadArcConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new ReadArcToDualArcConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new ReadArcToDualArcConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new CollapseReplicaTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new CollapseReplicaTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new ProxyDirectedArcPlaceTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new ProxyDirectedArcPlaceTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new ProxyReadArcPlaceTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new ProxyReadArcPlaceTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new PlaceMergerTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new PlaceMergerTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new TransitionMergerTool();
-			}
-		});
-	}
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new TransitionMergerTool();
+            }
+        });
+    }
 
-	private void initCompatibilityManager() {
-		final Framework framework = Framework.getInstance();
-		final CompatibilityManager cm = framework.getCompatibilityManager();
+    private void initCompatibilityManager() {
+        final Framework framework = Framework.getInstance();
+        final CompatibilityManager cm = framework.getCompatibilityManager();
 
-		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.petri.PetriNetModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.petri.PetriNetDescriptor\"/>");
-	}
+        cm.registerMetaReplacement(
+                "<descriptor class=\"org.workcraft.plugins.petri.PetriNetModelDescriptor\"/>",
+                "<descriptor class=\"org.workcraft.plugins.petri.PetriNetDescriptor\"/>");
+    }
 
 }

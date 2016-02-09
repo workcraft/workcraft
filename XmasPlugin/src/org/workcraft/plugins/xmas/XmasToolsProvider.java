@@ -24,27 +24,27 @@ import org.workcraft.plugins.xmas.tools.XmasSimulationTool;
 
 public class XmasToolsProvider implements CustomToolsProvider {
 
-	@Override
-	public Iterable<GraphEditorTool> getTools() {
-		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+    @Override
+    public Iterable<GraphEditorTool> getTools() {
+        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new SyncSelectionTool());
-		result.add(new CommentGeneratorTool());
-		result.add(new XmasConnectionTool());
+        result.add(new SyncSelectionTool());
+        result.add(new CommentGeneratorTool());
+        result.add(new XmasConnectionTool());
 
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SourceComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SinkComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(FunctionComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(QueueComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(ForkComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(JoinComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SwitchComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(MergeComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CreditComponent.class)));
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SyncComponent.class)));
-		result.add(new XmasSimulationTool());
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SourceComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SinkComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(FunctionComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(QueueComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(ForkComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(JoinComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SwitchComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(MergeComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(CreditComponent.class)));
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(SyncComponent.class)));
+        result.add(new XmasSimulationTool());
 
-		return result;
-	}
+        return result;
+    }
 
 }

@@ -31,150 +31,150 @@ import org.workcraft.gui.propertyeditor.Settings;
 
 public class PetrifyUtilitySettings implements Settings {
 
-	private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
-	private static final String prefix = "Tools.petrify";
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final String prefix = "Tools.petrify";
 
-	private static final String keyPetrifyCkeyPmmand = prefix + ".command";
-	private static final String keyPetrifyArgs = prefix + ".args";
-	private static final String keyAdvancedMode= prefix + ".advancedMode";
-	private static final String keyPrintStdout= prefix + ".printStdout";
-	private static final String keyPrintStderr= prefix + ".printStderr";
+    private static final String keyPetrifyCkeyPmmand = prefix + ".command";
+    private static final String keyPetrifyArgs = prefix + ".args";
+    private static final String keyAdvancedMode= prefix + ".advancedMode";
+    private static final String keyPrintStdout= prefix + ".printStdout";
+    private static final String keyPrintStderr= prefix + ".printStderr";
 
-	private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify");
-	private static final String defaultArgs = "";
-	private static final Boolean defaultAdvancedMode = false;
-	private static final Boolean defaultPrintStdout = true;
-	private static final Boolean defaultPrintStderr = true;
+    private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify");
+    private static final String defaultArgs = "";
+    private static final Boolean defaultAdvancedMode = false;
+    private static final Boolean defaultPrintStdout = true;
+    private static final Boolean defaultPrintStderr = true;
 
-	private static String command = defaultCommand;
-	private static String args = defaultArgs;
-	private static Boolean advancedMode = defaultAdvancedMode;
-	private static Boolean printStdout = defaultPrintStdout;
-	private static Boolean printStderr = defaultPrintStderr;
+    private static String command = defaultCommand;
+    private static String args = defaultArgs;
+    private static Boolean advancedMode = defaultAdvancedMode;
+    private static Boolean printStdout = defaultPrintStdout;
+    private static Boolean printStderr = defaultPrintStderr;
 
-	public PetrifyUtilitySettings() {
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Petrify command", String.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, String value) {
-				setCommand(value);
-			}
-			protected String getter(PetrifyUtilitySettings object) {
-				return getCommand();
-			}
-		});
+    public PetrifyUtilitySettings() {
+        properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+                this, "Petrify command", String.class, true, false, false) {
+            protected void setter(PetrifyUtilitySettings object, String value) {
+                setCommand(value);
+            }
+            protected String getter(PetrifyUtilitySettings object) {
+                return getCommand();
+            }
+        });
 
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
-				this, "Additional parameters", String.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, String value) {
-				setArgs(value);
-			}
-			protected String getter(PetrifyUtilitySettings object) {
-				return getArgs();
-			}
-		});
+        properties.add(new PropertyDeclaration<PetrifyUtilitySettings, String>(
+                this, "Additional parameters", String.class, true, false, false) {
+            protected void setter(PetrifyUtilitySettings object, String value) {
+                setArgs(value);
+            }
+            protected String getter(PetrifyUtilitySettings object) {
+                return getArgs();
+            }
+        });
 
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
-				this, "Edit additional parameters before every call", Boolean.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, Boolean value) {
-				setAdvancedMode(value);
-			}
-			protected Boolean getter(PetrifyUtilitySettings object) {
-				return getAdvancedMode();
-			}
-		});
+        properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
+                this, "Edit additional parameters before every call", Boolean.class, true, false, false) {
+            protected void setter(PetrifyUtilitySettings object, Boolean value) {
+                setAdvancedMode(value);
+            }
+            protected Boolean getter(PetrifyUtilitySettings object) {
+                return getAdvancedMode();
+            }
+        });
 
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
-				this, "Output stdout", Boolean.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, Boolean value) {
-				setPrintStdout(value);
-			}
-			protected Boolean getter(PetrifyUtilitySettings object) {
-				return getPrintStdout();
-			}
-		});
+        properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
+                this, "Output stdout", Boolean.class, true, false, false) {
+            protected void setter(PetrifyUtilitySettings object, Boolean value) {
+                setPrintStdout(value);
+            }
+            protected Boolean getter(PetrifyUtilitySettings object) {
+                return getPrintStdout();
+            }
+        });
 
-		properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
-				this, "Output stderr", Boolean.class, true, false, false) {
-			protected void setter(PetrifyUtilitySettings object, Boolean value) {
-				setPrintStderr(value);
-			}
-			protected Boolean getter(PetrifyUtilitySettings object) {
-				return getPrintStderr();
-			}
-		});
-	}
+        properties.add(new PropertyDeclaration<PetrifyUtilitySettings, Boolean>(
+                this, "Output stderr", Boolean.class, true, false, false) {
+            protected void setter(PetrifyUtilitySettings object, Boolean value) {
+                setPrintStderr(value);
+            }
+            protected Boolean getter(PetrifyUtilitySettings object) {
+                return getPrintStderr();
+            }
+        });
+    }
 
-	@Override
-	public List<PropertyDescriptor> getDescriptors() {
-		return properties;
-	}
+    @Override
+    public List<PropertyDescriptor> getDescriptors() {
+        return properties;
+    }
 
-	@Override
-	public void load(Config config) {
-		setCommand(config.getString(keyPetrifyCkeyPmmand, defaultCommand));
-		setArgs(config.getString(keyPetrifyArgs, defaultArgs));
-		setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
-		setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
-		setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
-	}
+    @Override
+    public void load(Config config) {
+        setCommand(config.getString(keyPetrifyCkeyPmmand, defaultCommand));
+        setArgs(config.getString(keyPetrifyArgs, defaultArgs));
+        setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
+        setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
+        setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
+    }
 
-	@Override
-	public void save(Config config) {
-		config.set(keyPetrifyCkeyPmmand, getCommand());
-		config.set(keyPetrifyArgs, getArgs());
-		config.setBoolean(keyAdvancedMode, getAdvancedMode());
-		config.setBoolean(keyPrintStdout, getPrintStdout());
-		config.setBoolean(keyPrintStderr, getPrintStderr());
-	}
+    @Override
+    public void save(Config config) {
+        config.set(keyPetrifyCkeyPmmand, getCommand());
+        config.set(keyPetrifyArgs, getArgs());
+        config.setBoolean(keyAdvancedMode, getAdvancedMode());
+        config.setBoolean(keyPrintStdout, getPrintStdout());
+        config.setBoolean(keyPrintStderr, getPrintStderr());
+    }
 
-	@Override
-	public String getSection() {
-		return "External tools";
-	}
+    @Override
+    public String getSection() {
+        return "External tools";
+    }
 
-	@Override
-	public String getName() {
-		return "Petrify";
-	}
+    @Override
+    public String getName() {
+        return "Petrify";
+    }
 
-	public static String getCommand() {
-		return command;
-	}
+    public static String getCommand() {
+        return command;
+    }
 
-	public static void setCommand(String value) {
-		command = value;
-	}
+    public static void setCommand(String value) {
+        command = value;
+    }
 
-	public static String getArgs() {
-		return args;
-	}
+    public static String getArgs() {
+        return args;
+    }
 
-	public static void setArgs(String value) {
-		args = value;
-	}
+    public static void setArgs(String value) {
+        args = value;
+    }
 
-	public static Boolean getAdvancedMode() {
-		return advancedMode;
-	}
+    public static Boolean getAdvancedMode() {
+        return advancedMode;
+    }
 
-	public static void setAdvancedMode(Boolean value) {
-		advancedMode = value;
-	}
+    public static void setAdvancedMode(Boolean value) {
+        advancedMode = value;
+    }
 
-	public static Boolean getPrintStdout() {
-		return printStdout;
-	}
+    public static Boolean getPrintStdout() {
+        return printStdout;
+    }
 
-	public static void setPrintStdout(Boolean value) {
-		printStdout = value;
-	}
+    public static void setPrintStdout(Boolean value) {
+        printStdout = value;
+    }
 
-	public static Boolean getPrintStderr() {
-		return printStderr;
-	}
+    public static Boolean getPrintStderr() {
+        return printStderr;
+    }
 
-	public static void setPrintStderr(Boolean value) {
-		printStderr = value;
-	}
+    public static void setPrintStderr(Boolean value) {
+        printStderr = value;
+    }
 
 }

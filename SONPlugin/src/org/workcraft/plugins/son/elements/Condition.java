@@ -9,43 +9,43 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
 public class Condition extends PlaceNode{
 
-	private boolean initialState = false;
-	private boolean finalState = false;
+    private boolean initialState = false;
+    private boolean finalState = false;
 
-	protected Color startTimeColor = Color.BLACK;
-	protected Color endTimeColor = Color.BLACK;
+    protected Color startTimeColor = Color.BLACK;
+    protected Color endTimeColor = Color.BLACK;
 
-	public boolean isInitial() {
-		return initialState;
-	}
+    public boolean isInitial() {
+        return initialState;
+    }
 
-	public void setInitial(boolean value) {
-		initialState = value;
-		sendNotification(new PropertyChangedEvent(this, "initial"));
-	}
+    public void setInitial(boolean value) {
+        initialState = value;
+        sendNotification(new PropertyChangedEvent(this, "initial"));
+    }
 
-	public boolean isFinal() {
-		return finalState;
-	}
+    public boolean isFinal() {
+        return finalState;
+    }
 
-	public void setFinal(boolean value) {
-		finalState = value;
-		sendNotification(new PropertyChangedEvent(this, "final"));
-	}
+    public void setFinal(boolean value) {
+        finalState = value;
+        sendNotification(new PropertyChangedEvent(this, "final"));
+    }
 
-	public Color getStartTimeColor(){
-		return startTimeColor;
-	}
+    public Color getStartTimeColor(){
+        return startTimeColor;
+    }
 
-	public void setStartTimeColor(Color value){
-		startTimeColor = value;
-	}
+    public void setStartTimeColor(Color value){
+        startTimeColor = value;
+    }
 
-	public Color getEndTimeColor(){
-		return endTimeColor;
-	}
+    public Color getEndTimeColor(){
+        return endTimeColor;
+    }
 
-	public void setEndTimeColor(Color value){
-		endTimeColor = value;
-	}
+    public void setEndTimeColor(Color value){
+        endTimeColor = value;
+    }
 }

@@ -16,23 +16,23 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
-	public FunctionComponentGeneratorTool() {
-		super(new DefaultNodeGenerator(FunctionComponent.class) {
-			@Override
-			public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
-				VisualFunctionComponent component = (VisualFunctionComponent)super.generate(model, where);
-				VisualFunctionContact contact = new VisualFunctionContact(new FunctionContact(IOType.OUTPUT));
-				contact.setPosition(new Point2D.Double(0, 0));
-				component.addContact((VisualCircuit)model, contact);
-				model.setName(contact.getReferencedComponent(), "z");
-				return component;
-			}
-		});
-	}
+    public FunctionComponentGeneratorTool() {
+        super(new DefaultNodeGenerator(FunctionComponent.class) {
+            @Override
+            public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
+                VisualFunctionComponent component = (VisualFunctionComponent)super.generate(model, where);
+                VisualFunctionContact contact = new VisualFunctionContact(new FunctionContact(IOType.OUTPUT));
+                contact.setPosition(new Point2D.Double(0, 0));
+                component.addContact((VisualCircuit)model, contact);
+                model.setName(contact.getReferencedComponent(), "z");
+                return component;
+            }
+        });
+    }
 
-	@Override
-	public String getHintMessage() {
-		return "Click to create a component, then right-click on the component to add contacts.";
-	}
+    @Override
+    public String getHintMessage() {
+        return "Click to create a component, then right-click on the component to add contacts.";
+    }
 
 }

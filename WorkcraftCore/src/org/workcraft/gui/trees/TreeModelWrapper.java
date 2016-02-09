@@ -32,107 +32,107 @@ import javax.swing.tree.TreePath;
 import org.workcraft.gui.workspace.Path;
 
 class TreeListenerWrapper<Node> implements TreeListener<Node> {
-	private final TreeModelListener l;
+    private final TreeModelListener l;
 
-	TreeListenerWrapper(TreeModelListener l) {
-		this.l = l;
-	}
+    TreeListenerWrapper(TreeModelListener l) {
+        this.l = l;
+    }
 
-	@Override
-	public void added(Path<Node> path) {
-		l.treeNodesInserted(tme(path));
-	}
+    @Override
+    public void added(Path<Node> path) {
+        l.treeNodesInserted(tme(path));
+    }
 
-	private TreeModelEvent tme(Path<Node> path) {
-		return new TreeModelEvent(this, path(path));
-	}
+    private TreeModelEvent tme(Path<Node> path) {
+        return new TreeModelEvent(this, path(path));
+    }
 
-	private Object[] path(Path<Node> path) {
-		return Path.getPath(path).toArray();
-	}
+    private Object[] path(Path<Node> path) {
+        return Path.getPath(path).toArray();
+    }
 
-	@Override public void changed(Path<Node> path) {
-		l.treeNodesChanged(tme(path));
-	}
+    @Override public void changed(Path<Node> path) {
+        l.treeNodesChanged(tme(path));
+    }
 
-	@Override
-	public void removed(Path<Node> path) {
-		l.treeNodesRemoved(tme(path));
-	}
+    @Override
+    public void removed(Path<Node> path) {
+        l.treeNodesRemoved(tme(path));
+    }
 
-	@Override
-	public void restructured(Path<Node> path) {
-		l.treeStructureChanged(tme(path));
-	}
+    @Override
+    public void restructured(Path<Node> path) {
+        l.treeStructureChanged(tme(path));
+    }
 }
 
 final class TreeModelWrapper<Node> implements TreeModel {
-	private final TreeSource<Node> source;
-	Map<TreeModelListener, TreeListenerWrapper<Node>> listeners = new HashMap<TreeModelListener, TreeListenerWrapper<Node>>();
+    private final TreeSource<Node> source;
+    Map<TreeModelListener, TreeListenerWrapper<Node>> listeners = new HashMap<TreeModelListener, TreeListenerWrapper<Node>>();
 
-	public void update(Path<Node> path) {
-		for (TreeListenerWrapper<Node> l : listeners.values()) {
-			l.restructured(path);
-		}
-	}
+    public void update(Path<Node> path) {
+        for (TreeListenerWrapper<Node> l : listeners.values()) {
+            l.restructured(path);
+        }
+    }
 
-	TreeModelWrapper(TreeSource<Node> source) {
-		this.source = source;
-	}
+    TreeModelWrapper(TreeSource<Node> source) {
+        this.source = source;
+    }
 
-	@Override public void addTreeModelListener(final TreeModelListener l) {
-		source.addListener(wrap(l));
-	}
+    @Override public void addTreeModelListener(final TreeModelListener l) {
+        source.addListener(wrap(l));
+    }
 
-	private TreeListenerWrapper<Node> wrap(final TreeModelListener l) {
-		TreeListenerWrapper<Node> result = listeners.get(l);
-		if (result == null) {
-			listeners.put(l, result = new TreeListenerWrapper<Node>(l));
-		}
-		return result;
-	}
+    private TreeListenerWrapper<Node> wrap(final TreeModelListener l) {
+        TreeListenerWrapper<Node> result = listeners.get(l);
+        if (result == null) {
+            listeners.put(l, result = new TreeListenerWrapper<Node>(l));
+        }
+        return result;
+    }
 
-	@Override public Object getChild(Object parent, int index) {
-		Object result = null;
-		List<Node> children = source.getChildren(cast(parent));
-		if (index < children.size()) {
-			result = children.get(index);
-		}
-		return result;
-	}
+    @Override public Object getChild(Object parent, int index) {
+        Object result = null;
+        List<Node> children = source.getChildren(cast(parent));
+        if (index < children.size()) {
+            result = children.get(index);
+        }
+        return result;
+    }
 
-	@Override
-	public int getChildCount(Object parent) {
-		return getChildren(parent).size();
-	}
+    @Override
+    public int getChildCount(Object parent) {
+        return getChildren(parent).size();
+    }
 
-	private List<Node> getChildren(Object parent) {
-		return source.getChildren(cast(parent));
-	}
+    private List<Node> getChildren(Object parent) {
+        return source.getChildren(cast(parent));
+    }
 
-	@Override public int getIndexOfChild(Object parent, Object child) {
-		return getChildren(parent).indexOf(child);
-	}
+    @Override public int getIndexOfChild(Object parent, Object child) {
+        return getChildren(parent).indexOf(child);
+    }
 
-	@Override public Object getRoot() {
-		return source.getRoot();
-	}
+    @Override public Object getRoot() {
+        return source.getRoot();
+    }
 
-	@Override public boolean isLeaf(Object node) {
-		return source.isLeaf(cast(node));
-	}
+    @Override public boolean isLeaf(Object node) {
+        return source.isLeaf(cast(node));
+    }
 
-	@SuppressWarnings("unchecked")
-	private Node cast(Object node) {
-		return (Node)node;
-	}
+    @SuppressWarnings("unchecked")
+    private Node cast(Object node) {
+        return (Node)node;
+    }
 
-	@Override public void removeTreeModelListener(TreeModelListener l) {
-		source.removeListener(wrap(l));
-	}
+    @Override public void removeTreeModelListener(TreeModelListener l) {
+        source.removeListener(wrap(l));
+    }
 
-	@Override public void valueForPathChanged(TreePath path, Object newValue) {
-		throw new org.workcraft.exceptions.NotSupportedException();
-	}
+    @Override public void valueForPathChanged(TreePath path, Object newValue) {
+        throw new org.workcraft.exceptions.NotSupportedException();
+    }
 
 }

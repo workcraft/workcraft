@@ -15,56 +15,56 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityCheckerTool extends VerificationTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Unreachable state";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Unreachable state";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof Fsm;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof Fsm;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
-		HashSet<State> unreachableStates = checkReachability(fsm);
-		if (unreachableStates.isEmpty()) {
-			JOptionPane.showMessageDialog(null,	"The model does not have unreachable states." ,
-					"Verification result", JOptionPane.INFORMATION_MESSAGE);
-		} else {
-			String stateStr = FsmUtils.statesToString(fsm, unreachableStates);
-			JOptionPane.showMessageDialog(null,	"The model has unreachable states:\n" + stateStr,
-					"Verification result", JOptionPane.WARNING_MESSAGE);
-		}
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
+        HashSet<State> unreachableStates = checkReachability(fsm);
+        if (unreachableStates.isEmpty()) {
+            JOptionPane.showMessageDialog(null,    "The model does not have unreachable states." ,
+                    "Verification result", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            String stateStr = FsmUtils.statesToString(fsm, unreachableStates);
+            JOptionPane.showMessageDialog(null,    "The model has unreachable states:\n" + stateStr,
+                    "Verification result", JOptionPane.WARNING_MESSAGE);
+        }
+    }
 
-	private HashSet<State> checkReachability(final Fsm fsm) {
-		HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
+    private HashSet<State> checkReachability(final Fsm fsm) {
+        HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
-		HashSet<State> visited = new HashSet<State>();
-		Queue<State> queue = new LinkedList<State>();
+        HashSet<State> visited = new HashSet<State>();
+        Queue<State> queue = new LinkedList<State>();
 
-		State initialState = fsm.getInitialState();
-		if (initialState != null) {
-			queue.add(initialState);
-		}
+        State initialState = fsm.getInitialState();
+        if (initialState != null) {
+            queue.add(initialState);
+        }
 
-		while (!queue.isEmpty()) {
-			State curState = queue.remove();
-			if (visited.contains(curState)) continue;
-			visited.add(curState);
-			for (Event curEvent: stateEvents.get(curState)) {
-				State nextState = (State)curEvent.getSecond();
-				if (nextState != null) {
-					queue.add(nextState);
-				}
-			}
-		}
+        while (!queue.isEmpty()) {
+            State curState = queue.remove();
+            if (visited.contains(curState)) continue;
+            visited.add(curState);
+            for (Event curEvent: stateEvents.get(curState)) {
+                State nextState = (State)curEvent.getSecond();
+                if (nextState != null) {
+                    queue.add(nextState);
+                }
+            }
+        }
 
-		HashSet<State> unreachableStates = new HashSet<State>(fsm.getStates());
-		unreachableStates.removeAll(visited);
-		return unreachableStates;
-	}
+        HashSet<State> unreachableStates = new HashSet<State>(fsm.getStates());
+        unreachableStates.removeAll(visited);
+        return unreachableStates;
+    }
 
 }

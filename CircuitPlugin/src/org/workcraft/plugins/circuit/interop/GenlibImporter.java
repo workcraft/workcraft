@@ -38,39 +38,39 @@ import org.workcraft.workspace.ModelEntry;
 
 public class GenlibImporter implements Importer {
 
-	@Override
-	public boolean accept(File file) {
-		return file.getName().endsWith(".lib");
-	}
+    @Override
+    public boolean accept(File file) {
+        return file.getName().endsWith(".lib");
+    }
 
-	@Override
-	public String getDescription() {
-		return "Genlib (.lib)";
-	}
+    @Override
+    public String getDescription() {
+        return "Genlib (.lib)";
+    }
 
-	@Override
-	public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-		return new ModelEntry(new CircuitDescriptor(), importGenlib(in));
-	}
+    @Override
+    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
+        return new ModelEntry(new CircuitDescriptor(), importGenlib(in));
+    }
 
-	public Circuit importGenlib(InputStream in) throws DeserialisationException {
-		final Circuit circuit = new Circuit();
-		GenlibParser genlibParser = new GenlibParser(in);
-		if (CommonDebugSettings.getParserTracing()) {
-			genlibParser.enable_tracing();
-		} else {
-			genlibParser.disable_tracing();
-		}
-		try {
-			Library library = genlibParser.parseGenlib();
-			for (final String name: library.getNames()) {
-				final Gate gate = library.get(name);
-				GenlibUtils.instantiateGate(gate, null, circuit);
-			}
-		} catch (ParseException e) {
-			throw new DeserialisationException(e);
-		}
-		return circuit;
-	}
+    public Circuit importGenlib(InputStream in) throws DeserialisationException {
+        final Circuit circuit = new Circuit();
+        GenlibParser genlibParser = new GenlibParser(in);
+        if (CommonDebugSettings.getParserTracing()) {
+            genlibParser.enable_tracing();
+        } else {
+            genlibParser.disable_tracing();
+        }
+        try {
+            Library library = genlibParser.parseGenlib();
+            for (final String name: library.getNames()) {
+                final Gate gate = library.get(name);
+                GenlibUtils.instantiateGate(gate, null, circuit);
+            }
+        } catch (ParseException e) {
+            throw new DeserialisationException(e);
+        }
+        return circuit;
+    }
 
 }

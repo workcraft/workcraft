@@ -42,95 +42,95 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 
 public abstract class VisualNode implements Properties, Node, Touchable, Stylable, ObservableState, Hidable {
-	protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
-	private Node parent = null;
-	private boolean hidden = false;
-	private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
-	private final ModelProperties properties = new ModelProperties();
+    protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
+    private Node parent = null;
+    private boolean hidden = false;
+    private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
+    private final ModelProperties properties = new ModelProperties();
 
-	protected final void addPopupMenuSegment(PopupMenuSegment segment) {
-		popupMenuBuilder.addSegment(segment);
-	}
+    protected final void addPopupMenuSegment(PopupMenuSegment segment) {
+        popupMenuBuilder.addSegment(segment);
+    }
 
-	public final JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
-		return popupMenuBuilder.build(actionListener);
-	}
+    public final JPopupMenu createPopupMenu(ScriptedActionListener actionListener) {
+        return popupMenuBuilder.build(actionListener);
+    }
 
-	public void addPropertyDeclaration(PropertyDescriptor declaration) {
-		properties.add(declaration);
-	}
+    public void addPropertyDeclaration(PropertyDescriptor declaration) {
+        properties.add(declaration);
+    }
 
-	public void removePropertyDeclarationByName(String propertyName) {
-		properties.removeByName(propertyName);
-	}
+    public void removePropertyDeclarationByName(String propertyName) {
+        properties.removeByName(propertyName);
+    }
 
-	public void renamePropertyDeclarationByName(String propertyName, String newPropertyName) {
-		properties.renameByName(propertyName, newPropertyName);
-	}
+    public void renamePropertyDeclarationByName(String propertyName, String newPropertyName) {
+        properties.renameByName(propertyName, newPropertyName);
+    }
 
-	@Override
-	public Collection<PropertyDescriptor> getDescriptors() {
-		return properties.getDescriptors();
-	}
+    @Override
+    public Collection<PropertyDescriptor> getDescriptors() {
+        return properties.getDescriptors();
+    }
 
-	@Override
-	public Rectangle2D getBoundingBox() {
-		return null;
-	}
+    @Override
+    public Rectangle2D getBoundingBox() {
+        return null;
+    }
 
-	@Override
-	public Point2D getCenter() {
-		return new Point2D.Double(getBoundingBox().getCenterX(), getBoundingBox().getCenterY());
-	}
+    @Override
+    public Point2D getCenter() {
+        return new Point2D.Double(getBoundingBox().getCenterX(), getBoundingBox().getCenterY());
+    }
 
-	@Override
-	public Collection<Node> getChildren() {
-		return Collections.emptyList();
-	}
+    @Override
+    public Collection<Node> getChildren() {
+        return Collections.emptyList();
+    }
 
-	@Override
-	public Node getParent() {
-		return parent;
-	}
+    @Override
+    public Node getParent() {
+        return parent;
+    }
 
-	@Override
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
+    @Override
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
 
-	@NoAutoSerialisation
-	@Override
-	public boolean isHidden() {
-		return hidden;
-	}
+    @NoAutoSerialisation
+    @Override
+    public boolean isHidden() {
+        return hidden;
+    }
 
-	@NoAutoSerialisation
-	@Override
-	public void setHidden(boolean hidden) {
-		this.hidden = hidden;
-	}
+    @NoAutoSerialisation
+    @Override
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
 
-	@Override
-	public void addObserver(StateObserver obs) {
-		observableStateImpl.addObserver(obs);
-	}
+    @Override
+    public void addObserver(StateObserver obs) {
+        observableStateImpl.addObserver(obs);
+    }
 
-	@Override
-	public void sendNotification(StateEvent e) {
-		observableStateImpl.sendNotification(e);
-	}
+    @Override
+    public void sendNotification(StateEvent e) {
+        observableStateImpl.sendNotification(e);
+    }
 
-	@Override
-	public void removeObserver(StateObserver obs) {
-		observableStateImpl.removeObserver(obs);
-	}
+    @Override
+    public void removeObserver(StateObserver obs) {
+        observableStateImpl.removeObserver(obs);
+    }
 
-	@Override
-	public void copyStyle(Stylable src) {
-	}
+    @Override
+    public void copyStyle(Stylable src) {
+    }
 
-	@Override
-	public void mixStyle(Stylable... srcs) {
-	}
+    @Override
+    public void mixStyle(Stylable... srcs) {
+    }
 
 }

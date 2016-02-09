@@ -48,225 +48,225 @@ import org.workcraft.util.Hierarchy;
 
 
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
-	public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
+    public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
-	protected double size = CommonVisualSettings.getBaseSize();
-	protected final double margin = 0.20;
+    protected double size = CommonVisualSettings.getBaseSize();
+    protected final double margin = 0.20;
 
-	private boolean isCurrentLevelInside = false;
-	private boolean isCollapsed = false;
-	private boolean isExcited = false;
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+    private boolean isCurrentLevelInside = false;
+    private boolean isCollapsed = false;
+    private boolean isExcited = false;
+    DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-	public VisualGroup() {
-		super();
-		addPropertyDeclarations();
-	}
+    public VisualGroup() {
+        super();
+        addPropertyDeclarations();
+    }
 
-	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
-				this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true, true) {
+    private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<VisualGroup, Boolean>(
+                this, PROPERTY_IS_COLLAPSED, Boolean.class, true, true, true) {
 
-			@Override
-			protected void setter(VisualGroup object, Boolean value) {
-				object.setIsCollapsed(value);
-			}
-			@Override
-			protected Boolean getter(VisualGroup object) {
-				return object.getIsCollapsed();
-			}
-		});
-	}
+            @Override
+            protected void setter(VisualGroup object, Boolean value) {
+                object.setIsCollapsed(value);
+            }
+            @Override
+            protected Boolean getter(VisualGroup object) {
+                return object.getIsCollapsed();
+            }
+        });
+    }
 
-	@Override
-	public void setIsCurrentLevelInside(boolean value) {
-		if (isCurrentLevelInside != value) {
-			sendNotification(new TransformChangingEvent(this));
-			this.isCurrentLevelInside = value;
-			sendNotification(new TransformChangedEvent(this));
-		}
-	}
+    @Override
+    public void setIsCurrentLevelInside(boolean value) {
+        if (isCurrentLevelInside != value) {
+            sendNotification(new TransformChangingEvent(this));
+            this.isCurrentLevelInside = value;
+            sendNotification(new TransformChangedEvent(this));
+        }
+    }
 
-	public boolean isCurrentLevelInside() {
-		return isCurrentLevelInside;
-	}
+    public boolean isCurrentLevelInside() {
+        return isCurrentLevelInside;
+    }
 
-	@Override
-	public void setIsCollapsed(boolean value) {
-		if (isCollapsed != value) {
-			sendNotification(new TransformChangingEvent(this));
-			isCollapsed = value;
-			sendNotification(new TransformChangedEvent(this));
-		}
-	}
+    @Override
+    public void setIsCollapsed(boolean value) {
+        if (isCollapsed != value) {
+            sendNotification(new TransformChangingEvent(this));
+            isCollapsed = value;
+            sendNotification(new TransformChangedEvent(this));
+        }
+    }
 
-	@Override
-	public boolean getIsCollapsed() {
-		return (isCollapsed && !isExcited);
-	}
+    @Override
+    public boolean getIsCollapsed() {
+        return (isCollapsed && !isExcited);
+    }
 
-	@Override
-	public void setIsExcited(boolean value) {
-		if (isExcited != value) {
-			sendNotification(new TransformChangingEvent(this));
-			isExcited = value;
-			sendNotification(new TransformChangedEvent(this));
-		}
-	}
+    @Override
+    public void setIsExcited(boolean value) {
+        if (isExcited != value) {
+            sendNotification(new TransformChangingEvent(this));
+            isExcited = value;
+            sendNotification(new TransformChangedEvent(this));
+        }
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
+    @Override
+    public void draw(DrawRequest r) {
 
-		Decoration dec = r.getDecoration();
-		if (dec instanceof ContainerDecoration) {
-			setIsExcited(((ContainerDecoration)dec).isContainerExcited());
-		}
+        Decoration dec = r.getDecoration();
+        if (dec instanceof ContainerDecoration) {
+            setIsExcited(((ContainerDecoration)dec).isContainerExcited());
+        }
 
-		// This is to update the rendered text for names (and labels) of group children,
-		// which is necessary to calculate the bounding box before children have been drawn
-		for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
-			component.cacheRenderedText(r);
-		}
+        // This is to update the rendered text for names (and labels) of group children,
+        // which is necessary to calculate the bounding box before children have been drawn
+        for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
+            component.cacheRenderedText(r);
+        }
 
-		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		if ((bb != null) && (getParent() != null)) {
-			Graphics2D g = r.getGraphics();
-			Decoration d = r.getDecoration();
-			g.setColor(Coloriser.colorise(Color.GRAY, d.getColorisation()));
-			float[] pattern = {0.2f, 0.2f};
-			g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-			g.draw(bb);
+        Rectangle2D bb = getBoundingBoxInLocalSpace();
+        if ((bb != null) && (getParent() != null)) {
+            Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
+            g.setColor(Coloriser.colorise(Color.GRAY, d.getColorisation()));
+            float[] pattern = {0.2f, 0.2f};
+            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+            g.draw(bb);
 
-			if (d.getColorisation() != null) {
-				float s2 = (float)CommonVisualSettings.getPivotSize() / 2;
-				Path2D p = new Path2D.Double();
-				p.moveTo(-s2, 0);
-				p.lineTo(s2, 0);
-				p.moveTo(0, -s2);
-				p.lineTo(0, s2);
-				g.setStroke(new BasicStroke((float)CommonVisualSettings.getPivotWidth()));
-				g.draw(p);
-			}
-		}
-	}
+            if (d.getColorisation() != null) {
+                float s2 = (float)CommonVisualSettings.getPivotSize() / 2;
+                Path2D p = new Path2D.Double();
+                p.moveTo(-s2, 0);
+                p.lineTo(s2, 0);
+                p.moveTo(0, -s2);
+                p.lineTo(0, s2);
+                g.setStroke(new BasicStroke((float)CommonVisualSettings.getPivotWidth()));
+                g.draw(p);
+            }
+        }
+    }
 
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = null;
-		if (!getIsCollapsed() || isCurrentLevelInside()) {
-			Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
-			bb = BoundingBoxHelper.mergeBoundingBoxes(children);
-		}
-		if (bb == null) {
-	        bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
-		}
-		return BoundingBoxHelper.expand(bb, margin, margin);
-	}
+    @Override
+    public Rectangle2D getBoundingBoxInLocalSpace() {
+        Rectangle2D bb = null;
+        if (!getIsCollapsed() || isCurrentLevelInside()) {
+            Collection<Touchable> children = Hierarchy.getChildrenOfType(this, Touchable.class);
+            bb = BoundingBoxHelper.mergeBoundingBoxes(children);
+        }
+        if (bb == null) {
+            bb = new Rectangle2D.Double(-size / 2, -size / 2, size, size);
+        }
+        return BoundingBoxHelper.expand(bb, margin, margin);
+    }
 
-	public final Collection<VisualComponent> getComponents() {
-		return Hierarchy.getChildrenOfType(this, VisualComponent.class);
-	}
+    public final Collection<VisualComponent> getComponents() {
+        return Hierarchy.getChildrenOfType(this, VisualComponent.class);
+    }
 
-	public final Collection<VisualConnection> getnections() {
-		return Hierarchy.getChildrenOfType(this, VisualConnection.class);
-	}
+    public final Collection<VisualConnection> getnections() {
+        return Hierarchy.getChildrenOfType(this, VisualConnection.class);
+    }
 
-	public List<Node> unGroup() {
-		ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
-		Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
-		groupImpl.reparent(nodesToReparent, newParent);
-		double tx = localToParentTransform.getTranslateX();
-		double ty = localToParentTransform.getTranslateY();
-		VisualModelTransformer.translateNodes(nodesToReparent, -tx, -ty);
-		return nodesToReparent;
-	}
+    public List<Node> unGroup() {
+        ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
+        Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
+        groupImpl.reparent(nodesToReparent, newParent);
+        double tx = localToParentTransform.getTranslateX();
+        double ty = localToParentTransform.getTranslateY();
+        VisualModelTransformer.translateNodes(nodesToReparent, -tx, -ty);
+        return nodesToReparent;
+    }
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		Rectangle2D bb = getBoundingBoxInLocalSpace();
-		if ((bb != null) && (getParent() != null)) {
-			return bb.contains(pointInLocalSpace);
-		}
-		return false;
-	}
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        Rectangle2D bb = getBoundingBoxInLocalSpace();
+        if ((bb != null) && (getParent() != null)) {
+            return bb.contains(pointInLocalSpace);
+        }
+        return false;
+    }
 
-	@Override
-	public void add(Node node) {
-		groupImpl.add(node);
-	}
+    @Override
+    public void add(Node node) {
+        groupImpl.add(node);
+    }
 
-	@Override
-	public void addObserver(HierarchyObserver obs) {
-		groupImpl.addObserver(obs);
-	}
+    @Override
+    public void addObserver(HierarchyObserver obs) {
+        groupImpl.addObserver(obs);
+    }
 
-	@Override
-	public Collection<Node> getChildren() {
-		return groupImpl.getChildren();
-	}
+    @Override
+    public Collection<Node> getChildren() {
+        return groupImpl.getChildren();
+    }
 
-	@Override
-	public Node getParent() {
-		return groupImpl.getParent();
-	}
+    @Override
+    public Node getParent() {
+        return groupImpl.getParent();
+    }
 
-	@Override
-	public void remove(Node node) {
-		groupImpl.remove(node);
-	}
+    @Override
+    public void remove(Node node) {
+        groupImpl.remove(node);
+    }
 
-	public void removeWithoutNotify(Node node) {
-		groupImpl.removeWithoutNotify(node);
-	}
+    public void removeWithoutNotify(Node node) {
+        groupImpl.removeWithoutNotify(node);
+    }
 
 
-	@Override
-	public void removeObserver(HierarchyObserver obs) {
-		groupImpl.removeObserver(obs);
-	}
+    @Override
+    public void removeObserver(HierarchyObserver obs) {
+        groupImpl.removeObserver(obs);
+    }
 
-	@Override
-	public void removeAllObservers() {
-		groupImpl.removeAllObservers();
-	}
+    @Override
+    public void removeAllObservers() {
+        groupImpl.removeAllObservers();
+    }
 
-	@Override
-	public void setParent(Node parent) {
-		groupImpl.setParent(parent);
-	}
+    @Override
+    public void setParent(Node parent) {
+        groupImpl.setParent(parent);
+    }
 
-	@Override
-	public void add(Collection<Node> nodes) {
-		groupImpl.add(nodes);
-	}
+    @Override
+    public void add(Collection<Node> nodes) {
+        groupImpl.add(nodes);
+    }
 
-	@Override
-	public void remove(Collection<Node> nodes) {
-		groupImpl.remove(nodes);
-	}
+    @Override
+    public void remove(Collection<Node> nodes) {
+        groupImpl.remove(nodes);
+    }
 
-	@Override
-	public void reparent(Collection<Node> nodes, Container newParent) {
-		groupImpl.reparent(nodes, newParent);
-	}
+    @Override
+    public void reparent(Collection<Node> nodes, Container newParent) {
+        groupImpl.reparent(nodes, newParent);
+    }
 
-	@Override
-	public void reparent(Collection<Node> nodes) {
-		groupImpl.reparent(nodes);
-	}
+    @Override
+    public void reparent(Collection<Node> nodes) {
+        groupImpl.reparent(nodes);
+    }
 
-	@Override
-	public Point2D getCenterInLocalSpace() {
-		return new Point2D.Double(0, 0);
-	}
+    @Override
+    public Point2D getCenterInLocalSpace() {
+        return new Point2D.Double(0, 0);
+    }
 
-	@Override
-	public void copyStyle(Stylable src) {
-		super.copyStyle(src);
-		if (src instanceof VisualGroup) {
-			VisualGroup srcGroup = (VisualGroup)src;
-			setIsCollapsed(srcGroup.getIsCollapsed());
-		}
-	}
+    @Override
+    public void copyStyle(Stylable src) {
+        super.copyStyle(src);
+        if (src instanceof VisualGroup) {
+            VisualGroup srcGroup = (VisualGroup)src;
+            setIsCollapsed(srcGroup.getIsCollapsed());
+        }
+    }
 
 }

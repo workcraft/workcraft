@@ -35,106 +35,106 @@ import org.workcraft.util.Hierarchy;
 
 public class XmasComponent extends MathNode implements Container, ObservableHierarchy {
 
-	DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+    DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-	private int gr = 0;
-	private String gp = "0";
+    private int gr = 0;
+    private String gp = "0";
 
-	public Node getParent() {
-		return groupImpl.getParent();
-	}
+    public Node getParent() {
+        return groupImpl.getParent();
+    }
 
-	public void setParent(Node parent) {
-		groupImpl.setParent(parent);
-	}
+    public void setParent(Node parent) {
+        groupImpl.setParent(parent);
+    }
 
-	public void addObserver(HierarchyObserver obs) {
-		groupImpl.addObserver(obs);
-	}
+    public void addObserver(HierarchyObserver obs) {
+        groupImpl.addObserver(obs);
+    }
 
-	public void removeObserver(HierarchyObserver obs) {
-		groupImpl.removeObserver(obs);
-	}
+    public void removeObserver(HierarchyObserver obs) {
+        groupImpl.removeObserver(obs);
+    }
 
-	public void removeAllObservers() {
-		groupImpl.removeAllObservers();
-	}
-
-
-	@Override
-	public void add(Node node) {
-		groupImpl.add(node);
-	}
-
-	@Override
-	public void add(Collection<Node> nodes) {
-		groupImpl.add(nodes);
-	}
-
-	@Override
-	public void remove(Node node) {
-		groupImpl.remove(node);
-	}
-
-	@Override
-	public void remove(Collection<Node> node) {
-		groupImpl.remove(node);
-	}
-
-	@Override
-	public void reparent(Collection<Node> nodes) {
-		groupImpl.reparent(nodes);
-	}
-
-	@Override
-	public void reparent(Collection<Node> nodes, Container newParent) {
-		groupImpl.reparent(nodes, newParent);
-	}
-
-	@Override
-	public Collection<Node> getChildren() {
-		return groupImpl.getChildren();
-	}
-
-	public Collection<XmasContact> getContacts() {
-		return Hierarchy.filterNodesByType(getChildren(), XmasContact.class);
-	}
-
-	public Collection<XmasContact> getInputs() {
-		ArrayList<XmasContact> result = new ArrayList<XmasContact>();
-		for(XmasContact c : getContacts()) {
-			if(c.getIOType() == IOType.INPUT) {
-				result.add(c);
-			}
-		}
-		return result;
-	}
-
-	public Collection<XmasContact> getOutputs() {
-		ArrayList<XmasContact> result = new ArrayList<XmasContact>();
-		for(XmasContact c : getContacts()) {
-			if(c.getIOType() == IOType.OUTPUT) {
-				result.add(c);
-			}
-		}
-		return result;
-	}
+    public void removeAllObservers() {
+        groupImpl.removeAllObservers();
+    }
 
 
-	public void setGr(int gr) {
-		this.gr = gr;
-	}
+    @Override
+    public void add(Node node) {
+        groupImpl.add(node);
+    }
 
-	public int getGr() {
-		return gr;
-	}
+    @Override
+    public void add(Collection<Node> nodes) {
+        groupImpl.add(nodes);
+    }
 
-	public void setGp(String gp) {
-		this.gp = gp;
-	}
+    @Override
+    public void remove(Node node) {
+        groupImpl.remove(node);
+    }
 
-	public String getGp() {
-		return gp;
-	}
+    @Override
+    public void remove(Collection<Node> node) {
+        groupImpl.remove(node);
+    }
+
+    @Override
+    public void reparent(Collection<Node> nodes) {
+        groupImpl.reparent(nodes);
+    }
+
+    @Override
+    public void reparent(Collection<Node> nodes, Container newParent) {
+        groupImpl.reparent(nodes, newParent);
+    }
+
+    @Override
+    public Collection<Node> getChildren() {
+        return groupImpl.getChildren();
+    }
+
+    public Collection<XmasContact> getContacts() {
+        return Hierarchy.filterNodesByType(getChildren(), XmasContact.class);
+    }
+
+    public Collection<XmasContact> getInputs() {
+        ArrayList<XmasContact> result = new ArrayList<XmasContact>();
+        for(XmasContact c : getContacts()) {
+            if(c.getIOType() == IOType.INPUT) {
+                result.add(c);
+            }
+        }
+        return result;
+    }
+
+    public Collection<XmasContact> getOutputs() {
+        ArrayList<XmasContact> result = new ArrayList<XmasContact>();
+        for(XmasContact c : getContacts()) {
+            if(c.getIOType() == IOType.OUTPUT) {
+                result.add(c);
+            }
+        }
+        return result;
+    }
+
+
+    public void setGr(int gr) {
+        this.gr = gr;
+    }
+
+    public int getGr() {
+        return gr;
+    }
+
+    public void setGp(String gp) {
+        this.gp = gp;
+    }
+
+    public String getGp() {
+        return gp;
+    }
 
 }

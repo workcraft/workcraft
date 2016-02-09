@@ -32,7 +32,7 @@ public class TimeInputFilter extends DocumentFilter{
         sb.insert(offset, string);
 
         if (doc.getLength() + string.length() <= maxLength
-                	&& isInteger(string)) {
+                    && isInteger(string)) {
             fb.insertString(offset, string, attr);
         }
     }
@@ -47,7 +47,7 @@ public class TimeInputFilter extends DocumentFilter{
         sb.replace(offset, offset + length, text);
 
         if (isInteger(sb.toString())
-        		&& (doc.getLength() + text.length() - length) <= maxLength) {
+                && (doc.getLength() + text.length() - length) <= maxLength) {
             super.replace(fb, offset, length, text, attrs);
          }
     }

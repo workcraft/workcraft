@@ -33,121 +33,121 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
-	private final class HugeSgRunnable implements Runnable {
-		private final String stateCountMsg;
-		private boolean hugeSgConfirmed = false;
+    private final class HugeSgRunnable implements Runnable {
+        private final String stateCountMsg;
+        private boolean hugeSgConfirmed = false;
 
-		private HugeSgRunnable(String stateCountMsg) {
-			this.stateCountMsg = stateCountMsg;
-		}
+        private HugeSgRunnable(String stateCountMsg) {
+            this.stateCountMsg = stateCountMsg;
+        }
 
-		@Override
-		public void run() {
-			final Framework framework = Framework.getInstance();
-			int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
-				"The state graph contains " + stateCountMsg + " states."
-				+ "It may take a very long time to be processed.\n\n"
-				+ "Are you sure you want to display it?",
-				"Please confirm", JOptionPane.YES_NO_OPTION);
-			hugeSgConfirmed = (answer == JOptionPane.YES_OPTION);
-		}
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
+                "The state graph contains " + stateCountMsg + " states."
+                + "It may take a very long time to be processed.\n\n"
+                + "Are you sure you want to display it?",
+                "Please confirm", JOptionPane.YES_NO_OPTION);
+            hugeSgConfirmed = (answer == JOptionPane.YES_OPTION);
+        }
 
-		public boolean isHugeSgConfirmed() {
-			return hugeSgConfirmed;
-		}
-	}
+        public boolean isHugeSgConfirmed() {
+            return hugeSgConfirmed;
+        }
+    }
 
-	private final WorkspaceEntry we;
-	private final boolean binary;
-	private final Pattern hugeSgPattern = Pattern.compile("Do you really want to dump a state graph with ([0-9]+) states ?");
+    private final WorkspaceEntry we;
+    private final boolean binary;
+    private final Pattern hugeSgPattern = Pattern.compile("Do you really want to dump a state graph with ([0-9]+) states ?");
 
-	public WriteSgConversionTask(WorkspaceEntry we, boolean binary) {
-		this.we = we;
-		this.binary = binary;
-	}
+    public WriteSgConversionTask(WorkspaceEntry we, boolean binary) {
+        this.we = we;
+        this.binary = binary;
+    }
 
-	public WorkspaceEntry getWorkspaceEntry() {
-		return we;
-	}
+    public WorkspaceEntry getWorkspaceEntry() {
+        return we;
+    }
 
-	@Override
-	public Result<? extends WriteSgConversionResult> run(ProgressMonitor<? super WriteSgConversionResult> monitor) {
-		final Framework framework = Framework.getInstance();
-		File pnFile = null;
-		try {
-			// Common variables
-			monitor.progressUpdate(0.05);
-			PetriNetModel pn = (PetriNetModel)getWorkspaceEntry().getModelEntry().getMathModel();
-			pn.setTitle(getWorkspaceEntry().getTitle());
-			Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
-			if (pnExporter == null) {
-				throw new RuntimeException ("Exporter not available: model class " + pn.getClass().getName() + " to format STG.");
-			}
-			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
-			monitor.progressUpdate(0.10);
+    @Override
+    public Result<? extends WriteSgConversionResult> run(ProgressMonitor<? super WriteSgConversionResult> monitor) {
+        final Framework framework = Framework.getInstance();
+        File pnFile = null;
+        try {
+            // Common variables
+            monitor.progressUpdate(0.05);
+            PetriNetModel pn = (PetriNetModel)getWorkspaceEntry().getModelEntry().getMathModel();
+            pn.setTitle(getWorkspaceEntry().getTitle());
+            Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
+            if (pnExporter == null) {
+                throw new RuntimeException ("Exporter not available: model class " + pn.getClass().getName() + " to format STG.");
+            }
+            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
+            monitor.progressUpdate(0.10);
 
-			// Generating .g file for Petri Net
-			pnFile = File.createTempFile("stg_", ".g");
-			ExportTask pnExportTask = new ExportTask(pnExporter, pn, pnFile.getAbsolutePath());
-			Result<? extends Object> pnExportResult = framework.getTaskManager().execute(
-					pnExportTask, "Exporting .g", subtaskMonitor);
+            // Generating .g file for Petri Net
+            pnFile = File.createTempFile("stg_", ".g");
+            ExportTask pnExportTask = new ExportTask(pnExporter, pn, pnFile.getAbsolutePath());
+            Result<? extends Object> pnExportResult = framework.getTaskManager().execute(
+                    pnExportTask, "Exporting .g", subtaskMonitor);
 
-			if (pnExportResult.getOutcome() != Outcome.FINISHED) {
-				if (pnExportResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<WriteSgConversionResult>(Outcome.CANCELLED);
-				}
-				return new Result<WriteSgConversionResult>(Outcome.FAILED);
-			}
-			monitor.progressUpdate(0.20);
+            if (pnExportResult.getOutcome() != Outcome.FINISHED) {
+                if (pnExportResult.getOutcome() == Outcome.CANCELLED) {
+                    return new Result<WriteSgConversionResult>(Outcome.CANCELLED);
+                }
+                return new Result<WriteSgConversionResult>(Outcome.FAILED);
+            }
+            monitor.progressUpdate(0.20);
 
-			// Generate State Graph
-			List<String> writeSgOptions = new ArrayList<String>();
-			if (binary) {
-				writeSgOptions.add("-bin");
-			}
+            // Generate State Graph
+            List<String> writeSgOptions = new ArrayList<String>();
+            if (binary) {
+                writeSgOptions.add("-bin");
+            }
 
-			while (true) {
-				WriteSgTask writeSgTask = new WriteSgTask(pnFile.getAbsolutePath(), null, writeSgOptions);
-				Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
-						writeSgTask, "Building state graph", subtaskMonitor);
+            while (true) {
+                WriteSgTask writeSgTask = new WriteSgTask(pnFile.getAbsolutePath(), null, writeSgOptions);
+                Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
+                        writeSgTask, "Building state graph", subtaskMonitor);
 
-				if (writeSgResult.getOutcome() == Outcome.FINISHED) {
-					try {
-						ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
-						final Fst fst = new DotGImporter().importSG(in);
-						return Result.finished(new WriteSgConversionResult(null, fst));
-					} catch (DeserialisationException e) {
-						return Result.exception(e);
-					}
-				}
-				if (writeSgResult.getOutcome() == Outcome.CANCELLED) {
-					return Result.cancelled();
-				}
-				if (writeSgResult.getCause() != null) {
-					return Result.exception(writeSgResult.getCause());
-				} else {
-					final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
-					final Matcher matcher = hugeSgPattern.matcher(errorMessages);
-					if (matcher.find()) {
-						final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));
-						SwingUtilities.invokeAndWait(hugeSgRunnable);
-						if (hugeSgRunnable.isHugeSgConfirmed()) {
-							writeSgOptions.add("-huge");
-							continue;
-						} else {
-							return Result.cancelled();
-						}
-					} else {
-						return Result.failed(new WriteSgConversionResult(writeSgResult, null));
-					}
-				}
-			}
+                if (writeSgResult.getOutcome() == Outcome.FINISHED) {
+                    try {
+                        ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
+                        final Fst fst = new DotGImporter().importSG(in);
+                        return Result.finished(new WriteSgConversionResult(null, fst));
+                    } catch (DeserialisationException e) {
+                        return Result.exception(e);
+                    }
+                }
+                if (writeSgResult.getOutcome() == Outcome.CANCELLED) {
+                    return Result.cancelled();
+                }
+                if (writeSgResult.getCause() != null) {
+                    return Result.exception(writeSgResult.getCause());
+                } else {
+                    final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
+                    final Matcher matcher = hugeSgPattern.matcher(errorMessages);
+                    if (matcher.find()) {
+                        final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));
+                        SwingUtilities.invokeAndWait(hugeSgRunnable);
+                        if (hugeSgRunnable.isHugeSgConfirmed()) {
+                            writeSgOptions.add("-huge");
+                            continue;
+                        } else {
+                            return Result.cancelled();
+                        }
+                    } else {
+                        return Result.failed(new WriteSgConversionResult(writeSgResult, null));
+                    }
+                }
+            }
 
-		} catch (Throwable e) {
-			return new Result<WriteSgConversionResult>(e);
-		} finally {
-			FileUtils.deleteFile(pnFile, CommonDebugSettings.getKeepTemporaryFiles());
-		}
-	}
+        } catch (Throwable e) {
+            return new Result<WriteSgConversionResult>(e);
+        } finally {
+            FileUtils.deleteFile(pnFile, CommonDebugSettings.getKeepTemporaryFiles());
+        }
+    }
 
 }

@@ -30,23 +30,23 @@ import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
 public class BundleSerialiser implements CustomXMLSerialiser {
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences,
-			NodeSerialiser nodeSerialiser) throws SerialisationException {
+    public void serialise(Element element, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences,
+            NodeSerialiser nodeSerialiser) throws SerialisationException {
 
-		Bundle b = (Bundle)object;
-		String s = "";
-		for (BundledTransition t: b.getTransitions()) {
-			if (s != "") {
-				s += ", ";
-			}
-			s += internalReferences.getReference(t);
-		}
-		element.setAttribute("transitions", s);
-	}
+        Bundle b = (Bundle)object;
+        String s = "";
+        for (BundledTransition t: b.getTransitions()) {
+            if (s != "") {
+                s += ", ";
+            }
+            s += internalReferences.getReference(t);
+        }
+        element.setAttribute("transitions", s);
+    }
 
-	public String getClassName() {
-		return Bundle.class.getName();
-	}
+    public String getClassName() {
+        return Bundle.class.getName();
+    }
 }

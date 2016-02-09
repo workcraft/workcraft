@@ -19,65 +19,65 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class WorkspaceChooserDialog extends JDialog {
-	private WorkspaceChooser chooser;
-	private JPanel buttonsPanel;
-	private JButton cancelButton;
-	private final Workspace workspace;
-	private final Func<Path<String>, Boolean> filter;
+    private WorkspaceChooser chooser;
+    private JPanel buttonsPanel;
+    private JButton cancelButton;
+    private final Workspace workspace;
+    private final Func<Path<String>, Boolean> filter;
 
-	public WorkspaceChooserDialog(Window parent, String title, Workspace workspace, Func<Path<String>, Boolean> filter) {
-		super(parent, title, ModalityType.APPLICATION_MODAL);
-		this.workspace = workspace;
-		this.filter = filter;
+    public WorkspaceChooserDialog(Window parent, String title, Workspace workspace, Func<Path<String>, Boolean> filter) {
+        super(parent, title, ModalityType.APPLICATION_MODAL);
+        this.workspace = workspace;
+        this.filter = filter;
 
-		this.setContentPane(createContents());
-	}
+        this.setContentPane(createContents());
+    }
 
-	private Container createContents() {
+    private Container createContents() {
 
-		double[][] sizes = {
-				{ TableLayout.FILL } ,
-				{ TableLayout.FILL, TableLayout.PREFERRED }
-		};
+        double[][] sizes = {
+                { TableLayout.FILL } ,
+                { TableLayout.FILL, TableLayout.PREFERRED }
+        };
 
-		JPanel contents = new JPanel(new TableLayout(sizes));
+        JPanel contents = new JPanel(new TableLayout(sizes));
 
-		chooser = new WorkspaceChooser(workspace, filter);
+        chooser = new WorkspaceChooser(workspace, filter);
 
-		buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
 
-		JButton runButton = new JButton ("OK");
-		runButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//modalResult = 1;
-				setVisible(false);
-			}
-		});
+        JButton runButton = new JButton ("OK");
+        runButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //modalResult = 1;
+                setVisible(false);
+            }
+        });
 
-		cancelButton = new JButton ("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//modalResult = 0;
-				setVisible(false);
-			}
-		});
+        cancelButton = new JButton ("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //modalResult = 0;
+                setVisible(false);
+            }
+        });
 
-		buttonsPanel.add(cancelButton);
-		buttonsPanel.add(runButton);
+        buttonsPanel.add(cancelButton);
+        buttonsPanel.add(runButton);
 
-		contents.add(chooser, "0 0");
-		contents.add(buttonsPanel, "0 1");
+        contents.add(chooser, "0 0");
+        contents.add(buttonsPanel, "0 1");
 
-		return contents;
-	}
+        return contents;
+    }
 
-	public List<WorkspaceEntry> choose() {
-		LinkedList<WorkspaceEntry> result = new LinkedList<WorkspaceEntry>();
+    public List<WorkspaceEntry> choose() {
+        LinkedList<WorkspaceEntry> result = new LinkedList<WorkspaceEntry>();
 
-		setVisible(true);
+        setVisible(true);
 
-		return result;
-	}
+        return result;
+    }
 }

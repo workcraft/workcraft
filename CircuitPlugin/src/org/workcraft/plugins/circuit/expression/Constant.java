@@ -7,35 +7,35 @@ import java.util.Map;
 
 public class Constant implements Expression {
 
-	public final boolean value;
+    public final boolean value;
 
-	public Constant(boolean value) {
+    public Constant(boolean value) {
         this.value = value;
     }
 
-	@Override
-	public boolean isAtomic() {
-		return true;
-	}
-
-	@Override
-	public String toString() {
-    	return (value ? "1" : "0");
+    @Override
+    public boolean isAtomic() {
+        return true;
     }
 
-	@Override
-	public Collection<Literal> getLiterals() {
-		return Arrays.asList();
-	}
+    @Override
+    public String toString() {
+        return (value ? "1" : "0");
+    }
 
-	@Override
-	public Expression eval() {
-		return eval(new HashMap<String, Boolean>());
-	}
+    @Override
+    public Collection<Literal> getLiterals() {
+        return Arrays.asList();
+    }
 
-	@Override
-	public Expression eval(Map<String, Boolean> assignments) {
-		return new Constant(value);
-	}
+    @Override
+    public Expression eval() {
+        return eval(new HashMap<String, Boolean>());
+    }
+
+    @Override
+    public Expression eval(Map<String, Boolean> assignments) {
+        return new Constant(value);
+    }
 
 }

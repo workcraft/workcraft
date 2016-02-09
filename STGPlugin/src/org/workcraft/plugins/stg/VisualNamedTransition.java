@@ -40,107 +40,107 @@ import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
-	public static Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.75f);
-	private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, getRenderedTextOffset());
+    public static Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.75f);
+    private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, getRenderedTextOffset());
 
-	public VisualNamedTransition(NamedTransition namedTransition) {
-		super(namedTransition, false, false, false);
-		namedTransition.addObserver(this);
-		updateRenderedText();
-	}
+    public VisualNamedTransition(NamedTransition namedTransition) {
+        super(namedTransition, false, false, false);
+        namedTransition.addObserver(this);
+        updateRenderedText();
+    }
 
-	public Point2D getRenderedTextOffset() {
-		return new Point2D.Double(0.0, 0.0);
-	}
+    public Point2D getRenderedTextOffset() {
+        return new Point2D.Double(0.0, 0.0);
+    }
 
-	@Override
-	public boolean getLabelVisibility() {
-		return false;
-	}
+    @Override
+    public boolean getLabelVisibility() {
+        return false;
+    }
 
-	@Override
-	public Point2D getLabelOffset() {
-		return new Point2D.Double(0.0,0.0);
-	}
+    @Override
+    public Point2D getLabelOffset() {
+        return new Point2D.Double(0.0,0.0);
+    }
 
-	@Override
-	public boolean getNameVisibility() {
-		return false;
-	}
+    @Override
+    public boolean getNameVisibility() {
+        return false;
+    }
 
-	@Override
-	public Point2D getNameOffset() {
-		return new Point2D.Double(0.0,0.0);
-	}
+    @Override
+    public Point2D getNameOffset() {
+        return new Point2D.Double(0.0,0.0);
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		if (d instanceof CoreDecoration) {
-			Color[] palette = ((CoreDecoration)d).getColorisationPalette();
-			Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
-			double x = expandedShape.getX();
-			double y = expandedShape.getY();
-			double w = expandedShape.getWidth() / palette.length;
-			double h = expandedShape.getHeight();
-			for (Color color: palette) {
-				g.setColor(color);
-				Rectangle2D shape = new Rectangle2D.Double(x, y, w, h);
-				g.fill(shape);
-				x += w;
-			}
-		} else {
-			Color background = d.getBackground();
-			if (background != null) {
-				g.setColor(background);
-				Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
-				g.fill(expandedShape);
-			}
-		}
-		g.setColor(Coloriser.colorise(getColor(), d.getColorisation()));
-		renderedText.draw(g);
-	}
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        if (d instanceof CoreDecoration) {
+            Color[] palette = ((CoreDecoration)d).getColorisationPalette();
+            Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
+            double x = expandedShape.getX();
+            double y = expandedShape.getY();
+            double w = expandedShape.getWidth() / palette.length;
+            double h = expandedShape.getHeight();
+            for (Color color: palette) {
+                g.setColor(color);
+                Rectangle2D shape = new Rectangle2D.Double(x, y, w, h);
+                g.fill(shape);
+                x += w;
+            }
+        } else {
+            Color background = d.getBackground();
+            if (background != null) {
+                g.setColor(background);
+                Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
+                g.fill(expandedShape);
+            }
+        }
+        g.setColor(Coloriser.colorise(getColor(), d.getColorisation()));
+        renderedText.draw(g);
+    }
 
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return BoundingBoxHelper.expand(renderedText.getBoundingBox(), 0.2, 0.2);
-	}
+    @Override
+    public Rectangle2D getBoundingBoxInLocalSpace() {
+        return BoundingBoxHelper.expand(renderedText.getBoundingBox(), 0.2, 0.2);
+    }
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
-	}
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+    }
 
-	public Color getColor() {
-		return Color.BLACK;
-	}
+    public Color getColor() {
+        return Color.BLACK;
+    }
 
-	protected void updateRenderedText() {
-		Point2D offset = getRenderedTextOffset();
-		if (renderedText.isDifferent(getName(), font, Positioning.CENTER, offset)) {
-			transformChanging();
-			renderedText = new RenderedText(getName(), font, Positioning.CENTER, offset);
-			transformChanged();
-		}
-	}
+    protected void updateRenderedText() {
+        Point2D offset = getRenderedTextOffset();
+        if (renderedText.isDifferent(getName(), font, Positioning.CENTER, offset)) {
+            transformChanging();
+            renderedText = new RenderedText(getName(), font, Positioning.CENTER, offset);
+            transformChanged();
+        }
+    }
 
-	public RenderedText getRenderedName() {
-		return renderedText;
-	}
+    public RenderedText getRenderedName() {
+        return renderedText;
+    }
 
-	public NamedTransition getReferencedTransition() {
-		return (NamedTransition)getReferencedComponent();
-	}
+    public NamedTransition getReferencedTransition() {
+        return (NamedTransition)getReferencedComponent();
+    }
 
-	@NoAutoSerialisation
-	public String getName() {
-		return getReferencedTransition().getName();
-	}
+    @NoAutoSerialisation
+    public String getName() {
+        return getReferencedTransition().getName();
+    }
 
-	@Override
-	public void notify(StateEvent e) {
-		updateRenderedText();
-	}
+    @Override
+    public void notify(StateEvent e) {
+        updateRenderedText();
+    }
 
 }

@@ -49,37 +49,37 @@ import org.workcraft.util.Hierarchy;
 
 public class Xmas extends AbstractMathModel {
 
-	public Xmas() {
-		this(new MathGroup(), (References)null);
-	}
+    public Xmas() {
+        this(new MathGroup(), (References)null);
+    }
 
-	public Xmas(Container root, References refs) {
-		super(root, new HierarchicalUniqueNameReferenceManager(refs) {
-			@Override
-			public String getPrefix(Node node) {
-				if (node instanceof SourceComponent) return "src";
-				if (node instanceof FunctionComponent) return "fun";
-				if (node instanceof QueueComponent) return "qu";
-				if (node instanceof ForkComponent) return "frk";
-				if (node instanceof JoinComponent) return "jn";
-				if (node instanceof SwitchComponent) return "sw";
-				if (node instanceof MergeComponent) return "mrg";
-				if (node instanceof SinkComponent) return "snk";
-				if (node instanceof SyncComponent) return "sync";
-				if (node instanceof XmasContact) return "contact";
-				if (node instanceof XmasConnection) return "con";
-				return super.getPrefix(node);
-			}
-		});
-	}
+    public Xmas(Container root, References refs) {
+        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+            @Override
+            public String getPrefix(Node node) {
+                if (node instanceof SourceComponent) return "src";
+                if (node instanceof FunctionComponent) return "fun";
+                if (node instanceof QueueComponent) return "qu";
+                if (node instanceof ForkComponent) return "frk";
+                if (node instanceof JoinComponent) return "jn";
+                if (node instanceof SwitchComponent) return "sw";
+                if (node instanceof MergeComponent) return "mrg";
+                if (node instanceof SinkComponent) return "snk";
+                if (node instanceof SyncComponent) return "sync";
+                if (node instanceof XmasContact) return "contact";
+                if (node instanceof XmasConnection) return "con";
+                return super.getPrefix(node);
+            }
+        });
+    }
 
-	public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-		MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
-		Hierarchy.getNearestContainer(first, second).add(con);
-		return con;
-	}
+    public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
+        MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+        Hierarchy.getNearestContainer(first, second).add(con);
+        return con;
+    }
 
-	public Collection<Node> getNodes() {
+    public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)){
             if (node instanceof SourceComponent)
@@ -100,34 +100,34 @@ public class Xmas extends AbstractMathModel {
                 result.add(node);
         }
         return result;
-	}
+    }
 
-	public String getType(Node node) {
-		String result = null;
-		if(node instanceof SourceComponent) result = "source";
-		if(node instanceof FunctionComponent) result = "function";
-		if(node instanceof QueueComponent) result = "queue";
-		if(node instanceof ForkComponent) result = "fork";
-		if(node instanceof JoinComponent) result = "join";
-		if(node instanceof SwitchComponent) result = "switch";
-		if(node instanceof MergeComponent) result = "merge";
-		if(node instanceof SwitchComponent) result = "switch";
-		if(node instanceof SinkComponent) result = "sink";
-		if(node instanceof CreditComponent) result = "credit";
-	    if(node instanceof SyncComponent) result = "sync";
-		return result;
-	}
+    public String getType(Node node) {
+        String result = null;
+        if(node instanceof SourceComponent) result = "source";
+        if(node instanceof FunctionComponent) result = "function";
+        if(node instanceof QueueComponent) result = "queue";
+        if(node instanceof ForkComponent) result = "fork";
+        if(node instanceof JoinComponent) result = "join";
+        if(node instanceof SwitchComponent) result = "switch";
+        if(node instanceof MergeComponent) result = "merge";
+        if(node instanceof SwitchComponent) result = "switch";
+        if(node instanceof SinkComponent) result = "sink";
+        if(node instanceof CreditComponent) result = "credit";
+        if(node instanceof SyncComponent) result = "sync";
+        return result;
+    }
 
-	public Collection<SourceComponent> getSourceComponents() {
+    public Collection<SourceComponent> getSourceComponents() {
         return Hierarchy.getDescendantsOfType(getRoot(), SourceComponent.class);
     }
 
-	public Collection<FunctionComponent> getFunctionComponents() {
-		return Hierarchy.getDescendantsOfType(getRoot(), FunctionComponent.class);
-	}
+    public Collection<FunctionComponent> getFunctionComponents() {
+        return Hierarchy.getDescendantsOfType(getRoot(), FunctionComponent.class);
+    }
 
-	public Collection<SwitchComponent> getSwitchComponents() {
-		return Hierarchy.getDescendantsOfType(getRoot(), SwitchComponent.class);
-	}
+    public Collection<SwitchComponent> getSwitchComponents() {
+        return Hierarchy.getDescendantsOfType(getRoot(), SwitchComponent.class);
+    }
 
 }

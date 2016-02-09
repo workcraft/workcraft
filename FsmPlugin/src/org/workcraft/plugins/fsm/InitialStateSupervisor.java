@@ -10,65 +10,65 @@ import org.workcraft.observation.StateSupervisor;
 import org.workcraft.util.Hierarchy;
 
 public class InitialStateSupervisor extends StateSupervisor {
-	final private Fsm fsm;
+    final private Fsm fsm;
 
-	public InitialStateSupervisor(Fsm fsm) {
-		this.fsm = fsm;
-	}
+    public InitialStateSupervisor(Fsm fsm) {
+        this.fsm = fsm;
+    }
 
-	@Override
-	public void handleEvent(StateEvent e) {
-		if (e instanceof PropertyChangedEvent) {
-			PropertyChangedEvent pce = (PropertyChangedEvent)e;
-			Object sender = e.getSender();
-			if ((sender instanceof State) && pce.getPropertyName().equals(State.PROPERTY_INITIAL)) {
-				// Update all the states on a change of the initial property
-				handleInitialStateChange((State)sender);
-			}
-		}
-	}
+    @Override
+    public void handleEvent(StateEvent e) {
+        if (e instanceof PropertyChangedEvent) {
+            PropertyChangedEvent pce = (PropertyChangedEvent)e;
+            Object sender = e.getSender();
+            if ((sender instanceof State) && pce.getPropertyName().equals(State.PROPERTY_INITIAL)) {
+                // Update all the states on a change of the initial property
+                handleInitialStateChange((State)sender);
+            }
+        }
+    }
 
-	@Override
-	public void handleHierarchyEvent(HierarchyEvent e) {
-		if (e instanceof NodesDeletingEvent) {
-			for (Node node: e.getAffectedNodes()) {
-				if (node instanceof State) {
-					// Move the initial property to another state on state removal
-					handleStateRemoval((State)node);
-				}
-			}
-		} else if (e instanceof NodesAddingEvent) {
-			for (Node node: e.getAffectedNodes()) {
-				if (node instanceof State) {
-					// Make pasted states non-initial
-					((State)node).setInitialQuiet(false);
-				}
-			}
-		}
-	}
+    @Override
+    public void handleHierarchyEvent(HierarchyEvent e) {
+        if (e instanceof NodesDeletingEvent) {
+            for (Node node: e.getAffectedNodes()) {
+                if (node instanceof State) {
+                    // Move the initial property to another state on state removal
+                    handleStateRemoval((State)node);
+                }
+            }
+        } else if (e instanceof NodesAddingEvent) {
+            for (Node node: e.getAffectedNodes()) {
+                if (node instanceof State) {
+                    // Make pasted states non-initial
+                    ((State)node).setInitialQuiet(false);
+                }
+            }
+        }
+    }
 
-	private void handleInitialStateChange(State state) {
-		for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-			if ( !s.equals(state) ) {
-				if (state.isInitial()) {
-					s.setInitialQuiet(false);
-				} else {
-					s.setInitialQuiet(true);
-					break;
-				}
-			}
-		}
-	}
+    private void handleInitialStateChange(State state) {
+        for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
+            if ( !s.equals(state) ) {
+                if (state.isInitial()) {
+                    s.setInitialQuiet(false);
+                } else {
+                    s.setInitialQuiet(true);
+                    break;
+                }
+            }
+        }
+    }
 
-	private void handleStateRemoval(State state) {
-		if (state.isInitial()) {
-			for (State s: fsm.getStates()) {
-				if ( !s.equals(state) ) {
-					s.setInitial(true);
-					break;
-				}
-			}
-		}
-	}
+    private void handleStateRemoval(State state) {
+        if (state.isInitial()) {
+            for (State s: fsm.getStates()) {
+                if ( !s.equals(state) ) {
+                    s.setInitial(true);
+                    break;
+                }
+            }
+        }
+    }
 
 }

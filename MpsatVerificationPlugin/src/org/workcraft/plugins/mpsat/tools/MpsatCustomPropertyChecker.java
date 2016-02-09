@@ -18,35 +18,35 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCustomPropertyChecker extends VerificationTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Custom properties [MPSat]...";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Custom properties [MPSat]...";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, PetriNetModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, PetriNetModel.class);
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.BOTTOM;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.BOTTOM;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat_presets.xml");
-		PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(presetFile, new MpsatSettingsSerialiser());
-		final Framework framework = Framework.getInstance();
-		MainWindow mainWindow = framework.getMainWindow();
-		MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);
-		GUI.centerToParent(dialog, mainWindow);
-		dialog.setVisible(true);
-		if (dialog.getModalResult() == 1) {
-			final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings());
-			framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
-					new MpsatChainResultHandler(mpsatTask));
-		}
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat_presets.xml");
+        PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(presetFile, new MpsatSettingsSerialiser());
+        final Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
+        MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);
+        GUI.centerToParent(dialog, mainWindow);
+        dialog.setVisible(true);
+        if (dialog.getModalResult() == 1) {
+            final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings());
+            framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
+                    new MpsatChainResultHandler(mpsatTask));
+        }
+    }
 
 }

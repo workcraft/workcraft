@@ -8,52 +8,52 @@ import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
 
 public class SignalPropertyDescriptor implements PropertyDescriptor {
-	private final STG stg;
-	private final SignalTransition transition;
+    private final STG stg;
+    private final SignalTransition transition;
 
-	public SignalPropertyDescriptor(STG stg, SignalTransition transition) {
-		this.stg = stg;
-		this.transition = transition;
-	}
+    public SignalPropertyDescriptor(STG stg, SignalTransition transition) {
+        this.stg = stg;
+        this.transition = transition;
+    }
 
-	@Override
-	public Map<Object, String> getChoice() {
-		return null;
-	}
+    @Override
+    public Map<Object, String> getChoice() {
+        return null;
+    }
 
-	@Override
-	public String getName() {
-		return "Signal name";
-	}
+    @Override
+    public String getName() {
+        return "Signal name";
+    }
 
-	@Override
-	public Class<?> getType() {
-		return String.class;
-	}
+    @Override
+    public Class<?> getType() {
+        return String.class;
+    }
 
-	@Override
-	public Object getValue() throws InvocationTargetException {
-		return transition.getSignalName();
-	}
+    @Override
+    public Object getValue() throws InvocationTargetException {
+        return transition.getSignalName();
+    }
 
-	@Override
-	public void setValue(Object value) throws InvocationTargetException {
-		stg.setName(transition, (String)value);
-	}
+    @Override
+    public void setValue(Object value) throws InvocationTargetException {
+        stg.setName(transition, (String)value);
+    }
 
-	@Override
-	public boolean isWritable() {
-		return true;
-	}
+    @Override
+    public boolean isWritable() {
+        return true;
+    }
 
-	@Override
-	public boolean isCombinable() {
-		return true;
-	}
+    @Override
+    public boolean isCombinable() {
+        return true;
+    }
 
-	@Override
-	public boolean isTemplatable() {
-		return false;
-	}
+    @Override
+    public boolean isTemplatable() {
+        return false;
+    }
 
 }

@@ -33,44 +33,44 @@ import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 
 public class LookAndFeelHelper {
 
-	private static Map<String, String> lafMap;
+    private static Map<String, String> lafMap;
 
-	public static Map<String, String> getLafMap() {
-		if (lafMap == null) {
-			lafMap = new LinkedHashMap<>();
-			lafMap.put("Metal (default)", "javax.swing.plaf.metal.MetalLookAndFeel");
-			lafMap.put("Windows", "com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-			lafMap.put("Substance: Moderate", "org.jvnet.substance.skin.SubstanceModerateLookAndFeel");
-			lafMap.put("Substance: Mist Silver", "org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel");
-			lafMap.put("Substance: Raven", "org.jvnet.substance.skin.SubstanceRavenLookAndFeel");
-			lafMap.put("Substance: Business", "org.jvnet.substance.skin.SubstanceBusinessLookAndFeel");
-			lafMap.put("Substance: Creme", "org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel");
-		}
-		return Collections.unmodifiableMap(lafMap);
-	}
+    public static Map<String, String> getLafMap() {
+        if (lafMap == null) {
+            lafMap = new LinkedHashMap<>();
+            lafMap.put("Metal (default)", "javax.swing.plaf.metal.MetalLookAndFeel");
+            lafMap.put("Windows", "com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            lafMap.put("Substance: Moderate", "org.jvnet.substance.skin.SubstanceModerateLookAndFeel");
+            lafMap.put("Substance: Mist Silver", "org.jvnet.substance.skin.SubstanceMistSilverLookAndFeel");
+            lafMap.put("Substance: Raven", "org.jvnet.substance.skin.SubstanceRavenLookAndFeel");
+            lafMap.put("Substance: Business", "org.jvnet.substance.skin.SubstanceBusinessLookAndFeel");
+            lafMap.put("Substance: Creme", "org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel");
+        }
+        return Collections.unmodifiableMap(lafMap);
+    }
 
-	public static void setDefaultLookAndFeel() {
-		String laf = UIManager.getCrossPlatformLookAndFeelClassName();
-		//String laf = UIManager.getSystemLookAndFeelClassName();
-		setLookAndFeel(laf);
-	}
+    public static void setDefaultLookAndFeel() {
+        String laf = UIManager.getCrossPlatformLookAndFeelClassName();
+        //String laf = UIManager.getSystemLookAndFeelClassName();
+        setLookAndFeel(laf);
+    }
 
-	public static void setLookAndFeel(String laf) {
-		try {
-			UIManager.setLookAndFeel(laf);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
-	}
+    public static void setLookAndFeel(String laf) {
+        try {
+            UIManager.setLookAndFeel(laf);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void setSubstance(String laf) {
-		setLookAndFeel(laf);
-		UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
-	}
+    public static void setSubstance(String laf) {
+        setLookAndFeel(laf);
+        UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
+    }
 }

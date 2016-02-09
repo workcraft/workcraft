@@ -16,20 +16,20 @@ import org.workcraft.plugins.stg.tools.StgSimulationTool;
 
 public class STGToolsProvider implements CustomToolsProvider {
 
-	@Override
-	public Iterable<GraphEditorTool> getTools() {
-		ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+    @Override
+    public Iterable<GraphEditorTool> getTools() {
+        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
-		result.add(new StgSelectionTool());
-		result.add(new CommentGeneratorTool());
-		result.add(new StgConnectionTool());
-		result.add(new ReadArcConnectionTool());
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(STGPlace.class)));
-		result.add(new StgSignalTransitionGeneratorTool());
-		result.add(new NodeGeneratorTool(new DefaultNodeGenerator(DummyTransition.class)));
-		result.add(new StgSimulationTool());
-		result.add(new EncodingConflictAnalyserTool());
-		return result;
-	}
+        result.add(new StgSelectionTool());
+        result.add(new CommentGeneratorTool());
+        result.add(new StgConnectionTool());
+        result.add(new ReadArcConnectionTool());
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(STGPlace.class)));
+        result.add(new StgSignalTransitionGeneratorTool());
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(DummyTransition.class)));
+        result.add(new StgSimulationTool());
+        result.add(new EncodingConflictAnalyserTool());
+        return result;
+    }
 
 }

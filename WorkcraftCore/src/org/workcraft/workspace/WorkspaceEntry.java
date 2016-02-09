@@ -54,343 +54,343 @@ import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
-	private ModelEntry modelEntry = null;
-	private boolean changed = true;
-	private boolean temporary = true;
-	private final Workspace workspace;
-	private final MementoManager history = new MementoManager();
-	private boolean canSelect = true;
-	private boolean canModify = true;
-	private Memento capturedMemento = null;
-	private Memento savedMemento = null;
+    private ModelEntry modelEntry = null;
+    private boolean changed = true;
+    private boolean temporary = true;
+    private final Workspace workspace;
+    private final MementoManager history = new MementoManager();
+    private boolean canSelect = true;
+    private boolean canModify = true;
+    private Memento capturedMemento = null;
+    private Memento savedMemento = null;
 
-	public WorkspaceEntry(Workspace workspace) {
-		this.workspace = workspace;
-	}
+    public WorkspaceEntry(Workspace workspace) {
+        this.workspace = workspace;
+    }
 
-	public void setChanged(boolean changed) {
-		if(this.changed != changed) {
-			this.changed = changed;
-			if (changed == false) {
-				savedMemento = null;
-			}
-			workspace.fireEntryChanged(this);
-			final Framework framework = Framework.getInstance();
-			framework.getMainWindow().refreshWorkspaceEntryTitle(this, true);
-		}
-	}
+    public void setChanged(boolean changed) {
+        if(this.changed != changed) {
+            this.changed = changed;
+            if (changed == false) {
+                savedMemento = null;
+            }
+            workspace.fireEntryChanged(this);
+            final Framework framework = Framework.getInstance();
+            framework.getMainWindow().refreshWorkspaceEntryTitle(this, true);
+        }
+    }
 
-	public boolean isChanged() {
-		return changed;
-	}
+    public boolean isChanged() {
+        return changed;
+    }
 
-	public ModelEntry getModelEntry() {
-		return modelEntry;
-	}
+    public ModelEntry getModelEntry() {
+        return modelEntry;
+    }
 
-	private StateObserver modelObserver = new StateObserver(){
-		@Override
-		public void notify(StateEvent e) {
-			if (e instanceof ModelModifiedEvent) {
-				setChanged(true);
-			}
-			observableState.sendNotification(e);
-		}
-	};
+    private StateObserver modelObserver = new StateObserver(){
+        @Override
+        public void notify(StateEvent e) {
+            if (e instanceof ModelModifiedEvent) {
+                setChanged(true);
+            }
+            observableState.sendNotification(e);
+        }
+    };
 
-	public void setModelEntry(ModelEntry modelEntry)
-	{
-		if(this.modelEntry != null) {
-			if (this.modelEntry.isVisual()) {
-				this.modelEntry.getVisualModel().removeObserver(modelObserver);
-			}
-		}
-		this.modelEntry = modelEntry;
+    public void setModelEntry(ModelEntry modelEntry)
+    {
+        if(this.modelEntry != null) {
+            if (this.modelEntry.isVisual()) {
+                this.modelEntry.getVisualModel().removeObserver(modelObserver);
+            }
+        }
+        this.modelEntry = modelEntry;
 
-		observableState.sendNotification(new StateEvent() {
-			@Override
-			public Object getSender() {
-				return this;
-			}
-		});
+        observableState.sendNotification(new StateEvent() {
+            @Override
+            public Object getSender() {
+                return this;
+            }
+        });
 
-		if (this.modelEntry.isVisual()) {
-			this.modelEntry.getVisualModel().addObserver(modelObserver);
-		}
-	}
+        if (this.modelEntry.isVisual()) {
+            this.modelEntry.getVisualModel().addObserver(modelObserver);
+        }
+    }
 
-	public boolean isWork() {
-		return (modelEntry != null) || (getWorkspacePath().getNode().endsWith(FileFilters.DOCUMENT_EXTENSION));
-	}
+    public boolean isWork() {
+        return (modelEntry != null) || (getWorkspacePath().getNode().endsWith(FileFilters.DOCUMENT_EXTENSION));
+    }
 
-	public String getTitle() {
-		String res;
-		String name = getWorkspacePath().getNode();
-		if (isWork()) {
-			int dot = name.lastIndexOf('.');
-			if (dot == -1) {
-				res = name;
-			} else {
-				res = name.substring(0, dot);
-			}
-		} else {
-			res = name;
-		}
-		return res;
-	}
+    public String getTitle() {
+        String res;
+        String name = getWorkspacePath().getNode();
+        if (isWork()) {
+            int dot = name.lastIndexOf('.');
+            if (dot == -1) {
+                res = name;
+            } else {
+                res = name.substring(0, dot);
+            }
+        } else {
+            res = name;
+        }
+        return res;
+    }
 
-	@Override
-	public String toString() {
-		String res = getTitle();
-		if (modelEntry != null && modelEntry.isVisual()) {
-			res = res + " [V]";
-		}
-		if (changed) {
-			res = "* " + res;
-		}
-		if (temporary) {
-			res = res + " (not in workspace)";
-		}
-		return res;
-	}
+    @Override
+    public String toString() {
+        String res = getTitle();
+        if (modelEntry != null && modelEntry.isVisual()) {
+            res = res + " [V]";
+        }
+        if (changed) {
+            res = "* " + res;
+        }
+        if (temporary) {
+            res = res + " (not in workspace)";
+        }
+        return res;
+    }
 
-	public boolean isTemporary() {
-		return temporary;
-	}
+    public boolean isTemporary() {
+        return temporary;
+    }
 
-	public void setTemporary(boolean temporary) {
-		this.temporary = temporary;
-	}
+    public void setTemporary(boolean temporary) {
+        this.temporary = temporary;
+    }
 
-	public Path<String> getWorkspacePath() {
-		return workspace.getPath(this);
-	}
+    public Path<String> getWorkspacePath() {
+        return workspace.getPath(this);
+    }
 
-	public File getFile() {
-		return workspace.getFile(this);
-	}
+    public File getFile() {
+        return workspace.getFile(this);
+    }
 
-	ObservableStateImpl observableState = new ObservableStateImpl();
+    ObservableStateImpl observableState = new ObservableStateImpl();
 
-	@Override
-	public void addObserver(StateObserver obs) {
-		observableState.addObserver(obs);
-	}
+    @Override
+    public void addObserver(StateObserver obs) {
+        observableState.addObserver(obs);
+    }
 
-	@Override
-	public void removeObserver(StateObserver obs) {
-		observableState.removeObserver(obs);
-	}
+    @Override
+    public void removeObserver(StateObserver obs) {
+        observableState.removeObserver(obs);
+    }
 
-	@Override
-	public void sendNotification (StateEvent e) {
-		observableState.sendNotification(e);
-	}
+    @Override
+    public void sendNotification (StateEvent e) {
+        observableState.sendNotification(e);
+    }
 
-	public void updateActionState() {
-		MainWindowActions.MERGE_WORK_ACTION.setEnabled(canModify);
-		MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canModify && history.canUndo());
-		MainWindowActions.EDIT_REDO_ACTION.setEnabled(canModify && history.canRedo());
-		MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify && canSelect);
-		MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify && canSelect);
-		MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify && canSelect);
-		MainWindowActions.EDIT_DELETE_ACTION.setEnabled(canModify && canSelect);
-		MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
-		MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
-		MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
-		MainWindow mainWindow = Framework.getInstance().getMainWindow();
-		if (mainWindow != null) {
-			mainWindow.getMainMenu().updateToolsMenuState(canModify);
-			mainWindow.getPropertyView().setVisible(canModify);
-		}
-	}
+    public void updateActionState() {
+        MainWindowActions.MERGE_WORK_ACTION.setEnabled(canModify);
+        MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canModify && history.canUndo());
+        MainWindowActions.EDIT_REDO_ACTION.setEnabled(canModify && history.canRedo());
+        MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_DELETE_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        if (mainWindow != null) {
+            mainWindow.getMainMenu().updateToolsMenuState(canModify);
+            mainWindow.getPropertyView().setVisible(canModify);
+        }
+    }
 
-	public void setCanModify(boolean canModify) {
-		this.canModify = canModify;
-		updateActionState();
-	}
+    public void setCanModify(boolean canModify) {
+        this.canModify = canModify;
+        updateActionState();
+    }
 
-	public void setCanSelect(boolean canSelect) {
-		this.canSelect = canSelect;
-		updateActionState();
-	}
+    public void setCanSelect(boolean canSelect) {
+        this.canSelect = canSelect;
+        updateActionState();
+    }
 
-	public void captureMemento() {
-		final Framework framework = Framework.getInstance();
-		capturedMemento = framework.save(modelEntry);
-		if (changed == false) {
-			savedMemento = capturedMemento;
-		}
+    public void captureMemento() {
+        final Framework framework = Framework.getInstance();
+        capturedMemento = framework.save(modelEntry);
+        if (changed == false) {
+            savedMemento = capturedMemento;
+        }
 
-		if (CommonDebugSettings.getCopyModelOnChange()) {
-			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
-			clipboard.setContents(new StringSelection(str), null);
-		}
-	}
+        if (CommonDebugSettings.getCopyModelOnChange()) {
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            String str = unzipInputStream(new ZipInputStream(capturedMemento.getStream()));
+            clipboard.setContents(new StringSelection(str), null);
+        }
+    }
 
-	public void cancelMemento() {
-		final Framework framework = Framework.getInstance();
-		setModelEntry(framework.load(capturedMemento));
-		setChanged(savedMemento != capturedMemento);
-		capturedMemento = null;
-	}
+    public void cancelMemento() {
+        final Framework framework = Framework.getInstance();
+        setModelEntry(framework.load(capturedMemento));
+        setChanged(savedMemento != capturedMemento);
+        capturedMemento = null;
+    }
 
-	public void saveMemento() {
-		Memento currentMemento = capturedMemento;
-		capturedMemento = null;
-		if (currentMemento == null) {
-			final Framework framework = Framework.getInstance();
-			currentMemento = framework.save(modelEntry);
-		}
-		if (changed == false) {
-			savedMemento = currentMemento;
-		}
-		history.pushUndo(currentMemento);
-		history.clearRedo();
-		updateActionState();
-	}
+    public void saveMemento() {
+        Memento currentMemento = capturedMemento;
+        capturedMemento = null;
+        if (currentMemento == null) {
+            final Framework framework = Framework.getInstance();
+            currentMemento = framework.save(modelEntry);
+        }
+        if (changed == false) {
+            savedMemento = currentMemento;
+        }
+        history.pushUndo(currentMemento);
+        history.clearRedo();
+        updateActionState();
+    }
 
 
-	public void undo() {
-		if (history.canUndo()) {
-			Memento undoMemento = history.pullUndo();
-			if (undoMemento != null) {
-				final Framework framework = Framework.getInstance();
-				Memento currentMemento = framework.save(modelEntry);
-				if (changed == false) {
-					savedMemento = currentMemento;
-				}
-				history.pushRedo(currentMemento);
-				setModelEntry(framework.load(undoMemento));
-				setChanged(undoMemento != savedMemento);
-			}
-		}
-		updateActionState();
-	}
+    public void undo() {
+        if (history.canUndo()) {
+            Memento undoMemento = history.pullUndo();
+            if (undoMemento != null) {
+                final Framework framework = Framework.getInstance();
+                Memento currentMemento = framework.save(modelEntry);
+                if (changed == false) {
+                    savedMemento = currentMemento;
+                }
+                history.pushRedo(currentMemento);
+                setModelEntry(framework.load(undoMemento));
+                setChanged(undoMemento != savedMemento);
+            }
+        }
+        updateActionState();
+    }
 
-	public void redo() {
-		if (history.canRedo()) {
-			Memento redoMemento = history.pullRedo();
-			if (redoMemento != null) {
-				final Framework framework = Framework.getInstance();
-				Memento currentMemento = framework.save(modelEntry);
-				if (changed == false) {
-					savedMemento = currentMemento;
-				}
-				history.pushUndo(currentMemento);
-				setModelEntry(framework.load(redoMemento));
-				setChanged(redoMemento != savedMemento);
-			}
-		}
-		updateActionState();
-	}
+    public void redo() {
+        if (history.canRedo()) {
+            Memento redoMemento = history.pullRedo();
+            if (redoMemento != null) {
+                final Framework framework = Framework.getInstance();
+                Memento currentMemento = framework.save(modelEntry);
+                if (changed == false) {
+                    savedMemento = currentMemento;
+                }
+                history.pushUndo(currentMemento);
+                setModelEntry(framework.load(redoMemento));
+                setChanged(redoMemento != savedMemento);
+            }
+        }
+        updateActionState();
+    }
 
-	public void insert(ModelEntry me) {
-		final Framework framework = Framework.getInstance();
-		try {
-			Memento currentMemento = framework.save(modelEntry);
-			Memento insertMemento = framework.save(me);
-			ModelEntry result = framework.load(currentMemento.getStream(), insertMemento.getStream());
-			saveMemento();
-			setModelEntry(result);
-			setChanged(true);
-		} catch (DeserialisationException e) {
-			JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
-					"Model insertion failed", JOptionPane.ERROR_MESSAGE);
-		}
-	}
+    public void insert(ModelEntry me) {
+        final Framework framework = Framework.getInstance();
+        try {
+            Memento currentMemento = framework.save(modelEntry);
+            Memento insertMemento = framework.save(me);
+            ModelEntry result = framework.load(currentMemento.getStream(), insertMemento.getStream());
+            saveMemento();
+            setModelEntry(result);
+            setChanged(true);
+        } catch (DeserialisationException e) {
+            JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
+                    "Model insertion failed", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-	public String unzipInputStream(ZipInputStream zis) {
-		String result = "";
-		try {
-			ZipEntry ze;
-			while ((ze = zis.getNextEntry()) != null)	{
-		        StringBuilder isb = new StringBuilder();
-		        BufferedReader br = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
-		        String line = "=== " + ze.getName() + " ===";
-		        while (line != null) {
-		            isb.append(line);
-		            isb.append('\n');
-		            line = br.readLine();
-		        }
-		        result += isb.toString();
-				zis.closeEntry();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+    public String unzipInputStream(ZipInputStream zis) {
+        String result = "";
+        try {
+            ZipEntry ze;
+            while ((ze = zis.getNextEntry()) != null)    {
+                StringBuilder isb = new StringBuilder();
+                BufferedReader br = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
+                String line = "=== " + ze.getName() + " ===";
+                while (line != null) {
+                    isb.append(line);
+                    isb.append('\n');
+                    line = br.readLine();
+                }
+                result += isb.toString();
+                zis.closeEntry();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
-	public String getClipboardAsString() {
-		final Framework framework = Framework.getInstance();
-		return unzipInputStream(new ZipInputStream(framework.clipboard.getStream()));
-	}
+    public String getClipboardAsString() {
+        final Framework framework = Framework.getInstance();
+        return unzipInputStream(new ZipInputStream(framework.clipboard.getStream()));
+    }
 
-	public void copy() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			captureMemento();
-			try {
-				// copy selected nodes inside a group as if it was the root
-				while (model.getCurrentLevel() != model.getRoot()) {
-					Collection<Node> nodes = new HashSet<Node>(model.getSelection());
-					Container level = model.getCurrentLevel();
-					Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-					if (parent != null) {
-						model.setCurrentLevel(parent);
-						model.addToSelection(level);
-					}
-					model.ungroupSelection();
-					model.select(nodes);
-				}
-				model.selectInverse();
-				model.deleteSelection();
-				final Framework framework = Framework.getInstance();
-				framework.clipboard = framework.save(modelEntry);
-				if (CommonDebugSettings.getCopyModelOnChange()) {
-					// copy the memento clipboard into the system-wide clipboard as a string
-					Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-					clipboard.setContents(new StringSelection(getClipboardAsString()), null);
-				}
-			} finally {
-				cancelMemento();
-			}
-		}
-	}
+    public void copy() {
+        VisualModel model = modelEntry.getVisualModel();
+        if (model.getSelection().size() > 0) {
+            captureMemento();
+            try {
+                // copy selected nodes inside a group as if it was the root
+                while (model.getCurrentLevel() != model.getRoot()) {
+                    Collection<Node> nodes = new HashSet<Node>(model.getSelection());
+                    Container level = model.getCurrentLevel();
+                    Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
+                    if (parent != null) {
+                        model.setCurrentLevel(parent);
+                        model.addToSelection(level);
+                    }
+                    model.ungroupSelection();
+                    model.select(nodes);
+                }
+                model.selectInverse();
+                model.deleteSelection();
+                final Framework framework = Framework.getInstance();
+                framework.clipboard = framework.save(modelEntry);
+                if (CommonDebugSettings.getCopyModelOnChange()) {
+                    // copy the memento clipboard into the system-wide clipboard as a string
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(new StringSelection(getClipboardAsString()), null);
+                }
+            } finally {
+                cancelMemento();
+            }
+        }
+    }
 
-	public void cut() {
-		copy();
-		delete();
-	}
+    public void cut() {
+        copy();
+        delete();
+    }
 
-	public void paste() {
-		final Framework framework = Framework.getInstance();
-		if (framework.clipboard != null) {
-			try {
-				Memento memento = framework.save(modelEntry);
-				ModelEntry result = framework.load(memento.getStream(), framework.clipboard.getStream());
-				saveMemento();
-				setModelEntry(result);
-				setChanged(true);
+    public void paste() {
+        final Framework framework = Framework.getInstance();
+        if (framework.clipboard != null) {
+            try {
+                Memento memento = framework.save(modelEntry);
+                ModelEntry result = framework.load(memento.getStream(), framework.clipboard.getStream());
+                saveMemento();
+                setModelEntry(result);
+                setChanged(true);
 
-				VisualModel model = result.getVisualModel();
-				VisualModelTransformer.translateSelection(model, 1.0, 1.0);
-			} catch (DeserialisationException e) {
-				JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
-						"Clipboard paste failed", JOptionPane.ERROR_MESSAGE);
-			}
-		}
-	}
+                VisualModel model = result.getVisualModel();
+                VisualModelTransformer.translateSelection(model, 1.0, 1.0);
+            } catch (DeserialisationException e) {
+                JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
+                        "Clipboard paste failed", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
-	public void delete() {
-		VisualModel model = modelEntry.getVisualModel();
-		if (model.getSelection().size() > 0) {
-			saveMemento();
-			model.deleteSelection();
-			setChanged(true);
-		}
-	}
+    public void delete() {
+        VisualModel model = modelEntry.getVisualModel();
+        if (model.getSelection().size() > 0) {
+            saveMemento();
+            model.deleteSelection();
+            setChanged(true);
+        }
+    }
 
 }

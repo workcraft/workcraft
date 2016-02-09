@@ -44,51 +44,51 @@ import org.workcraft.serialisation.Format;
 public class EMFExporter implements Exporter {
 
 
-	public void export(Model model, OutputStream out) throws IOException, SerialisationException {
-		InputStream svg = SVGExportUtils.stream(model);
+    public void export(Model model, OutputStream out) throws IOException, SerialisationException {
+        InputStream svg = SVGExportUtils.stream(model);
 
-		UserAgentAdapter ua = new UserAgentAdapter();
-		DocumentLoader loader = new DocumentLoader(ua);
-		try {
-			BridgeContext bridgeContext = new BridgeContext(ua, loader);
-			try {
-				Document svgDocument = loader.loadDocument("", svg);
+        UserAgentAdapter ua = new UserAgentAdapter();
+        DocumentLoader loader = new DocumentLoader(ua);
+        try {
+            BridgeContext bridgeContext = new BridgeContext(ua, loader);
+            try {
+                Document svgDocument = loader.loadDocument("", svg);
 
-				GVTBuilder gvtBuilder = new GVTBuilder();
-	            GraphicsNode rootNode = gvtBuilder.build(bridgeContext, svgDocument);
+                GVTBuilder gvtBuilder = new GVTBuilder();
+                GraphicsNode rootNode = gvtBuilder.build(bridgeContext, svgDocument);
 
-	            Rectangle2D bounds = rootNode.getBounds();
+                Rectangle2D bounds = rootNode.getBounds();
                 Dimension size = new Dimension((int)bounds.getWidth(), (int)bounds.getHeight());
                 // FIXME: freehep SVG2EMF converter does not seem to produce good results
 //                EMFGraphics2D eg2d = new EMFGraphics2D(out, size);
 //                eg2d.startExport();
 //                rootNode.paint(eg2d);
 //                eg2d.endExport();
-			} finally {
-				bridgeContext.dispose();
-			}
-		} finally {
-			loader.dispose();
-		}
-	}
+            } finally {
+                bridgeContext.dispose();
+            }
+        } finally {
+            loader.dispose();
+        }
+    }
 
-	public String getDescription() {
-		return ".emf (Freehep EMF converter)";
-	}
+    public String getDescription() {
+        return ".emf (Freehep EMF converter)";
+    }
 
-	public String getExtenstion() {
-		return ".emf";
-	}
+    public String getExtenstion() {
+        return ".emf";
+    }
 
-	public int getCompatibility(Model model) {
-		if (model instanceof VisualModel)
-			return Exporter.GENERAL_COMPATIBILITY;
-		else
-			return Exporter.NOT_COMPATIBLE;
-	}
+    public int getCompatibility(Model model) {
+        if (model instanceof VisualModel)
+            return Exporter.GENERAL_COMPATIBILITY;
+        else
+            return Exporter.NOT_COMPATIBLE;
+    }
 
-	@Override
-	public UUID getTargetFormat() {
-		return Format.EMF;
-	}
+    @Override
+    public UUID getTargetFormat() {
+        return Format.EMF;
+    }
 }

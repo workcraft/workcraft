@@ -24,103 +24,103 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class FsmModule  implements Module {
 
-	@Override
-	public String getDescription() {
-		return "Finite State Machine";
-	}
+    @Override
+    public String getDescription() {
+        return "Finite State Machine";
+    }
 
-	@Override
-	public void init() {
-		initPluginManager();
-		initCompatibilityManager();
-	}
+    @Override
+    public void init() {
+        initPluginManager();
+        initCompatibilityManager();
+    }
 
-	private void initPluginManager() {
-		final Framework framework = Framework.getInstance();
-		final PluginManager pm = framework.getPluginManager();
+    private void initPluginManager() {
+        final Framework framework = Framework.getInstance();
+        final PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(ModelDescriptor.class, FsmDescriptor.class);
+        pm.registerClass(ModelDescriptor.class, FsmDescriptor.class);
 
-		pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
-		pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
+        pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
+        pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new FsmToDgConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new FsmToDgConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new DgToFsmConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DgToFsmConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new FsmToPnConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new FsmToPnConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new DeadlockCheckerTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DeadlockCheckerTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new DeterminismCheckerTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DeterminismCheckerTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new ReachabilityCheckerTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new ReachabilityCheckerTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new ReversibilityCheckerTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new ReversibilityCheckerTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new AbstractContractorTool() {
-					@Override
-					public boolean isApplicableTo(WorkspaceEntry we) {
-						return we.getModelEntry().getMathModel() instanceof Fsm;
-					}
-				};
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new AbstractContractorTool() {
+                    @Override
+                    public boolean isApplicableTo(WorkspaceEntry we) {
+                        return we.getModelEntry().getMathModel() instanceof Fsm;
+                    }
+                };
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new StateMergerTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new StateMergerTool();
+            }
+        });
 
-	}
+    }
 
-	private void initCompatibilityManager() {
-		final Framework framework = Framework.getInstance();
-		final CompatibilityManager cm = framework.getCompatibilityManager();
+    private void initCompatibilityManager() {
+        final Framework framework = Framework.getInstance();
+        final CompatibilityManager cm = framework.getCompatibilityManager();
 
-		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.fsm.FsmModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.fsm.FsmDescriptor\"/>");
-	}
+        cm.registerMetaReplacement(
+                "<descriptor class=\"org.workcraft.plugins.fsm.FsmModelDescriptor\"/>",
+                "<descriptor class=\"org.workcraft.plugins.fsm.FsmDescriptor\"/>");
+    }
 
 }

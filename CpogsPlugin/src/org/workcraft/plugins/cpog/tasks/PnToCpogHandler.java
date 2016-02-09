@@ -6,19 +6,19 @@ import org.workcraft.tasks.Result.Outcome;
 
 public class PnToCpogHandler extends DummyProgressMonitor<PnToCpogResult>  {
 
-	public PnToCpogHandler(PnToCpogTask task) {
-		super();
-	}
+    public PnToCpogHandler(PnToCpogTask task) {
+        super();
+    }
 
-	@Override
-	public void finished(Result<? extends PnToCpogResult> result, String description) {
+    @Override
+    public void finished(Result<? extends PnToCpogResult> result, String description) {
 
-		if (result.getOutcome() == Outcome.FINISHED) {
-			System.out.println(result.getReturnValue().getStdout());
+        if (result.getOutcome() == Outcome.FINISHED) {
+            System.out.println(result.getReturnValue().getStdout());
 
-		} else if (result.getOutcome() == Outcome.FAILED) {
-			System.out.println(result.getReturnValue().getStdout());
-		}
-	}
+        } else if (result.getOutcome() == Outcome.FAILED) {
+            System.out.println(result.getReturnValue().getStdout());
+        }
+    }
 
 }

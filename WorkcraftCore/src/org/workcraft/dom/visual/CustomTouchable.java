@@ -6,5 +6,5 @@ import org.workcraft.dom.Node;
 
 public interface CustomTouchable
 {
-	Node customHitTest(Point2D point);
+    Node customHitTest(Point2D point);
 }

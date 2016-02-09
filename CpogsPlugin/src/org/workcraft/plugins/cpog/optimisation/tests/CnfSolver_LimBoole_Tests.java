@@ -27,12 +27,12 @@ import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.LimBooleCnfGenerator;
 
 public class CnfSolver_LimBoole_Tests extends SolverTests {
-	public CnfSolver_LimBoole_Tests()
-	{
-	}
+    public CnfSolver_LimBoole_Tests()
+    {
+    }
 
-	protected LegacyCpogSolver createSolver()
-	{
-		return new LegacyDefaultCpogSolver<BooleanFormula>(new CnfGeneratingOptimiser(), new LimBooleCnfGenerator());
-	}
+    protected LegacyCpogSolver createSolver()
+    {
+        return new LegacyDefaultCpogSolver<BooleanFormula>(new CnfGeneratingOptimiser(), new LimBooleCnfGenerator());
+    }
 }

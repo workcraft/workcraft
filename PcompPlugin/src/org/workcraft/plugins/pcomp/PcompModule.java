@@ -9,17 +9,17 @@ import org.workcraft.plugins.pcomp.tools.PcompTool;
 
 public class PcompModule implements Module {
 
-	@Override
-	public void init() {
-		final Framework framework = Framework.getInstance();
-		PluginManager pm = framework.getPluginManager();
+    @Override
+    public void init() {
+        final Framework framework = Framework.getInstance();
+        PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(Tool.class, PcompTool.class);
-		pm.registerClass(Settings.class, PcompUtilitySettings.class);
-	}
+        pm.registerClass(Tool.class, PcompTool.class);
+        pm.registerClass(Settings.class, PcompUtilitySettings.class);
+    }
 
-	@Override
-	public String getDescription() {
-		return "PComp parallel composition support";
-	}
+    @Override
+    public String getDescription() {
+        return "PComp parallel composition support";
+    }
 }

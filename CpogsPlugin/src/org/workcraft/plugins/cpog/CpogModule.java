@@ -33,79 +33,79 @@ import org.workcraft.serialisation.xml.XMLSerialiser;
 
 public class CpogModule implements Module {
 
-	@Override
-	public String getDescription() {
-		return "Conditional Partial Order Graphs";
-	}
+    @Override
+    public String getDescription() {
+        return "Conditional Partial Order Graphs";
+    }
 
-	@Override
-	public void init() {
-		initPluginManager();
-		initCompatibilityManager();
-	}
+    @Override
+    public void init() {
+        initPluginManager();
+        initCompatibilityManager();
+    }
 
-	private void initPluginManager() {
-		final Framework framework = Framework.getInstance();
-		final PluginManager pm = framework.getPluginManager();
+    private void initPluginManager() {
+        final Framework framework = Framework.getInstance();
+        final PluginManager pm = framework.getPluginManager();
 
-		pm.registerClass(ModelDescriptor.class, CpogDescriptor.class);
+        pm.registerClass(ModelDescriptor.class, CpogDescriptor.class);
 
-		pm.registerClass(PropertyClassProvider.class, EncodingPropertyProvider.class);
+        pm.registerClass(PropertyClassProvider.class, EncodingPropertyProvider.class);
 
-		pm.registerClass(XMLSerialiser.class, VisualCPOGGroupSerialiser.class);
-		pm.registerClass(XMLSerialiser.class, VertexSerialiser.class);
-		pm.registerClass(XMLSerialiser.class, RhoClauseSerialiser.class);
-		pm.registerClass(XMLSerialiser.class, ArcSerialiser.class);
+        pm.registerClass(XMLSerialiser.class, VisualCPOGGroupSerialiser.class);
+        pm.registerClass(XMLSerialiser.class, VertexSerialiser.class);
+        pm.registerClass(XMLSerialiser.class, RhoClauseSerialiser.class);
+        pm.registerClass(XMLSerialiser.class, ArcSerialiser.class);
 
-		pm.registerClass(XMLDeserialiser.class, VisualCPOGGroupDeserialiser.class);
-		pm.registerClass(XMLDeserialiser.class, VertexDeserialiser.class);
-		pm.registerClass(XMLDeserialiser.class, RhoClauseDeserialiser.class);
-		pm.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
-		pm.registerClass(Settings.class, CpogSettings.class);
+        pm.registerClass(XMLDeserialiser.class, VisualCPOGGroupDeserialiser.class);
+        pm.registerClass(XMLDeserialiser.class, VertexDeserialiser.class);
+        pm.registerClass(XMLDeserialiser.class, RhoClauseDeserialiser.class);
+        pm.registerClass(XMLDeserialiser.class, ArcDeserialiser.class);
+        pm.registerClass(Settings.class, CpogSettings.class);
 
-		pm.registerClass(Tool.class, ScencoHeuristicTool.class);
-		pm.registerClass(Tool.class, ScencoSATBasedTool.class);
-		pm.registerClass(Tool.class, ScencoSingleLiteralTool.class);
-		pm.registerClass(Tool.class, ScencoSequentialTool.class);
-		pm.registerClass(Tool.class, ScencoExhaustiveTool.class);
-		pm.registerClass(Tool.class, ScencoRandomTool.class);
+        pm.registerClass(Tool.class, ScencoHeuristicTool.class);
+        pm.registerClass(Tool.class, ScencoSATBasedTool.class);
+        pm.registerClass(Tool.class, ScencoSingleLiteralTool.class);
+        pm.registerClass(Tool.class, ScencoSequentialTool.class);
+        pm.registerClass(Tool.class, ScencoExhaustiveTool.class);
+        pm.registerClass(Tool.class, ScencoRandomTool.class);
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new GraphStatisticsTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new GraphStatisticsTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new CpogToGraphConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new CpogToGraphConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, new Initialiser<Tool>() {
-			@Override
-			public Tool create() {
-				return new GraphToCpogConverterTool();
-			}
-		});
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new GraphToCpogConverterTool();
+            }
+        });
 
-		pm.registerClass(Tool.class, PGMinerImportTool.class);
+        pm.registerClass(Tool.class, PGMinerImportTool.class);
 
-		pm.registerClass(Tool.class, PGMinerSelectedGraphsExtractionTool.class);
+        pm.registerClass(Tool.class, PGMinerSelectedGraphsExtractionTool.class);
 
 
 
-	}
+    }
 
-	private void initCompatibilityManager() {
-		final Framework framework = Framework.getInstance();
-		final CompatibilityManager cm = framework.getCompatibilityManager();
+    private void initCompatibilityManager() {
+        final Framework framework = Framework.getInstance();
+        final CompatibilityManager cm = framework.getCompatibilityManager();
 
-		cm.registerMetaReplacement(
-				"<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
-				"<descriptor class=\"org.workcraft.plugins.cpog.CpogDescriptor\"/>");
-	}
+        cm.registerMetaReplacement(
+                "<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
+                "<descriptor class=\"org.workcraft.plugins.cpog.CpogDescriptor\"/>");
+    }
 
 }

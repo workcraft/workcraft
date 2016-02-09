@@ -25,22 +25,22 @@ import org.workcraft.plugins.cpog.CpogSettings;
 
 public class ConsoleBooleanSolver {
 
-	public BooleanSolution solve(CnfTask task)
-	{
-		String cnf = task.getBody();
-		String solution = solve(cnf);
+    public BooleanSolution solve(CnfTask task)
+    {
+        String cnf = task.getBody();
+        String solution = solve(cnf);
 
-		return SolutionReader.readSolution(task, solution);
-	}
+        return SolutionReader.readSolution(task, solution);
+    }
 
-	private String solve(String cnf) {
-		switch (CpogSettings.getSatSolver()) {
-		case CLASP:
-			return ProcessIO.runViaStreams(cnf, new String[]{CpogSettings.getClaspCommand()});
-		case MINISAT:
-			return ProcessIO.minisat(CpogSettings.getMinisatCommand(), cnf);
-		default :
-			throw new RuntimeException("Unknown SAT Solver: " + CpogSettings.getSatSolver());
-		}
-	}
+    private String solve(String cnf) {
+        switch (CpogSettings.getSatSolver()) {
+        case CLASP:
+            return ProcessIO.runViaStreams(cnf, new String[]{CpogSettings.getClaspCommand()});
+        case MINISAT:
+            return ProcessIO.minisat(CpogSettings.getMinisatCommand(), cnf);
+        default :
+            throw new RuntimeException("Unknown SAT Solver: " + CpogSettings.getSatSolver());
+        }
+    }
 }

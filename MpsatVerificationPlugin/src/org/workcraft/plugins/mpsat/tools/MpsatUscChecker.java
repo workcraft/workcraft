@@ -8,24 +8,24 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatUscChecker extends AbstractMpsatChecker implements Tool {
 
-	@Override
-	public String getDisplayName() {
-		return "Unique State Coding (all cores) [MPSat]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Unique State Coding (all cores) [MPSat]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STGModel.class);
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.MIDDLE;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.MIDDLE;
+    }
 
-	@Override
-	public MpsatSettings getSettings() {
-		return MpsatSettings.getUscSettings();
-	}
+    @Override
+    public MpsatSettings getSettings() {
+        return MpsatSettings.getUscSettings();
+    }
 
 }

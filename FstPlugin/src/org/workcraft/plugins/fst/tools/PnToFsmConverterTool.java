@@ -10,21 +10,21 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PnToFsmConverterTool extends ConversionTool {
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, PetriNet.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, PetriNet.class);
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "Finite State Machine [Petrify]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Finite State Machine [Petrify]";
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		WriteSgConversionTask task = new WriteSgConversionTask(we, false);
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(task, "Building state graph", new PnToFsmConversionResultHandler(task));
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        WriteSgConversionTask task = new WriteSgConversionTask(we, false);
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(task, "Building state graph", new PnToFsmConversionResultHandler(task));
+    }
 
 }

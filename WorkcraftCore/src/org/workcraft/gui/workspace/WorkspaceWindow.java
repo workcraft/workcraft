@@ -47,307 +47,307 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class WorkspaceWindow extends JPanel {
-	public static class Actions {
+    public static class Actions {
 
-		public static final Action ADD_FILES_TO_WORKSPACE_ACTION = new Action() {
-			@Override
-			public void run() {
-				final Framework framework = Framework.getInstance();
-				framework.getMainWindow().getWorkspaceView()
-						.addToWorkspace(Path.root(""));
-			}
+        public static final Action ADD_FILES_TO_WORKSPACE_ACTION = new Action() {
+            @Override
+            public void run() {
+                final Framework framework = Framework.getInstance();
+                framework.getMainWindow().getWorkspaceView()
+                        .addToWorkspace(Path.root(""));
+            }
 
-			public String getText() {
-				return "Link files to the root of workspace...";
-			};
-		};
+            public String getText() {
+                return "Link files to the root of workspace...";
+            };
+        };
 
-		public static final Action OPEN_WORKSPACE_ACTION = new Action() {
-			@Override
-			public void run() {
-				final Framework framework = Framework.getInstance();
-				framework.getMainWindow().getWorkspaceView().openWorkspace();
-			}
+        public static final Action OPEN_WORKSPACE_ACTION = new Action() {
+            @Override
+            public void run() {
+                final Framework framework = Framework.getInstance();
+                framework.getMainWindow().getWorkspaceView().openWorkspace();
+            }
 
-			public String getText() {
-				return "Open workspace...";
-			};
-		};
+            public String getText() {
+                return "Open workspace...";
+            };
+        };
 
-		public static final Action SAVE_WORKSPACE_ACTION = new Action() {
-			@Override
-			public void run() {
-				try {
-					final Framework framework = Framework.getInstance();
-					framework.getMainWindow().getWorkspaceView().saveWorkspace();
-				} catch (OperationCancelledException e) {
-				}
-			}
+        public static final Action SAVE_WORKSPACE_ACTION = new Action() {
+            @Override
+            public void run() {
+                try {
+                    final Framework framework = Framework.getInstance();
+                    framework.getMainWindow().getWorkspaceView().saveWorkspace();
+                } catch (OperationCancelledException e) {
+                }
+            }
 
-			public String getText() {
-				return "Save workspace";
-			};
-		};
-		public static final Action SAVE_WORKSPACE_AS_ACTION = new Action() {
-			@Override
-			public void run() {
-				try {
-					final Framework framework = Framework.getInstance();
-					framework.getMainWindow().getWorkspaceView().saveWorkspaceAs();
-				} catch (OperationCancelledException e) {
-				}
-			}
+            public String getText() {
+                return "Save workspace";
+            };
+        };
+        public static final Action SAVE_WORKSPACE_AS_ACTION = new Action() {
+            @Override
+            public void run() {
+                try {
+                    final Framework framework = Framework.getInstance();
+                    framework.getMainWindow().getWorkspaceView().saveWorkspaceAs();
+                } catch (OperationCancelledException e) {
+                }
+            }
 
-			public String getText() {
-				return "Save workspace as...";
-			};
-		};
-		public static final Action NEW_WORKSPACE_AS_ACTION = new Action() {
-			@Override
-			public void run() {
-				final Framework framework = Framework.getInstance();
-				framework.getMainWindow().getWorkspaceView().newWorkspace();
-			}
+            public String getText() {
+                return "Save workspace as...";
+            };
+        };
+        public static final Action NEW_WORKSPACE_AS_ACTION = new Action() {
+            @Override
+            public void run() {
+                final Framework framework = Framework.getInstance();
+                framework.getMainWindow().getWorkspaceView().newWorkspace();
+            }
 
-			public String getText() {
-				return "New workspace";
-			};
-		};
-	}
+            public String getText() {
+                return "New workspace";
+            };
+        };
+    }
 
-	private JScrollPane scrollPane = null;
-	private TreeWindow<Path<String>> workspaceTree = null;
+    private JScrollPane scrollPane = null;
+    private TreeWindow<Path<String>> workspaceTree = null;
 
-	private String lastSavePath = null;
-	private String lastOpenPath = null;
+    private String lastSavePath = null;
+    private String lastOpenPath = null;
 
-	public WorkspaceWindow() {
-		super();
-		startup();
-	}
+    public WorkspaceWindow() {
+        super();
+        startup();
+    }
 
-	public void startup() {
-		final Framework framework = Framework.getInstance();
-		final Workspace workspace = framework.getWorkspace();
-		workspaceTree = TreeWindow.create(workspace.getTree(),
-				new WorkspaceTreeDecorator(workspace),
-				new WorkspacePopupProvider(this));
-		scrollPane = new JScrollPane();
-		scrollPane.getVerticalScrollBar().setUnitIncrement(8);
+    public void startup() {
+        final Framework framework = Framework.getInstance();
+        final Workspace workspace = framework.getWorkspace();
+        workspaceTree = TreeWindow.create(workspace.getTree(),
+                new WorkspaceTreeDecorator(workspace),
+                new WorkspacePopupProvider(this));
+        scrollPane = new JScrollPane();
+        scrollPane.getVerticalScrollBar().setUnitIncrement(8);
 
-		scrollPane.setViewportView(workspaceTree);
+        scrollPane.setViewportView(workspaceTree);
 
-		setLayout(new BorderLayout(0, 0));
-		this.add(scrollPane, BorderLayout.CENTER);
+        setLayout(new BorderLayout(0, 0));
+        this.add(scrollPane, BorderLayout.CENTER);
 
-		lastSavePath = framework.getConfigVar("gui.workspace.lastSavePath");
-		lastOpenPath = framework.getConfigVar("gui.workspace.lastOpenPath");
-	}
+        lastSavePath = framework.getConfigVar("gui.workspace.lastSavePath");
+        lastOpenPath = framework.getConfigVar("gui.workspace.lastOpenPath");
+    }
 
-	public void shutdown() {
-		final Framework framework = Framework.getInstance();
-		if (lastSavePath != null)
-			framework.setConfigVar("gui.workspace.lastSavePath", lastSavePath);
-		if (lastOpenPath != null)
-			framework.setConfigVar("gui.workspace.lastOpenPath", lastOpenPath);
-	}
+    public void shutdown() {
+        final Framework framework = Framework.getInstance();
+        if (lastSavePath != null)
+            framework.setConfigVar("gui.workspace.lastSavePath", lastSavePath);
+        if (lastOpenPath != null)
+            framework.setConfigVar("gui.workspace.lastOpenPath", lastOpenPath);
+    }
 
-	protected int getInsertPoint(DefaultMutableTreeNode node, String caption) {
-		if (node.getChildCount() == 0)
-			return 0;
+    protected int getInsertPoint(DefaultMutableTreeNode node, String caption) {
+        if (node.getChildCount() == 0)
+            return 0;
 
-		int i;
+        int i;
 
-		for (i = 0; i < node.getChildCount(); i++)
-			if (node.getChildAt(i).toString().compareToIgnoreCase(caption) > 0)
-				return i;
+        for (i = 0; i < node.getChildCount(); i++)
+            if (node.getChildAt(i).toString().compareToIgnoreCase(caption) > 0)
+                return i;
 
-		return i;
-	}
+        return i;
+    }
 
-	public void workspaceSaved() {
-		final Framework framework = Framework.getInstance();
-		String title = framework.getWorkspace().getWorkspaceFile().getAbsolutePath();
-		if (title.isEmpty()) {
-			title = "new workspace";
-		}
-		title = "(" + title + ")";
-		if (framework.getWorkspace().isChanged()) {
-			title = "*" + title;
-		}
-		repaint();
-	}
+    public void workspaceSaved() {
+        final Framework framework = Framework.getInstance();
+        String title = framework.getWorkspace().getWorkspaceFile().getAbsolutePath();
+        if (title.isEmpty()) {
+            title = "new workspace";
+        }
+        title = "(" + title + ")";
+        if (framework.getWorkspace().isChanged()) {
+            title = "*" + title;
+        }
+        repaint();
+    }
 
-	public JMenu createMenu() {
-		JMenu menu = new JMenu("Workspace");
+    public JMenu createMenu() {
+        JMenu menu = new JMenu("Workspace");
 
-		final Framework framework = Framework.getInstance();
-		final ScriptedActionListener listener = framework.getMainWindow().getDefaultActionListener();
+        final Framework framework = Framework.getInstance();
+        final ScriptedActionListener listener = framework.getMainWindow().getDefaultActionListener();
 
-		ActionMenuItem miNewModel = new ActionMenuItem(
-				MainWindowActions.CREATE_WORK_ACTION);
-		miNewModel.addScriptedActionListener(listener);
+        ActionMenuItem miNewModel = new ActionMenuItem(
+                MainWindowActions.CREATE_WORK_ACTION);
+        miNewModel.addScriptedActionListener(listener);
 
-		ActionMenuItem miAdd = new ActionMenuItem(
-				WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
-		miAdd.addScriptedActionListener(listener);
+        ActionMenuItem miAdd = new ActionMenuItem(
+                WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
+        miAdd.addScriptedActionListener(listener);
 
-		ActionMenuItem miSave = new ActionMenuItem(
-				WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
-		miSave.addScriptedActionListener(listener);
+        ActionMenuItem miSave = new ActionMenuItem(
+                WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
+        miSave.addScriptedActionListener(listener);
 
-		ActionMenuItem miSaveAs = new ActionMenuItem(
-				WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
-		miSaveAs.addScriptedActionListener(listener);
+        ActionMenuItem miSaveAs = new ActionMenuItem(
+                WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
+        miSaveAs.addScriptedActionListener(listener);
 
-		menu.add(miNewModel);
-		menu.addSeparator();
-		menu.add(miAdd);
-		menu.add(miSave);
-		menu.add(miSaveAs);
+        menu.add(miNewModel);
+        menu.addSeparator();
+        menu.add(miAdd);
+        menu.add(miSave);
+        menu.add(miSaveAs);
 
-		return menu;
-	}
+        return menu;
+    }
 
-	public void addToWorkspace(Path<String> path) {
-		JFileChooser fc;
-		if (lastOpenPath != null) {
-			fc = new JFileChooser(lastOpenPath);
-		} else {
-			fc = new JFileChooser();
-		}
-		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    public void addToWorkspace(Path<String> path) {
+        JFileChooser fc;
+        if (lastOpenPath != null) {
+            fc = new JFileChooser(lastOpenPath);
+        } else {
+            fc = new JFileChooser();
+        }
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		fc.setDialogTitle("Link to workspace");
-		fc.setMultiSelectionEnabled(true);
-		fc.addChoosableFileFilter(FileFilters.DOCUMENT_FILES);
-		fc.setFileFilter(fc.getAcceptAllFileFilter());
-		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			final Framework framework = Framework.getInstance();
-			for (File file : fc.getSelectedFiles()) {
-				Path<String> pathName = Path.append(path, file.getName());
-				framework.getWorkspace().addMount(pathName, file, false);
-			}
-			lastOpenPath = fc.getCurrentDirectory().getPath();
-		}
-	}
+        fc.setDialogTitle("Link to workspace");
+        fc.setMultiSelectionEnabled(true);
+        fc.addChoosableFileFilter(FileFilters.DOCUMENT_FILES);
+        fc.setFileFilter(fc.getAcceptAllFileFilter());
+        if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            final Framework framework = Framework.getInstance();
+            for (File file : fc.getSelectedFiles()) {
+                Path<String> pathName = Path.append(path, file.getName());
+                framework.getWorkspace().addMount(pathName, file, false);
+            }
+            lastOpenPath = fc.getCurrentDirectory().getPath();
+        }
+    }
 
-	public void saveWorkspace() throws OperationCancelledException {
-		final Framework framework = Framework.getInstance();
-		if (!framework.getWorkspace().isTemporary())
-			framework.getWorkspace().save();
-		else
-			saveWorkspaceAs();
-	}
+    public void saveWorkspace() throws OperationCancelledException {
+        final Framework framework = Framework.getInstance();
+        if (!framework.getWorkspace().isTemporary())
+            framework.getWorkspace().save();
+        else
+            saveWorkspaceAs();
+    }
 
-	public void saveWorkspaceAs() throws OperationCancelledException {
-		JFileChooser fc;
-		final Framework framework = Framework.getInstance();
-		final MainWindow mainWindow = framework.getMainWindow();
-		if (!framework.getWorkspace().isTemporary()) {
-			fc = new JFileChooser(framework.getWorkspace().getWorkspaceFile());
-		} else if (lastSavePath != null) {
-			fc = new JFileChooser(lastSavePath);
-		} else {
-			fc = new JFileChooser();
-		}
-		fc.setDialogTitle("Save workspace as...");
-		fc.setFileFilter(FileFilters.WORKSPACE_FILES);
+    public void saveWorkspaceAs() throws OperationCancelledException {
+        JFileChooser fc;
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        if (!framework.getWorkspace().isTemporary()) {
+            fc = new JFileChooser(framework.getWorkspace().getWorkspaceFile());
+        } else if (lastSavePath != null) {
+            fc = new JFileChooser(lastSavePath);
+        } else {
+            fc = new JFileChooser();
+        }
+        fc.setDialogTitle("Save workspace as...");
+        fc.setFileFilter(FileFilters.WORKSPACE_FILES);
 
-		File file;
+        File file;
 
-		while (true) {
-			if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
-				String path = FileFilters.addExtension(fc.getSelectedFile().getPath(), FileFilters.WORKSPACE_EXTENSION);
+        while (true) {
+            if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+                String path = FileFilters.addExtension(fc.getSelectedFile().getPath(), FileFilters.WORKSPACE_EXTENSION);
 
-				file = new File(path);
-				if (!file.exists()) {
-					break;
-				} else if (JOptionPane.showConfirmDialog(mainWindow,
-						"The file '" + file.getName() + "' already exists. Do you want to overwrite it?",
-						"Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-					break;
-				}
-			} else {
-				throw new OperationCancelledException("Save operation cancelled by user.");
-			}
-		}
-		framework.getWorkspace().saveAs(file);
-		lastSavePath = fc.getCurrentDirectory().getPath();
-	}
+                file = new File(path);
+                if (!file.exists()) {
+                    break;
+                } else if (JOptionPane.showConfirmDialog(mainWindow,
+                        "The file '" + file.getName() + "' already exists. Do you want to overwrite it?",
+                        "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    break;
+                }
+            } else {
+                throw new OperationCancelledException("Save operation cancelled by user.");
+            }
+        }
+        framework.getWorkspace().saveAs(file);
+        lastSavePath = fc.getCurrentDirectory().getPath();
+    }
 
-	private void checkSaved() throws OperationCancelledException {
-		final Framework framework = Framework.getInstance();
-		final MainWindow mainWindow = framework.getMainWindow();
-		if (framework.getWorkspace().isChanged()) {
-			int result = JOptionPane.showConfirmDialog(mainWindow,
-							"Current workspace is not saved. Do you wish to save it before opening?",
-							"Confirm", JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
+    private void checkSaved() throws OperationCancelledException {
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        if (framework.getWorkspace().isChanged()) {
+            int result = JOptionPane.showConfirmDialog(mainWindow,
+                            "Current workspace is not saved. Do you wish to save it before opening?",
+                            "Confirm", JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
 
-			if (result == JOptionPane.CANCEL_OPTION) {
-				throw new OperationCancelledException("Cancelled by user.");
-			}
-			if (result == JOptionPane.YES_OPTION) {
-				mainWindow.closeEditorWindows();
-				saveWorkspace();
-			} else {
-				mainWindow.closeEditorWindows();
-			}
-		}
-	}
+            if (result == JOptionPane.CANCEL_OPTION) {
+                throw new OperationCancelledException("Cancelled by user.");
+            }
+            if (result == JOptionPane.YES_OPTION) {
+                mainWindow.closeEditorWindows();
+                saveWorkspace();
+            } else {
+                mainWindow.closeEditorWindows();
+            }
+        }
+    }
 
-	public void newWorkspace() {
-		try {
-			checkSaved();
-		} catch (OperationCancelledException e) {
-			return;
-		}
-		final Framework framework = Framework.getInstance();
-		framework.getWorkspace().clear();
-	}
+    public void newWorkspace() {
+        try {
+            checkSaved();
+        } catch (OperationCancelledException e) {
+            return;
+        }
+        final Framework framework = Framework.getInstance();
+        framework.getWorkspace().clear();
+    }
 
-	public void openWorkspace() {
-		try {
-			checkSaved();
-		} catch (OperationCancelledException e) {
-			return;
-		}
+    public void openWorkspace() {
+        try {
+            checkSaved();
+        } catch (OperationCancelledException e) {
+            return;
+        }
 
-		JFileChooser fc = new JFileChooser();
-		fc.setDialogType(JFileChooser.OPEN_DIALOG);
-		fc.setFileFilter(FileFilters.WORKSPACE_FILES);
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogType(JFileChooser.OPEN_DIALOG);
+        fc.setFileFilter(FileFilters.WORKSPACE_FILES);
 
-		if (lastOpenPath != null)
-			fc.setCurrentDirectory(new File(lastOpenPath));
+        if (lastOpenPath != null)
+            fc.setCurrentDirectory(new File(lastOpenPath));
 
-		fc.setMultiSelectionEnabled(false);
-		fc.setDialogTitle("Open workspace");
+        fc.setMultiSelectionEnabled(false);
+        fc.setDialogTitle("Open workspace");
 
-		final Framework framework = Framework.getInstance();
-		final MainWindow mainWindow = framework.getMainWindow();
-		if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
-			try {
-				framework.loadWorkspace(fc.getSelectedFile());
-			} catch (DeserialisationException e) {
-				JOptionPane.showMessageDialog(mainWindow,
-							"Workspace load failed. Please see the Problems window for details.",
-							"Error", JOptionPane.ERROR_MESSAGE);
-				e.printStackTrace();
-			}
-		}
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
+            try {
+                framework.loadWorkspace(fc.getSelectedFile());
+            } catch (DeserialisationException e) {
+                JOptionPane.showMessageDialog(mainWindow,
+                            "Workspace load failed. Please see the Problems window for details.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
 
-		lastOpenPath = fc.getCurrentDirectory().getPath();
-	}
+        lastOpenPath = fc.getCurrentDirectory().getPath();
+    }
 
-	public void modelLoaded(WorkspaceEntry we) {
-	}
+    public void modelLoaded(WorkspaceEntry we) {
+    }
 
-	public void entryChanged(WorkspaceEntry we) {
-		repaint();
-	}
+    public void entryChanged(WorkspaceEntry we) {
+        repaint();
+    }
 
-	public Workspace getWorkspace() {
-		return Framework.getInstance().getWorkspace();
-	}
+    public Workspace getWorkspace() {
+        return Framework.getInstance().getWorkspace();
+    }
 }

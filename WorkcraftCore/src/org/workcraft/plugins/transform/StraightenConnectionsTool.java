@@ -33,37 +33,37 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class StraightenConnectionsTool extends TransformationTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Straighten connections (selected or all)";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Straighten connections (selected or all)";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, VisualModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, VisualModel.class);
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.BOTTOM;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.BOTTOM;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
-		if (visualModel != null) {
-			Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class);
-			if ( !visualModel.getSelection().isEmpty() ) {
-				connections.retainAll(visualModel.getSelection());
-			}
-			if ( !connections.isEmpty() ) {
-				we.saveMemento();
-				for (VisualConnection connection: connections) {
-					connection.setConnectionType(ConnectionType.BEZIER);
-					connection.setConnectionType(ConnectionType.POLYLINE);
-				}
-			}
-		}
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
+        if (visualModel != null) {
+            Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class);
+            if ( !visualModel.getSelection().isEmpty() ) {
+                connections.retainAll(visualModel.getSelection());
+            }
+            if ( !connections.isEmpty() ) {
+                we.saveMemento();
+                for (VisualConnection connection: connections) {
+                    connection.setConnectionType(ConnectionType.BEZIER);
+                    connection.setConnectionType(ConnectionType.POLYLINE);
+                }
+            }
+        }
+    }
 
 }

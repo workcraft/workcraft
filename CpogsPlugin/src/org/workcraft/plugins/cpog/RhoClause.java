@@ -29,17 +29,17 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 
 @VisualClass(org.workcraft.plugins.cpog.VisualRhoClause.class)
 public class RhoClause extends MathNode {
-	public static final String PROPERTY_FORMULA = "Formula";
+    public static final String PROPERTY_FORMULA = "Formula";
 
-	private BooleanFormula formula = BooleanOperations.ONE;
+    private BooleanFormula formula = BooleanOperations.ONE;
 
-	public void setFormula(BooleanFormula formula) {
-		this.formula = formula;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_FORMULA));
-	}
+    public void setFormula(BooleanFormula formula) {
+        this.formula = formula;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_FORMULA));
+    }
 
-	public BooleanFormula getFormula() {
-		return formula;
-	}
+    public BooleanFormula getFormula() {
+        return formula;
+    }
 
 }

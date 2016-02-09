@@ -50,138 +50,138 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @DisplayName("Variable")
 @SVGIcon("images/icons/svg/variable.svg")
 public class VisualVariable extends VisualComponent {
-	public static final String PROPERTY_LABEL = "Label";
-	private static Font variableFont;
-	private static Font valueFont;
+    public static final String PROPERTY_LABEL = "Label";
+    private static Font variableFont;
+    private static Font valueFont;
 
-	private final RenderedFormula valueFalseRenderedFormula = new RenderedFormula(
-			VariableState.FALSE.getValueAsString(), One.instance(),
-			valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
+    private final RenderedFormula valueFalseRenderedFormula = new RenderedFormula(
+            VariableState.FALSE.getValueAsString(), One.instance(),
+            valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
-	private final RenderedFormula valueTrueRenderedFormula = new RenderedFormula(
-			VariableState.TRUE.getValueAsString(), One.instance(),
-			valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
+    private final RenderedFormula valueTrueRenderedFormula = new RenderedFormula(
+            VariableState.TRUE.getValueAsString(), One.instance(),
+            valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
-	private final RenderedFormula valueUndefinedRenderedFormula = new RenderedFormula(
-			VariableState.UNDEFINED.getValueAsString(), One.instance(),
-			valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
+    private final RenderedFormula valueUndefinedRenderedFormula = new RenderedFormula(
+            VariableState.UNDEFINED.getValueAsString(), One.instance(),
+            valueFont, Positioning.CENTER, new Point2D.Double(0.0, 0.0));
 
-	private RenderedFormula variableRenderedFormula = new RenderedFormula("", One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
+    private RenderedFormula variableRenderedFormula = new RenderedFormula("", One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
 
-	static {
-		try {
-			Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb"));
-			variableFont = font.deriveFont(0.5f);
-			valueFont = font.deriveFont(0.75f);
-		} catch (FontFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    static {
+        try {
+            Font font = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb"));
+            variableFont = font.deriveFont(0.5f);
+            valueFont = font.deriveFont(0.75f);
+        } catch (FontFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public VisualVariable(Variable variable) {
-		super(variable);
-		addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
-				this, Variable.PROPERTY_STATE, VariableState.class, true, true, true) {
-			public void setter(VisualVariable object, VariableState value) {
-				object.setState(value);
-			}
-			public VariableState getter(VisualVariable object) {
-				return object.getState();
-			}
-		});
-		removePropertyDeclarationByName("Name positioning");
-		removePropertyDeclarationByName("Name color");
-	}
+    public VisualVariable(Variable variable) {
+        super(variable);
+        addPropertyDeclaration(new PropertyDeclaration<VisualVariable, VariableState>(
+                this, Variable.PROPERTY_STATE, VariableState.class, true, true, true) {
+            public void setter(VisualVariable object, VariableState value) {
+                object.setState(value);
+            }
+            public VariableState getter(VisualVariable object) {
+                return object.getState();
+            }
+        });
+        removePropertyDeclarationByName("Name positioning");
+        removePropertyDeclarationByName("Name color");
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Color colorisation = r.getDecoration().getColorisation();
-		Color background = r.getDecoration().getBackground();
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Color colorisation = r.getDecoration().getColorisation();
+        Color background = r.getDecoration().getBackground();
 
-		Shape shape = new Rectangle2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
-				size - strokeWidth, size - strokeWidth);
+        Shape shape = new Rectangle2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
+                size - strokeWidth, size - strokeWidth);
 
-		g.setStroke(new BasicStroke((float)strokeWidth));
-		g.setColor(Coloriser.colorise(getFillColor(), background));
-		g.fill(shape);
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		g.draw(shape);
+        g.setStroke(new BasicStroke((float)strokeWidth));
+        g.setColor(Coloriser.colorise(getFillColor(), background));
+        g.fill(shape);
+        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        g.draw(shape);
 
-		g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-		switch (getState()) {
-		case FALSE:
-			valueFalseRenderedFormula.draw(g);
-			break;
-		case TRUE:
-			valueTrueRenderedFormula.draw(g);
-			break;
-		case UNDEFINED:
-			valueUndefinedRenderedFormula.draw(g);
-			break;
-		default:
-			break;
-		}
-		drawVariableInLocalSpace(r);
-	}
+        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+        switch (getState()) {
+        case FALSE:
+            valueFalseRenderedFormula.draw(g);
+            break;
+        case TRUE:
+            valueTrueRenderedFormula.draw(g);
+            break;
+        case UNDEFINED:
+            valueUndefinedRenderedFormula.draw(g);
+            break;
+        default:
+            break;
+        }
+        drawVariableInLocalSpace(r);
+    }
 
 
-	protected void cacheVariableRenderedFormula(DrawRequest r) {
-		if (variableRenderedFormula.isDifferent(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset())) {
-			variableRenderedFormula = new RenderedFormula(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
-		}
-	}
+    protected void cacheVariableRenderedFormula(DrawRequest r) {
+        if (variableRenderedFormula.isDifferent(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset())) {
+            variableRenderedFormula = new RenderedFormula(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset());
+        }
+    }
 
-	protected void drawVariableInLocalSpace(DrawRequest r) {
-		if (getLabelVisibility()) {
-			Graphics2D g = r.getGraphics();
-			Decoration d = r.getDecoration();
-			cacheVariableRenderedFormula(r);
-			if ((variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
-				g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
-				variableRenderedFormula.draw(g);
-			}
-		}
-	}
+    protected void drawVariableInLocalSpace(DrawRequest r) {
+        if (getLabelVisibility()) {
+            Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
+            cacheVariableRenderedFormula(r);
+            if ((variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
+                g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
+                variableRenderedFormula.draw(g);
+            }
+        }
+    }
 
-	@NoAutoSerialisation
-	@Override
-	public String getLabel() {
-		return getMathVariable().getLabel();
-	}
+    @NoAutoSerialisation
+    @Override
+    public String getLabel() {
+        return getMathVariable().getLabel();
+    }
 
-	@NoAutoSerialisation
-	@Override
-	public void setLabel(String label)	{
-		getMathVariable().setLabel(label);
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
-	}
+    @NoAutoSerialisation
+    @Override
+    public void setLabel(String label)    {
+        getMathVariable().setLabel(label);
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
+    }
 
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		Rectangle2D bb = super.getBoundingBoxInLocalSpace();
-		if (getLabelVisibility() && (variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
-			bb = BoundingBoxHelper.union(bb, variableRenderedFormula.getBoundingBox());
-		}
-		return bb;
-	}
+    @Override
+    public Rectangle2D getBoundingBoxInLocalSpace() {
+        Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+        if (getLabelVisibility() && (variableRenderedFormula != null) && !variableRenderedFormula.isEmpty()) {
+            bb = BoundingBoxHelper.union(bb, variableRenderedFormula.getBoundingBox());
+        }
+        return bb;
+    }
 
-	public Variable getMathVariable() {
-		return (Variable)getReferencedComponent();
-	}
+    public Variable getMathVariable() {
+        return (Variable)getReferencedComponent();
+    }
 
-	public VariableState getState() {
-		return getMathVariable().getState();
-	}
+    public VariableState getState() {
+        return getMathVariable().getState();
+    }
 
-	public void setState(VariableState state) {
-		getMathVariable().setState(state);
-	}
+    public void setState(VariableState state) {
+        getMathVariable().setState(state);
+    }
 
-	public void toggle() {
-		setState(getState().toggle());
-	}
+    public void toggle() {
+        setState(getState().toggle());
+    }
 
 }

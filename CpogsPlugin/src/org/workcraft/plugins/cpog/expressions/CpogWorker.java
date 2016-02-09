@@ -24,6 +24,6 @@ import org.workcraft.plugins.cpog.expressions.CpogFormula;
 
 public interface CpogWorker {
 
-	CpogFormula overlay(CpogFormula x, CpogFormula y);
-	CpogFormula sequence(CpogFormula x, CpogFormula y);
+    CpogFormula overlay(CpogFormula x, CpogFormula y);
+    CpogFormula sequence(CpogFormula x, CpogFormula y);
 }

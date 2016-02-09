@@ -29,19 +29,19 @@ import org.workcraft.workspace.FileHandler;
 
 public class SystemOpen implements FileHandler {
 
-	@Override
-	public boolean accept(File f) {
-		return !f.getName().endsWith(FileFilters.DOCUMENT_EXTENSION);
-	}
+    @Override
+    public boolean accept(File f) {
+        return !f.getName().endsWith(FileFilters.DOCUMENT_EXTENSION);
+    }
 
-	@Override
-	public void execute(File f) {
-		DesktopApi.open(f);
-	}
+    @Override
+    public void execute(File f) {
+        DesktopApi.open(f);
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "Open using system default program";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Open using system default program";
+    }
 
 }

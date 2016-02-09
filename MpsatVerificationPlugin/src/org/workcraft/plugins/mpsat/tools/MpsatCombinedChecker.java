@@ -13,43 +13,43 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChecker extends VerificationTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Consistency, deadlock freenes and output persistency (reuse unfolding) [MPSat]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Consistency, deadlock freenes and output persistency (reuse unfolding) [MPSat]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STGModel.class);
+    }
 
-	@Override
-	public int getPriority() {
-		return 1;
-	}
+    @Override
+    public int getPriority() {
+        return 1;
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.TOP;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.TOP;
+    }
 
-	@Override
-	public final void run(WorkspaceEntry we) {
-		final ArrayList<MpsatSettings> settingsList = new ArrayList<>();
-		settingsList.add(MpsatSettings.getConsistencySettings());
-		settingsList.add(MpsatSettings.getDeadlockSettings());
-		settingsList.add(MpsatSettings.getPersistencySettings());
+    @Override
+    public final void run(WorkspaceEntry we) {
+        final ArrayList<MpsatSettings> settingsList = new ArrayList<>();
+        settingsList.add(MpsatSettings.getConsistencySettings());
+        settingsList.add(MpsatSettings.getDeadlockSettings());
+        settingsList.add(MpsatSettings.getPersistencySettings());
 
-		final MpsatCombinedChainTask mpsatTask = new MpsatCombinedChainTask(we, settingsList);
+        final MpsatCombinedChainTask mpsatTask = new MpsatCombinedChainTask(we, settingsList);
 
-		String description = "MPSat tool chain";
-		String title = we.getTitle();
-		if (!title.isEmpty()) {
-			description += "(" + title +")";
-		}
-		MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(mpsatTask, description, monitor);
-	}
+        String description = "MPSat tool chain";
+        String title = we.getTitle();
+        if (!title.isEmpty()) {
+            description += "(" + title +")";
+        }
+        MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(mpsatTask, description, monitor);
+    }
 
 }

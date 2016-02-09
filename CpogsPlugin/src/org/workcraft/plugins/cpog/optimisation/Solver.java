@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface Solver<Res, Task> {
-	Res solve(Task task);
+    Res solve(Task task);
 }

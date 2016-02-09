@@ -28,65 +28,65 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
 
-	private VisualCPOG visualCpog;
-	private WorkspaceEntry we;
-	private boolean createNewWindow;
+    private VisualCPOG visualCpog;
+    private WorkspaceEntry we;
+    private boolean createNewWindow;
 
-	public PGMinerResultHandler(VisualCPOG visualCpog, WorkspaceEntry we, boolean createNewWindow) {
-		this.visualCpog = visualCpog;
-		this.we = we;
-		this.createNewWindow = createNewWindow;
-	}
+    public PGMinerResultHandler(VisualCPOG visualCpog, WorkspaceEntry we, boolean createNewWindow) {
+        this.visualCpog = visualCpog;
+        this.we = we;
+        this.createNewWindow = createNewWindow;
+    }
 
-	public void finished(final Result<? extends ExternalProcessResult> result, String description) {
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
+    public void finished(final Result<? extends ExternalProcessResult> result, String description) {
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
 
-				@Override
-				public void run() {
-					final Framework framework = Framework.getInstance();
-					MainWindow mainWindow = framework.getMainWindow();
-					final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-					final ToolboxPanel toolbox = editor.getToolBox();
-					final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-					if (result.getOutcome() == Outcome.FAILED) {
-						JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run", "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
-					} else {
-						if (createNewWindow) {
-							CpogDescriptor cpogModel = new CpogDescriptor();
-							MathModel mathModel = cpogModel.createMathModel();
-							Path<String> path = we.getWorkspacePath();
-							VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
-							try {
-								if (v == null) {
-									throw new VisualModelInstantiationException("visual model is not defined for \"" + cpogModel.getDisplayName() + "\".");
-								}
-								visualCpog = (VisualCPOG) v.create(mathModel);
-								final Workspace workspace = framework.getWorkspace();
-								final Path<String> directory = workspace.getPath(we).getParent();
-								final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-								final ModelEntry me = new ModelEntry(cpogModel , visualCpog);
-								workspace.add(directory, name, me, true, true);
-							} catch (VisualModelInstantiationException e) {
-								e.printStackTrace();
-							}
-						}
-						we.captureMemento();
-						byte[] output = result.getReturnValue().getOutputFile("output.cpog");
-						String text = new String(output);
-						String line[] = text.split("\r\n");
-						tool.getLowestVertex(visualCpog);
-						for (int i = 0; i < line.length; i++) {
-							tool.insertExpression(line[i], visualCpog, false, false, false, true);
-						}
-						we.saveMemento();
-					}
-				}
-			});
-		} catch (InvocationTargetException | InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+                @Override
+                public void run() {
+                    final Framework framework = Framework.getInstance();
+                    MainWindow mainWindow = framework.getMainWindow();
+                    final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+                    final ToolboxPanel toolbox = editor.getToolBox();
+                    final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
+                    if (result.getOutcome() == Outcome.FAILED) {
+                        JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run", "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        if (createNewWindow) {
+                            CpogDescriptor cpogModel = new CpogDescriptor();
+                            MathModel mathModel = cpogModel.createMathModel();
+                            Path<String> path = we.getWorkspacePath();
+                            VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
+                            try {
+                                if (v == null) {
+                                    throw new VisualModelInstantiationException("visual model is not defined for \"" + cpogModel.getDisplayName() + "\".");
+                                }
+                                visualCpog = (VisualCPOG) v.create(mathModel);
+                                final Workspace workspace = framework.getWorkspace();
+                                final Path<String> directory = workspace.getPath(we).getParent();
+                                final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+                                final ModelEntry me = new ModelEntry(cpogModel , visualCpog);
+                                workspace.add(directory, name, me, true, true);
+                            } catch (VisualModelInstantiationException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        we.captureMemento();
+                        byte[] output = result.getReturnValue().getOutputFile("output.cpog");
+                        String text = new String(output);
+                        String line[] = text.split("\r\n");
+                        tool.getLowestVertex(visualCpog);
+                        for (int i = 0; i < line.length; i++) {
+                            tool.insertExpression(line[i], visualCpog, false, false, false, true);
+                        }
+                        we.saveMemento();
+                    }
+                }
+            });
+        } catch (InvocationTargetException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
 

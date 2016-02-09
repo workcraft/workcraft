@@ -47,91 +47,91 @@ import org.workcraft.plugins.xmas.components.SourceComponent.Type;
 @Hotkey(KeyEvent.VK_I)
 @SVGIcon("images/icons/svg/xmas-source.svg")
 public class VisualSourceComponent extends VisualXmasComponent {
-	public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
+    public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
 
-	public Color color = new Color(0, 255, 0, 255);
-	private VisualXmasContact oContact = null;
-	public final double tokenSize = 0.18 * size;
+    public Color color = new Color(0, 255, 0, 255);
+    private VisualXmasContact oContact = null;
+    public final double tokenSize = 0.18 * size;
 
 
-	public VisualSourceComponent(SourceComponent component) {
-		super(component);
-		if (component.getChildren().isEmpty()) {
-			oContact = addOutput("o", Positioning.CENTER);
-		}
-		addPropertyDeclarations();
-	}
+    public VisualSourceComponent(SourceComponent component) {
+        super(component);
+        if (component.getChildren().isEmpty()) {
+            oContact = addOutput("o", Positioning.CENTER);
+        }
+        addPropertyDeclarations();
+    }
 
-	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Type>(
-				this, SourceComponent.PROPERTY_TYPE, Type.class, true, true, true) {
-			protected void setter(VisualSourceComponent object, Type value) {
-				object.getReferencedSourceComponent().setType(value);
-			}
-			protected Type getter(VisualSourceComponent object) {
-				return object.getReferencedSourceComponent().getType();
-			}
-		});
-		addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Mode>(
-				this, SourceComponent.PROPERTY_MODE, Mode.class, true, true, true) {
-			protected void setter(VisualSourceComponent object, Mode value) {
-				object.getReferencedSourceComponent().setMode(value);
-			}
-			protected Mode getter(VisualSourceComponent object) {
-				return object.getReferencedSourceComponent().getMode();
-			}
-		});
-	}
+    private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Type>(
+                this, SourceComponent.PROPERTY_TYPE, Type.class, true, true, true) {
+            protected void setter(VisualSourceComponent object, Type value) {
+                object.getReferencedSourceComponent().setType(value);
+            }
+            protected Type getter(VisualSourceComponent object) {
+                return object.getReferencedSourceComponent().getType();
+            }
+        });
+        addPropertyDeclaration(new PropertyDeclaration<VisualSourceComponent, Mode>(
+                this, SourceComponent.PROPERTY_MODE, Mode.class, true, true, true) {
+            protected void setter(VisualSourceComponent object, Mode value) {
+                object.getReferencedSourceComponent().setMode(value);
+            }
+            protected Mode getter(VisualSourceComponent object) {
+                return object.getReferencedSourceComponent().getMode();
+            }
+        });
+    }
 
-	public SourceComponent getReferencedSourceComponent() {
-		return (SourceComponent)getReferencedComponent();
-	}
+    public SourceComponent getReferencedSourceComponent() {
+        return (SourceComponent)getReferencedComponent();
+    }
 
-	public VisualXmasContact getOContact() {
-		return oContact;
-	}
+    public VisualXmasContact getOContact() {
+        return oContact;
+    }
 
-	@Override
-	public Shape getShape() {
-		Path2D shape = new Path2D.Double();
+    @Override
+    public Shape getShape() {
+        Path2D shape = new Path2D.Double();
 
-		shape.moveTo(0.00, 0.00);
-		shape.lineTo(0.00, -0.60 * size);
+        shape.moveTo(0.00, 0.00);
+        shape.lineTo(0.00, -0.60 * size);
 
-		shape.moveTo(-0.40 * size, -0.60 * size);
-		shape.lineTo(+0.40 * size, -0.60 * size);
+        shape.moveTo(-0.40 * size, -0.60 * size);
+        shape.lineTo(+0.40 * size, -0.60 * size);
 
-		return shape;
-	}
+        return shape;
+    }
 
-	public Shape getTokenShape() {
-		return new Ellipse2D.Double(-1.8 * tokenSize, -2.5 * tokenSize, tokenSize, tokenSize);
-	}
+    public Shape getTokenShape() {
+        return new Ellipse2D.Double(-1.8 * tokenSize, -2.5 * tokenSize, tokenSize, tokenSize);
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		super.draw(r);
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		if (d instanceof StateDecoration) {
-			if (((StateDecoration)d).getState()) {
-				g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
-				g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-				Shape shape = transformShape(getTokenShape());
-				g.fill(shape);
-				g.draw(shape);
-			}
-		}
-	}
+    @Override
+    public void draw(DrawRequest r) {
+        super.draw(r);
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        if (d instanceof StateDecoration) {
+            if (((StateDecoration)d).getState()) {
+                g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+                g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+                Shape shape = transformShape(getTokenShape());
+                g.fill(shape);
+                g.draw(shape);
+            }
+        }
+    }
 
-	@Override
-	public void copyStyle(Stylable src) {
-		super.copyStyle(src);
-		if (src instanceof VisualSourceComponent) {
-			SourceComponent srcComponent = ((VisualSourceComponent)src).getReferencedSourceComponent();
-			getReferencedSourceComponent().setType(srcComponent.getType());
-			getReferencedSourceComponent().setMode(srcComponent.getMode());
-		}
-	}
+    @Override
+    public void copyStyle(Stylable src) {
+        super.copyStyle(src);
+        if (src instanceof VisualSourceComponent) {
+            SourceComponent srcComponent = ((VisualSourceComponent)src).getReferencedSourceComponent();
+            getReferencedSourceComponent().setType(srcComponent.getType());
+            getReferencedSourceComponent().setMode(srcComponent.getMode());
+        }
+    }
 
 }

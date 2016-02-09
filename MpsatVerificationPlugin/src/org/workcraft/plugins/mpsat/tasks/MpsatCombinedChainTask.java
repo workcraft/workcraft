@@ -25,98 +25,98 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
-	private final WorkspaceEntry we;
-	private final List<MpsatSettings> settingsList;
+    private final WorkspaceEntry we;
+    private final List<MpsatSettings> settingsList;
 
-	public MpsatCombinedChainTask(WorkspaceEntry we, List<MpsatSettings> settingsList) {
-		this.we = we;
-		this.settingsList = settingsList;
-	}
+    public MpsatCombinedChainTask(WorkspaceEntry we, List<MpsatSettings> settingsList) {
+        this.we = we;
+        this.settingsList = settingsList;
+    }
 
-	@Override
-	public Result<? extends MpsatCombinedChainResult> run(ProgressMonitor<? super MpsatCombinedChainResult> monitor) {
-		Framework framework = Framework.getInstance();
-		File directory = null;
-		try {
-			String title = we.getTitle();
-			String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
-			directory = FileUtils.createTempDirectory(prefix);
+    @Override
+    public Result<? extends MpsatCombinedChainResult> run(ProgressMonitor<? super MpsatCombinedChainResult> monitor) {
+        Framework framework = Framework.getInstance();
+        File directory = null;
+        try {
+            String title = we.getTitle();
+            String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
+            directory = FileUtils.createTempDirectory(prefix);
 
-			PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
-			Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
-			if (exporter == null) {
-				throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
-			}
-			SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
+            PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
+            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
+            if (exporter == null) {
+                throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
+            }
+            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
 
-			// Generate .g for the model
-			File netFile = new File(directory, "net" + exporter.getExtenstion());
-			ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
-			Result<? extends Object> exportResult = framework.getTaskManager().execute(
-					exportTask, "Exporting .g", subtaskMonitor);
+            // Generate .g for the model
+            File netFile = new File(directory, "net" + exporter.getExtenstion());
+            ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+            Result<? extends Object> exportResult = framework.getTaskManager().execute(
+                    exportTask, "Exporting .g", subtaskMonitor);
 
-			if (exportResult.getOutcome() != Outcome.FINISHED) {
-				if (exportResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
-				}
-				return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
-						new MpsatCombinedChainResult(exportResult, null, null, null, settingsList));
-			}
-			monitor.progressUpdate(0.33);
+            if (exportResult.getOutcome() != Outcome.FINISHED) {
+                if (exportResult.getOutcome() == Outcome.CANCELLED) {
+                    return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
+                }
+                return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
+                        new MpsatCombinedChainResult(exportResult, null, null, null, settingsList));
+            }
+            monitor.progressUpdate(0.33);
 
-			// Generate unfolding
-			boolean tryPnml = true;
-			for (MpsatSettings settings: settingsList) {
-				tryPnml &= settings.getMode().canPnml();
-			}
-			File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(tryPnml));
-			PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-			Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
+            // Generate unfolding
+            boolean tryPnml = true;
+            for (MpsatSettings settings: settingsList) {
+                tryPnml &= settings.getMode().canPnml();
+            }
+            File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(tryPnml));
+            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
-			if (punfResult.getOutcome() != Outcome.FINISHED) {
-				if (punfResult.getOutcome() == Outcome.CANCELLED) {
-					return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
-				}
-				return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
-						new MpsatCombinedChainResult(exportResult, null, punfResult, null, settingsList));
-			}
-			monitor.progressUpdate(0.66);
+            if (punfResult.getOutcome() != Outcome.FINISHED) {
+                if (punfResult.getOutcome() == Outcome.CANCELLED) {
+                    return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
+                }
+                return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
+                        new MpsatCombinedChainResult(exportResult, null, punfResult, null, settingsList));
+            }
+            monitor.progressUpdate(0.66);
 
-			// Run MPSat on the generated unfolding
-			ArrayList<Result<? extends ExternalProcessResult>> mpsatResultList = new ArrayList<>(settingsList.size());
-			for (MpsatSettings settings: settingsList) {
-				MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-						unfoldingFile.getAbsolutePath(), directory, tryPnml);
-				Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
-						mpsatTask, "Running verification [MPSat]", subtaskMonitor);
-				mpsatResultList.add(mpsatResult);
-				if (mpsatResult.getOutcome() != Outcome.FINISHED) {
-					if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
-						return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
-					}
-					return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
-							new MpsatCombinedChainResult(exportResult, null, punfResult, mpsatResultList, settingsList));
-				}
-			}
-			monitor.progressUpdate(1.0);
+            // Run MPSat on the generated unfolding
+            ArrayList<Result<? extends ExternalProcessResult>> mpsatResultList = new ArrayList<>(settingsList.size());
+            for (MpsatSettings settings: settingsList) {
+                MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
+                        unfoldingFile.getAbsolutePath(), directory, tryPnml);
+                Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
+                        mpsatTask, "Running verification [MPSat]", subtaskMonitor);
+                mpsatResultList.add(mpsatResult);
+                if (mpsatResult.getOutcome() != Outcome.FINISHED) {
+                    if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
+                        return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
+                    }
+                    return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
+                            new MpsatCombinedChainResult(exportResult, null, punfResult, mpsatResultList, settingsList));
+                }
+            }
+            monitor.progressUpdate(1.0);
 
-			return new Result<MpsatCombinedChainResult>(Outcome.FINISHED,
-					new MpsatCombinedChainResult(exportResult, null, punfResult, mpsatResultList, settingsList));
-		} catch (Throwable e) {
-			return new Result<MpsatCombinedChainResult>(e);
-		}
-		// Clean up
-		finally {
-			FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
-		}
-	}
+            return new Result<MpsatCombinedChainResult>(Outcome.FINISHED,
+                    new MpsatCombinedChainResult(exportResult, null, punfResult, mpsatResultList, settingsList));
+        } catch (Throwable e) {
+            return new Result<MpsatCombinedChainResult>(e);
+        }
+        // Clean up
+        finally {
+            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+        }
+    }
 
-	public List<MpsatSettings> getSettingsList() {
-		return settingsList;
-	}
+    public List<MpsatSettings> getSettingsList() {
+        return settingsList;
+    }
 
-	public WorkspaceEntry getWorkspaceEntry() {
-		return we;
-	}
+    public WorkspaceEntry getWorkspaceEntry() {
+        return we;
+    }
 
 }

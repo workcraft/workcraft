@@ -42,103 +42,103 @@ import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
 
 public class VisualXmasContact extends VisualComponent implements StateObserver {
-	public static final String IO_TYPE_PROPERTY_NAME = "IOtype";
+    public static final String IO_TYPE_PROPERTY_NAME = "IOtype";
 
-	private double size = 0.3;
+    private double size = 0.3;
 
-	public VisualXmasContact(XmasContact contact) {
-		super(contact);
+    public VisualXmasContact(XmasContact contact) {
+        super(contact);
 
-		contact.addObserver(this);
-		addPropertyDeclarations();
-	}
+        contact.addObserver(this);
+        addPropertyDeclarations();
+    }
 
-	public VisualXmasContact(XmasContact component, String label) {
-		super(component);
-		component.addObserver(this);
-		addPropertyDeclarations();
-	}
+    public VisualXmasContact(XmasContact component, String label) {
+        super(component);
+        component.addObserver(this);
+        addPropertyDeclarations();
+    }
 
-	private void addPropertyDeclarations() {
-		addPropertyDeclaration(new PropertyDeclaration<VisualXmasContact, IOType>(
-				this, XmasContact.PROPERTY_IO_TYPE, IOType.class, false, false, false) {
-			protected void setter(VisualXmasContact object, IOType value) {
-				object.setIOType(value);
-			}
-			protected IOType getter(VisualXmasContact object) {
-				return object.getIOType();
-			}
-		});
-	}
+    private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<VisualXmasContact, IOType>(
+                this, XmasContact.PROPERTY_IO_TYPE, IOType.class, false, false, false) {
+            protected void setter(VisualXmasContact object, IOType value) {
+                object.setIOType(value);
+            }
+            protected IOType getter(VisualXmasContact object) {
+                return object.getIOType();
+            }
+        });
+    }
 
-	public void setIOType(XmasContact.IOType type) {
-		getReferencedContact().setIOType(type);
-		sendNotification(new PropertyChangedEvent(this, IO_TYPE_PROPERTY_NAME));
-	}
+    public void setIOType(XmasContact.IOType type) {
+        getReferencedContact().setIOType(type);
+        sendNotification(new PropertyChangedEvent(this, IO_TYPE_PROPERTY_NAME));
+    }
 
-	public XmasContact.IOType getIOType() {
-		return getReferencedContact().getIOType();
-	}
+    public XmasContact.IOType getIOType() {
+        return getReferencedContact().getIOType();
+    }
 
-	public XmasContact getReferencedContact() {
-		return (XmasContact)getReferencedComponent();
-	}
+    public XmasContact getReferencedContact() {
+        return (XmasContact)getReferencedComponent();
+    }
 
-	private Shape getShape() {
-		if (getIOType() == IOType.INPUT) {
-			return new Rectangle2D.Double(-0.5 * size, -0.5 * size, size, size);
-		} else {
-			return new Ellipse2D.Double(-0.5 * size, -0.5 * size, size, size);
-		}
-	}
+    private Shape getShape() {
+        if (getIOType() == IOType.INPUT) {
+            return new Rectangle2D.Double(-0.5 * size, -0.5 * size, size, size);
+        } else {
+            return new Ellipse2D.Double(-0.5 * size, -0.5 * size, size, size);
+        }
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
+    @Override
+    public void draw(DrawRequest r) {
 
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
 
-		boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
-		if (inSimulationMode || XmasSettings.getShowContacts()) {
-			Shape shape = getShape();
-			g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));
+        boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
+        if (inSimulationMode || XmasSettings.getShowContacts()) {
+            Shape shape = getShape();
+            g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));
 
-			Color fillColor = d.getBackground();
-			if (fillColor == null) {
-				fillColor = getFillColor();
-			}
-			g.setColor(fillColor);
-			g.fill(shape);
+            Color fillColor = d.getBackground();
+            if (fillColor == null) {
+                fillColor = getFillColor();
+            }
+            g.setColor(fillColor);
+            g.fill(shape);
 
-			Color colorisation = d.getColorisation();
-			g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-			g.draw(shape);
-		}
-	}
+            Color colorisation = d.getColorisation();
+            g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+            g.draw(shape);
+        }
+    }
 
-	@Override
-	public Rectangle2D getBoundingBoxInLocalSpace() {
-		return getShape().getBounds2D();
-	}
+    @Override
+    public Rectangle2D getBoundingBoxInLocalSpace() {
+        return getShape().getBounds2D();
+    }
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		Point2D p2 = new Point2D.Double();
-		p2.setLocation(pointInLocalSpace);
-		Shape shape = getShape();
-		return shape.contains(p2);
-	}
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        Point2D p2 = new Point2D.Double();
+        p2.setLocation(pointInLocalSpace);
+        Shape shape = getShape();
+        return shape.contains(p2);
+    }
 
-	public boolean isInput() {
-		return getReferencedContact().isInput();
-	}
+    public boolean isInput() {
+        return getReferencedContact().isInput();
+    }
 
-	public boolean isOutput() {
-		return getReferencedContact().isOutput();
-	}
+    public boolean isOutput() {
+        return getReferencedContact().isOutput();
+    }
 
-	@Override
-	public void notify(StateEvent e) {
-	}
+    @Override
+    public void notify(StateEvent e) {
+    }
 
 }

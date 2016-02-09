@@ -35,109 +35,109 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
 public class NodeGeneratorTool extends AbstractTool {
-	private final NodeGenerator generator;
-	private VisualNode templateNode = null;
-	private VisualNode lastGeneratedNode = null;
-	private String warningMessage = null;
+    private final NodeGenerator generator;
+    private VisualNode templateNode = null;
+    private VisualNode lastGeneratedNode = null;
+    private String warningMessage = null;
 
-	public NodeGeneratorTool(NodeGenerator generator) {
-		this.generator = generator;
-	}
+    public NodeGeneratorTool(NodeGenerator generator) {
+        this.generator = generator;
+    }
 
-	@Override
-	public Icon getIcon() {
-		return generator.getIcon();
-	}
+    @Override
+    public Icon getIcon() {
+        return generator.getIcon();
+    }
 
-	@Override
-	public String getLabel() {
-		return generator.getLabel();
-	}
+    @Override
+    public String getLabel() {
+        return generator.getLabel();
+    }
 
-	@Override
-	public int getHotKeyCode() {
-		return generator.getHotKeyCode();
-	}
+    @Override
+    public int getHotKeyCode() {
+        return generator.getHotKeyCode();
+    }
 
-	private void resetState(GraphEditor editor) {
-		lastGeneratedNode = null;
-		warningMessage = null;
-		editor.getModel().selectNone();
+    private void resetState(GraphEditor editor) {
+        lastGeneratedNode = null;
+        warningMessage = null;
+        editor.getModel().selectNone();
 }
 
-	@Override
-	public void activated(GraphEditor editor) {
-		super.activated(editor);
-		resetState(editor);
-		if (templateNode == null) {
-			try {
-				templateNode = generator.createVisualNode(generator.createMathNode());
-			} catch (NodeCreationException e) {
-				throw new RuntimeException (e);
-			}
-		}
-		editor.getModel().setTemplateNode(templateNode);
-	}
+    @Override
+    public void activated(GraphEditor editor) {
+        super.activated(editor);
+        resetState(editor);
+        if (templateNode == null) {
+            try {
+                templateNode = generator.createVisualNode(generator.createMathNode());
+            } catch (NodeCreationException e) {
+                throw new RuntimeException (e);
+            }
+        }
+        editor.getModel().setTemplateNode(templateNode);
+    }
 
-	@Override
-	public void deactivated(GraphEditor editor) {
-		super.deactivated(editor);
-		resetState(editor);
-	}
+    @Override
+    public void deactivated(GraphEditor editor) {
+        super.deactivated(editor);
+        resetState(editor);
+    }
 
-	@Override
-	public void reactivated(GraphEditor editor) {
-		templateNode = null;
-	}
+    @Override
+    public void reactivated(GraphEditor editor) {
+        templateNode = null;
+    }
 
-	@Override
-	public void mouseMoved(GraphEditorMouseEvent e) {
-		if (lastGeneratedNode != null) {
-			if (!lastGeneratedNode.hitTest(e.getPosition())) {
-				resetState(e.getEditor());
-				e.getEditor().repaint();
-			}
-		}
-	}
+    @Override
+    public void mouseMoved(GraphEditorMouseEvent e) {
+        if (lastGeneratedNode != null) {
+            if (!lastGeneratedNode.hitTest(e.getPosition())) {
+                resetState(e.getEditor());
+                e.getEditor().repaint();
+            }
+        }
+    }
 
-	@Override
-	public void mousePressed(GraphEditorMouseEvent e) {
-		GraphEditor editor = e.getEditor();
-		if (lastGeneratedNode != null) {
-			warningMessage = "Move the mouse outside this node before creating a new node";
-			editor.repaint();
-		} else {
-			try {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					editor.getWorkspaceEntry().saveMemento();
-					VisualModel model = e.getModel();
-					Point2D snapPosition = editor.snap(e.getPosition(), null);
-					lastGeneratedNode = generator.generate(model, snapPosition);
-					lastGeneratedNode.copyStyle(templateNode);
-				}
-			} catch (NodeCreationException e1) {
-				throw new RuntimeException (e1);
-			}
-		}
-	}
+    @Override
+    public void mousePressed(GraphEditorMouseEvent e) {
+        GraphEditor editor = e.getEditor();
+        if (lastGeneratedNode != null) {
+            warningMessage = "Move the mouse outside this node before creating a new node";
+            editor.repaint();
+        } else {
+            try {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    editor.getWorkspaceEntry().saveMemento();
+                    VisualModel model = e.getModel();
+                    Point2D snapPosition = editor.snap(e.getPosition(), null);
+                    lastGeneratedNode = generator.generate(model, snapPosition);
+                    lastGeneratedNode.copyStyle(templateNode);
+                }
+            } catch (NodeCreationException e1) {
+                throw new RuntimeException (e1);
+            }
+        }
+    }
 
-	@Override
-	public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-		if (warningMessage != null) {
-			GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
-		} else {
-			super.drawInScreenSpace(editor, g);
-		}
-	}
+    @Override
+    public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
+        if (warningMessage != null) {
+            GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
+        } else {
+            super.drawInScreenSpace(editor, g);
+        }
+    }
 
-	@Override
-	public String getHintMessage() {
-		return generator.getText();
-	}
+    @Override
+    public String getHintMessage() {
+        return generator.getText();
+    }
 
-	@Override
-	public Decorator getDecorator(final GraphEditor editor) {
-		return Decorator.Empty.INSTANCE;
-	}
+    @Override
+    public Decorator getDecorator(final GraphEditor editor) {
+        return Decorator.Empty.INSTANCE;
+    }
 
 }

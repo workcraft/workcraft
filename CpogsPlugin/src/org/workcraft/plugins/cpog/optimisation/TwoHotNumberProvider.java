@@ -30,106 +30,106 @@ import java.util.Map;
 
 public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumber>
 {
-	TwoHotRangeProvider rangeProvider = new TwoHotRangeProvider();
+    TwoHotRangeProvider rangeProvider = new TwoHotRangeProvider();
 
-	Map<Integer, TwoHotRange> halfTaken = new HashMap<Integer, TwoHotRange>();
+    Map<Integer, TwoHotRange> halfTaken = new HashMap<Integer, TwoHotRange>();
 
-	private Cnf constraints = new Cnf();
+    private Cnf constraints = new Cnf();
 
-	public Cnf getConstraints()
-	{
-		return constraints;
-	}
+    public Cnf getConstraints()
+    {
+        return constraints;
+    }
 
-	public TwoHotNumber generate(String name, int range)
-	{
-		TwoHotRange htRes = halfTaken.get(range);
-		if(htRes != null)
-		{
-			//TwoHotNumber result = rangeProvider.getSecond(htRes);
-		}
+    public TwoHotNumber generate(String name, int range)
+    {
+        TwoHotRange htRes = halfTaken.get(range);
+        if(htRes != null)
+        {
+            //TwoHotNumber result = rangeProvider.getSecond(htRes);
+        }
 
-		if(range<2)
-			throw new RuntimeException("can't select 2 hot out of "+range);
+        if(range<2)
+            throw new RuntimeException("can't select 2 hot out of "+range);
 
-		List<Literal> literals = createLiterals(name+"_sel", range);
-		List<Literal> sort1 = createLiterals(name+"_sorta_", range);
-		List<Literal> thermo = createLiterals(name+"_t_", range);
-		List<Literal> sort2 = createLiterals(name+"_sortb_", range);
+        List<Literal> literals = createLiterals(name+"_sel", range);
+        List<Literal> sort1 = createLiterals(name+"_sorta_", range);
+        List<Literal> thermo = createLiterals(name+"_t_", range);
+        List<Literal> sort2 = createLiterals(name+"_sortb_", range);
 
-		constraints.add(CnfSorter.sortRound(sort1, thermo, literals));
-		constraints.add(CnfSorter.sortRound(sort2, sort1));
+        constraints.add(CnfSorter.sortRound(sort1, thermo, literals));
+        constraints.add(CnfSorter.sortRound(sort2, sort1));
 
-		for(int i=0;i<range-2;i++)
-			constraints.add(or(not(sort2.get(i))));
+        for(int i=0;i<range-2;i++)
+            constraints.add(or(not(sort2.get(i))));
 
-		for(int i=0;i<range-2;i+=2)
-		{
-			constraints.add(or(not(literals.get(i)), not(literals.get(i+1))));
-		}
+        for(int i=0;i<range-2;i+=2)
+        {
+            constraints.add(or(not(literals.get(i)), not(literals.get(i+1))));
+        }
 
-		constraints.add(or(sort2.get(range-1)));
-		constraints.add(or(sort2.get(range-2)));
+        constraints.add(or(sort2.get(range-1)));
+        constraints.add(or(sort2.get(range-2)));
 
-		return null;// new TwoHotNumber(literals, thermo);
-	}
+        return null;// new TwoHotNumber(literals, thermo);
+    }
 
-	private List<Literal> createLiterals(String name, int range) {
-		List<Literal> literals = new ArrayList<Literal>();
+    private List<Literal> createLiterals(String name, int range) {
+        List<Literal> literals = new ArrayList<Literal>();
 
-		for(int i=0;i<range;i++)
-			literals.add(new Literal(name+i));
-		return literals;
-	}
+        for(int i=0;i<range;i++)
+            literals.add(new Literal(name+i));
+        return literals;
+    }
 
 
-	public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
-		List<CnfClause> conditions = new ArrayList<CnfClause>();
+    public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
+        List<CnfClause> conditions = new ArrayList<CnfClause>();
 
-		if(code.size() != vars.length)
-			throw new RuntimeException("Lengths do not match: code="+code.size()+", vars="+vars.length);
+        if(code.size() != vars.length)
+            throw new RuntimeException("Lengths do not match: code="+code.size()+", vars="+vars.length);
 
-		List<Literal> preResult = new ArrayList<Literal>();
-		for(int i=0;i<vars.length;i++)
-			preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation()?"i":"")+ "_sv"+i));
+        List<Literal> preResult = new ArrayList<Literal>();
+        for(int i=0;i<vars.length;i++)
+            preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation()?"i":"")+ "_sv"+i));
 
-		for(int i=0;i<vars.length;i++)
-		{
-			Literal res = preResult.get(i);
-			Literal sel = code.get(i);
-			Literal var = vars[i];
-			conditions.add(or(not(res), not(sel), var));
-			conditions.add(or(res, sel));
-			conditions.add(or(res, not(var)));
+        for(int i=0;i<vars.length;i++)
+        {
+            Literal res = preResult.get(i);
+            Literal sel = code.get(i);
+            Literal var = vars[i];
+            conditions.add(or(not(res), not(sel), var));
+            conditions.add(or(res, sel));
+            conditions.add(or(res, not(var)));
 
-			conditions.add(or(not(result), res));
-		}
-		CnfClause resTrue = new CnfClause();
-		resTrue.add(result);
-		for(int i=0;i<vars.length;i++)
-			resTrue.add(not(preResult.get(i)));
-		conditions.add(resTrue);
+            conditions.add(or(not(result), res));
+        }
+        CnfClause resTrue = new CnfClause();
+        resTrue.add(result);
+        for(int i=0;i<vars.length;i++)
+            resTrue.add(not(preResult.get(i)));
+        conditions.add(resTrue);
 
-		return conditions;
-	}
+        return conditions;
+    }
 
-	public static BooleanFormula selectAnd(BooleanFormula[] vars, TwoHotRange number) {
-		throw new RuntimeException("incorrect");
-		/*
-		List<FreeVariable> params = new ArrayList<FreeVariable>();
-		CnfLiteral []literals = new CnfLiteral[vars.length];
+    public static BooleanFormula selectAnd(BooleanFormula[] vars, TwoHotRange number) {
+        throw new RuntimeException("incorrect");
+        /*
+        List<FreeVariable> params = new ArrayList<FreeVariable>();
+        CnfLiteral []literals = new CnfLiteral[vars.length];
 
-		for(int i=0;i<vars.length;i++)
-		{
-			FreeVariable var = new FV("param"+i);
-			params.add(var);
-			literals[i] = new CnfLiteral(var);
-		}
+        for(int i=0;i<vars.length;i++)
+        {
+            FreeVariable var = new FV("param"+i);
+            params.add(var);
+            literals[i] = new CnfLiteral(var);
+        }
 
-		List<CnfClause> result = selectAnd(CnfLiteral.One, literals, number);
+        List<CnfClause> result = selectAnd(CnfLiteral.One, literals, number);
 
-		Cnf cnf = new Cnf(result);
-		BooleanFormula res = BooleanReplacer.replace(cnf, params, Arrays.asList(vars));
-		return res;*/
-	}
+        Cnf cnf = new Cnf(result);
+        BooleanFormula res = BooleanReplacer.replace(cnf, params, Arrays.asList(vars));
+        return res;*/
+    }
 }

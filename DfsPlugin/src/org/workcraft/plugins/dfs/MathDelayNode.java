@@ -25,17 +25,17 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.observation.PropertyChangedEvent;
 
 public class MathDelayNode extends MathNode {
-	public static final String PROPERTY_DELAY = "Delay";
+    public static final String PROPERTY_DELAY = "Delay";
 
-	private double delay = 0.0;
+    private double delay = 0.0;
 
-	public double getDelay() {
-		return delay;
-	}
+    public double getDelay() {
+        return delay;
+    }
 
-	public void setDelay(double value) {
-		this.delay = value;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_DELAY));
-	}
+    public void setDelay(double value) {
+        this.delay = value;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_DELAY));
+    }
 
 }

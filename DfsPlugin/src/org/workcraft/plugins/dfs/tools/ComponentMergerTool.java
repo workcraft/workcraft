@@ -15,27 +15,27 @@ import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public final class ComponentMergerTool extends AbstractMergerTool {
-	@Override
-	public String getDisplayName() {
-		return "Merge selected components";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Merge selected components";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof Dfs;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof Dfs;
+    }
 
-	@Override
-	public Set<Class<? extends VisualComponent>> getMergableClasses() {
-		Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
-		result.add(VisualLogic.class);
-		result.add(VisualRegister.class);
-		result.add(VisualCounterflowLogic.class);
-		result.add(VisualCounterflowRegister.class);
-		result.add(VisualControlRegister.class);
-		result.add(VisualPushRegister.class);
-		result.add(VisualPopRegister.class);
-		return result;
-	}
+    @Override
+    public Set<Class<? extends VisualComponent>> getMergableClasses() {
+        Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
+        result.add(VisualLogic.class);
+        result.add(VisualRegister.class);
+        result.add(VisualCounterflowLogic.class);
+        result.add(VisualCounterflowRegister.class);
+        result.add(VisualControlRegister.class);
+        result.add(VisualPushRegister.class);
+        result.add(VisualPopRegister.class);
+        return result;
+    }
 
 }

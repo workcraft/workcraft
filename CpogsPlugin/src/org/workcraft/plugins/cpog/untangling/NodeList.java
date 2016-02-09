@@ -11,66 +11,66 @@ import org.workcraft.plugins.cpog.untangling.UntanglingNode.NodeType;
 
 public class NodeList extends ArrayList<UntanglingNode> {
 
-	HashMap<Node, UntanglingNode> nodeToUntanglingNodMap = new HashMap<>();
+    HashMap<Node, UntanglingNode> nodeToUntanglingNodMap = new HashMap<>();
 
-	/** Adds a node of the untangling's process        *
-	 *  separating label and id into a unsorted list. **/
-	UntanglingNode addNode(Node node) {
-		// check if the node is already present
-		UntanglingNode result = nodeToUntanglingNodMap.get(node);
+    /** Adds a node of the untangling's process        *
+     *  separating label and id into a unsorted list. **/
+    UntanglingNode addNode(Node node) {
+        // check if the node is already present
+        UntanglingNode result = nodeToUntanglingNodMap.get(node);
 
-		if (result == null) {
-			int id = Integer.parseInt(node.getLabel().replaceAll(".*-", ""));
-			String label = node.getLabel().replaceAll("-.*", "");
+        if (result == null) {
+            int id = Integer.parseInt(node.getLabel().replaceAll(".*-", ""));
+            String label = node.getLabel().replaceAll("-.*", "");
 
-			if (node instanceof Place){
-				result = new UntanglingNode(id, label, NodeType.PLACE);
-			} else{
-				result = new UntanglingNode(id, label, NodeType.TRANSITION);
-			}
-			nodeToUntanglingNodMap.put(node, result);
-			this.add(result);
-		}
-		return result;
-	}
+            if (node instanceof Place){
+                result = new UntanglingNode(id, label, NodeType.PLACE);
+            } else{
+                result = new UntanglingNode(id, label, NodeType.TRANSITION);
+            }
+            nodeToUntanglingNodMap.put(node, result);
+            this.add(result);
+        }
+        return result;
+    }
 
-	/** Sort the list of the untangling's vertices by the id **/
-	@SuppressWarnings("unchecked")
-	void sort() {
-		Collections.sort(this, new Comparator() {
+    /** Sort the list of the untangling's vertices by the id **/
+    @SuppressWarnings("unchecked")
+    void sort() {
+        Collections.sort(this, new Comparator() {
 
-			@Override
-			public int compare(Object node1, Object node2) {
-				return (((UntanglingNode) node2).getId() < ((UntanglingNode) node1).getId()) ? 1 : -1;
-			}
+            @Override
+            public int compare(Object node1, Object node2) {
+                return (((UntanglingNode) node2).getId() < ((UntanglingNode) node1).getId()) ? 1 : -1;
+            }
 
-		});
-	}
+        });
+    }
 
-	/** Rename with a " _n " the node with same names but different *
-	 *  id, in order to be coherent with partial order notation    **/
-	void rename() {
+    /** Rename with a " _n " the node with same names but different *
+     *  id, in order to be coherent with partial order notation    **/
+    void rename() {
 
-		for(int i = 0; i < this.size(); i++){
-			int k = 1;
-			for(int j = i+1; j < this.size(); j++){
+        for(int i = 0; i < this.size(); i++){
+            int k = 1;
+            for(int j = i+1; j < this.size(); j++){
 
-				// get names of the nodes
-				String formerNodeName = this.get(i).getLabel();
-				String latterNodeName = this.get(j).getLabel();
+                // get names of the nodes
+                String formerNodeName = this.get(i).getLabel();
+                String latterNodeName = this.get(j).getLabel();
 
-				if(formerNodeName.equals(latterNodeName)){
+                if(formerNodeName.equals(latterNodeName)){
 
-					// append a number at the end representing
-					// the number of times that node occurs
-					String replaceName = new String(latterNodeName);
-					replaceName = replaceName.concat("_" + (k+1));
-					k++;
-					this.get(j).setLabel(replaceName);
-				}
-			}
-		}
+                    // append a number at the end representing
+                    // the number of times that node occurs
+                    String replaceName = new String(latterNodeName);
+                    replaceName = replaceName.concat("_" + (k+1));
+                    k++;
+                    this.get(j).setLabel(replaceName);
+                }
+            }
+        }
 
-	}
+    }
 
 }

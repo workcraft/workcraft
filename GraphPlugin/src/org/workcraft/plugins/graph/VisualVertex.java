@@ -40,32 +40,32 @@ import org.workcraft.gui.graph.tools.Decoration;
 @DisplayName("Vertex")
 @SVGIcon("images/icons/svg/vertex.svg")
 public class VisualVertex extends VisualComponent {
-	private static double size = 1;
-	private static float strokeWidth = 0.1f;
+    private static double size = 1;
+    private static float strokeWidth = 0.1f;
 
-	public VisualVertex(Vertex vertex) {
-		super(vertex);
-	}
+    public VisualVertex(Vertex vertex) {
+        super(vertex);
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		Shape shape = new Ellipse2D.Double(
-				-size/2+strokeWidth/2, -size/2+strokeWidth/2,
-				size-strokeWidth, size-strokeWidth);
-		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-		g.fill(shape);
-		g.setStroke(new BasicStroke((float)strokeWidth));
-		g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		g.draw(shape);
-		drawLabelInLocalSpace(r);
-		drawNameInLocalSpace(r);
-	}
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        Shape shape = new Ellipse2D.Double(
+                -size/2+strokeWidth/2, -size/2+strokeWidth/2,
+                size-strokeWidth, size-strokeWidth);
+        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.fill(shape);
+        g.setStroke(new BasicStroke((float)strokeWidth));
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.draw(shape);
+        drawLabelInLocalSpace(r);
+        drawNameInLocalSpace(r);
+    }
 
-	@Override
-	public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-		return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
-	}
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
+    }
 
 }

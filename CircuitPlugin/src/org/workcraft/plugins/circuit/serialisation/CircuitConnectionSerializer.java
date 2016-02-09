@@ -9,16 +9,16 @@ import org.workcraft.serialisation.xml.NodeSerialiser;
 
 public class CircuitConnectionSerializer implements CustomXMLSerialiser{
 
-	@Override
-	public void serialise(Element element, Object object,
-			ReferenceProducer internalReferences,
-			ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
-			throws SerialisationException {
-	}
+    @Override
+    public void serialise(Element element, Object object,
+            ReferenceProducer internalReferences,
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser)
+            throws SerialisationException {
+    }
 
-	@Override
-	public String getClassName() {
-		return VisualCircuitConnection.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return VisualCircuitConnection.class.getName();
+    }
 
 }

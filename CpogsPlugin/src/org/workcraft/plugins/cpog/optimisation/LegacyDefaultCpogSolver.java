@@ -22,30 +22,30 @@ package org.workcraft.plugins.cpog.optimisation;
 
 public class LegacyDefaultCpogSolver<T> implements LegacyCpogSolver
 {
-	private final CpogSATProblemGenerator<? extends T> problemGenerator;
-	private final RawCnfGenerator<? super T> cnfConverter;
+    private final CpogSATProblemGenerator<? extends T> problemGenerator;
+    private final RawCnfGenerator<? super T> cnfConverter;
 
-	public LegacyDefaultCpogSolver(CpogSATProblemGenerator<? extends T> problemGenerator,
-			RawCnfGenerator<? super T> simpleCnfTaskProvider) {
-				this.problemGenerator = problemGenerator;
-				this.cnfConverter = simpleCnfTaskProvider;
-	}
+    public LegacyDefaultCpogSolver(CpogSATProblemGenerator<? extends T> problemGenerator,
+            RawCnfGenerator<? super T> simpleCnfTaskProvider) {
+                this.problemGenerator = problemGenerator;
+                this.cnfConverter = simpleCnfTaskProvider;
+    }
 
-	@Override
-	public CpogEncoding solve(String[] scenarios, int freeVars, int derivedVars) {
+    @Override
+    public CpogEncoding solve(String[] scenarios, int freeVars, int derivedVars) {
 
-		BooleanVariable [] vars = new BooleanVariable[freeVars];
+        BooleanVariable [] vars = new BooleanVariable[freeVars];
 
-		char nextVar = 'z';
-		for(int i = 0; i < freeVars; i++)
-		{
-			vars[i] = new FreeVariable("" + nextVar);
-			nextVar--;
-		}
+        char nextVar = 'z';
+        for(int i = 0; i < freeVars; i++)
+        {
+            vars[i] = new FreeVariable("" + nextVar);
+            nextVar--;
+        }
 
-		CpogOptimisationTask<? extends T> task = problemGenerator.getFormula(scenarios, vars, derivedVars);
+        CpogOptimisationTask<? extends T> task = problemGenerator.getFormula(scenarios, vars, derivedVars);
 
-		BooleanSolution solution = new ConsoleBooleanSolver().solve(cnfConverter.getCnf(task.getTask()));
-		return SolutionPrettifier.prettifySolution(task, solution);
-	}
+        BooleanSolution solution = new ConsoleBooleanSolver().solve(cnfConverter.getCnf(task.getTask()));
+        return SolutionPrettifier.prettifySolution(task, solution);
+    }
 }

@@ -37,53 +37,53 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 
 public class TransferableDocument implements Transferable {
-	public static final DataFlavor DOCUMENT_FLAVOR = new DataFlavor(Document.class, "XML");
+    public static final DataFlavor DOCUMENT_FLAVOR = new DataFlavor(Document.class, "XML");
 
-	private DataFlavor flavors[] = { DOCUMENT_FLAVOR, DataFlavor.stringFlavor };
-	private Document doc;
+    private DataFlavor flavors[] = { DOCUMENT_FLAVOR, DataFlavor.stringFlavor };
+    private Document doc;
 
-	public TransferableDocument(Document doc) {
-		this.doc = doc;
-	}
+    public TransferableDocument(Document doc) {
+        this.doc = doc;
+    }
 
-	public synchronized DataFlavor[] getTransferDataFlavors() {
-		return flavors;
-	}
+    public synchronized DataFlavor[] getTransferDataFlavors() {
+        return flavors;
+    }
 
-	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (
-				flavor.getRepresentationClass() == Document.class ||
-				flavor == DataFlavor.stringFlavor
-		);
-	}
-	public synchronized Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-		if (isDataFlavorSupported(flavor)) {
-			if (flavor == DataFlavor.stringFlavor) {
-				try {
-					TransformerFactory tFactory = TransformerFactory.newInstance();
-					tFactory.setAttribute("indent-number", new Integer(2));
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return (
+                flavor.getRepresentationClass() == Document.class ||
+                flavor == DataFlavor.stringFlavor
+        );
+    }
+    public synchronized Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+        if (isDataFlavorSupported(flavor)) {
+            if (flavor == DataFlavor.stringFlavor) {
+                try {
+                    TransformerFactory tFactory = TransformerFactory.newInstance();
+                    tFactory.setAttribute("indent-number", new Integer(2));
 
-					Transformer transformer = tFactory.newTransformer();
+                    Transformer transformer = tFactory.newTransformer();
 
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-					DOMSource source = new DOMSource(doc);
-					StreamResult result = new StreamResult(baos);
+                    DOMSource source = new DOMSource(doc);
+                    StreamResult result = new StreamResult(baos);
 
 
-					transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					transformer.transform(source, result);
+                    transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                    transformer.transform(source, result);
 
-					return (baos.toString("utf-8"));
-				} catch (TransformerException e) {
-					e.printStackTrace();
-					return null;
-				}
-			} else
-				return doc;
-		} else {
-			throw new UnsupportedFlavorException(flavor);
-		}
-	}
+                    return (baos.toString("utf-8"));
+                } catch (TransformerException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } else
+                return doc;
+        } else {
+            throw new UnsupportedFlavorException(flavor);
+        }
+    }
 }

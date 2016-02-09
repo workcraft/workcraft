@@ -21,25 +21,25 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public class CpogEncoding {
-	public CpogEncoding(boolean[][] encoding, BooleanFormula[] functions) {
-		this.encoding = encoding;
-		this.functions = functions;
-	}
-	public BooleanFormula[] getFunctions() {
-		return functions;
-	}
-	public boolean[][] getEncoding() {
-		return encoding;
-	}
-	public void setEncoding(boolean[][] encoding){
-		this.encoding = encoding;
-	}
-	public void setFormula(BooleanFormula formula,int index){
-		this.functions[index] = formula;
-	}
-	public void setFormule(BooleanFormula[] formula){
-		this.functions = formula;
-	}
-	private  BooleanFormula[] functions;
-	private boolean[][] encoding;
+    public CpogEncoding(boolean[][] encoding, BooleanFormula[] functions) {
+        this.encoding = encoding;
+        this.functions = functions;
+    }
+    public BooleanFormula[] getFunctions() {
+        return functions;
+    }
+    public boolean[][] getEncoding() {
+        return encoding;
+    }
+    public void setEncoding(boolean[][] encoding){
+        this.encoding = encoding;
+    }
+    public void setFormula(BooleanFormula formula,int index){
+        this.functions[index] = formula;
+    }
+    public void setFormule(BooleanFormula[] formula){
+        this.functions = formula;
+    }
+    private  BooleanFormula[] functions;
+    private boolean[][] encoding;
 }

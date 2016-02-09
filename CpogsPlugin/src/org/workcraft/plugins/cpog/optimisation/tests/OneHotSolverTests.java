@@ -29,12 +29,12 @@ import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 
 public class OneHotSolverTests extends SolverTests {
-	public OneHotSolverTests()
-	{
-	}
+    public OneHotSolverTests()
+    {
+    }
 
-	protected LegacyCpogSolver createSolver()
-	{
-		return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new LimBooleCnfGenerator());
-	}
+    protected LegacyCpogSolver createSolver()
+    {
+        return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider()), new LimBooleCnfGenerator());
+    }
 }

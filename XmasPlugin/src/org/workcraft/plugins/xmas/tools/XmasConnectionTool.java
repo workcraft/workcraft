@@ -6,11 +6,11 @@ import org.workcraft.plugins.xmas.components.VisualXmasConnection;
 
 public class XmasConnectionTool extends ConnectionTool {
 
-	@Override
-	public VisualConnection createDefaultTemplateNode() {
-		VisualXmasConnection result = new VisualXmasConnection();
-		result.setArrowLength(0.0);
-		return result;
-	}
+    @Override
+    public VisualConnection createDefaultTemplateNode() {
+        VisualXmasConnection result = new VisualXmasConnection();
+        result.setArrowLength(0.0);
+        return result;
+    }
 
 }

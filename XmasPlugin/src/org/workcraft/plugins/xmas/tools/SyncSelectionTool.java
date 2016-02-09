@@ -23,56 +23,56 @@ import org.workcraft.util.Hierarchy;
 
 public class SyncSelectionTool extends SelectionTool {
 
-	private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
+    private HashMap<VisualConnection, ScaleMode> connectionToScaleModeMap = null;
 
-	@Override
-	public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
-		JPopupMenu popup = super.createPopupMenu(node, editor);
-		if (node instanceof VisualSyncComponent) {
-			final VisualSyncComponent component = (VisualSyncComponent)node;
-			if (popup != null) {
-				popup.addSeparator();
-			} else {
-				popup = new JPopupMenu();
-				popup.setFocusable(false);
-			}
-			{
-				JMenuItem addInputMenuItem = new JMenuItem("Add input-output pair");
-				addInputMenuItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						editor.getWorkspaceEntry().saveMemento();
-						component.addInput("", Positioning.TOP);
-						component.addOutput("", Positioning.BOTTOM);
-					}
-				});
-				popup.add(addInputMenuItem);
-			}
-			{
-				JMenuItem removeInputMenuItem = new JMenuItem("Remove input-output pair");
-				removeInputMenuItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						for(VisualXmasContact contact : component.getContacts()) {
-							contact = null;
-						}
-					}
-				});
-				popup.add(removeInputMenuItem);
-			}
-			return popup;
-		}
+    @Override
+    public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
+        JPopupMenu popup = super.createPopupMenu(node, editor);
+        if (node instanceof VisualSyncComponent) {
+            final VisualSyncComponent component = (VisualSyncComponent)node;
+            if (popup != null) {
+                popup.addSeparator();
+            } else {
+                popup = new JPopupMenu();
+                popup.setFocusable(false);
+            }
+            {
+                JMenuItem addInputMenuItem = new JMenuItem("Add input-output pair");
+                addInputMenuItem.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        editor.getWorkspaceEntry().saveMemento();
+                        component.addInput("", Positioning.TOP);
+                        component.addOutput("", Positioning.BOTTOM);
+                    }
+                });
+                popup.add(addInputMenuItem);
+            }
+            {
+                JMenuItem removeInputMenuItem = new JMenuItem("Remove input-output pair");
+                removeInputMenuItem.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        for(VisualXmasContact contact : component.getContacts()) {
+                            contact = null;
+                        }
+                    }
+                });
+                popup.add(removeInputMenuItem);
+            }
+            return popup;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public void beforeSelectionModification(final GraphEditor editor) {
-		super.beforeSelectionModification(editor);
-		// FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (intro).
-		// Flipping/rotation of VisualContacts are processed after ControlPoints of VisualConnections.
-		// Therefore the shape of connections may change (e.g. if LOCK_RELATIVELY scale mode is selected).
-		// To prevent this, the connection scale mode is temporary changed to NONE, and then restored (in afterSelectionModification).
+    @Override
+    public void beforeSelectionModification(final GraphEditor editor) {
+        super.beforeSelectionModification(editor);
+        // FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (intro).
+        // Flipping/rotation of VisualContacts are processed after ControlPoints of VisualConnections.
+        // Therefore the shape of connections may change (e.g. if LOCK_RELATIVELY scale mode is selected).
+        // To prevent this, the connection scale mode is temporary changed to NONE, and then restored (in afterSelectionModification).
         VisualModel model = editor.getModel();
         Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
         Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
@@ -81,18 +81,18 @@ public class SyncSelectionTool extends SelectionTool {
             connectionToScaleModeMap.put(vc, vc.getScaleMode());
             vc.setScaleMode(ScaleMode.NONE);
         }
-	}
+    }
 
-	@Override
-	public void afterSelectionModification(final GraphEditor editor) {
-		if (connectionToScaleModeMap != null) {
-			for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
-				VisualConnection vc = entry.getKey();
-				ScaleMode scaleMode = entry.getValue();
-				vc.setScaleMode(scaleMode);
-			}
-		}
-		super.afterSelectionModification(editor);
-	}
+    @Override
+    public void afterSelectionModification(final GraphEditor editor) {
+        if (connectionToScaleModeMap != null) {
+            for (Entry<VisualConnection, ScaleMode> entry: connectionToScaleModeMap.entrySet()) {
+                VisualConnection vc = entry.getKey();
+                ScaleMode scaleMode = entry.getValue();
+                vc.setScaleMode(scaleMode);
+            }
+        }
+        super.afterSelectionModification(editor);
+    }
 
 }

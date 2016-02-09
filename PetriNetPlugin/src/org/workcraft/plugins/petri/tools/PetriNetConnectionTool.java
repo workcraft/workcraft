@@ -14,36 +14,36 @@ import org.workcraft.plugins.petri.VisualTransition;
 
 public class PetriNetConnectionTool extends ConnectionTool {
 
-	public PetriNetConnectionTool() {
-		super(true, true);
-	}
+    public PetriNetConnectionTool() {
+        super(true, true);
+    }
 
-	@Override
-	public boolean isConnectable(Node node) {
-		return ( (node instanceof VisualPlace)
-			  || (node instanceof VisualReplicaPlace)
-			  || (node instanceof VisualTransition) );
-	}
+    @Override
+    public boolean isConnectable(Node node) {
+        return ( (node instanceof VisualPlace)
+              || (node instanceof VisualReplicaPlace)
+              || (node instanceof VisualTransition) );
+    }
 
-	@Override
-	public String getSecondHintMessage() {
-		return (super.getSecondHintMessage() + " Hold Shift to create a place proxy.");
-	}
+    @Override
+    public String getSecondHintMessage() {
+        return (super.getSecondHintMessage() + " Hold Shift to create a place proxy.");
+    }
 
-	@Override
-	public VisualConnection finishConnection(GraphEditorMouseEvent e) {
-		VisualConnection connection = super.finishConnection(e);
-		if (connection != null) {
-			if ( (connection.getFirst() instanceof VisualPlace)
-			  || (connection.getSecond() instanceof VisualPlace)) {
+    @Override
+    public VisualConnection finishConnection(GraphEditorMouseEvent e) {
+        VisualConnection connection = super.finishConnection(e);
+        if (connection != null) {
+            if ( (connection.getFirst() instanceof VisualPlace)
+              || (connection.getSecond() instanceof VisualPlace)) {
 
-				if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
-					VisualModel visualModel = e.getEditor().getModel();
-					connection = PetriNetUtils.replicateConnectedPlace(visualModel, connection);
-				}
-			}
-		}
-		return connection;
-	}
+                if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+                    VisualModel visualModel = e.getEditor().getModel();
+                    connection = PetriNetUtils.replicateConnectedPlace(visualModel, connection);
+                }
+            }
+        }
+        return connection;
+    }
 
 }

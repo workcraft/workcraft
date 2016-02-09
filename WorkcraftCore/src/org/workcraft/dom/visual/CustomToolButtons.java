@@ -32,5 +32,5 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface CustomToolButtons {
-	Class <? extends GraphEditorTool>[] value();
+    Class <? extends GraphEditorTool>[] value();
 }

@@ -24,9 +24,9 @@ package org.workcraft.dom;
 import java.util.Set;
 
 public interface NodeContext {
-	public Set<Node> getPreset(Node node);
-	public Set<Node> getPostset(Node node);
-	public Set<Connection> getConnections (Node node);
-	public boolean hasConnection(Node first, Node second);
-	public Connection getConnection(Node first, Node second);
+    public Set<Node> getPreset(Node node);
+    public Set<Node> getPostset(Node node);
+    public Set<Connection> getConnections (Node node);
+    public boolean hasConnection(Node first, Node second);
+    public Connection getConnection(Node first, Node second);
 }

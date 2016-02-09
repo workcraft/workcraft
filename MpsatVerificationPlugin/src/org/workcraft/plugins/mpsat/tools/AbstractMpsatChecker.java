@@ -9,27 +9,27 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractMpsatChecker extends VerificationTool {
 
-	@Override
-	public final void run(WorkspaceEntry we) {
-		final MpsatSettings settings = getSettings();
-		final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
+    @Override
+    public final void run(WorkspaceEntry we) {
+        final MpsatSettings settings = getSettings();
+        final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
 
-		String description = "MPSat tool chain";
-		String title = we.getTitle();
-		if (!title.isEmpty()) {
-			description += "(" + title +")";
-		}
-		MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
-		final Framework framework = Framework.getInstance();
-		framework.getTaskManager().queue(mpsatTask, description, monitor);
-	}
+        String description = "MPSat tool chain";
+        String title = we.getTitle();
+        if (!title.isEmpty()) {
+            description += "(" + title +")";
+        }
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
+        final Framework framework = Framework.getInstance();
+        framework.getTaskManager().queue(mpsatTask, description, monitor);
+    }
 
-	@Override
-	public abstract String getDisplayName();
+    @Override
+    public abstract String getDisplayName();
 
-	@Override
-	public abstract boolean isApplicableTo(WorkspaceEntry we);
+    @Override
+    public abstract boolean isApplicableTo(WorkspaceEntry we);
 
-	public abstract MpsatSettings getSettings();
+    public abstract MpsatSettings getSettings();
 
 }

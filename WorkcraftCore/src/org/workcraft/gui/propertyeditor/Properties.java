@@ -24,5 +24,5 @@ package org.workcraft.gui.propertyeditor;
 import java.util.Collection;
 
 public interface Properties {
-	public Collection<PropertyDescriptor> getDescriptors();
+    public Collection<PropertyDescriptor> getDescriptors();
 }

@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface CnfSolver {
-	BooleanSolution solve(Cnf formula);
+    BooleanSolution solve(Cnf formula);
 }

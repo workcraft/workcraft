@@ -37,78 +37,78 @@ import org.workcraft.Framework;
 @SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {
 
-	private JPanel panelInput = null;
-	private JEditTextArea txtScript = null;
-	private boolean isInitState;
+    private JPanel panelInput = null;
+    private JEditTextArea txtScript = null;
+    private boolean isInitState;
 
-	public JavaScriptWindow() {
-		txtScript = new JEditTextArea();
-		txtScript.setTokenMarker(new JavaScriptTokenMarker());
-		txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
-			@Override
-			public void keyReleased(java.awt.event.KeyEvent e) {
-				if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (e.isControlDown() == true)) {
-					execScript();
-				}
-			}
-		});
-		txtScript.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				String text = txtScript.getText().trim();
-				if (text.isEmpty()) {
-					resetScript();
-				}
-			}
+    public JavaScriptWindow() {
+        txtScript = new JEditTextArea();
+        txtScript.setTokenMarker(new JavaScriptTokenMarker());
+        txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (e.isControlDown() == true)) {
+                    execScript();
+                }
+            }
+        });
+        txtScript.addFocusListener(new FocusListener() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                String text = txtScript.getText().trim();
+                if (text.isEmpty()) {
+                    resetScript();
+                }
+            }
 
-			@Override
-			public void focusGained(FocusEvent e) {
-				if (isInitState) {
-					isInitState = false;
-					txtScript.setText("");
-				}
-			}
-		});
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (isInitState) {
+                    isInitState = false;
+                    txtScript.setText("");
+                }
+            }
+        });
 
-		panelInput = new JPanel();
-		panelInput.setLayout(new BorderLayout());
-		panelInput.add(txtScript, BorderLayout.CENTER);
-		panelInput.setMinimumSize(new Dimension(100,100));
+        panelInput = new JPanel();
+        panelInput.setLayout(new BorderLayout());
+        panelInput.add(txtScript, BorderLayout.CENTER);
+        panelInput.setMinimumSize(new Dimension(100,100));
 
-		setLayout(new BorderLayout());
-		this.add(panelInput, BorderLayout.CENTER);
-		resetScript();
-	}
-
-
-	public void execScript() {
-		if (txtScript.getText().length() > 0)
-			try {
-				final Framework framework = Framework.getInstance();
-				Object result = framework.execJavaScript(txtScript.getText());
-
-				Context.enter();
-				String out = Context.toString(result);
-				Context.exit();
-				if (!out.equals("undefined")) {
-					System.out.println (out);
-				}
-				resetScript();
-			}
-		catch (org.mozilla.javascript.WrappedException e) {
-			Throwable we = e.getWrappedException();
-			System.err.println(we.getClass().getName() + " " + we.getMessage());
-		}
-		catch (org.mozilla.javascript.RhinoException e) {
-			System.err.println(e.getMessage());
-		}
-	}
+        setLayout(new BorderLayout());
+        this.add(panelInput, BorderLayout.CENTER);
+        resetScript();
+    }
 
 
-	private void resetScript() {
-		isInitState = true;
-		txtScript.setText("// Write a script and press Ctrl-Enter to execute it.");
-	}
+    public void execScript() {
+        if (txtScript.getText().length() > 0)
+            try {
+                final Framework framework = Framework.getInstance();
+                Object result = framework.execJavaScript(txtScript.getText());
+
+                Context.enter();
+                String out = Context.toString(result);
+                Context.exit();
+                if (!out.equals("undefined")) {
+                    System.out.println (out);
+                }
+                resetScript();
+            }
+        catch (org.mozilla.javascript.WrappedException e) {
+            Throwable we = e.getWrappedException();
+            System.err.println(we.getClass().getName() + " " + we.getMessage());
+        }
+        catch (org.mozilla.javascript.RhinoException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+
+    private void resetScript() {
+        isInitState = true;
+        txtScript.setText("// Write a script and press Ctrl-Enter to execute it.");
+    }
 
 
 

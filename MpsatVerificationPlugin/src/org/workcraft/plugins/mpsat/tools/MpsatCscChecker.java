@@ -7,24 +7,24 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCscChecker extends AbstractMpsatChecker {
 
-	@Override
-	public String getDisplayName() {
-		return "Complete State Coding (all cores) [MPSat]";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Complete State Coding (all cores) [MPSat]";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, STGModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, STGModel.class);
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.MIDDLE;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.MIDDLE;
+    }
 
-	@Override
-	public MpsatSettings getSettings() {
-		return MpsatSettings.getCscSettings();
-	}
+    @Override
+    public MpsatSettings getSettings() {
+        return MpsatSettings.getCscSettings();
+    }
 
 }

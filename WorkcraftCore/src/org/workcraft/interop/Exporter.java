@@ -29,13 +29,13 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 
 public interface Exporter {
-	public static final int NOT_COMPATIBLE = 0;
-	public static final int GENERAL_COMPATIBILITY = 1;
-	public static final int BEST_COMPATIBILITY = 10;
+    public static final int NOT_COMPATIBLE = 0;
+    public static final int GENERAL_COMPATIBILITY = 1;
+    public static final int BEST_COMPATIBILITY = 10;
 
-	public String getDescription();
-	public String getExtenstion();
-	public UUID getTargetFormat();
-	public int getCompatibility(Model model);
-	public void export (Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
+    public String getDescription();
+    public String getExtenstion();
+    public UUID getTargetFormat();
+    public int getCompatibility(Model model);
+    public void export (Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
 }

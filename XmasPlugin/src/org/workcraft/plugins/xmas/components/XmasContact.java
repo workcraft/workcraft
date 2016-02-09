@@ -30,51 +30,51 @@ import org.workcraft.observation.PropertyChangedEvent;
 @VisualClass(org.workcraft.plugins.xmas.components.VisualXmasContact.class)
 public class XmasContact extends MathNode {
 
-	public static final String PROPERTY_IO_TYPE = "I/O type";
+    public static final String PROPERTY_IO_TYPE = "I/O type";
 
-	public enum IOType {
-		INPUT("Input"),
-		OUTPUT("Output");
+    public enum IOType {
+        INPUT("Input"),
+        OUTPUT("Output");
 
-		private final String name;
+        private final String name;
 
-		private IOType(String name) {
-			this.name = name;
-		}
+        private IOType(String name) {
+            this.name = name;
+        }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	};
+        @Override
+        public String toString() {
+            return name;
+        }
+    };
 
-	private IOType ioType = IOType.OUTPUT;
+    private IOType ioType = IOType.OUTPUT;
 
-	public XmasContact() {
-	}
+    public XmasContact() {
+    }
 
-	public XmasContact(IOType ioType) {
-		super();
-		setIOType(ioType);
-	}
+    public XmasContact(IOType ioType) {
+        super();
+        setIOType(ioType);
+    }
 
-	public void setIOType(IOType value) {
-		if (this.ioType != value) {
-			this.ioType = value;
-			sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
-		}
-	}
+    public void setIOType(IOType value) {
+        if (this.ioType != value) {
+            this.ioType = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
+        }
+    }
 
-	public IOType getIOType() {
-		return ioType;
-	}
+    public IOType getIOType() {
+        return ioType;
+    }
 
-	public boolean isInput() {
-		return (getIOType() == IOType.INPUT);
-	}
+    public boolean isInput() {
+        return (getIOType() == IOType.INPUT);
+    }
 
-	public boolean isOutput() {
-		return (getIOType() == IOType.OUTPUT);
-	}
+    public boolean isOutput() {
+        return (getIOType() == IOType.OUTPUT);
+    }
 
 }

@@ -21,98 +21,98 @@ import org.workcraft.workspace.Workspace;
 
 @SuppressWarnings("serial")
 public class WorkspaceChooser extends JPanel {
-	private final Func<Path<String>, Boolean> filter;
-	private TreeWindow<Path<String>> tree;
-	private JTextField nameFilter;
-	private FilteredTreeSource<Path<String>> filteredSource;
+    private final Func<Path<String>, Boolean> filter;
+    private TreeWindow<Path<String>> tree;
+    private JTextField nameFilter;
+    private FilteredTreeSource<Path<String>> filteredSource;
 
-	public WorkspaceChooser(Workspace workspace, Func<Path<String>, Boolean> filter) {
-		super();
+    public WorkspaceChooser(Workspace workspace, Func<Path<String>, Boolean> filter) {
+        super();
 
-		this.filter = filter;
+        this.filter = filter;
 
-		double[][] sizes =
-		{
-				{ TableLayout.FILL },
-				{ TableLayout.PREFERRED, TableLayout.FILL }
-		};
+        double[][] sizes =
+        {
+                { TableLayout.FILL },
+                { TableLayout.PREFERRED, TableLayout.FILL }
+        };
 
-		final TableLayout mgr = new TableLayout(sizes);
-		mgr.setHGap(4);
-		mgr.setVGap(4);
-		this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        final TableLayout mgr = new TableLayout(sizes);
+        mgr.setHGap(4);
+        mgr.setVGap(4);
+        this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
-		this.setLayout(mgr);
+        this.setLayout(mgr);
 
-		nameFilter = new JTextField();
+        nameFilter = new JTextField();
 
-		nameFilter.getDocument().addDocumentListener(new DocumentListener() {
+        nameFilter.getDocument().addDocumentListener(new DocumentListener() {
 
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				updateFilter();
-			}
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateFilter();
+            }
 
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				updateFilter();
-			}
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateFilter();
+            }
 
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				updateFilter();
-			}
-		});
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateFilter();
+            }
+        });
 
-		this.add(GUI.createWideLabeledComponent(nameFilter, "Search:"), "0 0");
+        this.add(GUI.createWideLabeledComponent(nameFilter, "Search:"), "0 0");
 
-		filteredSource = new FilteredTreeSource<Path<String>>(workspace.getTree(), filter);
+        filteredSource = new FilteredTreeSource<Path<String>>(workspace.getTree(), filter);
 
-		tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace), null);
-
-
-
-		JScrollPane scroll = new JScrollPane();
-		scroll.setViewportView(tree);
+        tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace), null);
 
 
-		expand(filteredSource.getRoot());
 
-		this.add(scroll, "0 1");
+        JScrollPane scroll = new JScrollPane();
+        scroll.setViewportView(tree);
 
-		filteredSource.setFilter(filter);
-	}
 
-	private void expand(Path<String> node) {
-		if (filteredSource.isLeaf(node)) {
-			if (filter.eval(node))
-				tree.makeVisible(filteredSource.getPath(node));
-		} else {
-			for (Path<String> n : filteredSource.getChildren(node))
-				expand(n);
-		}
-	}
+        expand(filteredSource.getRoot());
 
-	private void updateFilter() {
-		filteredSource.setFilter(new Func<Path<String>, Boolean>() {
-			@Override
-			public Boolean eval(Path<String> arg) {
-				return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText())) || getCheckedNodes().contains(arg);
-			}
-		});
+        this.add(scroll, "0 1");
 
-		expand(filteredSource.getRoot());
-	}
+        filteredSource.setFilter(filter);
+    }
 
-	public void clearCheckBoxes() {
-		tree.clearCheckBoxes();
-	}
+    private void expand(Path<String> node) {
+        if (filteredSource.isLeaf(node)) {
+            if (filter.eval(node))
+                tree.makeVisible(filteredSource.getPath(node));
+        } else {
+            for (Path<String> n : filteredSource.getChildren(node))
+                expand(n);
+        }
+    }
 
-	public void setCheckBoxMode(CheckBoxMode mode) {
-		tree.setCheckBoxMode(mode);
-	}
+    private void updateFilter() {
+        filteredSource.setFilter(new Func<Path<String>, Boolean>() {
+            @Override
+            public Boolean eval(Path<String> arg) {
+                return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText())) || getCheckedNodes().contains(arg);
+            }
+        });
 
-	public Set<Path<String>> getCheckedNodes() {
-		return tree.getCheckedNodes();
-	}
+        expand(filteredSource.getRoot());
+    }
+
+    public void clearCheckBoxes() {
+        tree.clearCheckBoxes();
+    }
+
+    public void setCheckBoxMode(CheckBoxMode mode) {
+        tree.setCheckBoxMode(mode);
+    }
+
+    public Set<Path<String>> getCheckedNodes() {
+        return tree.getCheckedNodes();
+    }
 }

@@ -22,5 +22,5 @@
 package org.workcraft.gui.tabs;
 
 public interface TabClosingListener {
-	public void tabClosing (DockableTab tab);
+    public void tabClosing (DockableTab tab);
 }

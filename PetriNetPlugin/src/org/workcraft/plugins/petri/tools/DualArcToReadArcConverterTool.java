@@ -15,30 +15,30 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class DualArcToReadArcConverterTool extends TransformationTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Convert dual producing/consuming arcs to read-arcs (selected or all)";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Convert dual producing/consuming arcs to read-arcs (selected or all)";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof PetriNetModel;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.TOP;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.TOP;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final VisualModel model = we.getModelEntry().getVisualModel();
-		HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(model);
-		if ( !dualArcs.isEmpty() ) {
-			we.saveMemento();
-			HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(model, dualArcs);
-			model.select(new LinkedList<Node>(readArcs));
-		}
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final VisualModel model = we.getModelEntry().getVisualModel();
+        HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(model);
+        if ( !dualArcs.isEmpty() ) {
+            we.saveMemento();
+            HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(model, dualArcs);
+            model.select(new LinkedList<Node>(readArcs));
+        }
+    }
 
 }

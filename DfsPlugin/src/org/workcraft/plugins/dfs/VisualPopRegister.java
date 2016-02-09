@@ -43,94 +43,94 @@ import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 @SVGIcon("images/icons/svg/dfs-pop_register.svg")
 public class VisualPopRegister extends VisualBinaryRegister {
 
-	public VisualPopRegister(PopRegister register) {
-		super(register);
-	}
+    public VisualPopRegister(PopRegister register) {
+        super(register);
+    }
 
-	@Override
-	public void draw(DrawRequest r) {
-		Graphics2D g = r.getGraphics();
-		Decoration d = r.getDecoration();
-		double w = size - strokeWidth;
-		double h = size - strokeWidth;
-		double w2 = w/2;
-		double h2 = h/2;
-		double dx = size / 5;
-		double dy = strokeWidth / 2;
-		double dt = (size - strokeWidth) / 8;
-		float strokeWidth1 = (float)strokeWidth;
-		float strokeWidth2 = strokeWidth1 / 2;
+    @Override
+    public void draw(DrawRequest r) {
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        double w = size - strokeWidth;
+        double h = size - strokeWidth;
+        double w2 = w/2;
+        double h2 = h/2;
+        double dx = size / 5;
+        double dy = strokeWidth / 2;
+        double dt = (size - strokeWidth) / 8;
+        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth2 = strokeWidth1 / 2;
 
-		Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
+        Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
 
-		Path2D trueInnerShape = new Path2D.Double();
-		trueInnerShape.moveTo(-w2 + dx, +h2 - dy);
-		trueInnerShape.lineTo(-w2 + dx, -h2 + dy);
-		trueInnerShape.moveTo(+w2 - dx, +h2 - dy);
-		trueInnerShape.lineTo(+w2 - dx, -h2 + dy);
+        Path2D trueInnerShape = new Path2D.Double();
+        trueInnerShape.moveTo(-w2 + dx, +h2 - dy);
+        trueInnerShape.lineTo(-w2 + dx, -h2 + dy);
+        trueInnerShape.moveTo(+w2 - dx, +h2 - dy);
+        trueInnerShape.lineTo(+w2 - dx, -h2 + dy);
 
-		Path2D falseInnerShape = new Path2D.Double();
-		falseInnerShape.moveTo(+w2 - dx, +h2 - dy);
-		falseInnerShape.lineTo(       0, +h2 - 2 * dt);
-		falseInnerShape.lineTo(-w2 + dx, +h2 - dy);
+        Path2D falseInnerShape = new Path2D.Double();
+        falseInnerShape.moveTo(+w2 - dx, +h2 - dy);
+        falseInnerShape.lineTo(       0, +h2 - 2 * dt);
+        falseInnerShape.lineTo(-w2 + dx, +h2 - dy);
 
-		Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
+        Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
 
-		Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
-		Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
-		boolean trueMarked = getReferencedPopRegister().isTrueMarked();
-		boolean trueExcited = false;
-		boolean falseMarked = getReferencedPopRegister().isFalseMarked();
-		boolean falseExcited = false;
-		if (d instanceof BinaryRegisterDecoration) {
-			defaultColor = getForegroundColor();
-			tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
-			trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
-			trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
-			falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
-			falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
-		}
+        Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
+        Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());
+        boolean trueMarked = getReferencedPopRegister().isTrueMarked();
+        boolean trueExcited = false;
+        boolean falseMarked = getReferencedPopRegister().isFalseMarked();
+        boolean falseExcited = false;
+        if (d instanceof BinaryRegisterDecoration) {
+            defaultColor = getForegroundColor();
+            tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
+            trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
+            trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
+            falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
+            falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
+        }
 
-		g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-		g.fill(shape);
+        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.fill(shape);
 
-		g.setStroke(new BasicStroke(strokeWidth2));
-		if (falseExcited) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		} else {
-			g.setColor(defaultColor);
-		}
-		g.draw(falseInnerShape);
-		if (trueExcited) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		} else {
-			g.setColor(defaultColor);
-		}
-		g.draw(trueInnerShape);
+        g.setStroke(new BasicStroke(strokeWidth2));
+        if (falseExcited) {
+            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        } else {
+            g.setColor(defaultColor);
+        }
+        g.draw(falseInnerShape);
+        if (trueExcited) {
+            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        } else {
+            g.setColor(defaultColor);
+        }
+        g.draw(trueInnerShape);
 
-		if (trueExcited || falseExcited) {
-			g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-		} else {
-			g.setColor(defaultColor);
-		}
-		g.setStroke(new BasicStroke(strokeWidth1));
-		g.draw(shape);
+        if (trueExcited || falseExcited) {
+            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        } else {
+            g.setColor(defaultColor);
+        }
+        g.setStroke(new BasicStroke(strokeWidth1));
+        g.draw(shape);
 
-		g.setColor(tokenColor);
-		g.setStroke(new BasicStroke(strokeWidth2));
-		if (trueMarked) {
-			g.fill(tokenShape);
-		}
-		if (falseMarked) {
-			g.draw(tokenShape);
-		}
+        g.setColor(tokenColor);
+        g.setStroke(new BasicStroke(strokeWidth2));
+        if (trueMarked) {
+            g.fill(tokenShape);
+        }
+        if (falseMarked) {
+            g.draw(tokenShape);
+        }
 
-		drawLabelInLocalSpace(r);
-		drawNameInLocalSpace(r);
-	}
+        drawLabelInLocalSpace(r);
+        drawNameInLocalSpace(r);
+    }
 
-	public PopRegister getReferencedPopRegister() {
-		return (PopRegister)getReferencedComponent();
-	}
+    public PopRegister getReferencedPopRegister() {
+        return (PopRegister)getReferencedComponent();
+    }
 
 }

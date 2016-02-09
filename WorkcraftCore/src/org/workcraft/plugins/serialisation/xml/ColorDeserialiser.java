@@ -8,18 +8,18 @@ import org.workcraft.serialisation.xml.BasicXMLDeserialiser;
 
 public class ColorDeserialiser implements BasicXMLDeserialiser {
 
-	public String getClassName() {
-		return Color.class.getName();
-	}
+    public String getClassName() {
+        return Color.class.getName();
+    }
 
-	public Object deserialise(Element element) throws DeserialisationException {
-		String s = element.getAttribute("rgb");
-		if (s == null || s.charAt(0) != '#') {
-			s = "#000000";
-		}
-		int rgb = (int)Integer.parseInt(s.substring(1), 16);
-		return new Color(rgb, false);
+    public Object deserialise(Element element) throws DeserialisationException {
+        String s = element.getAttribute("rgb");
+        if (s == null || s.charAt(0) != '#') {
+            s = "#000000";
+        }
+        int rgb = (int)Integer.parseInt(s.substring(1), 16);
+        return new Color(rgb, false);
 
-	}
+    }
 
 }

@@ -25,6 +25,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 
 public interface NodeTransformer {
-	public boolean isApplicableTo(Node node);
-	public void transform(Model model, Node node);
+    public boolean isApplicableTo(Node node);
+    public void transform(Model model, Node node);
 }

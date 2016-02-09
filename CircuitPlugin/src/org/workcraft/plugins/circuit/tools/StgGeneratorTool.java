@@ -15,26 +15,26 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgGeneratorTool extends ConversionTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Signal Transition Graph";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Signal Transition Graph";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return we.getModelEntry().getMathModel() instanceof Circuit;
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof Circuit;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final VisualCircuit circuit = (VisualCircuit)we.getModelEntry().getVisualModel();
-		final CircuitToStgConverter converter = CircuitStgUtils.createCircuitToStgConverter(circuit);
-		final Workspace workspace = Framework.getInstance().getWorkspace();
-		final Path<String> directory = we.getWorkspacePath().getParent();
-		final String name = we.getWorkspacePath().getNode();
-		final ModelEntry me = new ModelEntry(new StgDescriptor(), converter.getStg());
-		boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
-		workspace.add(directory, name, me, false, openInEditor);
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        final VisualCircuit circuit = (VisualCircuit)we.getModelEntry().getVisualModel();
+        final CircuitToStgConverter converter = CircuitStgUtils.createCircuitToStgConverter(circuit);
+        final Workspace workspace = Framework.getInstance().getWorkspace();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String name = we.getWorkspacePath().getNode();
+        final ModelEntry me = new ModelEntry(new StgDescriptor(), converter.getStg());
+        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+        workspace.add(directory, name, me, false, openInEditor);
+    }
 
 }

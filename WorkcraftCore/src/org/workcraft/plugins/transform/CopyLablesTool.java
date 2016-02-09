@@ -34,38 +34,38 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CopyLablesTool extends TransformationTool {
 
-	@Override
-	public String getDisplayName() {
-		return "Copy unique names into labels (selected or all)";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Copy unique names into labels (selected or all)";
+    }
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		return WorkspaceUtils.canHas(we, VisualModel.class);
-	}
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.canHas(we, VisualModel.class);
+    }
 
-	@Override
-	public Position getPosition() {
-		return Position.BOTTOM;
-	}
+    @Override
+    public Position getPosition() {
+        return Position.BOTTOM;
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
-		if (visualModel != null) {
-			MathModel mathModel = (MathModel)visualModel.getMathModel();
-			Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class);
-			if ( !visualModel.getSelection().isEmpty() ) {
-				components.retainAll(visualModel.getSelection());
-			}
-			if ( !components.isEmpty() ) {
-				we.saveMemento();
-				for (VisualComponent visualComponent : components) {
-					Node refComponent = visualComponent.getReferencedComponent();
-					visualComponent.setLabel(mathModel.getName(refComponent));
-				}
-			}
-		}
-	}
+    @Override
+    public void run(WorkspaceEntry we) {
+        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
+        if (visualModel != null) {
+            MathModel mathModel = (MathModel)visualModel.getMathModel();
+            Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class);
+            if ( !visualModel.getSelection().isEmpty() ) {
+                components.retainAll(visualModel.getSelection());
+            }
+            if ( !components.isEmpty() ) {
+                we.saveMemento();
+                for (VisualComponent visualComponent : components) {
+                    Node refComponent = visualComponent.getReferencedComponent();
+                    visualComponent.setLabel(mathModel.getName(refComponent));
+                }
+            }
+        }
+    }
 
 }

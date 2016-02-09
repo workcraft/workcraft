@@ -27,36 +27,36 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
 public class FunctionContact extends Contact {
-	public static final String PROPERTY_SET_FUNCTION = "Set function";
-	public static final String PROPERTY_RESET_FUNCTION = "Reset function";
+    public static final String PROPERTY_SET_FUNCTION = "Set function";
+    public static final String PROPERTY_RESET_FUNCTION = "Reset function";
 
-	private BooleanFormula setFunction = null;
-	private BooleanFormula resetFunction = null;
+    private BooleanFormula setFunction = null;
+    private BooleanFormula resetFunction = null;
 
-	public FunctionContact(IOType ioType) {
-		super(ioType);
-	}
+    public FunctionContact(IOType ioType) {
+        super(ioType);
+    }
 
-	public FunctionContact() {
-		super();
-	}
+    public FunctionContact() {
+        super();
+    }
 
-	public BooleanFormula getSetFunction() {
-		return setFunction;
-	}
+    public BooleanFormula getSetFunction() {
+        return setFunction;
+    }
 
-	public void setSetFunction(BooleanFormula setFunction) {
-		this.setFunction = setFunction;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
-	}
+    public void setSetFunction(BooleanFormula setFunction) {
+        this.setFunction = setFunction;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
+    }
 
-	public BooleanFormula getResetFunction() {
-		return resetFunction;
-	}
+    public BooleanFormula getResetFunction() {
+        return resetFunction;
+    }
 
-	public void setResetFunction(BooleanFormula resetFunction) {
-		this.resetFunction = resetFunction;
-		sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));
-	}
+    public void setResetFunction(BooleanFormula resetFunction) {
+        this.resetFunction = resetFunction;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));
+    }
 
 }

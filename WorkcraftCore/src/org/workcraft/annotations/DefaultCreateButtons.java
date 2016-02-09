@@ -29,5 +29,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface DefaultCreateButtons {
-	public Class<?>[] value();
+    public Class<?>[] value();
 }

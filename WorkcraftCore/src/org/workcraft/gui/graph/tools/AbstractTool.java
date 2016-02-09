@@ -34,110 +34,110 @@ import org.workcraft.util.GUI;
 
 public abstract class AbstractTool implements GraphEditorTool {
 
-	@Override
-	public void activated(final GraphEditor editor) {
-		editor.forceRedraw();
-		editor.getModel().setTemplateNode(null);
-	}
+    @Override
+    public void activated(final GraphEditor editor) {
+        editor.forceRedraw();
+        editor.getModel().setTemplateNode(null);
+    }
 
-	@Override
-	public void deactivated(final GraphEditor editor) {
-	}
+    @Override
+    public void deactivated(final GraphEditor editor) {
+    }
 
-	@Override
-	public void reactivated(final GraphEditor editor) {
-	}
+    @Override
+    public void reactivated(final GraphEditor editor) {
+    }
 
-	@Override
-	public VisualModel getUnderlyingModel(VisualModel model) {
-		return model;
-	}
+    @Override
+    public VisualModel getUnderlyingModel(VisualModel model) {
+        return model;
+    }
 
-	@Override
-	public void createInterfacePanel(final GraphEditor editor) {
-	}
+    @Override
+    public void createInterfacePanel(final GraphEditor editor) {
+    }
 
-	@Override
-	public JPanel getInterfacePanel() {
-		return null;
-	}
+    @Override
+    public JPanel getInterfacePanel() {
+        return null;
+    }
 
-	@Override
-	public String getHintMessage() {
-		return null;
-	}
+    @Override
+    public String getHintMessage() {
+        return null;
+    }
 
-	@Override
-	public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
-		GUI.drawEditorMessage(editor, g, Color.BLACK, getHintMessage());
-	}
+    @Override
+    public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
+        GUI.drawEditorMessage(editor, g, Color.BLACK, getHintMessage());
+    }
 
-	@Override
-	public void drawInUserSpace(final GraphEditor editor, Graphics2D g) {
-	}
+    @Override
+    public void drawInUserSpace(final GraphEditor editor, Graphics2D g) {
+    }
 
-	@Override
-	public void keyPressed(GraphEditorKeyEvent event) {
-	}
+    @Override
+    public void keyPressed(GraphEditorKeyEvent event) {
+    }
 
-	@Override
-	public void keyReleased(GraphEditorKeyEvent event) {
-	}
+    @Override
+    public void keyReleased(GraphEditorKeyEvent event) {
+    }
 
-	@Override
-	public void keyTyped(GraphEditorKeyEvent event) {
-	}
+    @Override
+    public void keyTyped(GraphEditorKeyEvent event) {
+    }
 
-	@Override
-	public void mouseClicked(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void mouseClicked(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public void mouseEntered(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void mouseEntered(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public void mouseExited(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void mouseExited(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public void mouseMoved(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void mouseMoved(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public void mousePressed(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void mousePressed(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public void mouseReleased(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void mouseReleased(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public void startDrag(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void startDrag(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public void finishDrag(GraphEditorMouseEvent e) {
-	}
+    @Override
+    public void finishDrag(GraphEditorMouseEvent e) {
+    }
 
-	@Override
-	public boolean isDragging() {
-		return false;
-	}
+    @Override
+    public boolean isDragging() {
+        return false;
+    }
 
-	@Override
-	public int getHotKeyCode() {
-		return -1; // undefined hotkey
-	}
+    @Override
+    public int getHotKeyCode() {
+        return -1; // undefined hotkey
+    }
 
-	@Override
-	public Icon getIcon() {
-		return null;
-	}
+    @Override
+    public Icon getIcon() {
+        return null;
+    }
 
-	@Override
-	public boolean requiresButton() {
-		return true;
-	}
+    @Override
+    public boolean requiresButton() {
+        return true;
+    }
 
 }

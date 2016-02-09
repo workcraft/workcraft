@@ -32,5 +32,5 @@ import org.workcraft.gui.graph.tools.CustomToolsProvider;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface CustomTools {
-	public Class<? extends CustomToolsProvider> value();
+    public Class<? extends CustomToolsProvider> value();
 }

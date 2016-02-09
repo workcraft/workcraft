@@ -7,17 +7,17 @@ import org.workcraft.dom.math.MathModel;
 
 public class SONDescriptor implements ModelDescriptor{
 
-	public String getDisplayName(){
-		return "Structured Occurrence Nets";
-	}
+    public String getDisplayName(){
+        return "Structured Occurrence Nets";
+    }
 
     public MathModel createMathModel(){
-		return new SON();
-	}
+        return new SON();
+    }
 
-	public VisualModelDescriptor getVisualModelDescriptor(){
-		return new VisualSONDescriptor();
-	}
+    public VisualModelDescriptor getVisualModelDescriptor(){
+        return new VisualSONDescriptor();
+    }
 
 
 }
