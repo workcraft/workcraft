@@ -20,16 +20,6 @@
 */
 package org.workcraft.plugins.cpog.expressions;
 
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.expressions.And;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanWorker;
-import org.workcraft.plugins.cpog.optimisation.expressions.Iff;
-import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
-import org.workcraft.plugins.cpog.optimisation.expressions.Not;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Or;
-import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class CleverCpogWorker implements CpogWorker
 {

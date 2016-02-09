@@ -36,7 +36,6 @@ import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import com.sun.tracing.dtrace.DependencyClass;
 
 public class CpogParsingTool {
 

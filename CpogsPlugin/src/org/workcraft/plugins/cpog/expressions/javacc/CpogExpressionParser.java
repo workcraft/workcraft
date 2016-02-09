@@ -8,12 +8,6 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.workcraft.plugins.cpog.expressions.*;
-import org.workcraft.util.Func;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.javacc.BooleanParser;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 import org.workcraft.plugins.cpog.optimisation.FreeVariable;
 
 public class CpogExpressionParser implements CpogExpressionParserConstants {

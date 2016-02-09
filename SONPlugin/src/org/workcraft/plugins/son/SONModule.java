@@ -15,7 +15,6 @@ import org.workcraft.plugins.son.tools.StructurePropertyChecker;
 import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.plugins.son.tools.TimeConsistencyChecker;
 import org.workcraft.plugins.son.tools.TimeValueDisable;
-import org.workcraft.plugins.son.tools.TimeValueEstimator;
 import org.workcraft.plugins.son.tools.ClearMarkingTool;
 import org.workcraft.plugins.son.tools.TimeValueSetter;
 

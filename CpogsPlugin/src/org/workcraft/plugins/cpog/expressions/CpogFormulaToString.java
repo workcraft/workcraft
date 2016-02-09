@@ -23,18 +23,6 @@ package org.workcraft.plugins.cpog.expressions;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.expressions.And;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
-import org.workcraft.plugins.cpog.optimisation.expressions.Iff;
-import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
-import org.workcraft.plugins.cpog.optimisation.expressions.Not;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Or;
-import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class CpogFormulaToString implements CpogVisitor<String>
 {

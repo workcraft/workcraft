@@ -14,7 +14,6 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.NotFoundException;
 
 public class DotGParser implements DotGParserConstants {
         private HashMap<String, Type> signals;

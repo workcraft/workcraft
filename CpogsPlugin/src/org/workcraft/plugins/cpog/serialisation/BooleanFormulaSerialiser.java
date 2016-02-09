@@ -23,7 +23,6 @@ package org.workcraft.plugins.cpog.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;

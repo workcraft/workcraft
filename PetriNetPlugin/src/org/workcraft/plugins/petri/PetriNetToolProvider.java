@@ -2,11 +2,9 @@ package org.workcraft.plugins.petri;
 
 import java.util.ArrayList;
 
-import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
-import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.petri.tools.PetriNetConnectionTool;
