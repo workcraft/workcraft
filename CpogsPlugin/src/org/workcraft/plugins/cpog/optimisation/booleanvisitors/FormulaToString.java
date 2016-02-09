@@ -38,7 +38,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class FormulaToString implements BooleanVisitor<String>
 {
-    public class Void{ private Void(){} }
+    public final class Void{ private Void(){} }
     public static class PrinterSuite
     {
         public PrinterSuite()

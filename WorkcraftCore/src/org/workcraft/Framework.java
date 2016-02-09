@@ -94,7 +94,7 @@ import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
 
 
-public class Framework {
+public final class Framework {
     private static String SETTINGS_DIRECTORY_NAME = ".workcraft";
     private static String CONFIG_FILE_NAME = "config.xml";
     private static String PLUGINS_FILE_NAME = "plugins.xml";

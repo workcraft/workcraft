@@ -50,7 +50,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class FormulaToGraphics
 {
-    public class Void{ private Void(){} }
+    public final class Void{ private Void(){} }
 
     public static Font defaultFont;
     public static Font defaultSubFont;

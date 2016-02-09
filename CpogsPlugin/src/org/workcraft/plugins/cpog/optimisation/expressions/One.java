@@ -22,7 +22,7 @@ package org.workcraft.plugins.cpog.optimisation.expressions;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-public class One implements BooleanFormula {
+public final class One implements BooleanFormula {
 
     private static final One instance = new One();
 

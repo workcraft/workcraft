@@ -30,7 +30,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 
 
-class DrawMan
+final class DrawMan
 {
     private final Graphics2D graphics;
     private final Decorator decorator;

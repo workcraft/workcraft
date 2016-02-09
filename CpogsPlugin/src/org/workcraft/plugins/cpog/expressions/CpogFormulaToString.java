@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class CpogFormulaToString implements CpogVisitor<String>
 {
-    public class Void{ private Void(){} }
+    public final class Void{ private Void(){} }
     public static class PrinterSuite
     {
         public PrinterSuite()

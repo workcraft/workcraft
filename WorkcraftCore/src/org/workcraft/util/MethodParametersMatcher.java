@@ -24,7 +24,7 @@ package org.workcraft.util;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInfo>
+public final class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInfo>
 {
     private MethodParametersMatcher()
     {
