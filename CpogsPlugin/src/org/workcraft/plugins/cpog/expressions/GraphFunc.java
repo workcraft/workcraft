@@ -5,7 +5,6 @@
 
 package org.workcraft.plugins.cpog.expressions;
 
-import java.util.ArrayList;
 
 import org.workcraft.util.Func;
 

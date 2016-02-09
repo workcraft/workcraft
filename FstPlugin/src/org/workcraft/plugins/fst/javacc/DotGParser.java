@@ -4,15 +4,12 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import org.workcraft.dom.Node;
-import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
-import org.workcraft.util.Pair;
 import org.workcraft.exceptions.FormatException;
 
 public class DotGParser implements DotGParserConstants {

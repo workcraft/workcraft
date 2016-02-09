@@ -1,8 +1,6 @@
 package org.workcraft.plugins.xmas.tools;
 
-import java.awt.Color;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,25 +8,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
 import org.workcraft.Tool;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.Framework;
 
 import javax.swing.Box;
 import javax.swing.JFrame;
@@ -37,7 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
-import javax.swing.JTextField;
 
 
 public class VerConfTool implements Tool {

@@ -28,7 +28,6 @@ import org.workcraft.dom.visual.Replicable;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.util.Hierarchy;
 
 

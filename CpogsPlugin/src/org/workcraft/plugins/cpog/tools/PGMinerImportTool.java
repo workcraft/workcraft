@@ -1,14 +1,12 @@
 package org.workcraft.plugins.cpog.tools;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Scanner;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCPOG;

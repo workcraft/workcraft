@@ -3,16 +3,9 @@ package org.workcraft.plugins.layout.javacc;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.ArrayList;
 
-import org.workcraft.dom.Node;
-import org.workcraft.util.Pair;
-import org.workcraft.util.Triple;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.layout.*;
 
 @SuppressWarnings("all")

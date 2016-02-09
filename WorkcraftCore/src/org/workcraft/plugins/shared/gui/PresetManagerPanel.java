@@ -14,7 +14,6 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;

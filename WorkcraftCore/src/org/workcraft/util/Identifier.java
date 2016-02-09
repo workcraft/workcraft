@@ -3,7 +3,6 @@ package org.workcraft.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 
 public class Identifier {
     private static final Pattern identifierPattern = Pattern.compile("[_A-Za-z][_A-Za-z0-9]*");

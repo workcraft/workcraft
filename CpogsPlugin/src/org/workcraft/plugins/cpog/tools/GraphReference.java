@@ -1,14 +1,9 @@
 package org.workcraft.plugins.cpog.tools;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.plugins.cpog.VisualArc;
-import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
 
 import java.awt.geom.Point2D;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 

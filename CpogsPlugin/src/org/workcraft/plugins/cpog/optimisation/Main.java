@@ -20,7 +20,6 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
