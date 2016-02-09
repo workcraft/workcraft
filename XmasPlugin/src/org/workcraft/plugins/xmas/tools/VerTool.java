@@ -134,8 +134,7 @@ public class VerTool extends AbstractTool implements Tool {
            return args;
     }
 
-    private static String process_loc(String file)
-    {
+    private static String process_loc(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -151,8 +150,7 @@ public class VerTool extends AbstractTool implements Tool {
         return str;
     }
 
-    private static void process_qsl(String file)
-    {
+    private static void process_qsl(String file) {
         qslist.clear();
         Scanner sc=null;
         try {
@@ -172,8 +170,7 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    private static String process_eq(String file)
-    {
+    private static String process_eq(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));

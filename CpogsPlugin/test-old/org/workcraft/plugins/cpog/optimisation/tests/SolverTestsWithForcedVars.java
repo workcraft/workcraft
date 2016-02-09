@@ -35,45 +35,37 @@ import org.workcraft.plugins.cpog.optimisation.Optimiser;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
 
-public class SolverTestsWithForcedVars
-{
-    String[] smallTest1 = new String[]
-                                       {
+public class SolverTestsWithForcedVars {
+    String[] smallTest1 = new String[] {
                "a",
 };
-    String[] smallTest2 = new String[]
-                                       {
+    String[] smallTest2 = new String[] {
                "a",
                "b",
 };
 
-    String[] smallTest3 = new String[]
-                                       {
+    String[] smallTest3 = new String[] {
                "a",
                "1",
 };
 
-    String[] smallTest4 = new String[]
-                                       {
+    String[] smallTest4 = new String[] {
                "0",
                "a",
 };
 
-    String[] smallTest5 = new String[]
-                                       {
+    String[] smallTest5 = new String[] {
                "0",
                "1",
                "a",
 };
-    String[] smallTest6 = new String[]
-                                       {
+    String[] smallTest6 = new String[] {
                "0",
                "1",
                "a",
                "A",
 };
-    String[] processor = new String[]
-                                     {
+    String[] processor = new String[] {
 
             "1---00001100",
             "1--000111110",
@@ -88,253 +80,211 @@ public class SolverTestsWithForcedVars
 
 
     @Test
-    public void solveProcessor_3_4_3_3_2_solvable()
-    {
+    public void solveProcessor_3_4_3_3_2_solvable() {
         testSolve(processor, 3, new int[]{4,3,3,2}, true);
     }
 
     @Test
-    public void solveProcessor_3_4_3_3_1_solvable()
-    {
+    public void solveProcessor_3_4_3_3_1_solvable() {
         testSolve(processor, 3, new int[]{4,3,3,1}, true);
     }
 
     @Test
-    public void solveProcessor_3_5_3_3_solvable()
-    {
+    public void solveProcessor_3_5_3_3_solvable() {
         testSolve(processor, 3, new int[]{5,3,3}, true);
     }
 
     @Test
-    public void solveProcessor_3_11_solvable()
-    {
+    public void solveProcessor_3_11_solvable() {
         testSolve(processor, 3, 11, true);
     }
 
     @Test
-    public void solveProcessor_3_10_unsolvable()
-    {
+    public void solveProcessor_3_10_unsolvable() {
         testSolve(processor, 3, 10, false);
     }
 
     @Test
-    public void solveProcessor_4_4_4_solvable()
-    {
+    public void solveProcessor_4_4_4_solvable() {
         testSolve(processor, 4, new int[]{4,4}, true);
     }
 
     @Test
-    public void solveProcessor_4_7_unsolvable()
-    {
+    public void solveProcessor_4_7_unsolvable() {
         testSolve(processor, 4, 7, false);
     }
 
     @Test
-    public void solveProcessor_4_8_solvable()
-    {
+    public void solveProcessor_4_8_solvable() {
         testSolve(processor, 4, 8, true);
     }
 
     @Test
-    public void solveProcessor_3_4_4_3_solvable()
-    {
+    public void solveProcessor_3_4_4_3_solvable() {
         testSolve(processor, 3, new int[]{4,4,3}, true);
     }
 
     @Test
-    public void solveSmall1()
-    {
+    public void solveSmall1() {
         testSolve(smallTest1, 0, 0, true);
     }
     @Test
-    public void solveSmall2_0_0_unsolvable()
-    {
+    public void solveSmall2_0_0_unsolvable() {
         testSolve(smallTest2, 0, 0, false);
     }
 
     @Test
-    public void solveSmall2_1_2_unsolvable()
-    {
+    public void solveSmall2_1_2_unsolvable() {
         testSolve(smallTest2, 1, 2, false);
     }
 
     @Test
-    public void solveSmall2_1_3_solvable()
-    {
+    public void solveSmall2_1_3_solvable() {
         testSolve(smallTest2, 1, 3, true);
     }
 
     @Test
-    public void solveSmall3_1_1_solvable()
-    {
+    public void solveSmall3_1_1_solvable() {
         testSolve(smallTest3, 1, 1, true);
     }
 
     @Test
-    public void solveSmall3_1_0_unsolvable()
-    {
+    public void solveSmall3_1_0_unsolvable() {
         testSolve(smallTest3, 1, 0, false);
     }
 
     @Test
-    public void solveSmall4_1_0_unsolvable()
-    {
+    public void solveSmall4_1_0_unsolvable() {
         testSolve(smallTest4, 1, 0, false);
     }
 
     @Test
-    public void solveSmall4_1_1_solvable()
-    {
+    public void solveSmall4_1_1_solvable() {
         testSolve(smallTest4, 1, 1, true);
     }
 
     @Test
-    public void solveSmall5_1_4_unsolvable()
-    {
+    public void solveSmall5_1_4_unsolvable() {
         testSolve(smallTest5, 1, 4, false);
     }
 
     @Test
-    public void solveSmall5_2_1_unsolvable()
-    {
+    public void solveSmall5_2_1_unsolvable() {
         testSolve(smallTest5, 2, 1, false);
     }
 
 
     @Test
-    public void solveSmall5_2_2_solvable()
-    {
+    public void solveSmall5_2_2_solvable() {
         testSolve(smallTest5, 2, 2, true);
     }
 
     @Test
-    public void solveSmall6_2_2_unsolvable()
-    {
+    public void solveSmall6_2_2_unsolvable() {
         testSolve(smallTest6, 2, 2, false);
     }
     @Test
-    public void solveSmall6_2_3_solvable()
-    {
+    public void solveSmall6_2_3_solvable() {
         testSolve(smallTest6, 2, 3, true);
     }
 
     @Test
-    public void solveProcessor_8_1_unsolvable()
-    {
+    public void solveProcessor_8_1_unsolvable() {
         testSolve(processor, 8, 1, false);
     }
 
     @Test
-    public void solveProcessor_8_2_unsolvable()
-    {
+    public void solveProcessor_8_2_unsolvable() {
         testSolve(processor, 8, 2, false);
     }
 
     @Test
-    public void solveProcessor_8_3_solvable()
-    {
+    public void solveProcessor_8_3_solvable() {
         testSolve(processor, 8, new int[]{2,1}, true);
     }
 
     @Test
-    public void solveProcessor_8_4_solvable()
-    {
+    public void solveProcessor_8_4_solvable() {
         testSolve(processor, 8, 4, true);
     }
 
     @Test
-    public void solveProcessor_8_5_solvable()
-    {
+    public void solveProcessor_8_5_solvable() {
         testSolve(processor, 8, 5, true);
     }
 
     @Test
-    public void solveProcessor_8_6_solvable()
-    {
+    public void solveProcessor_8_6_solvable() {
         testSolve(processor, 8, 6, true);
     }
 
     @Test
-    public void solveProcessor_8_7_solvable()
-    {
+    public void solveProcessor_8_7_solvable() {
         testSolve(processor, 8, 7, true);
     }
 
     @Test
-    public void solveProcessor_8_8_solvable()
-    {
+    public void solveProcessor_8_8_solvable() {
         testSolve(processor, 8, 8, true);
     }
 
     @Test
-    public void solveProcessor_5_5_unsolvable()
-    {
+    public void solveProcessor_5_5_unsolvable() {
         testSolve(processor, 5, 5, false);
     }
 
     @Test
-    public void solveProcessor_5_6_solvable()
-    {
+    public void solveProcessor_5_6_solvable() {
         testSolve(processor, 5, new int[]{2,3,1}, true);
     }
 
     @Test
-    public void solveProcessor_5_9_solvable()
-    {
+    public void solveProcessor_5_9_solvable() {
         testSolve(processor, 5, 9, true);
     }
 
     @Test
-    public void solveProcessor_6_5_solvable()
-    {
+    public void solveProcessor_6_5_solvable() {
         testSolve(processor, 6, 5, true);
     }
 
     @Test
-    public void solveProcessor_6_7_solvable()
-    {
+    public void solveProcessor_6_7_solvable() {
         testSolve(processor, 6, 7, true);
     }
 
     @Test
-    public void solveProcessor_6_8_solvable()
-    {
+    public void solveProcessor_6_8_solvable() {
         testSolve(processor, 6, 8, true);
     }
 
     @Test
-    public void solveProcessor_6_9_solvable()
-    {
+    public void solveProcessor_6_9_solvable() {
         testSolve(processor, 6, 9, true);
     }
 
     @Test
-    public void solveProcessor_6_4_unsolvable()
-    {
+    public void solveProcessor_6_4_unsolvable() {
         testSolve(processor, 6, 4, false);
     }
 
     @Test
-    public void solveProcessor_7_4_solvable()
-    {
+    public void solveProcessor_7_4_solvable() {
         testSolve(processor, 7, 4, true);
     }
 
     @Test
-    public void solveProcessor_7_6_solvable()
-    {
+    public void solveProcessor_7_6_solvable() {
         testSolve(processor, 7, 6, true);
     }
 
     @Test
-    public void solveProcessor_7_7_solvable()
-    {
+    public void solveProcessor_7_7_solvable() {
         testSolve(processor, 7, 7, true);
     }
 
     @Test
-    public void solveProcessor_7_3_unsolvable()
-    {
+    public void solveProcessor_7_3_unsolvable() {
         testSolve(processor, 7, 3, false);
     }
 
@@ -367,11 +317,9 @@ public class SolverTestsWithForcedVars
     private void printSolution(CpogEncoding solution) {
         if(solution == null)
             System.out.println("No solution.");
-        else
-        {
+        else {
             boolean[][] encoding = solution.getEncoding();
-            for(int i=0;i<encoding.length;i++)
-            {
+            for(int i=0;i<encoding.length;i++) {
                 for(int j=0;j<encoding[i].length;j++)
                     System.out.print(encoding[i][j]?1:0);
                 System.out.println();
@@ -379,8 +327,7 @@ public class SolverTestsWithForcedVars
 
             System.out.println("Functions:");
             BooleanFormula[] functions = solution.getFunctions();
-            for(int i=0;i<functions.length;i++)
-            {
+            for(int i=0;i<functions.length;i++) {
                 System.out.println(FormulaToString.toString(functions[i]));
             }
         }

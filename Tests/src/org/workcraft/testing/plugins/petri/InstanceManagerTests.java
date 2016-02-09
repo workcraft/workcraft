@@ -14,12 +14,10 @@ import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.plugins.stg.InstanceManager;
 import org.workcraft.util.Pair;
 
-public class InstanceManagerTests
-{
+public class InstanceManagerTests {
 
     @Test
-    public void testConstructor()
-    {
+    public void testConstructor() {
         new InstanceManager() {
             @Override public String getLabel(Node node) {
                 throw new RuntimeException("this method should not be called");
@@ -27,8 +25,7 @@ public class InstanceManagerTests
         };
     }
 
-    InstanceManager make(final Map<Node, String> expectedRequests)
-    {
+    InstanceManager make(final Map<Node, String> expectedRequests) {
         return new InstanceManager() {
             @Override public String getLabel(Node node) {
                 final String label = expectedRequests.get(node);
@@ -40,16 +37,14 @@ public class InstanceManagerTests
     }
 
     @Test
-    public void testGetReferenceUnknown()
-    {
+    public void testGetReferenceUnknown() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         final InstanceManager mgr = make(expectedRequests);
         assertNull(mgr.getInstance(new DefaultNodeImpl(null)));
     }
 
     @Test
-    public void testAssign()
-    {
+    public void testAssign() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -67,8 +62,7 @@ public class InstanceManagerTests
     }
 
     @Test
-    public void testAssignAfterRemove()
-    {
+    public void testAssignAfterRemove() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -94,8 +88,7 @@ public class InstanceManagerTests
     }
 
     @Test
-    public void testRemove()
-    {
+    public void testRemove() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -111,8 +104,7 @@ public class InstanceManagerTests
 
 
     @Test(expected=ArgumentException.class)
-    public void testDoubleAssign()
-    {
+    public void testDoubleAssign() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
@@ -122,8 +114,7 @@ public class InstanceManagerTests
     }
 
     @Test
-    public void testAssignForced()
-    {
+    public void testAssignForced() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
@@ -133,8 +124,7 @@ public class InstanceManagerTests
     }
 
     @Test(expected=DuplicateIDException.class)
-    public void testAssignForcedExistingId()
-    {
+    public void testAssignForcedExistingId() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -146,8 +136,7 @@ public class InstanceManagerTests
     }
 
     @Test
-    public void testNotFound()
-    {
+    public void testNotFound() {
         InstanceManager mgr = new InstanceManager() {
             @Override
             public String getLabel(Node node) {

@@ -31,8 +31,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 
-class SquareNode extends VisualComponent
-{
+class SquareNode extends VisualComponent {
     Rectangle2D.Double rectOuter;
     Rectangle2D.Double rectInner;
     int resultToReturn;

@@ -10,32 +10,27 @@ public class ArcCondition {
     private CpogFormula formula;
     private String boolForm;
 
-    public ArcCondition(CpogFormula formula, String boolForm)
-    {
+    public ArcCondition(CpogFormula formula, String boolForm) {
         this.formula = formula;
         this.boolForm = boolForm;
     }
 
-    public CpogFormula getFormula()
-    {
+    public CpogFormula getFormula() {
         return formula;
     }
 
-    public String getBoolForm()
-    {
+    public String getBoolForm() {
         return boolForm;
     }
 
-    public ArrayList<String> getVertexList()
-    {
+    public ArrayList<String> getVertexList() {
         String f = CpogFormulaToString.toString(formula);
         ArrayList<String> list = new ArrayList<String>();
         int index = 0;
 
         f = f.replace(" ", "");
 
-        while (f.contains("^"))
-        {
+        while (f.contains("^")) {
             index = f.indexOf("^");
             list.add(f.substring(0, index));
             f = f.substring(index + 1);

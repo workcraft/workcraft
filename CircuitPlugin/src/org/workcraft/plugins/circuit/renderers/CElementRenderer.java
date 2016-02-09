@@ -197,8 +197,7 @@ public class CElementRenderer extends GateRenderer {
 
             @Override
             public Map<String, Point2D> contactPositions() {
-                if (cachedPositions == null)
-                {
+                if (cachedPositions == null) {
                     Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
                     double x = boundingBox().getMaxX()-(bothVars.size()*0.5) * GateRenderer.ANDGateAspectRatio;

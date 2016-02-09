@@ -33,24 +33,20 @@ import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
-public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser
-{
+public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser {
     @Override
-    public String getClassName()
-    {
+    public String getClassName() {
         return VisualScenario.class.getName();
     }
 
     @Override
     public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
-            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
-    {
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException {
         Encoding encoding = ((VisualScenario) instance).getEncoding();
 
         NodeList subelements = element.getElementsByTagName("encoding");
 
-        for (int i = 0; i < subelements.getLength(); i++)
-        {
+        for (int i = 0; i < subelements.getLength(); i++) {
             Element subelement = (Element) subelements.item(i);
 
             Variable var = (Variable) externalReferenceResolver.getObject(subelement.getAttribute("variable"));
@@ -62,15 +58,13 @@ public class VisualCPOGGroupDeserialiser implements CustomXMLDeserialiser
 
     @Override
     public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
-            Object... constructorParameters)
-    {
+            Object... constructorParameters) {
         return new VisualScenario();
     }
 
     @Override
     public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
-            NodeInitialiser nodeInitialiser) throws DeserialisationException
-    {
+            NodeInitialiser nodeInitialiser) throws DeserialisationException {
 
     }
 }

@@ -77,8 +77,7 @@ public class VisualArc extends VisualConnection {
         this.mathConnection = mathConnection;
     }
 
-    public BooleanFormula getCondition()
-    {
+    public BooleanFormula getCondition() {
         return mathConnection.getCondition();
     }
 

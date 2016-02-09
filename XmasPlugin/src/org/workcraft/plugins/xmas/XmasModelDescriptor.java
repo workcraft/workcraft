@@ -21,8 +21,7 @@ public class XmasModelDescriptor implements ModelDescriptor {
 
     @Override
     public VisualModelDescriptor getVisualModelDescriptor() {
-        return new VisualModelDescriptor()
-        {
+        return new VisualModelDescriptor() {
             @Override
             public VisualModel create(MathModel mathModel)
                     throws VisualModelInstantiationException {

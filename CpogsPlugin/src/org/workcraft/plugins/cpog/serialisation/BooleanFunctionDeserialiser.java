@@ -34,8 +34,7 @@ import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 import org.workcraft.util.Func;
 
-public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialiser
-{
+public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialiser {
     private static final class VariableResolver implements
             Func<String, BooleanVariable> {
         private final ReferenceResolver internalReferenceResolver;
@@ -72,8 +71,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 
     @Override
     public void finaliseInstance(Element element, Object instance, final ReferenceResolver internalReferenceResolver,
-            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
-    {
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException {
         String attributeName = "formula";
 
         BooleanFormula formula = readFormulaFromAttribute(element, internalReferenceResolver, attributeName);
@@ -100,8 +98,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 
     @Override
     public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
-            NodeInitialiser nodeInitialiser) throws DeserialisationException
-    {
+            NodeInitialiser nodeInitialiser) throws DeserialisationException {
 
     }
 }

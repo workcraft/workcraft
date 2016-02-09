@@ -4,8 +4,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
-public class StgDescriptor implements ModelDescriptor
-{
+public class StgDescriptor implements ModelDescriptor {
     @Override
     public String getDisplayName() {
         return "Signal Transition Graph";

@@ -31,6 +31,10 @@
 
         <module name="RedundantModifier" />
 
+        <module name="LeftCurly">
+            <property name="maxLineLength" value="100"/>
+        </module>
+
         <module name="FinalClass" />
 
         <module name="ArrayTypeStyle" />

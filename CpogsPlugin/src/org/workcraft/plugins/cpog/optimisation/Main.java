@@ -26,8 +26,7 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
 @SuppressWarnings("all")
 public class Main {
-    static String[] scenarios =
-    {
+    static String[] scenarios = {
         "0000",
         "0100",
         "1000",
@@ -38,16 +37,14 @@ public class Main {
         "1111",
     };
 
-    static String[] paper_simple =
-    {
+    static String[] paper_simple = {
         "011--",
         "10---",
         "11010",
         "11-01",
     };
 
-    static String[] phase_encoder_3 =
-    {
+    static String[] phase_encoder_3 = {
         "1010-0",
         "-00110",
         "01-010",
@@ -56,8 +53,7 @@ public class Main {
         "01010-",
     };
 
-    static String[] phase_encoder_4 =
-    {
+    static String[] phase_encoder_4 = {
     "---000000111",
     "-11000001--0",
     "--100001001-",
@@ -84,15 +80,13 @@ public class Main {
     "000--1-11000",
     };
 
-    static String[] smallscenarios =
-    {
+    static String[] smallscenarios = {
         "110",
         "101",
         "011",
     };
 
-    static String[] processor =
-    {
+    static String[] processor = {
         "11111100",
         "------01",
         "-----011",
@@ -108,8 +102,7 @@ public class Main {
         "11110111",
     };
 
-    static String[] withGe = new String[]
-                                     {
+    static String[] withGe = new String[] {
 
             "1---00001100",
             "1--000111110",
@@ -121,8 +114,7 @@ public class Main {
             "A111010111aA",
                                      };
 
-    public static void main(String[] args) throws Exception, IOException
-    {
+    public static void main(String[] args) throws Exception, IOException {
 
         int freeVariables = 5;
         int derivedVariables = 8;
@@ -150,8 +142,7 @@ public class Main {
         ),
         ProcessIO.readFile(new File("C:\\Documents and Settings\\User\\My Documents\\weirdCpog\\stream3616042594776122168out")));
 
-        for(BooleanVariable var : sol.getVariables())
-        {
+        for(BooleanVariable var : sol.getVariables()) {
             System.out.println(var.getLabel()+"\t"+sol.getSolution(var));
         }
         if(true)
@@ -172,11 +163,9 @@ public class Main {
 
         if(solution == null)
             System.out.println("No solution.");
-        else
-        {
+        else {
             boolean[][] encoding = solution.getEncoding();
-            for(int i=0;i<encoding.length;i++)
-            {
+            for(int i=0;i<encoding.length;i++) {
                 for(int j=0;j<encoding[i].length;j++)
                     System.out.print(encoding[i][j]?1:0);
                 System.out.println();
@@ -184,8 +173,7 @@ public class Main {
 
             System.out.println("Functions:");
             BooleanFormula[] functions = solution.getFunctions();
-            for(int i=0;i<functions.length;i++)
-            {
+            for(int i=0;i<functions.length;i++) {
                 System.out.println(FormulaToString.toString(functions[i]));
             }
         }

@@ -132,14 +132,13 @@ public class XmlUtil {
 
         try {
             return new Color(Integer.parseInt(s.substring(1), 16), false);
-        } catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return defaultValue;
         }
     }
 
-    public static int readIntAttr (Element element, String attributeName, int defaultValue)  {
+    public static int readIntAttr (Element element, String attributeName, int defaultValue) {
         String attributeValue = element.getAttribute(attributeName);
         try {
             return Integer.parseInt(attributeValue);
@@ -153,7 +152,7 @@ public class XmlUtil {
         element.setAttribute(attributeName, Integer.toString(value));
     }
 
-    public static double readDoubleAttr (Element element, String attributeName, double defaultValue)  {
+    public static double readDoubleAttr (Element element, String attributeName, double defaultValue) {
         String attributeValue = element.getAttribute(attributeName);
         try {
             return Double.parseDouble(attributeValue);
@@ -167,7 +166,7 @@ public class XmlUtil {
         element.setAttribute(attributeName, Double.toString(value));
     }
 
-    public static boolean readBoolAttr (Element element, String attributeName)  {
+    public static boolean readBoolAttr (Element element, String attributeName) {
         String attributeValue = element.getAttribute(attributeName);
         return Boolean.parseBoolean(attributeValue);
     }
@@ -176,8 +175,7 @@ public class XmlUtil {
         element.setAttribute(attributeName, Boolean.toString(value));
     }
 
-    public static String readStringAttr (Element element, String attributeName)
-    {
+    public static String readStringAttr (Element element, String attributeName) {
         return element.getAttribute(attributeName);
     }
 

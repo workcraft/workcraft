@@ -18,13 +18,11 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class DnfGenerator {
-    public static Dnf generate(BooleanFormula formula)
-    {
+    public static Dnf generate(BooleanFormula formula) {
         if (formula == null) {
             formula = One.instance();
         }
-        return formula.accept(new BooleanVisitor<Dnf>()
-                {
+        return formula.accept(new BooleanVisitor<Dnf>() {
                     boolean negation = false;
 
                     @Override
@@ -64,8 +62,7 @@ public class DnfGenerator {
                         return or(and(a,nb), and(na, b));
                     }
 
-                    private Dnf zero()
-                    {
+                    private Dnf zero() {
                         return negation ? new Dnf(new DnfClause()) : new Dnf();
                     }
 
@@ -88,7 +85,9 @@ public class DnfGenerator {
                         try{
                         return node.getX().accept(this);
                         }
-                        finally{negation=!negation;}
+                        finally{
+                                negation=!negation;
+                        }
                     }
 
                     @Override
@@ -181,8 +180,7 @@ public class DnfGenerator {
         Dnf result = new Dnf();
         for(DnfClause leftClause : left.getClauses()) {
 
-            for(DnfClause rightClause : right.getClauses())
-            {
+            for(DnfClause rightClause : right.getClauses()) {
                 boolean foundSameLiteral;
                 boolean clauseDiscarded = false;
                 boolean sameNegation=false;

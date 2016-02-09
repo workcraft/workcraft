@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.workcraft.gui.workspace.Path;
 
-public class TreeSourceAdapter<Node> implements TreeSource<Node>
-{
+public class TreeSourceAdapter<Node> implements TreeSource<Node> {
 
     TreeListenerArray<Node> ls = new TreeListenerArray<Node>();
     private final TreeSource<Node> source;

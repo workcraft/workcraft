@@ -29,8 +29,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @DisplayName("Signal transition")
 @VisualClass(org.workcraft.plugins.stg.VisualSignalTransition.class)
-public class SignalTransition extends NamedTransition
-{
+public class SignalTransition extends NamedTransition {
     public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
     public static final String PROPERTY_SIGNAL_NAME = "Signal name";
     public static final String PROPERTY_DIRECTION = "Direction";

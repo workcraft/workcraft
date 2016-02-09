@@ -275,7 +275,7 @@ public final class Framework {
         return config.get(key);
     }
 
-    public int getConfigVarAsInt (String key, int defaultValue)  {
+    public int getConfigVarAsInt (String key, int defaultValue) {
         String s = config.get(key);
 
         try {
@@ -286,7 +286,7 @@ public final class Framework {
         }
     }
 
-    public boolean getConfigVarAsBool (String key, boolean defaultValue)  {
+    public boolean getConfigVarAsBool (String key, boolean defaultValue) {
         String s = config.get(key);
 
         if (s == null)
@@ -362,13 +362,11 @@ public final class Framework {
         return execJavaScript (script, globalScope);
     }
 
-    static class JavascriptPassThroughException extends RuntimeException
-    {
+    static class JavascriptPassThroughException extends RuntimeException {
         private static final long serialVersionUID = 8906492547355596206L;
         private final String scriptTrace;
 
-        JavascriptPassThroughException(Throwable wrapped, String scriptTrace)
-        {
+        JavascriptPassThroughException(Throwable wrapped, String scriptTrace) {
             super(wrapped);
             this.scriptTrace = scriptTrace;
         }
@@ -396,15 +394,12 @@ public final class Framework {
     }
 
     private Object doContextAction (ContextAction action) {
-        try
-        {
+        try {
             return contextFactory.call(action);
-        } catch(JavaScriptException ex)
-        {
+        } catch(JavaScriptException ex) {
             System.out.println("Script stack trace: " + ex.getScriptStackTrace());
             Object value = ex.getValue();
-            if(value instanceof NativeJavaObject)
-            {
+            if(value instanceof NativeJavaObject) {
                 Object wrapped = ((NativeJavaObject)value).unwrap();
                 if(wrapped instanceof Throwable)
                     throw new JavascriptPassThroughException((Throwable)wrapped, ex.getScriptStackTrace());
@@ -542,7 +537,7 @@ public final class Framework {
         }
     }
 
-    public ModelEntry importFile(File file) throws DeserialisationException  {
+    public ModelEntry importFile(File file) throws DeserialisationException {
         try {
             final Importer importer = Import.chooseBestImporter(getPluginManager(), file);
             return Import.importFromFile(importer, file);
@@ -554,7 +549,7 @@ public final class Framework {
     private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
         ZipInputStream zis = new ZipInputStream(zippedData);
         ZipEntry ze;
-        while ((ze = zis.getNextEntry()) != null)    {
+        while ((ze = zis.getNextEntry()) != null) {
             if (ze.getName().equals(name)) {
                 return zis;
             }
@@ -628,7 +623,7 @@ public final class Framework {
         }
     }
 
-    public ModelEntry load(InputStream is) throws DeserialisationException   {
+    public ModelEntry load(InputStream is) throws DeserialisationException {
         try {
             // load meta data
             byte[] bi = DataAccumulator.loadStream(is);

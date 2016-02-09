@@ -57,8 +57,7 @@ public class DocumentPlaceholder extends JPanel {
     }
 
     private BufferedImage getImage() {
-        if (logoImage == null)
-        {
+        if (logoImage == null) {
             try {
                 logoImage = GUI.loadImageFromResource("images/logo.png");
             } catch (IOException e) {

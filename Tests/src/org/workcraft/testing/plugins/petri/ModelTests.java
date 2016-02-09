@@ -31,8 +31,7 @@ import org.workcraft.plugins.petri.Transition;
 public class ModelTests {
 
     @Test
-    public void TestTransitionsAndPlacesCollections()
-    {
+    public void TestTransitionsAndPlacesCollections() {
         PetriNet petriNet = new PetriNet();
 
         Transition tr = new Transition();

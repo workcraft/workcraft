@@ -27,10 +27,8 @@ import java.util.TreeSet;
 import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.util.Pair;
 
-public class IDGenerator
-{
-    private static final Comparator<? super Pair<Integer, Integer>> comparator = new Comparator<Pair<Integer, Integer>>()
-            {
+public class IDGenerator {
+    private static final Comparator<? super Pair<Integer, Integer>> comparator = new Comparator<Pair<Integer, Integer>>() {
                 @Override
                 public int compare(Pair<Integer, Integer> o1,
                         Pair<Integer, Integer> o2) {

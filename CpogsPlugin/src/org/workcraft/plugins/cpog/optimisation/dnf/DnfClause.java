@@ -9,12 +9,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class DnfClause extends Clause {
 
-    public DnfClause()
-    {
+    public DnfClause() {
     }
 
-    public DnfClause(Literal... literals)
-    {
+    public DnfClause(Literal... literals) {
         super(literals);
     }
 

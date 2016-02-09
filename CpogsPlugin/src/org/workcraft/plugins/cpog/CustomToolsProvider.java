@@ -13,8 +13,7 @@ public class CustomToolsProvider implements
         org.workcraft.gui.graph.tools.CustomToolsProvider {
 
     @Override
-    public Iterable<GraphEditorTool> getTools()
-    {
+    public Iterable<GraphEditorTool> getTools() {
         ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
 
         result.add(new CpogSelectionTool());

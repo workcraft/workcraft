@@ -213,10 +213,8 @@ public class SyncTool implements Tool {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        finally
-        {
-                if ( writer_s != null )
-                {
+        finally {
+                if ( writer_s != null ) {
                     writer_s.close();
                 }
         }
@@ -455,8 +453,7 @@ public class SyncTool implements Tool {
         File jsonFile = XmasSettings.getTempVxmJsonFile();
         PrintWriter writer = null;
 
-        try
-        {
+        try {
         writer = new PrintWriter(jsonFile);
         int cnt_nodes=0;
         int num_outputs=0;
@@ -775,14 +772,11 @@ public class SyncTool implements Tool {
         }
 
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
                 e.printStackTrace();
         }
-        finally
-        {
-                if ( writer != null )
-                {
+        finally {
+                if ( writer != null ) {
                     writer.close();
                 }
         }

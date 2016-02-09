@@ -11,10 +11,8 @@ import javax.swing.SwingUtilities;
 import org.workcraft.util.GUI;
 
 public class MainWindowIconManager {
-    static void apply(final MainWindow window)
-    {
-        new Thread(new Runnable()
-        {
+    static void apply(final MainWindow window) {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 final Image active = GUI.createIconFromSVG("images/icons/svg/place.svg", 32, 32, Color.WHITE).getImage();

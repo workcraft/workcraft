@@ -26,25 +26,21 @@ import org.workcraft.plugins.cpog.Arc;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.serialisation.ReferenceResolver;
 
-public class ArcDeserialiser extends BooleanFunctionDeserialiser
-{
+public class ArcDeserialiser extends BooleanFunctionDeserialiser {
     @Override
-    public String getClassName()
-    {
+    public String getClassName() {
         return Arc.class.getName();
     }
 
     @Override
-    protected void setFormula(Object deserialisee, BooleanFormula formula)
-    {
+    protected void setFormula(Object deserialisee, BooleanFormula formula) {
         ((Arc)deserialisee).setCondition(formula);
     }
 
     @Override
     public Object createInstance(Element element,
             ReferenceResolver externalReferenceResolver,
-            Object... constructorParameters)
-    {
+            Object... constructorParameters) {
         return new Arc();
     }
 

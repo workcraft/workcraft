@@ -31,12 +31,10 @@ public abstract class Nf<C> implements BooleanFormula {
 
     private List<C> clauses = new ArrayList<C>();
 
-    public Nf()
-    {
+    public Nf() {
     }
 
-    public Nf(C... clauses)
-    {
+    public Nf(C... clauses) {
         this(Arrays.asList(clauses));
     }
 
@@ -52,13 +50,11 @@ public abstract class Nf<C> implements BooleanFormula {
         return clauses;
     }
 
-    public void add(List<C> list)
-    {
+    public void add(List<C> list) {
         clauses.addAll(list);
     }
 
-    public void add(C... arr)
-    {
+    public void add(C... arr) {
         clauses.addAll(Arrays.asList(arr));
     }
 

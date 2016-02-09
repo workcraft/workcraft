@@ -24,13 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class CpogFormulaToString implements CpogVisitor<String>
-{
+public class CpogFormulaToString implements CpogVisitor<String> {
     public final class Void{ private Void(){} }
-    public static class PrinterSuite
-    {
-        public PrinterSuite()
-        {
+    public static class PrinterSuite {
+        public PrinterSuite() {
             overlay = new OverlayPrinter();
             sequence = new SequencePrinter();
             vars = new VariablePrinter();
@@ -39,21 +36,18 @@ public class CpogFormulaToString implements CpogVisitor<String>
             builder = new StringBuilder();
         }
 
-        public void init()
-        {
+        public void init() {
             init(false);
         }
 
-        public void init(boolean unicodeAllowed)
-        {
+        public void init(boolean unicodeAllowed) {
             init(overlay, sequence, unicodeAllowed);
             init(sequence, vars, unicodeAllowed);
             init(vars, paren, unicodeAllowed);
             init(paren, overlay, unicodeAllowed);
         }
 
-        public void init(DelegatingPrinter printer, DelegatingPrinter next, boolean unicodeAllowed)
-        {
+        public void init(DelegatingPrinter printer, DelegatingPrinter next, boolean unicodeAllowed) {
             printer.setNext(next);
             printer.setBuilder(builder);
             printer.unicodeAllowed = unicodeAllowed;
@@ -66,24 +60,20 @@ public class CpogFormulaToString implements CpogVisitor<String>
         public ParenthesesPrinter paren;
     }
 
-    public static class DelegatingPrinter implements CpogVisitor<Void>
-    {
+    public static class DelegatingPrinter implements CpogVisitor<Void> {
         public DelegatingPrinter next;
         public StringBuilder builder;
         public boolean unicodeAllowed = false;
 
-        public void setNext(DelegatingPrinter next)
-        {
+        public void setNext(DelegatingPrinter next) {
             this.next = next;
         }
 
-        public void setBuilder(StringBuilder builder)
-        {
+        public void setBuilder(StringBuilder builder) {
             this.builder = builder;
         }
 
-        public Void append(String text)
-        {
+        public Void append(String text) {
             builder.append(text);
             return null;
         }
@@ -111,24 +101,21 @@ public class CpogFormulaToString implements CpogVisitor<String>
         }
     }
 
-    public static class OverlayPrinter extends DelegatingPrinter
-    {
+    public static class OverlayPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Overlay node) {
             return visitBinary(this, " + ", node);
         }
     }
 
-    public static class SequencePrinter extends DelegatingPrinter
-    {
+    public static class SequencePrinter extends DelegatingPrinter {
         @Override
         public Void visit(Sequence node) {
             return visitBinary(this, unicodeAllowed ? " \u2295 " : " ^ ", node);
         }
     }
 
-    public static class VariablePrinter extends DelegatingPrinter
-    {
+    public static class VariablePrinter extends DelegatingPrinter {
         Map<String, CpogFormulaVariable> varMap = new HashMap<String, CpogFormulaVariable>();
         @Override
         public Void visit(CpogFormulaVariable var) {
@@ -146,12 +133,14 @@ public class CpogFormulaToString implements CpogVisitor<String>
         }
     }
 
-    public static class ParenthesesPrinter extends DelegatingPrinter
-    {
-        @Override public Void visit(Overlay node) { return enclose(node); }
-        @Override public Void visit(Sequence node) { return enclose(node); }
-        Void enclose(CpogFormula node)
-        {
+    public static class ParenthesesPrinter extends DelegatingPrinter {
+        @Override public Void visit(Overlay node) {
+            return enclose(node);
+        }
+        @Override public Void visit(Sequence node) {
+            return enclose(node);
+        }
+        Void enclose(CpogFormula node) {
             append("(");
             node.accept(next);
             append(")");
@@ -159,8 +148,7 @@ public class CpogFormulaToString implements CpogVisitor<String>
         }
     }
 
-    public static String toString(CpogFormula f)
-    {
+    public static String toString(CpogFormula f) {
         return toString(f, false);
     }
 

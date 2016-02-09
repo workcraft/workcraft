@@ -41,16 +41,14 @@ import org.workcraft.workspace.ModelEntry;
 public class DotGSerialiserTests {
     //@Test
     //TODO: Make real test.
-    public void test() throws IOException, ModelValidationException, SerialisationException, DeserialisationException
-    {
+    public void test() throws IOException, ModelValidationException, SerialisationException, DeserialisationException {
         STG good = getModel(true);
 
         Set<Place> goodTokenized = getTokenizedPlaces(good);
         ArrayList<String> goodIds = getSortedIds(good, goodTokenized);
         print(goodIds);
 
-        for(int i=0;i<50;i++)
-        {
+        for(int i=0;i<50;i++) {
             STG bad = getModel(false);
 
             Set<Place> badTokenized = getTokenizedPlaces(bad);
@@ -88,8 +86,7 @@ public class DotGSerialiserTests {
 
     private STG getModel(boolean good) throws IOException, DeserialisationException {
         int reimportedTokens;
-        do
-        {
+        do {
             ModelEntry importedEntry = Import.importFromFile(new DotGImporter(), new File("D:\\Work\\Out\\fetchA-fetchAmB-varA-muxA.g.ren.g"));
             STG model = (STG) importedEntry.getModel();
 

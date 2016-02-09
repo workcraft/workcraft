@@ -40,8 +40,7 @@ import org.workcraft.util.Hierarchy;
 import net.sf.jga.algorithms.Filter;
 import net.sf.jga.fn.UnaryFunctor;
 
-public class HitMan
-{
+public class HitMan {
     private static <T extends Node> Iterable<T> filterByBB(Iterable<T> nodes, final Point2D pointInLocalSpace) {
         return Filter.filter(nodes, new UnaryFunctor<T, Boolean>() {
             private static final long serialVersionUID = -7790168871113424836L;
@@ -81,7 +80,7 @@ public class HitMan
     }
 
     public static boolean isBranchHit (Point2D point, Node node) {
-        if (node instanceof Touchable && ((Touchable)node).hitTest(point))    {
+        if (node instanceof Touchable && ((Touchable)node).hitTest(point)) {
             if (node instanceof Hidable) {
                 return !((Hidable)node).isHidden();
             } else {
@@ -272,8 +271,7 @@ public class HitMan
      */
     public static Collection<Node> boxHitTest (Container container, Point2D p1, Point2D p2) {
 
-        if(container instanceof Movable)
-        {
+        if(container instanceof Movable) {
             AffineTransform toLocal = Geometry.optimisticInverse(((Movable) container).getTransform());
             toLocal.transform(p1, p1);
             toLocal.transform(p2, p2);

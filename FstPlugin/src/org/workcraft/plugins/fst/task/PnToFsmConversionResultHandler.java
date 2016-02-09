@@ -35,8 +35,7 @@ public class PnToFsmConversionResultHandler extends DummyProgressMonitor<WriteSg
     @Override
     public void finished(final Result<? extends WriteSgConversionResult> result, String description) {
 
-        SwingUtilities.invokeLater(new Runnable()
-        {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 final Framework framework = Framework.getInstance();

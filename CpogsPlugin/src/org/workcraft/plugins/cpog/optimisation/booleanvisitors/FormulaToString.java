@@ -36,13 +36,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
-public class FormulaToString implements BooleanVisitor<String>
-{
+public class FormulaToString implements BooleanVisitor<String> {
     public final class Void{ private Void(){} }
-    public static class PrinterSuite
-    {
-        public PrinterSuite()
-        {
+    public static class PrinterSuite {
+        public PrinterSuite() {
             iff = new IffPrinter();
             imply = new ImplyPrinter();
             or = new OrPrinter();
@@ -56,13 +53,11 @@ public class FormulaToString implements BooleanVisitor<String>
             builder = new StringBuilder();
         }
 
-        public void init()
-        {
+        public void init() {
             init(false);
         }
 
-        public void init(boolean unicodeAllowed)
-        {
+        public void init(boolean unicodeAllowed) {
             init(iff, imply, unicodeAllowed);
             init(imply, or, unicodeAllowed);
             init(or, xor, unicodeAllowed);
@@ -74,8 +69,7 @@ public class FormulaToString implements BooleanVisitor<String>
             init(paren, iff, unicodeAllowed);
         }
 
-        public void init(DelegatingPrinter printer, DelegatingPrinter next, boolean unicodeAllowed)
-        {
+        public void init(DelegatingPrinter printer, DelegatingPrinter next, boolean unicodeAllowed) {
             printer.setNext(next);
             printer.setBuilder(builder);
             printer.unicodeAllowed = unicodeAllowed;
@@ -93,24 +87,20 @@ public class FormulaToString implements BooleanVisitor<String>
         public ParenthesesPrinter paren;
     }
 
-    public static class DelegatingPrinter implements BooleanVisitor<Void>
-    {
+    public static class DelegatingPrinter implements BooleanVisitor<Void> {
         public DelegatingPrinter next;
         public StringBuilder builder;
         public boolean unicodeAllowed = false;
 
-        public void setNext(DelegatingPrinter next)
-        {
+        public void setNext(DelegatingPrinter next) {
             this.next = next;
         }
 
-        public void setBuilder(StringBuilder builder)
-        {
+        public void setBuilder(StringBuilder builder) {
             this.builder = builder;
         }
 
-        public Void append(String text)
-        {
+        public Void append(String text) {
             builder.append(text);
             return null;
         }
@@ -168,48 +158,42 @@ public class FormulaToString implements BooleanVisitor<String>
         }
     }
 
-    public static class IffPrinter extends DelegatingPrinter
-    {
+    public static class IffPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Iff node) {
             return visitBinary(this, " = ", node);
         }
     }
 
-    public static class ImplyPrinter extends DelegatingPrinter
-    {
+    public static class ImplyPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Imply node) {
             return visitBinary(next, unicodeAllowed ? " \u21d2 " : " => ", node);
         }
     }
 
-    public static class OrPrinter extends DelegatingPrinter
-    {
+    public static class OrPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Or node) {
             return visitBinary(this, " + ", node);
         }
     }
 
-    public static class XorPrinter extends DelegatingPrinter
-    {
+    public static class XorPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Xor node) {
             return visitBinary(this, unicodeAllowed ? " \u2295 " : " ^ ", node);
         }
     }
 
-    public static class AndPrinter extends DelegatingPrinter
-    {
+    public static class AndPrinter extends DelegatingPrinter {
         @Override
         public Void visit(And node) {
             return visitBinary(this, unicodeAllowed ? "\u00b7" : "*", node);
         }
     }
 
-    public static class NotPrinter extends DelegatingPrinter
-    {
+    public static class NotPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Not node) {
             node.getX().accept(this);
@@ -217,8 +201,7 @@ public class FormulaToString implements BooleanVisitor<String>
         }
     }
 
-    public static class ConstantPrinter extends DelegatingPrinter
-    {
+    public static class ConstantPrinter extends DelegatingPrinter {
         @Override
         public Void visit(One one) {
             return append("1");
@@ -229,8 +212,7 @@ public class FormulaToString implements BooleanVisitor<String>
         }
     }
 
-    public static class VariablePrinter extends DelegatingPrinter
-    {
+    public static class VariablePrinter extends DelegatingPrinter {
         Map<String, BooleanVariable> varMap = new HashMap<String, BooleanVariable>();
         @Override
         public Void visit(BooleanVariable var) {
@@ -248,18 +230,32 @@ public class FormulaToString implements BooleanVisitor<String>
         }
     }
 
-    public static class ParenthesesPrinter extends DelegatingPrinter
-    {
-        @Override public Void visit(Zero node) { return enclose(node); }
-        @Override public Void visit(One node) { return enclose(node); }
-        @Override public Void visit(BooleanVariable node) { return enclose(node); }
-        @Override public Void visit(And node) { return enclose(node); }
-        @Override public Void visit(Or node) { return enclose(node); }
-        @Override public Void visit(Xor node) { return enclose(node); }
-        @Override public Void visit(Iff node) { return enclose(node); }
-        @Override public Void visit(Imply node) { return enclose(node); }
-        Void enclose(BooleanFormula node)
-        {
+    public static class ParenthesesPrinter extends DelegatingPrinter {
+        @Override public Void visit(Zero node) {
+                return enclose(node);
+        }
+        @Override public Void visit(One node) {
+                return enclose(node);
+        }
+        @Override public Void visit(BooleanVariable node) {
+                return enclose(node);
+        }
+        @Override public Void visit(And node) {
+                return enclose(node);
+        }
+        @Override public Void visit(Or node) {
+                return enclose(node);
+        }
+        @Override public Void visit(Xor node) {
+                return enclose(node);
+        }
+        @Override public Void visit(Iff node) {
+                return enclose(node);
+        }
+        @Override public Void visit(Imply node) {
+                return enclose(node);
+        }
+        Void enclose(BooleanFormula node) {
             append("(");
             node.accept(next);
             append(")");
@@ -267,8 +263,7 @@ public class FormulaToString implements BooleanVisitor<String>
         }
     }
 
-    public static String toString(BooleanFormula f)
-    {
+    public static String toString(BooleanFormula f) {
         return toString(f, false);
     }
 

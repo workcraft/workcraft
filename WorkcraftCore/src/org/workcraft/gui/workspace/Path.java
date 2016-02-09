@@ -23,11 +23,12 @@ package org.workcraft.gui.workspace;
 import java.util.ArrayList;
 import java.util.List;
 
-class EmptyPath<Node> extends Path<Node>
-{
+class EmptyPath<Node> extends Path<Node> {
     static EmptyPath<?> instance = new EmptyPath<Object>();
     @SuppressWarnings("unchecked")
-    public static <Node> EmptyPath<Node> instance() { return (EmptyPath<Node>) instance; }
+    public static <Node> EmptyPath<Node> instance() {
+        return (EmptyPath<Node>) instance;
+    }
 
     @Override
     public Node getNode() {
@@ -45,8 +46,7 @@ class EmptyPath<Node> extends Path<Node>
     }
 }
 
-class RootPath<Node> extends Path<Node>
-{
+class RootPath<Node> extends Path<Node> {
     private final Node root;
 
     RootPath(Node root) {
@@ -70,8 +70,7 @@ class RootPath<Node> extends Path<Node>
 
 }
 
-class NormalPath<Node> extends Path<Node>
-{
+class NormalPath<Node> extends Path<Node> {
     private final Path<Node> parent;
     private final Node node;
 
@@ -82,8 +81,7 @@ class NormalPath<Node> extends Path<Node>
         this.node = node;
     }
 
-    public Path<Node> getParent()
-    {
+    public Path<Node> getParent() {
         return parent;
     }
 
@@ -97,8 +95,7 @@ class NormalPath<Node> extends Path<Node>
     }
 }
 
-public abstract class Path<Node>
-{
+public abstract class Path<Node> {
     public abstract boolean isEmpty();
     public abstract Node getNode();
     public abstract Path<Node> getParent();
@@ -106,7 +103,7 @@ public abstract class Path<Node>
     public static <Node> List<Node> getPath(Path<Node> path) {
         ArrayList<Node> list = new ArrayList<Node>();
         Path<Node> p = path;
-        while ((p != null) && !p.isEmpty())    {
+        while ((p != null) && !p.isEmpty()) {
             list.add(p.getNode());
             p = p.getParent();
         }
@@ -129,8 +126,7 @@ public abstract class Path<Node>
             return new NormalPath<Node>(path, suffix);
     }
 
-    private static boolean equal(Object o1, Object o2)
-    {
+    private static boolean equal(Object o1, Object o2) {
         if(o1 == null)
             return o2 == null;
         else
@@ -186,8 +182,7 @@ public abstract class Path<Node>
         return result;
     }
 
-    public static <Node> Path<Node> empty()
-    {
+    public static <Node> Path<Node> empty() {
         return EmptyPath.instance();
     }
 

@@ -26,25 +26,21 @@ import org.workcraft.plugins.cpog.Vertex;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.serialisation.ReferenceResolver;
 
-public class VertexDeserialiser extends BooleanFunctionDeserialiser
-{
+public class VertexDeserialiser extends BooleanFunctionDeserialiser {
     @Override
-    public String getClassName()
-    {
+    public String getClassName() {
         return Vertex.class.getName();
     }
 
     @Override
-    protected void setFormula(Object deserialisee, BooleanFormula formula)
-    {
+    protected void setFormula(Object deserialisee, BooleanFormula formula) {
         ((Vertex)deserialisee).setCondition(formula);
     }
 
     @Override
     public Object createInstance(Element element,
             ReferenceResolver externalReferenceResolver,
-            Object... constructorParameters)
-    {
+            Object... constructorParameters) {
         return new Vertex();
     }
 

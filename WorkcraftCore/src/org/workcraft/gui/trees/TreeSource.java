@@ -24,8 +24,7 @@ import java.util.List;
 
 import org.workcraft.gui.workspace.Path;
 
-public interface TreeSource<Node>
-{
+public interface TreeSource<Node> {
     void addListener(TreeListener<Node> listener);
     void removeListener(TreeListener<Node> listener);
     Node getRoot();

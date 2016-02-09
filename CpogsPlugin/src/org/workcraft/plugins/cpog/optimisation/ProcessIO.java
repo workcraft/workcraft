@@ -31,8 +31,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 public class ProcessIO {
-    public static String runViaStreams(String input, String[] process)
-    {
+    public static String runViaStreams(String input, String[] process) {
         Process limboole;
         try {
             writeFile(input, File.createTempFile("stream", "in"));
@@ -56,8 +55,7 @@ public class ProcessIO {
         }
     }
 
-    static String minisat(String minisatPath, String input)
-    {
+    static String minisat(String minisatPath, String input) {
         String result;
         try {
             File inputFile = File.createTempFile("minisat", ".in");

@@ -28,24 +28,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumber>
-{
+public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumber> {
     TwoHotRangeProvider rangeProvider = new TwoHotRangeProvider();
 
     Map<Integer, TwoHotRange> halfTaken = new HashMap<Integer, TwoHotRange>();
 
     private Cnf constraints = new Cnf();
 
-    public Cnf getConstraints()
-    {
+    public Cnf getConstraints() {
         return constraints;
     }
 
-    public TwoHotNumber generate(String name, int range)
-    {
+    public TwoHotNumber generate(String name, int range) {
         TwoHotRange htRes = halfTaken.get(range);
-        if(htRes != null)
-        {
+        if(htRes != null) {
             //TwoHotNumber result = rangeProvider.getSecond(htRes);
         }
 
@@ -63,8 +59,7 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
         for(int i=0;i<range-2;i++)
             constraints.add(or(not(sort2.get(i))));
 
-        for(int i=0;i<range-2;i+=2)
-        {
+        for(int i=0;i<range-2;i+=2) {
             constraints.add(or(not(literals.get(i)), not(literals.get(i+1))));
         }
 
@@ -93,8 +88,7 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
         for(int i=0;i<vars.length;i++)
             preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation()?"i":"")+ "_sv"+i));
 
-        for(int i=0;i<vars.length;i++)
-        {
+        for(int i=0;i<vars.length;i++) {
             Literal res = preResult.get(i);
             Literal sel = code.get(i);
             Literal var = vars[i];

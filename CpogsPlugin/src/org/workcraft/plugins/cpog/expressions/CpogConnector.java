@@ -10,8 +10,7 @@ public class CpogConnector implements CpogVisitor< Set<VisualVertex> > {
 
     VisualCPOG cpog = null;
 
-    public CpogConnector(VisualCPOG cpog)
-    {
+    public CpogConnector(VisualCPOG cpog) {
         this.cpog = cpog;
     }
 
@@ -29,8 +28,7 @@ public class CpogConnector implements CpogVisitor< Set<VisualVertex> > {
         Set<VisualVertex> right = node.getY().accept(this);
 
         for(VisualVertex l : left)
-            for(VisualVertex r : right)
-            {
+            for(VisualVertex r : right) {
                 // TODO: handle self-loops properly
                 cpog.connect(l, r);
             }

@@ -173,13 +173,11 @@ public class SONSelectionTool extends SelectionTool {
     public void mouseClicked(GraphEditorMouseEvent e){
         VisualSON model = (VisualSON)e.getEditor().getModel();
 
-        if (e.getClickCount() > 1)
-        {
+        if (e.getClickCount() > 1) {
             VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
             Collection<Node> selection = e.getModel().getSelection();
 
-            if(selection.size() == 1)
-            {
+            if(selection.size() == 1) {
                 Node selectedNode = selection.iterator().next();
                 selectedNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
@@ -239,8 +237,7 @@ public class SONSelectionTool extends SelectionTool {
     }
 
     @Override
-    public void keyPressed(GraphEditorKeyEvent e)
-    {
+    public void keyPressed(GraphEditorKeyEvent e) {
         super.keyPressed(e);
 
         if (e.isAltDown() && !e.isCtrlDown() && !e.isShiftDown()) {

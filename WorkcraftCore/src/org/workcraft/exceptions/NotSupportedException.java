@@ -23,13 +23,11 @@ package org.workcraft.exceptions;
 
 public class NotSupportedException extends RuntimeException {
 
-    public NotSupportedException(String message)
-    {
+    public NotSupportedException(String message) {
         super(message);
     }
 
-    public NotSupportedException()
-    {
+    public NotSupportedException() {
         super("The feature is not supported");
     }
 

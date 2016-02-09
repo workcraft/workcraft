@@ -31,13 +31,11 @@ class ConnectionByComponentsIdentifier implements
 
     private final KeyProvider<MathNode> componentKeyProvider;
 
-    class Pair
-    {
+    class Pair {
         private final Object o1;
         private final Object o2;
 
-        Pair(Object o1, Object o2)
-        {
+        Pair(Object o1, Object o2) {
             this.o1 = o1;
             this.o2 = o2;
         }
@@ -69,26 +67,22 @@ class ConnectionByComponentsIdentifier implements
     }
 }
 
-interface KeyProvider<T>
-{
+interface KeyProvider<T> {
     Object getKey(T item);
 }
 
-class Finder<T>
-{
+class Finder<T> {
     private final HashMap<Object, T> map;
     private final KeyProvider<T> keyProvider;
 
-    Finder(Iterable<T> items, KeyProvider<T> keyProvider)
-    {
+    Finder(Iterable<T> items, KeyProvider<T> keyProvider) {
         this.keyProvider = keyProvider;
         map = new HashMap<Object, T>();
         for(T item : items)
             map.put(keyProvider.getKey(item), item);
     }
 
-    public T getMatching(T item)
-    {
+    public T getMatching(T item) {
         return map.get(keyProvider.getKey(item));
     }
 }

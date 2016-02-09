@@ -13,7 +13,9 @@ public class MainWindowActions {
     public static final Action CREATE_WORK_ACTION = new Action() {
         @Override public void run() {
             final Framework f = Framework.getInstance();
-            try { f.getMainWindow().createWork(); } catch (OperationCancelledException e) { }
+            try {
+                f.getMainWindow().createWork();
+            } catch (OperationCancelledException e) { }
         }
         @Override public String getText() {
             return "Create work...";
@@ -22,7 +24,9 @@ public class MainWindowActions {
     public static final Action OPEN_WORK_ACTION = new Action() {
         @Override public void run() {
             final Framework f = Framework.getInstance();
-            try { f.getMainWindow().openWork(); } catch (OperationCancelledException e) { }
+            try {
+                f.getMainWindow().openWork();
+            } catch (OperationCancelledException e) { }
         }
         @Override public String getText() {
             return "Open work...";
@@ -31,7 +35,9 @@ public class MainWindowActions {
     public static final Action MERGE_WORK_ACTION = new Action() {
         @Override public void run() {
             final Framework f = Framework.getInstance();
-            try { f.getMainWindow().mergeWork(); } catch (OperationCancelledException e) { }
+            try {
+                f.getMainWindow().mergeWork();
+            } catch (OperationCancelledException e) { }
         }
         @Override public String getText() {
             return "Merge work...";
@@ -106,7 +112,9 @@ public class MainWindowActions {
     public static final Action SHUTDOWN_GUI_ACTION = new Action() {
         @Override public void run() {
             final Framework f = Framework.getInstance();
-            try { f.shutdownGUI(); } catch (OperationCancelledException e) { }
+            try {
+                f.shutdownGUI();
+            } catch (OperationCancelledException e) { }
         }
         public String getText() {
             return "Switch to console mode";

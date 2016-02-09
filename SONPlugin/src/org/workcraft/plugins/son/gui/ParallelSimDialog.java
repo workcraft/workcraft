@@ -63,8 +63,7 @@ public class ParallelSimDialog  extends JDialog{
     private int run = 0;
     private Window owner;
 
-    class EventItem
-    {
+    class EventItem {
         private String label;
         private boolean isSelected = false;
         private TransitionNode event;
@@ -135,10 +134,8 @@ public class ParallelSimDialog  extends JDialog{
         eventList.setCellRenderer(new CheckListRenderer());
         eventList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
 
-        eventList.addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent event)
-            {
+        eventList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent event) {
                 JList list = (JList) event.getSource();
 
                 int index = list.locationToIndex(event.getPoint());
@@ -300,16 +297,13 @@ public class ParallelSimDialog  extends JDialog{
         this.add(interfacePanel);
         this.pack();
 
-        this.addWindowListener(new WindowAdapter()
-        {
-          public void windowClosing(WindowEvent e)
-          {
+        this.addWindowListener(new WindowAdapter() {
+          public void windowClosing(WindowEvent e) {
               getSONModel().refreshAllColor();
           }
         });
 
-        this.addWindowFocusListener(new WindowFocusListener()
-        {
+        this.addWindowFocusListener(new WindowFocusListener() {
             @Override
             public void windowGainedFocus(WindowEvent e) {
             }

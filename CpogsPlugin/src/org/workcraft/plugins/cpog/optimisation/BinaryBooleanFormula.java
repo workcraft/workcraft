@@ -23,8 +23,7 @@ package org.workcraft.plugins.cpog.optimisation;
 public abstract class BinaryBooleanFormula implements BooleanFormula {
     private final BooleanFormula x;
     private final BooleanFormula y;
-    public BinaryBooleanFormula(BooleanFormula x, BooleanFormula y)
-    {
+    public BinaryBooleanFormula(BooleanFormula x, BooleanFormula y) {
         this.x = x;
         this.y = y;
     }

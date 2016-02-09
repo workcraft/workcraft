@@ -25,13 +25,11 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingR
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.util.Hierarchy;
 
-public class VisualScenario extends VisualGroup
-{
+public class VisualScenario extends VisualGroup {
     public static final String PROPERTY_ENCODING = "Encoding";
     public static final String PROPERTY_LABEL = "Label";
 
-    private static final class ReverseComparator implements Comparator<Variable>
-    {
+    private static final class ReverseComparator implements Comparator<Variable> {
         @Override
         public int compare(Variable o1, Variable o2) {
             return -o1.compareTo(o2);
@@ -136,8 +134,7 @@ public class VisualScenario extends VisualGroup
 
         Rectangle2D bb = getContentsBoundingBox();
 
-        if (bb != null && getParent() != null)
-        {
+        if (bb != null && getParent() != null) {
 //            g.setColor(Coloriser.colorise(Color.WHITE, background));
 //            g.fill(bb);
             g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
@@ -181,8 +178,7 @@ public class VisualScenario extends VisualGroup
 
             for(Variable var : sortedVariables) if (!var.getState().matches(encoding.getState(var))) perfectMatch = false;
 
-            for(Variable var : sortedVariables)
-            {
+            for(Variable var : sortedVariables) {
                 String text = var.getLabel();
 
                 result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());

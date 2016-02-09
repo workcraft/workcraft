@@ -87,8 +87,7 @@ public class Geometry {
         public final CubicCurve2D curve1;
         public final CubicCurve2D curve2;
 
-        public CurveSplitResult(CubicCurve2D curve1, CubicCurve2D curve2)
-        {
+        public CurveSplitResult(CubicCurve2D curve1, CubicCurve2D curve2) {
             this.curve1 = curve1;
             this.curve2 = curve2;
         }
@@ -148,12 +147,10 @@ public class Geometry {
     }
 
     public static AffineTransform optimisticInverse(AffineTransform transform) {
-        try
-        {
+        try {
             return transform.createInverse();
         }
-        catch(NoninvertibleTransformException ex)
-        {
+        catch(NoninvertibleTransformException ex) {
             throw new RuntimeException("Matrix inverse failed! Pessimists win :( ");
         }
     }

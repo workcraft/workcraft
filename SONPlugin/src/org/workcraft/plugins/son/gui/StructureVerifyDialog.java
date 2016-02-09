@@ -70,8 +70,7 @@ public class StructureVerifyDialog extends JDialog{
         }
     }
 
-    class ListItem
-    {
+    class ListItem {
         private String label;
         private boolean isSelected = true;
         private Object obj;
@@ -165,10 +164,8 @@ public class StructureVerifyDialog extends JDialog{
         groupList = new JList (listModel);
         groupList.setCellRenderer(new ItemListRenderer());
         groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        groupList.addMouseListener(new MouseAdapter()
-        {
-            public void mousePressed(MouseEvent event)
-            {
+        groupList.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent event) {
                 JList list = (JList) event.getSource();
 
                 int index = list.locationToIndex(event.getPoint());

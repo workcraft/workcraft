@@ -48,8 +48,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 @Hotkey(KeyEvent.VK_R)
 @DisplayName("RhoClause")
 @SVGIcon("images/icons/svg/rho.svg")
-public class VisualRhoClause extends VisualComponent
-{
+public class VisualRhoClause extends VisualComponent {
     private static float strokeWidth = 0.038f;
 
     private Rectangle2D boudingBox = new Rectangle2D.Float(0, 0, 0, 0);
@@ -121,28 +120,23 @@ public class VisualRhoClause extends VisualComponent
         return getFormula().accept(new PrettifyBooleanReplacer());
     }
 
-    public Rectangle2D getBoundingBoxInLocalSpace()
-    {
+    public Rectangle2D getBoundingBoxInLocalSpace() {
         return boudingBox;
     }
 
-    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)
-    {
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }
 
-    public RhoClause getMathRhoClause()
-    {
+    public RhoClause getMathRhoClause() {
         return (RhoClause)getReferencedComponent();
     }
 
-    public BooleanFormula getFormula()
-    {
+    public BooleanFormula getFormula() {
         return getMathRhoClause().getFormula();
     }
 
-    public void setFormula(BooleanFormula formula)
-    {
+    public void setFormula(BooleanFormula formula) {
         getMathRhoClause().setFormula(formula);
     }
 }

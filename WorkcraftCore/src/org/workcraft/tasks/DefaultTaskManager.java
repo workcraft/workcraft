@@ -6,8 +6,7 @@ public class DefaultTaskManager implements TaskManager {
 
     TaskObserverList taskObserverList = new TaskObserverList();
 
-    static class TaskObserverList extends ArrayList<TaskMonitor> implements TaskMonitor
-    {
+    static class TaskObserverList extends ArrayList<TaskMonitor> implements TaskMonitor {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -47,8 +46,7 @@ public class DefaultTaskManager implements TaskManager {
 
     @Override
     public <T> void queue(final Task<T> task, final String description) {
-        new Thread(new Runnable()
-        {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 execute(task, description);
@@ -59,8 +57,7 @@ public class DefaultTaskManager implements TaskManager {
 
     @Override
     public <T> void queue(final Task<T> task, final String description, final ProgressMonitor<? super T> observer) {
-        new Thread(new Runnable()
-        {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 rawExecute(task, description, observer);

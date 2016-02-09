@@ -80,27 +80,23 @@ public class OutputArea extends JFrame {
                 myfile=new File(myfile.getAbsolutePath().concat(".txt"));
             }
         }
-        if(myfile==null || myfile.getName().isEmpty())
-        {
+        if(myfile==null || myfile.getName().isEmpty()) {
             JOptionPane.showMessageDialog(this,"Please enter a file name!","Error",JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if(myfile.exists())
-        {
+        if(myfile.exists()) {
             r = JOptionPane.showConfirmDialog(this, "A file with same name already exists. Do you want to overwrite it?");
             if(r != 0)
                 return;
         }
-        try
-        {
+        try {
             FileWriter fw = new FileWriter(myfile);
             fw.write(textArea.getText());
             setTitle(myfile.getName()+" - Output");
             fw.close();
         }
-        catch(IOException e)
-        {
+        catch(IOException e) {
             JOptionPane.showMessageDialog(this,"Failed to save the file","Error",JOptionPane.ERROR_MESSAGE);
         }
     }

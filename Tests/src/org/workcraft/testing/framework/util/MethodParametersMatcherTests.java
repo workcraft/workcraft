@@ -33,44 +33,35 @@ import org.workcraft.util.MethodParametersMatcher;
 import org.workcraft.util.MethodParametersMatcher.MethodInfo;
 
 public class MethodParametersMatcherTests {
-    class A
-    {
+    class A {
 
     }
 
-    class AB extends A
-    {
+    class AB extends A {
 
     }
 
-    class AC extends A
-    {
+    class AC extends A {
 
     }
 
-    class ABq extends AB
-    {
+    class ABq extends AB {
 
     }
 
-    class ABp extends AB
-    {
+    class ABp extends AB {
 
     }
 
-    int match(Class<?> type, Class<?>... parameters) throws Exception
-    {
+    int match(Class<?> type, Class<?>... parameters) throws Exception {
         TestMethodInfo match;
-        try
-        {
+        try {
             match = MethodParametersMatcher.match(getMethods(type), parameters);
         }
-        catch(NoSuchMethodException e)
-        {
+        catch(NoSuchMethodException e) {
             return -1;
         }
-        catch(AmbiguousMethodException e)
-        {
+        catch(AmbiguousMethodException e) {
             return -2;
         }
         return match.execute();
@@ -78,27 +69,37 @@ public class MethodParametersMatcherTests {
 
 
     static class simple{
-        public static int qq(){return 1;};
+        public static int qq(){
+            return 1;
+        };
     }
 
     @Test
-    public void TestSimple() throws Exception
-    {
+    public void TestSimple() throws Exception {
         Assert.assertEquals(1, match(simple.class));
         Assert.assertEquals(-1, match(simple.class, Object.class));
     }
 
     static class advanced{
-        public static int qq(){return 1;};
-        public static int qq(A a){return 2;};
-        public static int qq(ABq abq){return 3;};
-        public static int qq(AB ab){return 4;};
-        public static int qq(AC ac){return 5;};
+        public static int qq(){
+            return 1;
+        };
+        public static int qq(A a){
+            return 2;
+        };
+        public static int qq(ABq abq){
+            return 3;
+        };
+        public static int qq(AB ab){
+            return 4;
+        };
+        public static int qq(AC ac){
+            return 5;
+        };
     }
 
     @Test
-    public void TestMostSpecific() throws Exception
-    {
+    public void TestMostSpecific() throws Exception {
         Assert.assertEquals(1, match(advanced.class));
         Assert.assertEquals(2, match(advanced.class, A.class));
         Assert.assertEquals(3, match(advanced.class, ABq.class));
@@ -108,14 +109,17 @@ public class MethodParametersMatcherTests {
     }
 
     static class ambiguous{
-        public static int qq(A a, AC b){return 1;};
-        public static int qq(ABq a, A b){return 2;};
+        public static int qq(A a, AC b){
+            return 1;
+        };
+        public static int qq(ABq a, A b){
+            return 2;
+        };
     }
 
 
     @Test
-    public void TestAmbiguous() throws Exception
-    {
+    public void TestAmbiguous() throws Exception {
         Assert.assertEquals(1, match(ambiguous.class, A.class, AC.class));
         Assert.assertEquals(-1, match(ambiguous.class, AB.class, A.class));
         Assert.assertEquals(2, match(ambiguous.class, ABq.class, A.class));
@@ -123,8 +127,7 @@ public class MethodParametersMatcherTests {
         Assert.assertEquals(-2, match(ambiguous.class, ABq.class, AC.class));
     }
 
-    class TestMethodInfo implements MethodInfo
-    {
+    class TestMethodInfo implements MethodInfo {
         private final Method method;
 
         TestMethodInfo(Method method) {
@@ -135,8 +138,7 @@ public class MethodParametersMatcherTests {
             return method.getParameterTypes();
         }
 
-        public int execute() throws Exception
-        {
+        public int execute() throws Exception {
             Object[] args = new Object[getParameterTypes().length];
             return (Integer)method.invoke(null, args);
         }

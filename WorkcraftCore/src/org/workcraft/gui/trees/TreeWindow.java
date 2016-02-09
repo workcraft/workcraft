@@ -47,8 +47,7 @@ import javax.swing.tree.TreePath;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.workspace.Workspace;
 
-public class TreeWindow<Node> extends JPanel
-{
+public class TreeWindow<Node> extends JPanel {
     public enum CheckBoxMode {
         NONE,
         LEAF,
@@ -62,8 +61,7 @@ public class TreeWindow<Node> extends JPanel
 
     private JCheckBox checkBox;
 
-    public TreeWindow(TreeSource<Node> source, TreeDecorator<Node> decorator, TreePopupProvider<Node> popupProvider)
-    {
+    public TreeWindow(TreeSource<Node> source, TreeDecorator<Node> decorator, TreePopupProvider<Node> popupProvider) {
         this.popupProvider = popupProvider;
         startup(source, decorator);
     }
@@ -72,8 +70,7 @@ public class TreeWindow<Node> extends JPanel
     private TreeSourceAdapter<Node> sourceWithRestructuredTrapped;
 
     @SuppressWarnings("unchecked")
-    public Node selected()
-    {
+    public Node selected() {
         return (Node)tree.getSelectionPath().getLastPathComponent();
     }
 
@@ -98,8 +95,7 @@ public class TreeWindow<Node> extends JPanel
 
     boolean externalExpanded = false;
 
-    public void startup(final TreeSource<Node> source, final TreeDecorator<Node> decorator)
-    {
+    public void startup(final TreeSource<Node> source, final TreeDecorator<Node> decorator) {
         tree = new JTree();
         tree.setFocusable(true);
 
@@ -107,11 +103,9 @@ public class TreeWindow<Node> extends JPanel
         checkBox.setBackground(tree.getBackground());
         checkBox.setMargin(new Insets(0,0,0,0));
 
-        sourceWithRestructuredTrapped = new TreeSourceAdapter<Node>(source)
-        {
+        sourceWithRestructuredTrapped = new TreeSourceAdapter<Node>(source) {
             public TreeListener<Node> getListener(final TreeListener<Node> chain) {
-                return new TreeListenerAdapter<Node>(chain)
-                {
+                return new TreeListenerAdapter<Node>(chain) {
                     @Override
                     public void restructured(Path<Node> path) {
                         List<TreePath> expanded = new ArrayList<TreePath>();
@@ -139,20 +133,20 @@ public class TreeWindow<Node> extends JPanel
             };
         };
 
-
         final TreeModelWrapper<Node> modelWrapper = new TreeModelWrapper<Node>(sourceWithRestructuredTrapped);
         tree.setModel(modelWrapper);
 
         if (popupProvider!=null)
-            tree.addMouseListener(new MouseAdapter()
-            {
-                public void mousePressed(java.awt.event.MouseEvent e) { maybeShowPopup(e); };
-                public void mouseReleased(java.awt.event.MouseEvent e) { maybeShowPopup(e); };
-
+            tree.addMouseListener(new MouseAdapter() {
+                public void mousePressed(java.awt.event.MouseEvent e) {
+                    maybeShowPopup(e);
+                };
+                public void mouseReleased(java.awt.event.MouseEvent e) {
+                    maybeShowPopup(e);
+                };
 
                 private void maybeShowPopup(MouseEvent e) {
-                    if(e.isPopupTrigger())
-                    {
+                    if(e.isPopupTrigger()) {
                         final int x = e.getX();
                         final int y = e.getY();
                         tree.setSelectionPath(tree.getClosestPathForLocation(x, y));
@@ -198,8 +192,7 @@ public class TreeWindow<Node> extends JPanel
 
 
 
-        tree.setCellRenderer(new DefaultTreeCellRenderer()
-        {
+        tree.setCellRenderer(new DefaultTreeCellRenderer() {
             private static final long serialVersionUID = 1L;
             private JPanel cellRenderer;
 
@@ -262,12 +255,10 @@ public class TreeWindow<Node> extends JPanel
         }
         );
 
-        tree.addKeyListener(new KeyAdapter()
-        {
+        tree.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_F5)
-                {
+                if(e.getKeyCode() == KeyEvent.VK_F5) {
                     sourceWithRestructuredTrapped.getListener().restructured(Path.root(source.getRoot()));
                 }
             }

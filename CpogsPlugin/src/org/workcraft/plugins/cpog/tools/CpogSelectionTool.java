@@ -194,8 +194,7 @@ public class CpogSelectionTool extends SelectionTool {
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "Text Files", "txt");
                 chooser.setFileFilter(filter);
-                if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-                {
+                if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     ArrayList<String> expressions = new ArrayList<String>();
 
                     textFile = chooser.getSelectedFile();
@@ -587,10 +586,8 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public void insertLoose(VisualCPOG visualCpog, Double coordinate) {
-        for (Node node : visualCpog.getSelection())
-        {
-            if (node instanceof VisualVertex)
-            {
+        for (Node node : visualCpog.getSelection()) {
+            if (node instanceof VisualVertex) {
                 VisualVertex v = (VisualVertex) node;
                 v.setPosition(new Double(v.getX(), v.getY() + coordinate.getY()));
             }
@@ -769,8 +766,7 @@ public class CpogSelectionTool extends SelectionTool {
                 prevSelection.removeAll(pageVerts);
                 includeArcsInPage(visualCpog);
                 selectionPageGroup(editor);
-                if (visualCpog.getSelection().size() == 1)
-                {
+                if (visualCpog.getSelection().size() == 1) {
                     for (Node n1 : visualCpog.getSelection()) {
                         if (n1 instanceof VisualPage) {
                             VisualPage vp = (VisualPage) n1;
@@ -842,8 +838,7 @@ public class CpogSelectionTool extends SelectionTool {
                                             if (n instanceof VisualVertex) {
                                                 VisualVertex f = (VisualVertex) n;
                                                 if (f.getLabel().equals(first)) {
-                                                    for (Node n1 : p.getChildren())
-                                                    {
+                                                    for (Node n1 : p.getChildren()) {
                                                         if (n1 instanceof VisualVertex) {
                                                             VisualVertex s = (VisualVertex) n1;
                                                             if (s.getLabel().equals(second)){
@@ -893,8 +888,7 @@ public class CpogSelectionTool extends SelectionTool {
             public void handleEvent(StateEvent e) {
                 if (e instanceof PropertyChangedEvent) {
                     PropertyChangedEvent pce = (PropertyChangedEvent) e;
-                    if (pce.getPropertyName().compareTo("position") == 0)
-                    {
+                    if (pce.getPropertyName().compareTo("position") == 0) {
                         if ((pce.getSender() instanceof VisualVertex) && !(pce.getSender().getParent() instanceof VisualScenarioPage)) {
                             VisualVertex v = (VisualVertex) pce.getSender();
                             double xDiff = 0;

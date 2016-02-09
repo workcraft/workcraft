@@ -56,7 +56,7 @@ class DefaultNodeDeserialiser {
         if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
             return;
 
-        try    {
+        try {
             List<Element> propertyElements = XmlUtil.getChildElements("property", currentLevelElement);
             HashMap<String, Element> nameMap = new HashMap<String, Element>();
 
@@ -65,8 +65,7 @@ class DefaultNodeDeserialiser {
 
             BeanInfo info = getBeanInfo(currentLevel);
 
-            for (PropertyDescriptor desc : info.getPropertyDescriptors())
-            {
+            for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
                 if (!nameMap.containsKey(desc.getName()))
                     continue;
 
@@ -86,11 +85,9 @@ class DefaultNodeDeserialiser {
                 // the property is writable and is not of array type, try to get a deserialiser
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(desc.getPropertyType().getName());
 
-                if (!(deserialiser instanceof BasicXMLDeserialiser))
-                {
+                if (!(deserialiser instanceof BasicXMLDeserialiser)) {
                     // no deserialiser, try to use the special case enum deserialiser
-                    if (desc.getPropertyType().isEnum())
-                    {
+                    if (desc.getPropertyType().isEnum()) {
                         deserialiser = fac.getDeserialiserFor(Enum.class.getName());
                         if (deserialiser == null)
                             continue;

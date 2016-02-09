@@ -479,8 +479,7 @@ public class VisualModelTests {
             Assert.assertArrayEquals(expected, their);
         }
 
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             Assert.assertTrue("Should be a visual group", obj instanceof VisualGroup);
             assertEquals((Node)obj);
             return true;
@@ -537,8 +536,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestHitNodeCurrentLevelTransformation()
-    {
+    public void TestHitNodeCurrentLevelTransformation() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -555,8 +553,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestHitObjectsCurrentLevelTransformation()
-    {
+    public void TestHitObjectsCurrentLevelTransformation() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();

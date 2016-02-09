@@ -29,8 +29,7 @@ public class OneHotIntBooleanFormula {
         this.vars = vars;
     }
 
-    BooleanVariable get(int index)
-    {
+    BooleanVariable get(int index) {
         return vars.get(index);
     }
 

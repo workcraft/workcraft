@@ -48,8 +48,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 
 
-public class FormulaToGraphics
-{
+public class FormulaToGraphics {
     public final class Void{ private Void(){} }
 
     public static Font defaultFont;
@@ -107,8 +106,7 @@ public class FormulaToGraphics
         return res;
     }
 
-    public static FormulaRenderingResult print(char c, Font font, FontRenderContext fontRenderContext)
-    {
+    public static FormulaRenderingResult print(char c, Font font, FontRenderContext fontRenderContext) {
         FormulaRenderingResult result = new FormulaRenderingResult();
 
         GlyphVector glyphs;
@@ -131,8 +129,7 @@ public class FormulaToGraphics
     }
 
 
-    public static class PrinterSuite
-    {
+    public static class PrinterSuite {
         public PrinterSuite() {
             iff = new IffPrinter();
             imply = new ImplyPrinter();
@@ -253,40 +250,35 @@ public class FormulaToGraphics
         }
     }
 
-    public static class IffPrinter extends DelegatingPrinter
-    {
+    public static class IffPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Iff node) {
             return visitBinary(this, " = ", node);
         }
     }
 
-    public static class ImplyPrinter extends DelegatingPrinter
-    {
+    public static class ImplyPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Imply node) {
             return visitBinary(next, unicodeAllowed ? " \u21d2 " : " => ", node);
         }
     }
 
-    public static class OrPrinter extends DelegatingPrinter
-    {
+    public static class OrPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Or node) {
             return visitBinary(this, " + ", node);
         }
     }
 
-    public static class XorPrinter extends DelegatingPrinter
-    {
+    public static class XorPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Xor node) {
             return visitBinary(this, unicodeAllowed ? " \u2295 " : " ^ ", node);
         }
     }
 
-    public static class AndPrinter extends DelegatingPrinter
-    {
+    public static class AndPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(And node) {
             return visitBinary(this, unicodeAllowed ? "\u00b7" : "*", node);

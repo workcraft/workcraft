@@ -25,8 +25,7 @@ import org.workcraft.plugins.cpog.CpogSettings;
 
 public class ConsoleBooleanSolver {
 
-    public BooleanSolution solve(CnfTask task)
-    {
+    public BooleanSolution solve(CnfTask task) {
         String cnf = task.getBody();
         String solution = solve(cnf);
 

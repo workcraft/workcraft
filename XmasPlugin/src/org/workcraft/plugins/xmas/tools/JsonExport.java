@@ -81,10 +81,8 @@ public class JsonExport implements Tool {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        finally
-        {
-                if ( writer_s != null )
-                {
+        finally {
+                if ( writer_s != null ) {
                     writer_s.close();
                 }
         }
@@ -213,8 +211,7 @@ public class JsonExport implements Tool {
         //GEN JSON
         File file = XmasSettings.getTempVxmJsonFile();
         PrintWriter writer = null;
-        try
-        {
+        try {
         writer = new PrintWriter(file);
         int cnt_nodes=0;
         int num_outputs=0;
@@ -503,14 +500,11 @@ public class JsonExport implements Tool {
         writer.println("}");
         System.out.println("Output written to JsonFile");
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
                 e.printStackTrace();
         }
-        finally
-        {
-                if ( writer != null )
-                {
+        finally {
+                if ( writer != null ) {
                     writer.close();
                 }
         }

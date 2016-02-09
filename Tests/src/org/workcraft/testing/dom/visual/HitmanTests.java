@@ -36,19 +36,15 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Touchable;
 
 public class HitmanTests {
-    class DummyNode implements Node
-    {
+    class DummyNode implements Node {
         Collection<Node> children;
-        DummyNode()
-        {
+        DummyNode() {
             children = Collections.emptyList();
         }
-        DummyNode(Node[] children)
-        {
+        DummyNode(Node[] children) {
             this.children = new ArrayList<Node>(Arrays.asList(children));
         }
-        DummyNode(Collection<Node> children)
-        {
+        DummyNode(Collection<Node> children) {
             this.children = children;
         }
 
@@ -65,8 +61,7 @@ public class HitmanTests {
         }
     }
 
-    class HitableNode extends DummyNode implements Touchable
-    {
+    class HitableNode extends DummyNode implements Touchable {
         public Rectangle2D getBoundingBox() {
             return new Rectangle2D.Double(0, 0, 1, 1);
         }
@@ -76,15 +71,13 @@ public class HitmanTests {
         }
 
         @Override
-        public Point2D getCenter()
-        {
+        public Point2D getCenter() {
             return new Point2D.Double(0, 0);
         }
     }
 
     @Test
-    public void TestHitDeepestSkipNulls()
-    {
+    public void TestHitDeepestSkipNulls() {
         final HitableNode toHit = new HitableNode();
         Node node = new DummyNode(
             new Node[]{

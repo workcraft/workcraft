@@ -377,8 +377,7 @@ public class ScencoSolver {
 
             // Set optimal encoding to graphs
             boolean[][] opt_encoding = new boolean[m][];
-            for(int i=0;i<m;i++)
-            {
+            for(int i=0;i<m;i++) {
                 opt_encoding[i] = new boolean[freeVariables + pr];
                 for(int j=0;j<freeVariables;j++){
                     if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') opt_encoding[i][j] = false;

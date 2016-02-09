@@ -60,8 +60,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
         }
     }
 
-    public void serialise(Element element, Object object) throws SerialisationException
-    {
+    public void serialise(Element element, Object object) throws SerialisationException {
         element.setAttribute("class", object.getClass().getName());
 
         nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);

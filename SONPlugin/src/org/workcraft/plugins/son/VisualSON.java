@@ -504,13 +504,11 @@ public class VisualSON extends AbstractVisualModel {
         return result;
     }
 
-    public Collection<VisualONGroup> getVisualONGroups()
-    {
+    public Collection<VisualONGroup> getVisualONGroups() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualONGroup.class);
     }
 
-    public Collection<VisualSuperGroup> getVisualSuperGroups()
-    {
+    public Collection<VisualSuperGroup> getVisualSuperGroups() {
         return Hierarchy.getChildrenOfType(getRoot(), VisualSuperGroup.class);
     }
 
@@ -530,23 +528,19 @@ public class VisualSON extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualEvent.class);
     }
 
-    public Collection<VisualSONConnection> getVisualSONConnections()
-    {
+    public Collection<VisualSONConnection> getVisualSONConnections() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualSONConnection.class);
     }
 
-    public Collection<VisualBlock> getVisualBlocks()
-    {
+    public Collection<VisualBlock> getVisualBlocks() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualBlock.class);
     }
 
-    public Collection<VisualPage> getVisualPages()
-    {
+    public Collection<VisualPage> getVisualPages() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualPage.class);
     }
 
-    public Collection<VisualSONConnection> getVisualConnections(VisualComponent node)
-    {
+    public Collection<VisualSONConnection> getVisualConnections(VisualComponent node) {
         //input value
         ArrayList<VisualSONConnection> result = new ArrayList<VisualSONConnection>();
         for (VisualSONConnection con : this.getVisualSONConnections()){
@@ -558,8 +552,7 @@ public class VisualSON extends AbstractVisualModel {
         return result;
     }
 
-    public Collection<VisualSONConnection> getVisualConnections(VisualComponent first, VisualComponent second)
-    {
+    public Collection<VisualSONConnection> getVisualConnections(VisualComponent first, VisualComponent second) {
         ArrayList<VisualSONConnection> result = new ArrayList<VisualSONConnection>();
         for (VisualSONConnection con : this.getVisualSONConnections()){
             if (con.getFirst() == first && con.getSecond() == second)

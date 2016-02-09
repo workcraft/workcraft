@@ -40,8 +40,7 @@ public class LegacyPluginInfo implements Initialiser<Object> {
         if (cls == null || cls.equals(Object.class))
             return;
 
-        for (Class<?> interf : cls.getInterfaces())
-        {
+        for (Class<?> interf : cls.getInterfaces()) {
             set.add(interf.getName());
             addInterfaces (interf, set);
         }

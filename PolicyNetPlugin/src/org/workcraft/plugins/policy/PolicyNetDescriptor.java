@@ -4,8 +4,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
-public class PolicyNetDescriptor implements ModelDescriptor
-{
+public class PolicyNetDescriptor implements ModelDescriptor {
     @Override
     public String getDisplayName() {
         return "Policy Net";

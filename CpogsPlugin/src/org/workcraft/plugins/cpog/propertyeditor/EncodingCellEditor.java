@@ -7,8 +7,7 @@ import javax.swing.JTable;
 import org.workcraft.gui.propertyeditor.GenericCellEditor;
 import org.workcraft.plugins.cpog.Encoding;
 
-class EncodingCellEditor extends GenericCellEditor
-{
+class EncodingCellEditor extends GenericCellEditor {
     private static final long serialVersionUID = 8L;
     private Encoding encoding;
 

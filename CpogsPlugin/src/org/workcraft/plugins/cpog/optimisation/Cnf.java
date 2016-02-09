@@ -28,12 +28,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class Cnf extends Nf<CnfClause> {
 
-    public Cnf()
-    {
+    public Cnf() {
     }
 
-    public Cnf(CnfClause... clauses)
-    {
+    public Cnf(CnfClause... clauses) {
         super(clauses);
     }
 
@@ -42,8 +40,7 @@ public class Cnf extends Nf<CnfClause> {
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new HumanReadableCnfPrinter().print(this);
     }
 
