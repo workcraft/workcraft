@@ -1,19 +1,9 @@
 include "WorkcraftCore"
-include "CircuitPlugin"
-include "CpogsPlugin"
-include "DfsPlugin"
-include "FsmPlugin"
-include "FstPlugin"
-include "GraphPlugin"
-include "MpsatSynthesisPlugin"
-include "MpsatVerificationPlugin"
-include "PcompPlugin"
-include "PetrifyExtraPlugin"
-include "PetrifyPlugin"
-include "PetriNetPlugin"
-include "PolicyNetPlugin"
-include "PunfPlugin"
-include "SONPlugin"
-include "STGPlugin"
-include "XmasPlugin"
 include "Tests"
+
+// Include all the plugins
+include rootDir.listFiles().findAll {
+        it.isDirectory() && it =~ ".*Plugin"
+    }.collect {
+        it.getName()
+    }.toArray(new java.lang.String[0])
