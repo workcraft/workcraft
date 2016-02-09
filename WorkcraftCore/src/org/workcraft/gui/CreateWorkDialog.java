@@ -65,7 +65,7 @@ public class CreateWorkDialog extends JDialog {
     private JList modelList;
     private JButton okButton;
     private JButton cancelButton;
-    private JScrollPane modelScroll ;
+    private JScrollPane modelScroll;
     private JCheckBox chkVisual;
     private JCheckBox chkOpen;
     private JTextField txtTitle;

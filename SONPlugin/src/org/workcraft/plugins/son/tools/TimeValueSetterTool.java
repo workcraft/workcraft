@@ -75,8 +75,8 @@ public class TimeValueSetterTool extends AbstractTool{
     protected Dimension buttonSize = new Dimension(100, 25);
     private TimeEstimatorSettings settings;
 
-    private Node selection = null ;
-    private Node visualSelection = null ;
+    private Node selection = null;
+    private Node visualSelection = null;
     private boolean visibility;
     private Color selectedColor = Color.ORANGE;
     private Font font = new Font("Arial", Font.PLAIN, 12);

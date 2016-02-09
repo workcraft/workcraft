@@ -74,7 +74,7 @@ public class VisualPopRegister extends VisualBinaryRegister {
         falseInnerShape.lineTo(       0, +h2 - 2 * dt);
         falseInnerShape.lineTo(-w2 + dx, +h2 - dy);
 
-        Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
+        Shape tokenShape = new Ellipse2D.Double(-dt, -dt, 2 * dt, 2 * dt);
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
         Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());

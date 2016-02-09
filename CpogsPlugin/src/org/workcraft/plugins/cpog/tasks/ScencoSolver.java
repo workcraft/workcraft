@@ -119,7 +119,7 @@ public class ScencoSolver {
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         directory = FileUtils.createTempDirectory(prefix);
-        File scenarioFile = new File(directory , "scenarios.cpog");
+        File scenarioFile = new File(directory, "scenarios.cpog");
         File encodingFile = new File(directory, "custom.enc");
         File resultDirectory = new File(directory, "result");
         resultDirectory.mkdir();

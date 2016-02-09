@@ -74,7 +74,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 @Override
                 public void run() {
                     JOptionPane.showMessageDialog(null,
-                            "MPSat mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported." ,
+                            "MPSat mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
                             "Sorry..", JOptionPane.WARNING_MESSAGE);
                 }
             });
@@ -157,7 +157,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 Path<String> path = we.getWorkspacePath();
                 final Path<String> directory = path.getParent();
                 final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                final ModelEntry me = new ModelEntry(new CircuitDescriptor() , circuit);
+                final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
 
                 final Framework framework = Framework.getInstance();

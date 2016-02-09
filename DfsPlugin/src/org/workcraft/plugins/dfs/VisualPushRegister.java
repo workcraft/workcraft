@@ -77,7 +77,7 @@ public class VisualPushRegister extends VisualBinaryRegister {
         falseInnerShape.lineTo(-w2 + dx, +h2 - 2 * dt);
         falseInnerShape.lineTo(-w2 + dx, +h2 - 2 * dt - eps);
 
-        Shape tokenShape = new Ellipse2D.Double(-dt , -dt, 2 * dt, 2 * dt);
+        Shape tokenShape = new Ellipse2D.Double(-dt, -dt, 2 * dt, 2 * dt);
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
         Color tokenColor = Coloriser.colorise(getTokenColor(), d.getColorisation());

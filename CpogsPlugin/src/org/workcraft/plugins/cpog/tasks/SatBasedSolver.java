@@ -111,7 +111,7 @@ public class SatBasedSolver {
         // Write scenarios into file.
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        File scenarioFile = new File(directory , "scenarios.cpog");
+        File scenarioFile = new File(directory, "scenarios.cpog");
         File encodingFile = new File(directory, "custom.enc");
         File resultDirectory = new File(directory, "result");
         resultDirectory.mkdir(); // ???

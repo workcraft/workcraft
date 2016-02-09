@@ -107,7 +107,7 @@ public class VisualCondition extends VisualPlaceNode{
         String start = "Start: "+ getStartTime().toString();
 
         Point2D offset = getOffset(startTimePositioning);
-        offset.setLocation(offset.getX() , offset.getY() - labelOffset);
+        offset.setLocation(offset.getX(), offset.getY() - labelOffset);
 
         if (startTimeRenderedText.isDifferent(start, timeFont, startTimePositioning, offset)) {
             startTimeRenderedText = new RenderedText(start, timeFont, startTimePositioning, offset);
@@ -128,7 +128,7 @@ public class VisualCondition extends VisualPlaceNode{
         String end = "End: "+ getEndTime().toString();
 
         Point2D offset = getOffset(endTimePositioning);
-        offset.setLocation(offset.getX() , offset.getY() - labelOffset);
+        offset.setLocation(offset.getX(), offset.getY() - labelOffset);
 
         if (endTimeRenderedText.isDifferent(end, timeFont, endTimePositioning, offset)) {
             endTimeRenderedText = new RenderedText(end, timeFont, endTimePositioning, offset);

@@ -125,7 +125,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             x += remainingWidth;
             break;
         }
-        for (int i = rowStart ; i < rowEnd ; i++) {
+        for (int i = rowStart; i < rowEnd; i++) {
             Component m = target.getComponent(i);
             if (m.isVisible()) {
                 int cy = y + (height - m.getHeight()) / 2;
@@ -158,7 +158,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             if(useBaseline)
                 throw new NotSupportedException("BaseLine is not supported.");
 
-            for (int i = 0 ; i < nmembers ; i++) {
+            for (int i = 0; i < nmembers; i++) {
                 Component m = target.getComponent(i);
                 if (m.isVisible()) {
                     Dimension d = m.getPreferredSize();

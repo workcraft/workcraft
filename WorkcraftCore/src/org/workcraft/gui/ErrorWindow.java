@@ -119,7 +119,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             if (systemErr != null) {
                 systemErr.write(b, off, len);
             }
-            String s = new String(b , off , len);
+            String s = new String(b, off, len);
             puts(s);
         }
 

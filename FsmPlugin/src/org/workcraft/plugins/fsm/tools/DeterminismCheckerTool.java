@@ -29,7 +29,7 @@ public class DeterminismCheckerTool extends VerificationTool {
         final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
         HashSet<State> nondeterministicStates = checkDeterminism(fsm);
         if (nondeterministicStates.isEmpty()) {
-            JOptionPane.showMessageDialog(null,    "The model is deterministic." ,
+            JOptionPane.showMessageDialog(null,    "The model is deterministic.",
                     "Verification result", JOptionPane.INFORMATION_MESSAGE);
         } else {
             String stateStr = FsmUtils.statesToString(fsm, nondeterministicStates);

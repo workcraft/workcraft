@@ -193,7 +193,7 @@ public class Geometry {
             }
         }
         info.tEnd = t;
-        info.headOrientation = Math.atan2(info.headPosition.getY() - pt.getY() , info.headPosition.getX() - pt.getX());
+        info.headOrientation = Math.atan2(info.headPosition.getY() - pt.getY(), info.headPosition.getX() - pt.getX());
         return info;
     }
 

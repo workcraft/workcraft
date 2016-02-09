@@ -27,6 +27,7 @@
         <module name="RedundantImport" />
 
         <module name="NoWhitespaceAfter" />
+        <module name="NoWhitespaceBefore" />
     </module>
 
 </module>

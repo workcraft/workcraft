@@ -244,7 +244,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
             exp = exp + str;
             str = bracketInternals();
           }
-          result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).formula();
+          result = new CpogExpressionParser(new StringReader(exp), vars, graphName, bool).formula();
       break;
     default:
       jj_la1[4] = jj_gen;
