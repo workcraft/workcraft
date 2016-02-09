@@ -20,8 +20,6 @@
 */
 package org.workcraft.plugins.cpog.expressions;
 
-import org.workcraft.plugins.cpog.expressions.CpogFormula;
-
 public interface CpogWorker {
 
     CpogFormula overlay(CpogFormula x, CpogFormula y);

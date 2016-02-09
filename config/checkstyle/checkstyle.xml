@@ -23,5 +23,6 @@
         <module name="NoLineWrap" />
         <module name="PackageName" />
         <module name="UnusedImports" />
+        <module name="RedundantImport" />
     </module>
 </module>
