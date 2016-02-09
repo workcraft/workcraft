@@ -25,9 +25,9 @@ import java.awt.Color;
 import java.util.Collection;
 
 public class Coloriser {
-    private static float comp1[] = new float[4];
-    private static float comp2[] = new float[4];
-    private static float comp3[] = new float[4];
+    private static float[] comp1 = new float[4];
+    private static float[] comp2 = new float[4];
+    private static float[] comp3 = new float[4];
 
     private static float blend(float col, float orig) {
         return col + (1.0f - col) * orig * 0.8f;

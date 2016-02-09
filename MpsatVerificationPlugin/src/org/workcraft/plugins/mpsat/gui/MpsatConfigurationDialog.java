@@ -80,9 +80,9 @@ public class MpsatConfigurationDialog extends JDialog {
         createReachPanel();
         createButtonsPanel();
 
-        double size[][] = new double[][] {
+        double[][] size = new double[][] {
                 {TableLayout.FILL},
-                {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonsPanel.getPreferredSize().height}
+                {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonsPanel.getPreferredSize().height},
         };
 
         layout = new TableLayout(size);

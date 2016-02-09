@@ -18,7 +18,7 @@ public class MaxCpogTest {
             "00011",
             "11111",
             "10111",
-            "1z1ZZ"
+            "1z1ZZ",
     };
 
     @Test

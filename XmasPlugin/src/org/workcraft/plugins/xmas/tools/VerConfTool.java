@@ -67,22 +67,22 @@ public class VerConfTool implements Tool {
              "q1",
              "q2",
              "a1",
-             "a2"
+             "a2",
     };
 
     String[] lvlchoices = {
              "normal",
-             "advanced"
+             "advanced",
     };
 
     String[] hlchoices = {
              "none",
-             "sel"
+             "sel",
     };
 
     String[] solchoices = {
              "text",
-             "popup"
+             "popup",
     };
 
     String[] solno = {
@@ -93,7 +93,7 @@ public class VerConfTool implements Tool {
              "5",
              "6",
              "7",
-             "8"
+             "8",
     };
 
     public void dispose() {

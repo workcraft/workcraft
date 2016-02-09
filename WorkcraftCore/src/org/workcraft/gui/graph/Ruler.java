@@ -39,14 +39,14 @@ public class Ruler implements GridListener {
     private Color background = new Color(225, 231, 242);
     private Font font;
     private Color foreground = new Color(0, 0, 0);
-    private String horizontalMajorCaptions[];
+    private String[] horizontalMajorCaptions;
     private int[] horizontalMajorTicks;
     private int[] horizontalMinorTicks;
     private int majorTickSize = 10;
     private int minorTickSize = 3;
     private Rectangle shape;
     private int size = 15;
-    private String verticalMajorCaptions[];
+    private String[] verticalMajorCaptions;
     private int[] verticalMajorTicks;
     private int[] verticalMinorTicks;
 

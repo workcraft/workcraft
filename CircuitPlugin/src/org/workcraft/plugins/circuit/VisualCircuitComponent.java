@@ -593,7 +593,7 @@ public class VisualCircuitComponent extends VisualComponent implements
         g.fill(bb);
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
         if (getIsEnvironment()) {
-            float dash[] = {0.25f, 0.25f };
+            float[] dash = {0.25f, 0.25f };
             g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
                     BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
         } else {

@@ -44,9 +44,9 @@ public class TaskControl extends JPanel {
     volatile boolean cancelRequested;
 
     public TaskControl (String taskDescription) {
-        double size[][] = {
+        double[][] size = {
                 {TableLayout.FILL, 80, 100},
-                {20, 20, 20}
+                {20, 20, 20},
         };
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);

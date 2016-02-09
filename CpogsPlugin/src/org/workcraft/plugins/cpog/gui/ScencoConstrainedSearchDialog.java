@@ -102,8 +102,8 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             height = 110;
         }
 
-        double size[][] = new double[][] {{TableLayout.FILL },
-                {60, height, TableLayout.FILL, 39 } };
+        double[][] size = new double[][] {{TableLayout.FILL },
+                {60, height, TableLayout.FILL, 39 }, };
 
         layout = new TableLayout(size);
         layout.setHGap(3);
@@ -391,7 +391,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                     settings.setBits(Integer.parseInt(bitsText.getText()));
 
                     settings.setCustomEncMode(true);
-                    String encodings[] = new String[m];
+                    String[] encodings = new String[m];
                     for (int i = 0; i < m; i++) {
                         encodings[i] = (String) encodingTable.getModel()
                                 .getValueAt(i, 1);

@@ -243,7 +243,7 @@ public class ParallelSimDialog  extends JDialog{
     private void createEventInfoPanel(){
         eventInfoPanel = new JPanel();
 
-        String colNames[] = {"Name", "Label"};
+        String[] colNames = {"Name", "Label"};
 
         JTable table = new JTable(createData(), colNames);
         table.setEnabled(false);
@@ -256,7 +256,7 @@ public class ParallelSimDialog  extends JDialog{
     }
 
     private String[][] createData(){
-        String dataVal[][] = new String[this.minFire.size()+1][2];
+        String[][] dataVal = new String[this.minFire.size()+1][2];
 
         dataVal[0][0] = net.getNodeReference(clickedEvent)+ "(clicked)";
         dataVal[0][1] = this.clickedEvent.getLabel();

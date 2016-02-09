@@ -78,9 +78,9 @@ public class PcompDialog extends JDialog {
     }
 
     private JPanel createContents() {
-        double sizes[][] = {
+        double[][] sizes = {
                 {TableLayout.FILL, TableLayout.PREFERRED },
-                {TableLayout.FILL, TableLayout.PREFERRED }
+                {TableLayout.FILL, TableLayout.PREFERRED },
         };
 
         final JPanel content = new JPanel(new TableLayout(sizes));

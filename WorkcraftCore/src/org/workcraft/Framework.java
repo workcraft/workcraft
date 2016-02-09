@@ -94,7 +94,7 @@ import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
 
 
-public class Framework {
+public final class Framework {
     private static String SETTINGS_DIRECTORY_NAME = ".workcraft";
     private static String CONFIG_FILE_NAME = "config.xml";
     private static String PLUGINS_FILE_NAME = "plugins.xml";
@@ -297,7 +297,7 @@ public class Framework {
 
     public String[] getModelNames() {
         LinkedList<Class<?>> list = modelManager.getModelList();
-        String a[] = new String[list.size()];
+        String[] a = new String[list.size()];
         int i=0;
         for (Class<?> cls : list)
             a[i++] = cls.getName();

@@ -93,7 +93,7 @@ public class OutputWindow extends JPanel {
         }
 
         @Override
-        public void write(byte b[]) throws IOException {
+        public void write(byte[] b) throws IOException {
             if (systemOut != null) {
                 systemOut.write(b);
             }
@@ -101,7 +101,7 @@ public class OutputWindow extends JPanel {
         }
 
         @Override
-        public void write(byte b[], int off, int len) throws IOException {
+        public void write(byte[] b, int off, int len) throws IOException {
             if (systemOut != null) {
                 systemOut.write(b, off, len);
             }

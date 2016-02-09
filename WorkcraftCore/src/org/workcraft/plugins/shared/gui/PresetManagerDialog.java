@@ -33,7 +33,7 @@ public class PresetManagerDialog<T> extends JDialog {
 
         double[][] size = {
                 {TableLayout.FILL, 100 },
-                {20, 20, TableLayout.FILL, 20 }
+                {20, 20, TableLayout.FILL, 20 },
         };
 
         TableLayout layout = new TableLayout(size);

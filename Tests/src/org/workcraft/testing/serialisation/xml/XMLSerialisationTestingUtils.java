@@ -81,7 +81,7 @@ public class XMLSerialisationTestingUtils {
                         new LegacyPluginInfo (EnumSerialiser.class),
                         new LegacyPluginInfo (AffineTransformSerialiser.class),
                         new LegacyPluginInfo (VisualConnectionSerialiser.class),
-                        new LegacyPluginInfo (ImplicitPlaceArcSerialiser.class)
+                        new LegacyPluginInfo (ImplicitPlaceArcSerialiser.class),
                 };
             } else if (interfaceType.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class))
             {

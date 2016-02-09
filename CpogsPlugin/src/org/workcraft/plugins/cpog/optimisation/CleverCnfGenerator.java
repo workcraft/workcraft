@@ -46,7 +46,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 {
     Cnf result = new Cnf();
 
-    private static class Void { private Void(){} }
+    private static final class Void { private Void(){} }
 
     static class ConstantExpectingCnfGenerator implements BooleanVisitor<Void>
     {

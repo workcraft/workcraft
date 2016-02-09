@@ -271,8 +271,8 @@ public class CycleAnalyserTool extends AbstractTool {
         }
         // Prepare temporary node array and adjacency matrix
         int size = allComponents.size();
-        VisualComponent tmpComponents[] = allComponents.toArray(new VisualComponent[size]);
-        boolean adjMatrix[][] = new boolean[size][size];
+        VisualComponent[] tmpComponents = allComponents.toArray(new VisualComponent[size]);
+        boolean[][] adjMatrix = new boolean[size][size];
         for (int i = 0; i < size; i++) {
             HashSet<Node> preset = new HashSet<Node>(dfs.getPreset(tmpComponents[i]));
             HashSet<Node> postset = new HashSet<Node>(dfs.getPostset(tmpComponents[i]));

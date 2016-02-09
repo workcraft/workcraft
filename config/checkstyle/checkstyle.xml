@@ -28,6 +28,12 @@
 
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
+
+        <module name="FinalClass" />
+
+        <module name="ArrayTypeStyle" />
+        <module name="ArrayTrailingComma" />
+        <module name="UpperEll" />
     </module>
 
 </module>
