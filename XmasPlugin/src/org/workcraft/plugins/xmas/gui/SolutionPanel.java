@@ -31,8 +31,7 @@ public class SolutionPanel extends JPanel {
         JButton saveButton = new JButton("Save");
 
         JButton playButton = new JButton("Play trace");
-        playButton.addActionListener(new ActionListener()
-        {
+        playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 /*final WorkspaceEntry we = task.getWorkspaceEntry();

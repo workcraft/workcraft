@@ -26,17 +26,14 @@ import static org.workcraft.plugins.cpog.optimisation.CnfOperations.or;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TwoHotRangeProvider
-{
+public class TwoHotRangeProvider {
     private Cnf constraints = new Cnf();
 
-    public Cnf getConstraints()
-    {
+    public Cnf getConstraints() {
         return constraints;
     }
 
-    public TwoHotRange generate(String name, int range)
-    {
+    public TwoHotRange generate(String name, int range) {
         if(range<2)
             throw new RuntimeException("can't select 2 hot out of "+range);
 
@@ -51,8 +48,7 @@ public class TwoHotRangeProvider
         for(int i=0;i<range-2;i++)
             constraints.add(or(not(sort2.get(i))));
 
-        for(int i=0;i<range-2;i+=2)
-        {
+        for(int i=0;i<range-2;i+=2) {
             constraints.add(or(not(literals.get(i)), not(literals.get(i+1))));
         }
 
@@ -81,8 +77,7 @@ public class TwoHotRangeProvider
         for(int i=0;i<vars.length;i++)
             preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation()?"i":"")+ "_sv"+i));
 
-        for(int i=0;i<vars.length;i++)
-        {
+        for(int i=0;i<vars.length;i++) {
             Literal res = preResult.get(i);
             Literal sel = code.get(i);
             Literal var = vars[i];

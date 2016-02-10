@@ -5,7 +5,7 @@ import java.awt.Color;
 public interface Decoration {
     Color getColorisation();
     Color getBackground();
-    public static class Empty implements Decoration {
+    class Empty implements Decoration {
 
         @Override
         public Color getColorisation() {

@@ -24,5 +24,5 @@ package org.workcraft.serialisation.xml;
 import org.workcraft.exceptions.DeserialisationException;
 
 public interface NodeFinaliser {
-    public void finaliseInstance(Object instance) throws DeserialisationException;
+    void finaliseInstance(Object instance) throws DeserialisationException;
 }

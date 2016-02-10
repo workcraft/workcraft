@@ -21,5 +21,5 @@
 package org.workcraft.plugins.cpog.optimisation;
 
 public interface SimpleBooleanFormula {
-    abstract void accept(ReducedBooleanVisitor constantExpectingCnfGenerator);
+    void accept(ReducedBooleanVisitor constantExpectingCnfGenerator);
 }

@@ -21,8 +21,7 @@ public class WorkspaceMemoryObject {
         return model;
     }
 
-    public boolean isVisualModel()
-    {
+    public boolean isVisualModel() {
         return model instanceof VisualModel;
     }
 }

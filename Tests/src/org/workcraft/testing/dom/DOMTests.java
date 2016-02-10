@@ -60,8 +60,7 @@ public class DOMTests {
         assertFalse (pn.getConnections(t1).contains(con1));
 
         boolean thrown = true;
-        try
-        {
+        try {
             pn.getNodeReference(null);
             thrown = false;
         }catch(Throwable th) {}

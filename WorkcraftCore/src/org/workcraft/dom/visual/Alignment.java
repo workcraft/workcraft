@@ -9,7 +9,7 @@ public enum Alignment {
 
     private final String name;
 
-    private Alignment(String name) {
+    Alignment(String name) {
         this.name = name;
     }
 

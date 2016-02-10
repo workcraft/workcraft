@@ -24,7 +24,7 @@ package org.workcraft.workspace;
 import java.io.File;
 
 public interface FileHandler {
-    public boolean accept (File f);
-    public void execute (File f);
-    public String getDisplayName();
+    boolean accept (File f);
+    void execute (File f);
+    String getDisplayName();
 }

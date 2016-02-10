@@ -30,18 +30,15 @@ import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
-public class FunctionDeserialiser implements CustomXMLDeserialiser
-{
+public class FunctionDeserialiser implements CustomXMLDeserialiser {
     @Override
-    public String getClassName()
-    {
+    public String getClassName() {
         return FunctionContact.class.getName();
     }
 
     @Override
     public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
-            Object... constructorParameters)
-    {
+            Object... constructorParameters) {
         return new FunctionContact();
     }
 

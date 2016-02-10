@@ -30,41 +30,41 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 
 
 public interface Model extends NodeContext {
-    public void setTitle(String title);
-    public String getTitle();
+    void setTitle(String title);
+    String getTitle();
 
     /**
      * @return a user-friendly display name for this model, which is either
      * read from <type>DisplayName</type> annotation, or, if the annotation
      * is missing, taken from the name of the model class.
      */
-    public String getDisplayName();
+    String getDisplayName();
 
     /**
      * @return a short name for this model, which is either read from
      * <type>ShortName</type> annotation, or, if the annotation is
      * missing, made as an acronym from the geDisplayName.
      */
-    public String getShortName();
+    String getShortName();
 
     /// methods for work with referenced component names
-    public ReferenceManager getReferenceManager();
-    public Node getNodeByReference(NamespaceProvider provider, String reference);
-    public String getNodeReference(NamespaceProvider provider, Node node);
-    public Node getNodeByReference(String reference);
-    public String getNodeReference(Node node);
-    public String getName(Node node);
-    public void setName(Node node, String name);
+    ReferenceManager getReferenceManager();
+    Node getNodeByReference(NamespaceProvider provider, String reference);
+    String getNodeReference(NamespaceProvider provider, Node node);
+    Node getNodeByReference(String reference);
+    String getNodeReference(Node node);
+    String getName(Node node);
+    void setName(Node node, String name);
 
-    public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
+    void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
 
-    public Container getRoot();
-    public <R> Set<R> getPreset(Node node, Class<R> type);
-    public <R> Set<R> getPostset(Node node, Class<R> type);
+    Container getRoot();
+    <R> Set<R> getPreset(Node node, Class<R> type);
+    <R> Set<R> getPostset(Node node, Class<R> type);
 
-    public void add (Node node);
-    public void remove (Node node);
-    public void remove (Collection<Node> nodes);
+    void add (Node node);
+    void remove (Node node);
+    void remove (Collection<Node> nodes);
 
-    public ModelProperties getProperties(Node node);
+    ModelProperties getProperties(Node node);
 }

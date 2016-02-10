@@ -42,8 +42,7 @@ public class ListMap <K,V> {
 
     public void remove(K key, V value) {
         LinkedList<V> list = map.get(key);
-        if (list != null)
-        {
+        if (list != null) {
             list.remove(value);
             if (list.isEmpty())
                 map.remove(key);
@@ -70,8 +69,7 @@ public class ListMap <K,V> {
         return map.values();
     }
 
-    public void clear()
-    {
+    public void clear() {
         map.clear();
     }
 }

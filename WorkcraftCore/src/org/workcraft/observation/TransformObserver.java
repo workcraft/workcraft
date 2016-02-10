@@ -24,6 +24,6 @@ package org.workcraft.observation;
 import org.workcraft.dom.visual.TransformDispatcher;
 
 public interface TransformObserver {
-    public void subscribe (TransformDispatcher dispatcher);
-    public void notify (TransformEvent e);
+    void subscribe (TransformDispatcher dispatcher);
+    void notify (TransformEvent e);
 }

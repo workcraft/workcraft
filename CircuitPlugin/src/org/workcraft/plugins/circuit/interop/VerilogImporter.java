@@ -85,7 +85,7 @@ public class VerilogImporter implements Importer {
         public final String resetFunction;
         public final HashMap<String, String> connections; // (portName -> netName)
 
-        public AssignGate(String outputName, String setFunction, String resetFunction, HashMap<String, String> connections) {
+        AssignGate(String outputName, String setFunction, String resetFunction, HashMap<String, String> connections) {
             this.outputName = outputName;
             this.setFunction = setFunction;
             this.resetFunction = resetFunction;

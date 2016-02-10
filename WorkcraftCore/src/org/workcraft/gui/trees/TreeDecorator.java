@@ -23,6 +23,6 @@ package org.workcraft.gui.trees;
 import javax.swing.Icon;
 
 public interface TreeDecorator<Node> {
-    public String getName(Node node);
-    public Icon getIcon(Node node);
+    String getName(Node node);
+    Icon getIcon(Node node);
 }

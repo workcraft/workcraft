@@ -29,12 +29,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class Dnf extends Nf<DnfClause> {
 
-    public Dnf()
-    {
+    public Dnf() {
     }
 
-    public Dnf(DnfClause... clauses)
-    {
+    public Dnf(DnfClause... clauses) {
         super(clauses);
     }
 

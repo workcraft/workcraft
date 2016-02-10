@@ -20,7 +20,7 @@ public class SignalEvent extends Event {
 
         private final String name;
 
-        private Direction(String name) {
+        Direction(String name) {
             this.name = name;
         }
 

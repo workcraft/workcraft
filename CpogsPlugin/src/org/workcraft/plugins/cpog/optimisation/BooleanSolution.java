@@ -24,5 +24,5 @@ import java.util.Collection;
 
 public interface BooleanSolution {
     Collection<BooleanVariable> getVariables();
-    public boolean getSolution(BooleanVariable variable);
+    boolean getSolution(BooleanVariable variable);
 }

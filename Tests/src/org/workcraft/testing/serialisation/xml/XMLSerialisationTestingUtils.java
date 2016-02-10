@@ -69,8 +69,7 @@ public class XMLSerialisationTestingUtils {
 
         public LegacyPluginInfo[] getLegacyPlugins(Class<?> interfaceType) {
 
-            if (interfaceType.equals(org.workcraft.serialisation.xml.XMLSerialiser.class))
-            {
+            if (interfaceType.equals(org.workcraft.serialisation.xml.XMLSerialiser.class)) {
                 return new LegacyPluginInfo[] {
                         new LegacyPluginInfo (IntSerialiser.class),
                         new LegacyPluginInfo (BooleanSerialiser.class),
@@ -83,8 +82,7 @@ public class XMLSerialisationTestingUtils {
                         new LegacyPluginInfo (VisualConnectionSerialiser.class),
                         new LegacyPluginInfo (ImplicitPlaceArcSerialiser.class),
                 };
-            } else if (interfaceType.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class))
-            {
+            } else if (interfaceType.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class)) {
                 return new LegacyPluginInfo[] {
                         new LegacyPluginInfo (IntDeserialiser.class),
                         new LegacyPluginInfo (BooleanDeserialiser.class),

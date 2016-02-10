@@ -29,7 +29,7 @@ public class DotExporter implements Exporter {
         public final Collection<String> destinations;
         public final String comment;
 
-        public ExportNode(String id, double width, double height, Collection<String> destinations, String comment) {
+        ExportNode(String id, double width, double height, Collection<String> destinations, String comment) {
             this.id = id;
             this.width = width;
             this.height = height;

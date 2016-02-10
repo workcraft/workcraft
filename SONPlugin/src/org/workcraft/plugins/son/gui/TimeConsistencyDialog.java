@@ -152,10 +152,8 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
         nodeList.setCellRenderer(new ItemListRenderer());
         nodeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        nodeList.addMouseListener(new MouseAdapter()
-        {
-            public void mousePressed(MouseEvent event)
-            {
+        nodeList.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent event) {
                 JList<ListItem> list = (JList<ListItem>) event.getSource();
 
                 int index = list.locationToIndex(event.getPoint());

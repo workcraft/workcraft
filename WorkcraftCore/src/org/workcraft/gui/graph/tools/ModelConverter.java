@@ -14,22 +14,22 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 
 public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel>  {
 
-    public TSrcModel getSrcModel();
-    public TDstModel getDstModel();
-    public Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap();
-    public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap();
+    TSrcModel getSrcModel();
+    TDstModel getDstModel();
+    Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap();
+    Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap();
 
-    public String convertNodeName(String srcName, Container container);
-    public Container getRefToDstPage(String ref);
-    public VisualNode getSrcToDstNode(VisualNode srcNode);
+    String convertNodeName(String srcName, Container container);
+    Container getRefToDstPage(String ref);
+    VisualNode getSrcToDstNode(VisualNode srcNode);
 
-    public void preprocessing();
-    public void postprocessing();
+    void preprocessing();
+    void postprocessing();
 
-    public VisualPage convertPage(VisualPage srcPage);
-    public VisualComponent convertComponent(VisualComponent srcComponent);
-    public VisualReplica convertReplica(VisualReplica srcReplica);
-    public VisualGroup convertGroup(VisualGroup srcGroup);
-    public VisualConnection convertConnection(VisualConnection srcConnection);
+    VisualPage convertPage(VisualPage srcPage);
+    VisualComponent convertComponent(VisualComponent srcComponent);
+    VisualReplica convertReplica(VisualReplica srcReplica);
+    VisualGroup convertGroup(VisualGroup srcGroup);
+    VisualConnection convertConnection(VisualConnection srcConnection);
 
 }

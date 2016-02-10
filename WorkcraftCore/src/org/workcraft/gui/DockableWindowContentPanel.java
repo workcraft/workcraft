@@ -100,7 +100,7 @@ public class DockableWindowContentPanel extends JPanel {
             return button;
         }
 
-        public DockableViewHeader(String title, int options) {
+        DockableViewHeader(String title, int options) {
             super();
             setLayout(new BorderLayout());
 

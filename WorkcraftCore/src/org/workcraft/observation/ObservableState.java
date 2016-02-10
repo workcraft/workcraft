@@ -22,7 +22,7 @@
 package org.workcraft.observation;
 
 public interface ObservableState {
-    public void addObserver (StateObserver obs);
-    public void removeObserver (StateObserver obs);
-    public void sendNotification (StateEvent e);
+    void addObserver (StateObserver obs);
+    void removeObserver (StateObserver obs);
+    void sendNotification (StateEvent e);
 }

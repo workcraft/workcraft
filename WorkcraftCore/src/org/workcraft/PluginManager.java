@@ -132,8 +132,7 @@ public class PluginManager implements PluginProvider {
     }
 
     private void initModules() {
-        for(PluginInfo<? extends Module> info : getPlugins(Module.class))
-        {
+        for(PluginInfo<? extends Module> info : getPlugins(Module.class)) {
             final Module module = info.newInstance();
             try {
                 LogUtils.logMessageLine("  Loading module: " + module.getDescription());
@@ -205,8 +204,7 @@ public class PluginManager implements PluginProvider {
 
         LogUtils.logMessageLine("" + classes.size() + " plugin(s) found.");
 
-        for(Class<?> cls : classes)
-        {
+        for(Class<?> cls : classes) {
             final LegacyPluginInfo info = new LegacyPluginInfo(cls);
             pluginInfos.add(info);
             processLegacyPlugin(cls, info);

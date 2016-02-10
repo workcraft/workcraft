@@ -1,6 +1,6 @@
 package org.workcraft;
 
 public interface Module extends Plugin {
-    public String getDescription();
-    public void init();
+    String getDescription();
+    void init();
 }

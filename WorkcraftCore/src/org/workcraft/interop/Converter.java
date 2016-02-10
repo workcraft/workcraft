@@ -26,8 +26,8 @@ import org.workcraft.Plugin;
 import org.workcraft.dom.Model;
 
 public interface Converter extends Plugin, FileFilter {
-    public Class <? extends Model> getSourceModelClass();
-    public Class <? extends Model> getTargetModelClass();
-    public boolean supportsVisual();
-    public Model convert (Model source);
+    Class <? extends Model> getSourceModelClass();
+    Class <? extends Model> getTargetModelClass();
+    boolean supportsVisual();
+    Model convert (Model source);
 }

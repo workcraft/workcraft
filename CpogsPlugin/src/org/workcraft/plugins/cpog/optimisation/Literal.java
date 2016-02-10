@@ -23,13 +23,11 @@ package org.workcraft.plugins.cpog.optimisation;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-public class Literal implements BooleanFormula
-{
+public class Literal implements BooleanFormula {
     private BooleanVariable variable;
     private boolean negation;
 
-    public Literal()
-    {
+    public Literal() {
     }
 
     public static Literal Zero = new Literal(new FreeVariable("0"));

@@ -31,12 +31,10 @@ public abstract class Clause implements BooleanFormula {
 
     private List<Literal> literals = new ArrayList<Literal>();
 
-    public Clause()
-    {
+    public Clause() {
     }
 
-    public Clause(Literal... literals)
-    {
+    public Clause(Literal... literals) {
         this(Arrays.asList(literals));
     }
 
@@ -52,13 +50,11 @@ public abstract class Clause implements BooleanFormula {
         return literals;
     }
 
-    public void add(List<Literal> list)
-    {
+    public void add(List<Literal> list) {
         literals.addAll(list);
     }
 
-    public void add(Literal... arr)
-    {
+    public void add(Literal... arr) {
         literals.addAll(Arrays.asList(arr));
     }
 

@@ -106,10 +106,8 @@ public class ScencoSingleSequentialDialog extends JDialog {
                 abcCheck = new JCheckBox("", settings.isAbcFlag());
                 abcLabel = new JLabel(ScencoDialogSupport.textAbcLabel);
                 //abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
-                abcLabel.addMouseListener(new MouseAdapter()
-                {
-                    public void mouseClicked(MouseEvent e)
-                    {
+                abcLabel.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
                         abcCheck.setSelected(abcCheck.isSelected() ? false : true);
                     }
                 });
@@ -118,10 +116,8 @@ public class ScencoSingleSequentialDialog extends JDialog {
                 verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
                 //verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
                 verboseModeCheck = new JCheckBox("",false);
-                verboseModeLabel.addMouseListener(new MouseAdapter()
-                {
-                    public void mouseClicked(MouseEvent e)
-                    {
+                verboseModeLabel.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
                         verboseModeCheck.setSelected(verboseModeCheck.isSelected() ? false : true);
                     }
                 });

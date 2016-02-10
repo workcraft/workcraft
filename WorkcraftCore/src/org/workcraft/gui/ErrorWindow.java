@@ -76,7 +76,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
     class ErrorStreamView extends FilterOutputStream implements ChangeListener {
         JTextArea target;
 
-        public ErrorStreamView(OutputStream aStream, JTextArea target) {
+        ErrorStreamView(OutputStream aStream, JTextArea target) {
             super(aStream);
             this.target = target;
         }

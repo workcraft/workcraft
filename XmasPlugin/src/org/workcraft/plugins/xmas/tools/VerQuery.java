@@ -67,7 +67,7 @@ public class VerQuery extends AbstractTool implements Tool {
         String name;
         int chk;
 
-        public qslist(String s1,int n) {
+        qslist(String s1,int n) {
             name = s1;
             chk=n;
         }
@@ -176,8 +176,7 @@ public class VerQuery extends AbstractTool implements Tool {
            return args;
     }
 
-    private static String process_loc(String file)
-    {
+    private static String process_loc(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -193,8 +192,7 @@ public class VerQuery extends AbstractTool implements Tool {
         return str;
     }
 
-    private static void process_qsl(String file)
-    {
+    private static void process_qsl(String file) {
         qslist.clear();
         Scanner sc=null;
         try {
@@ -214,8 +212,7 @@ public class VerQuery extends AbstractTool implements Tool {
         }
     }
 
-    private static String process_eq(String file)
-    {
+    private static String process_eq(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -231,8 +228,7 @@ public class VerQuery extends AbstractTool implements Tool {
         return str;
     }
 
-    private static String process_que(String file)
-    {
+    private static String process_que(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -440,8 +436,7 @@ public class VerQuery extends AbstractTool implements Tool {
     static List<JCheckBox> jcbn = new ArrayList<JCheckBox>();
     JCheckBox jcb, jcblast;
 
-    void populate_md(int grnum)
-    {
+    void populate_md(int grnum) {
         int i;
 
         mdcombob.addItem("ALL");
@@ -451,8 +446,7 @@ public class VerQuery extends AbstractTool implements Tool {
         }
     }
 
-    void populate_qlists(Xmas cnet)
-    {
+    void populate_qlists(Xmas cnet) {
         for (Node node : cnet.getNodes()) {
             if(node instanceof QueueComponent) {
                 //System.out.println("QQQQ " + cnet.getName(node) + ".");
@@ -462,8 +456,7 @@ public class VerQuery extends AbstractTool implements Tool {
         }
     }
 
-    void populate_qslists(Xmas cnet)
-    {
+    void populate_qslists(Xmas cnet) {
         int cnt=0;
 
         for (Node node : cnet.getNodes()) {

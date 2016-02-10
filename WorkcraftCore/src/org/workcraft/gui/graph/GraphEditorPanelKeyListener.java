@@ -31,7 +31,7 @@ class GraphEditorPanelKeyListener implements KeyListener {
     GraphEditorPanel editor;
     GraphEditorKeyListener forwardListener;
 
-    public GraphEditorPanelKeyListener(GraphEditorPanel editor, GraphEditorKeyListener forwardListener) {
+    GraphEditorPanelKeyListener(GraphEditorPanel editor, GraphEditorKeyListener forwardListener) {
         this.editor = editor;
         this.forwardListener = forwardListener;
     }

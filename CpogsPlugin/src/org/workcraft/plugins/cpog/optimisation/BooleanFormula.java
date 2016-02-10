@@ -24,5 +24,5 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 
 public interface BooleanFormula {
-    abstract <T> T accept(BooleanVisitor<T> visitor);
+    <T> T accept(BooleanVisitor<T> visitor);
 }

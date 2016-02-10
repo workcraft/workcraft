@@ -29,22 +29,22 @@ import javax.swing.JPanel;
 import org.workcraft.dom.visual.VisualModel;
 
 public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMouseListener {
-    public void activated(final GraphEditor editor);
-    public void deactivated(final GraphEditor editor);
-    public void reactivated(final GraphEditor editor);
+    void activated(final GraphEditor editor);
+    void deactivated(final GraphEditor editor);
+    void reactivated(final GraphEditor editor);
 
-    public void drawInUserSpace(final GraphEditor editor, Graphics2D g);
-    public void drawInScreenSpace(final GraphEditor editor, Graphics2D g);
-    public Decorator getDecorator(final GraphEditor editor);
+    void drawInUserSpace(final GraphEditor editor, Graphics2D g);
+    void drawInScreenSpace(final GraphEditor editor, Graphics2D g);
+    Decorator getDecorator(final GraphEditor editor);
 
-    public VisualModel getUnderlyingModel(VisualModel model);
-    public void createInterfacePanel(final GraphEditor editor);
-    public JPanel getInterfacePanel();
+    VisualModel getUnderlyingModel(VisualModel model);
+    void createInterfacePanel(final GraphEditor editor);
+    JPanel getInterfacePanel();
 
-    public String getLabel();
-    public Icon getIcon();
-    public int getHotKeyCode();
-    public String getHintMessage();
-    public boolean requiresButton();
+    String getLabel();
+    Icon getIcon();
+    int getHotKeyCode();
+    String getHintMessage();
+    boolean requiresButton();
 
 }

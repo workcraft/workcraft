@@ -18,7 +18,7 @@ abstract class AbstractStructuralVerification implements StructuralVerification{
 
     private RelationAlgorithm relationAlg;
 
-    public AbstractStructuralVerification(SON net){
+    AbstractStructuralVerification(SON net){
         this.net = net;
 
         relationAlg = new RelationAlgorithm(net);

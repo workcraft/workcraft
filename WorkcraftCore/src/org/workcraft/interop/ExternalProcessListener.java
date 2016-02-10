@@ -22,7 +22,7 @@
 package org.workcraft.interop;
 
 public interface ExternalProcessListener {
-    public void outputData(final byte[] data);
-    public void errorData(final byte[] data);
-    public void processFinished(int returnCode);
+    void outputData(final byte[] data);
+    void errorData(final byte[] data);
+    void processFinished(int returnCode);
 }

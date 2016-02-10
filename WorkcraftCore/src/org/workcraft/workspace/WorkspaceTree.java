@@ -67,8 +67,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
         }
 
         @Override
-        public void workspaceLoaded()
-        {
+        public void workspaceLoaded() {
             listener.restructured(Path.root(getRoot()));
         }
     }
@@ -124,8 +123,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
         return isLeaf(workspace, node);
     }
 
-    public static boolean isLeaf(Workspace workspace, Path<String> path)
-    {
+    public static boolean isLeaf(Workspace workspace, Path<String> path) {
         MountTree mount = workspace.getMountTree(path);
         return mount.subDirs.size() == 0 && !mount.mountTo.isDirectory();
     }

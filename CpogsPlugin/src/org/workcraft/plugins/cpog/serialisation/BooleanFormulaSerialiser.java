@@ -34,12 +34,10 @@ import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 import org.workcraft.util.Identifier;
 
-public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser
-{
+public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
     @Override
     public void serialise(Element element, Object object, final ReferenceProducer internalReferences,
-            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException
-    {
+            ReferenceProducer externalReferences, NodeSerialiser nodeSerialiser) throws SerialisationException {
         BooleanFormula formula = getFormula(object);
         String attributeName = "formula";
 

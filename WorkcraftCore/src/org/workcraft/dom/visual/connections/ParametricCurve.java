@@ -25,11 +25,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public interface ParametricCurve {
-    public Point2D getPointOnCurve (double t);
-    public Point2D getNearestPointOnCurve(Point2D pt);
-    public double getDistanceToCurve(Point2D pt);
-    public Rectangle2D getBoundingBox();
+    Point2D getPointOnCurve (double t);
+    Point2D getNearestPointOnCurve(Point2D pt);
+    double getDistanceToCurve(Point2D pt);
+    Rectangle2D getBoundingBox();
 
-    public Point2D getDerivativeAt(double t);
-    public Point2D getSecondDerivativeAt(double t);
+    Point2D getDerivativeAt(double t);
+    Point2D getSecondDerivativeAt(double t);
 }

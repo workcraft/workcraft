@@ -23,7 +23,7 @@ public class SONConnection extends MathConnection{
 
         private final String name;
 
-        private Semantics(String name) {
+        Semantics(String name) {
             this.name = name;
         }
 

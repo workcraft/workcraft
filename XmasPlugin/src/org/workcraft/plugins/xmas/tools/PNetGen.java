@@ -48,7 +48,7 @@ public class PNetGen implements Tool {
            String a;
            String b;
 
-            public Ids(String s1,String s2) {
+            Ids(String s1,String s2) {
               a = s1;
               b = s2;
             }
@@ -61,7 +61,7 @@ public class PNetGen implements Tool {
            String c;
            String d;
 
-            public Info(String s1,String s2,String s3,String s4) {
+            Info(String s1,String s2,String s3,String s4) {
               a = s1;
               b = s2;
               c = s3;
@@ -91,8 +91,7 @@ public class PNetGen implements Tool {
         }
     }
 
-    private static void Process_file(String file)
-    {
+    private static void Process_file(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -965,8 +964,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         JsonFactory f = new MappingJsonFactory();
         File cpnFile = XmasSettings.getTempVxmCpnFile();
         PrintWriter writer = null;
-        try
-        {
+        try {
 
             initlist();
             File syncFile = XmasSettings.getTempVxmSyncFile();
@@ -1122,14 +1120,11 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                   }
                 }
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
                 e.printStackTrace();
         }
-        finally
-        {
-                if ( writer != null )
-                {
+        finally {
+                if ( writer != null ) {
                     writer.close();
                     System.out.println("Control CPNs created");
                     PNetExt pnconv = new PNetExt(src_nodes,fun_nodes,sw_nodes,syncflag);

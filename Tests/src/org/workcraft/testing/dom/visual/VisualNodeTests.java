@@ -36,14 +36,12 @@ import org.workcraft.util.Hierarchy;
 
 public class VisualNodeTests {
 
-    static VisualGroup createGroup(VisualGroup parent)
-    {
+    static VisualGroup createGroup(VisualGroup parent) {
         return Tools.createGroup(parent);
     }
 
     @Test
-    public void testTransformChangeNotify()
-    {
+    public void testTransformChangeNotify() {
         final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
         final Boolean[] hit = new Boolean[]{false};
         node.addObserver( new StateObserver() {
@@ -61,8 +59,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void testParentToAncestorTransform() throws NotAnAncestorException
-    {
+    public void testParentToAncestorTransform() throws NotAnAncestorException {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
@@ -111,8 +108,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void TestGetPath()
-    {
+    public void TestGetPath() {
         VisualGroup root = createGroup(null);
         Assert.assertEquals(1, Hierarchy.getPath(root).length);
         VisualGroup node1 = createGroup(root);
@@ -122,8 +118,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void TestFindCommonParent()
-    {
+    public void TestFindCommonParent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
@@ -172,8 +167,7 @@ public class VisualNodeTests {
             assertClose(expected[i], actual[i]);
     }
 
-    private void assertClose(double expected, double actual)
-    {
+    private void assertClose(double expected, double actual) {
         double eps = 1e-6;
         Assert.assertTrue("Expected: "+expected+", actual: "+actual, expected-eps<=actual && expected+eps>=actual);
     }

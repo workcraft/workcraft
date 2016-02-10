@@ -150,11 +150,9 @@ public class Workspace {
     public Path<String> getWorkspacePath(File file) {
         Entry<Path<String>,File> bestMount = null;
         Path<String> bestRel = null;
-        for(Entry<Path<String>,File> e : mounts.entrySet())
-        {
+        for(Entry<Path<String>,File> e : mounts.entrySet()) {
             Path<String> relative = getRelative(e.getValue(), file);
-            if(relative != null && (bestRel == null || Path.getPath(relative).size() < Path.getPath(bestRel).size()))
-            {
+            if(relative != null && (bestRel == null || Path.getPath(relative).size() < Path.getPath(bestRel).size())) {
                 bestRel = relative;
                 bestMount = e;
             }
@@ -169,10 +167,8 @@ public class Workspace {
         descendant = descendant.getAbsoluteFile();
 
         List<String> strs = new ArrayList<String>();
-        while(descendant != null)
-        {
-            if(descendant.equals(ancestor))
-            {
+        while(descendant != null) {
+            if(descendant.equals(ancestor)) {
                 Path<String> result = Path.empty();
                 for(int i=0;i<strs.size();i++)
                     result = Path.append(result, strs.get(strs.size()-1-i));
@@ -203,8 +199,7 @@ public class Workspace {
         addMount(Path.fromString(pathRelativeToWorkspace), file, temporary);
     }
 
-    public void addMount(Path<String> path, File file, boolean temporary)
-    {
+    public void addMount(Path<String> path, File file, boolean temporary) {
         final Path<String> wsPath = getWorkspacePath(file);
         if (wsPath != null) {
             throw new RuntimeException("Path already in the workspace: " + wsPath);
@@ -536,7 +531,7 @@ public class Workspace {
         if (!file.exists())
             return;
 
-        if (file.isDirectory())    {
+        if (file.isDirectory()) {
             for (File f : file.listFiles()) {
                 delete(getWorkspacePath(f));
             }

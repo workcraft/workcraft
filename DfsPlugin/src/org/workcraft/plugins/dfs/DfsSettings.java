@@ -55,7 +55,7 @@ public class DfsSettings implements Settings {
         private final String name;
         private final Color[] colors;
 
-        private Palette(String name, Color[] colors) {
+        Palette(String name, Color[] colors) {
             this.name = name;
             this.colors = colors;
         }

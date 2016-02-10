@@ -31,18 +31,17 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 
-class SquareNode extends VisualComponent
-{
+class SquareNode extends VisualComponent {
     Rectangle2D.Double rectOuter;
     Rectangle2D.Double rectInner;
     int resultToReturn;
-    public SquareNode(Container parent, Rectangle2D.Double rectOuter, Rectangle2D.Double rectInner) {
+    SquareNode(Container parent, Rectangle2D.Double rectOuter, Rectangle2D.Double rectInner) {
         super(null);
         this.rectOuter = rectOuter;
         this.rectInner = rectInner;
     }
 
-    public SquareNode(Container parent, Rectangle2D.Double rect) {
+    SquareNode(Container parent, Rectangle2D.Double rect) {
         this(parent, rect, rect);
     }
 

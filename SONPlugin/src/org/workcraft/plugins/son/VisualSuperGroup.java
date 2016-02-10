@@ -70,16 +70,14 @@ public class VisualSuperGroup extends VisualGroup{
     }
 
     @Override
-    public void draw(DrawRequest r)
-    {
+    public void draw(DrawRequest r) {
 
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
 
         Rectangle2D bb = getContentsBoundingBox();
 
-        if (bb != null && getParent() != null)
-        {
+        if (bb != null && getParent() != null) {
             g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
             g.fill(bb);
             g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
@@ -102,18 +100,15 @@ public class VisualSuperGroup extends VisualGroup{
     }
 
     @Override
-    public boolean hitTestInLocalSpace(Point2D p)
-    {
+    public boolean hitTestInLocalSpace(Point2D p) {
         return getContentsBoundingBox().contains(p);
     }
 
-    public void setLabel(String label)
-    {
+    public void setLabel(String label) {
         this.label = label;
     }
 
-    public String getLabel()
-    {
+    public String getLabel() {
         return this.label;
     }
 

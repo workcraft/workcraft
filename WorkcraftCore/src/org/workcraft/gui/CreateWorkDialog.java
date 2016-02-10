@@ -85,7 +85,7 @@ public class CreateWorkDialog extends JDialog {
     static class ListElement implements Comparable<ListElement> {
         public ModelDescriptor descriptor;
 
-        public ListElement(ModelDescriptor descriptor) {
+        ListElement(ModelDescriptor descriptor) {
             this.descriptor = descriptor;
         }
 

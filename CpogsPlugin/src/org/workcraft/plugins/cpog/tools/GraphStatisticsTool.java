@@ -81,8 +81,7 @@ public class GraphStatisticsTool implements Tool {
             }
 
             allArcs += cpog.getArcs(scenario).size();
-            for(VisualArc a : cpog.getArcs(scenario))
-            {
+            for(VisualArc a : cpog.getArcs(scenario)) {
                 if (a.getCondition() == One.instance() || a.getCondition() == Zero.instance()) {
                     simpleArcs++;
                 } else {

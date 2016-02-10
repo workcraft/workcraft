@@ -92,8 +92,7 @@ public class BufferRenderer extends GateRenderer {
 
                         Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
-                        for(String v : result.contactPositions().keySet())
-                        {
+                        for(String v : result.contactPositions().keySet()) {
                             Point2D p = result.contactPositions().get(v);
                             positions.put(v, new Point2D.Double(p.getX() - bubbleSize/2, p.getY()));
                         }
@@ -125,10 +124,8 @@ public class BufferRenderer extends GateRenderer {
                     private Map<String, Point2D> cachedPositions = null;
 
                     @Override
-                    public Rectangle2D boundingBox()
-                    {
-                        if (cachedBB == null)
-                        {
+                    public Rectangle2D boundingBox() {
+                        if (cachedBB == null) {
                             double maxX=0;
                             double sumY=0;
                             for (ComponentRenderingResult res: results) {
@@ -145,8 +142,7 @@ public class BufferRenderer extends GateRenderer {
 
                     @Override
                     public Map<String, Point2D> contactPositions() {
-                        if (cachedPositions == null)
-                        {
+                        if (cachedPositions == null) {
                             Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
                             double x = boundingBox().getMaxX()-boundingBox().getHeight() * ANDGateAspectRatio;
@@ -155,8 +151,7 @@ public class BufferRenderer extends GateRenderer {
                             for (ComponentRenderingResult res: results) {
                                 Rectangle2D rec = res.boundingBox();
 
-                                for(String v : res.contactPositions().keySet())
-                                {
+                                for(String v : res.contactPositions().keySet()) {
                                     Point2D p = res.contactPositions().get(v);
                                     positions.put(v, new Point2D.Double(p.getX() + x - rec.getWidth()/2, p.getY() + y + rec.getHeight()/2));
                                 }
@@ -221,8 +216,7 @@ public class BufferRenderer extends GateRenderer {
 
                     @Override
                     public Rectangle2D boundingBox() {
-                        if (cachedBB == null)
-                        {
+                        if (cachedBB == null) {
                             double maxX=0;
                             double sumY=0;
                             for (ComponentRenderingResult res: results) {
@@ -238,8 +232,7 @@ public class BufferRenderer extends GateRenderer {
                     @Override
                     public Map<String, Point2D> contactPositions() {
 
-                        if (cachedPositions == null)
-                        {
+                        if (cachedPositions == null) {
                             Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
                             double h = boundingBox().getHeight();
@@ -251,8 +244,7 @@ public class BufferRenderer extends GateRenderer {
                             for (ComponentRenderingResult res: results) {
                                 Rectangle2D rec = res.boundingBox();
 
-                                for(String v : res.contactPositions().keySet())
-                                {
+                                for(String v : res.contactPositions().keySet()) {
                                     Point2D p = res.contactPositions().get(v);
 
                                     double xofs = 0;
@@ -327,8 +319,7 @@ public class BufferRenderer extends GateRenderer {
                     private Map<String, Point2D> cachedPositions = null;
                     @Override
                     public Rectangle2D boundingBox() {
-                        if (cachedBB == null)
-                        {
+                        if (cachedBB == null) {
                             double maxX=0;
                             double sumY=0;
                             for (ComponentRenderingResult res: results) {
@@ -345,8 +336,7 @@ public class BufferRenderer extends GateRenderer {
 
                     @Override
                     public Map<String, Point2D> contactPositions() {
-                        if (cachedPositions == null)
-                        {
+                        if (cachedPositions == null) {
                             Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
                             double h = boundingBox().getHeight();
@@ -359,8 +349,7 @@ public class BufferRenderer extends GateRenderer {
                             for (ComponentRenderingResult res: results) {
                                 Rectangle2D rec = res.boundingBox();
 
-                                for(String v : res.contactPositions().keySet())
-                                {
+                                for(String v : res.contactPositions().keySet()) {
                                     double xofs = 0;
                                     if (res.boundingBox().getHeight()<=0.5)
                                         xofs = +getXFromY((y2-(y+rec.getHeight()/2))/(y2-y1), h/3);

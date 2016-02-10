@@ -16,7 +16,7 @@ public class Signal extends Symbol {
 
         private final String name;
 
-        private Type(String name) {
+        Type(String name) {
             this.name = name;
         }
 

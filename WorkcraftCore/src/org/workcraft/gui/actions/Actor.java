@@ -22,5 +22,5 @@
 package org.workcraft.gui.actions;
 
 public interface Actor {
-    public void actionEnableStateChanged(boolean actionEnabled);
+    void actionEnableStateChanged(boolean actionEnabled);
 }

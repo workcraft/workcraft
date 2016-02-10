@@ -22,5 +22,5 @@ package org.workcraft.plugins.cpog.expressions;
 
 
 public interface CpogFormulaVariable extends CpogFormula {
-    public String getLabel();
+    String getLabel();
 }

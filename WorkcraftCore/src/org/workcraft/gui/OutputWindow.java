@@ -87,7 +87,7 @@ public class OutputWindow extends JPanel {
         private String oldPrefix = null;
         private boolean needsNewLine = false;
 
-        public OutputStreamView(OutputStream aStream, JTextArea target) {
+        OutputStreamView(OutputStream aStream, JTextArea target) {
             super(aStream);
             this.target = target;
         }

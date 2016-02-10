@@ -24,21 +24,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MiniSatCnfPrinter implements CnfPrinter
-{
+public class MiniSatCnfPrinter implements CnfPrinter {
     Map<BooleanVariable, Integer> numbers = new HashMap<BooleanVariable, Integer>();
     int varCount = 0;
     private Cnf cnf;
 
     @Override
-    public String print(Cnf cnf)
-    {
+    public String print(Cnf cnf) {
         this.cnf = cnf;
         StringBuilder result = new StringBuilder();
-        for(CnfClause clause : cnf.getClauses())
-        {
-            for(Literal literal : clause.getLiterals())
-            {
+        for(CnfClause clause : cnf.getClauses()) {
+            for(Literal literal : clause.getLiterals()) {
                 Integer number = getNumber(literal.getVariable());
                 if(literal.getNegation())
                     result.append("-");
@@ -73,8 +69,7 @@ public class MiniSatCnfPrinter implements CnfPrinter
 
     private Integer getNumber(BooleanVariable variable) {
         Integer res = numbers.get(variable);
-        if(res == null)
-        {
+        if(res == null) {
             res = ++varCount;
             numbers.put(variable, res);
         }

@@ -42,8 +42,7 @@ public class CpogParsingTool {
     private static final int MAX_SCENARIOS_LINUX = 680;
     private static final int MAX_SCENARIOS_OTHER_OS = 340;
 
-     public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, HashMap<String, GraphReference> refMap)
-     {
+     public CpogParsingTool(HashMap<String, Variable> variableMap, int xpos, HashMap<String, GraphReference> refMap) {
          this.variableMap = variableMap;
          this.xpos = xpos;
          this.refMap = refMap;
@@ -54,14 +53,10 @@ public class CpogParsingTool {
     private HashMap<String, GraphReference> refMap;
     private ArrayList<String> usedReferences;
 
-     public BooleanFormula parseBool(String bool, final VisualCPOG visualCpog) throws ParseException
-     {
-        Func<String, BooleanVariable> boolVars = new Func<String, BooleanVariable>()
-        {
-            public BooleanVariable eval(final String label)
-            {
-                if (variableMap.containsKey(label))
-                {
+     public BooleanFormula parseBool(String bool, final VisualCPOG visualCpog) throws ParseException {
+        Func<String, BooleanVariable> boolVars = new Func<String, BooleanVariable>() {
+            public BooleanVariable eval(final String label) {
+                if (variableMap.containsKey(label)) {
                     if (!visualCpog.getVariables().contains(variableMap.get(label))) {
                         if (variableMap.get(label).getParent() != null) {
                             return variableMap.get(label);
@@ -83,11 +78,9 @@ public class CpogParsingTool {
 
         BooleanFormula boolForm;
 
-        try
-        {
+        try {
           boolForm = BooleanParser.parse(bool, boolVars);
-        } catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e)
-        {
+        } catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e) {
           throw new ParseException("Boolean error in: " + bool);
         }
         return boolForm;
@@ -178,14 +171,12 @@ public class CpogParsingTool {
         }
     }
 
-    public static ArrayList<Node> getChildren(VisualCPOG visualCpog, Node node)
-     {
+    public static ArrayList<Node> getChildren(VisualCPOG visualCpog, Node node) {
          ArrayList<Node> children = new ArrayList<>();
          HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
 
 
-         for (VisualArc arc : arcs)
-         {
+         for (VisualArc arc : arcs) {
              if ((arc.getFirst().equals(node))) {
                  children.add(arc.getSecond());
              }
@@ -194,13 +185,11 @@ public class CpogParsingTool {
          return children;
      }
 
-    public static HashSet<Node> getParents(VisualCPOG visualCpog, Node node)
-    {
+    public static HashSet<Node> getParents(VisualCPOG visualCpog, Node node) {
         HashSet<Node> parents = new HashSet<>();
         HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
 
-        for (VisualArc arc : arcs)
-        {
+        for (VisualArc arc : arcs) {
             if ((arc.getSecond().equals(node))) {
                 parents.add(arc.getFirst());
             }
@@ -209,8 +198,7 @@ public class CpogParsingTool {
         return parents;
     }
 
-     public static String getExpressionFromGraph(VisualCPOG visualCpog)
-     {
+     public static String getExpressionFromGraph(VisualCPOG visualCpog) {
          Collection<Node> originalSelection;
          ArrayList<VisualTransformableNode> groups = new ArrayList<>();
          ArrayList<Node> vertices = new ArrayList<Node>();
@@ -243,8 +231,7 @@ public class CpogParsingTool {
 
                  Iterator<Node> i = roots.iterator();
 
-                 while(i.hasNext())
-                 {
+                 while(i.hasNext()) {
                    q.add(i.next());
                    while(!q.isEmpty()){
                        connections.clear();
@@ -262,27 +249,23 @@ public class CpogParsingTool {
 
                        describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog);
 
-                       if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
-                       {
+                       if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+")) {
                            expression.add("+");
                        }
 
-                       if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+"))
-                       {
+                       if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+")) {
                            expression.add("+");
                        }
                    }
 
                  }
-                 while (expression.get(expression.size() - 1) == "+")
-                 {
+                 while (expression.get(expression.size() - 1) == "+") {
                      expression.remove(expression.size() - 1);
                  }
                  expression.add("\n");
              }
          }
-         if (!originalSelection.isEmpty())
-         {
+         if (!originalSelection.isEmpty()) {
              vertices.clear();
              for (Node n : originalSelection) {
                  if (n instanceof VisualVertex) {
@@ -307,8 +290,7 @@ public class CpogParsingTool {
              HashSet<Connection> visitedConnections = new HashSet<Connection>();
              ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 
-             while(i.hasNext())
-             {
+             while(i.hasNext()) {
 
                q.add(i.next());
                while(!q.isEmpty()){
@@ -325,13 +307,11 @@ public class CpogParsingTool {
 
                    describeArcs(expression, totalConnections, visitedVertices, visitedConnections, current, vertices, visualCpog);
 
-                   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+"))
-                   {
+                   if ((!q.isEmpty() || (i.hasNext())) && (expression.get(expression.size() - 1) != "+")) {
                        expression.add("+");
                    }
 
-                   if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+"))
-                   {
+                   if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+")) {
                        expression.add("+");
                    }
                }
@@ -352,8 +332,7 @@ public class CpogParsingTool {
                      total = total.substring(0, total.length() - 1);
                  }
                  total = total + ex;
-             } else if (((ex.contains(" ")) || (ex.equals("+"))) || (!(total.contains(" " + ex + " ")) && !(total.startsWith(ex + " ")) && !(total.endsWith(" " + ex))))
-             {
+             } else if (((ex.contains(" ")) || (ex.equals("+"))) || (!(total.contains(" " + ex + " ")) && !(total.startsWith(ex + " ")) && !(total.endsWith(" " + ex)))) {
                  if (!(ex.equals("+") && total.endsWith("+"))) {
                      if ((total.endsWith("\n")) || (total.equals(""))) {
                          total = total + ex;
@@ -511,22 +490,18 @@ public class CpogParsingTool {
         boolean second = false;
 
         //get root(s)
-        for (Node v : vertices)
-        {
+        for (Node v : vertices) {
            arcs = visualCpog.getConnections(v);
            it = arcs.iterator();
            //The following covers root nodes, and nodes with no connections
-           while (it.hasNext())
-           {
+           while (it.hasNext()) {
                connection = it.next();
-               if ((!connection.getFirst().equals(v)) && (vertices.contains(connection.getFirst())))
-               {
+               if ((!connection.getFirst().equals(v)) && (vertices.contains(connection.getFirst()))) {
                    second = true;
                    break;
                }
            }
-           if (!second)
-           {
+           if (!second) {
                roots.add(v);
            }
            second = false;
@@ -594,13 +569,10 @@ public class CpogParsingTool {
         return result;
     }
 
-    public int findVertex(ArrayList<ArrayList<Node>> outer, Node target)
-     {
+    public int findVertex(ArrayList<ArrayList<Node>> outer, Node target) {
          int index = 0;
-         for (ArrayList<Node> inner : outer)
-         {
-             if (inner.contains(target))
-             {
+         for (ArrayList<Node> inner : outer) {
+             if (inner.contains(target)) {
                  return index;
              }
              index++;
@@ -608,17 +580,14 @@ public class CpogParsingTool {
          return -1;
      }
 
-     public void addNode(Node v, int index, ArrayList<ArrayList<Node>> outer)
-     {
+     public void addNode(Node v, int index, ArrayList<ArrayList<Node>> outer) {
          int removalIndex = 0;
 
          removalIndex = findVertex(outer, v);
-         if (removalIndex >= 0)
-         {
+         if (removalIndex >= 0) {
              outer.get(removalIndex).remove(v);
          }
-         if (outer.size() - 1 < index)
-         {
+         if (outer.size() - 1 < index) {
              outer.add(new ArrayList<Node>());
          }
 
@@ -702,12 +671,10 @@ public class CpogParsingTool {
          return false;
      }
 
-     public String replaceReferences(String text)
-     {
+     public String replaceReferences(String text) {
          usedReferences = new ArrayList<>();
          boolean added;
-         for (String k : refMap.keySet())
-            {
+         for (String k : refMap.keySet()) {
              added = false;
                 if (text.contains(" " + k + " ")){
                     if (k.startsWith("[")) {
@@ -747,11 +714,9 @@ public class CpogParsingTool {
          return text;
      }
 
-     public void setArcConditions(HashSet<ArcCondition> arcConditionList, VisualCPOG visualCpog, HashMap<String, VisualVertex> vertexMap)
-     {
+     public void setArcConditions(HashSet<ArcCondition> arcConditionList, VisualCPOG visualCpog, HashMap<String, VisualVertex> vertexMap) {
          int index;
-         for (ArcCondition a : arcConditionList)
-            {
+         for (ArcCondition a : arcConditionList) {
              if (a.getBoolForm().compareTo("") != 0) {
                 index = 0;
                     ArrayList<String> vertexList = a.getVertexList();
@@ -759,22 +724,18 @@ public class CpogParsingTool {
                     String first, second;
                     VisualArc arc;
 
-                    while(it.hasNext())
-                    {
+                    while(it.hasNext()) {
                         first = it.next();
-                        for (int c = index + 1; c < vertexList.size(); c++)
-                        {
+                        for (int c = index + 1; c < vertexList.size(); c++) {
                             second = vertexList.get(c);
 
                             ArrayList<String> verts1 = new ArrayList<String>();
                             ArrayList<String> verts2 = new ArrayList<String>();
                             int ind = 0;
-                            if (first.contains("("))
-                            {
+                            if (first.contains("(")) {
                                 first = first.replace("(", "");
                                 first = first.replace(")", "");
-                                while(first.contains("+"))
-                                {
+                                while(first.contains("+")) {
                                     ind = first.indexOf("+");
                                     verts1.add(first.substring(0, ind));
                                     first = first.substring(ind+1);
@@ -782,12 +743,10 @@ public class CpogParsingTool {
                                     verts1.add(first);
                             }
                             verts1.add(first);
-                            if (second.contains("("))
-                            {
+                            if (second.contains("(")) {
                                 second = second.replace("(", "");
                                 second = second.replace(")", "");
-                                while(second.contains("+"))
-                                {
+                                while(second.contains("+")) {
                                     ind = second.indexOf("+");
                                     verts2.add(second.substring(0, ind));
                                     second = second.substring(ind+1);
@@ -795,14 +754,11 @@ public class CpogParsingTool {
                             }
                             verts2.add(second);
 
-                            for (String vert1 : verts1)
-                            {
-                                for (String vert2 : verts2)
-                                {
+                            for (String vert1 : verts1) {
+                                for (String vert2 : verts2) {
                                     arc = (VisualArc) visualCpog.getConnection(vertexMap.get(vert1), vertexMap.get(vert2));
                                     ArrayList<VisualArc> dupArcs = new ArrayList<VisualArc>();
-                                    if (arc != null)
-                                    {
+                                    if (arc != null) {
                                         for (Connection con : visualCpog.getConnections(vertexMap.get(vert1))) {
                                             if (con.getSecond().equals(vertexMap.get(vert2))) {
                                                 dupArcs.add((VisualArc) con);
@@ -817,7 +773,9 @@ public class CpogParsingTool {
                                                     conditionFound = true;
                                                 }
                                             }
-                                            for (VisualArc va : toBeRemoved) { dupArcs.remove(va); }
+                                            for (VisualArc va : toBeRemoved) {
+                                                dupArcs.remove(va);
+                                            }
 
                                             if (!(conditionFound) && (dupArcs.size() > 1)) {
                                                 for (int i = 1; i < dupArcs.size(); i++) {
@@ -831,11 +789,9 @@ public class CpogParsingTool {
                                         }
 
                                         try {
-                                            if (FormulaToString.toString(arc.getCondition()).compareTo("1") == 0)
-                                            {
+                                            if (FormulaToString.toString(arc.getCondition()).compareTo("1") == 0) {
                                                 arc.setCondition(parseBool(a.getBoolForm(), visualCpog));
-                                            } else
-                                            {
+                                            } else {
                                                 arc.setCondition(parseBool(FormulaToString.toString(arc.getCondition()) + "|" + a.getBoolForm(), visualCpog));
                                             }
                                         } catch (ParseException e) {
@@ -853,8 +809,7 @@ public class CpogParsingTool {
                 }
      }
 
-     public Point2D.Double getLowestVertex(VisualCPOG visualCpog)
-     {
+     public Point2D.Double getLowestVertex(VisualCPOG visualCpog) {
          Collection<VisualVertex> vertices =  visualCpog.getVertices(visualCpog.getCurrentLevel());
          vertices.removeAll(visualCpog.getSelection());
 
@@ -902,8 +857,7 @@ public class CpogParsingTool {
          }
          if (startPoint == null) {
              startPoint = new Point2D.Double(0,0);
-         } else
-         {
+         } else {
              startPoint.setLocation(startPoint.getX(), startPoint.getY());
          }
 
@@ -912,8 +866,7 @@ public class CpogParsingTool {
      }
 
 
-     public ArrayList<String> getUsedReferences()
-     {
+     public ArrayList<String> getUsedReferences() {
          return usedReferences;
      }
 

@@ -29,5 +29,5 @@ public interface LegacyCpogSolver {
      * @return
      * Null if unsat
      */
-    public CpogEncoding solve(String[] scenarios, int freeVars, int derivedVars);
+    CpogEncoding solve(String[] scenarios, int freeVars, int derivedVars);
 }

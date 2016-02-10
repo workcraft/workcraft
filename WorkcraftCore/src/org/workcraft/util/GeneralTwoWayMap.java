@@ -27,8 +27,7 @@ import java.util.Set;
 import org.workcraft.exceptions.ArgumentException;
 
 public class GeneralTwoWayMap<T1,T2> {
-    public GeneralTwoWayMap(Map<T1, T2> map1, Map<T2, T1> map2)
-    {
+    public GeneralTwoWayMap(Map<T1, T2> map1, Map<T2, T1> map2) {
         if(!map1.isEmpty() || !map2.isEmpty())
             throw new ArgumentException("maps should be empty");
         this.from1to2 = map1;
@@ -36,8 +35,7 @@ public class GeneralTwoWayMap<T1,T2> {
     }
     final Map<T1, T2> from1to2;
     final Map<T2, T1> from2to1;
-    public void put(T1 first, T2 second)
-    {
+    public void put(T1 first, T2 second) {
         removeKey(first);
         removeValue(second);
         if (first == null || second == null)
@@ -45,12 +43,10 @@ public class GeneralTwoWayMap<T1,T2> {
         from1to2.put(first, second);
         from2to1.put(second, first);
     }
-    public Set<T1> keys()
-    {
+    public Set<T1> keys() {
         return from1to2.keySet();
     }
-    public Set<T2> values()
-    {
+    public Set<T2> values() {
         return from2to1.keySet();
     }
     public T2 getValue(T1 first) {
@@ -59,14 +55,12 @@ public class GeneralTwoWayMap<T1,T2> {
     public T1 getKey(T2 second) {
         return from2to1.get(second);
     }
-    public void removeKey(T1 first)
-    {
+    public void removeKey(T1 first) {
         T2 second = getValue(first);
         if(second != null)
             remove(first,second);
     }
-    public void removeValue(T2 second)
-    {
+    public void removeValue(T2 second) {
         T1 first = getKey(second);
         if(first != null)
             remove(first,second);

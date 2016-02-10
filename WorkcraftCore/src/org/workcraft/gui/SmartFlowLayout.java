@@ -173,15 +173,13 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
                     rowh = Math.max(rowh, d.height);
 
                     if (x >= maxwidth) {
-                        if(fit(target, insets.left + hgap, y, maxwidth, rowh, start, i+1, ltr))
-                        {
+                        if(fit(target, insets.left + hgap, y, maxwidth, rowh, start, i+1, ltr)) {
                             start = i+1;
                             x = 0;
                             y += vgap + rowh;
                             rowh = 0;
                         }
-                        else
-                        {
+                        else {
                             int end = i;
                             if(start == end)
                                 end++;
@@ -201,8 +199,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         }
     }
 
-    private void stretch(Container target, int x, int y, int width, int height, int start, int end, boolean ltr)
-    {
+    private void stretch(Container target, int x, int y, int width, int height, int start, int end, boolean ltr) {
         UnaryFunctor<Component, Dimension> maximumExtremeProvider = new UnaryFunctor<Component, Dimension>() {
             private static final long serialVersionUID = 1L;
 
@@ -222,8 +219,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     }
 
     @SuppressWarnings("serial")
-    private boolean fit(Container target, int x, int y, int width, int height, int start, int end, boolean ltr)
-    {
+    private boolean fit(Container target, int x, int y, int width, int height, int start, int end, boolean ltr) {
         UnaryFunctor<Component, Dimension> minimumExtremeProvider = new UnaryFunctor<Component, Dimension>() {
             @Override
             public Dimension fn(Component c) {
@@ -233,8 +229,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
 
         if(!resize(target, start, end, width, minimumExtremeProvider))
             return false;
-        else
-        {
+        else {
             if (applyLayout)
                 moveComponents(target, x, y, 0, height, start, end, ltr);
             return true;
@@ -242,20 +237,16 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     }
 
 
-    private boolean resize(Container target, int start, int end, int width, UnaryFunctor<Component, Dimension> extremeProvider)
-    {
+    private boolean resize(Container target, int start, int end, int width, UnaryFunctor<Component, Dimension> extremeProvider) {
         int totalFreedom = 0;
         int extremeWidth = 0;
 
-        for(int i=start;i<end;i++)
-        {
+        for(int i=start;i<end;i++) {
             Component component = target.getComponent(i);
-            if(component.isVisible())
-            {
+            if(component.isVisible()) {
                 Dimension extreme = extremeProvider.fn(component);
                 Dimension pref = component.getPreferredSize();
-                if(i>start)
-                {
+                if(i>start) {
                     extremeWidth += hgap;
                 }
                 totalFreedom += extreme.width - pref.width;
@@ -266,19 +257,16 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         int totalChange = width - (extremeWidth - totalFreedom);
 
         boolean failed;
-        if((double)totalChange/totalFreedom > 1.0)
-        {
+        if((double)totalChange/totalFreedom > 1.0) {
             failed = true;
             totalChange = totalFreedom;
         }
         else
             failed = false;
 
-        for(int i=start;i<end;i++)
-        {
+        for(int i=start;i<end;i++) {
             Component component = target.getComponent(i);
-            if(component.isVisible() && totalFreedom != 0)
-            {
+            if(component.isVisible() && totalFreedom != 0) {
                 Dimension extreme = extremeProvider.fn(component);
                 Dimension pref = component.getPreferredSize();
 
@@ -320,8 +308,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
      * of the fields we use now..
      */
     private void readObject(ObjectInputStream stream)
-    throws IOException, ClassNotFoundException
-    {
+    throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
 
         if (serialVersionOnStream < 1) {

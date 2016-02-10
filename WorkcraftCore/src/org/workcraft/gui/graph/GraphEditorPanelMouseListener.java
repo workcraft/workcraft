@@ -43,7 +43,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     private Point2D prevPosition = new Point2D.Double(0, 0);
     private Point2D startPosition = null;
 
-    public GraphEditorPanelMouseListener(GraphEditor editor, ToolProvider toolProvider) {
+    GraphEditorPanelMouseListener(GraphEditor editor, ToolProvider toolProvider) {
         this.editor = editor;
         this.toolProvider = toolProvider;
     }

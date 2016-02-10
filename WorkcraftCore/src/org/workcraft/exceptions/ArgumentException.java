@@ -1,7 +1,6 @@
 package org.workcraft.exceptions;
 
-public class ArgumentException extends RuntimeException
-{
+public class ArgumentException extends RuntimeException {
     private static final long serialVersionUID = 813881853034782201L;
 
     public ArgumentException() {

@@ -23,5 +23,5 @@ package org.workcraft.dom.visual;
 
 
 public interface Drawable {
-    public void draw (DrawRequest r);
+    void draw (DrawRequest r);
 }

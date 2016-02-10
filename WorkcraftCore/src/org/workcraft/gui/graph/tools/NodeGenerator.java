@@ -31,11 +31,11 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 
 public interface NodeGenerator {
-    public Icon getIcon();
-    public String getLabel();
-    public String getText();
-    public int getHotKeyCode();
-    public MathNode createMathNode() throws NodeCreationException;
-    public VisualNode createVisualNode(MathNode mathNode) throws NodeCreationException;
-    public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException;
+    Icon getIcon();
+    String getLabel();
+    String getText();
+    int getHotKeyCode();
+    MathNode createMathNode() throws NodeCreationException;
+    VisualNode createVisualNode(MathNode mathNode) throws NodeCreationException;
+    VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException;
 }

@@ -1412,7 +1412,7 @@ public class MainWindow extends JFrame {
 class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
     private Importer importer;
 
-    public ImporterFileFilter(Importer importer) {
+    ImporterFileFilter(Importer importer) {
         this.importer = importer;
     }
 
@@ -1428,7 +1428,7 @@ class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
 class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
     private Exporter exporter;
 
-    public ExporterFileFilter(Exporter exporter) {
+    ExporterFileFilter(Exporter exporter) {
         this.exporter = exporter;
     }
 

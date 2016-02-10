@@ -38,8 +38,16 @@ public class BuiltinSerialisers implements Module {
     public void init() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        pm.registerClass(ModelDeserialiser.class, new Initialiser<ModelDeserialiser>(){public ModelDeserialiser create(){return new XMLModelDeserialiser(framework.getPluginManager());}});
-        pm.registerClass(ModelSerialiser.class, new Initialiser<ModelSerialiser>(){public ModelSerialiser create(){return new XMLModelSerialiser(framework.getPluginManager());}});
+        pm.registerClass(ModelDeserialiser.class, new Initialiser<ModelDeserialiser>(){
+            public ModelDeserialiser create(){
+                return new XMLModelDeserialiser(framework.getPluginManager());
+            }
+        });
+        pm.registerClass(ModelSerialiser.class, new Initialiser<ModelSerialiser>(){
+            public ModelSerialiser create(){
+                return new XMLModelSerialiser(framework.getPluginManager());
+            }
+        });
 
         pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, AffineTransformSerialiser.class);
         pm.registerClass(org.workcraft.serialisation.xml.XMLSerialiser.class, BooleanSerialiser.class);

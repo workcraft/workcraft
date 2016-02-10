@@ -13,8 +13,7 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
     private int vertexCount = 0;
     private int variableCount = 0;
 
-    public ConsistencyEnforcer(VisualCPOG visualCPOG)
-    {
+    public ConsistencyEnforcer(VisualCPOG visualCPOG) {
         this.visualCPOG  = visualCPOG;
     }
 
@@ -44,15 +43,12 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
         }
     }
 
-    private void updateEncoding()
-    {
-        for(VisualScenario group : visualCPOG.getGroups())
-        {
+    private void updateEncoding() {
+        for(VisualScenario group : visualCPOG.getGroups()) {
             Encoding oldEncoding = group.getEncoding();
             Encoding newEncoding = new Encoding();
 
-            for(VisualVariable var : visualCPOG.getVariables())
-            {
+            for(VisualVariable var : visualCPOG.getVariables()) {
                 Variable mathVariable = var.getMathVariable();
                 newEncoding.setState(mathVariable, oldEncoding.getState(mathVariable));
             }

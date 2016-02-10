@@ -78,8 +78,7 @@ public class VisualComponentGroupTests {
 
 
     @Test
-    public void TestHitComponent()
-    {
+    public void TestHitComponent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         node1.setX(5);
@@ -94,8 +93,7 @@ public class VisualComponentGroupTests {
         Assert.assertEquals(null, HitMan.hitDeepestNodeOfType(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
     }
 
-    public void TestHitConnection()
-    {
+    public void TestHitConnection() {
         VisualGroup root = createGroup(null);
         VisualGroup group = createGroup(root);
         group.setX(5);
@@ -117,8 +115,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestHitNode()
-    {
+    public void TestHitNode() {
         VisualGroup group = new VisualGroup();
 
         Rectangle2D.Double r1 = new Rectangle2D.Double();
@@ -159,14 +156,12 @@ public class VisualComponentGroupTests {
         Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(2.95, 2.95), group));
     }
 
-    private SquareNode getSquareNode(VisualNode parent, double x, double y)
-    {
+    private SquareNode getSquareNode(VisualNode parent, double x, double y) {
         return new SquareNode(null, new Rectangle2D.Double(x, y, 1, 1));
     }
 
     @Test
-    public void TestHitSubGroup()
-    {
+    public void TestHitSubGroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -180,8 +175,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestUngroup()
-    {
+    public void TestUngroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -229,14 +223,12 @@ public class VisualComponentGroupTests {
 //        Assert.assertEquals(null, HitMan.hitTestForSelection(new Point2D.Double(10.5, 16.5), root));
     }
 
-    private VisualGroup createGroup(VisualGroup parent)
-    {
+    private VisualGroup createGroup(VisualGroup parent) {
         return VisualNodeTests.createGroup(parent);
     }
 
     @Test
-    public void TestTransformChangeNotification()
-    {
+    public void TestTransformChangeNotification() {
         TransformEventPropagator p = new TransformEventPropagator();
 
         VisualGroup root = createGroup(null);
@@ -251,9 +243,8 @@ public class VisualComponentGroupTests {
         Assert.assertTrue("not hit", node1.notified);
     }
 
-    class DummyNode extends VisualComponent
-    {
-        public DummyNode(VisualGroup parent) {
+    class DummyNode extends VisualComponent {
+        DummyNode(VisualGroup parent) {
             super(null);
             parent.add(this);
         }

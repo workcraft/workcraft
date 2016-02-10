@@ -98,8 +98,7 @@ public class WorkspaceEntry implements ObservableState {
         }
     };
 
-    public void setModelEntry(ModelEntry modelEntry)
-    {
+    public void setModelEntry(ModelEntry modelEntry) {
         if(this.modelEntry != null) {
             if (this.modelEntry.isVisual()) {
                 this.modelEntry.getVisualModel().removeObserver(modelObserver);
@@ -305,7 +304,7 @@ public class WorkspaceEntry implements ObservableState {
         String result = "";
         try {
             ZipEntry ze;
-            while ((ze = zis.getNextEntry()) != null)    {
+            while ((ze = zis.getNextEntry()) != null) {
                 StringBuilder isb = new StringBuilder();
                 BufferedReader br = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
                 String line = "=== " + ze.getName() + " ===";

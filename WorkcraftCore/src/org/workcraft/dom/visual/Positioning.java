@@ -18,7 +18,7 @@ public enum Positioning {
     public final int xSign;
     public final int ySign;
 
-    private Positioning(String name, double xOffset, double yOffset) {
+    Positioning(String name, double xOffset, double yOffset) {
         this.name = name;
         this.xOffset = xOffset;
         this.yOffset = yOffset;

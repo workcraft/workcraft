@@ -72,10 +72,8 @@ public class TimeEstimatorDialog extends JDialog{
         add(tabelPanel, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
 
-        addWindowListener(new WindowAdapter()
-        {
-          public void windowClosing(WindowEvent e)
-          {
+        addWindowListener(new WindowAdapter() {
+          public void windowClosing(WindowEvent e) {
              setParameters();
           }
         });

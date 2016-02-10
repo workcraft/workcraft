@@ -31,7 +31,7 @@ public class PNetExt {
            String name1;
            String name2;
 
-           public source(String s1,String s2) {
+           source(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
@@ -42,7 +42,7 @@ public class PNetExt {
            String name1;
            String name2;
 
-           public switch_(String s1,String s2) {
+           switch_(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
@@ -53,7 +53,7 @@ public class PNetExt {
            String name1;
            String name2;
 
-           public merge_(String s1,String s2) {
+           merge_(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
@@ -63,7 +63,7 @@ public class PNetExt {
 
            String name1;
 
-           public fun_(String s1) {
+           fun_(String s1) {
              name1 = s1;
            }
     }

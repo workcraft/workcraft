@@ -1,6 +1,5 @@
 package org.workcraft;
 
-public interface Initialiser<T>
-{
-    public T create();
+public interface Initialiser<T> {
+    T create();
 }

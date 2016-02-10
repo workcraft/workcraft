@@ -27,12 +27,10 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class WorkspaceTreeDecorator implements TreeDecorator<Path<String>>
-{
+public class WorkspaceTreeDecorator implements TreeDecorator<Path<String>> {
     private final Workspace workspace;
 
-    public WorkspaceTreeDecorator(Workspace workspace)
-    {
+    public WorkspaceTreeDecorator(Workspace workspace) {
         this.workspace = workspace;
     }
 

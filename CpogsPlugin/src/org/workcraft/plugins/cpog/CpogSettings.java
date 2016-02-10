@@ -17,7 +17,7 @@ public class CpogSettings implements Settings {
 
         public final String name;
 
-        private SatSolver(String name) {
+        SatSolver(String name) {
             this.name = name;
         }
 

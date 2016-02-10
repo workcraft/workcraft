@@ -84,8 +84,7 @@ public class VisualXmas extends AbstractVisualModel {
         }
     }
 
-    public VisualXmas(Xmas model, VisualGroup root)
-    {
+    public VisualXmas(Xmas model, VisualGroup root) {
         super(model, root);
         circuit=model;
     }

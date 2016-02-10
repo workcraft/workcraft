@@ -30,8 +30,7 @@ import org.workcraft.plugins.cpog.Encoding;
 
 public class EncodingProperty implements PropertyClass {
 
-    public Object fromCellEditorValue(Object editorComponentValue)
-    {
+    public Object fromCellEditorValue(Object editorComponentValue) {
         return editorComponentValue;
     }
 
@@ -43,8 +42,7 @@ public class EncodingProperty implements PropertyClass {
         return new DefaultTableCellRenderer();
     }
 
-    public Object toCellRendererValue(Object value)
-    {
+    public Object toCellRendererValue(Object value) {
         return (Encoding) value;
     }
 }

@@ -28,8 +28,8 @@ import javax.swing.JPopupMenu;
 import org.workcraft.gui.actions.ScriptedActionListener;
 
 public class PopupMenuBuilder {
-    public static interface PopupMenuSegment {
-        public void addItems (JPopupMenu menu, ScriptedActionListener actionListener);
+    interface PopupMenuSegment {
+        void addItems (JPopupMenu menu, ScriptedActionListener actionListener);
     }
 
     LinkedList<PopupMenuSegment> segments = new LinkedList<PopupMenuSegment>();

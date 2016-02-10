@@ -20,8 +20,7 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
-public class LegacyDefaultCpogSolver<T> implements LegacyCpogSolver
-{
+public class LegacyDefaultCpogSolver<T> implements LegacyCpogSolver {
     private final CpogSATProblemGenerator<? extends T> problemGenerator;
     private final RawCnfGenerator<? super T> cnfConverter;
 
@@ -37,8 +36,7 @@ public class LegacyDefaultCpogSolver<T> implements LegacyCpogSolver
         BooleanVariable[] vars = new BooleanVariable[freeVars];
 
         char nextVar = 'z';
-        for(int i = 0; i < freeVars; i++)
-        {
+        for(int i = 0; i < freeVars; i++) {
             vars[i] = new FreeVariable("" + nextVar);
             nextVar--;
         }

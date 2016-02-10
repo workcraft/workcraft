@@ -43,7 +43,7 @@ class XMLDeserialiserState implements References {
     public HashMap<Object, Element> instanceElements = new HashMap<Object, Element>();
     private ListMap<Container, Node> children = new ListMap<Container, Node>();
 
-    public XMLDeserialiserState(ReferenceResolver externalReferences) {
+    XMLDeserialiserState(ReferenceResolver externalReferences) {
         this.externalReferences = externalReferences;
     }
 

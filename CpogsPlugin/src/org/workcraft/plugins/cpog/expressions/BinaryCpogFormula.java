@@ -23,8 +23,7 @@ package org.workcraft.plugins.cpog.expressions;
 public abstract class BinaryCpogFormula implements CpogFormula {
     private final CpogFormula x;
     private final CpogFormula y;
-    public BinaryCpogFormula(CpogFormula x, CpogFormula y)
-    {
+    public BinaryCpogFormula(CpogFormula x, CpogFormula y) {
         this.x = x;
         this.y = y;
     }

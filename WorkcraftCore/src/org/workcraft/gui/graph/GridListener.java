@@ -33,5 +33,5 @@ public interface GridListener {
      * @param sender
      * The grid that sent the event.
      */
-    public void gridChanged(Grid sender);
+    void gridChanged(Grid sender);
 }

@@ -13,7 +13,7 @@ public class BinaryRegister extends MathDelayNode {
 
         private final String name;
 
-        private Marking(String name) {
+        Marking(String name) {
             this.name = name;
         }
 

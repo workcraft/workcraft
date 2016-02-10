@@ -53,7 +53,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 public class VisualModelTests {
 
     private class MockMathModel extends AbstractModel implements MathModel{
-        public MockMathModel() {
+        MockMathModel() {
             super(new MathGroup());
         }
 
@@ -69,7 +69,7 @@ public class VisualModelTests {
 
     private class MockConcreteVisualModel extends AbstractVisualModel {
 
-        public MockConcreteVisualModel() {
+        MockConcreteVisualModel() {
             super(new MockMathModel());
         }
 
@@ -468,7 +468,7 @@ public class VisualModelTests {
     class GroupNodeEqualityTest {
         private VisualNode[] expected;
 
-        public GroupNodeEqualityTest(VisualNode[] expected) {
+        GroupNodeEqualityTest(VisualNode[] expected) {
             this.expected = expected;
         }
 
@@ -479,8 +479,7 @@ public class VisualModelTests {
             Assert.assertArrayEquals(expected, their);
         }
 
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             Assert.assertTrue("Should be a visual group", obj instanceof VisualGroup);
             assertEquals((Node)obj);
             return true;
@@ -537,8 +536,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestHitNodeCurrentLevelTransformation()
-    {
+    public void TestHitNodeCurrentLevelTransformation() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -555,8 +553,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestHitObjectsCurrentLevelTransformation()
-    {
+    public void TestHitObjectsCurrentLevelTransformation() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();

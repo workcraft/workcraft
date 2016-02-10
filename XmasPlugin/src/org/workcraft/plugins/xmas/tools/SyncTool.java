@@ -93,7 +93,7 @@ public class SyncTool implements Tool {
            String g1;
            String g2;
 
-           public sync_(String s1,String s2,String s3,String s4,int gr,int cno) {
+           sync_(String s1,String s2,String s3,String s4,int gr,int cno) {
              name1 = s1;
              name2 = s2;
              name3 = s3;
@@ -213,10 +213,8 @@ public class SyncTool implements Tool {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        finally
-        {
-                if ( writer_s != null )
-                {
+        finally {
+                if ( writer_s != null ) {
                     writer_s.close();
                 }
         }
@@ -455,8 +453,7 @@ public class SyncTool implements Tool {
         File jsonFile = XmasSettings.getTempVxmJsonFile();
         PrintWriter writer = null;
 
-        try
-        {
+        try {
         writer = new PrintWriter(jsonFile);
         int cnt_nodes=0;
         int num_outputs=0;
@@ -775,14 +772,11 @@ public class SyncTool implements Tool {
         }
 
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
                 e.printStackTrace();
         }
-        finally
-        {
-                if ( writer != null )
-                {
+        finally {
+                if ( writer != null ) {
                     writer.close();
                 }
         }

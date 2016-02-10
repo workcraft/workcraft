@@ -24,27 +24,22 @@ package org.workcraft.util;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public final class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInfo>
-{
-    private MethodParametersMatcher()
-    {
+public final class MethodParametersMatcher<T extends MethodParametersMatcher.MethodInfo> {
+    private MethodParametersMatcher() {
     }
 
-    public interface MethodInfo
-    {
+    public interface MethodInfo {
         Class<?>[] getParameterTypes();
     }
 
     private ArrayList<T> methods;
 
-    public static <T extends MethodParametersMatcher.MethodInfo> T match(Collection<T> methods, Class<?>... parameters) throws NoSuchMethodException
-    {
+    public static <T extends MethodParametersMatcher.MethodInfo> T match(Collection<T> methods, Class<?>... parameters) throws NoSuchMethodException {
         MethodParametersMatcher<T> matcher = new MethodParametersMatcher<T>();
         return matcher.instanceMatch(methods, parameters);
     }
 
-    private T instanceMatch(Collection<T> methods, Class<?>... parameters) throws NoSuchMethodException
-    {
+    private T instanceMatch(Collection<T> methods, Class<?>... parameters) throws NoSuchMethodException {
         this.methods = new ArrayList<T>(methods);
 
         matchByParameters(parameters);
@@ -60,8 +55,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
         if(this.methods.size() > 1)
             throw new RuntimeException("We have a bug o_O");
 
-        if(this.methods.size() < 1)
-        {
+        if(this.methods.size() < 1) {
             if(filtered.length > 1)
                 throw new AmbiguousMethodException();
             else
@@ -94,8 +88,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
     private void filterByParameter(int parameterNumber) {
         Class<?> best = null;
 
-        for(int i=methods.size(); --i>=0;)
-        {
+        for(int i=methods.size(); --i>=0;) {
             Class<?> current = methods.get(i).getParameterTypes()[parameterNumber];
             if(best == null || best.isAssignableFrom(current))
                 best = current;
@@ -105,8 +98,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
                 filtered[i] = true;
     }
 
-    void remove(int i)
-    {
+    void remove(int i) {
         int last = methods.size()-1;
         methods.set(i, methods.get(last));
         methods.remove(last);

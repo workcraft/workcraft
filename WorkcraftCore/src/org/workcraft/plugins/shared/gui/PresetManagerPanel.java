@@ -120,8 +120,7 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     @SuppressWarnings("unchecked")
-    public void managePresets()
-    {
+    public void managePresets() {
         Preset<T> selected = (Preset<T>)presetCombo.getSelectedItem();
 
         PresetManagerDialog<T> dlg = new PresetManagerDialog<T>(dialogOwner, presetManager);
@@ -146,8 +145,7 @@ public class PresetManagerPanel<T> extends JPanel {
             presetCombo.setSelectedIndex(0);
     }
 
-    public void createPreset()
-    {
+    public void createPreset() {
         String desc = JOptionPane.showInputDialog(dialogOwner, "Please enter the description of the new preset:");
 
         if (!(desc == null || desc.isEmpty())) {
@@ -158,8 +156,7 @@ public class PresetManagerPanel<T> extends JPanel {
         }
     }
 
-    public void selectFirst()
-    {
+    public void selectFirst() {
 
         if (presetCombo.getItemCount()>0)
             presetCombo.setSelectedIndex(0);

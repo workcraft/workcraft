@@ -7,12 +7,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
 
-public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula>
-{
+public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
     private final List<BooleanFormula> rho = new ArrayList<BooleanFormula>();
 
-    public OneHotNumberProvider()
-    {
+    public OneHotNumberProvider() {
     }
 
     @Override

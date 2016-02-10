@@ -40,7 +40,7 @@ public class CommonEditorSettings implements Settings {
 
         public final String name;
 
-        private TitleStyle(String name) {
+        TitleStyle(String name) {
             this.name = name;
         }
 

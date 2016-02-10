@@ -90,8 +90,7 @@ public class ModelManager {
         UUID uuid = null;
         if (!isValidModelClass(model_class))
             return null;
-        try
-        {
+        try {
             uuid = (UUID)model_class.getField("_modeluuid").get(null);
         }
         catch (NoSuchFieldException e) {
@@ -115,8 +114,7 @@ public class ModelManager {
         if (!isValidModelClass(model_class))
             return null;
 
-        try
-        {
+        try {
             uuid = (UUID)model_class.getField("_modeluuid").get(null);
         }
         catch (NoSuchFieldException e) {
@@ -131,8 +129,7 @@ public class ModelManager {
     public static String getModelDisplayName(Class<?> model_class) {
         if (!isValidModelClass(model_class))
             return null;
-        try
-        {
+        try {
             return (String)model_class.getField("_displayname").get(null);
         }
         catch (NoSuchFieldException e) {
@@ -147,8 +144,7 @@ public class ModelManager {
     public static String getToolDisplayName(Class<?> tool_class) {
         if (!isValidToolClass(tool_class))
             return null;
-        try
-        {
+        try {
             return (String)tool_class.getField("_displayname").get(null);
         }
         catch (NoSuchFieldException e) {
@@ -161,8 +157,7 @@ public class ModelManager {
     }
 
     public void addModel(Class<?> cls) {
-        try
-        {
+        try {
             UUID uuid = (UUID)cls.getField("_modeluuid").get(null);
             String model_name = (String)cls.getField("_displayname").get(null);
             if (uuid_model_map.get(uuid)!=null) {
@@ -182,8 +177,7 @@ public class ModelManager {
     }
 
     public void addComponent (Class<?> cls) {
-        try
-        {
+        try {
             UUID uuid = (UUID)cls.getField("_modeluuid").get(null);
             String component_name = (String)cls.getField("_displayname").get(null);
 
@@ -194,8 +188,7 @@ public class ModelManager {
 
             LinkedList<Class<?>> list = uuid_component_list_map.get(uuid);
 
-            if (list == null)
-            {
+            if (list == null) {
                 list = new LinkedList<Class<?>>();
                 uuid_component_list_map.put(uuid, list);
             }

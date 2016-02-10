@@ -23,7 +23,7 @@ public class MpsatSettings {
 
         private final String name;
 
-        private SolutionMode(String name) {
+        SolutionMode(String name) {
             this.name = name;
         }
 

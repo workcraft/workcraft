@@ -30,8 +30,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
-public class BooleanEvaluator implements BooleanVisitor<Boolean>
-{
+public class BooleanEvaluator implements BooleanVisitor<Boolean> {
 
     @Override
     public Boolean visit(And node) {

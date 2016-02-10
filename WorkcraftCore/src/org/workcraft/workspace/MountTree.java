@@ -28,8 +28,7 @@ import java.util.Map;
 
 import org.workcraft.gui.workspace.Path;
 
-public class MountTree
-{
+public class MountTree {
     @Override
     public boolean equals(Object obj) {
         if(obj == this)
@@ -40,8 +39,7 @@ public class MountTree
         return other.mountTo.equals(mountTo);
     }
 
-    public MountTree(File defaultPath, Map<Path<String>, File> mounts, Path<String> workspacePath)
-    {
+    public MountTree(File defaultPath, Map<Path<String>, File> mounts, Path<String> workspacePath) {
         path = workspacePath;
 
         if(defaultPath == null)
@@ -50,12 +48,10 @@ public class MountTree
 
         subDirs = new HashMap<String, MountTree>();
 
-        if(mounts != null)
-        {
+        if(mounts != null) {
             Map<String, Map<Path<String>, File>> perSubDir = new HashMap<String, Map<Path<String>, File>>();
 
-            for(Path<String> s : mounts.keySet())
-            {
+            for(Path<String> s : mounts.keySet()) {
                 File file = mounts.get(s);
 
                 if(file == null)
@@ -65,8 +61,7 @@ public class MountTree
 
                 if(pathItems.size() == 0)
                     tmpMountTo = file;
-                else
-                {
+                else {
                     String folder = pathItems.get(0);
                     if(folder.length() == 0)
                         throw new RuntimeException("invalid mount path");

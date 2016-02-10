@@ -91,10 +91,8 @@ public class PnToCpogDialog extends JDialog {
         // reduction of maximal significant runs, check box
         reduceCheck = new JCheckBox("", true);
         reduceLabel = new JLabel(PnToCpogDialogSupport.textReduceLabel);
-        reduceLabel.addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent e)
-            {
+        reduceLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
                 reduceCheck.setSelected(reduceCheck.isSelected() ? false : true);
             }
         });
@@ -102,10 +100,8 @@ public class PnToCpogDialog extends JDialog {
         // reduce isomorphic processes, check box
         isomorphismCheck = new JCheckBox("", true);
         isomorphismLabel = new JLabel(PnToCpogDialogSupport.textIsomorphismLabel);
-        isomorphismLabel.addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent e)
-            {
+        isomorphismLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
                 isomorphismCheck.setSelected(isomorphismCheck.isSelected() ? false : true);
             }
         });
@@ -124,10 +120,8 @@ public class PnToCpogDialog extends JDialog {
         // remove condition nodes check box
         removeNodesCheck = new JCheckBox("", false);
         removeNodesLabel = new JLabel(PnToCpogDialogSupport.textRemoveNodeLabel);
-        removeNodesLabel.addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent e)
-            {
+        removeNodesLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
                 removeNodesCheck.setSelected(removeNodesCheck.isSelected() ? false : true);
             }
         });

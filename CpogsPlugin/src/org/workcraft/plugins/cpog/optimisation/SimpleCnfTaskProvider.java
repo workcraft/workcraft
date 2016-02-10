@@ -26,8 +26,7 @@ import static org.workcraft.plugins.cpog.optimisation.CnfOperations.or;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleCnfTaskProvider implements RawCnfGenerator<Cnf>
-{
+public class SimpleCnfTaskProvider implements RawCnfGenerator<Cnf> {
     @Override
     public CnfTask getCnf(Cnf cnf) {
         Map<String, BooleanVariable> vars = new HashMap<String, BooleanVariable>();

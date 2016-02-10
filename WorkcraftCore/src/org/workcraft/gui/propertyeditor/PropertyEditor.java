@@ -22,6 +22,6 @@
 package org.workcraft.gui.propertyeditor;
 
 public interface PropertyEditor {
-    public void setObject(Properties o);
-    public void clearObject();
+    void setObject(Properties o);
+    void clearObject();
 }

@@ -23,8 +23,7 @@ package org.workcraft.plugins.cpog.optimisation.expressions;
 import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-public class Iff extends BinaryBooleanFormula
-{
+public class Iff extends BinaryBooleanFormula {
     Iff(BooleanFormula x, BooleanFormula y) {
         super(x,y);
     }

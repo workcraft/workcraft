@@ -6,13 +6,13 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
 
 public interface PetriNetModel extends Model {
-    public Collection<Transition> getTransitions();
-    public Collection<Place> getPlaces();
-    public Collection<Connection> getConnections();
+    Collection<Transition> getTransitions();
+    Collection<Place> getPlaces();
+    Collection<Connection> getConnections();
 
-    public boolean isEnabled(Transition t);
-    public void fire(Transition t);
+    boolean isEnabled(Transition t);
+    void fire(Transition t);
 
-    public boolean isUnfireEnabled(Transition t);
-    public void unFire(Transition t);
+    boolean isUnfireEnabled(Transition t);
+    void unFire(Transition t);
 }

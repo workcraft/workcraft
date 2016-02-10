@@ -22,8 +22,7 @@
 package org.workcraft.plugins.cpog;
 
 
-public enum VariableState
-{
+public enum VariableState {
     TRUE('1', "[1] true"),
     FALSE('0', "[0] false"),
     UNDEFINED('?', "[?] undefined");
@@ -31,7 +30,7 @@ public enum VariableState
     public final char value;
     private final String name;
 
-    private VariableState(char value, String name) {
+    VariableState(char value, String name) {
         this.value = value;
         this.name = name;
     }

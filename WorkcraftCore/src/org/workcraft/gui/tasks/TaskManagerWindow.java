@@ -54,7 +54,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         TaskManagerWindow window;
         TaskControl taskControl;
 
-        public TaskControlMonitor (TaskManagerWindow window, TaskControl taskControl) {
+        TaskControlMonitor (TaskManagerWindow window, TaskControl taskControl) {
             this.taskControl = taskControl;
             this.window = window;
         }
@@ -126,7 +126,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         private JPanel container;
         private String description;
 
-        public TaskControlGenerator(JPanel container, String description) {
+        TaskControlGenerator(JPanel container, String description) {
             this.container = container;
             this.description = description;
         }

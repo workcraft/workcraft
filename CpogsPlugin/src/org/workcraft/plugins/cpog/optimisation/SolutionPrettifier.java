@@ -24,10 +24,8 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.SolutionSubstitut
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 
-public class SolutionPrettifier
-{
-    public static <T> CpogEncoding prettifySolution(CpogOptimisationTask<T> task, BooleanSolution solution)
-    {
+public class SolutionPrettifier {
+    public static <T> CpogEncoding prettifySolution(CpogOptimisationTask<T> task, BooleanSolution solution) {
         if(solution==null)
             return null;
 
@@ -47,8 +45,7 @@ public class SolutionPrettifier
             functions[i] = functionVars[i].accept(substitutor);
 
         boolean[][] encoding = new boolean[encodingVars.length][];
-        for(int i=0;i<encodingVars.length;i++)
-        {
+        for(int i=0;i<encodingVars.length;i++) {
             encoding[i] = new boolean[encodingVars[i].length];
             for(int j=0;j<encodingVars[i].length;j++)
                 encoding[i][j] = encodingVars[i][j].accept(substitutor).accept(evaluator);

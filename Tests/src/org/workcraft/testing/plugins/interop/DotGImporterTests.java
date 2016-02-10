@@ -44,8 +44,7 @@ import org.workcraft.workspace.ModelEntry;
 
 public class DotGImporterTests {
     @Test
-    public void Test1() throws IOException, DeserialisationException
-    {
+    public void Test1() throws IOException, DeserialisationException {
         File tempFile = File.createTempFile("test", ".g");
 
         FileOutputStream fileStream = new FileOutputStream(tempFile);
@@ -84,16 +83,14 @@ public class DotGImporterTests {
     }
 
     @Test
-    public void Test2() throws Throwable
-    {
+    public void Test2() throws Throwable {
         final InputStream test = ClassLoader.getSystemClassLoader().getResourceAsStream("org/workcraft/testing/plugins/interop/test2.g");
         STGModel imported = new DotGImporter().importSTG(test);//DotGImporterTests.class.getClassLoader().getResourceAsStream("test2.g"));
         Assert.assertEquals(17, imported.getTransitions().size());
         Assert.assertEquals(0, imported.getDummyTransitions().size());
 
         int explicitPlaces = 0;
-        for(Place p : imported.getPlaces())
-        {
+        for(Place p : imported.getPlaces()) {
             if(!((STGPlace)p).isImplicit()) explicitPlaces++;
         }
 
@@ -101,8 +98,7 @@ public class DotGImporterTests {
 
         Assert.assertEquals(18, imported.getPlaces().size());
 
-        for(Transition t : imported.getTransitions())
-        {
+        for(Transition t : imported.getTransitions()) {
             Assert.assertTrue(imported.getPreset(t).size()>0);
             Assert.assertTrue(imported.getPostset(t).size()>0);
         }

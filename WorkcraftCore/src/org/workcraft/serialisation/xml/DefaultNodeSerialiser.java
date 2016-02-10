@@ -52,8 +52,7 @@ public class DefaultNodeSerialiser {
 
         BeanInfo info = getBeanInfo(currentLevel);
 
-        for (PropertyDescriptor desc : info.getPropertyDescriptors())
-        {
+        for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
             if (desc.getPropertyType() == null)
                 continue;
 
@@ -71,11 +70,9 @@ public class DefaultNodeSerialiser {
             // the property is writable and is not of array type, try to get a serialiser
             XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
 
-            if (!(serialiser instanceof BasicXMLSerialiser))
-            {
+            if (!(serialiser instanceof BasicXMLSerialiser)) {
                 // no serialiser, try to use the special case enum serialiser
-                if (desc.getPropertyType().isEnum())
-                {
+                if (desc.getPropertyType().isEnum()) {
                     serialiser = fac.getSerialiserFor(Enum.class);
                     if (serialiser == null)
                         continue;

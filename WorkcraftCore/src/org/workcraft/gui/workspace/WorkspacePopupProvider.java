@@ -83,7 +83,9 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 final JMenuItem miCreateWork = new JMenuItem("Create work...");
                 miCreateWork.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(ActionEvent e) {
-                        try { framework.getMainWindow().createWork(path); } catch (OperationCancelledException e1) { }
+                        try {
+                            framework.getMainWindow().createWork(path);
+                        } catch (OperationCancelledException e1) { }
                     }
                 });
                 popup.add(miCreateWork);
@@ -92,7 +94,9 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
                 miCreateFolder.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(ActionEvent e) {
-                        try { createFolder(path); } catch (OperationCancelledException e1) { }
+                        try {
+                            createFolder(path);
+                        } catch (OperationCancelledException e1) { }
                     }
 
                     private void createFolder(Path<String> path) throws OperationCancelledException {
@@ -119,8 +123,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         }
 
 
-        if (WorkspaceTree.isLeaf(workspace, path))
-        {
+        if (WorkspaceTree.isLeaf(workspace, path)) {
             popup.addSeparator();
             final WorkspaceEntry openFile = workspace.getOpenFile(path);
             if (openFile==null) {

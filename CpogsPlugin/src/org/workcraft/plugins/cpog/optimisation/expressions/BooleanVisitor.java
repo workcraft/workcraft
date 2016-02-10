@@ -23,14 +23,14 @@ package org.workcraft.plugins.cpog.optimisation.expressions;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 
 public interface BooleanVisitor<T> {
-    public T visit(And node);
-    public T visit(Iff node);
-    public T visit(Xor node);
-    public T visit(Zero node);
-    public T visit(One node);
-    public T visit(Not node);
-    public T visit(Imply node);
+    T visit(And node);
+    T visit(Iff node);
+    T visit(Xor node);
+    T visit(Zero node);
+    T visit(One node);
+    T visit(Not node);
+    T visit(Imply node);
 
-    public T visit(BooleanVariable variable);
-    public T visit(Or node);
+    T visit(BooleanVariable variable);
+    T visit(Or node);
 }

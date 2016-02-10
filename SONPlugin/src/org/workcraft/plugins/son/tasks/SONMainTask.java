@@ -164,23 +164,18 @@ public class SONMainTask implements Task<VerificationResult>{
         return new Result<VerificationResult>(Outcome.FINISHED);
     }
 
-    private static void clearConsole()
-    {
-        try
-        {
+    private static void clearConsole() {
+        try {
             String os = System.getProperty("os.name");
 
-            if (os.contains("Window"))
-            {
+            if (os.contains("Window")) {
                 Runtime.getRuntime().exec("cls");
             }
-            else
-            {
+            else {
                 Runtime.getRuntime().exec("cls");
             }
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             //  Handle exception.
         }
     }

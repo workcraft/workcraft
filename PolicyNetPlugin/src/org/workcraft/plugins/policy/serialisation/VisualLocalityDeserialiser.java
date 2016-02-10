@@ -12,15 +12,13 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 public class VisualLocalityDeserialiser implements CustomXMLDeserialiser{
 
     @Override
-    public String getClassName()
-    {
+    public String getClassName() {
         return VisualLocality.class.getName();
     }
 
     @Override
     public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
-            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException
-    {
+            ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException {
         VisualLocality visualLocality = (VisualLocality)instance;
         String ref = element.getAttribute("ref");
         Locality locality = (Locality)externalReferenceResolver.getObject(ref);
@@ -29,8 +27,7 @@ public class VisualLocalityDeserialiser implements CustomXMLDeserialiser{
 
     @Override
     public Object createInstance(Element element, ReferenceResolver externalReferenceResolver,
-            Object... constructorParameters)
-    {
+            Object... constructorParameters) {
         String ref = element.getAttribute("ref");
         Locality locality = (Locality)externalReferenceResolver.getObject(ref);
         return new VisualLocality(locality);
@@ -38,7 +35,6 @@ public class VisualLocalityDeserialiser implements CustomXMLDeserialiser{
 
     @Override
     public void initInstance(Element element, Object instance, ReferenceResolver externalReferenceResolver,
-            NodeInitialiser nodeInitialiser) throws DeserialisationException
-    {
+            NodeInitialiser nodeInitialiser) throws DeserialisationException {
     }
 }

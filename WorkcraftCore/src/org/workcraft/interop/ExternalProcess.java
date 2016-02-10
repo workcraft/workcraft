@@ -36,7 +36,7 @@ public class ExternalProcess {
         private final ReadableByteChannel channel;
         private final ByteBuffer buffer = ByteBuffer.allocate(1024);
 
-        public StreamReaderThread(ReadableByteChannel channel) {
+        StreamReaderThread(ReadableByteChannel channel) {
             this.channel = channel;
         }
 

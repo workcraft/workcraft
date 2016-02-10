@@ -210,8 +210,7 @@ public class SatBasedSolver {
         for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
 
         CpogEncoding solution = null;
-        try
-        {
+        try {
             // OLD SCENCO EXECUTION
             if (SCENCO) {
                 if (pr > 0) {
@@ -238,8 +237,7 @@ public class SatBasedSolver {
                 }
             }
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             we.cancelMemento();
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             JOptionPane.showMessageDialog(null, e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);

@@ -27,12 +27,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class CnfClause extends Clause {
 
-    public CnfClause()
-    {
+    public CnfClause() {
     }
 
-    public CnfClause(Literal... literals)
-    {
+    public CnfClause(Literal... literals) {
         super(literals);
     }
 

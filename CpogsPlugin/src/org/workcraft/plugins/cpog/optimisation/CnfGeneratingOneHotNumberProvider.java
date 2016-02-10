@@ -11,12 +11,10 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
-class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula>
-{
+class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
     private final List<CnfClause> rho = new ArrayList<CnfClause>();
 
-    public CnfGeneratingOneHotNumberProvider()
-    {
+    CnfGeneratingOneHotNumberProvider() {
     }
 
     public OneHotIntBooleanFormula generate(String varPrefix, int range) {
@@ -28,19 +26,16 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 
         boolean useSorting = true;
 
-        if(!useSorting)
-        {
+        if(!useSorting) {
             for(int i=0;i<range;i++)
                 for(int j=i+1;j<range;j++)
                     rho.add(or(not(vars.get(i)), not(vars.get(j))));
 
             rho.add(or(vars));
         }
-        else
-        {
+        else {
             List<Literal> sorted = new ArrayList<Literal>();
-            for(int i=0;i<range;i++)
-            {
+            for(int i=0;i<range;i++) {
                 literals.add(new Literal(vars.get(i)));
                 sorted.add(new Literal(varPrefix + "sorted"+i));
             }
@@ -75,8 +70,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
             throw new RuntimeException("Lengths do not match");
 
         Literal notResult = not(result);
-        for(int i=0;i<vars.length;i++)
-        {
+        for(int i=0;i<vars.length;i++) {
             conditions.add(or(notResult, not(code.get(i)), vars[i]));
             conditions.add(or(result, not(code.get(i)), not(vars[i])));
         }
@@ -98,8 +92,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
         List<BooleanVariable> params = new ArrayList<BooleanVariable>();
         Literal[]literals = new Literal[vars.length];
 
-        for(int i=0;i<vars.length;i++)
-        {
+        for(int i=0;i<vars.length;i++) {
             BooleanVariable var = new FreeVariable("param"+i);
             params.add(var);
             literals[i] = new Literal(var);

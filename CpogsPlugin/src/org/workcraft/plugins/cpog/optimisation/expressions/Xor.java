@@ -23,8 +23,7 @@ package org.workcraft.plugins.cpog.optimisation.expressions;
 import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-public class Xor extends BinaryBooleanFormula
-{
+public class Xor extends BinaryBooleanFormula {
     public Xor(BooleanFormula x, BooleanFormula y) {
         super(x,y);
     }

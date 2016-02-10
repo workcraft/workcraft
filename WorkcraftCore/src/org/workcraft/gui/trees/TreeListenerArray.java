@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.workcraft.gui.workspace.Path;
 
-public class TreeListenerArray<Node> implements TreeListener<Node>
-{
+public class TreeListenerArray<Node> implements TreeListener<Node> {
     List<TreeListener<Node>> list = new ArrayList<TreeListener<Node>>();
 
     @Override
@@ -33,13 +32,11 @@ public class TreeListenerArray<Node> implements TreeListener<Node>
             l.restructured(path);
     }
 
-    public void add(TreeListener<Node> listener)
-    {
+    public void add(TreeListener<Node> listener) {
         list.add(listener);
     }
 
-    public void remove(TreeListener<Node> listener)
-    {
+    public void remove(TreeListener<Node> listener) {
         list.remove(listener);
     }
 }

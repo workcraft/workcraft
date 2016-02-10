@@ -5,12 +5,10 @@ import java.util.List;
 
 import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
 
-class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanFormula>
-{
+class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanFormula> {
     private final List<BooleanFormula> rho = new ArrayList<BooleanFormula>();
 
-    public ThermometerNumberProvider()
-    {
+    ThermometerNumberProvider() {
     }
 
     @Override
@@ -39,8 +37,7 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
 
         conditions.add(imply(not(digits.get(0)), vars[0]));
         conditions.add(imply(digits.get(N-1), vars[N]));
-        for(int i=0;i<N-1;i++)
-        {
+        for(int i=0;i<N-1;i++) {
             conditions.add(imply(and(digits.get(i), not(digits.get(i+1))), vars[i+1]));
         }
 

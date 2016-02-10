@@ -32,8 +32,7 @@ import org.workcraft.dom.visual.TouchableTransformer;
 
 public class TouchableTransformerTests {
 
-    private static class Dummy implements Touchable
-    {
+    private static class Dummy implements Touchable {
         public Rectangle2D getBoundingBox() {
             throw new RuntimeException("not implemented");
         }
@@ -44,25 +43,21 @@ public class TouchableTransformerTests {
         }
 
         @Override
-        public Point2D getCenter()
-        {
+        public Point2D getCenter() {
             throw new RuntimeException("not implemented");
         }
     }
 
     @Test
-    public void TestHitTestIdentity()
-    {
+    public void TestHitTestIdentity() {
         testHitTestIdentity(new Point2D.Double(88, 33), true);
         testHitTestIdentity(new Point2D.Double(0, 0), false);
         testHitTestIdentity(new Point2D.Double(-8, 3), false);
         testHitTestIdentity(new Point2D.Double(0, 0), true);
     }
 
-    private void testHitTestIdentity(final Point2D point, final boolean result)
-    {
-        Dummy dummy = new Dummy()
-        {
+    private void testHitTestIdentity(final Point2D point, final boolean result) {
+        Dummy dummy = new Dummy() {
             @Override
             public boolean hitTest(Point2D p) {
                 assertEquals(point, p);
@@ -77,18 +72,15 @@ public class TouchableTransformerTests {
     }
 
     @Test
-    public void TestBBIdentity()
-    {
+    public void TestBBIdentity() {
         testBBIdentity(new Rectangle2D.Double(88, 33, 3, 3));
         testBBIdentity(new Rectangle2D.Double(0, 0, 10, 10));
         testBBIdentity(null);
         testBBIdentity(new Rectangle2D.Double(-5, -5, 8, 0));
     }
 
-    private void testBBIdentity(final Rectangle2D bb)
-    {
-        Dummy dummy = new Dummy()
-        {
+    private void testBBIdentity(final Rectangle2D bb) {
+        Dummy dummy = new Dummy() {
             @Override
             public Rectangle2D getBoundingBox() {
                 if(bb == null)
@@ -102,8 +94,7 @@ public class TouchableTransformerTests {
     }
 
     @Test
-    public void TestRotateBoundingBox()
-    {
+    public void TestRotateBoundingBox() {
         final Rectangle2D bb = new Rectangle2D.Double(0, 0, 1, 1);
         AffineTransform transform = AffineTransform.getRotateInstance(3.1415926535897932384626433832795/4.0);
 
@@ -127,8 +118,7 @@ public class TouchableTransformerTests {
 
 
     @Test
-    public void TestTranslateHitTest()
-    {
+    public void TestTranslateHitTest() {
         TouchableTransformer toucher = new TouchableTransformer(
                 new Dummy(){
                     @Override

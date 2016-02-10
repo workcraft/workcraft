@@ -18,7 +18,7 @@ public class ControlRegister extends BinaryRegister {
 
         private final String name;
 
-        private SynchronisationType(String name) {
+        SynchronisationType(String name) {
             this.name = name;
         }
 

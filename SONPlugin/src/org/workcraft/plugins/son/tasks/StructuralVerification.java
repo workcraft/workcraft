@@ -7,15 +7,15 @@ import org.workcraft.plugins.son.ONGroup;
 
 public interface StructuralVerification {
 
-    public void task(Collection<ONGroup> selectedGroups);
+    void task(Collection<ONGroup> selectedGroups);
 
-    public Collection<String> getRelationErrors();
+    Collection<String> getRelationErrors();
 
-    public Collection<ArrayList<String>> getCycleErrors();
+    Collection<ArrayList<String>> getCycleErrors();
 
-    public Collection<String> getGroupErrors();
+    Collection<String> getGroupErrors();
 
-    public int getErrNumber();
+    int getErrNumber();
 
-    public int getWarningNumber();
+    int getWarningNumber();
 }

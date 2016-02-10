@@ -40,9 +40,9 @@ import org.workcraft.exceptions.NodeCreationException;
 public abstract class AbstractNodeGenerator implements NodeGenerator {
 
     public interface MathNodeGenerator {
-        public MathNode createNode();
-        public String getLabel();
-        public int getHotKeyCode();
+        MathNode createNode();
+        String getLabel();
+        int getHotKeyCode();
     }
 
     @Override
