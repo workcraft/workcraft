@@ -121,8 +121,18 @@ public class ScencoExecutionSupport {
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
     protected void reset_vars(String verbose, String genMode, String numSol, String customFlag, String customPath, String effort, String espressoFlag, String abcFlag, String gateLibFlag, String cpogSize, String disableFunction, String oldSynt){
-        verbose = ""; genMode= ""; numSol= ""; customFlag= ""; customPath= ""; effort= ""; espressoFlag= "";
-        abcFlag= ""; gateLibFlag= ""; cpogSize= ""; disableFunction= ""; oldSynt= "";
+        verbose = "";
+        genMode= "";
+        numSol= "";
+        customFlag= "";
+        customPath= "";
+        effort= "";
+        espressoFlag= "";
+        abcFlag= "";
+        gateLibFlag= "";
+        cpogSize= "";
+        disableFunction= "";
+        oldSynt= "";
         return;
     }
 

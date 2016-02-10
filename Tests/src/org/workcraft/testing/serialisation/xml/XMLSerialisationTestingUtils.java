@@ -150,7 +150,8 @@ public class XMLSerialisationTestingUtils {
             Place p3 = new Place();
             SignalTransition t3 = new SignalTransition();
 
-            g1.add(p3); g1.add(t3);
+            g1.add(p3);
+            g1.add(t3);
 
             stg.connect(p3, t3);
 
@@ -176,7 +177,10 @@ public class XMLSerialisationTestingUtils {
             VisualSignalTransition vt3 = new VisualSignalTransition(t3);
             VisualSignalTransition vt4 = new VisualSignalTransition(t4);
 
-            visualSTG.add(vt1);visualSTG.add(vt2);visualSTG.add(vt3);visualSTG.add(vt4);
+            visualSTG.add(vt1);
+            visualSTG.add(vt2);
+            visualSTG.add(vt3);
+            visualSTG.add(vt4);
 
             visualSTG.connect(vt1, vt2);
             visualSTG.connect(vt2, vt3);

@@ -348,8 +348,18 @@ public class SatBasedSolver {
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
     private void reset_vars(){
-        verbose = ""; genMode= ""; numSol= ""; customFlag= ""; customPath= ""; effort= ""; espressoFlag= "";
-        abcFlag= ""; gateLibFlag= ""; cpogSize= ""; disableFunction= ""; oldSynt= "";
+        verbose = "";
+        genMode= "";
+        numSol= "";
+        customFlag= "";
+        customPath= "";
+        effort= "";
+        espressoFlag= "";
+        abcFlag= "";
+        gateLibFlag= "";
+        cpogSize= "";
+        disableFunction= "";
+        oldSynt= "";
         return;
     }
 

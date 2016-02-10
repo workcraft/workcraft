@@ -324,11 +324,21 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     public String toString() {
         String str = "";
         switch (align) {
-        case LEFT:        str = ",align=left"; break;
-        case CENTER:      str = ",align=center"; break;
-        case RIGHT:       str = ",align=right"; break;
-        case LEADING:     str = ",align=leading"; break;
-        case TRAILING:    str = ",align=trailing"; break;
+        case LEFT:
+            str = ",align=left";
+            break;
+        case CENTER:
+            str = ",align=center";
+            break;
+        case RIGHT:
+            str = ",align=right";
+            break;
+        case LEADING:
+            str = ",align=leading";
+            break;
+        case TRAILING:
+            str = ",align=trailing";
+            break;
         }
         return getClass().getName() + "[hgap=" + hgap + ",vgap=" + vgap + str + "]";
     }

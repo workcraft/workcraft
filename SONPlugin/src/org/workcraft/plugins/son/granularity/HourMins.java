@@ -93,7 +93,9 @@ public class HourMins extends AbstractTimeGranularity{
 
         switch(str.length()){
             case 1:
-            case 2: mins = time; break;
+            case 2:
+                mins = time;
+                break;
             case 3:
                 mins = Integer.valueOf(str.substring(1, 3));
                 hour = Integer.valueOf(str.substring(0, 1));
@@ -137,7 +139,9 @@ public class HourMins extends AbstractTimeGranularity{
 
         switch(str.length()){
             case 1:
-            case 2: mins = time; break;
+            case 2:
+                mins = time;
+                break;
             case 3:
                 mins = Integer.valueOf(str.substring(1, 3));
                 break;

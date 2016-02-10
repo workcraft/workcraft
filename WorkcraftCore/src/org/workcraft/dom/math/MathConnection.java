@@ -46,7 +46,8 @@ public class MathConnection extends MathNode implements Connection {
     }
 
     final public void setDependencies(MathNode first, MathNode second) {
-        this.first = first;     this.second = second;
+        this.first = first;
+        this.second = second;
     }
 
     @Override

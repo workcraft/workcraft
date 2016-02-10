@@ -180,7 +180,9 @@ public class BasicTypesSerialisation {
             Element e3 = doc.createElement("property");
             s.serialise(e3, "\" <xml");
 
-            root.appendChild(e1);root.appendChild(e2);root.appendChild(e3);
+            root.appendChild(e1);
+            root.appendChild(e2);
+            root.appendChild(e3);
 
             // XmlUtil.writeDocument(doc, System.out);
 

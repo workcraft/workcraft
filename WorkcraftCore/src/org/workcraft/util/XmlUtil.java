@@ -183,7 +183,8 @@ public class XmlUtil {
 
     public static Document createDocument() throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.newDocument();
@@ -192,7 +193,8 @@ public class XmlUtil {
 
     public static Document loadDocument(File file) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(file);
@@ -202,7 +204,8 @@ public class XmlUtil {
 
     public static Document loadDocument(String path) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(new File(path));
@@ -212,7 +215,8 @@ public class XmlUtil {
 
     public static Document loadDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(is);
@@ -222,7 +226,8 @@ public class XmlUtil {
 
     public static Document loadDocument(ReadableByteChannel in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(Channels.newInputStream(in));
