@@ -54,7 +54,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         TaskManagerWindow window;
         TaskControl taskControl;
 
-        TaskControlMonitor (TaskManagerWindow window, TaskControl taskControl) {
+        TaskControlMonitor(TaskManagerWindow window, TaskControl taskControl) {
             this.taskControl = taskControl;
             this.window = window;
         }
@@ -153,7 +153,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
         setLayout(new BorderLayout());
         scroll = new JScrollPane();
-        add (scroll, BorderLayout.CENTER);
+        add(scroll, BorderLayout.CENTER);
 
         content = new ScrollPaneWidthTrackingPanel();
         //ytcontent.setBackground(Color.ORANGE);
@@ -196,7 +196,8 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                             monitor.progressUpdate(i/99.0);
                         }
                         return new Result<Object>(Outcome.FINISHED);
-                    } }, "Test task #" + counter++, new DummyProgressMonitor<Object>(){
+                    }
+                }, "Test task #" + counter++, new DummyProgressMonitor<Object>(){
 
                         @Override
                         public void finished(Result<? extends Object> result, final String description) {
@@ -214,10 +215,10 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             }
         });
 
-        content.add (testTaskButton);
+        content.add(testTaskButton);
     }
 
-    public void removeTaskControl (TaskControl taskControl) {
+    public void removeTaskControl(TaskControl taskControl) {
         content.remove(taskControl);
         content.revalidate();
     }
@@ -235,6 +236,6 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
-        return new TaskControlMonitor (this, tcg.getTaskCotnrol());
+        return new TaskControlMonitor(this, tcg.getTaskCotnrol());
     }
 }

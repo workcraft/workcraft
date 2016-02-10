@@ -56,7 +56,7 @@ public class CheckCircuitTask extends MpsatChainTask {
     private final boolean checkHazard;
 
     public CheckCircuitTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkHazard) {
-        super (we, null);
+        super(we, null);
         this.we = we;
         this.checkConformation = checkConformation;
         this.checkDeadlock = checkDeadlock;

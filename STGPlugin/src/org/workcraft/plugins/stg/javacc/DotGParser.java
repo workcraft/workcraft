@@ -28,7 +28,7 @@ public class DotGParser implements DotGParserConstants {
                 implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
         }
 
-        private Node getOrCreate (String name) {
+        private Node getOrCreate(String name) {
                 Node node = stg.getNodeByReference(name);
                 if (node == null) {
                         node = stg.getNodeByReference(name + "/0");
@@ -45,7 +45,7 @@ public class DotGParser implements DotGParserConstants {
                 return node;
         }
 
-        private Node getOrCreate (Pair<String, Integer> ref) {
+        private Node getOrCreate(Pair<String, Integer> ref) {
                 String reference = stg.makeReference(ref);
                 String name = ref.getFirst();
                 Node node = stg.getNodeByReference(reference);
@@ -62,7 +62,7 @@ public class DotGParser implements DotGParserConstants {
                 return node;
         }
 
-        private Node getOrCreate (Triple<String, Direction, Integer> ref) {
+        private Node getOrCreate(Triple<String, Direction, Integer> ref) {
                 String reference = stg.makeReference(ref);
                 String name = ref.getFirst();
                 Node node = stg.getNodeByReference (reference);
@@ -73,14 +73,14 @@ public class DotGParser implements DotGParserConstants {
                                 st.setSignalType(signals.get(name));
                                 node = st;
                         } else {
-                                throw new FormatException ("Undeclared signal encountered: "
+                                throw new FormatException("Undeclared signal encountered: "
                                         + name + " ("+reference+"). Possibly malformed header.");
                         }
                 }
                 return node;
         }
 
-        private void createArc (Node first, Node second) {
+        private void createArc(Node first, Node second) {
                 try {
                         ConnectionResult result = stg.connect(first, second);
                         STGPlace implicitPlace = result.getImplicitPlace();
@@ -89,21 +89,21 @@ public class DotGParser implements DotGParserConstants {
                                 implicitPlace.setImplicit(true);
                         }
                 } catch (InvalidConnectionException e) {
-                        throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +
+                        throw new FormatException("Cannot create arc from " + stg.getNodeReference(first) +
                          " to " + stg.getNodeReference(second) + ".", e);
                 }
         }
 
-        private void addSignals (List<String> list, Type type) {
+        private void addSignals(List<String> list, Type type) {
                 for (String name : list) {
                         if (signals.containsKey(name)) {
                                 Type prevType = signals.get(name);
                                 if (!prevType.equals(type)) {
-                                        throw new FormatException ("The " + type + " signal '" + name
+                                        throw new FormatException("The " + type + " signal '" + name
                                            + "' was already listed as an " + prevType + " signal.");
                                 }
                         } else if (dummies.contains(name)) {
-                                throw new FormatException ("The " + type + " '" + name
+                                throw new FormatException("The " + type + " '" + name
                                     + "' was already listed as a dummy.");
                         } else {
                                 signals.put(name, type);
@@ -111,11 +111,11 @@ public class DotGParser implements DotGParserConstants {
                 }
         }
 
-        private void addDummies (List<String> list) {
+        private void addDummies(List<String> list) {
                 for (String name : list) {
                         if (signals.containsKey(name)) {
                                 Type type = signals.get(name);
-                                throw new FormatException ("The dummy '" + name
+                                throw new FormatException("The dummy '" + name
                                     + "' was already listed as an " + type + " signal.");
                         } else {
                                 dummies.add(name);

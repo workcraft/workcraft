@@ -51,7 +51,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XmlUtil {
-    public static List<Element> getChildElements (String tagName, Element element) {
+    public static List<Element> getChildElements(String tagName, Element element) {
             LinkedList<Element> result = new LinkedList<Element>();
             NodeList nl = element.getChildNodes();
             for (int i=0; i<nl.getLength(); i++) {
@@ -62,7 +62,7 @@ public class XmlUtil {
             return result;
     }
 
-    public static Element getChildElement (String tagName, Element element) {
+    public static Element getChildElement(String tagName, Element element) {
         NodeList nl = element.getChildNodes();
         for (int i=0; i<nl.getLength(); i++) {
             Node n = nl.item(i);
@@ -72,7 +72,7 @@ public class XmlUtil {
         return null;
     }
 
-    public static Element createChildElement (String tagName, Element parentElement) {
+    public static Element createChildElement(String tagName, Element parentElement) {
         Element result = parentElement.getOwnerDocument().createElement(tagName);
         parentElement.appendChild(result);
         return result;
@@ -120,11 +120,11 @@ public class XmlUtil {
         }
     }
 
-    public static void writeColorAttr (Element element, String attributeName, Color value) {
+    public static void writeColorAttr(Element element, String attributeName, Color value) {
         element.setAttribute(attributeName, String.format("#%x", value.getRGB() & 0xffffff));
     }
 
-    public static Color readColorAttr (Element element, String attributeName, Color defaultValue) {
+    public static Color readColorAttr(Element element, String attributeName, Color defaultValue) {
         String s = element.getAttribute(attributeName);
 
         if (s == null || s.charAt(0) != '#')
@@ -138,54 +138,53 @@ public class XmlUtil {
         }
     }
 
-    public static int readIntAttr (Element element, String attributeName, int defaultValue) {
+    public static int readIntAttr(Element element, String attributeName, int defaultValue) {
         String attributeValue = element.getAttribute(attributeName);
         try {
             return Integer.parseInt(attributeValue);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
 
-    public static void writeIntAttr (Element element, String attributeName, int value) {
+    public static void writeIntAttr(Element element, String attributeName, int value) {
         element.setAttribute(attributeName, Integer.toString(value));
     }
 
-    public static double readDoubleAttr (Element element, String attributeName, double defaultValue) {
+    public static double readDoubleAttr(Element element, String attributeName, double defaultValue) {
         String attributeValue = element.getAttribute(attributeName);
         try {
             return Double.parseDouble(attributeValue);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
 
-    public static void writeDoubleAttr (Element element, String attributeName, double value) {
+    public static void writeDoubleAttr(Element element, String attributeName, double value) {
         element.setAttribute(attributeName, Double.toString(value));
     }
 
-    public static boolean readBoolAttr (Element element, String attributeName) {
+    public static boolean readBoolAttr(Element element, String attributeName) {
         String attributeValue = element.getAttribute(attributeName);
         return Boolean.parseBoolean(attributeValue);
     }
 
-    public static void writeBoolAttr (Element element, String attributeName, boolean value) {
+    public static void writeBoolAttr(Element element, String attributeName, boolean value) {
         element.setAttribute(attributeName, Boolean.toString(value));
     }
 
-    public static String readStringAttr (Element element, String attributeName) {
+    public static String readStringAttr(Element element, String attributeName) {
         return element.getAttribute(attributeName);
     }
 
-    public static void writeStringAttr (Element element, String attributeName, String value) {
+    public static void writeStringAttr(Element element, String attributeName, String value) {
         element.setAttribute(attributeName, (value==null)?"":value);
     }
 
     public static Document createDocument() throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.newDocument();
@@ -194,7 +193,8 @@ public class XmlUtil {
 
     public static Document loadDocument(File file) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(file);
@@ -204,7 +204,8 @@ public class XmlUtil {
 
     public static Document loadDocument(String path) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(new File(path));
@@ -214,7 +215,8 @@ public class XmlUtil {
 
     public static Document loadDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(is);
@@ -224,7 +226,8 @@ public class XmlUtil {
 
     public static Document loadDocument(ReadableByteChannel in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc; DocumentBuilder db;
+        Document doc;
+        DocumentBuilder db;
 
         db = dbf.newDocumentBuilder();
         doc = db.parse(Channels.newInputStream(in));

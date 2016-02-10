@@ -45,7 +45,9 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, BooleanVisitor<Literal> {
     Cnf result = new Cnf();
 
-    private static final class Void { private Void(){} }
+    private static final class Void {
+        private Void(){}
+    }
 
     static class ConstantExpectingCnfGenerator implements BooleanVisitor<Void> {
         private static boolean cleverOptimiseAnd = true;
@@ -65,14 +67,12 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
             if(currentResult) {
                 and.getX().accept(this);
                 and.getY().accept(this);
-            }
-            else {
+            } else {
                 if(!cleverOptimiseAnd) {
                     Literal x = and.getX().accept(dumbGenerator);
                     Literal y = and.getY().accept(dumbGenerator);
                     result.add(or(not(x), not(y)));
-                }
-                else {
+                } else {
                     Literal[][] side1 = getBiClause(and.getX());
                     Literal[][] side2 = getBiClause(and.getY());
                     for(int i=0;i<side1.length;i++)
@@ -159,8 +159,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
             if(currentResult) {
                 result.add(or(x, not(y)));
                 result.add(or(not(x), y));
-            }
-            else {
+            } else {
                 result.add(or(x, y));
                 result.add(or(not(x), not(y)));
             }

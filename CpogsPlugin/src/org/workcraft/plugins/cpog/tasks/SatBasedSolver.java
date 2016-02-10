@@ -141,8 +141,7 @@ public class SatBasedSolver {
                                 "set path of the folder containing Abc inside Workcraft settings.",
                                 "Abc tool not installed correctly",
                                 JOptionPane.ERROR_MESSAGE);
-            }
-            else{
+            } else{
                 abcFlag = "-a";
                 gateLibFlag = "-lib";
                 f = new File(abcFolder + gatesLibrary);
@@ -236,8 +235,7 @@ public class SatBasedSolver {
                     System.out.println();
                 }
             }
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             we.cancelMemento();
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             JOptionPane.showMessageDialog(null, e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);
@@ -265,8 +263,7 @@ public class SatBasedSolver {
                         if(encoding[i][j]){
                             Output.print("1");
                             //System.out.print("1");
-                        }
-                        else{
+                        } else{
                             Output.print("0");
                             //System.out.print("0");
                         }
@@ -351,8 +348,18 @@ public class SatBasedSolver {
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
     private void reset_vars(){
-        verbose = ""; genMode= ""; numSol= ""; customFlag= ""; customPath= ""; effort= ""; espressoFlag= "";
-        abcFlag= ""; gateLibFlag= ""; cpogSize= ""; disableFunction= ""; oldSynt= "";
+        verbose = "";
+        genMode= "";
+        numSol= "";
+        customFlag= "";
+        customPath= "";
+        effort= "";
+        espressoFlag= "";
+        abcFlag= "";
+        gateLibFlag= "";
+        cpogSize= "";
+        disableFunction= "";
+        oldSynt= "";
         return;
     }
 

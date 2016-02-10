@@ -64,7 +64,7 @@ public class DotGSerialiser implements ModelSerialiser {
         if (model instanceof Fsm) {
             writeFsm(out, (Fsm)model);
         } else {
-            throw new ArgumentException ("Model class not supported: " + model.getClass().getName());
+            throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
         out.close();
         return resolver;

@@ -71,32 +71,32 @@ public class XMLSerialisationTestingUtils {
 
             if (interfaceType.equals(org.workcraft.serialisation.xml.XMLSerialiser.class)) {
                 return new LegacyPluginInfo[] {
-                        new LegacyPluginInfo (IntSerialiser.class),
-                        new LegacyPluginInfo (BooleanSerialiser.class),
-                        new LegacyPluginInfo (StringSerialiser.class),
-                        new LegacyPluginInfo (DoubleSerialiser.class),
-                        new LegacyPluginInfo (ConnectionSerialiser.class),
-                        new LegacyPluginInfo (IntSerialiser.class),
-                        new LegacyPluginInfo (EnumSerialiser.class),
-                        new LegacyPluginInfo (AffineTransformSerialiser.class),
-                        new LegacyPluginInfo (VisualConnectionSerialiser.class),
-                        new LegacyPluginInfo (ImplicitPlaceArcSerialiser.class),
+                        new LegacyPluginInfo(IntSerialiser.class),
+                        new LegacyPluginInfo(BooleanSerialiser.class),
+                        new LegacyPluginInfo(StringSerialiser.class),
+                        new LegacyPluginInfo(DoubleSerialiser.class),
+                        new LegacyPluginInfo(ConnectionSerialiser.class),
+                        new LegacyPluginInfo(IntSerialiser.class),
+                        new LegacyPluginInfo(EnumSerialiser.class),
+                        new LegacyPluginInfo(AffineTransformSerialiser.class),
+                        new LegacyPluginInfo(VisualConnectionSerialiser.class),
+                        new LegacyPluginInfo(ImplicitPlaceArcSerialiser.class),
                 };
             } else if (interfaceType.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class)) {
                 return new LegacyPluginInfo[] {
-                        new LegacyPluginInfo (IntDeserialiser.class),
-                        new LegacyPluginInfo (BooleanDeserialiser.class),
-                        new LegacyPluginInfo (StringDeserialiser.class),
-                        new LegacyPluginInfo (DoubleDeserialiser.class),
-                        new LegacyPluginInfo (ConnectionDeserialiser.class),
-                        new LegacyPluginInfo (IntDeserialiser.class),
-                        new LegacyPluginInfo (EnumDeserialiser.class),
-                        new LegacyPluginInfo (AffineTransformDeserialiser.class),
-                        new LegacyPluginInfo (VisualConnectionDeserialiser.class),
-                        new LegacyPluginInfo (ImplicitPlaceArcDeserialiser.class),
+                        new LegacyPluginInfo(IntDeserialiser.class),
+                        new LegacyPluginInfo(BooleanDeserialiser.class),
+                        new LegacyPluginInfo(StringDeserialiser.class),
+                        new LegacyPluginInfo(DoubleDeserialiser.class),
+                        new LegacyPluginInfo(ConnectionDeserialiser.class),
+                        new LegacyPluginInfo(IntDeserialiser.class),
+                        new LegacyPluginInfo(EnumDeserialiser.class),
+                        new LegacyPluginInfo(AffineTransformDeserialiser.class),
+                        new LegacyPluginInfo(VisualConnectionDeserialiser.class),
+                        new LegacyPluginInfo(ImplicitPlaceArcDeserialiser.class),
                 };
             } else
-                throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceType.getCanonicalName());
+                throw new RuntimeException("Mock plugin manager doesn't know interface " + interfaceType.getCanonicalName());
         }
 
     }
@@ -123,8 +123,7 @@ public class XMLSerialisationTestingUtils {
             stg.connect(p2, t1);
 
             return stg;
-        }
-        catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }
@@ -151,13 +150,13 @@ public class XMLSerialisationTestingUtils {
             Place p3 = new Place();
             SignalTransition t3 = new SignalTransition();
 
-            g1.add(p3); g1.add(t3);
+            g1.add(p3);
+            g1.add(t3);
 
             stg.connect(p3, t3);
 
             return stg;
-        }
-        catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }
@@ -178,7 +177,10 @@ public class XMLSerialisationTestingUtils {
             VisualSignalTransition vt3 = new VisualSignalTransition(t3);
             VisualSignalTransition vt4 = new VisualSignalTransition(t4);
 
-            visualSTG.add(vt1);visualSTG.add(vt2);visualSTG.add(vt3);visualSTG.add(vt4);
+            visualSTG.add(vt1);
+            visualSTG.add(vt2);
+            visualSTG.add(vt3);
+            visualSTG.add(vt4);
 
             visualSTG.connect(vt1, vt2);
             visualSTG.connect(vt2, vt3);
@@ -188,8 +190,7 @@ public class XMLSerialisationTestingUtils {
 
 
             return visualSTG;
-        }
-        catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }

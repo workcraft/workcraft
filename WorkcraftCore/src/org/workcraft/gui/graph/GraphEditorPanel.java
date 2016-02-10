@@ -148,7 +148,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     private boolean updatePropertyViewRequested = true;
 
     public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
-        super (new BorderLayout());
+        super(new BorderLayout());
         this.mainWindow = mainWindow;
         this.workspaceEntry = workspaceEntry;
 

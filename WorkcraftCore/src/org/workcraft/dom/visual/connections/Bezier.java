@@ -185,7 +185,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
     @Override
     public void setParent(Node parent) {
-        throw new RuntimeException ("Node does not support reparenting");
+        throw new RuntimeException("Node does not support reparenting");
     }
 
     @Override

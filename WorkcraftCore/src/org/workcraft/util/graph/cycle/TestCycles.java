@@ -38,9 +38,11 @@ public class TestCycles {
 
         adjMatrix[0][1] = true;
         adjMatrix[1][2] = true;
-        adjMatrix[2][0] = true; adjMatrix[2][6] = true;
+        adjMatrix[2][0] = true;
+        adjMatrix[2][6] = true;
         adjMatrix[3][4] = true;
-        adjMatrix[4][5] = true; adjMatrix[4][6] = true;
+        adjMatrix[4][5] = true;
+        adjMatrix[4][6] = true;
         adjMatrix[5][3] = true;
         adjMatrix[6][7] = true;
         adjMatrix[7][8] = true;

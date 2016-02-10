@@ -182,7 +182,7 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     @Override
-    public void sendNotification (StateEvent e) {
+    public void sendNotification(StateEvent e) {
         observableState.sendNotification(e);
     }
 

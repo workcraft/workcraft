@@ -42,7 +42,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
     private DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
     private XMLDeserialiserState state = null;
 
-    private void registerDeserialiser (XMLDeserialiser deserialiser) {
+    private void registerDeserialiser(XMLDeserialiser deserialiser) {
         deserialisers.put(deserialiser.getClassName(), deserialiser);
     }
 
@@ -63,7 +63,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
             registerDeserialiser(info.newInstance());
     }
 
-    public Object initInstance (Element element, Object ... constructorParameters) throws DeserialisationException {
+    public Object initInstance(Element element, Object ... constructorParameters) throws DeserialisationException {
         Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
         state.setInstanceElement(instance, element);
@@ -71,7 +71,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 
         if (instance instanceof Container) {
             for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {
-                Object subNode = initInstance (subNodeElement);
+                Object subNode = initInstance(subNodeElement);
 
                  if (subNode instanceof Node)
                      state.addChildNode((Container)instance, (Node)subNode);
@@ -80,7 +80,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         return instance;
     }
 
-    public static Model createModel (Class<?> cls, Node root, Object underlyingModel, References rr) throws DeserialisationException {
+    public static Model createModel(Class<?> cls, Node root, Object underlyingModel, References rr) throws DeserialisationException {
         Model result;
         try {
 
@@ -94,8 +94,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
                     result = (Model) ctor.newInstance(root);
                 }
 
-            }
-            else {
+            } else {
                 try {
                     ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass(), References.class);
                     result = (Model) ctor.newInstance(underlyingModel, root, rr);

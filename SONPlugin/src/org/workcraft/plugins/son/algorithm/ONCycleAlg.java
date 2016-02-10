@@ -56,7 +56,7 @@ public class ONCycleAlg{
      * Using Tarjan algorithm to get all strongly connected components
      * then convert to cycle path
      */
-    public Collection<Path> cycleTask (Collection<? extends Node> nodes){
+    public Collection<Path> cycleTask(Collection<? extends Node> nodes){
         List<Path> result = new ArrayList<Path>();
 
         List<Node> list = new ArrayList<Node>();

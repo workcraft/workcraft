@@ -159,8 +159,7 @@ public class TimeValueSetterTool extends AbstractTool{
                             time.setStartTime(interval);
                             time.setEndTime(interval);
                         }
-                    }
-                    else if(visualSelection instanceof VisualSONConnection){
+                    } else if(visualSelection instanceof VisualSONConnection){
                         ((SONConnection) selection).setTime(interval);
                     }
                     updateTimePanel(editor, visualSelection);
@@ -268,14 +267,11 @@ public class TimeValueSetterTool extends AbstractTool{
 
         if(title.equals(timeLabel)){
             setTimeLabelValue(node, field, isMin);
-        }
-        else if(title.equals(startLabel)){
+        } else if(title.equals(startLabel)){
             setStartLabel(node, field, isMin);
-        }
-        else if(title.equals(durationLabel)){
+        } else if(title.equals(durationLabel)){
             setDurationLabel(node, field, isMin);
-        }
-        else if(title.equals(endLabel)){
+        } else if(title.equals(endLabel)){
             setEndLabel(node, field, isMin);
         }
     }
@@ -442,8 +438,7 @@ public class TimeValueSetterTool extends AbstractTool{
                     field.setText(value.maxToString());
                 }
             }
-        }
-        else if(node instanceof VisualBlock){
+        } else if(node instanceof VisualBlock){
             VisualBlock vb = (VisualBlock)node;
             Block b = (Block)vb.getReferencedComponent();
             value = b.getDuration();
@@ -507,8 +502,7 @@ public class TimeValueSetterTool extends AbstractTool{
                 value = con.getTime();
                 timePropertyPanel.add(createTimeInputPanel(timeLabel, value, node));
             }
-        }
-        else if(node instanceof VisualPlaceNode){
+        } else if(node instanceof VisualPlaceNode){
 
             if(node instanceof VisualCondition){
                 VisualCondition vc2 = (VisualCondition)node;
@@ -529,8 +523,7 @@ public class TimeValueSetterTool extends AbstractTool{
 
             value =c.getDuration();
             timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
-        }
-        else if(node instanceof VisualBlock){
+        } else if(node instanceof VisualBlock){
             VisualBlock vb = (VisualBlock)node;
             Block b = (Block)vb.getReferencedComponent();
 

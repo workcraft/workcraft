@@ -46,13 +46,13 @@ public class Geometry {
         return result;
     }
 
-    public static Point2D subtract (Point2D p1, Point2D p2) {
+    public static Point2D subtract(Point2D p1, Point2D p2) {
         Point2D result = (Point2D)p1.clone();
         result.setLocation(result.getX() - p2.getX(), result.getY() - p2.getY());
         return result;
     }
 
-    public static Point2D rotate90CCW (Point2D p) {
+    public static Point2D rotate90CCW(Point2D p) {
         Point2D result = (Point2D)p.clone();
         result.setLocation(-p.getY(), p.getX());
         return result;
@@ -69,7 +69,7 @@ public class Geometry {
     }
 
     public static Point2D reduce(Point2D p) {
-        Point2D result = multiply (normalize(p), Math.pow(p.distanceSq(0, 0), 0.2));
+        Point2D result = multiply(normalize(p), Math.pow(p.distanceSq(0, 0), 0.2));
         return result;
     }
 
@@ -112,7 +112,7 @@ public class Geometry {
         return new CurveSplitResult(buildCurve(curve.getP1(), a1, b1, c), buildCurve(c, b2, a3, curve.getP2()));
     }
 
-    public static Point2D getPointOnCubicCurve (CubicCurve2D curve, double t) {
+    public static Point2D getPointOnCubicCurve(CubicCurve2D curve, double t) {
         Point2D a1 = lerp(curve.getP1(), curve.getCtrlP1(), t);
         Point2D a2 = lerp(curve.getCtrlP1(), curve.getCtrlP2(), t);
         Point2D a3 = lerp(curve.getCtrlP2(), curve.getP2(), t);
@@ -123,7 +123,7 @@ public class Geometry {
         return lerp(b1, b2, t);
     }
 
-    public static Point2D getDerivativeOfCubicCurve (CubicCurve2D curve, double t) {
+    public static Point2D getDerivativeOfCubicCurve(CubicCurve2D curve, double t) {
 
         Point2D a1 = subtract(curve.getCtrlP1(), curve.getP1());
         Point2D a2 = subtract(curve.getCtrlP2(), curve.getCtrlP1());
@@ -135,7 +135,7 @@ public class Geometry {
         return multiply(lerp(b1, b2, t), 3.0);
     }
 
-    public static Point2D getSecondDerivativeOfCubicCurve (CubicCurve2D curve, double t) {
+    public static Point2D getSecondDerivativeOfCubicCurve(CubicCurve2D curve, double t) {
         Point2D a1 = subtract(curve.getCtrlP1(), curve.getP1());
         Point2D a2 = subtract(curve.getCtrlP2(), curve.getCtrlP1());
         Point2D a3 = subtract(curve.getP2(), curve.getCtrlP2());
@@ -149,8 +149,7 @@ public class Geometry {
     public static AffineTransform optimisticInverse(AffineTransform transform) {
         try {
             return transform.createInverse();
-        }
-        catch(NoninvertibleTransformException ex) {
+        } catch(NoninvertibleTransformException ex) {
             throw new RuntimeException("Matrix inverse failed! Pessimists win :( ");
         }
     }
@@ -198,13 +197,13 @@ public class Geometry {
         Point2D result = (Point2D)p.clone();
 
         if (dotProduct(vx,vy) > 0.0000001)
-            throw new RuntimeException ("Vectors vx and vy must be orthogonal");
+            throw new RuntimeException("Vectors vx and vy must be orthogonal");
 
         double vysq = vy.distanceSq(0,0);
         double vxsq = vx.distanceSq(0,0);
 
         if (vysq < 0.0000001 || vxsq < 0.0000001)
-            throw new RuntimeException ("Vectors vx and vy must not have zero length");
+            throw new RuntimeException("Vectors vx and vy must not have zero length");
 
         result.setLocation(dotProduct(p, vx) / vxsq, dotProduct(p, vy) / vysq);
 

@@ -74,7 +74,7 @@ public class ControlPointScaler {
         Point2D up = getUpVector(mode, v);
         for (ControlPoint cp : controlPoints) {
             Point2D p = subtract(cp.getPosition(), oldC1);
-            Point2D dp = changeBasis (p, v0, up0);
+            Point2D dp = changeBasis(p, v0, up0);
             Point2D mP1 = multiply(v, dp.getX());
             Point2D mP2 = multiply(up, dp.getY());
             cp.setPosition(add(add(mP1, mP2),    newC1));
@@ -90,7 +90,7 @@ public class ControlPointScaler {
         case ADAPTIVE:
             return reduce(rotate90CCW(v0));
         default:
-            throw new RuntimeException ("Unexpected value of scale mode");
+            throw new RuntimeException("Unexpected value of scale mode");
         }
     }
 

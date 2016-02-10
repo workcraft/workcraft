@@ -46,8 +46,7 @@ public class SONAlg extends RelationAlgorithm{
                     }
                     if(isInitial) result.add(c);
                 }
-            }
-            else{
+            } else{
                 for(Condition c : getONInitial(group)){
                     result.add(c);
                 }
@@ -80,8 +79,7 @@ public class SONAlg extends RelationAlgorithm{
                     }
                     if(isFinal) result.add(c);
                 }
-            }
-            else{
+            } else{
                 for(Condition c : getONFinal(group)){
                     result.add(c);
                 }

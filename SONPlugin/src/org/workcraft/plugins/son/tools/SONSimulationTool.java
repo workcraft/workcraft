@@ -429,9 +429,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         if(!isRev){
             reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"));
             reverseButton.setToolTipText("Switch to reverse simulation");
-        }
-
-        else{
+        } else{
             reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"));
             reverseButton.setToolTipText("Switch to forward simulation");
         }
@@ -605,12 +603,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         if (hasTransferableText) {
             try {
                 str = (String)contents.getTransferData(DataFlavor.stringFlavor);
-            }
-            catch (UnsupportedFlavorException ex){
+            } catch (UnsupportedFlavorException ex){
                 System.out.println(ex);
                 ex.printStackTrace();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 System.out.println(ex);
                 ex.printStackTrace();
             }
@@ -673,8 +669,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                 errAlg.setErrNum(upperEvents, sync, phases, false);
                 //set error number for lower events
                 errAlg.setErrNum(step, sync, phases, true);
-            }
-            else{
+            } else{
                 errAlg.setRevErrNum(upperEvents, sync, phases, false);
                 errAlg.setRevErrNum(step, sync, phases, true);
             }

@@ -130,8 +130,7 @@ public class CycleAnalyserTool extends AbstractTool {
                     } catch (NumberFormatException e) {
                         cycleCountText.setText(new Integer(cycleCount).toString());
                     }
-                }
-                else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                } else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     cycleCountText.setText(new Integer(cycleCount).toString());
                 }
             }

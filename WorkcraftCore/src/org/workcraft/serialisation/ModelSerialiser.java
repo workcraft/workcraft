@@ -28,6 +28,6 @@ import org.workcraft.exceptions.SerialisationException;
 public interface ModelSerialiser extends SerialFormat {
     String getDescription();
     String getExtension();
-    boolean isApplicableTo (Model model);
-    ReferenceProducer serialise (Model model, OutputStream out, ReferenceProducer externalReferences) throws SerialisationException;
+    boolean isApplicableTo(Model model);
+    ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer externalReferences) throws SerialisationException;
 }

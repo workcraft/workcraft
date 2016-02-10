@@ -52,13 +52,13 @@ public class Annotations {
         B b = new B();
 
         for (Annotation aa : a.getClass().getAnnotations()) {
-            System.out.println (aa.getClass().getSimpleName());
-            System.out.println (aa.toString());
+            System.out.println(aa.getClass().getSimpleName());
+            System.out.println(aa.toString());
         }
 
         for (Annotation aa : b.getClass().getAnnotations()) {
-            System.out.println (aa.getClass().getSimpleName());
-            System.out.println (aa.toString());
+            System.out.println(aa.getClass().getSimpleName());
+            System.out.println(aa.toString());
         }
 
     }

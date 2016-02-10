@@ -64,7 +64,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         float strokeWidth1 = (float)strokeWidth;
         float strokeWidth2 = strokeWidth1 / 2;
 
-        Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
+        Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
 
         Path2D forwardShape = new Path2D.Double();
         forwardShape.moveTo(-v2, -h2);
@@ -78,7 +78,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         backwardShape.lineTo(-v2, 0);
         backwardShape.lineTo(-v2, h2);
 
-        Shape andTokenShape = new Rectangle2D.Double (-dt, dt, 2 * dt, 2 * dt);
+        Shape andTokenShape = new Rectangle2D.Double(-dt, dt, 2 * dt, 2 * dt);
         Path2D orTokenShape = new Path2D.Double();
         orTokenShape.moveTo(0, -3 * dt);
         orTokenShape.lineTo(dt, -dt);

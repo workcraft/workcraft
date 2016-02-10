@@ -439,7 +439,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     public void setParent(Node parent) {
         super.setParent(parent);
         invalidate();
-    };
+    }
 
     @Override
     public void draw(DrawRequest r) {

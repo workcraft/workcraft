@@ -1056,7 +1056,7 @@ public class CpogSelectionTool extends SelectionTool {
         return parsingTool.getLowestVertex(visualCpog);
     }
 
-    private void editNameInPlace (final GraphEditor editor, final VisualVertex vertex, String initialText) {
+    private void editNameInPlace(final GraphEditor editor, final VisualVertex vertex, String initialText) {
         final JTextField text = new JTextField(initialText);
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(vertex);
         Rectangle2D bbRoot = TransformHelper.transform(vertex, localToRootTransform).getBoundingBox();
@@ -1077,8 +1077,7 @@ public class CpogSelectionTool extends SelectionTool {
             public void keyPressed(KeyEvent arg0) {
                 if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
                     editor.requestFocus();
-                }
-                else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                } else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     cancelInPlaceEdit = true;
                     editor.requestFocus();
                 }

@@ -53,7 +53,7 @@ public class PlaceNode extends MathNode implements Time{
         sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
     }
 
-    public void setFillColor (Color fillColor){
+    public void setFillColor(Color fillColor){
         this.fillColor = fillColor;
         sendNotification(new PropertyChangedEvent(this, "fillColor"));
     }

@@ -99,7 +99,7 @@ public class Export {
         }
     }
 
-    static public Exporter chooseBestExporter (PluginProvider provider, Model model, UUID targetFormat) {
+    static public Exporter chooseBestExporter(PluginProvider provider, Model model, UUID targetFormat) {
         Iterable<PluginInfo<? extends Exporter>> plugins = provider.getPlugins(Exporter.class);
 
         Exporter best = null;
@@ -120,7 +120,7 @@ public class Export {
         return best;
     }
 
-    static public void exportToFile (Model model, File file, UUID targetFormat, PluginProvider provider) throws IOException, ModelValidationException, SerialisationException {
+    static public void exportToFile(Model model, File file, UUID targetFormat, PluginProvider provider) throws IOException, ModelValidationException, SerialisationException {
         Exporter exporter = chooseBestExporter(provider, model, targetFormat);
         if (exporter == null)
             throw new SerialisationException("No exporter available for model type " + model.getDisplayName() + " to produce format " + Format.getDescription(targetFormat));
@@ -142,7 +142,7 @@ public class Export {
             if (model instanceof VisualModel) {
                 if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE) {
                     if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
-                        throw new RuntimeException ("Exporter is not applicable to the model.");
+                        throw new RuntimeException("Exporter is not applicable to the model.");
                     } else {
                         model = ((VisualModel)model).getMathModel();
                     }
@@ -158,7 +158,7 @@ public class Export {
         }
     }
 
-    static public void exportToFile (Exporter exporter, Model model, String fileName) throws IOException, ModelValidationException, SerialisationException {
+    static public void exportToFile(Exporter exporter, Model model, String fileName) throws IOException, ModelValidationException, SerialisationException {
         exportToFile(exporter, model, new File(fileName));
     }
 }

@@ -73,7 +73,7 @@ public class FileFilters {
         private String extension;
         private String description;
 
-        public GenericFileFilter (String extension, String description) {
+        public GenericFileFilter(String extension, String description) {
             this.extension = extension;
             this.description = description;
         }

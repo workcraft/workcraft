@@ -62,9 +62,9 @@ public class VisualModelSerialisation {
         DataAccumulator visualData = new DataAccumulator();
         serialiser.serialise(visualstg, visualData, mathModelReferences);
 
-        System.out.println (new String (mathData.getData()));
-        System.out.println ("---------------");
-        System.out.println (new String (visualData.getData()));
+        System.out.println(new String(mathData.getData()));
+        System.out.println("---------------");
+        System.out.println(new String(visualData.getData()));
 
         // deserialise
         XMLModelDeserialiser deserialiser = new XMLModelDeserialiser(mockPluginManager);

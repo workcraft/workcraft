@@ -73,68 +73,65 @@ public class Config {
     }
 
     public void setInt(String key, int value) {
-        set (key, Integer.toString(value));
+        set(key, Integer.toString(value));
     }
 
     public int getInt(String key, int defaultValue) {
-        String s = get (key);
+        String s = get(key);
         if (s == null) {
             return defaultValue;
         }
         try {
             return Integer.parseInt(s);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return defaultValue;
         }
     }
 
-    public <T extends Enum<T>> void setEnum (String key, Class<T> enumType, T value) {
+    public <T extends Enum<T>> void setEnum(String key, Class<T> enumType, T value) {
         if (value != null) {
-            set (key, value.name());
+            set(key, value.name());
         }
     }
 
-    public <T extends Enum<T>> T getEnum (String key, Class<T> enumType, T defaultValue) {
-        String s = get (key);
+    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType, T defaultValue) {
+        String s = get(key);
         if (s == null) {
             return defaultValue;
         }
         try {
             return Enum.valueOf(enumType, s);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return defaultValue;
         }
     }
 
-    public void setDouble (String key, double value) {
-        set (key, Double.toString(value));
+    public void setDouble(String key, double value) {
+        set(key, Double.toString(value));
     }
 
-    public double getDouble (String key, double defaultValue) {
+    public double getDouble(String key, double defaultValue) {
         String s = get(key);
         if (s == null)
             return defaultValue;
         try {
             return Double.parseDouble(s);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return defaultValue;
         }
     }
 
-    public void setColor (String key, Color value) {
+    public void setColor(String key, Color value) {
         if (value != null) {
-            set (key, String.format("#%x", value.getRGB() & 0xffffff));
+            set(key, String.format("#%x", value.getRGB() & 0xffffff));
         }
     }
 
     public Color getColor(String key, Color defaultValue) {
-        String s = get (key);
+        String s = get(key);
         if (s == null || s.charAt(0) != '#') {
             return defaultValue;
         }
@@ -146,11 +143,11 @@ public class Config {
         }
     }
 
-    public void setBoolean (String key, boolean value) {
+    public void setBoolean(String key, boolean value) {
         set(key, Boolean.toString(value));
     }
 
-    public boolean getBoolean (String key, boolean defaultValue) {
+    public boolean getBoolean(String key, boolean defaultValue) {
         String s = get(key);
         if (s == null) {
             return defaultValue;

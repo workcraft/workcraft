@@ -55,7 +55,7 @@ class XMLDeserialiserState implements References {
         return this;
     }
 
-    public void addChildNode (Container parent, Node child) {
+    public void addChildNode(Container parent, Node child) {
         children.put(parent, child);
     }
 
@@ -63,15 +63,15 @@ class XMLDeserialiserState implements References {
         return children.get(parent);
     }
 
-    public void setInstanceElement (Object instance, Element element) {
+    public void setInstanceElement(Object instance, Element element) {
         instanceElements.put(instance, element);
     }
 
-    public Element getInstanceElement (Object instance) {
+    public Element getInstanceElement(Object instance) {
         return instanceElements.get(instance);
     }
 
-    public void setObject (String reference, Object obj) {
+    public void setObject(String reference, Object obj) {
         internalReferenceMap.put(reference, obj);
     }
 

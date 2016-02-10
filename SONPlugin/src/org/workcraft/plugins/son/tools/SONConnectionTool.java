@@ -38,25 +38,29 @@ public class SONConnectionTool extends ConnectionTool {
         polyButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent arg0){
                 semantic = Semantics.PNLINE;
-        }});
+            }
+        });
 
         asynButton = new JRadioButton("A/Syn Communication");
         asynButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent arg0){
                 semantic = Semantics.ASYNLINE;
-        }});
+            }
+        });
 
         synButton = new JRadioButton("Synchronous Communication");
         synButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent arg0){
                 semantic = Semantics.SYNCLINE;
-        }});
+            }
+        });
 
         bhvButton = new JRadioButton("Behavioural Abstraction");
         bhvButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent arg0){
                 semantic = Semantics.BHVLINE;
-        }});
+            }
+        });
 
         polyButton.setSelected(true);
 

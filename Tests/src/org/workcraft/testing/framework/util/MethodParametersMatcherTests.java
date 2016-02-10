@@ -57,11 +57,9 @@ public class MethodParametersMatcherTests {
         TestMethodInfo match;
         try {
             match = MethodParametersMatcher.match(getMethods(type), parameters);
-        }
-        catch(NoSuchMethodException e) {
+        } catch(NoSuchMethodException e) {
             return -1;
-        }
-        catch(AmbiguousMethodException e) {
+        } catch(AmbiguousMethodException e) {
             return -2;
         }
         return match.execute();
@@ -71,7 +69,7 @@ public class MethodParametersMatcherTests {
     static class simple{
         public static int qq(){
             return 1;
-        };
+        }
     }
 
     @Test
@@ -83,19 +81,19 @@ public class MethodParametersMatcherTests {
     static class advanced{
         public static int qq(){
             return 1;
-        };
+        }
         public static int qq(A a){
             return 2;
-        };
+        }
         public static int qq(ABq abq){
             return 3;
-        };
+        }
         public static int qq(AB ab){
             return 4;
-        };
+        }
         public static int qq(AC ac){
             return 5;
-        };
+        }
     }
 
     @Test
@@ -111,10 +109,10 @@ public class MethodParametersMatcherTests {
     static class ambiguous{
         public static int qq(A a, AC b){
             return 1;
-        };
+        }
         public static int qq(ABq a, A b){
             return 2;
-        };
+        }
     }
 
 

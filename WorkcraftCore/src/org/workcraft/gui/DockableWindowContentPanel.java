@@ -53,7 +53,7 @@ public class DockableWindowContentPanel extends JPanel {
         private int windowID;
         private int actionType;
 
-        public ViewAction (int windowID, int actionType) {
+        public ViewAction(int windowID, int actionType) {
             this.actionType = actionType;
             this.windowID = windowID;
         }
@@ -107,7 +107,7 @@ public class DockableWindowContentPanel extends JPanel {
             Color c;
             if (UIManager.getLookAndFeel().getName().contains("Substance")) {
                 c = getBackground();
-                c = new Color( (int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
+                c = new Color((int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
             } else {
                 c = UIManager.getColor("InternalFrame.activeTitleBackground");
             }
@@ -122,7 +122,7 @@ public class DockableWindowContentPanel extends JPanel {
             }
 
             int icons = 0;
-            if ( (options & MINIMIZE_BUTTON) != 0) {
+            if ((options & MINIMIZE_BUTTON) != 0) {
                 btnMin = createHeaderButton(UIManager.getIcon("InternalFrame.minimizeIcon"),
                         new ViewAction(id, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 btnMin.setToolTipText("Toggle minimized");
@@ -130,15 +130,15 @@ public class DockableWindowContentPanel extends JPanel {
                 icons++;
             }
 
-            if ( (options & MAXIMIZE_BUTTON) != 0) {
+            if ((options & MAXIMIZE_BUTTON) != 0) {
                 btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
                         new ViewAction(id, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 buttonPanel.add(btnMax);
                 icons++;
             }
 
-            if ( (options & CLOSE_BUTTON) != 0) {
-                //System.out.println (UIManager.getColor("InternalFrame.activeTitleGradient"));
+            if ((options & CLOSE_BUTTON) != 0) {
+                //System.out.println(UIManager.getColor("InternalFrame.activeTitleGradient"));
                 btnClose = createHeaderButton(UIManager.getIcon("InternalFrame.closeIcon"),
                         new ViewAction(id, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
                 btnClose.setToolTipText("Close window");
@@ -171,8 +171,7 @@ public class DockableWindowContentPanel extends JPanel {
                 if (maximized) {
                     btnMax.setIcon(UIManager.getIcon("InternalFrame.minimizeIcon"));
                     btnMax.setToolTipText("Restore window");
-                }
-                else {
+                } else {
                     btnMax.setIcon(UIManager.getIcon("InternalFrame.maximizeIcon"));
                     btnMax.setToolTipText("Maximize window");
                 }
@@ -197,7 +196,7 @@ public class DockableWindowContentPanel extends JPanel {
     private int id;
     private int options;
 
-    public DockableWindowContentPanel (MainWindow mainWindow,
+    public DockableWindowContentPanel(MainWindow mainWindow,
             int id, String title, JComponent content, int options) {
 
         super();
@@ -208,7 +207,7 @@ public class DockableWindowContentPanel extends JPanel {
         this.id = id;
         this.content = content;
 
-        if ( (options & ~HEADER) > 0) {
+        if ((options & ~HEADER) > 0) {
             this.options = options | HEADER;
         } else {
             this.options = options;

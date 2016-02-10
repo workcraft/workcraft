@@ -24,7 +24,7 @@ public class Tools {
             String errorMessage = "Attempt to apply incompatible tool " +
                 tool.getClass().getName() + " to a workspace entry " + we.getWorkspacePath();
 
-            throw new RuntimeException (errorMessage);
+            throw new RuntimeException(errorMessage);
         }
     }
 

@@ -141,8 +141,7 @@ public class BasicTypesSerialisation {
             AffineTransformSerialiser s = new AffineTransformSerialiser();
             AffineTransformDeserialiser ds = new AffineTransformDeserialiser();
 
-            AffineTransform t = new AffineTransform
-            (
+            AffineTransform t = new AffineTransform(
                     Math.random(), Math.random(), Math.random(),
                     Math.random(), Math.random(), Math.random()
                 );
@@ -180,7 +179,9 @@ public class BasicTypesSerialisation {
             Element e3 = doc.createElement("property");
             s.serialise(e3, "\" <xml");
 
-            root.appendChild(e1);root.appendChild(e2);root.appendChild(e3);
+            root.appendChild(e1);
+            root.appendChild(e2);
+            root.appendChild(e3);
 
             // XmlUtil.writeDocument(doc, System.out);
 

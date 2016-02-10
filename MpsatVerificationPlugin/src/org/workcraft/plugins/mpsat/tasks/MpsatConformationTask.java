@@ -45,7 +45,7 @@ public class MpsatConformationTask extends MpsatChainTask {
     private File envFile;
 
     public MpsatConformationTask(WorkspaceEntry we, File envFile) {
-        super (we, null);
+        super(we, null);
         this.we = we;
         this.envFile = envFile;
     }
@@ -64,7 +64,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             STG devStg = (STG)we.getModelEntry().getVisualModel().getMathModel();
             Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
             if (devStgExporter == null) {
-                throw new RuntimeException ("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
+                throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
 

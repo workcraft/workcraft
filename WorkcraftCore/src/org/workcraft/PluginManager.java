@@ -137,8 +137,7 @@ public class PluginManager implements PluginProvider {
             try {
                 LogUtils.logMessageLine("  Loading module: " + module.getDescription());
                 module.init();
-            }
-            catch(Throwable th) {
+            } catch(Throwable th) {
                 LogUtils.logErrorLine("Failed initialisation of module " + module.toString());
             }
         }
@@ -179,7 +178,7 @@ public class PluginManager implements PluginProvider {
         XmlUtil.saveDocument(doc, file);
     }
 
-    private void processLegacyPlugin (Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
+    private void processLegacyPlugin(Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
         for (String interfaceName : info.getInterfaces())
         try {
             plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));

@@ -61,7 +61,7 @@ public class VisualPolicyNet extends VisualPetriNet {
         this(model, null);
     }
 
-    public VisualPolicyNet (PolicyNet model, VisualGroup root) {
+    public VisualPolicyNet(PolicyNet model, VisualGroup root) {
         super(model, (root == null ? new VisualLocality((Locality)model.getRoot()) : root));
         // invalidate spanning trees of all VisualBundles when the the model is changed
         new StateSupervisor() {

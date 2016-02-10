@@ -32,8 +32,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
                     rho.add(or(not(vars.get(i)), not(vars.get(j))));
 
             rho.add(or(vars));
-        }
-        else {
+        } else {
             List<Literal> sorted = new ArrayList<Literal>();
             for(int i=0;i<range;i++) {
                 literals.add(new Literal(vars.get(i)));

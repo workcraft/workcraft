@@ -82,7 +82,7 @@ public class JavaScriptWindow extends JPanel {
 
 
     public void execScript() {
-        if (txtScript.getText().length() > 0)
+        if (txtScript.getText().length() > 0) {
             try {
                 final Framework framework = Framework.getInstance();
                 Object result = framework.execJavaScript(txtScript.getText());
@@ -91,16 +91,15 @@ public class JavaScriptWindow extends JPanel {
                 String out = Context.toString(result);
                 Context.exit();
                 if (!out.equals("undefined")) {
-                    System.out.println (out);
+                    System.out.println(out);
                 }
                 resetScript();
+            } catch (org.mozilla.javascript.WrappedException e) {
+                Throwable we = e.getWrappedException();
+                System.err.println(we.getClass().getName() + " " + we.getMessage());
+            } catch (org.mozilla.javascript.RhinoException e) {
+                System.err.println(e.getMessage());
             }
-        catch (org.mozilla.javascript.WrappedException e) {
-            Throwable we = e.getWrappedException();
-            System.err.println(we.getClass().getName() + " " + we.getMessage());
-        }
-        catch (org.mozilla.javascript.RhinoException e) {
-            System.err.println(e.getMessage());
         }
     }
 

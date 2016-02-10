@@ -45,7 +45,7 @@ public class ReachibilityDialog extends JDialog {
             }));
         }
 
-        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton closeButton = new JButton("Close");
         getRootPane().setDefaultButton(closeButton);
 

@@ -125,8 +125,7 @@ public class Interval {
                 return true;
             }
             return other.getMin() <= number && number <= other.getMax();
-        }
-        else if(number == null && other != null) {
+        } else if(number == null && other != null) {
             return other.getMin() == null && other.getMax() == null;
         }
         return false;

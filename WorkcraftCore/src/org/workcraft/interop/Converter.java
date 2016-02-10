@@ -29,5 +29,5 @@ public interface Converter extends Plugin, FileFilter {
     Class <? extends Model> getSourceModelClass();
     Class <? extends Model> getTargetModelClass();
     boolean supportsVisual();
-    Model convert (Model source);
+    Model convert(Model source);
 }

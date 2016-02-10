@@ -147,7 +147,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
     }
 
-    private Color[] tokenColors;;
+    private Color[] tokenColors;
 
     private ColorGenerator createColorGenerator(boolean required) {
         ColorGenerator result = null;

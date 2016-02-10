@@ -122,7 +122,7 @@ public class SettingsEditorDialog extends JDialog {
         loadSections();
     }
 
-    public DefaultMutableTreeNode getSectionNode (DefaultMutableTreeNode node, String section) {
+    public DefaultMutableTreeNode getSectionNode(DefaultMutableTreeNode node, String section) {
         int dotPos = section.indexOf('.');
 
         String thisLevel, nextLevel;

@@ -94,7 +94,7 @@ public class BSONCycleAlg extends ONCycleAlg{
     }
 
     @Override
-    public Collection<Path> cycleTask (Collection<? extends Node> nodes){
+    public Collection<Path> cycleTask(Collection<? extends Node> nodes){
         //remove all paths which do not involve before(e) relation.
          return cycleFliter(super.cycleTask(nodes));
     }

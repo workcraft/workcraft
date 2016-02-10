@@ -8,7 +8,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 
 public class VisualSONDescriptor implements VisualModelDescriptor{
 
-    public VisualModel create (MathModel mathModel) throws VisualModelInstantiationException{
+    public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException{
         return new VisualSON((SON)mathModel);
     }
 

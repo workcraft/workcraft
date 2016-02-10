@@ -7,7 +7,7 @@ import org.workcraft.util.XmlUtil;
 
 public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings> {
 
-    public MpsatSettings fromXML (Element element) {
+    public MpsatSettings fromXML(Element element) {
         String name = XmlUtil.readStringAttr(element, "name");
         MpsatMode mode = MpsatMode.getModeByArgument(element.getAttribute("mode"));
         int verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);

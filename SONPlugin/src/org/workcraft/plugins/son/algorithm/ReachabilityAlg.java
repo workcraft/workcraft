@@ -1,4 +1,4 @@
-    package org.workcraft.plugins.son.algorithm;
+package org.workcraft.plugins.son.algorithm;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -65,7 +65,7 @@ public class ReachabilityAlg extends RelationAlgorithm{
         }
     }
 
-    public Collection<Node> getCausalPredecessors (Node s){
+    public Collection<Node> getCausalPredecessors(Node s){
         predecessors.clear();
         LinkedList<Node> visited = new LinkedList<Node>();
         BSONAlg bsonAlg = new BSONAlg(net);

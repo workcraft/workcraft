@@ -27,7 +27,7 @@ public class DefaultTaskManager implements TaskManager {
 
     @Override
     public <T> Result<? extends T> execute(Task<T> task, String description) {
-        return execute (task, description, null);
+        return execute(task, description, null);
     }
 
     @Override

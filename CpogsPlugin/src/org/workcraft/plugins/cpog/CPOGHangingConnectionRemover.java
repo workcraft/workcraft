@@ -24,7 +24,7 @@ public class CPOGHangingConnectionRemover extends DefaultHangingConnectionRemove
             UnaryFunctor<Connection, Boolean> hanging = new UnaryFunctor<Connection, Boolean>() {
                 @Override
                 public Boolean fn(Connection arg0) {
-                    return !isConnectionInside (e.getAffectedNodes(), arg0);
+                    return !isConnectionInside(e.getAffectedNodes(), arg0);
                 }
             };
 

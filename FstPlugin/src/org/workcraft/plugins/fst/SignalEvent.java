@@ -30,7 +30,7 @@ public class SignalEvent extends Event {
                     return item;
                 }
             }
-            throw new ArgumentException ("Unexpected string: " + s);
+            throw new ArgumentException("Unexpected string: " + s);
         }
 
         @Override

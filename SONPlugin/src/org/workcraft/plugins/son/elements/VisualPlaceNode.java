@@ -103,7 +103,7 @@ public class VisualPlaceNode extends VisualComponent{
         drawNameInLocalSpace(r);
     }
 
-    public void drawToken (DrawRequest r) {
+    public void drawToken(DrawRequest r) {
 
         PlaceNode p = (PlaceNode)getReferencedComponent();
         Decoration d = r.getDecoration();

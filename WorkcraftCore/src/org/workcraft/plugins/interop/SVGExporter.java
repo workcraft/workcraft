@@ -46,7 +46,7 @@ public class SVGExporter implements Exporter {
 
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         if (model == null) {
-            throw new SerialisationException ("Not a visual model");
+            throw new SerialisationException("Not a visual model");
         }
         try {
             Document doc = XmlUtil.createDocument();

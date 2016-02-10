@@ -108,7 +108,7 @@ public class ScencoExecutionSupport {
                   bre.readLine();
                   bre.readLine();
                   while ((strLine = bre.readLine()) != null) {
-                      System.out.println (strLine);
+                      System.out.println(strLine);
                   }
                   in.close();
             }catch (Exception e){ //Catch exception if any
@@ -121,8 +121,18 @@ public class ScencoExecutionSupport {
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
     protected void reset_vars(String verbose, String genMode, String numSol, String customFlag, String customPath, String effort, String espressoFlag, String abcFlag, String gateLibFlag, String cpogSize, String disableFunction, String oldSynt){
-        verbose = ""; genMode= ""; numSol= ""; customFlag= ""; customPath= ""; effort= ""; espressoFlag= "";
-        abcFlag= ""; gateLibFlag= ""; cpogSize= ""; disableFunction= ""; oldSynt= "";
+        verbose = "";
+        genMode= "";
+        numSol= "";
+        customFlag= "";
+        customPath= "";
+        effort= "";
+        espressoFlag= "";
+        abcFlag= "";
+        gateLibFlag= "";
+        cpogSize= "";
+        disableFunction= "";
+        oldSynt= "";
         return;
     }
 
@@ -146,8 +156,7 @@ public class ScencoExecutionSupport {
                     p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
                     positions.add(p);
                     n++;
-                }
-                else {
+                } else {
                     int id = events.get(vertex.getLabel());
                     count.set(id, count.get(id) + 1);
                     Point2D p = vertex.getCenter();
@@ -287,8 +296,7 @@ public class ScencoExecutionSupport {
                                     if(i < cond.length()){
                                         result += cond.charAt(i);
                                     }
-                                }
-                                else{
+                                } else{
                                     result += cond.charAt(i);;
                                 }
                             }
@@ -550,8 +558,7 @@ public class ScencoExecutionSupport {
                 if (trivial != '?') {
                     if (trivial == '1') {
                         condition = One.instance();
-                    }
-                    else {
+                    } else {
                         continue;
                     }
                 }

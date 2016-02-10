@@ -59,7 +59,7 @@ public class WorkspaceWindow extends JPanel {
 
             public String getText() {
                 return "Link files to the root of workspace...";
-            };
+            }
         };
 
         public static final Action OPEN_WORKSPACE_ACTION = new Action() {
@@ -71,7 +71,7 @@ public class WorkspaceWindow extends JPanel {
 
             public String getText() {
                 return "Open workspace...";
-            };
+            }
         };
 
         public static final Action SAVE_WORKSPACE_ACTION = new Action() {
@@ -86,7 +86,7 @@ public class WorkspaceWindow extends JPanel {
 
             public String getText() {
                 return "Save workspace";
-            };
+            }
         };
         public static final Action SAVE_WORKSPACE_AS_ACTION = new Action() {
             @Override
@@ -100,7 +100,7 @@ public class WorkspaceWindow extends JPanel {
 
             public String getText() {
                 return "Save workspace as...";
-            };
+            }
         };
         public static final Action NEW_WORKSPACE_AS_ACTION = new Action() {
             @Override
@@ -111,7 +111,7 @@ public class WorkspaceWindow extends JPanel {
 
             public String getText() {
                 return "New workspace";
-            };
+            }
         };
     }
 

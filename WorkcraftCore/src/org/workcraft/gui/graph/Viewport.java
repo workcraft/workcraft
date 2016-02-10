@@ -178,7 +178,7 @@ public class Viewport {
 
         viewChanged();
 
-        setShape (x,y,w,h);
+        setShape(x,y,w,h);
     }
 
     /**
@@ -214,15 +214,15 @@ public class Viewport {
      * @return
      * The corresponding point in screen space (in integer precision)
      */
-    public Point userToScreen (Point2D pointInUserSpace) {
+    public Point userToScreen(Point2D pointInUserSpace) {
         Point result = new Point();
         finalTransform.transform(pointInUserSpace, result);
         return result;
     }
 
-    public Rectangle userToScreen (Rectangle2D rectInUserSpace) {
-        Point ul = userToScreen (new Point2D.Double(rectInUserSpace.getMinX(), rectInUserSpace.getMinY()));
-        Point lr = userToScreen (new Point2D.Double(rectInUserSpace.getMaxX(), rectInUserSpace.getMaxY()));
+    public Rectangle userToScreen(Rectangle2D rectInUserSpace) {
+        Point ul = userToScreen(new Point2D.Double(rectInUserSpace.getMinX(), rectInUserSpace.getMinY()));
+        Point lr = userToScreen(new Point2D.Double(rectInUserSpace.getMaxX(), rectInUserSpace.getMaxY()));
 
         return new Rectangle(ul.x, ul.y, lr.x-ul.x, lr.y-ul.y);
     }
@@ -234,7 +234,7 @@ public class Viewport {
      * @return
      * The corresponding point in user space (in double precision)
      */
-    public Point2D screenToUser (Point pointInScreenSpace) {
+    public Point2D screenToUser(Point pointInScreenSpace) {
         Point2D result = new Point2D.Double();
         finalInverseTransform.transform(pointInScreenSpace, result);
         return result;
@@ -247,11 +247,11 @@ public class Viewport {
      * Y value contains the vertical pixel size.
      * With the default user-to-screen transform these values are equal.
      */
-    public Point2D pixelSizeInUserSpace () {
-        Point originInScreenSpace = userToScreen (ORIGIN);
+    public Point2D pixelSizeInUserSpace() {
+        Point originInScreenSpace = userToScreen(ORIGIN);
         originInScreenSpace.x += 1;
         originInScreenSpace.y += 1;
-        return screenToUser (originInScreenSpace);
+        return screenToUser(originInScreenSpace);
     }
 
     /**
@@ -261,11 +261,11 @@ public class Viewport {
      * @param dy
      * The amount of vertical panning required (in pixels)
      */
-    public void pan (int dx, int dy) {
-        Point originInScreenSpace = userToScreen (ORIGIN);
+    public void pan(int dx, int dy) {
+        Point originInScreenSpace = userToScreen(ORIGIN);
         originInScreenSpace.x += dx;
         originInScreenSpace.y += dy;
-        Point2D panInUserSpace = screenToUser (originInScreenSpace);
+        Point2D panInUserSpace = screenToUser(originInScreenSpace);
 
         tx += panInUserSpace.getX();
         ty += panInUserSpace.getY();
@@ -273,7 +273,7 @@ public class Viewport {
         viewChanged();
     }
 
-    public void scale (double scale) {
+    public void scale(double scale) {
         if (scale < 0.01f) {
             scale = 0.01f;
         }
@@ -295,7 +295,7 @@ public class Viewport {
      * @param levels
      * The required change of the zoom level. Use positive value to zoom in, negative value to zoom out.
      */
-    public void zoom (int levels) {
+    public void zoom(int levels) {
         scale(scale * Math.pow(SCALE_FACTOR, levels));
     }
 
@@ -313,7 +313,7 @@ public class Viewport {
      * @param anchor
      * The anchor point in screen space.
      */
-    public void zoom (int levels, Point anchor) {
+    public void zoom(int levels, Point anchor) {
         Point2D anchorInUserSpace = screenToUser(anchor);
         zoom(levels);
 
@@ -340,7 +340,7 @@ public class Viewport {
      * @param height
      * The height of the new viewport (in pixels)
      */
-    public void setShape (int x, int y, int width, int height) {
+    public void setShape(int x, int y, int width, int height) {
         shape.setBounds(x, y, width, height);
         shapeChanged();
     }
@@ -351,7 +351,7 @@ public class Viewport {
      * @param shape
      *     The new shape of the viewport as Rectangle (in pixels).
      */
-    public void setShape (Rectangle shape) {
+    public void setShape(Rectangle shape) {
         setShape(shape.x, shape.y, shape.width, shape.height);
         shapeChanged();
     }
@@ -368,7 +368,7 @@ public class Viewport {
      * @param listener
      * The new listener.
      */
-    public void addListener (ViewportListener listener) {
+    public void addListener(ViewportListener listener) {
         listeners.add(listener);
     }
 
@@ -377,7 +377,7 @@ public class Viewport {
      * @param listener
      * The listener to remove.
      */
-    public void removeListener (ViewportListener listener) {
+    public void removeListener(ViewportListener listener) {
         listeners.remove(listener);
     }
 }

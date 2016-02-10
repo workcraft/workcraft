@@ -57,11 +57,11 @@ public class SynchronousExternalProcess {
         process.addListener(new SynchronousListener());
     }
 
-    public boolean start (long timeout) throws IOException {
+    public boolean start(long timeout) throws IOException {
         return start(timeout, new byte[]{});
     }
 
-    public boolean start (long timeout, byte[] input) throws IOException {
+    public boolean start(long timeout, byte[] input) throws IOException {
         errorData.clear();
         outputData.clear();
         finished = false;

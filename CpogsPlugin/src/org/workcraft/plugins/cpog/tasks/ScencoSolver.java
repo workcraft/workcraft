@@ -141,8 +141,7 @@ public class ScencoSolver {
                 args.add(MSG_ABC_NOT_PRESENT);
                 args.add(ACCESS_SCENCO_ERROR);
                 return args;
-            }
-            else{
+            } else{
                 abcFlag = "-a";
                 gateLibFlag = "-lib";
                 f = new File(abcFolder + gatesLibrary);
@@ -277,7 +276,8 @@ public class ScencoSolver {
                 // Read Optimal Formulae
                 if(outputLines[i].contains(".start_formulae")){
                     i++;
-                    v = 0; a = 0;
+                    v = 0;
+                    a = 0;
                     while(outputLines[i].contains(".end_formulae") == false){
                         if(settings.isVerboseMode())
                             System.out.println(outputLines[i]);

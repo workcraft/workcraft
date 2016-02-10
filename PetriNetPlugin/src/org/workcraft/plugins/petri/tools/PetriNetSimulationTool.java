@@ -622,12 +622,10 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         if (hasTransferableText) {
             try {
                 str = (String)contents.getTransferData(DataFlavor.stringFlavor);
-            }
-            catch (UnsupportedFlavorException ex){
+            } catch (UnsupportedFlavorException ex){
                 System.out.println(ex);
                 ex.printStackTrace();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 System.out.println(ex);
                 ex.printStackTrace();
             }

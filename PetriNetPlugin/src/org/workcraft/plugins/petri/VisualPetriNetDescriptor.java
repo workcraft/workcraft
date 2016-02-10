@@ -9,7 +9,7 @@ public class VisualPetriNetDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) {
-        return new VisualPetriNet ((PetriNet)mathModel);
+        return new VisualPetriNet((PetriNet)mathModel);
     }
 
     @Override

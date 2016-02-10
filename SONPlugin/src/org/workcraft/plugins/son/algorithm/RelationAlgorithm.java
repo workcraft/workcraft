@@ -216,7 +216,7 @@ public class RelationAlgorithm{
     /**
      * get all asynchronous (Communication-SON) pre-events for a given event node
      */
-    public Collection<TransitionNode> getPreAsynEvents (TransitionNode e){
+    public Collection<TransitionNode> getPreAsynEvents(TransitionNode e){
         Collection<TransitionNode> result = new ArrayList<TransitionNode>();
         for(Node pre : net.getPreset(e)){
             if((pre instanceof ChannelPlace) && net.getSONConnectionType(pre, e) == Semantics.ASYNLINE){
@@ -234,7 +234,7 @@ public class RelationAlgorithm{
     /**
      * get all asynchronous (Communication-SON) post-events for a given event node
      */
-    public Collection<TransitionNode> getPostAsynEvents (TransitionNode e){
+    public Collection<TransitionNode> getPostAsynEvents(TransitionNode e){
         Collection<TransitionNode> result = new ArrayList<TransitionNode>();
         for(Node post : net.getPostset(e) )
             if((post instanceof ChannelPlace) && net.getSONConnectionType(post, e) == Semantics.ASYNLINE){

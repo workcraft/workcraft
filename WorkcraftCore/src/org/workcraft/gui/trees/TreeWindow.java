@@ -130,7 +130,7 @@ public class TreeWindow<Node> extends JPanel {
                             tree.expandPath(p);
                     }
                 };
-            };
+            }
         };
 
         final TreeModelWrapper<Node> modelWrapper = new TreeModelWrapper<Node>(sourceWithRestructuredTrapped);
@@ -140,10 +140,10 @@ public class TreeWindow<Node> extends JPanel {
             tree.addMouseListener(new MouseAdapter() {
                 public void mousePressed(java.awt.event.MouseEvent e) {
                     maybeShowPopup(e);
-                };
+                }
                 public void mouseReleased(java.awt.event.MouseEvent e) {
                     maybeShowPopup(e);
-                };
+                }
 
                 private void maybeShowPopup(MouseEvent e) {
                     if(e.isPopupTrigger()) {
@@ -237,8 +237,7 @@ public class TreeWindow<Node> extends JPanel {
                     if (source.isLeaf(node)) {
                         cellRenderer.add(checkBox, "0 0");
                         cellRenderer.add(res, "1 0");
-                    }
-                    else
+                    } else
                         return res;
 
                     break;

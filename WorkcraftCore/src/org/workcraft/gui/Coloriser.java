@@ -33,7 +33,7 @@ public class Coloriser {
         return col + (1.0f - col) * orig * 0.8f;
     }
 
-    public static Color colorise (Color originalColor, Color colorisation) {
+    public static Color colorise(Color originalColor, Color colorisation) {
         if (colorisation == null) {
             return originalColor;
         }

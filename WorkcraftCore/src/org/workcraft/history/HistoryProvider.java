@@ -30,7 +30,7 @@ public interface HistoryProvider {
     boolean canRedo();
     void redo();
 
-    void moveToState (int index);
+    void moveToState(int index);
     int getCurrentStateIndex();
 
     void addHistoryListener(HistoryListener listener);

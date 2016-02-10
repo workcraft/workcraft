@@ -37,20 +37,20 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 
 public class GUI {
 
-    public static JPanel createLabeledComponent (JComponent component, String labelText) {
-        JPanel result = new JPanel (new FlowLayout(FlowLayout.LEFT, 3, 0));
+    public static JPanel createLabeledComponent(JComponent component, String labelText) {
+        JPanel result = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         result.add(new JLabel(labelText));
         result.add(component);
         return result;
     }
 
-    public static JPanel createWideLabeledComponent (JComponent component, String labelText) {
+    public static JPanel createWideLabeledComponent(JComponent component, String labelText) {
         double[][] sizes = {
                 {TableLayout.PREFERRED, TableLayout.FILL},
                 {TableLayout.PREFERRED},
         };
 
-        JPanel result = new JPanel (new TableLayout(sizes));
+        JPanel result = new JPanel(new TableLayout(sizes));
         result.add(new JLabel(labelText), "0 0");
         result.add(component, "1 0");
         return result;
@@ -60,7 +60,7 @@ public class GUI {
         Dimension parentSize = parent.getSize();
         Dimension mySize = frame.getSize();
         Point q = parent.getLocationOnScreen();
-        frame.setLocation (((parentSize.width - mySize.width)/2) + q.x, ((parentSize.height - mySize.height)/2) + q.y);
+        frame.setLocation(((parentSize.width - mySize.width)/2) + q.x, ((parentSize.height - mySize.height)/2) + q.y);
     }
 
     public static void centerAndSizeToParent(Window frame, Window parent) {
@@ -80,7 +80,7 @@ public class GUI {
     public static ImageIcon createIconFromImage(String path) {
         URL res = ClassLoader.getSystemResource(path);
         if(res==null) {
-            System.err.println ("Missing icon: " + path);
+            System.err.println("Missing icon: " + path);
             return null;
         }
         return new ImageIcon(res);
@@ -98,7 +98,7 @@ public class GUI {
             g.drawRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
             g.setColor(color);
             LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
-            g.drawString (message, r.x, r.y+r.height-(int)(lm.getDescent()));
+            g.drawString(message, r.x, r.y+r.height-(int)(lm.getDescent()));
         }
     }
 
@@ -150,9 +150,8 @@ public class GUI {
             graphicsNode.paint(g2d);
             g2d.dispose();
             return new ImageIcon(bufferedImage);
-        }
-        catch (Throwable e) {
-            System.err.println ("Failed to load SVG file " + path);
+        } catch (Throwable e) {
+            System.err.println("Failed to load SVG file " + path);
             System.err.println(e);
             return null;
         }

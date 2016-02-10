@@ -32,7 +32,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.util.ConstructorParametersMatcher;
 
 public class ModelFactory {
-    public static Model createModel (String className) throws ModelInstantiationException {
+    public static Model createModel(String className) throws ModelInstantiationException {
         try{
             Class<?> modelClass = Class.forName(className);
             Constructor<?> ctor = modelClass.getConstructor();
@@ -56,7 +56,7 @@ public class ModelFactory {
     }
 
 
-    public static VisualModel createVisualModel (Model model) throws VisualModelInstantiationException {
+    public static VisualModel createVisualModel(Model model) throws VisualModelInstantiationException {
         // Find the corresponding visual class
         VisualClass vcat = model.getClass().getAnnotation(VisualClass.class);
 
@@ -70,24 +70,24 @@ public class ModelFactory {
             Object visual = ctor.newInstance(model);
 
             if (!VisualModel.class.isAssignableFrom(visual.getClass()))
-                throw new VisualModelInstantiationException ("visual class " + visual.getClass().getName() +
+                throw new VisualModelInstantiationException("visual class " + visual.getClass().getName() +
                         ", created for object of class " + model.getClass().getName() + ", is not inherited from "
                         + VisualModel.class.getName());
 
             return (VisualModel)visual;
 
         } catch (SecurityException e) {
-            throw new VisualModelInstantiationException (e);
+            throw new VisualModelInstantiationException(e);
         } catch (NoSuchMethodException e) {
-            throw new VisualModelInstantiationException (e);
+            throw new VisualModelInstantiationException(e);
         } catch (IllegalArgumentException e) {
-            throw new VisualModelInstantiationException (e);
+            throw new VisualModelInstantiationException(e);
         } catch (InstantiationException e) {
-            throw new VisualModelInstantiationException (e);
+            throw new VisualModelInstantiationException(e);
         } catch (IllegalAccessException e) {
-            throw new VisualModelInstantiationException (e);
+            throw new VisualModelInstantiationException(e);
         } catch (InvocationTargetException e) {
-            throw new VisualModelInstantiationException (e);
+            throw new VisualModelInstantiationException(e);
         }
     }
 

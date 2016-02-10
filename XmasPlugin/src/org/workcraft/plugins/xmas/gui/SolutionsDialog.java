@@ -39,7 +39,7 @@ public class SolutionsDialog extends JDialog {
             }));*/
 
         contents.add(solutionsPanel, "0 1");
-        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {

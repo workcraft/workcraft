@@ -178,8 +178,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
                             x = 0;
                             y += vgap + rowh;
                             rowh = 0;
-                        }
-                        else {
+                        } else {
                             int end = i;
                             if(start == end)
                                 end++;
@@ -195,7 +194,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             //moveComponents(target, insets.left + hgap, y, 0, rowh, start, nmembers, ltr);
             stretch(target, insets.left + hgap, y, maxwidth, rowh, start, nmembers, ltr);
 
-            return new Dimension (maxwidth, y + rowh + (rowh!=0?vgap:0));
+            return new Dimension(maxwidth, y + rowh + (rowh!=0?vgap:0));
         }
     }
 
@@ -260,8 +259,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         if((double)totalChange/totalFreedom > 1.0) {
             failed = true;
             totalChange = totalFreedom;
-        }
-        else
+        } else
             failed = false;
 
         for(int i=start;i<end;i++) {
@@ -326,11 +324,21 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     public String toString() {
         String str = "";
         switch (align) {
-        case LEFT:        str = ",align=left"; break;
-        case CENTER:      str = ",align=center"; break;
-        case RIGHT:       str = ",align=right"; break;
-        case LEADING:     str = ",align=leading"; break;
-        case TRAILING:    str = ",align=trailing"; break;
+        case LEFT:
+            str = ",align=left";
+            break;
+        case CENTER:
+            str = ",align=center";
+            break;
+        case RIGHT:
+            str = ",align=right";
+            break;
+        case LEADING:
+            str = ",align=leading";
+            break;
+        case TRAILING:
+            str = ",align=trailing";
+            break;
         }
         return getClass().getName() + "[hgap=" + hgap + ",vgap=" + vgap + str + "]";
     }

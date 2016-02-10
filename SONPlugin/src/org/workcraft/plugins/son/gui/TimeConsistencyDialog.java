@@ -93,12 +93,12 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
             listModel.addElement(new ListItem("Scenario "+(i+1), scenarioSavelist.get(i)));
         }
 
-        scenarioList = new JList<ListItem> (listModel);
+        scenarioList = new JList<ListItem>(listModel);
         scenarioList.setCellRenderer(new ScenarioListRenderer());
         scenarioList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scenarioList.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed (MouseEvent event){
+            public void mousePressed(MouseEvent event){
                 JList<ListItem> list = (JList<ListItem>) event.getSource();
 
                 int index = list.locationToIndex(event.getPoint());
@@ -148,7 +148,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
             }
         }
 
-        nodeList = new JList<ListItem> (listModel);
+        nodeList = new JList<ListItem>(listModel);
         nodeList.setCellRenderer(new ItemListRenderer());
         nodeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
@@ -366,7 +366,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
     @Override
     protected void createButtonsPanel() {
-        runButton = new JButton ("Run");
+        runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
         runButton.addActionListener(new ActionListener() {
             @Override
@@ -381,7 +381,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
             }
         });
 
-        cancelButton = new JButton ("Cancel");
+        cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(new ActionListener() {
             @Override
@@ -391,7 +391,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
             }
         });
 
-        confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        confirmButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         confirmButtonsPanel.add(cancelButton);
         confirmButtonsPanel.add(runButton);
 
@@ -426,7 +426,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
         this.pack();
     }
 
-    public TimeConsistencyDialog (Window owner, WorkspaceEntry we){
+    public TimeConsistencyDialog(Window owner, WorkspaceEntry we){
         super(owner, "Time Anayalsis Setting",  ModalityType.APPLICATION_MODAL, we);
     }
 

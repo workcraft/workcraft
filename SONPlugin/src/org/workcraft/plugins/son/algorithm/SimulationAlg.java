@@ -108,10 +108,8 @@ public class SimulationAlg extends RelationAlgorithm {
                             if(e2 instanceof TransitionNode && u.contains(e2)){
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
-                            }
-                            else if(!step.contains(e2)){
-                                throw new RuntimeException
-                                ("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
+                            } else if(!step.contains(e2)){
+                                throw new RuntimeException("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
                         }
                 }
@@ -150,10 +148,8 @@ public class SimulationAlg extends RelationAlgorithm {
                             if(e2 instanceof TransitionNode && u.contains(e2)){
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
-                            }
-                            else if(!step.contains(e2)){
-                                throw new RuntimeException
-                                ("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
+                            } else if(!step.contains(e2)){
+                                throw new RuntimeException("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
                         }
                 }
@@ -181,7 +177,7 @@ public class SimulationAlg extends RelationAlgorithm {
     }
 
 
-    private boolean isONEnabled (TransitionNode e) {
+    private boolean isONEnabled(TransitionNode e) {
         if(net.getPreset(e).isEmpty())
             return false;
 
@@ -272,14 +268,12 @@ public class SimulationAlg extends RelationAlgorithm {
                             for(Node pre2 : net.getPreset(pre)){
                                 if(visit.contains(pre2)){
                                     continue;
-                                }
-                                else if(!result.contains(pre2) || del.contains(pre2)){
+                                } else if(!result.contains(pre2) || del.contains(pre2)){
                                     visit.add(e2);
                                     del.addAll(visit);
                                     visit.removeLast();
                                     break;
-                                }
-                                else if(!visit.contains(pre2)){
+                                } else if(!visit.contains(pre2)){
                                     e2 = (TransitionNode)pre2;
                                     stack.push(e2);
                                 }
@@ -307,8 +301,8 @@ public class SimulationAlg extends RelationAlgorithm {
 
 
     //reverse simulation
-    private boolean isRevONEnabled (TransitionNode e) {
-        if(net.getPostset    (e).isEmpty())
+    private boolean isRevONEnabled(TransitionNode e) {
+        if(net.getPostset(e).isEmpty())
             return false;
 
         for (Node n : net.getPostset(e)){
@@ -330,7 +324,8 @@ public class SimulationAlg extends RelationAlgorithm {
                     Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
                     for(Condition c2 : min)
                         if(!c2.isMarked())
-                            return false;                }
+                            return false;
+                }
             return true;
             }
         }
@@ -384,16 +379,14 @@ public class SimulationAlg extends RelationAlgorithm {
                             for(Node post2 : net.getPostset(post)){
                                 if(visit.contains(post2)){
                                     continue;
-                                }
-                                else if(!result.contains(post2) || del.contains(post2)){
+                                } else if(!result.contains(post2) || del.contains(post2)){
 //                                    e2 = (TransitionNode)pre2;
 //                                    stack.push(e2);
                                     visit.add(e2);
                                     del.addAll(visit);
                                     visit.removeLast();
                                     break;
-                                }
-                                else if(!visit.contains(post2)){
+                                } else if(!visit.contains(post2)){
                                     e2 = (TransitionNode)post2;
                                     stack.push(e2);
                                 }

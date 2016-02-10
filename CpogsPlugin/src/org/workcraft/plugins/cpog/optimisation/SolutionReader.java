@@ -95,12 +95,10 @@ public class SolutionReader {
                 if(varName.equals("0")) {
                     if(value)
                         throw new RuntimeException("0");
-                }
-                else if(varName.equals("1")) {
+                } else if(varName.equals("1")) {
                     if(!value)
                         throw new RuntimeException("!1");
-                }
-                else {
+                } else {
                     BooleanVariable var = vars.get(varName);
                     if(var == null)
                         throw new RuntimeException("No variable for solution:" + varName);
@@ -121,8 +119,7 @@ public class SolutionReader {
             if(split.length != 2)
                 throw new RuntimeException("Minisat output is more than 2 lines.");
             return parseIntArray(split[1].split(" "));
-        }
-        else {//clasp file
+        } else {//clasp file
             boolean sat = false;
             for(int i=0;i<split.length;i++) {
                 if(split[i].equals("s UNSATISFIABLE"))

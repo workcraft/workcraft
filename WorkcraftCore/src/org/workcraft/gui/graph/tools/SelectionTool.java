@@ -663,7 +663,7 @@ public class SelectionTool extends AbstractTool {
         };
     }
 
-    private void editLabelInPlace (final GraphEditor editor, final VisualComponent component, String initialText) {
+    private void editLabelInPlace(final GraphEditor editor, final VisualComponent component, String initialText) {
         // Create a text pane without wrapping
         final JTextPane textPane = new JTextPane() {
             @Override

@@ -144,10 +144,10 @@ public class PnToCpogDialog extends JDialog {
     /** creates panel containing the buttons for running or closing the converter **/
     private void createButtonPanel(final PnToCpogSettings settings) {
 
-        buttonPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         // run the converter
-        runButton = new JButton ("Run");
+        runButton = new JButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -163,7 +163,7 @@ public class PnToCpogDialog extends JDialog {
         });
 
         // close the converter
-        closeButton = new JButton ("Close");
+        closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

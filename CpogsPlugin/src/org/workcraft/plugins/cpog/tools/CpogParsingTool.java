@@ -131,7 +131,7 @@ public class CpogParsingTool {
                     if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
                         VisualPage p = (VisualPage) v.getParent();
                         Point2D.Double newPosition = new
-                                Point2D.Double (refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
+                                Point2D.Double(refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
                                                 refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());
                         v.setPosition(newPosition);
                     } else {
@@ -684,25 +684,32 @@ public class CpogParsingTool {
                         text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
                         added = true;
                     }
-                } if (text.contains("]" + k + " ")) {
+                }
+                if (text.contains("]" + k + " ")) {
                         text = text.replaceAll("]" + k + " ", "](" + refMap.get(k).getNormalForm() + ") ");
                         added = true;
-                } if (text.contains("(" + k + ")")) {
+                }
+                if (text.contains("(" + k + ")")) {
                         text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k).getNormalForm() + "\\)");
                         added = true;
-                } if (text.contains("(" + k + " ")) {
+                }
+                if (text.contains("(" + k + " ")) {
                         text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k).getNormalForm() + "\\) ");
                         added = true;
-                } if (text.contains(" " + k + ")")) {
+                }
+                if (text.contains(" " + k + ")")) {
                         text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k).getNormalForm() + "\\)\\)");
                         added = true;
-                } if (text.endsWith(" " + k)) {
+                }
+                if (text.endsWith(" " + k)) {
                         text = text.replace(" " + k, " (" + refMap.get(k).getNormalForm() + ")");
                         added = true;
-                } if (text.endsWith("]" + k)) {
+                }
+                if (text.endsWith("]" + k)) {
                         text = text.replace("]" + k, "](" + refMap.get(k).getNormalForm() + ")");
                         added = true;
-                } if (text.endsWith(" " + k + ")")) {
+                }
+                if (text.endsWith(" " + k + ")")) {
                         text = text.replace(" " + k + "\\)", " (" + refMap.get(k).getNormalForm() + "\\)\\)");
                         added = true;
                 }
@@ -833,7 +840,7 @@ public class CpogParsingTool {
          for(VisualVertex vertex : vertices) {
              centre = (Double) vertex.getCenter();
              if (startPoint == null) {
-                 startPoint = new Point2D.Double (centre.getX(), centre.getY());
+                 startPoint = new Point2D.Double(centre.getX(), centre.getY());
              } else {
                  if (centre.getY() > startPoint.getY()) {
                      startPoint.setLocation(startPoint.getX(), centre.getY());

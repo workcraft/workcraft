@@ -62,9 +62,9 @@ public interface Model extends NodeContext {
     <R> Set<R> getPreset(Node node, Class<R> type);
     <R> Set<R> getPostset(Node node, Class<R> type);
 
-    void add (Node node);
-    void remove (Node node);
-    void remove (Collection<Node> nodes);
+    void add(Node node);
+    void remove(Node node);
+    void remove(Collection<Node> nodes);
 
     ModelProperties getProperties(Node node);
 }

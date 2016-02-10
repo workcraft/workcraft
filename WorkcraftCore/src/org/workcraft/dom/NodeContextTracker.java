@@ -39,7 +39,7 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
     private HashMap<Node, LinkedHashSet<Node>> postsets = new HashMap<Node, LinkedHashSet<Node>>();
     private HashMap<Node, LinkedHashSet<Connection>> connections = new HashMap<Node, LinkedHashSet<Connection>>();
 
-    private void initHashes (Node n) {
+    private void initHashes(Node n) {
         LinkedHashSet<Node> set = presets.get(n);
         if (set == null) {
             presets.put(n, new LinkedHashSet<Node>());

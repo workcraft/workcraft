@@ -47,7 +47,7 @@ public class PresetManagerDialog<T> extends JDialog {
         this.add(content, BorderLayout.CENTER);
 
 
-        okButton = new JButton ("OK");
+        okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,7 +55,7 @@ public class PresetManagerDialog<T> extends JDialog {
             }
         });
 
-        deleteButton = new JButton ("Delete");
+        deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -75,7 +75,7 @@ public class PresetManagerDialog<T> extends JDialog {
             }
         });
 
-        renameButton = new JButton ("Rename");
+        renameButton = new JButton("Rename");
         renameButton.addActionListener(new ActionListener() {
             @SuppressWarnings("unchecked")
             @Override

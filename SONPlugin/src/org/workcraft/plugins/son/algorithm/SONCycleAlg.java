@@ -25,7 +25,7 @@ public class SONCycleAlg extends BSONCycleAlg{
      *     get all cycles without synchronous cycles
      */
     @Override
-    public Collection<Path> cycleTask (Collection<? extends Node> nodes){
+    public Collection<Path> cycleTask(Collection<? extends Node> nodes){
         return cycleFliter(super.cycleTask(nodes));
     }
 

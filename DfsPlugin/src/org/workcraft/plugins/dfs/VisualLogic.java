@@ -62,7 +62,7 @@ public class VisualLogic extends VisualDelayComponent {
         int kd = 6;
         double dd = (size - strokeWidth1 - strokeWidth1) / (4 * kd);
 
-        Shape shape = new Rectangle2D.Double (-w2, -h2, w, h);
+        Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
         Path2D eeShape = new Path2D.Double();
         eeShape.moveTo(-2*dd + dd, -2 * dd);
         eeShape.lineTo(-2*dd - dd, -2 * dd);

@@ -141,7 +141,7 @@ public class BSONAlg extends RelationAlgorithm{
         return result;
     }
 
-    private Marking getPathBounding (Collection<Condition> nodes, Node upper, boolean getMin){
+    private Marking getPathBounding(Collection<Condition> nodes, Node upper, boolean getMin){
         dfsResult.clear();
         LinkedList<Node> visited = new LinkedList<Node>();
         for(Condition s : nodes){

@@ -53,7 +53,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
     private JTextArea txtStdErr;
     private Color colorBack = null;
 
-    public ErrorWindow () {
+    public ErrorWindow() {
         txtStdErr = new JTextArea();
         txtStdErr.setLineWrap(true);
         txtStdErr.setEditable(false);

@@ -13,7 +13,7 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     private Func<T, Boolean> filter;
     private final LinkedList<TreeListener<T>> listeners = new LinkedList<TreeListener<T>>();
 
-    public FilteredTreeSource (TreeSource<T> sourceTree, Func<T, Boolean> filter) {
+    public FilteredTreeSource(TreeSource<T> sourceTree, Func<T, Boolean> filter) {
         this.source = sourceTree;
         this.filter = filter;
     }

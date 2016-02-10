@@ -42,10 +42,10 @@ public class MathModelSerialisation {
 
     public static void compareMathModels(Model model1, Model model2) {
         Assert.assertTrue(model1.getTitle().equals(model2.getTitle()));
-        SerialisationTestingUtils.compareNodes (model1.getRoot(), model2.getRoot());
+        SerialisationTestingUtils.compareNodes(model1.getRoot(), model2.getRoot());
     }
 
-    public void runTest (STG stg) {
+    public void runTest(STG stg) {
         try {
             PluginProvider mock = XMLSerialisationTestingUtils.createMockPluginManager();
 
@@ -55,7 +55,7 @@ public class MathModelSerialisation {
             DataAccumulator accum = new DataAccumulator();
             serialiser.serialise(stg, accum, null);
 
-            System.out.println (new String(accum.getData()));
+            System.out.println(new String(accum.getData()));
 
             // deserialise
             XMLModelDeserialiser deserisaliser = new XMLModelDeserialiser(mock);
@@ -72,12 +72,12 @@ public class MathModelSerialisation {
 
     @Test
     public void SimpleSaveLoad() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
-        runTest (XMLSerialisationTestingUtils.createTestSTG1());
+        runTest(XMLSerialisationTestingUtils.createTestSTG1());
     }
 
     @Test
     public void SaveLoadWithGroups() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
-        runTest (XMLSerialisationTestingUtils.createTestSTG2());
+        runTest(XMLSerialisationTestingUtils.createTestSTG2());
     }
 
 }

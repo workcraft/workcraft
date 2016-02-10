@@ -80,8 +80,7 @@ public class JsonExport implements Tool {
             writer_s.println("empty");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
                 if ( writer_s != null ) {
                     writer_s.close();
                 }
@@ -126,38 +125,31 @@ public class JsonExport implements Tool {
                     VisualSourceComponent vsc=(VisualSourceComponent)vp;
                     SourceComponent sc=vsc.getReferencedSourceComponent();
                     sc.setGr(no);
-                }
-                else if(vp instanceof VisualSinkComponent) {
+                } else if(vp instanceof VisualSinkComponent) {
                     VisualSinkComponent vsc=(VisualSinkComponent)vp;
                     SinkComponent sc=vsc.getReferencedSinkComponent();
                     sc.setGr(no);
-                }
-                else if(vp instanceof VisualFunctionComponent) {
+                } else if(vp instanceof VisualFunctionComponent) {
                     VisualFunctionComponent vsc=(VisualFunctionComponent)vp;
                     FunctionComponent sc=vsc.getReferencedFunctionComponent();
                     sc.setGr(no);
-                }
-                else if(vp instanceof VisualQueueComponent) {
+                } else if(vp instanceof VisualQueueComponent) {
                     VisualQueueComponent vsc=(VisualQueueComponent)vp;
                     QueueComponent sc=vsc.getReferencedQueueComponent();
                     sc.setGr(no);
-                }
-                else if(vp instanceof VisualForkComponent) {
+                } else if(vp instanceof VisualForkComponent) {
                     VisualForkComponent vsc=(VisualForkComponent)vp;
                     ForkComponent sc=vsc.getReferencedForkComponent();
                     sc.setGr(no);
-                }
-                else if(vp instanceof VisualJoinComponent) {
+                } else if(vp instanceof VisualJoinComponent) {
                     VisualJoinComponent vsc=(VisualJoinComponent)vp;
                     JoinComponent sc=vsc.getReferencedJoinComponent();
                     sc.setGr(no);
-                }
-                else if(vp instanceof VisualSwitchComponent) {
+                } else if(vp instanceof VisualSwitchComponent) {
                     VisualSwitchComponent vsc=(VisualSwitchComponent)vp;
                     SwitchComponent sc=vsc.getReferencedSwitchComponent();
                     sc.setGr(no);
-                }
-                else if(vp instanceof VisualMergeComponent) {
+                } else if(vp instanceof VisualMergeComponent) {
                     VisualMergeComponent vsc=(VisualMergeComponent)vp;
                     MergeComponent sc=vsc.getReferencedMergeComponent();
                     sc.setGr(no);
@@ -239,12 +231,10 @@ public class JsonExport implements Tool {
             if(cnet.getType(node).equals("fork")) {
                 System.out.println("      \"type\": \"" + "xfork" + "\",");
                 writer.println("      \"type\": \"" + "xfork" + "\",");
-            }
-            else if(cnet.getType(node).equals("switch")) {
+            } else if(cnet.getType(node).equals("switch")) {
                 System.out.println("      \"type\": \"" + "xswitch" + "\",");
                 writer.println("      \"type\": \"" + "xswitch" + "\",");
-            }
-            else {
+            } else {
                 System.out.println("      \"type\": \"" + cnet.getType(node) + "\",");
                 writer.println("      \"type\": \"" + cnet.getType(node) + "\",");
             }
@@ -254,38 +244,31 @@ public class JsonExport implements Tool {
                 src_node=(SourceComponent)node;
                 contacts=src_node.getOutputs();
                 num_outputs=1;
-            }
-            else if(node instanceof SinkComponent) {
+            } else if(node instanceof SinkComponent) {
                 snk_node=(SinkComponent)node;
                 contacts=snk_node.getOutputs();
                 num_outputs=1;
-            }
-            else if(node instanceof FunctionComponent) {
+            } else if(node instanceof FunctionComponent) {
                 fun_node=(FunctionComponent)node;
                 contacts=fun_node.getOutputs();
                 num_outputs=1;
-            }
-            else if(node instanceof QueueComponent) {
+            } else if(node instanceof QueueComponent) {
                 qu_node=(QueueComponent)node;
                 contacts=qu_node.getOutputs();
                 num_outputs=1;
-            }
-            else if(node instanceof ForkComponent) {
+            } else if(node instanceof ForkComponent) {
                 frk_node=(ForkComponent)node;
                 contacts=frk_node.getOutputs();
                 num_outputs=2;
-            }
-            else if(node instanceof JoinComponent) {
+            } else if(node instanceof JoinComponent) {
                 jn_node=(JoinComponent)node;
                 contacts=jn_node.getOutputs();
                 num_outputs=1;
-            }
-            else if(node instanceof SwitchComponent) {
+            } else if(node instanceof SwitchComponent) {
                 sw_node=(SwitchComponent)node;
                 contacts=sw_node.getOutputs();
                 num_outputs=2;
-            }
-            else if(node instanceof MergeComponent) {
+            } else if(node instanceof MergeComponent) {
                 mrg_node=(MergeComponent)node;
                 contacts=mrg_node.getOutputs();
                 num_outputs=1;
@@ -309,8 +292,7 @@ public class JsonExport implements Tool {
                                 }
                                 contact_cnt++;
                             }
-                        }
-                        else if(cp_node instanceof MergeComponent) {
+                        } else if(cp_node instanceof MergeComponent) {
                             MergeComponent mrg_node_=(MergeComponent)cp_node;
                             contacts_=mrg_node_.getInputs();
                             for(XmasContact mrgcnt_node : contacts_) {
@@ -332,8 +314,7 @@ public class JsonExport implements Tool {
                             System.out.println("         },");
                             writer.println("         },");
                             num_outputs=1;  //fpb
-                        }
-                        else {
+                        } else {
                             System.out.println("        }");
                             writer.println("        }");
                         }
@@ -343,12 +324,10 @@ public class JsonExport implements Tool {
             if(node instanceof SourceComponent) {
                   System.out.println("      ],");
                   writer.println("      ],");
-                }
-            else if(node instanceof QueueComponent) {
+                } else if(node instanceof QueueComponent) {
               System.out.println("      ],");
               writer.println("      ],");
-            }
-            else {
+            } else {
                   System.out.println("      ],");
                   writer.println("      ],");
                 }
@@ -375,8 +354,7 @@ public class JsonExport implements Tool {
                 writer.println("        }");
                   System.out.println("      ]");
                   writer.println("      ]");
-            }
-            else if(node instanceof SinkComponent) {
+            } else if(node instanceof SinkComponent) {
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
@@ -388,8 +366,7 @@ public class JsonExport implements Tool {
                 writer.println("        }");
                   System.out.println("      ]");
                   writer.println("      ]");
-            }
-            else if(node instanceof FunctionComponent) {
+            } else if(node instanceof FunctionComponent) {
                 //char fncheckfn = fun_node.getVal();
                 //System.out.println("val = " + fncheckfn);
                 System.out.println("      \"fields\": [");
@@ -406,8 +383,7 @@ public class JsonExport implements Tool {
                 writer.println("        }");
                   System.out.println("      ]");
                   writer.println("      ]");
-            }
-            else if(node instanceof QueueComponent) {
+            } else if(node instanceof QueueComponent) {
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
@@ -432,8 +408,7 @@ public class JsonExport implements Tool {
                 writer.println("        }");
                   System.out.println("      ]");
                   writer.println("      ]");
-            }
-            else if(node instanceof ForkComponent) {
+            } else if(node instanceof ForkComponent) {
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
@@ -445,8 +420,7 @@ public class JsonExport implements Tool {
                 writer.println("        }");
                   System.out.println("      ]");
                   writer.println("      ]");
-            }
-            else if(node instanceof JoinComponent) {
+            } else if(node instanceof JoinComponent) {
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
@@ -458,8 +432,7 @@ public class JsonExport implements Tool {
                 writer.println("        }");
                   System.out.println("      ]");
                   writer.println("      ]");
-            }
-            else if(node instanceof SwitchComponent) {
+            } else if(node instanceof SwitchComponent) {
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
@@ -471,8 +444,7 @@ public class JsonExport implements Tool {
                 writer.println("        }");
                   System.out.println("      ]");
                   writer.println("      ]");
-            }
-            else if(node instanceof MergeComponent) {
+            } else if(node instanceof MergeComponent) {
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
@@ -488,8 +460,7 @@ public class JsonExport implements Tool {
             if(cnt_nodes<num_nodes) {
               System.out.println("    },");
               writer.println("    },");
-            }
-            else {
+            } else {
               System.out.println("    }");
               writer.println("    }");
             }
@@ -499,11 +470,9 @@ public class JsonExport implements Tool {
         System.out.println("}");
         writer.println("}");
         System.out.println("Output written to JsonFile");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
                 e.printStackTrace();
-        }
-        finally {
+        } finally {
                 if ( writer != null ) {
                     writer.close();
                 }

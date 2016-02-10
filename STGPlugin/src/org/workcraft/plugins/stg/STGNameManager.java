@@ -57,14 +57,14 @@ public class STGNameManager extends UniqueNameManager {
         } else if (Identifier.isValid(name)) {
             signalName = name;
         } else {
-            throw new ArgumentException ("Name '" + name + "' is not a valid signal transition label.");
+            throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");
         }
         if (isUnusedName(signalName) || !getSignalTransitions(signalName).isEmpty()) {
             instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
             st.setDirection(direction);
             renameSignalTransition(st, signalName);
         } else {
-            throw new ArgumentException ("Name '" + name + "' is unavailable.");
+            throw new ArgumentException("Name '" + name + "' is unavailable.");
         }
     }
 
@@ -76,10 +76,10 @@ public class STGNameManager extends UniqueNameManager {
                 instancedNameManager.assign(dt, r, forceInstance);
                 renameDummyTransition(dt, dummyName);
             } else {
-                throw new ArgumentException ("Name '" + name + "' is unavailable.");
+                throw new ArgumentException("Name '" + name + "' is unavailable.");
             }
         } else {
-            throw new ArgumentException ("Name '" + name + "' is not a valid dummy label.");
+            throw new ArgumentException("Name '" + name + "' is not a valid dummy label.");
         }
     }
 

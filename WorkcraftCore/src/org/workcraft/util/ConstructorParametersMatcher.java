@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class ConstructorParametersMatcher {
     private static class ConstructorInfo<T> implements MethodParametersMatcher.MethodInfo {
-        ConstructorInfo (Constructor<? extends T> constructor) {
+        ConstructorInfo(Constructor<? extends T> constructor) {
             this.constructor = constructor;
             this.parameterTypes = constructor.getParameterTypes();
         }
@@ -46,8 +46,7 @@ public class ConstructorParametersMatcher {
 
         try {
             return MethodParametersMatcher.match(constructors, parameters).constructor;
-        }
-        catch(NoSuchMethodException e) {
+        } catch(NoSuchMethodException e) {
             String s = "";
             for(Class<?> parameter : parameters) {
                 if(s.length()>0)

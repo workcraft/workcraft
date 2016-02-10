@@ -68,7 +68,7 @@ public class Annotations {
         return ndcba.value();
     }
 
-    public static int getHotKeyCode (Class <?> cls) {
+    public static int getHotKeyCode(Class <?> cls) {
         Hotkey hkd = cls.getAnnotation(Hotkey.class);
         if (hkd == null)
             return -1;

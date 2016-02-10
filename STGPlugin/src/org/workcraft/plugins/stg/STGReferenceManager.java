@@ -46,7 +46,7 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
         return result;
     }
 
-    public int getInstanceNumber (Node node) {
+    public int getInstanceNumber(Node node) {
         STGNameManager mgr = getNameManager(node);
         int result = 0;
         if (mgr.isNamed(node)) {
@@ -55,7 +55,7 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
         return result;
     }
 
-    public void setInstanceNumber (Node node, int number) {
+    public void setInstanceNumber(Node node, int number) {
         STGNameManager mgr = getNameManager(node);
         mgr.setInstanceNumber(node, number);
     }

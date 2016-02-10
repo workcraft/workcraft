@@ -184,7 +184,7 @@ public class MpsatConfigurationDialog extends JDialog {
                 solutionLimitText.setEnabled(false);
             }
         });
-        firstSolutionRadioButton = new JRadioButton ("any");
+        firstSolutionRadioButton = new JRadioButton("any");
         firstSolutionRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -282,9 +282,9 @@ public class MpsatConfigurationDialog extends JDialog {
     }
 
     private void createButtonsPanel() {
-        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        runButton = new JButton ("Run");
+        runButton = new JButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -293,7 +293,7 @@ public class MpsatConfigurationDialog extends JDialog {
             }
         });
 
-        cancelButton = new JButton ("Cancel");
+        cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -302,7 +302,7 @@ public class MpsatConfigurationDialog extends JDialog {
             }
         });
 
-        helpButton = new JButton ("Help");
+        helpButton = new JButton("Help");
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

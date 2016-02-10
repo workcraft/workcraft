@@ -34,7 +34,7 @@ public class ObservableStateImpl implements ObservableState {
         observers.remove(obs);
     }
 
-    public void sendNotification (StateEvent e) {
+    public void sendNotification(StateEvent e) {
         for (StateObserver o : observers)
             o.notify(e);
     }
