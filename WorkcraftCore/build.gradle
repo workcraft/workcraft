@@ -17,4 +17,5 @@ dependencies {
     compile 'log4j:log4j:1.2.8'
     compile 'org.mozilla:rhino:1.7.7.1'
     compile 'net.sf.jga:jga:0.8.3'
+    compile 'net.sf.jedit-syntax:jedit-syntax:2.2.2'
 }
