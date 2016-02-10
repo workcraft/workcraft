@@ -836,7 +836,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                 }
             } else {
                 if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
-                    return (row == mainTrace.getPosition() + branchTrace.getPosition());
+                    return row == mainTrace.getPosition() + branchTrace.getPosition();
                 }
             }
             return false;

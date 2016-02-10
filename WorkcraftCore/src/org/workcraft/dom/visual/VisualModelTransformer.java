@@ -14,7 +14,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 public class VisualModelTransformer {
 
     private static void transformNodes(Collection<Node> nodes, AffineTransform t) {
-        assert (nodes != null);
+        assert nodes != null;
         // Control points may move while the nodes are repositioned, therefore this two-step transformation.
         HashMap<ControlPoint, Point2D> controlPointPositions = new HashMap<>();
         for (Node node: nodes) {
@@ -74,7 +74,7 @@ public class VisualModelTransformer {
         Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
         if (selectionBB != null) {
             AffineTransform t = new AffineTransform();
-            Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
+            Point2D cp = new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY());
             t.translate(cp.getX(), cp.getY());
             t.scale(sx, sy);
             t.translate(-cp.getX(), -cp.getY());
@@ -87,7 +87,7 @@ public class VisualModelTransformer {
         Rectangle2D selectionBB = getNodesCoordinateBox(vm.getSelection());
         if (selectionBB != null) {
             AffineTransform t = new AffineTransform();
-            Point2D cp = (new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY()));
+            Point2D cp = new Point2D.Double(selectionBB.getCenterX(), selectionBB.getCenterY());
 
             t.translate(cp.getX(), cp.getY());
             t.rotate(theta);

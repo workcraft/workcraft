@@ -43,12 +43,12 @@ public class MultiSet<T> implements Set<T> {
 
     @Override
     public boolean isEmpty() {
-        return (size() == 0);
+        return size() == 0;
     }
 
     @Override
     public boolean contains(Object o) {
-        return (count(o) > 0);
+        return count(o) > 0;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MultiSet<T> implements Set<T> {
             public boolean hasNext() {
                 boolean result = cursor.hasNext();
                 if ( !result && (current != null)) {
-                    result = (count(current) > currentIdx);
+                    result = count(current) > currentIdx;
                 }
                 return result;
             }

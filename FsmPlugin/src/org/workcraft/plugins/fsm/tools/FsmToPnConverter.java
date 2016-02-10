@@ -46,7 +46,7 @@ public class FsmToPnConverter {
             VisualTransition transition = entry.getValue();
             Symbol symbol = event.getReferencedEvent().getSymbol();
             String dstName = dstModel.getMathName(transition);
-            String srcName = ((symbol == null) ? "" : srcModel.getMathName(symbol));
+            String srcName = (symbol == null) ? "" : srcModel.getMathName(symbol);
             result.put(dstName, srcName);
         }
         return result;
@@ -72,7 +72,7 @@ public class FsmToPnConverter {
         NameManager nameManagerer = refManager.getNameManager(null);
         for(VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             Symbol symbol = event.getReferencedEvent().getSymbol();
-            String symbolName = ((symbol == null) ? Fsm.EPSILON_SERIALISATION : srcModel.getMathName(symbol));
+            String symbolName = (symbol == null) ? Fsm.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
             String name = nameManagerer.getDerivedName(null, symbolName);
             VisualTransition transition = dstModel.createTransition(name, null);
             transition.setPosition(event.getCenter());
@@ -127,9 +127,9 @@ public class FsmToPnConverter {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualEvent) {
-            result = (node == getRelatedTransition((VisualEvent)highLevelNode));
+            result = node == getRelatedTransition((VisualEvent)highLevelNode);
         } else if (highLevelNode instanceof VisualState) {
-            result = (node == getRelatedPlace((VisualState)highLevelNode));
+            result = node == getRelatedPlace((VisualState)highLevelNode);
         }
         return result;
     }

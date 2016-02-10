@@ -90,7 +90,7 @@ abstract public class AbstractMergerTool extends TransformationTool {
     public void replaceComponents(VisualModel model, Set<VisualComponent> components, VisualComponent newComponent) {
         for (VisualComponent component: components) {
             for (Connection connection: model.getConnections(component)) {
-                boolean isUndirected = (connection instanceof Undirected);
+                boolean isUndirected = connection instanceof Undirected;
                 Node first = connection.getFirst();
                 Node second = connection.getSecond();
                 try {

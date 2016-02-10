@@ -24,12 +24,12 @@ public class SignalToDummyTransitionConverterTool extends TransformationTool imp
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return (we.getModelEntry().getMathModel() instanceof STG);
+        return we.getModelEntry().getMathModel() instanceof STG;
     }
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return (node instanceof VisualSignalTransition);
+        return node instanceof VisualSignalTransition;
     }
 
     @Override

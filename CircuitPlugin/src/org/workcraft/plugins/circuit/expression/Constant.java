@@ -20,7 +20,7 @@ public class Constant implements Expression {
 
     @Override
     public String toString() {
-        return (value ? "1" : "0");
+        return value ? "1" : "0";
     }
 
     @Override

@@ -40,7 +40,7 @@ public class PunfUtilitySettings implements Settings {
     private static final String keyPrintStderr= prefix + ".printStderr";
     private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 
-    private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf");
+    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf";
     private static final String defaultExtraArgs = "-r";
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
@@ -178,11 +178,11 @@ public class PunfUtilitySettings implements Settings {
     }
 
     public static String getUnfoldingExtension(boolean tryPnml) {
-        return (tryPnml && getUsePnmlUnfolding() ? ".pnml" : ".mci");
+        return tryPnml && getUsePnmlUnfolding() ? ".pnml" : ".mci";
     }
 
     public static String getToolSuffix(boolean tryPnml) {
-        return (tryPnml && getUsePnmlUnfolding() ? "" : "-mci");
+        return tryPnml && getUsePnmlUnfolding() ? "" : "-mci";
     }
 
 }

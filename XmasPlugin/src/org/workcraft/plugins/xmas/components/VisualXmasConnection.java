@@ -38,7 +38,7 @@ public class VisualXmasConnection extends VisualConnection {
         // Draw a small pieces of line at the beginning and at the end of connection arc when the contacts are hidden.
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
-        boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
+        boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         Color colorisation = d.getColorisation();
         g.setColor(Coloriser.colorise(getColor(), colorisation));
         g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));

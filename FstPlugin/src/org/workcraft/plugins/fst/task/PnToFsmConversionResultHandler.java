@@ -51,7 +51,7 @@ public class PnToFsmConversionResultHandler extends DummyProgressMonitor<WriteSg
                     final Path<String> directory = path.getParent();
                     final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));;
                     final ModelEntry me = new ModelEntry(new FsmDescriptor(), model);
-                    boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+                    boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
                     workspace.add(directory, name, me, true, openInEditor);
                 } else if (result.getOutcome() != Outcome.CANCELLED) {
                     MainWindow mainWindow = framework.getMainWindow();

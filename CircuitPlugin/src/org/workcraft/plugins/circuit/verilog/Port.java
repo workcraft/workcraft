@@ -26,11 +26,11 @@ public class Port {
     }
 
     public boolean isInput() {
-        return (type == Type.INPUT);
+        return type == Type.INPUT;
     }
 
     public boolean isOutput() {
-        return (type == Type.OUTPUT);
+        return type == Type.OUTPUT;
     }
 
 }

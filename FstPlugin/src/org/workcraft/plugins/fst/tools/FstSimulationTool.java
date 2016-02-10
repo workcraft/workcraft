@@ -88,7 +88,7 @@ public class FstSimulationTool extends StgSimulationTool {
             new Func<Node, Boolean>() {
                 @Override
                 public Boolean eval(Node node) {
-                    return (getExcitedTransitionOfNode(node) != null);
+                    return getExcitedTransitionOfNode(node) != null;
                 }
             });
 
@@ -127,7 +127,7 @@ public class FstSimulationTool extends StgSimulationTool {
             @Override
             public Decoration getDecoration(Node node) {
                 Node transition = getTraceCurrentNode();
-                final boolean isExcited = (getExcitedTransitionOfNode(node) != null);
+                final boolean isExcited = getExcitedTransitionOfNode(node) != null;
                 final boolean isHighlighted = generator.isRelated(node, transition);
 
                 if (node instanceof VisualEvent) {

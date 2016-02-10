@@ -40,7 +40,7 @@ public class XmasSettings implements Settings {
     private static final boolean defaultShowContacts = false;
     private static final double defaultBorderWidth = 0.06;
     private static final double defaultWireWidth = 0.06;
-    private static final String defaultVxmCommand = (DesktopApi.getOs().isWindows() ? "tools\\vxm\\vxm.exe" : "tools/vxm/vxm");
+    private static final String defaultVxmCommand = DesktopApi.getOs().isWindows() ? "tools\\vxm\\vxm.exe" : "tools/vxm/vxm";
 
     private static boolean showContacts = defaultShowContacts;
     private static double borderWidth = defaultBorderWidth;

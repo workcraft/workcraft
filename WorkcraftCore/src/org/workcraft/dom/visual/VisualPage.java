@@ -110,7 +110,7 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
 
     @Override
     public boolean getIsCollapsed() {
-        return (isCollapsed && !isExcited);
+        return isCollapsed && !isExcited;
     }
 
     @Override

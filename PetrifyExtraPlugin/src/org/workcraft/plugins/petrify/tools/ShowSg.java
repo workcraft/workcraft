@@ -34,7 +34,7 @@ public class ShowSg implements Tool {
 
     @Override
     public String getDisplayName() {
-        return (binary ? "State graph (binary-encoded) [write_sg + draw_astg]" : "State graph (basic) [write_sg + draw_astg]");
+        return binary ? "State graph (binary-encoded) [write_sg + draw_astg]" : "State graph (basic) [write_sg + draw_astg]";
     }
 
     @Override

@@ -47,8 +47,8 @@ public class RenderedFormula implements Touchable {
         if (text == null) {
             text = "";
         }
-        return (!text.equals(this.text) || !formula.equals(this.formula) || !font.equals(this.font)
-                || positioning != this.positioning || offset.getX() != this.xOffset || offset.getY() != this.yOffset);
+        return !text.equals(this.text) || !formula.equals(this.formula) || !font.equals(this.font)
+                || positioning != this.positioning || offset.getX() != this.xOffset || offset.getY() != this.yOffset;
     }
 
     public void draw(Graphics2D g) {
@@ -75,7 +75,7 @@ public class RenderedFormula implements Touchable {
     }
 
     public boolean isEmpty() {
-        return ((text == null) || text.isEmpty());
+        return (text == null) || text.isEmpty();
     }
 
 }

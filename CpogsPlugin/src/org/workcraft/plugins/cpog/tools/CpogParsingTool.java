@@ -177,7 +177,7 @@ public class CpogParsingTool {
 
 
          for (VisualArc arc : arcs) {
-             if ((arc.getFirst().equals(node))) {
+             if (arc.getFirst().equals(node)) {
                  children.add(arc.getSecond());
              }
          }
@@ -190,7 +190,7 @@ public class CpogParsingTool {
         HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
 
         for (VisualArc arc : arcs) {
-            if ((arc.getSecond().equals(node))) {
+            if (arc.getSecond().equals(node)) {
                 parents.add(arc.getFirst());
             }
         }
@@ -784,7 +784,7 @@ public class CpogParsingTool {
                                                 dupArcs.remove(va);
                                             }
 
-                                            if (!(conditionFound) && (dupArcs.size() > 1)) {
+                                            if (!conditionFound && (dupArcs.size() > 1)) {
                                                 for (int i = 1; i < dupArcs.size(); i++) {
                                                     visualCpog.remove(dupArcs.get(i));
                                                 }
@@ -917,16 +917,16 @@ public class CpogParsingTool {
 
     public static boolean hasEnoughScenarios(WorkspaceEntry we) {
         VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
-        return (getScenarios(cpog).size() > 1);
+        return getScenarios(cpog).size() > 1;
     }
 
     public static boolean hasTooScenarios(WorkspaceEntry we){
         DesktopApi.OsType os = DesktopApi.getOs();
         VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
         if(os.isLinux()){
-            return (getScenarios(cpog).size() > MAX_SCENARIOS_LINUX);
+            return getScenarios(cpog).size() > MAX_SCENARIOS_LINUX;
         } else {
-            return (getScenarios(cpog).size() > MAX_SCENARIOS_OTHER_OS);
+            return getScenarios(cpog).size() > MAX_SCENARIOS_OTHER_OS;
         }
     }
 

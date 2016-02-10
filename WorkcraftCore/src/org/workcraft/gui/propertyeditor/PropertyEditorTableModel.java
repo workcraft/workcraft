@@ -86,7 +86,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         if (col == 0) {
             return false;
         } else {
-            return (declarations[row].isWritable());
+            return declarations[row].isWritable();
         }
     }
 

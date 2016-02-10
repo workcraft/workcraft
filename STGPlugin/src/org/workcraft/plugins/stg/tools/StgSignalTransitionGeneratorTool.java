@@ -28,8 +28,8 @@ public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        shiftPressed = ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0);
-        controlPressed = ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0);
+        shiftPressed = (e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0;
+        controlPressed = (e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0;
         super.mousePressed(e);
     }
 

@@ -27,7 +27,7 @@ public class PetrifyNetSynthesis extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return (WorkspaceUtils.canHas(we, PetriNetModel.class) || WorkspaceUtils.canHas(we, Fsm.class));
+        return WorkspaceUtils.canHas(we, PetriNetModel.class) || WorkspaceUtils.canHas(we, Fsm.class);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class PetrifyNetSynthesis extends ConversionTool {
         ArrayList<String> args = getArgs();
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
         final Framework framework = Framework.getInstance();
-        boolean hasSignals = (WorkspaceUtils.canHas(we, STGModel.class) || WorkspaceUtils.canHas(we, Fst.class));
+        boolean hasSignals = WorkspaceUtils.canHas(we, STGModel.class) || WorkspaceUtils.canHas(we, Fst.class);
         TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
         framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
     }

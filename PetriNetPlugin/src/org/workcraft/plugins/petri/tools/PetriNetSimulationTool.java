@@ -720,7 +720,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
             } else {
                 if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition())
                         && (row < mainTrace.getPosition() + branchTrace.size())) {
-                    return (row == mainTrace.getPosition() + branchTrace.getPosition());
+                    return row == mainTrace.getPosition() + branchTrace.getPosition();
                 }
             }
             return false;
@@ -994,7 +994,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         } else if (first instanceof VisualReplicaPlace) {
             place = ((VisualReplicaPlace)first).getReferencedPlace();
         }
-        return ((place != null) && (place.getTokens() > 0));
+        return (place != null) && (place.getTokens() > 0);
     }
 
     @Override

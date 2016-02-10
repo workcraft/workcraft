@@ -189,7 +189,7 @@ public class VisualCPOG extends AbstractVisualModel {
 
     @Override
     public boolean isGroupable(Node node) {
-        return ((node instanceof VisualVertex) || (node instanceof VisualVariable));
+        return (node instanceof VisualVertex) || (node instanceof VisualVariable);
     }
 
     @Override

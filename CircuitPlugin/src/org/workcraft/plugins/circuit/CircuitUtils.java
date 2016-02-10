@@ -54,7 +54,7 @@ public class CircuitUtils {
             } else if (node instanceof Contact) {
                 Contact contact = (Contact)node;
                 // Support for zero-delay buffers and inverters.
-                Contact zeroDelayInput = (transparentZeroDelayComponents ? findZeroDelayInput(contact) : null);
+                Contact zeroDelayInput = transparentZeroDelayComponents ? findZeroDelayInput(contact) : null;
                 if (zeroDelayInput != null) {
                     queue.addAll(circuit.getPreset(zeroDelayInput));
                 } else if (contact.isDriver()) {
@@ -110,7 +110,7 @@ public class CircuitUtils {
                 } else if (node instanceof Contact) {
                     Contact contact = (Contact)node;
                     // Support for zero-delay buffers and inverters.
-                    Contact zeroDelayOutput = (transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null);
+                    Contact zeroDelayOutput = transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null;
                     if (zeroDelayOutput != null) {
                         queue.addAll(circuit.getPostset(zeroDelayOutput));
                     } else if (contact.isDriven()) {

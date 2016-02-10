@@ -30,7 +30,7 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     public boolean isApplicableTo(Node node) {
         if (node instanceof VisualReadArc) {
             VisualReadArc readArc = (VisualReadArc)node;
-            return (readArc.getFirst() instanceof VisualPlace);
+            return readArc.getFirst() instanceof VisualPlace;
         }
         return false;
     }

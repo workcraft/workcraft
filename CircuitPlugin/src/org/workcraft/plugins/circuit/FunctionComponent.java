@@ -79,7 +79,7 @@ public class FunctionComponent extends CircuitComponent {
             if ((setFunction != null) && (outputContact.getResetFunction() == null)) {
                 BooleanFormula zeroReplace = BooleanUtils.cleverReplace(setFunction, inputContact, Zero.instance());
                 BooleanFormula oneReplace = BooleanUtils.cleverReplace(setFunction, inputContact, One.instance());
-                result = ((zeroReplace == Zero.instance()) && (oneReplace == One.instance()));
+                result = (zeroReplace == Zero.instance()) && (oneReplace == One.instance());
             }
         }
         return result;
@@ -99,7 +99,7 @@ public class FunctionComponent extends CircuitComponent {
             if ((setFunction != null) && (outputContact.getResetFunction() == null)) {
                 BooleanFormula zeroReplace = BooleanUtils.cleverReplace(setFunction, inputContact, Zero.instance());
                 BooleanFormula oneReplace = BooleanUtils.cleverReplace(setFunction, inputContact, One.instance());
-                result = ((zeroReplace == One.instance()) && (oneReplace == Zero.instance()));
+                result = (zeroReplace == One.instance()) && (oneReplace == Zero.instance());
             }
         }
         return result;

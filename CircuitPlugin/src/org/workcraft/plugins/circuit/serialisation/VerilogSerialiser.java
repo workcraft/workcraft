@@ -86,7 +86,7 @@ public class VerilogSerialiser implements ModelSerialiser {
 
     @Override
     public boolean isApplicableTo(Model model) {
-        return (model instanceof Circuit);
+        return model instanceof Circuit;
     }
 
     @Override
@@ -123,7 +123,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         for (Contact contact: Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class, new Func<Contact, Boolean>() {
             @Override
             public Boolean eval(Contact arg) {
-                return (arg.isPort());
+                return arg.isPort();
             }
         })) {
             if (isFirstPort) {
@@ -227,7 +227,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         for (Contact contact: Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class, new Func<Contact, Boolean>() {
             @Override
             public Boolean eval(Contact arg) {
-                return (arg.isPort() != arg.isOutput());
+                return arg.isPort() != arg.isOutput();
             }
         })) {
             contacts.add(contact);

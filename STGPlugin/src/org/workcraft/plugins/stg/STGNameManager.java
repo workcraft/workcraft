@@ -129,17 +129,17 @@ public class STGNameManager extends UniqueNameManager {
 
     @Override
     public boolean isNamed(Node node) {
-        return (super.isNamed(node)
-                || (instancedNameManager.getInstance(node) != null));
+        return super.isNamed(node)
+                || (instancedNameManager.getInstance(node) != null);
     }
 
     @Override
     public boolean isUnusedName(String name) {
-    return (super.isUnusedName(name)
+    return super.isUnusedName(name)
             && !instancedNameManager.containsGenerator(name + "-")
             && !instancedNameManager.containsGenerator(name + "+")
             && !instancedNameManager.containsGenerator(name + "~")
-            && !instancedNameManager.containsGenerator(name));
+            && !instancedNameManager.containsGenerator(name);
     }
 
     @Override

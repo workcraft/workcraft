@@ -131,7 +131,7 @@ abstract public class StgGenerator {
 
 
     public void createReplicaReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
-        double dx = ((p.getRootSpaceX() > t.getRootSpaceX()) ? 6.0 : -6.0);
+        double dx = (p.getRootSpaceX() > t.getRootSpaceX()) ? 6.0 : -6.0;
         createReplicaReadArc(p, t, dx, 0.0);
     }
 
@@ -173,7 +173,7 @@ abstract public class StgGenerator {
         double xP = to.one.getRootSpaceX();
         double yZero = to.zero.getRootSpaceY();
         double yOne = to.one.getRootSpaceY();
-        double x = ((xT > xP) ? xT + 6.0 : xT - 6.0);
+        double x = (xT > xP) ? xT + 6.0 : xT - 6.0;
         createReplicaReadArcs(from.zero, to.fallList, new Point2D.Double(x, yZero));
         createReplicaReadArcs(from.one, to.riseList, new Point2D.Double(x, yOne));
     }

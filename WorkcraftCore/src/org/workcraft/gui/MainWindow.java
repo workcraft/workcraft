@@ -575,7 +575,7 @@ public class MainWindow extends JFrame {
 
     private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
         JComponent content = dockableWindow.getContentPanel().getContent();
-        return ((content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null);
+        return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
     }
 
     /** For use from Javascript **/
@@ -741,7 +741,7 @@ public class MainWindow extends JFrame {
 
     public void saveWindowGeometryToConfig() {
         final Framework framework = Framework.getInstance();
-        boolean maximised = ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0);
+        boolean maximised = (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
         framework.setConfigVar(CONFIG_GUI_MAIN_MAXIMISED, Boolean.toString(maximised));
         framework.setConfigVar(CONFIG_GUI_MAIN_WIDTH, Integer.toString(getWidth()));
         framework.setConfigVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()));
@@ -1172,7 +1172,7 @@ public class MainWindow extends JFrame {
                         ModelEntry me = Import.importFromFile(importer, f);
                         String title = FileUtils.getFileNameWithoutExtension(f);
                         me.getModel().setTitle(title);
-                        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+                        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
                         framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, openInEditor);
                         lastOpenPath = f.getParent();
                         break;
@@ -1204,7 +1204,7 @@ public class MainWindow extends JFrame {
     }
 
     private String getTitle(WorkspaceEntry we, VisualModel model) {
-        String prefix = (we.isChanged() ? "*" : TITLE_PLACEHOLDER);
+        String prefix = we.isChanged() ? "*" : TITLE_PLACEHOLDER;
         String suffix = null;
         switch (CommonEditorSettings.getTitleStyle()) {
         case LONG:
@@ -1217,7 +1217,7 @@ public class MainWindow extends JFrame {
             suffix = TITLE_PLACEHOLDER;
             break;
         }
-        return (prefix + we.getTitle() + suffix);
+        return prefix + we.getTitle() + suffix;
     }
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
@@ -1417,7 +1417,7 @@ class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
     }
 
     public boolean accept(File f) {
-        return (f.isDirectory() || importer.accept(f));
+        return f.isDirectory() || importer.accept(f);
     }
 
     public String getDescription() {
@@ -1433,7 +1433,7 @@ class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
     }
 
     public boolean accept(File f) {
-        return (f.isDirectory() || f.getName().endsWith(exporter.getExtenstion()));
+        return f.isDirectory() || f.getName().endsWith(exporter.getExtenstion());
     }
 
     public String getDescription() {

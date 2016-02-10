@@ -57,13 +57,13 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
                 Path<String> path = we.getWorkspacePath();
                 if (result.getOutcome() == Outcome.FINISHED) {
                     STGModel stgModel = result.getReturnValue().getResult();
-                    PetriNetModel model = (convertResultStgToPetriNet ? stgModel : convertStgToPetriNet(stgModel));
+                    PetriNetModel model = convertResultStgToPetriNet ? stgModel : convertStgToPetriNet(stgModel);
                     final Workspace workspace = framework.getWorkspace();
                     final Path<String> directory = path.getParent();
                     final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                    final ModelDescriptor modelDescriptor = (convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor());
+                    final ModelDescriptor modelDescriptor = convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor();
                     final ModelEntry me = new ModelEntry(modelDescriptor, model);
-                    boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+                    boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
                     workspace.add(directory, name, me, true, openInEditor);
                 } else {
                     MainWindow mainWindow = framework.getMainWindow();

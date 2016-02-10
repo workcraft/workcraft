@@ -51,10 +51,8 @@ public class TransferableDocument implements Transferable {
     }
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return (
-                flavor.getRepresentationClass() == Document.class ||
-                flavor == DataFlavor.stringFlavor
-        );
+        return flavor.getRepresentationClass() == Document.class ||
+                flavor == DataFlavor.stringFlavor;
     }
     public synchronized Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         if (isDataFlavorSupported(flavor)) {
@@ -75,7 +73,7 @@ public class TransferableDocument implements Transferable {
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                     transformer.transform(source, result);
 
-                    return (baos.toString("utf-8"));
+                    return baos.toString("utf-8");
                 } catch (TransformerException e) {
                     e.printStackTrace();
                     return null;

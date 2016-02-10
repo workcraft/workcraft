@@ -11,9 +11,9 @@ public class CircuitConnectionTool extends ConnectionTool {
 
     @Override
     public boolean isConnectable(Node node) {
-        return ( (node instanceof VisualContact)
+        return (node instanceof VisualContact)
               || (node instanceof VisualJoint)
-              || (node instanceof VisualCircuitConnection));
+              || (node instanceof VisualCircuitConnection);
     }
 
     @Override

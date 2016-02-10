@@ -187,8 +187,8 @@ public class JsonExport implements Tool {
         //System.out.println("Name_ =" + cnet.getName(contact_node));
         for (Connection c : cnet.getConnections(contact_node)) {
             //System.out.println("OutputConnection =" + cnet.getName(c));
-            //if((c.getFirst() instanceof Contact)) System.out.println("Found First Contact");
-            if((c.getSecond() instanceof XmasContact)) {
+            //if(c.getFirst() instanceof Contact) System.out.println("Found First Contact");
+            if(c.getSecond() instanceof XmasContact) {
                 //System.out.println("Found Output Contact" + cnet.getName(c.getSecond()));
                 Node cp_node = c.getSecond().getParent();
                 //System.out.println("Found Output Component" + cnet.getName(cp_node));
@@ -275,7 +275,7 @@ public class JsonExport implements Tool {
             }
             for(XmasContact contact_node_ : contacts) {
                 for (Connection c : cnet.getConnections(contact_node_)) {
-                    if((c.getSecond() instanceof XmasContact)) {
+                    if(c.getSecond() instanceof XmasContact) {
                         //System.out.println("Output Contact" + cnet.getName(c.getSecond()));
                         System.out.println("        {");
                         writer.println("        {");

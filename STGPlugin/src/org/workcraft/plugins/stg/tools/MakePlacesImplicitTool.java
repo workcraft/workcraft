@@ -20,12 +20,12 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return (we.getModelEntry().getMathModel() instanceof STG);
+        return we.getModelEntry().getMathModel() instanceof STG;
     }
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return (node instanceof VisualPlace);
+        return node instanceof VisualPlace;
     }
 
     @Override

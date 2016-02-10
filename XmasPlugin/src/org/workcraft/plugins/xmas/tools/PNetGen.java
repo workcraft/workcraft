@@ -829,14 +829,14 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
             writebidir(id, "_q"+i+"1", "_hd"+i+"minus", writer);
             if(i==size) inc=1;
             else inc=i+1;
-            writebidir(id, "_q"+i+"1", "_hd"+(inc)+"plus", writer);
+            writebidir(id, "_q"+i+"1", "_hd"+inc+"plus", writer);
         }
         for(int i=1;i<=size;i++) {
             writebidir(id, "_q"+i+"0", "_tl"+i+"minus", writer);
             writebidir(id, "_q"+i+"1", "_tl"+i+"plus", writer);
             if(i==size) inc=1;
             else inc=i+1;
-            writebidir(id, "_q"+i+"0", "_tl"+(inc)+"plus", writer);
+            writebidir(id, "_q"+i+"0", "_tl"+inc+"plus", writer);
         }
         for(int i=1;i<=size;i++) {
             writebidir(id, "_hd"+i+"1", "_q"+i+"plus", writer);

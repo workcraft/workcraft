@@ -184,7 +184,7 @@ public class WaggingGenerator {
             // create control registers
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos - 2.0, yPos + iPos * 2.0),
-                    (predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN), SynchronisationType.AND);
+                    predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
             reg0.getReferencedControlRegister().setProbability(1.0/count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos - 4.0, yPos + iPos * 2.0),
@@ -233,7 +233,7 @@ public class WaggingGenerator {
             // create control registers
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos + 2.0, yPos + iPos * 2.0),
-                    (predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN), SynchronisationType.AND);
+                    predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
             reg0.getReferencedControlRegister().setProbability(1.0/count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos + 4.0, yPos + iPos * 2.0),

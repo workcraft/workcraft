@@ -119,9 +119,9 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
                     outcome = Outcome.FAILED;
                 }
 
-                String equations = (equationsFile.exists() ? FileUtils.readAllText(equationsFile) : "");
-                String verilog = (verilogFile.exists() ? FileUtils.readAllText(verilogFile) : "");
-                String log = (logFile.exists() ? FileUtils.readAllText(logFile) : "");
+                String equations = equationsFile.exists() ? FileUtils.readAllText(equationsFile) : "";
+                String verilog = verilogFile.exists() ? FileUtils.readAllText(verilogFile) : "";
+                String log = logFile.exists() ? FileUtils.readAllText(logFile) : "";
                 String stdout = new String(res.getReturnValue().getOutput());
                 String stderr = new String(res.getReturnValue().getErrors());
                 SynthesisResult result = new SynthesisResult(equations, verilog, log, stdout, stderr);

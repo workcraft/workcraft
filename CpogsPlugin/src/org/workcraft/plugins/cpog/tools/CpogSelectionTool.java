@@ -825,7 +825,7 @@ public class CpogSelectionTool extends SelectionTool {
 
                         } else if (node instanceof VisualArc) {
                             VisualArc a = (VisualArc) node;
-                            if ((a.getFirst().getParent().equals(a.getSecond().getParent()))) {
+                            if (a.getFirst().getParent().equals(a.getSecond().getParent())) {
                                 if ((a.getFirst().getParent() instanceof VisualPage) || (a.getFirst().getParent() instanceof VisualScenarioPage)) {
                                     VisualPage vp = (VisualPage) a.getFirst().getParent();
                                     String first = ((VisualVertex)a.getFirst()).getLabel();

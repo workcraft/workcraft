@@ -33,10 +33,10 @@ public class PetriNetUtils {
         HashSet<VisualConnection> producingArcs = PetriNetUtils.getVisualProducingArcs(visualModel);
         for (VisualConnection consumingArc: consumingArcs) {
             for (VisualConnection producingArc: producingArcs) {
-                boolean isDualArcs = ((consumingArc.getFirst() == producingArc.getSecond())
-                        && (consumingArc.getSecond() == producingArc.getFirst()));
+                boolean isDualArcs = (consumingArc.getFirst() == producingArc.getSecond())
+                        && (consumingArc.getSecond() == producingArc.getFirst());
                 Collection<Node> selection = visualModel.getSelection();
-                boolean selectedArcsOrNoSelection = (selection.isEmpty() || selection.contains(consumingArc) || selection.contains(producingArc));
+                boolean selectedArcsOrNoSelection = selection.isEmpty() || selection.contains(consumingArc) || selection.contains(producingArc);
                 if (isDualArcs && selectedArcsOrNoSelection) {
                     dualArcs.add(new Pair<VisualConnection, VisualConnection>(consumingArc, producingArc));
                 }
@@ -332,12 +332,12 @@ public class PetriNetUtils {
                 if (replica instanceof VisualReplicaPlace) {
                     VisualReplicaPlace replicaPlace = (VisualReplicaPlace)replica;
                     Connection connection = visualModel.getConnection(replicaPlace, transition);
-                    found = (connection instanceof VisualReadArc);
+                    found = connection instanceof VisualReadArc;
                 }
             }
             if ( !found ) {
                 Connection connection = visualModel.getConnection(place, transition);
-                found = (connection instanceof VisualReadArc);
+                found = connection instanceof VisualReadArc;
             }
         }
         return found;
@@ -361,12 +361,12 @@ public class PetriNetUtils {
                 if (replica instanceof VisualReplicaPlace) {
                     VisualReplicaPlace replicaPlace = (VisualReplicaPlace)replica;
                     Connection connection = visualModel.getConnection(transition, replicaPlace);
-                    found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+                    found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
                 }
             }
             if ( !found ) {
                 Connection connection = visualModel.getConnection(transition, place);
-                found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+                found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
             }
         }
         return found;
@@ -390,12 +390,12 @@ public class PetriNetUtils {
                 if (replica instanceof VisualReplicaPlace) {
                     VisualReplicaPlace replicaPlace = (VisualReplicaPlace)replica;
                     Connection connection = visualModel.getConnection(replicaPlace, transition);
-                    found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+                    found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
                 }
             }
             if ( !found ) {
                 Connection connection = visualModel.getConnection(place, transition);
-                found = ((connection instanceof VisualConnection) && !(connection instanceof VisualReadArc));
+                found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
             }
         }
         return found;
@@ -438,17 +438,17 @@ public class PetriNetUtils {
     }
 
     public static boolean isVisualTransition(Node node) {
-        return (node instanceof VisualTransition);
+        return node instanceof VisualTransition;
     }
 
     public static boolean isVisualPlaceOrReplicaPlace(Node node) {
-        return ((node instanceof VisualPlace) || (node instanceof VisualReplicaPlace));
+        return (node instanceof VisualPlace) || (node instanceof VisualReplicaPlace);
     }
 
     public static boolean isVisualProducingArc(Node node) {
         if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
             VisualConnection connection = (VisualConnection)node;
-            return (isVisualTransition(connection.getFirst()) && isVisualPlaceOrReplicaPlace(connection.getSecond()));
+            return isVisualTransition(connection.getFirst()) && isVisualPlaceOrReplicaPlace(connection.getSecond());
         }
         return false;
     }
@@ -456,7 +456,7 @@ public class PetriNetUtils {
     public static boolean isVisualConsumingArc(Node node) {
         if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
             VisualConnection connection = (VisualConnection)node;
-            return (isVisualPlaceOrReplicaPlace(connection.getFirst()) && isVisualTransition(connection.getSecond()));
+            return isVisualPlaceOrReplicaPlace(connection.getFirst()) && isVisualTransition(connection.getSecond());
         }
         return false;
     }
@@ -487,7 +487,7 @@ public class PetriNetUtils {
                 place2 = ((VisualReplicaPlace)place2).getMaster();
             }
 
-            return ((place1 == place2) && (transition1 == transition2));
+            return (place1 == place2) && (transition1 == transition2);
         }
         return false;
     }

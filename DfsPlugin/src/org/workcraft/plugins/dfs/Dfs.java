@@ -44,7 +44,7 @@ public class Dfs extends AbstractMathModel {
             public String getPrefix(Node node) {
                 if ((node instanceof Logic) || (node instanceof CounterflowLogic)) return "l";
                 if ((node instanceof Register) || (node instanceof CounterflowRegister)) return "r";
-                if ((node instanceof ControlRegister)) return "c";
+                if (node instanceof ControlRegister) return "c";
                 if ((node instanceof PushRegister) || (node instanceof PopRegister)) return "p";
                 return super.getPrefix(node);
             }

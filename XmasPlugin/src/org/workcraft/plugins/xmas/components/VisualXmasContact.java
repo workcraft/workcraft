@@ -98,7 +98,7 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
-        boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
+        boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         if (inSimulationMode || XmasSettings.getShowContacts()) {
             Shape shape = getShape();
             g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));

@@ -24,7 +24,7 @@ public class Trace extends ArrayList<String> {
     }
 
     public boolean canProgress() {
-        return (!isEmpty() && (position < size()));
+        return !isEmpty() && (position < size());
     }
 
     public String getCurrent() {

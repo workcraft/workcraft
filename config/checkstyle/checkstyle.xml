@@ -31,6 +31,7 @@
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
+        <module name="UnnecessaryParentheses" />
 
         <module name="RedundantModifier" />
 

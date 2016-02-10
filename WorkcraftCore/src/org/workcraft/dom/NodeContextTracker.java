@@ -156,7 +156,7 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
     @Override
     public boolean hasConnection(Node first, Node second) {
         LinkedHashSet<Node> firstPostset = postsets.get(first);
-        return ((firstPostset != null) && (firstPostset.contains(second)));
+        return (firstPostset != null) && (firstPostset.contains(second));
     }
 
     @Override

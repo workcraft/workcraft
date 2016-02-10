@@ -39,7 +39,7 @@ public class GraphToCpogConverterTool extends ConversionTool {
             final Path<String> directory = we.getWorkspacePath().getParent();
             final String name = we.getWorkspacePath().getNode();
             final ModelEntry me = new ModelEntry(new CpogDescriptor(), converter.getDstModel());
-            boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
             workspace.add(directory, name, me, false, openInEditor);
         } finally {
             we.cancelMemento();

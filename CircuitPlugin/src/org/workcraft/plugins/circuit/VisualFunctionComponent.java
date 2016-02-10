@@ -87,7 +87,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     public boolean getIsZeroDelay() {
-        return ((getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().getIsZeroDelay());
+        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().getIsZeroDelay();
     }
 
     public void setIsZeroDelay(boolean value) {
@@ -97,11 +97,11 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     public boolean isBuffer() {
-        return ((getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isBuffer());
+        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isBuffer();
     }
 
     public boolean isInverter() {
-        return ((getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isInverter());
+        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isInverter();
     }
 
     private ComponentRenderingResult getRenderingResult() {

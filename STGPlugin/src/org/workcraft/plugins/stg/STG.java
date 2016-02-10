@@ -158,7 +158,7 @@ public class STG extends AbstractMathModel implements STGModel {
                 SignalTransition.class, new Func<SignalTransition, Boolean>() {
                     @Override
                     public Boolean eval(SignalTransition arg) {
-                        return (arg.getSignalType() == type);
+                        return arg.getSignalType() == type;
                     }
                 });
     }
@@ -193,7 +193,7 @@ public class STG extends AbstractMathModel implements STGModel {
                 SignalTransition.class, new Func<SignalTransition, Boolean>() {
                     @Override
                     public Boolean eval(SignalTransition arg) {
-                        return (type.equals(arg.getSignalType()));
+                        return type.equals(arg.getSignalType());
                     }
                 });
     }
@@ -206,7 +206,7 @@ public class STG extends AbstractMathModel implements STGModel {
                 SignalTransition.class, new Func<SignalTransition, Boolean>() {
                     @Override
                     public Boolean eval(SignalTransition arg) {
-                        return (signalName.equals(arg.getSignalName()));
+                        return signalName.equals(arg.getSignalName());
                     }
                 });
     }
@@ -242,7 +242,7 @@ public class STG extends AbstractMathModel implements STGModel {
     public String getSignalReference(SignalTransition st) {
         String reference = referenceManager.getNodeReference(null, st);
         String path = NamespaceHelper.getReferencePath(reference);
-        return (path + st.getSignalName());
+        return path + st.getSignalName();
     }
 
     public int getInstanceNumber(Node st) {

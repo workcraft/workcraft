@@ -55,7 +55,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return (node instanceof VisualTransition);
+        return node instanceof VisualTransition;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     private boolean isLanguageChanging(PetriNetModel model, Transition transition) {
-        return ( !isType1Secure(model, transition) && !isType2Secure(model, transition) );
+        return !isType1Secure(model, transition) && !isType2Secure(model, transition);
     }
 
     // There are no choice places in the preset (preset can be empty).
@@ -176,7 +176,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     private boolean isSafenessViolationg(PetriNetModel model, Transition transition) {
-        return ( !isType1Safe(model, transition) && !isType2Safe(model, transition) && !isType3Safe(model, transition));
+        return !isType1Safe(model, transition) && !isType2Safe(model, transition) && !isType3Safe(model, transition);
     }
 
     // The only place in the postset is unmarked AND it is not a merge.

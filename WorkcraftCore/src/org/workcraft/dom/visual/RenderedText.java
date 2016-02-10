@@ -53,8 +53,8 @@ public class RenderedText {
         if (text == null) {
             text = "";
         }
-        return (!text.equals(this.text) || !font.equals(this.font) || positioning != this.positioning
-                || offset.getX() != this.xOffset || offset.getY() != this.yOffset);
+        return !text.equals(this.text) || !font.equals(this.font) || positioning != this.positioning
+                || offset.getX() != this.xOffset || offset.getY() != this.yOffset;
     }
 
     public void draw(Graphics2D g) {
@@ -72,7 +72,7 @@ public class RenderedText {
                 xMargin = (boundingBox.getWidth() - lineBoundingBox.getWidth()) / 2.0;
                 break;
             case RIGHT:
-                xMargin = (boundingBox.getWidth() - lineBoundingBox.getWidth());
+                xMargin = boundingBox.getWidth() - lineBoundingBox.getWidth();
                 break;
             default:
                 xMargin = 0.0;
@@ -93,7 +93,7 @@ public class RenderedText {
     }
 
     public boolean isEmpty() {
-        return ((text == null) || text.isEmpty());
+        return (text == null) || text.isEmpty();
     }
 
 }

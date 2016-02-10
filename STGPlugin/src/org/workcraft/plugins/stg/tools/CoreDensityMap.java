@@ -24,14 +24,14 @@ public class CoreDensityMap {
         nameToDensity = buildNameToDensityMap(cores);
         densityToColor = buildDensityToColorMap(nameToDensity);
         densityPalette = buidDensityPalette(densityToColor.keySet());
-        isReduced = (getPaletteSize() < densityToColor.size());
+        isReduced = getPaletteSize() < densityToColor.size();
     }
 
     private HashMap<String, Integer> buildNameToDensityMap(Collection<Core> cores) {
         HashMap<String, Integer> result = new HashMap<>();
         for (Core core: cores) {
             for (String name: core) {
-                int density = (result.containsKey(name) ? result.get(name) : 0);
+                int density = result.containsKey(name) ? result.get(name) : 0;
                 density++;
                 result.put(name, density);
             }
@@ -49,7 +49,7 @@ public class CoreDensityMap {
             densityToLevel.put(density, level);
         }
         int levelLimit = STGSettings.getDensityMapLevelLimit();
-        int levelCount = ((densitySet.size() < levelLimit) ? densitySet.size() : levelLimit);
+        int levelCount = (densitySet.size() < levelLimit) ? densitySet.size() : levelLimit;
         float[] bs = getBrightnessLevels(levelCount);
         Color[] palette = ColorUtils.getHsbPalette(new float[]{0.05f}, new float[]{0.4f}, bs);
         for (String name: densityMap.keySet()) {
@@ -81,7 +81,7 @@ public class CoreDensityMap {
         ArrayList<Integer> densityList = new ArrayList<>(densitySet);
         Collections.sort(densityList);
         int levelLimit = STGSettings.getDensityMapLevelLimit();
-        int fromIndex = ((densityList.size() < levelLimit) ? 0 : densityList.size() - levelLimit);
+        int fromIndex = (densityList.size() < levelLimit) ? 0 : densityList.size() - levelLimit;
         return new ArrayList<>(densityList.subList(fromIndex, densityList.size()));
     }
 

@@ -107,11 +107,11 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public boolean isInput() {
-        return (getIOType() == IOType.INPUT);
+        return getIOType() == IOType.INPUT;
     }
 
     public boolean isOutput() {
-        return (getIOType() == IOType.OUTPUT);
+        return getIOType() == IOType.OUTPUT;
     }
 
     public boolean isPort() {
@@ -119,11 +119,11 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public boolean isDriver() {
-        return (isOutput() != isPort());
+        return isOutput() != isPort();
     }
 
     public boolean isDriven() {
-        return (isOutput() == isPort());
+        return isOutput() == isPort();
     }
 
 }

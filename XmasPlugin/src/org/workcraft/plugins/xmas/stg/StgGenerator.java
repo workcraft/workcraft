@@ -182,10 +182,10 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         double xP = to.one.getRootSpaceX();
         double yZero = to.zero.getRootSpaceY();
         double yOne = to.one.getRootSpaceY();
-        double xFall = ((xT > xP) ? xT + 6.0 : xT - 6.0);
+        double xFall = (xT > xP) ? xT + 6.0 : xT - 6.0;
         double yFall = yZero;
-        double xRise = ((xT < xP) ? xT + 6.0 : xT - 6.0);
-        double yRise = ((yOne > yZero) ? yOne + 1.0 : yOne - 1.0);
+        double xRise = (xT < xP) ? xT + 6.0 : xT - 6.0;
+        double yRise = (yOne > yZero) ? yOne + 1.0 : yOne - 1.0;
         createReplicaReadArcs(from.zero, to.fallList, new Point2D.Double(xFall, yFall + yOffset));
         createReplicaReadArcs(from.one, to.riseList, new Point2D.Double(xRise, yRise + yOffset));
     }
@@ -229,7 +229,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         double x = oracle.fallList.get(0).getRootSpaceX();
         double yFall = oracle.fallList.get(0).getRootSpaceY();
         double yRise = oracle.riseList.get(0).getRootSpaceY();
-        double y = ((yFall > yRise) ? yFall + 2.0 : yFall - 2.0);
+        double y = (yFall > yRise) ? yFall + 2.0 : yFall - 2.0;
         createReplicaReadArcs(signal.one, oracle.fallList, new Point2D.Double(x, y));
     }
 
@@ -300,7 +300,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public ContactStg getContactStg(VisualXmasContact contact) {
-        return ((contactMap == null) ? null : contactMap.get(contact));
+        return (contactMap == null) ? null : contactMap.get(contact);
     }
 
     private void putContactStg(VisualXmasContact contact, ContactStg s) {
@@ -433,7 +433,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public SourceStg getSourceStg(VisualSourceComponent component) {
-        return ((sourceMap == null) ? null : sourceMap.get(component));
+        return (sourceMap == null) ? null : sourceMap.get(component);
     }
 
     public void putSourceStg(VisualSourceComponent component, SourceStg stg) {
@@ -494,7 +494,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public SinkStg getSinkStg(VisualSinkComponent component) {
-        return ((sinkMap == null) ? null : sinkMap.get(component));
+        return (sinkMap == null) ? null : sinkMap.get(component);
     }
 
     public void putSinkStg(VisualSinkComponent component, SinkStg stg) {
@@ -575,7 +575,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public FunctionStg getFunctionStg(VisualFunctionComponent component) {
-        return ((functionMap == null) ? null : functionMap.get(component));
+        return (functionMap == null) ? null : functionMap.get(component);
     }
 
     public void putFunctionStg(VisualFunctionComponent component, FunctionStg stg) {
@@ -698,7 +698,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public ForkStg getForkStg(VisualForkComponent component) {
-        return ((forkMap == null) ? null : forkMap.get(component));
+        return (forkMap == null) ? null : forkMap.get(component);
     }
 
     public void putForkStg(VisualForkComponent component, ForkStg stg) {
@@ -813,7 +813,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public JoinStg getJoinStg(VisualJoinComponent component) {
-        return ((joinMap == null) ? null : joinMap.get(component));
+        return (joinMap == null) ? null : joinMap.get(component);
     }
 
     public void putJoinStg(VisualJoinComponent component, JoinStg stg) {
@@ -942,7 +942,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public SwitchStg getSwitchStg(VisualSwitchComponent component) {
-        return ((switchMap == null) ? null : switchMap.get(component));
+        return (switchMap == null) ? null : switchMap.get(component);
     }
 
     public void putSwitchStg(VisualSwitchComponent component, SwitchStg stg) {
@@ -1059,7 +1059,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public MergeStg getMergeStg(VisualMergeComponent component) {
-        return ((mergeMap == null) ? null : mergeMap.get(component));
+        return (mergeMap == null) ? null : mergeMap.get(component);
     }
 
     public void putMergeStg(VisualMergeComponent component, MergeStg stg) {
@@ -1102,7 +1102,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             ContactStg hd = new ContactStg(rdy, dn);
             rdy = generateSignalStg(XmasStgType.TRDY, name + _TAIL + suffix +_RDY, pos.getX() + xSlot, pos.getY() + 8.0);
             dn = generateSignalStg(XmasStgType.TDN, name + _TAIL + suffix + _DN, pos.getX() + xSlot, pos.getY() + 16.0, 4, 3);
-            setSignalInitialState(rdy, (idx == 0));
+            setSignalInitialState(rdy, idx == 0);
             ContactStg tl = new ContactStg(rdy, dn);
             SlotStg slot = new SlotStg(mem, hd, tl);
             slotList.add(slot);
@@ -1174,7 +1174,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         if (i != null) {
             boolean first = true;
             for (VisualSignalTransition t: i.dn.riseList) {
-                VisualPlace p = ((first) ? i.rdy.zero : i.rdy.one);
+                VisualPlace p = first ? i.rdy.zero : i.rdy.one;
                 createReadArc(p, t);
                 first = false;
             }
@@ -1182,7 +1182,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         if (o != null) {
             boolean first = true;
             for (VisualSignalTransition t: o.dn.riseList) {
-                VisualPlace p = ((first) ? o.rdy.zero : o.rdy.one);
+                VisualPlace p = first ? o.rdy.zero : o.rdy.one;
                 createReadArc(p, t);
                 first = false;
             }
@@ -1248,7 +1248,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public QueueStg getQueueStg(VisualQueueComponent component) {
-        return ((queueMap == null) ? null : queueMap.get(component));
+        return (queueMap == null) ? null : queueMap.get(component);
     }
 
     public void putQueueStg(VisualQueueComponent component, QueueStg stg) {
@@ -1278,7 +1278,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         } else if (highLevelNode instanceof VisualQueueComponent) {
             nodeStg = getQueueStg((VisualQueueComponent)highLevelNode);
         }
-        return ((nodeStg != null) && nodeStg.contains(node));
+        return (nodeStg != null) && nodeStg.contains(node);
     }
 
 }

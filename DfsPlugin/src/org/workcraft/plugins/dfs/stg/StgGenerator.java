@@ -270,7 +270,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public LogicStg getLogicStg(VisualLogic logic) {
-        return ((logicMap == null) ? null : logicMap.get(logic));
+        return (logicMap == null) ? null : logicMap.get(logic);
     }
 
     public void putLogicStg(VisualLogic logic, LogicStg stg) {
@@ -398,7 +398,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public RegisterStg getRegisterStg(VisualRegister register) {
-        return ((registerMap == null) ? null : registerMap.get(register));
+        return (registerMap == null) ? null : registerMap.get(register);
     }
 
     public void putRegisterStg(VisualRegister register, RegisterStg stg) {
@@ -559,7 +559,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public CounterflowLogicStg getCounterflowLogicStg(VisualCounterflowLogic logic) {
-        return ((counterflowLogicMap == null) ? null : counterflowLogicMap.get(logic));
+        return (counterflowLogicMap == null) ? null : counterflowLogicMap.get(logic);
     }
 
     public void putCounterflowLogicStg(VisualCounterflowLogic logic, CounterflowLogicStg stg) {
@@ -730,7 +730,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public CounterflowRegisterStg getCounterflowRegisterStg(VisualCounterflowRegister register) {
-        return ((counterflowRegisterMap == null) ? null: counterflowRegisterMap.get(register));
+        return (counterflowRegisterMap == null) ? null: counterflowRegisterMap.get(register);
     }
 
     public void putCounterflowRegisterStg(VisualCounterflowRegister register, CounterflowRegisterStg stg) {
@@ -888,8 +888,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     private BinaryRegisterStg generateControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
-        boolean andSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND);
-        boolean orSync = (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR);
+        boolean andSync = r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND;
+        boolean orSync = r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR;
         return generateBinaryRegisterSTG(r, andSync, orSync);
     }
 
@@ -995,7 +995,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public BinaryRegisterStg getControlRegisterStg(VisualControlRegister register) {
-        return ((controlRegisterMap == null) ? null : controlRegisterMap.get(register));
+        return (controlRegisterMap == null) ? null : controlRegisterMap.get(register);
     }
 
     public void putControlRegisterStg(VisualControlRegister register, BinaryRegisterStg stg) {
@@ -1081,7 +1081,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public BinaryRegisterStg getPushRegisterStg(VisualPushRegister register) {
-        return ((pushRegisterMap == null) ? null : pushRegisterMap.get(register));
+        return (pushRegisterMap == null) ? null : pushRegisterMap.get(register);
     }
 
     public void putPushRegisterStg(VisualPushRegister register, BinaryRegisterStg stg) {
@@ -1167,7 +1167,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public BinaryRegisterStg getPopRegisterStg(VisualPopRegister register) {
-        return ((popRegisterMap == null) ? null : popRegisterMap.get(register));
+        return (popRegisterMap == null) ? null : popRegisterMap.get(register);
     }
 
     public void putPopRegisterStg(VisualPopRegister register, BinaryRegisterStg stg) {
@@ -1195,7 +1195,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         } else if (highLevelNode instanceof VisualPopRegister) {
             nodeStg = getPopRegisterStg((VisualPopRegister)highLevelNode);
         }
-        return ((nodeStg != null) && nodeStg.contains(node));
+        return (nodeStg != null) && nodeStg.contains(node);
     }
 
 }

@@ -67,7 +67,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
         //... and all possible functions.
         TwoHotRange[] derivedFunctions = new TwoHotRange[derivedVariables];
         for(int i=0;i<derivedVariables;i++)
-            derivedFunctions[i] = generateBinaryFunction((nonDerivedVariables/*+i*/)*2, i);
+            derivedFunctions[i] = generateBinaryFunction(nonDerivedVariables/*+i*/*2, i);
 
         orderFunctions(derivedFunctions);
 

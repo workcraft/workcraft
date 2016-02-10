@@ -120,7 +120,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
                 Node node = net.getNodeByReference(ref);
                 if ((node instanceof Place) && savedState.containsKey(node)) {
-                    boolean initToOne = (savedState.get(node) > 0);
+                    boolean initToOne = savedState.get(node) > 0;
                     contact.setInitToOne(initToOne);
                 }
             }
@@ -135,12 +135,12 @@ public class CircuitSimulationTool extends StgSimulationTool {
             Node zeroNode = net.getNodeByReference(signalName + "_0");
             if (zeroNode instanceof Place) {
                 Place zeroPlace = (Place)zeroNode;
-                signalState.value = ((zeroPlace.getTokens() > 0) ? 0 : 1);
+                signalState.value = (zeroPlace.getTokens() > 0) ? 0 : 1;
             }
             Node oneNode= net.getNodeByReference(signalName + "_1");
             if (oneNode instanceof Place) {
                 Place onePlace = (Place)oneNode;
-                signalState.value = ((onePlace.getTokens() > 0) ? 1 : 0);
+                signalState.value = (onePlace.getTokens() > 0) ? 1 : 0;
             }
         }
     }
@@ -218,10 +218,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
                         Node traceCurrentNode = getTraceCurrentNode();
                         SignalStg signalStg = signalStgAndInversion.getFirst();
                         boolean isInverting = signalStgAndInversion.getSecond();
-                        final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
-                        final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
-                        final boolean isExcited = ((getContactExcitedTransition(contact) != null) && !isZeroDelay);
-                        final boolean isInTrace = (signalStg.contains(traceCurrentNode) && !isZeroDelay);
+                        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
+                        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
+                        final boolean isExcited = (getContactExcitedTransition(contact) != null) && !isZeroDelay;
+                        final boolean isInTrace = signalStg.contains(traceCurrentNode) && !isZeroDelay;
                         return new Decoration() {
                                 @Override
                             public Color getColorisation() {
@@ -259,8 +259,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
                     if (signalStgAndInversion != null) {
                         SignalStg signalStg = signalStgAndInversion.getFirst();
                         boolean isInverting = signalStgAndInversion.getSecond();
-                        final boolean isOne = ((signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting);
-                        final boolean isZero = ((signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting);
+                        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
+                        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
                         return new Decoration() {
                             @Override
                             public Color getColorisation() {

@@ -25,9 +25,9 @@ public class ReadArcConnectionTool extends ConnectionTool {
 
     @Override
     public boolean isConnectable(Node node) {
-        return ( (node instanceof VisualPlace)
+        return (node instanceof VisualPlace)
               || (node instanceof VisualReplicaPlace)
-              || (node instanceof VisualTransition) );
+              || (node instanceof VisualTransition);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
 
     @Override
     public String getSecondHintMessage() {
-        return (super.getSecondHintMessage() + " Hold Shift to create a place proxy.");
+        return super.getSecondHintMessage() + " Hold Shift to create a place proxy.";
     }
 
     @Override

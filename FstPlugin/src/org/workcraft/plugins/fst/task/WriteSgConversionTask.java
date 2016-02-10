@@ -49,7 +49,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                 + "It may take a very long time to be processed.\n\n"
                 + "Are you sure you want to display it?",
                 "Please confirm", JOptionPane.YES_NO_OPTION);
-            hugeSgConfirmed = (answer == JOptionPane.YES_OPTION);
+            hugeSgConfirmed = answer == JOptionPane.YES_OPTION;
         }
 
         public boolean isHugeSgConfirmed() {

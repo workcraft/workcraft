@@ -59,7 +59,7 @@ public class PnToCpogTask implements Task<PnToCpogResult>{
             final Workspace workspace = framework.getWorkspace();
             final Path<String> directory = we.getWorkspacePath().getParent();
             final ModelEntry me = new ModelEntry(new CpogDescriptor(), cpog);
-            boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
             workspace.add(directory, we.getTitle().concat("_cpog"), me, false, openInEditor);
         }
 

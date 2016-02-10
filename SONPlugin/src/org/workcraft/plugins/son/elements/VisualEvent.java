@@ -126,7 +126,7 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 
     public void setDuration(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Event)getReferencedComponent()).setDuration((input));
+        ((Event)getReferencedComponent()).setDuration(input);
     }
 
     public String getDuration() {

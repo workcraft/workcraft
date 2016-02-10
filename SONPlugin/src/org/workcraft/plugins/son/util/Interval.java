@@ -89,8 +89,8 @@ public class Interval {
 
         // overlap happens ONLY when this's max is on the right of other's min
         // AND this's min is on the left of other's max.
-        return (((this.max == null) || (other.min == null) || (this.max.intValue() >= other.min.intValue())) &&
-            ((this.min == null) || (other.max == null) || (this.min.intValue() <= other.max.intValue())));
+        return ((this.max == null) || (other.min == null) || (this.max.intValue() >= other.min.intValue())) &&
+            ((this.min == null) || (other.max == null) || (this.min.intValue() <= other.max.intValue()));
     }
 
     public static Interval getOverlapping(Collection<Interval> intervals){

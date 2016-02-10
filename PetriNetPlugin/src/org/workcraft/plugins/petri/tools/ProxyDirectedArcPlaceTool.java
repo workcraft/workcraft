@@ -35,7 +35,7 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
             } else if (PetriNetUtils.isVisualProducingArc(connection)) {
                 place = connection.getSecond();
             }
-            return (place instanceof VisualPlace);
+            return place instanceof VisualPlace;
         }
         return false;
     }

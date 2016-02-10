@@ -173,7 +173,7 @@ public class ConnectionHelper {
         double p2y = p2.getY();
         double p3x = p3.getX();
         double p3y = p3.getY();
-        double result = (p1x * (p2y - p3y) + p2x * (p3y - p1y) + p3x * (p1y - p2y));
+        double result = p1x * (p2y - p3y) + p2x * (p3y - p1y) + p3x * (p1y - p2y);
         return result;
     }
 

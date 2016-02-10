@@ -134,7 +134,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
                 int absoluteBranchSize = mainTrace.getPosition() + branchTrace.size();
                 int absoluteBranchPosition = mainTrace.getPosition() + branchTrace.getPosition();
                 if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < absoluteBranchSize)) {
-                    return (row == absoluteBranchPosition);
+                    return row == absoluteBranchPosition;
                 }
             }
             return false;

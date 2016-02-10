@@ -51,7 +51,7 @@ public class HitMan {
                     return true;
                 }
                 Rectangle2D boundingBox = ((Touchable)arg).getBoundingBox();
-                return ((boundingBox != null) && boundingBox.contains(pointInLocalSpace));
+                return (boundingBox != null) && boundingBox.contains(pointInLocalSpace);
             }
         });
     }
@@ -77,7 +77,7 @@ public class HitMan {
                 return result;
             }
         }
-        return (filter.eval(point, node) ? hitBranch(point, node) : null);
+        return filter.eval(point, node) ? hitBranch(point, node) : null;
     }
 
     public static boolean isBranchHit(Point2D point, Node node) {
@@ -117,7 +117,7 @@ public class HitMan {
         if(node instanceof CustomTouchable) {
             return ((CustomTouchable)node).customHitTest(point);
         }
-        return (isBranchHit(point, node) ? node : null);
+        return isBranchHit(point, node) ? node : null;
     }
 
     @SuppressWarnings("unchecked")
@@ -191,17 +191,17 @@ public class HitMan {
     public static Node hitTestForSelection(Point2D point, Node node) {
         Node result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node n) {
-                boolean isMovable = (n instanceof Movable);
+                boolean isMovable = n instanceof Movable;
                 boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
-                return (isMovable && isShown);
+                return isMovable && isShown;
             }
         });
         if (result == null) {
             result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
                 public Boolean eval(Node n) {
-                    boolean isConnection = (n instanceof VisualConnection);
+                    boolean isConnection = n instanceof VisualConnection;
                     boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
-                    return (isConnection && isShown);
+                    return isConnection && isShown;
                 }
             });
         }
@@ -216,11 +216,11 @@ public class HitMan {
     public static Node hitTestForConnection(Point2D point, Node node) {
         Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node n) {
-                boolean isMovable = (n instanceof Movable);
+                boolean isMovable = n instanceof Movable;
                 boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
-                boolean isContainer = (n instanceof Container);
-                boolean isExpanded = ((n instanceof Collapsible) && !((Collapsible)n).getIsCollapsed());
-                return (isMovable && isShown && !(isContainer && isExpanded));
+                boolean isContainer = n instanceof Container;
+                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible)n).getIsCollapsed();
+                return isMovable && isShown && !(isContainer && isExpanded);
             }
         });
         if (result == null) {
@@ -228,7 +228,7 @@ public class HitMan {
                 public Boolean eval(Node n) {
                     boolean isConnection = n instanceof VisualConnection;
                     boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
-                    return (isConnection && isShown);
+                    return isConnection && isShown;
                 }
             });
         }
@@ -244,19 +244,19 @@ public class HitMan {
     public static Node hitTestForPopup(Point2D point, Node node) {
         Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node n) {
-                boolean isMovable = (n instanceof Movable);
+                boolean isMovable = n instanceof Movable;
                 boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
-                boolean isContainer = (n instanceof Container);
-                boolean isExpanded = ((n instanceof Collapsible) && !((Collapsible)n).getIsCollapsed());
-                return (isMovable && isShown && !(isContainer && isExpanded));
+                boolean isContainer = n instanceof Container;
+                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible)n).getIsCollapsed();
+                return isMovable && isShown && !(isContainer && isExpanded);
             }
         });
         if (result == null) {
             result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
                 public Boolean eval(Node n) {
-                    boolean isConnection = (n instanceof VisualConnection);
+                    boolean isConnection = n instanceof VisualConnection;
                     boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
-                    return (isConnection && isShown);
+                    return isConnection && isShown;
                 }
             });
         }

@@ -42,7 +42,7 @@ public class GateRenderer {
             public ComponentRenderingResult visit(final BooleanVariable var) {
 
                 final Rectangle2D bb =
-                    (isBuffer) ? new Rectangle2D.Double(-0.5, -0.5, 1.0, 1.0) : new Rectangle2D.Double(0.0, -0.25, 0.0, 0.5);
+                    isBuffer ? new Rectangle2D.Double(-0.5, -0.5, 1.0, 1.0) : new Rectangle2D.Double(0.0, -0.25, 0.0, 0.5);
 
                 return new ComponentRenderingResult() {
                     @Override

@@ -85,10 +85,10 @@ public class ExpressionUtils {
     }
 
     private static boolean isResetTerm(String term, String literal) {
-        return ( term.startsWith(literal + FACTOR_DELIMITER)
+        return term.startsWith(literal + FACTOR_DELIMITER)
               || term.endsWith(FACTOR_DELIMITER + literal)
               || term.contains(FACTOR_DELIMITER + literal + FACTOR_DELIMITER)
-              || term.equals(literal));
+              || term.equals(literal);
     }
 
     private static String removeTermLiteral(String term, String literal) {
