@@ -3,7 +3,6 @@
 build/
 
 bin
-jar
 distr
 *.log
 *.dot
@@ -15,7 +14,6 @@ generated
 .settings
 !/WorkcraftRunner/.classpath
 !/WorkcraftRunner/.project
-*.jar
 *.orig
 *.moved
 *.BASE
