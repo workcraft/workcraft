@@ -1,12 +1,3 @@
-sourceSets {
-    main {
-        resources {
-            srcDir 'src'
-            exclude '**/*.java'
-        }
-    }
-}
-
 jar {
     // Include all dependencies in the jar
     from {
