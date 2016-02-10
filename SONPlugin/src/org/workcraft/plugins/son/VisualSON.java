@@ -58,8 +58,8 @@ public class VisualSON extends AbstractVisualModel {
         this(model, null);
     }
 
-    public VisualSON (SON model, VisualGroup root){
-        super (model, root);
+    public VisualSON(SON model, VisualGroup root){
+        super(model, root);
     //    currentmathLevel = getCurrentLevel();
         if (root == null)
             try {
@@ -73,50 +73,50 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection (Node first, Node second) throws InvalidConnectionException{
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException{
         if ((first instanceof VisualCondition) && (second instanceof VisualCondition) && (currentConnectonSemantics == Semantics.PNLINE))
-            throw new InvalidConnectionException ("Connections between conditions are not valid(PN Connection)");
+            throw new InvalidConnectionException("Connections between conditions are not valid(PN Connection)");
         if ((first instanceof VisualEvent) && (second instanceof VisualEvent))
-            throw new InvalidConnectionException ("Connections between events are not valid (PN Connection)");
+            throw new InvalidConnectionException("Connections between events are not valid (PN Connection)");
         if ((second instanceof VisualSONConnection) || (first instanceof VisualSONConnection))
-            throw new InvalidConnectionException ("Invalid connection (Connection)");
+            throw new InvalidConnectionException("Invalid connection (Connection)");
 
         //asyn type
         if (!(first instanceof VisualChannelPlace) && !(second instanceof VisualChannelPlace)
                 && ((currentConnectonSemantics == Semantics.ASYNLINE) || (currentConnectonSemantics == Semantics.SYNCLINE))) {
-            throw new InvalidConnectionException ("Invalid connection (A/Syn Communication)");
+            throw new InvalidConnectionException("Invalid connection (A/Syn Communication)");
         }
         //Group
         if ((first instanceof VisualChannelPlace) && !isGrouped(second))
-            throw new InvalidConnectionException ("Connections between channel places and un-grouped nodes are not valid (Group)");
+            throw new InvalidConnectionException("Connections between channel places and un-grouped nodes are not valid (Group)");
         if ((second instanceof VisualChannelPlace) && !isGrouped(first))
-            throw new InvalidConnectionException ("Connections between channel places and un-grouped nodes are not valid (Group)");
+            throw new InvalidConnectionException("Connections between channel places and un-grouped nodes are not valid (Group)");
         if ((first instanceof VisualChannelPlace) && (second instanceof VisualChannelPlace))
-            throw new InvalidConnectionException ("Connections between channel places are not valid (A/Syn Communication)");
+            throw new InvalidConnectionException("Connections between channel places are not valid (A/Syn Communication)");
         if (((first instanceof VisualChannelPlace) && (second instanceof VisualCondition))
                 || ((first instanceof VisualCondition) && (second instanceof VisualChannelPlace)))
-            throw new InvalidConnectionException ("Connections between channel place and condition are not valid (A/Syn Communication)");
+            throw new InvalidConnectionException("Connections between channel place and condition are not valid (A/Syn Communication)");
 
         if(isGrouped(first) && isGrouped(second) && !isInSameGroup(first, second)  &&
                 (currentConnectonSemantics == Semantics.PNLINE || currentConnectonSemantics == Semantics.ASYNLINE || currentConnectonSemantics == Semantics.SYNCLINE) )
-            throw new InvalidConnectionException ("Direct connections between two different groups are not valid (PN Connection, A/Syn Communication)");
+            throw new InvalidConnectionException("Direct connections between two different groups are not valid (PN Connection, A/Syn Communication)");
 
         if(!(first instanceof VisualChannelPlace) &&  !(second instanceof VisualChannelPlace)){
             if (isGrouped(first) && !isGrouped(second) || isGrouped(second) && !isGrouped(first))
-            throw new InvalidConnectionException ("Connections between grouped node and un-grouped nodes are not valid (Group)");
+            throw new InvalidConnectionException("Connections between grouped node and un-grouped nodes are not valid (Group)");
 
         //Bhv Type
         if (currentConnectonSemantics == Semantics.BHVLINE) {
             if ((first instanceof VisualEvent) || (second instanceof VisualEvent))
-                throw new InvalidConnectionException ("Connections between non-conditions are not valid (Behavioural Abstraction)");
+                throw new InvalidConnectionException("Connections between non-conditions are not valid (Behavioural Abstraction)");
             if (!isGrouped(first) || !isGrouped(second) )
-                throw new InvalidConnectionException ("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
+                throw new InvalidConnectionException("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
             if (isInSameGroup(first, second))
-                throw new InvalidConnectionException ("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
+                throw new InvalidConnectionException("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
             if (isInBlock(first) || this.isInBlock(second))
-                throw new InvalidConnectionException ("Block cannot cross phases (Block)");
+                throw new InvalidConnectionException("Block cannot cross phases (Block)");
             if (hasInputBhv(first) || hasOutputBhv(second))
-                throw new InvalidConnectionException ("Condition with both input and output behavioural relations is not valid  (Behavioural Abstraction)");
+                throw new InvalidConnectionException("Condition with both input and output behavioural relations is not valid  (Behavioural Abstraction)");
             }
         }
 
@@ -124,23 +124,23 @@ public class VisualSON extends AbstractVisualModel {
         if (first instanceof VisualChannelPlace)
             for (Node node : net.getPreset(((VisualChannelPlace) first).getReferencedComponent())){
                 if (net.isInSameGroup(((VisualComponent)second).getReferencedComponent(), node)){
-                    throw new InvalidConnectionException ("The input and ouput nodes for a channel place belong to same group are not valid");
+                    throw new InvalidConnectionException("The input and ouput nodes for a channel place belong to same group are not valid");
                 }
             }
 
         if (second instanceof VisualChannelPlace)
             for (Node node : net.getPostset(((VisualChannelPlace) second).getReferencedComponent())){
                 if (net.isInSameGroup(((VisualComponent)first).getReferencedComponent(), node)){
-                    throw new InvalidConnectionException ("The input and ouput nodes of a channel place belong to same group are not valid");
+                    throw new InvalidConnectionException("The input and ouput nodes of a channel place belong to same group are not valid");
                 }
             }
 
         //block
         if((first instanceof VisualEvent) && isInBlock(second))
-            throw new InvalidConnectionException ("Block inputs must be conditions (Block)");
+            throw new InvalidConnectionException("Block inputs must be conditions (Block)");
 
         if((second instanceof VisualEvent) && isInBlock(first))
-            throw new InvalidConnectionException ("Block outputs must be conditions (Block)");
+            throw new InvalidConnectionException("Block outputs must be conditions (Block)");
     }
 
     private boolean isGrouped(Node node){
@@ -152,7 +152,7 @@ public class VisualSON extends AbstractVisualModel {
         return false;
     }
 
-    private boolean isInSameGroup (Node first, Node second){
+    private boolean isInSameGroup(Node first, Node second){
         for (VisualONGroup group : getVisualONGroups()){
             if ( group.getVisualComponents().contains(first) && group.getVisualComponents().contains(second)){
                 return true;
@@ -191,7 +191,7 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect (Node first, Node second, MathConnection mConnection) throws InvalidConnectionException{
+    public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException{
         validateConnection(first, second);
         VisualComponent c1= (VisualComponent)first;
         VisualComponent c2= (VisualComponent)second;
@@ -211,7 +211,7 @@ public class VisualSON extends AbstractVisualModel {
         return ret;
     }
 
-    public VisualConnection connect (Node first, Node second, Semantics semantics) throws InvalidConnectionException{
+    public VisualConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException{
         forceConnectionSemantics(semantics);
         return connect(first, second);
     }
@@ -277,7 +277,7 @@ public class VisualSON extends AbstractVisualModel {
 
     }
 
-    private boolean isPure (Collection<Node> nodes) {
+    private boolean isPure(Collection<Node> nodes) {
         for (VisualSONConnection connect : getVisualSONConnections()){
             if(nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
                 && !nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))

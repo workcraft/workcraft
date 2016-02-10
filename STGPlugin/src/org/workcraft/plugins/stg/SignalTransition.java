@@ -68,7 +68,7 @@ public class SignalTransition extends NamedTransition {
                     return item;
                 }
             }
-            throw new ArgumentException ("Unexpected string: " + s);
+            throw new ArgumentException("Unexpected string: " + s);
         }
 
         @Override

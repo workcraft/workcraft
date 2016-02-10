@@ -28,9 +28,9 @@ import java.util.LinkedHashSet;
 import org.workcraft.observation.ObservableHierarchy;
 
 public class DefaultGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
-    private Collection<Node> children = new LinkedHashSet<Node> ();
+    private Collection<Node> children = new LinkedHashSet<Node>();
 
-    public DefaultGroupImpl (Container groupRef) {
+    public DefaultGroupImpl(Container groupRef) {
         super(groupRef);
     }
 

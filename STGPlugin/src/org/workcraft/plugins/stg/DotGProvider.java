@@ -17,7 +17,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class DotGProvider {
 
-    public File getDotG (Path<String> source) {
+    public File getDotG(Path<String> source) {
         final Framework framework = Framework.getInstance();
         Workspace workspace = framework.getWorkspace();
         WorkspaceEntry we = workspace.getOpenFile(source);
@@ -30,7 +30,7 @@ public class DotGProvider {
             if (modelEntry.getMathModel() instanceof STGModel)
                 model = (STGModel) modelEntry.getMathModel();
             else
-                throw new RuntimeException ("Unexpected model class " + we.getClass().getName());
+                throw new RuntimeException("Unexpected model class " + we.getClass().getName());
             try {
                 String prefix = model.getTitle();
                 if ((prefix == null) || prefix.isEmpty()) {
@@ -51,7 +51,7 @@ public class DotGProvider {
         } else if (source.getNode().endsWith(FileFilters.DOCUMENT_EXTENSION)){
             throw new NotImplementedException();
         } else {
-            throw new RuntimeException ("Don't know how to create a .g file from " + source);
+            throw new RuntimeException("Don't know how to create a .g file from " + source);
         }
     }
 }

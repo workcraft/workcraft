@@ -102,7 +102,7 @@ public class Console {
                 framework.setArgs(arglist);
                 try {
                     LogUtils.logMessageLine("Executing "+ arg.substring(6) + "...");
-                    framework.execJavaScript(new File (arg.substring(6)));
+                    framework.execJavaScript(new File(arg.substring(6)));
                 } catch (FileNotFoundException e) {
                     LogUtils.logErrorLine("Script specified from command line not found: " + arg);
                 } catch (org.mozilla.javascript.WrappedException e) {
@@ -161,7 +161,7 @@ public class Console {
             } else if (framework.isGUIRestartRequested()) {
                 framework.startGUI();
             } else {
-                System.out.print ("js>");
+                System.out.print("js>");
                 try {
                     String line = in.readLine();
                     Object result = framework.execJavaScript(line);

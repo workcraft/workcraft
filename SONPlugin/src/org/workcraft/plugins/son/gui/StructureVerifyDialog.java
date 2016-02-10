@@ -161,7 +161,7 @@ public class StructureVerifyDialog extends JDialog{
                 listModel.addElement(new ListItem("Group: " + net.getNodeReference(group) + " (" + group.getLabel() + ")", group));
         }
 
-        groupList = new JList (listModel);
+        groupList = new JList(listModel);
         groupList.setCellRenderer(new ItemListRenderer());
         groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         groupList.addMouseListener(new MouseAdapter() {
@@ -269,7 +269,7 @@ public class StructureVerifyDialog extends JDialog{
     }
 
     protected void createButtonsPanel() {
-        runButton = new JButton ("Run");
+        runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
         runButton.addActionListener(new ActionListener() {
             @Override
@@ -279,7 +279,7 @@ public class StructureVerifyDialog extends JDialog{
             }
         });
 
-        cancelButton = new JButton ("Cancel");
+        cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(new ActionListener() {
             @Override
@@ -289,7 +289,7 @@ public class StructureVerifyDialog extends JDialog{
             }
         });
 
-        confirmButtonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        confirmButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         confirmButtonsPanel.add(cancelButton);
         confirmButtonsPanel.add(runButton);
     }
@@ -315,7 +315,7 @@ public class StructureVerifyDialog extends JDialog{
         pack();
     }
 
-    public StructureVerifyDialog (Window owner, String title, ModalityType modalityType, WorkspaceEntry we){
+    public StructureVerifyDialog(Window owner, String title, ModalityType modalityType, WorkspaceEntry we){
         //super(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL);
         super(owner, title, modalityType);
         this.we = we;
@@ -331,7 +331,7 @@ public class StructureVerifyDialog extends JDialog{
         return titledBorder;
     }
 
-    public StructureVerifyDialog (Window owner, WorkspaceEntry we){
+    public StructureVerifyDialog(Window owner, WorkspaceEntry we){
         this(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL, we);
     }
 

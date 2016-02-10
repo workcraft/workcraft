@@ -77,20 +77,20 @@ public class PresetManager <T> {
         presets.add(preset);
     }
 
-    public Preset<T> save (T settings, String description) {
+    public Preset<T> save(T settings, String description) {
         Preset<T> preset = new Preset<T>(description, settings, false);
         presets.add(preset);
         savePresets();
         return preset;
     }
 
-    public void update (Preset<T> preset, T settings) {
+    public void update(Preset<T> preset, T settings) {
         checkBuiltIn(preset);
         preset.setSettings(settings);
         savePresets();
     }
 
-    public void delete (Preset<T> preset) {
+    public void delete(Preset<T> preset) {
         checkBuiltIn(preset);
         presets.remove(preset);
         savePresets();
@@ -98,7 +98,7 @@ public class PresetManager <T> {
 
     private void checkBuiltIn(Preset<T> preset) {
         if (preset.isBuiltIn())
-            throw new RuntimeException ("Invalid operation attempted on a built-in MPSat preset.");
+            throw new RuntimeException("Invalid operation attempted on a built-in MPSat preset.");
     }
 
     public Preset<T> find(String description) {

@@ -51,7 +51,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
         }
 
         bsonAlg = new BSONAlg(net);
-        reachAlg = new ReachabilityAlg (net);
+        reachAlg = new ReachabilityAlg(net);
 
         markingRefs = new ArrayList<String>();
         causalPredecessors = new HashSet<Node>();

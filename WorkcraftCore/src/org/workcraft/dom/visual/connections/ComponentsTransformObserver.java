@@ -47,7 +47,7 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 
     private boolean valid = false;
 
-    public ComponentsTransformObserver (VisualConnection connection) {
+    public ComponentsTransformObserver(VisualConnection connection) {
         this.connection = connection;
     }
 
@@ -147,6 +147,6 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
 
     @Override
     public void setParent(Node parent) {
-        throw new RuntimeException ("Node does not support reparenting");
+        throw new RuntimeException("Node does not support reparenting");
     }
 }

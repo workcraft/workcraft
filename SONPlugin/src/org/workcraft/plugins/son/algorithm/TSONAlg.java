@@ -139,7 +139,7 @@ public class TSONAlg extends RelationAlgorithm{
     /**
      * check if a given input causally precede all outputs
      */
-    public boolean isCausallyPrecede (Node input, Collection<Node> outputs){
+    public boolean isCausallyPrecede(Node input, Collection<Node> outputs){
         for(Node post : relation.getPostPNSet(input)){
             if(outputs.contains(post))
                 outputs.remove(post);

@@ -63,7 +63,7 @@ public class Triple <T1, T2, T3> {
         return "<" + first.toString() + ", " + second.toString() + ", " + third.toString() + ">";
     }
 
-    public static <T1, T2, T3> Triple<T1, T2, T3> of (T1 first, T2 second, T3 third) {
-        return new Triple<T1, T2, T3> (first, second, third);
+    public static <T1, T2, T3> Triple<T1, T2, T3> of(T1 first, T2 second, T3 third) {
+        return new Triple<T1, T2, T3>(first, second, third);
     }
 }

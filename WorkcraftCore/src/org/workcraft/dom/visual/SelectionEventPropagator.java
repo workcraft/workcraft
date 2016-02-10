@@ -37,7 +37,7 @@ import org.workcraft.observation.StateObserver;
 public class SelectionEventPropagator extends HierarchySupervisor implements StateObserver {
     private LinkedList<SelectionObserver> selectionObservers = new LinkedList<SelectionObserver>();
 
-    public SelectionEventPropagator (VisualModel model) {
+    public SelectionEventPropagator(VisualModel model) {
         model.addObserver(this);
     }
 
@@ -54,7 +54,7 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
 
     private void nodeRemoved(Node node) {
         if (node instanceof SelectionObserver) {
-            //System.out.println ("Removing observer " + node);
+            //System.out.println("Removing observer " + node);
             SelectionObserver so = (SelectionObserver)node;
             selectionObservers.remove(so);
         }
@@ -65,7 +65,7 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
 
     private void nodeAdded(Node node) {
         if (node instanceof SelectionObserver) {
-            //System.out.println ("Adding observer " + node);
+            //System.out.println("Adding observer " + node);
             SelectionObserver so = (SelectionObserver) node;
             selectionObservers.add(so);
         }
@@ -77,7 +77,7 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
     @Override
     public void notify(StateEvent e) {
         if (e instanceof SelectionChangedEvent) {
-            //System.out.println ("Propagating event");
+            //System.out.println("Propagating event");
             for (SelectionObserver so : selectionObservers)
                 so.notify((SelectionChangedEvent)e);
         }

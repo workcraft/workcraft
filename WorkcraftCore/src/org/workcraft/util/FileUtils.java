@@ -60,7 +60,7 @@ public class FileUtils {
         }
     }
 
-    public static void dumpString (File out, String string) throws IOException {
+    public static void dumpString(File out, String string) throws IOException {
         FileOutputStream fos = new FileOutputStream(out);
         fos.write(string.getBytes());
         fos.close();
@@ -110,16 +110,16 @@ public class FileUtils {
 
     public static void copyAll(File source, File targetDir) throws IOException {
         if (!targetDir.isDirectory()) {
-            throw new RuntimeException ("Cannot copy files to a file that is not a directory.");
+            throw new RuntimeException("Cannot copy files to a file that is not a directory.");
         }
         File target = new File(targetDir, source.getName());
 
         if (source.isDirectory()) {
             if (!target.mkdir()) {
-                throw new RuntimeException ("Cannot create directory " + target.getAbsolutePath());
+                throw new RuntimeException("Cannot create directory " + target.getAbsolutePath());
             }
             for (File f : source.listFiles()) {
-                copyAll (f, target);
+                copyAll(f, target);
             }
         } else {
             copyFile(source, target);
@@ -132,7 +132,7 @@ public class FileUtils {
         writer.close();
     }
 
-    public static String readAllText (File file) throws IOException {
+    public static String readAllText(File file) throws IOException {
         InputStream stream = new FileInputStream(file);
         try {
             return readAllText(stream);

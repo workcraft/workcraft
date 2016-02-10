@@ -178,7 +178,7 @@ public class PluginManager implements PluginProvider {
         XmlUtil.saveDocument(doc, file);
     }
 
-    private void processLegacyPlugin (Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
+    private void processLegacyPlugin(Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
         for (String interfaceName : info.getInterfaces())
         try {
             plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));

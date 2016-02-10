@@ -28,6 +28,7 @@
         <module name="UnusedImports" />
         <module name="RedundantImport" />
 
+        <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
 

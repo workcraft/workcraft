@@ -46,7 +46,7 @@ public class ONGroup extends PageNode{
         return result;
     }
 
-    public boolean contains (Node node){
+    public boolean contains(Node node){
         if (this.getComponents().contains(node))
             return true;
         else

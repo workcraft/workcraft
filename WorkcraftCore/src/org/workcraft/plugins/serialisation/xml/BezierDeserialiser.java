@@ -54,7 +54,7 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
     public Object createInstance(Element element,
             ReferenceResolver externalReferenceResolver,
             Object... constructorParameters) {
-        return new Bezier ((VisualConnection)constructorParameters[0]);
+        return new Bezier((VisualConnection)constructorParameters[0]);
     }
 
     @Override

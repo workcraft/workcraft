@@ -51,7 +51,7 @@ public class RenderedFormula implements Touchable {
                 || positioning != this.positioning || offset.getX() != this.xOffset || offset.getY() != this.yOffset);
     }
 
-    public void draw (Graphics2D g) {
+    public void draw(Graphics2D g) {
         g.setFont(font);
         AffineTransform oldTransform = g.getTransform();
         g.translate(boundingBox.getX(), boundingBox.getMaxY());

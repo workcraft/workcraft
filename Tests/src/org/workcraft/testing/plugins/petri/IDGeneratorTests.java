@@ -33,7 +33,7 @@ public class IDGeneratorTests {
 
         try {
          generator.reserveID(4);
-         fail ("Duplicate ID issued");
+         fail("Duplicate ID issued");
         } catch (DuplicateIDException e) {
             assertEquals(4, e.getId());
         }

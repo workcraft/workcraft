@@ -38,7 +38,7 @@ public class OutputArea extends JFrame {
     private void createMenu(){
         menu = new JMenuBar();
         file = new JMenu(" File ");
-        export = new JMenuItem ("Export result");
+        export = new JMenuItem("Export result");
         exit = new JMenuItem("Exit");
 
         menu.add(file);
@@ -109,20 +109,20 @@ public class OutputArea extends JFrame {
         textArea.setEditable(false);
         textArea.setFont(font);
 
-        Container contentPane = this.getContentPane ();
+        Container contentPane = this.getContentPane();
 
-        contentPane.setLayout (new BorderLayout ());
+        contentPane.setLayout(new BorderLayout());
         createMenu();
         contentPane.add(menu, BorderLayout.NORTH);
 
-        contentPane.add (
-            new JScrollPane (
+        contentPane.add(
+            new JScrollPane(
                 textArea,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
             BorderLayout.CENTER);
-        this.pack ();
-        this.setVisible (true);
+        this.pack();
+        this.setVisible(true);
         this.setTitle("Structure Verification Result");
 
         Toolkit kit = Toolkit.getDefaultToolkit();

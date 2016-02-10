@@ -53,17 +53,17 @@ public class NodeFactory {
             return visual;
 
         } catch (SecurityException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (NoSuchMethodException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (IllegalArgumentException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (InstantiationException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (IllegalAccessException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (InvocationTargetException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         }
     }
 
@@ -73,19 +73,19 @@ public class NodeFactory {
             Constructor<?> ctor = cls.getConstructor();
             return (T)ctor.newInstance();
         } catch (ClassCastException ex) {
-            throw new NodeCreationException (ex);
+            throw new NodeCreationException(ex);
         }    catch (SecurityException ex) {
-            throw new NodeCreationException (ex);
+            throw new NodeCreationException(ex);
         } catch (NoSuchMethodException ex) {
-            throw new NodeCreationException (ex);
+            throw new NodeCreationException(ex);
         } catch (IllegalArgumentException ex) {
-            throw new NodeCreationException (ex);
+            throw new NodeCreationException(ex);
         } catch (InstantiationException ex) {
-            throw new NodeCreationException (ex);
+            throw new NodeCreationException(ex);
         } catch (IllegalAccessException ex) {
-            throw new NodeCreationException (ex);
+            throw new NodeCreationException(ex);
         } catch (InvocationTargetException ex) {
-            throw new NodeCreationException (ex);
+            throw new NodeCreationException(ex);
         }
     }
 
@@ -101,7 +101,7 @@ public class NodeFactory {
                         getConstructor().newInstance()).
                         createComponent(component, constructorParameters);
             } catch (Exception e) {
-                throw new NodeCreationException (e);
+                throw new NodeCreationException(e);
             }
         } else {
             return createVisualComponentSimple(component, constructorParameters);
@@ -133,17 +133,17 @@ public class NodeFactory {
             return visual;
 
         } catch (SecurityException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (NoSuchMethodException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (IllegalArgumentException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (InstantiationException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (IllegalAccessException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         } catch (InvocationTargetException e) {
-            throw new NodeCreationException (e);
+            throw new NodeCreationException(e);
         }
     }
 

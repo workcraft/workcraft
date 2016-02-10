@@ -74,7 +74,7 @@ public abstract class AbstractModel implements Model {
         if (node.getParent() instanceof Container) {
             ((Container)node.getParent()).remove(node);
         } else {
-            throw new RuntimeException ("Cannot remove a child node from a node that is not a Container (or null).");
+            throw new RuntimeException("Cannot remove a child node from a node that is not a Container (or null).");
         }
     }
 
@@ -85,7 +85,7 @@ public abstract class AbstractModel implements Model {
             // some nodes may be removed as a result of removing other nodes in the list,
             // e.g. hanging connections so need to check
             if (node.getParent() != null) {
-                remove (node);
+                remove(node);
             }
         }
     }

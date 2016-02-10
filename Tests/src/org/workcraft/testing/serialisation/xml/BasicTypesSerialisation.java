@@ -141,8 +141,7 @@ public class BasicTypesSerialisation {
             AffineTransformSerialiser s = new AffineTransformSerialiser();
             AffineTransformDeserialiser ds = new AffineTransformDeserialiser();
 
-            AffineTransform t = new AffineTransform
-            (
+            AffineTransform t = new AffineTransform(
                     Math.random(), Math.random(), Math.random(),
                     Math.random(), Math.random(), Math.random()
                 );

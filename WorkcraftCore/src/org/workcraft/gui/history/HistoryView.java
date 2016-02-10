@@ -105,7 +105,7 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 
         // populate list of existing events
         List <HistoryEvent> events = provider.getHistory();
-        listModel = new HistoryListModel (events);
+        listModel = new HistoryListModel(events);
         getListHistory().setModel(listModel);
 
         // attach to new provider

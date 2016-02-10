@@ -13,7 +13,7 @@ public class ControlConnection extends MathConnection {
     public ControlConnection() {
     }
 
-    public ControlConnection (MathNode first, MathNode second) {
+    public ControlConnection(MathNode first, MathNode second) {
         super(first, second);
     }
 

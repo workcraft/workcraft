@@ -80,7 +80,7 @@ public class Workspace {
             File baseDir = File.createTempFile("workspace", "");
             baseDir.delete();
             if (!baseDir.mkdir())
-                throw new RuntimeException ("Could not create a temporary workspace directory.");
+                throw new RuntimeException("Could not create a temporary workspace directory.");
             baseDir.deleteOnExit();
             this.workspaceFile = new File(baseDir, "workspace.works");
         } catch (IOException e) {
@@ -195,7 +195,7 @@ public class Workspace {
         return we;
     }
 
-    public void add (String pathRelativeToWorkspace, File file, boolean temporary) {
+    public void add(String pathRelativeToWorkspace, File file, boolean temporary) {
         addMount(Path.fromString(pathRelativeToWorkspace), file, temporary);
     }
 
@@ -211,11 +211,11 @@ public class Workspace {
         fireWorkspaceChanged();
     }
 
-    /*public void remove (String pathRelativeToWorkspace, boolean deleteFromDisk) {
+    /*public void remove(String pathRelativeToWorkspace, boolean deleteFromDisk) {
         remove (Path.fromString(pathRelativeToWorkspace), deleteFromDisk);
     }
 
-    public void remove (Path<String> path, boolean deleteFromDisk) {
+    public void remove(Path<String> path, boolean deleteFromDisk) {
         File file = getFile(path);
         if (file.isDirectory()) {
 
@@ -273,7 +273,7 @@ public class Workspace {
         return new ArrayList<WorkspaceEntry>(openFiles.values());
     }
 
-    public void addListener (WorkspaceListener l) {
+    public void addListener(WorkspaceListener l) {
         workspaceListeners.add(l);
     }
 
@@ -305,13 +305,13 @@ public class Workspace {
                 addMount(Path.fromString(mountPoint), file, false);
             }
             addMount(Path.<String>empty(), baseDir(), true);
-            setTemporary (false);
+            setTemporary(false);
         } catch (ParserConfigurationException e) {
-            throw new DeserialisationException (e);
+            throw new DeserialisationException(e);
         } catch (SAXException e) {
-            throw new DeserialisationException (e);
+            throw new DeserialisationException(e);
         } catch (IOException e) {
-            throw new DeserialisationException (e);
+            throw new DeserialisationException(e);
         }
         fireWorkspaceChanged();
     }
@@ -512,7 +512,7 @@ public class Workspace {
         return openFiles.getValue(path);
     }
 
-    private void deleteFile (Path<String> path) throws OperationCancelledException {
+    private void deleteFile(Path<String> path) throws OperationCancelledException {
         final WorkspaceEntry openFile = getOpenFile(path);
         if (openFile != null) {
             final Framework framework = Framework.getInstance();

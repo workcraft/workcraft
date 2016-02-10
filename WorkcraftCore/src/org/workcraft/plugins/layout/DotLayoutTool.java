@@ -65,7 +65,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
         final Framework framework = Framework.getInstance();
         Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.DOT);
         if (exporter == null) {
-            throw new RuntimeException ("Cannot find a .dot exporter for the model " + model);
+            throw new RuntimeException("Cannot find a .dot exporter for the model " + model);
         }
         FileOutputStream out = new FileOutputStream(file);
         exporter.export(model, out);

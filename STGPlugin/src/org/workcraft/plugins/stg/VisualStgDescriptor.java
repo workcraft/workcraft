@@ -10,7 +10,7 @@ public class VisualStgDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-        return new VisualSTG ((STG) mathModel);
+        return new VisualSTG((STG) mathModel);
     }
 
     @Override

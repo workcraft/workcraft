@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class DOMTests {
 
     @Test
-    public void Test1 () throws InvalidConnectionException {
+    public void Test1() throws InvalidConnectionException {
         PetriNet pn = new PetriNet();
 
         Place p1 = new Place();
@@ -46,18 +46,18 @@ public class DOMTests {
         Connection con1 = pn.connect(p1, t1);
         Connection con2 = pn.connect(t1, p2);
 
-        assertSame (p1, pn.getNodeByReference(pn.getNodeReference(p1)));
-        assertSame (p2, pn.getNodeByReference(pn.getNodeReference(p2)));
+        assertSame(p1, pn.getNodeByReference(pn.getNodeReference(p1)));
+        assertSame(p2, pn.getNodeByReference(pn.getNodeReference(p2)));
 
-        assertTrue (pn.getPreset(p2).contains(t1));
-        assertTrue (pn.getPostset(p1).contains(t1));
+        assertTrue(pn.getPreset(p2).contains(t1));
+        assertTrue(pn.getPostset(p1).contains(t1));
 
-        assertTrue (pn.getConnections(p1).contains(con1));
+        assertTrue(pn.getConnections(p1).contains(con1));
 
         pn.remove(p1);
 
-        assertTrue (pn.getConnections(t1).contains(con2));
-        assertFalse (pn.getConnections(t1).contains(con1));
+        assertTrue(pn.getConnections(t1).contains(con2));
+        assertFalse(pn.getConnections(t1).contains(con1));
 
         boolean thrown = true;
         try {

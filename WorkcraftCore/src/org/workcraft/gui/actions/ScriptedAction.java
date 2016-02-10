@@ -24,7 +24,7 @@ package org.workcraft.gui.actions;
 import org.workcraft.Framework;
 
 public abstract class ScriptedAction extends Action {
-    public static final String tryOperation (String operation) {
+    public static final String tryOperation(String operation) {
         return "try\n" +
         "{\n" +
         operation + "\n" +

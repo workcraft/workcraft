@@ -73,7 +73,7 @@ public class NodeGeneratorTool extends AbstractTool {
             try {
                 templateNode = generator.createVisualNode(generator.createMathNode());
             } catch (NodeCreationException e) {
-                throw new RuntimeException (e);
+                throw new RuntimeException(e);
             }
         }
         editor.getModel().setTemplateNode(templateNode);
@@ -116,7 +116,7 @@ public class NodeGeneratorTool extends AbstractTool {
                     lastGeneratedNode.copyStyle(templateNode);
                 }
             } catch (NodeCreationException e1) {
-                throw new RuntimeException (e1);
+                throw new RuntimeException(e1);
             }
         }
     }

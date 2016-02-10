@@ -87,7 +87,7 @@ public class SON extends AbstractMathModel {
 
     public SONConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {
         if (getSONConnection(first, second) != null){
-            throw new InvalidConnectionException ("Duplicate Connections" + getNodeReference(first)+" " +getNodeReference(second));
+            throw new InvalidConnectionException("Duplicate Connections" + getNodeReference(first)+" " +getNodeReference(second));
         }
 
         SONConnection con = new SONConnection((MathNode)first, (MathNode)second, semantics);
@@ -391,7 +391,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<Semantics> getSONConnectionTypes (Node node){
+    public Collection<Semantics> getSONConnectionTypes(Node node){
         Collection<Semantics> result =  new HashSet<Semantics>();
         for (SONConnection con : getSONConnections(node)){
             result.add(con.getSemantics());
@@ -400,7 +400,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<Semantics> getSONConnectionTypes (Collection<Node> nodes){
+    public Collection<Semantics> getSONConnectionTypes(Collection<Node> nodes){
         Collection<Semantics> result =  new HashSet<Semantics>();
         for(Node node : nodes){
             for (SONConnection con : getSONConnections(node)){
@@ -411,7 +411,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Semantics getSONConnectionType (Node first, Node second){
+    public Semantics getSONConnectionType(Node first, Node second){
         SONConnection con = getSONConnection(first, second);
         return con.getSemantics();
     }
@@ -519,7 +519,7 @@ public class SON extends AbstractMathModel {
         return null;
     }
 
-    public boolean isInSameGroup (Node first, Node second){
+    public boolean isInSameGroup(Node first, Node second){
         for (ONGroup group : getGroups()){
             if (group.contains(first) && group.contains(second))
                 return true;

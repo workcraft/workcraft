@@ -84,7 +84,7 @@ public class Event extends Transition implements TransitionNode, Time{
     }
 
     @Override
-    public void setFillColor (Color fillColor){
+    public void setFillColor(Color fillColor){
         this.fillColor = fillColor;
         sendNotification(new PropertyChangedEvent(this, "fillColor"));
     }

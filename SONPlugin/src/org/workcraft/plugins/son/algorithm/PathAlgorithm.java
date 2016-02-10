@@ -55,7 +55,7 @@ public class PathAlgorithm{
         }
     }
 
-    private void DFStest (Collection<Node> nodes, LinkedList<Node> visited, Collection<Condition> v){
+    private void DFStest(Collection<Node> nodes, LinkedList<Node> visited, Collection<Condition> v){
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
         for(Node node : post){
             visited.add(node);
@@ -72,7 +72,7 @@ public class PathAlgorithm{
     }
 
     //get paths between two given nodes. (recursion)
-    public Collection<Path> getPaths (Condition s,  Collection<Condition> v, Collection<Node> nodes){
+    public Collection<Path> getPaths(Condition s,  Collection<Condition> v, Collection<Node> nodes){
         pathResult.clear();
         LinkedList<Node> visited = new LinkedList<Node>();
         visited.add(s);
@@ -81,7 +81,7 @@ public class PathAlgorithm{
     }
 
     //get paths between two given nodes. (recursion)
-    public Collection<Path> getPaths (Node s, Node v, Collection<Node> nodes){
+    public Collection<Path> getPaths(Node s, Node v, Collection<Node> nodes){
         pathResult.clear();
         LinkedList<Node> visited = new LinkedList<Node>();
         visited.add(s);
@@ -97,7 +97,7 @@ public class PathAlgorithm{
         return list;
     }
     //get nodes between two given node sets. (iteration)
-    public static Collection<Node> dfs2 (Marking s, Marking v, SON net){
+    public static Collection<Node> dfs2(Marking s, Marking v, SON net){
         Collection<Node> result = new HashSet<Node>();
         RelationAlgorithm relation = new RelationAlgorithm(net);
         Stack<Node> stack = new Stack<Node>();

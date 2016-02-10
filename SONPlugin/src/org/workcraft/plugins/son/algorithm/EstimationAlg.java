@@ -729,7 +729,7 @@ public class EstimationAlg extends TimeAlg{
         }
     }
 
-    private Interval durationAccumulator1 (LinkedList<Time> visited){
+    private Interval durationAccumulator1(LinkedList<Time> visited){
         Interval result = new Interval(0000, 0000);
         Time first = visited.getFirst();
         for(Time time : visited){

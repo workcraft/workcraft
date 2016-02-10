@@ -113,13 +113,13 @@ class DefaultNodeDeserialiser {
         }
     }
 
-    public Object initInstance (Element element, ReferenceResolver externalReferenceResolver, Object ... constructorParameters) throws DeserialisationException {
+    public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object ... constructorParameters) throws DeserialisationException {
         String className = element.getAttribute("class");
 
         if (className == null || className.isEmpty())
             throw new DeserialisationException("Class name attribute is not set\n" + element.toString());
 
-        //System.out.println ("Initialising " + className);
+        //System.out.println("Initialising " + className);
 
         try {
             Class<?> cls = Class.forName(className);
@@ -133,13 +133,13 @@ class DefaultNodeDeserialiser {
             XMLDeserialiser deserialiser  = fac.getDeserialiserFor(className);
 
             if (deserialiser instanceof CustomXMLDeserialiser) {
-                //System.out.println ("Using custom deserialiser " + deserialiser);
+                //System.out.println("Using custom deserialiser " + deserialiser);
                 instance = ((CustomXMLDeserialiser)deserialiser).createInstance(currentLevelElement, externalReferenceResolver, constructorParameters);
             } else if (deserialiser instanceof BasicXMLDeserialiser) {
-                //System.out.println ("Using basic deserialiser " + deserialiser);
+                //System.out.println("Using basic deserialiser " + deserialiser);
                 instance = ((BasicXMLDeserialiser)deserialiser).deserialise(currentLevelElement);
             } else {
-                //System.out.println ("Using default deserialiser " + deserialiser);
+                //System.out.println("Using default deserialiser " + deserialiser);
 
                 // Check for incoming parameters - these may be supplied when a custom deserialiser requests
                 // a sub-node to be deserialised which should know how to construct this class and pass
@@ -176,7 +176,7 @@ class DefaultNodeDeserialiser {
                 }
             }
 
-            //System.out.println ("Result = " + instance);
+            //System.out.println("Result = " + instance);
 
             doInitialisation(element, instance, instance.getClass(), externalReferenceResolver);
 
@@ -196,7 +196,7 @@ class DefaultNodeDeserialiser {
         }
     }
 
-    void doInitialisation (Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
+    void doInitialisation(Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
         Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
         if (currentLevelElement != null) {
             autoDeserialiseProperties(currentLevelElement, instance, currentLevel, externalReferenceResolver);
@@ -229,7 +229,7 @@ class DefaultNodeDeserialiser {
             try {
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
                 if (deserialiser instanceof CustomXMLDeserialiser) {
-                    //System.out.println ("Using custom deserialiser " + deserialiser);
+                    //System.out.println("Using custom deserialiser " + deserialiser);
                     ((CustomXMLDeserialiser)deserialiser).finaliseInstance(currentLevelElement, instance, internalReferenceResolver, externalReferenceResolver, finaliser);
                 }
             } catch (InstantiationException e) {
@@ -243,7 +243,7 @@ class DefaultNodeDeserialiser {
         }
     }
 
-    public void finaliseInstance (Element element, Object instance, ReferenceResolver internalReferenceResolver,
+    public void finaliseInstance(Element element, Object instance, ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver) throws DeserialisationException {
         doFinalisation(element, instance, internalReferenceResolver, externalReferenceResolver, instance.getClass());
     }

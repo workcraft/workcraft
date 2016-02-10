@@ -161,8 +161,8 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
         for (int i=0; i<getSegmentCount(); i++) {
             Line2D segment = getSegment(i);
-            Point2D a = new Point2D.Double ( pt.getX() - segment.getX1(), pt.getY() - segment.getY1() );
-            Point2D b = new Point2D.Double ( segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1() );
+            Point2D a = new Point2D.Double( pt.getX() - segment.getX1(), pt.getY() - segment.getY1() );
+            Point2D b = new Point2D.Double( segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1() );
 
             double magB = b.distance(0, 0);
             double dist;
@@ -233,7 +233,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         if (index < segments) {
             return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index+1));
         } else {
-            throw new RuntimeException ("Segment index is greater than number of segments");
+            throw new RuntimeException("Segment index is greater than number of segments");
         }
     }
 
@@ -303,7 +303,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
     @Override
     public void setParent(Node parent) {
-        throw new RuntimeException ("Node does not support reparenting");
+        throw new RuntimeException("Node does not support reparenting");
     }
 
     @Override

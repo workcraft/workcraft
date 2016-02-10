@@ -158,7 +158,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends GraphEditorTool> T getToolInstance (Class<T> cls) {
+    public <T extends GraphEditorTool> T getToolInstance(Class<T> cls) {
         for (GraphEditorTool tool : tools) {
             if (cls.isInstance(tool)) {
                 return (T)tool;
@@ -204,8 +204,8 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         addTool(connectionTool, false);
     }
 
-    private void setToolsForModel (VisualModel model) {
-        setLayout(new SimpleFlowLayout (5, 5));
+    private void setToolsForModel(VisualModel model) {
+        setLayout(new SimpleFlowLayout(5, 5));
 
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
         if (customTools != null)    {

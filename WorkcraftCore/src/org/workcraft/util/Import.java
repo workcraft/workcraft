@@ -33,14 +33,14 @@ import org.workcraft.workspace.ModelEntry;
 
 public class Import {
 
-    static public ModelEntry importFromFile (Importer importer, File file) throws IOException, DeserialisationException {
+    static public ModelEntry importFromFile(Importer importer, File file) throws IOException, DeserialisationException {
         FileInputStream fileInputStream = new FileInputStream(file);
         ModelEntry model = importer.importFrom(fileInputStream);
         fileInputStream.close();
         return model;
     }
 
-    static public Importer chooseBestImporter (PluginProvider provider, File file) {
+    static public Importer chooseBestImporter(PluginProvider provider, File file) {
         for (PluginInfo<? extends Importer> info : provider.getPlugins(Importer.class)) {
             Importer importer = info.getSingleton();
 

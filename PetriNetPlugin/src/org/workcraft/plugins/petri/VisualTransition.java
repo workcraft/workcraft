@@ -61,7 +61,7 @@ public class VisualTransition extends VisualComponent {
         Decoration d = r.getDecoration();
         double xy = -size / 2 + strokeWidth / 2;
         double wh = size - strokeWidth;
-        Shape shape = new Rectangle2D.Double (xy, xy, wh, wh);
+        Shape shape = new Rectangle2D.Double(xy, xy, wh, wh);
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));

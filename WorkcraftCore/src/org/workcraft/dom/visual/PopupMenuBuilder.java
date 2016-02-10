@@ -29,12 +29,12 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 
 public class PopupMenuBuilder {
     interface PopupMenuSegment {
-        void addItems (JPopupMenu menu, ScriptedActionListener actionListener);
+        void addItems(JPopupMenu menu, ScriptedActionListener actionListener);
     }
 
     LinkedList<PopupMenuSegment> segments = new LinkedList<PopupMenuSegment>();
 
-    public void addSegment (PopupMenuSegment segment) {
+    public void addSegment(PopupMenuSegment segment) {
         segments.add(segment);
     }
 

@@ -43,7 +43,7 @@ public class TaskControl extends JPanel {
 
     volatile boolean cancelRequested;
 
-    public TaskControl (String taskDescription) {
+    public TaskControl(String taskDescription) {
         double[][] size = {
                 {TableLayout.FILL, 80, 100},
                 {20, 20, 20},
@@ -69,8 +69,8 @@ public class TaskControl extends JPanel {
         progressBar.setMinimum(0);
         progressBar.setMaximum(1000);
 
-        progressBar.setMinimumSize(new Dimension (100,20));
-        progressBar.setPreferredSize(new Dimension (300,20));
+        progressBar.setMinimumSize(new Dimension(100,20));
+        progressBar.setPreferredSize(new Dimension(300,20));
 
         btnCancel = new JButton("Cancel");
         btnCancel.addActionListener(new ActionListener() {

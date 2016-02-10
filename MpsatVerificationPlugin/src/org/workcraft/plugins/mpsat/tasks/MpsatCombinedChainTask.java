@@ -45,7 +45,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
-                throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
+                throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
 

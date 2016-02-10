@@ -21,7 +21,7 @@ public class ASONAlg extends RelationAlgorithm{
         super(net);
     }
 
-    public boolean isEnabled (Marking marking, TransitionNode t) {
+    public boolean isEnabled(Marking marking, TransitionNode t) {
         // gather number of connections for each pre-condition
         for (Node n : getPrePNSet(t)) {
             if (!marking.contains(n)) {

@@ -55,7 +55,7 @@ public class TimeEstimatorDialog extends JDialog{
     protected Dimension buttonSize = new Dimension(80, 25);
     protected int run = 0;
 
-    public TimeEstimatorDialog (GraphEditor editor, TimeEstimatorSettings settings, Node selection, Granularity g){
+    public TimeEstimatorDialog(GraphEditor editor, TimeEstimatorSettings settings, Node selection, Granularity g){
         super(editor.getMainWindow(), "Estimator Setting", ModalityType.TOOLKIT_MODAL);
         net = (SON)editor.getModel().getMathModel();
         this.editor = editor;
@@ -209,9 +209,9 @@ public class TimeEstimatorDialog extends JDialog{
     }
 
     protected void createButtonsPanel() {
-        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        runButton = new JButton ("Run");
+        runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
         runButton.addActionListener(new ActionListener() {
             @Override
@@ -226,8 +226,7 @@ public class TimeEstimatorDialog extends JDialog{
                         boolean isNarrow = narrow.isSelected() && narrow.isEnabled();
                         boolean isTwodir = twoDir.isSelected() && twoDir.isEnabled();
 
-                        EntireEstimationAlg alg1 = new EntireEstimationAlg
-                        (net, getDefaultDuration(), granularity, getScenarioRef(), isNarrow, isTwodir);
+                        EntireEstimationAlg alg1 = new EntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), isNarrow, isTwodir);
                         try {
                             alg1.entireEst();
                         } catch (AlternativeStructureException e1) {
@@ -264,7 +263,7 @@ public class TimeEstimatorDialog extends JDialog{
             }
         });
 
-        cancelButton = new JButton ("Cancel");
+        cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(new ActionListener() {
             @Override

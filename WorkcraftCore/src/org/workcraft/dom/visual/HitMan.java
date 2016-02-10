@@ -61,7 +61,7 @@ public class HitMan {
     }
 
     public static Node hitDeepest(Point2D point, Node node, final Func<Node, Boolean> filter) {
-        return hitDeepest(point, node, new Func2<Point2D, Node, Boolean> () {
+        return hitDeepest(point, node, new Func2<Point2D, Node, Boolean>() {
             @Override
             public Boolean eval(Point2D point, Node node) {
                 return filter.eval(node);
@@ -80,7 +80,7 @@ public class HitMan {
         return (filter.eval(point, node) ? hitBranch(point, node) : null);
     }
 
-    public static boolean isBranchHit (Point2D point, Node node) {
+    public static boolean isBranchHit(Point2D point, Node node) {
         if (node instanceof Touchable && ((Touchable)node).hitTest(point)) {
             if (node instanceof Hidable) {
                 return !((Hidable)node).isHidden();
@@ -183,7 +183,7 @@ public class HitMan {
     }
 
 
-    public static Node hitTestForSelection (Point2D point, VisualModel model) {
+    public static Node hitTestForSelection(Point2D point, VisualModel model) {
         AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
         return hitTestForSelection(at.transform(point, null), model.getCurrentLevel());
     }
@@ -208,7 +208,7 @@ public class HitMan {
         return result;
     }
 
-    public static Node hitTestForConnection (Point2D point, VisualModel model) {
+    public static Node hitTestForConnection(Point2D point, VisualModel model) {
         Point2D pt = transformToChildSpace(point, model.getRoot());
         return hitTestForConnection(pt, model.getRoot());
     }
@@ -270,7 +270,7 @@ public class HitMan {
      * @param p2         The bottom-right corner of the rectangle
      * @return             The collection of nodes fitting completely inside the rectangle
      */
-    public static Collection<Node> boxHitTest (Container container, Point2D p1, Point2D p2) {
+    public static Collection<Node> boxHitTest(Container container, Point2D p1, Point2D p2) {
 
         if(container instanceof Movable) {
             AffineTransform toLocal = Geometry.optimisticInverse(((Movable) container).getTransform());

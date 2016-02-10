@@ -194,7 +194,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             //moveComponents(target, insets.left + hgap, y, 0, rowh, start, nmembers, ltr);
             stretch(target, insets.left + hgap, y, maxwidth, rowh, start, nmembers, ltr);
 
-            return new Dimension (maxwidth, y + rowh + (rowh!=0?vgap:0));
+            return new Dimension(maxwidth, y + rowh + (rowh!=0?vgap:0));
         }
     }
 

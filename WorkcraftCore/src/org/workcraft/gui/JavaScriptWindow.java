@@ -91,7 +91,7 @@ public class JavaScriptWindow extends JPanel {
                 String out = Context.toString(result);
                 Context.exit();
                 if (!out.equals("undefined")) {
-                    System.out.println (out);
+                    System.out.println(out);
                 }
                 resetScript();
             } catch (org.mozilla.javascript.WrappedException e) {

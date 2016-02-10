@@ -36,13 +36,13 @@ public class LegacyPluginInfo implements Initialiser<Object> {
     private String className;
     private String[] interfaceNames;
 
-    private void addInterfaces (Class<?> cls, Set<String> set) {
+    private void addInterfaces(Class<?> cls, Set<String> set) {
         if (cls == null || cls.equals(Object.class))
             return;
 
         for (Class<?> interf : cls.getInterfaces()) {
             set.add(interf.getName());
-            addInterfaces (interf, set);
+            addInterfaces(interf, set);
         }
 
         addInterfaces(cls.getSuperclass(), set);
@@ -59,7 +59,7 @@ public class LegacyPluginInfo implements Initialiser<Object> {
             displayName = name.value();
 
         HashSet<String> interfaces = new HashSet<String>();
-        addInterfaces (cls, interfaces);
+        addInterfaces(cls, interfaces);
         interfaceNames = interfaces.toArray(new String[0]);
     }
 

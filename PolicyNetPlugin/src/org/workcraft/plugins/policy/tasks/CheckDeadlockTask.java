@@ -34,7 +34,7 @@ public class CheckDeadlockTask extends MpsatChainTask {
     private final WorkspaceEntry we;
 
     public CheckDeadlockTask(WorkspaceEntry we) {
-        super (we, null);
+        super(we, null);
         this.we = we;
         this.settings = new MpsatSettings("Deadlock freeness", MpsatMode.DEADLOCK, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
@@ -52,7 +52,7 @@ public class CheckDeadlockTask extends MpsatChainTask {
             PetriNet model = (PetriNet)generator.getPetriNet().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
-                throw new RuntimeException ("Exporter not available: model class " + model.getClass().getName() + " to format Petri net.");
+                throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format Petri net.");
             }
             monitor.progressUpdate(0.10);
 

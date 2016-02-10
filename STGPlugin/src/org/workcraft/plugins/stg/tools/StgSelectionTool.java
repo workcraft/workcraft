@@ -71,7 +71,7 @@ public class StgSelectionTool extends SelectionTool {
         }
     }
 
-    private void editNameInPlace (final GraphEditor editor, final VisualNamedTransition transition, String initialText) {
+    private void editNameInPlace(final GraphEditor editor, final VisualNamedTransition transition, String initialText) {
         final JTextField text = new JTextField(initialText);
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
         Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();

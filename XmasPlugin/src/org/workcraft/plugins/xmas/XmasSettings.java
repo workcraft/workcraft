@@ -99,7 +99,7 @@ public class XmasSettings implements Settings {
     @Override
     public void load(Config config) {
         setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
-        setBorderWidth (config.getDouble(keyBorderWidth, defaultBorderWidth));
+        setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
         setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
         setVxmCommand(config.getString(keyVxmCommand, defaultVxmCommand));
     }

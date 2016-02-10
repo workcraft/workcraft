@@ -153,7 +153,7 @@ public class ModelManager {
             UUID uuid = (UUID)cls.getField("_modeluuid").get(null);
             String model_name = (String)cls.getField("_displayname").get(null);
             if (uuid_model_map.get(uuid)!=null) {
-                System.err.println ("Duplicate model id ("+uuid.toString()+"), skipping");
+                System.err.println("Duplicate model id ("+uuid.toString()+"), skipping");
                 return;
             }
             model_list.add(cls);
@@ -166,13 +166,13 @@ public class ModelManager {
         }
     }
 
-    public void addComponent (Class<?> cls) {
+    public void addComponent(Class<?> cls) {
         try {
             UUID uuid = (UUID)cls.getField("_modeluuid").get(null);
             String component_name = (String)cls.getField("_displayname").get(null);
 
             if (uuid_model_map.get(uuid)==null) {
-                System.err.println ("Component "+component_name+"(class "+cls.getName()+") refers to unknown model (id "+uuid.toString()+"), skipping");
+                System.err.println("Component "+component_name+"(class "+cls.getName()+") refers to unknown model (id "+uuid.toString()+"), skipping");
                 return;
             }
 

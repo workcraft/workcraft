@@ -39,7 +39,7 @@ public class SONMainTask implements Task<VerificationResult>{
     }
 
     @Override
-    public Result<? extends VerificationResult> run (ProgressMonitor <? super VerificationResult> monitor){
+    public Result<? extends VerificationResult> run(ProgressMonitor <? super VerificationResult> monitor){
         clearConsole();
         //all tasks
         SON net=(SON)we.getModelEntry().getMathModel();

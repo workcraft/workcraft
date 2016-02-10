@@ -44,9 +44,9 @@ public class WorkspaceChooserDialog extends JDialog {
 
         chooser = new WorkspaceChooser(workspace, filter);
 
-        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton runButton = new JButton ("OK");
+        JButton runButton = new JButton("OK");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,7 +55,7 @@ public class WorkspaceChooserDialog extends JDialog {
             }
         });
 
-        cancelButton = new JButton ("Cancel");
+        cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

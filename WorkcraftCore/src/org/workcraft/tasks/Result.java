@@ -19,7 +19,7 @@ public class Result<T> {
         this.result = null;
     }
 
-    public Result (Outcome outcome, T result) {
+    public Result(Outcome outcome, T result) {
         this.outcome = outcome;
         this.cause = null;
         this.result = result;

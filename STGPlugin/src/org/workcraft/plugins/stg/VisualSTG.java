@@ -106,20 +106,20 @@ public class VisualSTG extends AbstractVisualModel {
     @Override
     public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
         if (first == second) {
-            throw new InvalidConnectionException ("Self-loops are not allowed.");
+            throw new InvalidConnectionException("Self-loops are not allowed.");
         }
         if ( ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
           && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
-            throw new InvalidConnectionException ("Arcs between places are not allowed.");
+            throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
         if (PetriNetUtils.hasReadArcConnection(this, first, second) || PetriNetUtils.hasReadArcConnection(this, second, first)) {
-            throw new InvalidConnectionException ("Nodes are already connected by a read-arc.");
+            throw new InvalidConnectionException("Nodes are already connected by a read-arc.");
         }
         if (PetriNetUtils.hasProducingArcConnection(this, first, second)) {
-            throw new InvalidConnectionException ("This producing arc already exists.");
+            throw new InvalidConnectionException("This producing arc already exists.");
         }
         if (PetriNetUtils.hasConsumingArcConnection(this, first, second)) {
-            throw new InvalidConnectionException ("This consuming arc already exists.");
+            throw new InvalidConnectionException("This consuming arc already exists.");
         }
     }
 
@@ -185,14 +185,14 @@ public class VisualSTG extends AbstractVisualModel {
     @Override
     public void validateUndirectedConnection(Node first, Node second)    throws InvalidConnectionException {
         if (first == second) {
-            throw new InvalidConnectionException ("Self-loops are not allowed.");
+            throw new InvalidConnectionException("Self-loops are not allowed.");
         }
         if ( ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
           && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
-            throw new InvalidConnectionException ("Read-arcs between places are not allowed.");
+            throw new InvalidConnectionException("Read-arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
-            throw new InvalidConnectionException ("Read-arcs between transitions are not allowed.");
+            throw new InvalidConnectionException("Read-arcs between transitions are not allowed.");
         }
         if ( PetriNetUtils.hasReadArcConnection(this, first, second)
           || PetriNetUtils.hasReadArcConnection(this, second, first)
@@ -200,7 +200,7 @@ public class VisualSTG extends AbstractVisualModel {
           || PetriNetUtils.hasProducingArcConnection(this, second, first)
           || PetriNetUtils.hasConsumingArcConnection(this, first, second)
           || PetriNetUtils.hasConsumingArcConnection(this, second, first) ) {
-                throw new InvalidConnectionException ("Nodes are already connected.");
+                throw new InvalidConnectionException("Nodes are already connected.");
         }
     }
 
@@ -290,7 +290,7 @@ public class VisualSTG extends AbstractVisualModel {
 
             VisualConnection con1 = null;
             VisualConnection con2 = null;
-            Collection<Connection> connections = new ArrayList<Connection> (getConnections(place));
+            Collection<Connection> connections = new ArrayList<Connection>(getConnections(place));
             for (Connection con: connections) {
                 if (con.getFirst() == place) {
                     con2 = (VisualConnection)con;

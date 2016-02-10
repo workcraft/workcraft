@@ -53,12 +53,12 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 
     protected Color tokenColor = CommonVisualSettings.getBorderColor();
 
-    public VisualImplicitPlaceArc () {
+    public VisualImplicitPlaceArc() {
         super();
         addPropertyDeclarations();
     }
 
-    public VisualImplicitPlaceArc (VisualComponent first, VisualComponent second,
+    public VisualImplicitPlaceArc(VisualComponent first, VisualComponent second,
             MathConnection refCon1, MathConnection refCon2, STGPlace implicitPlace) {
         super(null, first, second);
         this.refCon1 = refCon1;

@@ -56,8 +56,8 @@ public class Grid implements ViewportListener {
 
     protected Stroke stroke;
 
-    protected Color majorLinesColor = new Color (200,200,200);
-    protected Color minorLinesColor = new Color (240,240,240);
+    protected Color majorLinesColor = new Color(200,200,200);
+    protected Color minorLinesColor = new Color(240,240,240);
     protected Color guideLinesColor = Color.RED;
 
 
@@ -201,8 +201,8 @@ public class Grid implements ViewportListener {
         // Compute the visible user space area from the viewport
         Point2D visibleUL = new Point2D.Double();
         Point2D visibleLR = new Point2D.Double();
-        Point viewLL = new Point (view.x, view.height+view.y);
-        Point viewUR = new Point (view.width+view.x, view.y);
+        Point viewLL = new Point(view.x, view.height+view.y);
+        Point viewUR = new Point(view.width+view.x, view.y);
         viewport.getInverseTransform().transform(viewLL, visibleUL);
         viewport.getInverseTransform().transform(viewUR, visibleLR);
 
@@ -304,7 +304,7 @@ public class Grid implements ViewportListener {
      * @param g
      * Graphics2D object for the component the viewport is drawn onto.
      */
-    public void draw (Graphics2D g) {
+    public void draw(Graphics2D g) {
         g.setStroke(stroke);
         g.setColor(minorLinesColor);
         g.draw(minorLinesPath);
@@ -379,7 +379,7 @@ public class Grid implements ViewportListener {
      * @param listener
      * The new listener.
      */
-    public void addListener (GridListener listener) {
+    public void addListener(GridListener listener) {
         listeners.add(listener);
     }
 
@@ -388,7 +388,7 @@ public class Grid implements ViewportListener {
      * @param listener
      * The listener to remove.
      */
-    public void removeListener (GridListener listener) {
+    public void removeListener(GridListener listener) {
         listeners.remove(listener);
     }
 

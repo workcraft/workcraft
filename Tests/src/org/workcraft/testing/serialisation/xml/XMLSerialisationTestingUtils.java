@@ -71,32 +71,32 @@ public class XMLSerialisationTestingUtils {
 
             if (interfaceType.equals(org.workcraft.serialisation.xml.XMLSerialiser.class)) {
                 return new LegacyPluginInfo[] {
-                        new LegacyPluginInfo (IntSerialiser.class),
-                        new LegacyPluginInfo (BooleanSerialiser.class),
-                        new LegacyPluginInfo (StringSerialiser.class),
-                        new LegacyPluginInfo (DoubleSerialiser.class),
-                        new LegacyPluginInfo (ConnectionSerialiser.class),
-                        new LegacyPluginInfo (IntSerialiser.class),
-                        new LegacyPluginInfo (EnumSerialiser.class),
-                        new LegacyPluginInfo (AffineTransformSerialiser.class),
-                        new LegacyPluginInfo (VisualConnectionSerialiser.class),
-                        new LegacyPluginInfo (ImplicitPlaceArcSerialiser.class),
+                        new LegacyPluginInfo(IntSerialiser.class),
+                        new LegacyPluginInfo(BooleanSerialiser.class),
+                        new LegacyPluginInfo(StringSerialiser.class),
+                        new LegacyPluginInfo(DoubleSerialiser.class),
+                        new LegacyPluginInfo(ConnectionSerialiser.class),
+                        new LegacyPluginInfo(IntSerialiser.class),
+                        new LegacyPluginInfo(EnumSerialiser.class),
+                        new LegacyPluginInfo(AffineTransformSerialiser.class),
+                        new LegacyPluginInfo(VisualConnectionSerialiser.class),
+                        new LegacyPluginInfo(ImplicitPlaceArcSerialiser.class),
                 };
             } else if (interfaceType.equals(org.workcraft.serialisation.xml.XMLDeserialiser.class)) {
                 return new LegacyPluginInfo[] {
-                        new LegacyPluginInfo (IntDeserialiser.class),
-                        new LegacyPluginInfo (BooleanDeserialiser.class),
-                        new LegacyPluginInfo (StringDeserialiser.class),
-                        new LegacyPluginInfo (DoubleDeserialiser.class),
-                        new LegacyPluginInfo (ConnectionDeserialiser.class),
-                        new LegacyPluginInfo (IntDeserialiser.class),
-                        new LegacyPluginInfo (EnumDeserialiser.class),
-                        new LegacyPluginInfo (AffineTransformDeserialiser.class),
-                        new LegacyPluginInfo (VisualConnectionDeserialiser.class),
-                        new LegacyPluginInfo (ImplicitPlaceArcDeserialiser.class),
+                        new LegacyPluginInfo(IntDeserialiser.class),
+                        new LegacyPluginInfo(BooleanDeserialiser.class),
+                        new LegacyPluginInfo(StringDeserialiser.class),
+                        new LegacyPluginInfo(DoubleDeserialiser.class),
+                        new LegacyPluginInfo(ConnectionDeserialiser.class),
+                        new LegacyPluginInfo(IntDeserialiser.class),
+                        new LegacyPluginInfo(EnumDeserialiser.class),
+                        new LegacyPluginInfo(AffineTransformDeserialiser.class),
+                        new LegacyPluginInfo(VisualConnectionDeserialiser.class),
+                        new LegacyPluginInfo(ImplicitPlaceArcDeserialiser.class),
                 };
             } else
-                throw new RuntimeException ("Mock plugin manager doesn't know interface " + interfaceType.getCanonicalName());
+                throw new RuntimeException("Mock plugin manager doesn't know interface " + interfaceType.getCanonicalName());
         }
 
     }

@@ -13,7 +13,7 @@ public interface TransitionNode extends Time{
 
     String getLabel();
 
-    void setFillColor (Color fillColor);
+    void setFillColor(Color fillColor);
 
     Color getFillColor();
 

@@ -10,7 +10,7 @@ public class SubtaskMonitor<T> implements ProgressMonitor<T> {
     private DataAccumulator stdoutAccum = new DataAccumulator();
     private DataAccumulator stderrAccum = new DataAccumulator();
 
-    public SubtaskMonitor (ProgressMonitor<?> parent) {
+    public SubtaskMonitor(ProgressMonitor<?> parent) {
         this.parent = parent;
     }
 

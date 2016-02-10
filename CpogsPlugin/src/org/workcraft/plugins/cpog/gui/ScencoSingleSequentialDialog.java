@@ -146,9 +146,9 @@ public class ScencoSingleSequentialDialog extends JDialog {
             bits++;
         }
 
-        buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        saveButton = new JButton ("Run");
+        saveButton = new JButton("Run");
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -190,7 +190,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
             }
         });
 
-        closeButton = new JButton ("Close");
+        closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

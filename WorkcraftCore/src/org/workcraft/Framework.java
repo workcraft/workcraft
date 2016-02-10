@@ -148,7 +148,7 @@ public final class Framework {
             try {
                 return cx.compileReader(reader, sourceName, 1, null);
             } catch (IOException e) {
-                throw new RuntimeException (e);
+                throw new RuntimeException(e);
             }
         }
     }
@@ -169,7 +169,7 @@ public final class Framework {
     class SetArgs implements ContextAction {
         Object[] args;
 
-        public void setArgs (Object[] args) {
+        public void setArgs(Object[] args) {
             this.args = args;
         }
 
@@ -259,23 +259,23 @@ public final class Framework {
         config.save(file);
     }
 
-    public void setConfigVar (String key, String value) {
+    public void setConfigVar(String key, String value) {
         config.set(key, value);
     }
 
-    public void setConfigVar (String key, int value) {
+    public void setConfigVar(String key, int value) {
         config.set(key, Integer.toString(value));
     }
 
-    public void setConfigVar (String key, boolean value) {
+    public void setConfigVar(String key, boolean value) {
         config.set(key, Boolean.toString(value));
     }
 
-    public String getConfigVar (String key) {
+    public String getConfigVar(String key) {
         return config.get(key);
     }
 
-    public int getConfigVarAsInt (String key, int defaultValue) {
+    public int getConfigVarAsInt(String key, int defaultValue) {
         String s = config.get(key);
 
         try {
@@ -285,7 +285,7 @@ public final class Framework {
         }
     }
 
-    public boolean getConfigVarAsBool (String key, boolean defaultValue) {
+    public boolean getConfigVarAsBool(String key, boolean defaultValue) {
         String s = config.get(key);
 
         if (s == null)
@@ -329,7 +329,7 @@ public final class Framework {
         return globalScope;
     }
 
-    public void setJavaScriptProperty (final String name, final Object object, final ScriptableObject scope, final boolean readOnly) {
+    public void setJavaScriptProperty(final String name, final Object object, final ScriptableObject scope, final boolean readOnly) {
         contextFactory.call(new ContextAction(){
             public Object run(Context arg0) {
                 Object scriptable = Context.javaToJS(object, scope);
@@ -343,7 +343,7 @@ public final class Framework {
         });
     }
 
-    public void deleteJavaScriptProperty (final String name, final ScriptableObject scope) {
+    public void deleteJavaScriptProperty(final String name, final ScriptableObject scope) {
         contextFactory.call(new ContextAction(){
             public Object run(Context arg0) {
                 return ScriptableObject.deleteProperty(scope, name);
@@ -353,12 +353,12 @@ public final class Framework {
     }
 
     public Object execJavaScript(File file) throws FileNotFoundException {
-        BufferedReader reader = new BufferedReader (new FileReader(file));
+        BufferedReader reader = new BufferedReader(new FileReader(file));
         return execJavaScript(compileJavaScript(reader, file.getPath()));
     }
 
     public Object execJavaScript(Script script) {
-        return execJavaScript (script, globalScope);
+        return execJavaScript(script, globalScope);
     }
 
     static class JavascriptPassThroughException extends RuntimeException {
@@ -380,7 +380,7 @@ public final class Framework {
         }
     }
 
-    public Object execJavaScript (String script) {
+    public Object execJavaScript(String script) {
         return execJavaScript(script, globalScope);
     }
 
@@ -392,7 +392,7 @@ public final class Framework {
         return doContextAction(new ExecuteScriptAction(script, scope));
     }
 
-    private Object doContextAction (ContextAction action) {
+    private Object doContextAction(ContextAction action) {
         try {
             return contextFactory.call(action);
         } catch(JavaScriptException ex) {
@@ -407,20 +407,20 @@ public final class Framework {
         }
     }
 
-    public void execJSResource (String resourceName) throws IOException {
+    public void execJSResource(String resourceName) throws IOException {
         execJavaScript(FileUtils.readAllTextFromSystemResource(resourceName));
     }
 
-    public void execJSFile (String filePath) throws IOException {
+    public void execJSFile(String filePath) throws IOException {
 
-        execJavaScript (FileUtils.readAllText(new File(filePath)), globalScope);
+        execJavaScript(FileUtils.readAllText(new File(filePath)), globalScope);
     }
 
-    public Script compileJavaScript (String source, String sourceName) {
+    public Script compileJavaScript(String source, String sourceName) {
         return (Script) doContextAction(new CompileScriptAction(source, sourceName));
     }
 
-    public Script compileJavaScript (BufferedReader source, String sourceName) {
+    public Script compileJavaScript(BufferedReader source, String sourceName) {
         return (Script) doContextAction(new CompileScriptFromReaderAction(source, sourceName));
     }
 
@@ -700,7 +700,7 @@ public final class Framework {
         File file = new File(path);
         try {
             FileOutputStream stream = new FileOutputStream(file);
-            save (model, stream);
+            save(model, stream);
             stream.close();
         } catch (FileNotFoundException e) {
             throw new SerialisationException(e);

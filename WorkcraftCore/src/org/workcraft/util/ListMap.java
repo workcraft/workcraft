@@ -31,7 +31,7 @@ import java.util.Set;
 public class ListMap <K,V> {
     private HashMap<K,LinkedList<V>> map =  new HashMap<K, LinkedList<V>>();
 
-    public void put (K key, V value) {
+    public void put(K key, V value) {
         LinkedList<V> list = map.get(key);
         if (list == null) {
             list = new LinkedList<V>();

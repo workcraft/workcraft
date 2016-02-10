@@ -87,17 +87,17 @@ public class VisualCircuit extends AbstractVisualModel {
     @Override
     public void validateConnection(Node first, Node second) throws InvalidConnectionException {
         if (first == second) {
-            throw new InvalidConnectionException ("Connections are only valid between different objects.");
+            throw new InvalidConnectionException("Connections are only valid between different objects.");
         }
 
         if (second instanceof VisualConnection) {
-            throw new InvalidConnectionException ("Merging connections is not allowed.");
+            throw new InvalidConnectionException("Merging connections is not allowed.");
         }
 
         if (second instanceof VisualComponent) {
             for (Connection c: this.getConnections(second)) {
                 if (c.getSecond() == second) {
-                    throw new InvalidConnectionException ("Only one connection is allowed as a driver.");
+                    throw new InvalidConnectionException("Only one connection is allowed as a driver.");
                 }
             }
         }
@@ -105,17 +105,17 @@ public class VisualCircuit extends AbstractVisualModel {
         if (first instanceof VisualContact) {
             Contact contact = ((VisualContact)first).getReferencedContact();
             if (contact.isInput() && !contact.isPort()) {
-                throw new InvalidConnectionException ("Inputs of components cannot be drivers.");
+                throw new InvalidConnectionException("Inputs of components cannot be drivers.");
             }
         }
 
         if (second instanceof VisualContact) {
             Contact contact = ((VisualContact)second).getReferencedContact();
             if (contact.isOutput() && !contact.isPort()) {
-                throw new InvalidConnectionException ("Outputs of the components cannot be driven.");
+                throw new InvalidConnectionException("Outputs of the components cannot be driven.");
             }
             if (contact.isInput() && contact.isPort()) {
-                throw new InvalidConnectionException ("Inputs from the environment cannot be driven.");
+                throw new InvalidConnectionException("Inputs from the environment cannot be driven.");
             }
         }
 
@@ -148,10 +148,10 @@ public class VisualCircuit extends AbstractVisualModel {
             if (driven.isOutput() && driven.isPort()) {
                 outputPortCount++;
                 if (outputPortCount > 1) {
-                    throw new InvalidConnectionException ("Fork on the output port is not allowed.");
+                    throw new InvalidConnectionException("Fork on the output port is not allowed.");
                 }
                 if ((driver != null) && driver.isInput() && driver.isPort()) {
-                    throw new InvalidConnectionException ("Direct connection from input port to output port is not allowed.");
+                    throw new InvalidConnectionException("Direct connection from input port to output port is not allowed.");
                 }
             }
         }
@@ -163,13 +163,13 @@ public class VisualCircuit extends AbstractVisualModel {
             if (secondParent instanceof VisualFunctionComponent) {
                 VisualFunctionComponent secondComponent = (VisualFunctionComponent)secondParent;
                 if (firstComponent.getIsZeroDelay() && secondComponent.getIsZeroDelay()) {
-                    throw new InvalidConnectionException ("Zero delay components cannot be connected to each other.");
+                    throw new InvalidConnectionException("Zero delay components cannot be connected to each other.");
                 }
             }
             if (second instanceof VisualContact) {
                 VisualContact secondContact = (VisualContact)second;
                 if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
-                    throw new InvalidConnectionException ("Zero delay components cannot be connected to the output ports.");
+                    throw new InvalidConnectionException("Zero delay components cannot be connected to the output ports.");
                 }
             }
         }

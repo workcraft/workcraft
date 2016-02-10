@@ -108,7 +108,7 @@ public class ScencoExecutionSupport {
                   bre.readLine();
                   bre.readLine();
                   while ((strLine = bre.readLine()) != null) {
-                      System.out.println (strLine);
+                      System.out.println(strLine);
                   }
                   in.close();
             }catch (Exception e){ //Catch exception if any

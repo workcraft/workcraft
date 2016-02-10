@@ -59,9 +59,9 @@ public class PSExporter implements Exporter {
                 return;
             } else {
                 if (result.getCause() != null) {
-                    throw new SerialisationException (result.getCause());
+                    throw new SerialisationException(result.getCause());
                 } else {
-                    throw new SerialisationException ("Could not export model as .g");
+                    throw new SerialisationException("Could not export model as .g");
                 }
             }
         }
@@ -77,9 +77,9 @@ public class PSExporter implements Exporter {
                 return;
             } else {
                 if (draw_astgResult.getCause() != null) {
-                    throw new SerialisationException (draw_astgResult.getCause());
+                    throw new SerialisationException(draw_astgResult.getCause());
                 } else {
-                    throw new SerialisationException ("draw_astg failed with return code " + draw_astgResult.getReturnValue().getReturnCode() + "\n\n" +
+                    throw new SerialisationException("draw_astg failed with return code " + draw_astgResult.getReturnValue().getReturnCode() + "\n\n" +
                             new String(draw_astgResult.getReturnValue().getErrors()) +"\n");
                 }
             }

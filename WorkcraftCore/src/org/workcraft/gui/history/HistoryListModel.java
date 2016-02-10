@@ -32,7 +32,7 @@ import org.workcraft.history.HistoryEvent;
 public class HistoryListModel extends AbstractListModel {
     List <HistoryEvent> events;
 
-    public HistoryListModel (List<HistoryEvent> events) {
+    public HistoryListModel(List<HistoryEvent> events) {
         super();
     }
 

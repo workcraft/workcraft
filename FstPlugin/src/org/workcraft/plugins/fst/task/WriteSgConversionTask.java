@@ -81,7 +81,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             pn.setTitle(getWorkspaceEntry().getTitle());
             Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
             if (pnExporter == null) {
-                throw new RuntimeException ("Exporter not available: model class " + pn.getClass().getName() + " to format STG.");
+                throw new RuntimeException("Exporter not available: model class " + pn.getClass().getName() + " to format STG.");
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
             monitor.progressUpdate(0.10);

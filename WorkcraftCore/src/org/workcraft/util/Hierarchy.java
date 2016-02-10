@@ -33,7 +33,7 @@ import org.workcraft.dom.visual.NodeHelper;
 
 public class Hierarchy {
     public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {
-        return new Func<Node, Boolean> (){
+        return new Func<Node, Boolean>(){
             public Boolean eval(Node node) {
                 if (type.isInstance(node)) {
                     return true;
@@ -44,7 +44,7 @@ public class Hierarchy {
         };
     }
 
-    public static  Collection<Node> fillterNodes (Collection<Node> nodes, UnaryFunctor<Node, Boolean> filter) {
+    public static  Collection<Node> fillterNodes(Collection<Node> nodes, UnaryFunctor<Node, Boolean> filter) {
         LinkedList<Node> result = new LinkedList<Node>();
         for (Node node : nodes) {
             if (filter.fn(node)) {
@@ -55,7 +55,7 @@ public class Hierarchy {
     }
 
 
-    public static <T extends Node> Collection <T> filterNodesByType (Collection<Node> nodes, final Class<T> type) {
+    public static <T extends Node> Collection <T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
         LinkedList<T> result = new LinkedList<T>();
         for (Node node : nodes) {
             if (type.isInstance(node)) {

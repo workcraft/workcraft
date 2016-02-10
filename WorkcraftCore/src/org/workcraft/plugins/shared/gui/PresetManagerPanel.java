@@ -71,7 +71,7 @@ public class PresetManagerPanel<T> extends JPanel {
             }
         });
 
-        manageButton = new JButton ("Manage...");
+        manageButton = new JButton("Manage...");
         manageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -90,7 +90,7 @@ public class PresetManagerPanel<T> extends JPanel {
         });
 
 
-        updatePresetButton = new JButton ("Update");
+        updatePresetButton = new JButton("Update");
         updatePresetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -99,7 +99,7 @@ public class PresetManagerPanel<T> extends JPanel {
             }
         });
 
-        saveAsButton = new JButton ("Save as...");
+        saveAsButton = new JButton("Save as...");
         saveAsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

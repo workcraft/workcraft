@@ -57,7 +57,7 @@ public class DotGSerialiser implements ModelSerialiser {
         }
     }
 
-    private void writeSignalsHeader (PrintWriter out, Collection<String> signalNames, String header) {
+    private void writeSignalsHeader(PrintWriter out, Collection<String> signalNames, String header) {
         if ( !signalNames.isEmpty() ) {
             LinkedList<String> sortedNames = new LinkedList<String>(signalNames);
             Collections.sort(sortedNames);
@@ -70,7 +70,7 @@ public class DotGSerialiser implements ModelSerialiser {
         }
     }
 
-    private Iterable<Node> sortNodes (Collection<? extends Node> nodes, final Model model) {
+    private Iterable<Node> sortNodes(Collection<? extends Node> nodes, final Model model) {
         ArrayList<Node> list = new ArrayList<Node>(nodes);
         Collections.sort(list, new Comparator<Node>() {
             @Override
@@ -90,7 +90,7 @@ public class DotGSerialiser implements ModelSerialiser {
         if (model.getPostset(node).size()>0) {
             out.write(NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(node)));
 
-            for (Node n : sortNodes (model.getPostset(node), model)  ) {
+            for (Node n : sortNodes(model.getPostset(node), model)  ) {
                 if (n instanceof STGPlace) {
                     if (((STGPlace)n).isImplicit()) {
                         Collection<Node> postset = model.getPostset(n);
@@ -127,7 +127,7 @@ public class DotGSerialiser implements ModelSerialiser {
         } else if (model instanceof PetriNetModel) {
             writePN((PetriNetModel)model, out);
         } else {
-            throw new ArgumentException ("Model class not supported: " + model.getClass().getName());
+            throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
         out.print(".end\n");
         out.close();
@@ -141,14 +141,14 @@ public class DotGSerialiser implements ModelSerialiser {
         writeSignalsHeader(out, stg.getDummyReferences(), ".dummy");
 
         out.print(".graph\n");
-        for (Node n : sortNodes (stg.getSignalTransitions(), stg)) {
-            writeGraphEntry (out, stg, n);
+        for (Node n : sortNodes(stg.getSignalTransitions(), stg)) {
+            writeGraphEntry(out, stg, n);
         }
-        for (Node n : sortNodes (stg.getDummyTransitions(), stg)) {
-            writeGraphEntry (out, stg, n);
+        for (Node n : sortNodes(stg.getDummyTransitions(), stg)) {
+            writeGraphEntry(out, stg, n);
         }
-        for (Node n : sortNodes (stg.getPlaces(), stg)) {
-            writeGraphEntry (out, stg, n);
+        for (Node n : sortNodes(stg.getPlaces(), stg)) {
+            writeGraphEntry(out, stg, n);
         }
         writeMarking(stg, stg.getPlaces(), out);
     }
@@ -159,7 +159,7 @@ public class DotGSerialiser implements ModelSerialiser {
             final int tokens = p.getTokens();
             final String reference;
             if (p instanceof STGPlace) {
-                if ( ((STGPlace)p).isImplicit() ) {
+                if (((STGPlace)p).isImplicit() ) {
                     Node predNode = model.getPreset(p).iterator().next();
                     String predFlatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(predNode));
                     Node succNode = model.getPostset(p).iterator().next();
@@ -182,13 +182,13 @@ public class DotGSerialiser implements ModelSerialiser {
         boolean first = true;
         for (String m : markingEntries) {
             if (!first) {
-                out.print (" ");
+                out.print(" ");
             } else {
                 first = false;
             }
             out.print(m);
         }
-        out.print ("}\n");
+        out.print("}\n");
         StringBuilder capacity = new StringBuilder();
         for (Place p : places) {
             if (p instanceof STGPlace) {
@@ -213,10 +213,10 @@ public class DotGSerialiser implements ModelSerialiser {
         writeSignalsHeader(out, transitions, ".dummy");
         out.print(".graph\n");
         for (Transition t : net.getTransitions()) {
-            writeGraphEntry (out, net, t);
+            writeGraphEntry(out, net, t);
         }
         for (Place p : net.getPlaces()) {
-            writeGraphEntry (out,net, p);
+            writeGraphEntry(out,net, p);
         }
         writeMarking(net, net.getPlaces(), out);
     }

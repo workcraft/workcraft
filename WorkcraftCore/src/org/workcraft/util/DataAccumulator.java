@@ -31,7 +31,7 @@ import java.util.LinkedList;
 public class DataAccumulator extends OutputStream {
     private LinkedList<byte[]> dataChunks = new LinkedList<byte[]>();
 
-    public static byte[] loadStream (InputStream is) throws IOException {
+    public static byte[] loadStream(InputStream is) throws IOException {
         DataAccumulator accum = new DataAccumulator();
 
         while (true) {
@@ -56,11 +56,11 @@ public class DataAccumulator extends OutputStream {
         return new ByteArrayInputStream(loadStream(is));
     }
 
-    private void addDataChunk (byte[] data) {
+    private void addDataChunk(byte[] data) {
         dataChunks.add(data);
     }
 
-    public byte[] getData () {
+    public byte[] getData() {
         int len = 0;
         for (byte[] dataChunk : dataChunks)
             len += dataChunk.length;

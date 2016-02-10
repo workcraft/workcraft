@@ -37,11 +37,11 @@ public class InstanceManager {
     /**
      * Automatically assign a new name to <i>t</i>, taking the name from label getter and auto-generating instance number.
      */
-    public void assign (Node node) {
+    public void assign(Node node) {
         final Pair<String, Integer> assigned = instances.getValue(node);
         final Integer instance;
         if (assigned != null) {
-            throw new ArgumentException ("Instance already assigned to '"
+            throw new ArgumentException("Instance already assigned to '"
                     + getLabel(node) + "/" + assigned.getSecond() +"'");
         }
         final String label = getLabel(node);
@@ -52,14 +52,14 @@ public class InstanceManager {
     /**
      * Manually assign a new name to <i>t</i>, auto-generating instance number.
      */
-    public void assign (Node node, String name) {
+    public void assign(Node node, String name) {
         assign(node, Pair.of(name, (Integer)null), false);
     }
 
     /**
      * Manually assign an instance number to <i>t</i>.
      */
-    public void assign (Node node, int instance) {
+    public void assign(Node node, int instance) {
         assign(node, Pair.of(getLabel(node), instance), true);
     }
 
@@ -67,7 +67,7 @@ public class InstanceManager {
      * Manually assign a full reference to <i>t</i>, either auto-generating (<i>forceInstance = false</i>)
      * or forcing (<i>forceInstance = true</i>) the instance number.
      */
-    public void assign (Node node, Pair<String, Integer> reference, boolean forceInstance) {
+    public void assign(Node node, Pair<String, Integer> reference, boolean forceInstance) {
         final Pair<String, Integer> assigned = instances.getValue(node);
         if (reference.getSecond() == null || !forceInstance) {
             if (assigned != null) {
@@ -100,7 +100,7 @@ public class InstanceManager {
         }
     }
 
-    public Pair<String, Integer> getInstance (Node node) {
+    public Pair<String, Integer> getInstance(Node node) {
         return instances.getValue(node);
     }
 
@@ -131,7 +131,7 @@ public class InstanceManager {
             DummyTransition dum = (DummyTransition)node;
             return dum.getName();
         } else {
-            throw new RuntimeException ("Unexpected class " + node.getClass().getName());
+            throw new RuntimeException("Unexpected class " + node.getClass().getName());
         }
     }
 

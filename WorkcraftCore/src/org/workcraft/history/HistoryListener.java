@@ -23,7 +23,7 @@ package org.workcraft.history;
 import java.util.EventListener;
 
 public interface HistoryListener extends EventListener {
-    void eventAdded (HistoryEvent event);
-    void movedToState (int index);
+    void eventAdded(HistoryEvent event);
+    void movedToState(int index);
     void redoHistoryDiscarded();
 }

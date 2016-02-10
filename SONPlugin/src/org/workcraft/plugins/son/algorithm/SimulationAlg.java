@@ -109,8 +109,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
                             } else if(!step.contains(e2)){
-                                throw new RuntimeException
-                                ("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
+                                throw new RuntimeException("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
                         }
                 }
@@ -150,8 +149,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 u.remove(e2);
                                 stack.push((TransitionNode)e2);
                             } else if(!step.contains(e2)){
-                                throw new RuntimeException
-                                ("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
+                                throw new RuntimeException("algorithm error: unenabled event in sync cycle"+net.getNodeReference(e2));
                             }
                         }
                 }
@@ -179,7 +177,7 @@ public class SimulationAlg extends RelationAlgorithm {
     }
 
 
-    private boolean isONEnabled (TransitionNode e) {
+    private boolean isONEnabled(TransitionNode e) {
         if(net.getPreset(e).isEmpty())
             return false;
 
@@ -303,8 +301,8 @@ public class SimulationAlg extends RelationAlgorithm {
 
 
     //reverse simulation
-    private boolean isRevONEnabled (TransitionNode e) {
-        if(net.getPostset    (e).isEmpty())
+    private boolean isRevONEnabled(TransitionNode e) {
+        if(net.getPostset(e).isEmpty())
             return false;
 
         for (Node n : net.getPostset(e)){

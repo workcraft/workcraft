@@ -29,14 +29,14 @@ public class FormatException extends RuntimeException {
     }
 
     public FormatException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
     public FormatException(String message) {
-        super (message);
+        super(message);
     }
 
     public FormatException(Throwable cause) {
-        super (cause);
+        super(cause);
     }
 }

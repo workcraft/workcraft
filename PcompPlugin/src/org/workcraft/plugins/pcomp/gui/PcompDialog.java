@@ -131,8 +131,8 @@ public class PcompDialog extends JDialog {
         options.add(improvedPcomp, 3);
 
         content.add(options, "1 0");
-        JPanel buttonsPanel = new JPanel (new FlowLayout(FlowLayout.RIGHT));
-        JButton runButton = new JButton ("Run");
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton runButton = new JButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -140,7 +140,7 @@ public class PcompDialog extends JDialog {
             }
         });
 
-        JButton cancelButton = new JButton ("Cancel");
+        JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

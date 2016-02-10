@@ -29,10 +29,10 @@ public class MathConnection extends MathNode implements Connection {
     private MathNode first;
     private MathNode second;
 
-    public MathConnection () {
+    public MathConnection() {
     }
 
-    public MathConnection (MathNode first, MathNode second) {
+    public MathConnection(MathNode first, MathNode second) {
         super();
         setDependencies(first, second);
     }

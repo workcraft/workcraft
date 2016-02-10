@@ -67,7 +67,7 @@ public class ScenarioTable extends JTable{
     @SuppressWarnings("serial")
     protected class ScenarioTableCellRendererImplementation implements TableCellRenderer {
 
-        JLabel label = new JLabel () {
+        JLabel label = new JLabel() {
             @Override
             public void paint( Graphics g ) {
                 g.setColor( getBackground() );

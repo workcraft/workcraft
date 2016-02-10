@@ -37,5 +37,5 @@ public interface Exporter {
     String getExtenstion();
     UUID getTargetFormat();
     int getCompatibility(Model model);
-    void export (Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
+    void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
 }

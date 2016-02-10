@@ -47,7 +47,7 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
             UnaryFunctor<Connection, Boolean> hanging = new UnaryFunctor<Connection, Boolean>() {
                 @Override
                 public Boolean fn(Connection arg0) {
-                    return !isConnectionInside (e.getAffectedNodes(), arg0);
+                    return !isConnectionInside(e.getAffectedNodes(), arg0);
                 }
             };
 
@@ -66,7 +66,7 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
         }
     }
 
-    public static boolean isConnectionInside (Collection<Node> nodes, Connection con) {
+    public static boolean isConnectionInside(Collection<Node> nodes, Connection con) {
         for (Node node : nodes) {
             if (node == con || Hierarchy.isDescendant(con, node)) {
                 return true;
@@ -83,7 +83,7 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
             }
         }
         for (Node nn : node.getChildren()) {
-            findHangingConnections (nn, hangingConnections, hanging);
+            findHangingConnections(nn, hangingConnections, hanging);
         }
     }
 

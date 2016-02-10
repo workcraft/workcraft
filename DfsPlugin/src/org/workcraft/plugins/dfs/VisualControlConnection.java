@@ -8,7 +8,7 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 public class VisualControlConnection extends VisualConnection {
 
-    public VisualControlConnection () {
+    public VisualControlConnection() {
         this(null, null, null);
     }
 

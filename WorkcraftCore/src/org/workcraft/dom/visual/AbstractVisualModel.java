@@ -197,7 +197,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             container.add(component);
         } catch (NodeCreationException e) {
             String mathName = getMathName(mathNode);
-            throw new RuntimeException ("Cannot create visual component for math node '" + mathName + "' of class '" + type +"'");
+            throw new RuntimeException("Cannot create visual component for math node '" + mathName + "' of class '" + type +"'");
         }
         return (T)component;
     }
@@ -239,7 +239,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public void draw (Graphics2D g, Decorator decorator) {
+    public void draw(Graphics2D g, Decorator decorator) {
         DrawMan.draw(this, g, decorator, getRoot());
     }
 
@@ -304,7 +304,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     private void validateSelection(Node node) {
         if (!Hierarchy.isDescendant(node, getCurrentLevel())) {
-            throw new RuntimeException (
+            throw new RuntimeException(
                 "Cannot select a node that is not in the current editing level ("
                 + node + "), parent (" + node.getParent() +")");
         }

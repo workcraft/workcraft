@@ -43,7 +43,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
     HashMap <TransformObserver, LinkedList<Node>> observerToNodes
     = new HashMap<TransformObserver, LinkedList<Node>>();
 
-    private void addObserver (Node node, TransformObserver to) {
+    private void addObserver(Node node, TransformObserver to) {
         LinkedList<TransformObserver> list = nodeToObservers.get(node);
         if ( list == null ) {
             list = new LinkedList<TransformObserver>();
@@ -52,14 +52,14 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
         list.add(to);
     }
 
-    private void removeObserver (Node node, TransformObserver to) {
+    private void removeObserver(Node node, TransformObserver to) {
         LinkedList<TransformObserver> list = nodeToObservers.get(node);
         list.remove(to);
         if (list.isEmpty())
             nodeToObservers.remove(node);
     }
 
-    private void addObservedNode (TransformObserver to, Node node) {
+    private void addObservedNode(TransformObserver to, Node node) {
         LinkedList<Node> list = observerToNodes.get(to);
         if ( list == null ) {
             list = new LinkedList<Node>();
@@ -68,7 +68,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
         list.add(node);
     }
 
-    private void removeObservedNode (TransformObserver to, Node node) {
+    private void removeObservedNode(TransformObserver to, Node node) {
         LinkedList<Node> list = observerToNodes.get(to);
         list.remove(node);
 

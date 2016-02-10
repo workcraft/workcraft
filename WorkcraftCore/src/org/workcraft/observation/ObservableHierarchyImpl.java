@@ -38,7 +38,7 @@ public class ObservableHierarchyImpl implements ObservableHierarchy {
         observers.clear();
     }
 
-    public void sendNotification (HierarchyEvent e) {
+    public void sendNotification(HierarchyEvent e) {
         for (HierarchyObserver obs : observers) {
             obs.notify(e);
         }

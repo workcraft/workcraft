@@ -64,23 +64,23 @@ public class NodeContextTrackerTests {
         nct.attach(group);
 
         Set<Node> n4pre = nct.getPreset(n4);
-        assertEquals (n4pre.size(), 1);
-        assertTrue (n4pre.contains(n3));
+        assertEquals(n4pre.size(), 1);
+        assertTrue(n4pre.contains(n3));
 
         Set<Node> n3pre = nct.getPreset(n3);
-        assertEquals (n3pre.size(), 2);
-        assertTrue (n3pre.contains(n1));
-        assertTrue (n3pre.contains(n2));
+        assertEquals(n3pre.size(), 2);
+        assertTrue(n3pre.contains(n1));
+        assertTrue(n3pre.contains(n2));
 
         Set<Node> n3post = nct.getPostset(n3);
-        assertEquals (n3post.size(), 1);
-        assertTrue (n3post.contains(n4));
+        assertEquals(n3post.size(), 1);
+        assertTrue(n3post.contains(n4));
 
         Set<Node> n4post = nct.getPostset(n4);
-        assertTrue (n4post.isEmpty());
+        assertTrue(n4post.isEmpty());
 
         Set<Node> n1pre = nct.getPreset(n1);
-        assertTrue (n1pre.isEmpty());
+        assertTrue(n1pre.isEmpty());
     }
 
     @Test
@@ -110,42 +110,42 @@ public class NodeContextTrackerTests {
         group.add(n4);
 
         Set<Node> n4pre = nct.getPreset(n4);
-        assertEquals (n4pre.size(), 1);
-        assertTrue (n4pre.contains(n3));
+        assertEquals(n4pre.size(), 1);
+        assertTrue(n4pre.contains(n3));
 
         Set<Node> n3pre = nct.getPreset(n3);
-        assertEquals (n3pre.size(), 2);
-        assertTrue (n3pre.contains(n1));
-        assertTrue (n3pre.contains(n2));
+        assertEquals(n3pre.size(), 2);
+        assertTrue(n3pre.contains(n1));
+        assertTrue(n3pre.contains(n2));
 
         Set<Node> n3post = nct.getPostset(n3);
-        assertEquals (n3post.size(), 1);
-        assertTrue (n3post.contains(n4));
+        assertEquals(n3post.size(), 1);
+        assertTrue(n3post.contains(n4));
 
         Set<Node> n4post = nct.getPostset(n4);
-        assertTrue (n4post.isEmpty());
+        assertTrue(n4post.isEmpty());
 
         Set<Node> n1pre = nct.getPreset(n1);
-        assertTrue (n1pre.isEmpty());
+        assertTrue(n1pre.isEmpty());
 
         group.remove(n3);
-        assertTrue (nct.getPreset(n1).isEmpty());
-        assertTrue (nct.getPreset(n2).isEmpty());
-        assertTrue (nct.getPreset(n4).isEmpty());
+        assertTrue(nct.getPreset(n1).isEmpty());
+        assertTrue(nct.getPreset(n2).isEmpty());
+        assertTrue(nct.getPreset(n4).isEmpty());
 
-        assertTrue (nct.getPostset(n1).isEmpty());
-        assertTrue (nct.getPostset(n2).isEmpty());
-        assertTrue (nct.getPostset(n4).isEmpty());
+        assertTrue(nct.getPostset(n1).isEmpty());
+        assertTrue(nct.getPostset(n2).isEmpty());
+        assertTrue(nct.getPostset(n4).isEmpty());
 
         group.remove(con1);
 
-        assertTrue (nct.getPreset(n1).isEmpty());
-        assertTrue (nct.getPreset(n2).isEmpty());
-        assertTrue (nct.getPreset(n4).isEmpty());
+        assertTrue(nct.getPreset(n1).isEmpty());
+        assertTrue(nct.getPreset(n2).isEmpty());
+        assertTrue(nct.getPreset(n4).isEmpty());
 
-        assertTrue (nct.getPostset(n1).isEmpty());
-        assertTrue (nct.getPostset(n2).isEmpty());
-        assertTrue (nct.getPostset(n4).isEmpty());
+        assertTrue(nct.getPostset(n1).isEmpty());
+        assertTrue(nct.getPostset(n2).isEmpty());
+        assertTrue(nct.getPostset(n4).isEmpty());
     }
 
     @Test
@@ -175,34 +175,34 @@ public class NodeContextTrackerTests {
         group.add(n4);
 
         Set<Node> n4pre = nct.getPreset(n4);
-        assertEquals (n4pre.size(), 1);
-        assertTrue (n4pre.contains(n3));
+        assertEquals(n4pre.size(), 1);
+        assertTrue(n4pre.contains(n3));
 
         Set<Node> n3pre = nct.getPreset(n3);
-        assertEquals (n3pre.size(), 2);
-        assertTrue (n3pre.contains(n1));
-        assertTrue (n3pre.contains(n2));
+        assertEquals(n3pre.size(), 2);
+        assertTrue(n3pre.contains(n1));
+        assertTrue(n3pre.contains(n2));
 
         Set<Node> n3post = nct.getPostset(n3);
-        assertEquals (n3post.size(), 1);
-        assertTrue (n3post.contains(n4));
+        assertEquals(n3post.size(), 1);
+        assertTrue(n3post.contains(n4));
 
         Set<Node> n4post = nct.getPostset(n4);
-        assertTrue (n4post.isEmpty());
+        assertTrue(n4post.isEmpty());
 
         Set<Node> n1pre = nct.getPreset(n1);
-        assertTrue (n1pre.isEmpty());
+        assertTrue(n1pre.isEmpty());
 
         group.remove(con1);
 
-        assertTrue (nct.getPostset(n1).isEmpty());
-        assertEquals (nct.getPreset(n3).size(), 1 );
+        assertTrue(nct.getPostset(n1).isEmpty());
+        assertEquals(nct.getPreset(n3).size(), 1 );
 
         group.remove(con2);
-        assertTrue (nct.getPostset(n2).isEmpty());
-        assertTrue (nct.getPreset(n3).isEmpty());
+        assertTrue(nct.getPostset(n2).isEmpty());
+        assertTrue(nct.getPreset(n3).isEmpty());
 
-        assertTrue (nct.getPostset(n3).contains(n4));
+        assertTrue(nct.getPostset(n3).contains(n4));
 
         group.remove(n4);
 

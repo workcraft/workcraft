@@ -32,7 +32,7 @@ public class ConsistencyAlg extends TimeAlg{
         this.net = net;
     }
 
-    public ArrayList<String> nodeConsistency (Node node, Interval start, Interval end, Interval dur, Granularity g){
+    public ArrayList<String> nodeConsistency(Node node, Interval start, Interval end, Interval dur, Granularity g){
         ArrayList<String> result = new ArrayList<String>();
 
         if(!start.isSpecified() || !end.isSpecified() || !dur.isSpecified()){
@@ -106,7 +106,7 @@ public class ConsistencyAlg extends TimeAlg{
         return result;
     }
 
-    private ArrayList<String> concurConsistency (TransitionNode t){
+    private ArrayList<String> concurConsistency(TransitionNode t){
         ArrayList<String> result = new ArrayList<String>();
         Collection<SONConnection> inputConnections =  net.getInputPNConnections(t);
         Collection<SONConnection> outputConnections = net.getOutputPNConnections(t);
