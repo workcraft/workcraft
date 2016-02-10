@@ -15,4 +15,9 @@ dependencies {
     compile 'org.codehaus.jackson:jackson-core-asl:1.8.10'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.10'
     compile 'log4j:log4j:1.2.8'
+    compile 'org.mozilla:rhino:1.7.7.1'
+    compile 'net.sf.jga:jga:0.8.3'
+    compile 'net.sf.jedit-syntax:jedit-syntax:2.2.2'
+    compile 'info.clearthought:table-layout:4.3.0'
+    compile 'org.java.net.substance:substance:5.3'
 }
