@@ -18,4 +18,6 @@ dependencies {
     compile project(':WorkcraftCore')
     compile project(':STGPlugin')
     compile project(':PetriNetPlugin')
+
+    compile 'junit:junit:4.5'
 }
