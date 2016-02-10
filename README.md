@@ -15,7 +15,7 @@ you want to run your own gradle, you can.
 
 Use the `assemble` task to build the core and all the plugins:
 
-    $ gradle assemble
+    $ ./gradlew assemble
 
 If Gradle complains about a missing `JAVA_HOME` env var even though it
 is set properly, the following may help in Debian-like systems:
@@ -24,7 +24,7 @@ is set properly, the following may help in Debian-like systems:
 
 ### Running the tests
 
-    $ gradle check
+    $ ./gradlew check
 
 On top of running the JUnit tests, this command will also run
 [checkstyle](https://github.com/checkstyle/checkstyle) in order to
