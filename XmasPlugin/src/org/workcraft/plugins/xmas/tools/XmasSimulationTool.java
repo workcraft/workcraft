@@ -214,9 +214,11 @@ public class XmasSimulationTool extends StgSimulationTool {
                         public Color getColorisation() {
                             if (firstReady && secondReady) {
                                 return COLOR_BOTH_READY;
-                            } if (firstReady) {
+                            }
+                            if (firstReady) {
                                 return COLOR_IRDY;
-                            } if (secondReady) {
+                            }
+                            if (secondReady) {
                                 return COLOR_TRDY;
                             }
                             return COLOR_NONE_READY;

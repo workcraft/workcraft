@@ -272,8 +272,7 @@ public class VisualSON extends AbstractVisualModel {
                     "An occurrence net must contain at least one condition",group, JOptionPane.WARNING_MESSAGE);
             result.removeAll(result);
             return result;
-        }
-        else
+        } else
             return result;
 
     }
@@ -439,11 +438,9 @@ public class VisualSON extends AbstractVisualModel {
                     errorType = 1;
                 else
                     result.add(node);
-            }
-            else if(node instanceof VisualComment){
+            } else if(node instanceof VisualComment){
                 result.add(node);
-            }
-            else if(!(node instanceof VisualSONConnection))
+            } else if(!(node instanceof VisualSONConnection))
                 errorType = 2;
         }
 

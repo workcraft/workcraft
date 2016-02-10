@@ -141,8 +141,7 @@ public class ScencoSolver {
                 args.add(MSG_ABC_NOT_PRESENT);
                 args.add(ACCESS_SCENCO_ERROR);
                 return args;
-            }
-            else{
+            } else{
                 abcFlag = "-a";
                 gateLibFlag = "-lib";
                 f = new File(abcFolder + gatesLibrary);

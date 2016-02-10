@@ -64,8 +64,7 @@ public class PathAlgorithm{
                 path.addAll(visited);
                 pathResult.add(path);
                 visited.removeLast();
-            }
-            else if(!visited.contains(node)){
+            } else if(!visited.contains(node)){
                 DFStest(nodes, visited, v);
                 visited.removeLast();
             }

@@ -196,7 +196,8 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                             monitor.progressUpdate(i/99.0);
                         }
                         return new Result<Object>(Outcome.FINISHED);
-                    } }, "Test task #" + counter++, new DummyProgressMonitor<Object>(){
+                    }
+                }, "Test task #" + counter++, new DummyProgressMonitor<Object>(){
 
                         @Override
                         public void finished(Result<? extends Object> result, final String description) {

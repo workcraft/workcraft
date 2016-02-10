@@ -30,7 +30,7 @@ public class DirectedArcToReadArcConverterTool extends TransformationTool implem
     @Override
     public boolean isApplicableTo(Node node) {
         return (PetriNetUtils.isVisualConsumingArc(node) || PetriNetUtils.isVisualProducingArc(node));
-    };
+    }
 
     @Override
     public Position getPosition() {

@@ -170,12 +170,10 @@ public class SONMainTask implements Task<VerificationResult>{
 
             if (os.contains("Window")) {
                 Runtime.getRuntime().exec("cls");
-            }
-            else {
+            } else {
                 Runtime.getRuntime().exec("cls");
             }
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             //  Handle exception.
         }
     }

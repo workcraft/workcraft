@@ -97,9 +97,8 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
                     new MpsatSynthesisChainResult(exportResult, null, punfResult, mpsatResult, settings));
         } catch (Throwable e) {
             return new Result<MpsatSynthesisChainResult>(e);
-        }
-        // Clean up
-        finally {
+        } finally {
+            // Clean up
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
         }
     }

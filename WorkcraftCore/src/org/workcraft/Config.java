@@ -83,8 +83,7 @@ public class Config {
         }
         try {
             return Integer.parseInt(s);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return defaultValue;
         }
@@ -103,8 +102,7 @@ public class Config {
         }
         try {
             return Enum.valueOf(enumType, s);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return defaultValue;
         }
@@ -120,8 +118,7 @@ public class Config {
             return defaultValue;
         try {
             return Double.parseDouble(s);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return defaultValue;
         }

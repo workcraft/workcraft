@@ -96,9 +96,8 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
                     new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);
-        }
-        // Clean up
-        finally {
+        } finally {
+            // Clean up
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
         }
     }

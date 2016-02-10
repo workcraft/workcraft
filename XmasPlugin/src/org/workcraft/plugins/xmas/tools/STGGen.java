@@ -45,8 +45,7 @@ public class STGGen implements Tool {
             for (JRadioButton r : rlist) {
                 if(r==button) {
                     r.setSelected(true);
-                }
-                else {
+                } else {
                     r.setSelected(false);
                 }
             }
@@ -140,11 +139,9 @@ public class STGGen implements Tool {
                     if(r.isSelected()) {
                         if(r.getText().equals("asynchronous")) {
                             sel=0;
-                        }
-                        else if(r.getText().equals("mesochronous")) {
+                        } else if(r.getText().equals("mesochronous")) {
                             sel=1;
-                        }
-                        else if(r.getText().equals("pausible")) {
+                        } else if(r.getText().equals("pausible")) {
                             sel=2;
                         }
                         //sel=no;

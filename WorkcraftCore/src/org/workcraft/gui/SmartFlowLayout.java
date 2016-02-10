@@ -178,8 +178,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
                             x = 0;
                             y += vgap + rowh;
                             rowh = 0;
-                        }
-                        else {
+                        } else {
                             int end = i;
                             if(start == end)
                                 end++;
@@ -260,8 +259,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         if((double)totalChange/totalFreedom > 1.0) {
             failed = true;
             totalChange = totalFreedom;
-        }
-        else
+        } else
             failed = false;
 
         for(int i=start;i<end;i++) {

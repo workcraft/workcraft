@@ -219,7 +219,7 @@ public final class Framework {
                 } else {
                     return super.execute(task, description, observer);
                 }
-            };
+            }
         };
         modelManager = new ModelManager();
         compatibilityManager = new CompatibilityManager();
@@ -280,8 +280,7 @@ public final class Framework {
 
         try {
             return Integer.parseInt(s);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
@@ -422,7 +421,8 @@ public final class Framework {
     }
 
     public Script compileJavaScript (BufferedReader source, String sourceName) {
-        return (Script) doContextAction(new CompileScriptFromReaderAction(source, sourceName));    }
+        return (Script) doContextAction(new CompileScriptFromReaderAction(source, sourceName));
+    }
 
     public void startGUI() {
         if (inGUIMode) {

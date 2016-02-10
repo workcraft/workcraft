@@ -83,8 +83,7 @@ public class ScenarioTable extends JTable{
                 label.setText(((String)value));
             else if(value instanceof ScenarioRef){
                 label.setText("Senario "+(row+1));
-            }
-            else
+            } else
                 return null;
 
             if (row == saveList.getPosition() && column == 0 && !saveList.isEmpty() && isCellColorized) {

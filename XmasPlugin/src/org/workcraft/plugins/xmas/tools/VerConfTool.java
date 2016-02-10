@@ -118,20 +118,16 @@ public class VerConfTool implements Tool {
             if(check.startsWith("trace")) {
                 nxt=new Scanner(line_.next());
                 trcombob.setSelectedItem(nxt.next());
-            }
-            else if(check.startsWith("level")) {
+            } else if(check.startsWith("level")) {
                 nxt=new Scanner(line_.next());
                 lvcombob.setSelectedItem(nxt.next());
-            }
-            else if(check.startsWith("display")) {
+            } else if(check.startsWith("display")) {
                 nxt=new Scanner(line_.next());
                 dycombob.setSelectedItem(nxt.next());
-            }
-            else if(check.startsWith("highlight")) {
+            } else if(check.startsWith("highlight")) {
                 nxt=new Scanner(line_.next());
                 hlcombob.setSelectedItem(nxt.next());
-            }
-            else if(check.startsWith("soln")) {
+            } else if(check.startsWith("soln")) {
                 nxt=new Scanner(line_.next());
                 slcombob.setSelectedItem(nxt.next());
             }
@@ -213,8 +209,7 @@ public class VerConfTool implements Tool {
                 if(selected.toString().equals("normal")) {
                         hlcombob.removeItemAt(1);
                         hlcombob.addItem("local");
-                }
-                else if(selected.toString().equals("advanced")) {
+                } else if(selected.toString().equals("advanced")) {
                         hlcombob.removeItemAt(1);
                         hlcombob.addItem("rel");
                 }

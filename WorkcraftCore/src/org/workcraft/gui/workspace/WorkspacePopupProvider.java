@@ -156,9 +156,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         popup.add(mi);
                     }
                 }
-            }
-
-            else if (openFile.getModelEntry() != null) {
+            } else if (openFile.getModelEntry() != null) {
                 final Model model = openFile.getModelEntry().getModel();
                 JLabel label = new JLabel (model.getDisplayName()+ " " + (model.getTitle().isEmpty()?"" : ("'" + model.getTitle() + "'" )));
                 popup.add(label);

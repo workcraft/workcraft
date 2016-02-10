@@ -134,7 +134,7 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
 
     public void removeWithoutNotify(Node node) {
         removeInternal(node, false);
-    };
+    }
 
     @Override
     public void remove(Collection<Node> nodes) {

@@ -59,8 +59,7 @@ public class EntireEstimationAlg extends EstimationAlg{
 
         try {
             end = getEstimatedEndTime(superIni);
-        }
-        catch (TimeEstimationException e){
+        } catch (TimeEstimationException e){
             net.remove(superIni);
             throw new TimeEstimationException("");
         } catch (TimeOutOfBoundsException e){
@@ -118,8 +117,7 @@ public class EntireEstimationAlg extends EstimationAlg{
 
             try {
                 start = getEstimatedStartTime(superFinal);
-            }
-            catch (TimeEstimationException e){
+            } catch (TimeEstimationException e){
                 net.remove(superFinal);
                 throw new TimeEstimationException("");
             } catch (TimeOutOfBoundsException e){
@@ -147,8 +145,7 @@ public class EntireEstimationAlg extends EstimationAlg{
                 if(narrow){
                     con.setTime(((Time)first).getEndTime());
                     con.setTimeLabelColor(color);
-                }
-                else{
+                } else{
                     if((!con.getTime().isSpecified())){
                         con.setTime(((Time)first).getEndTime());
                         con.setTimeLabelColor(color);

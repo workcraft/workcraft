@@ -100,23 +100,18 @@ public class SyncTool implements Tool {
              if(s4.equals("o")) {  //new
                  if(cno==0) {
                    l1 = s4;
-                 }
-                 else if(cno==1) {
+                 } else if(cno==1) {
                    l1 = "b";
-                 }
-                 else if(cno==2) {
+                 } else if(cno==2) {
                    l1 = "a";
                  }
                  gr1=gr;
-             }
-             else {
+             } else {
                  if(cno==0) {
                    l2 = s4;
-                 }
-                 else if(cno==1) {
+                 } else if(cno==1) {
                    l2 = "b";
-                 }
-                 else if(cno==2) {
+                 } else if(cno==2) {
                    l2 = "a";
                  }
                  gr2=gr;
@@ -142,11 +137,9 @@ public class SyncTool implements Tool {
                 s.name3=str_;
                 if(cno==0) {
                     s.l2 = "i";
-                }
-                else if(cno==1) {
+                } else if(cno==1) {
                     s.l2 = "b";
-                }
-                else if(cno==2) {
+                } else if(cno==2) {
                     s.l2 = "a";
                 }
                 s.gr2 = gr;
@@ -160,11 +153,9 @@ public class SyncTool implements Tool {
                 s.name2=str_;
                 if(cno==0) {
                     s.l1 = "o";
-                }
-                else if(cno==1) {
+                } else if(cno==1) {
                     s.l1 = "b";
-                }
-                else if(cno==2) {
+                } else if(cno==2) {
                     s.l1 = "a";
                 }
                 s.gr1 = gr; //new
@@ -177,11 +168,9 @@ public class SyncTool implements Tool {
         for (sync_ s : synclist) {
             if(slist.get(no).equals("asynchronous")) {
                 s.typ="a";
-            }
-            else if(slist.get(no).equals("mesochronous")) {
+            } else if(slist.get(no).equals("mesochronous")) {
                 s.typ="m";
-            }
-            else if(slist.get(no).equals("pausible")) {
+            } else if(slist.get(no).equals("pausible")) {
                 s.typ="p";
             }
             s.g1=slist1.get(no);
@@ -212,8 +201,7 @@ public class SyncTool implements Tool {
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
                 if ( writer_s != null ) {
                     writer_s.close();
                 }
@@ -236,11 +224,9 @@ public class SyncTool implements Tool {
                             //System.out.println("Found " + str);
                             if(str.equals("asynchronous")) {
                                 slist.add(new String("asynchronous"));
-                            }
-                            else if(str.equals("mesochronous")) {
+                            } else if(str.equals("mesochronous")) {
                                 slist.add(new String("mesochronous"));
-                            }
-                            else if(str.equals("pausible")) {
+                            } else if(str.equals("pausible")) {
                                 slist.add(new String("pausible"));
                             }
                         }
@@ -265,8 +251,7 @@ public class SyncTool implements Tool {
                             String str=tf.getText().toString();
                             if(n==2) {
                                 slist1.add(new String(str));
-                            }
-                            else if(n==3) {
+                            } else if(n==3) {
                                 slist2.add(new String(str));
                             }
                             n++;
@@ -289,31 +274,25 @@ public class SyncTool implements Tool {
                         if(cn_ instanceof JComboBox) {
                             JComboBox cb=(JComboBox)cn_;
                             sel = (String) cb.getSelectedItem();
-                        }
-                        else if(cn_ instanceof JTextField) {
+                        } else if(cn_ instanceof JTextField) {
                             JTextField tf=(JTextField)cn_;
                             String str=tf.getText().toString();
                             if(sel.equals("mesochronous")) {
                                 if(n==2) {
                                     tf.setEnabled(false);
-                                }
-                                else if(n==3) {
+                                } else if(n==3) {
                                     tf.setEnabled(false);
                                 }
-                            }
-                            else if(sel.equals("asynchronous")) {
+                            } else if(sel.equals("asynchronous")) {
                                 if(n==2) {
                                     tf.setEnabled(true);
-                                }
-                                else if(n==3) {
+                                } else if(n==3) {
                                     tf.setEnabled(true);
                                 }
-                            }
-                            else if(sel.equals("pausible")) {
+                            } else if(sel.equals("pausible")) {
                                 if(n==2) {
                                     tf.setEnabled(true);
-                                }
-                                else if(n==3) {
+                                } else if(n==3) {
                                     tf.setEnabled(true);
                                 }
                             }
@@ -366,18 +345,15 @@ public class SyncTool implements Tool {
                     VisualSourceComponent vsc=(VisualSourceComponent)vp;
                     SourceComponent sc=vsc.getReferencedSourceComponent();
                     sc.setGr(gno);
-                }
-                else if(vp instanceof VisualSinkComponent) {
+                } else if(vp instanceof VisualSinkComponent) {
                     VisualSinkComponent vsc=(VisualSinkComponent)vp;
                     SinkComponent sc=vsc.getReferencedSinkComponent();
                     sc.setGr(gno);
-                }
-                else if(vp instanceof VisualFunctionComponent) {
+                } else if(vp instanceof VisualFunctionComponent) {
                     VisualFunctionComponent vsc=(VisualFunctionComponent)vp;
                     FunctionComponent sc=vsc.getReferencedFunctionComponent();
                     sc.setGr(gno);
-                }
-                else if(vp instanceof VisualQueueComponent) {
+                } else if(vp instanceof VisualQueueComponent) {
                     VisualQueueComponent vsc=(VisualQueueComponent)vp;
                     QueueComponent sc=vsc.getReferencedQueueComponent();
                     sc.setGr(gno);
@@ -398,25 +374,21 @@ public class SyncTool implements Tool {
                             }
                         }
                     }*/
-                }
-                else if(vp instanceof VisualForkComponent) {
+                } else if(vp instanceof VisualForkComponent) {
                     VisualForkComponent vsc=(VisualForkComponent)vp;
                     ForkComponent sc=vsc.getReferencedForkComponent();
                     sc.setGr(gno);
                     //System.out.println("Fork no = " + gno + " " + sc.getGr());
-                }
-                else if(vp instanceof VisualJoinComponent) {
+                } else if(vp instanceof VisualJoinComponent) {
                     VisualJoinComponent vsc=(VisualJoinComponent)vp;
                     JoinComponent sc=vsc.getReferencedJoinComponent();
                     sc.setGr(gno);
                     //System.out.println("Join no = " + gno + " " + sc.getGr());
-                }
-                else if(vp instanceof VisualSwitchComponent) {
+                } else if(vp instanceof VisualSwitchComponent) {
                     VisualSwitchComponent vsc=(VisualSwitchComponent)vp;
                     SwitchComponent sc=vsc.getReferencedSwitchComponent();
                     sc.setGr(gno);
-                }
-                else if(vp instanceof VisualMergeComponent) {
+                } else if(vp instanceof VisualMergeComponent) {
                     VisualMergeComponent vsc=(VisualMergeComponent)vp;
                     MergeComponent sc=vsc.getReferencedMergeComponent();
                     sc.setGr(gno);
@@ -515,15 +487,13 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(checksynclist(cnet.getName(cp_node))==1) {
                                         synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),0));
-                                    }
-                                    else {
+                                    } else {
                                         store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn1 instanceof VisualFunctionComponent) {            //Fun
+                    } else if(vn1 instanceof VisualFunctionComponent) {            //Fun
                         VisualFunctionComponent vsc=(VisualFunctionComponent)vn1;
                         FunctionComponent sc=vsc.getReferencedFunctionComponent();
                         contacts_ = sc.getOutputs();
@@ -539,15 +509,13 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(checksynclist(cnet.getName(cp_node))==1) {
                                         synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),0));
-                                    }
-                                    else {
+                                    } else {
                                         store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn1 instanceof VisualMergeComponent) {                //Merge
+                    } else if(vn1 instanceof VisualMergeComponent) {                //Merge
                         VisualMergeComponent vsc=(VisualMergeComponent)vn1;
                         MergeComponent sc=vsc.getReferencedMergeComponent();
                         contacts_ = sc.getOutputs();
@@ -566,16 +534,14 @@ public class SyncTool implements Tool {
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
                                         if(checksynclist(cnet.getName(cp_node))==1) {
                                             synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),cno));
-                                        }
-                                        else {
+                                        } else {
                                             store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn1 instanceof VisualSwitchComponent) {                //Switch
+                    } else if(vn1 instanceof VisualSwitchComponent) {                //Switch
                         VisualSwitchComponent vsc=(VisualSwitchComponent)vn1;
                         SwitchComponent sc=vsc.getReferencedSwitchComponent();
                         contacts_ = sc.getOutputs();
@@ -594,16 +560,14 @@ public class SyncTool implements Tool {
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
                                         if(checksynclist(cnet.getName(cp_node))==1) {
                                             synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),cno));
-                                        }
-                                        else {
+                                        } else {
                                             store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn1 instanceof VisualJoinComponent) {                   //Join
+                    } else if(vn1 instanceof VisualJoinComponent) {                   //Join
                         VisualJoinComponent vsc=(VisualJoinComponent)vn1;
                         JoinComponent sc=vsc.getReferencedJoinComponent();
                         contacts_ = sc.getOutputs();
@@ -621,16 +585,14 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(checksynclist(cnet.getName(cp_node))==1) {
                                         synclist.add(new sync_(cnet.getName(cp_node),cnet.getName(sc),"","o",sc.getGr(),cno));
-                                    }
-                                    else {
+                                    } else {
                                         store_sname_(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                     }
                                 }
                             }
                         }
                     }
-                }
-                else if(vn1 instanceof VisualSyncComponent) {    //vn1
+                } else if(vn1 instanceof VisualSyncComponent) {    //vn1
                     Collection<XmasContact> contacts_;
                     Collection<XmasContact> ccontacts;
                     if(vn2 instanceof VisualQueueComponent) {               //Queue
@@ -651,16 +613,14 @@ public class SyncTool implements Tool {
                                         if(checksynclist(cnet.getName(cp_node))==1) {
                                             //System.out.println("Queue ___ = " + sc.getGr());
                                             synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
-                                        }
-                                        else {
+                                        } else {
                                             store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn2 instanceof VisualFunctionComponent) {       //Function
+                    } else if(vn2 instanceof VisualFunctionComponent) {       //Function
                         VisualFunctionComponent vsc=(VisualFunctionComponent)vn2;
                         FunctionComponent sc=vsc.getReferencedFunctionComponent();
                         contacts_ = sc.getInputs();
@@ -677,16 +637,14 @@ public class SyncTool implements Tool {
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
                                         if(checksynclist(cnet.getName(cp_node))==1) {
                                             synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
-                                        }
-                                        else {
+                                        } else {
                                             store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn2 instanceof VisualMergeComponent) {                //Merge
+                    } else if(vn2 instanceof VisualMergeComponent) {                //Merge
                         VisualMergeComponent vsc=(VisualMergeComponent)vn2;
                         MergeComponent sc=vsc.getReferencedMergeComponent();
                         contacts_ = sc.getInputs();
@@ -706,16 +664,14 @@ public class SyncTool implements Tool {
                                         if(checksynclist(cnet.getName(cp_node))==1) {
                                             //System.out.println("  Found contact__ = merge ");
                                             synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),cno));
-                                        }
-                                        else {
+                                        } else {
                                             store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),cno);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn2 instanceof VisualSwitchComponent) {           //Switch - base
+                    } else if(vn2 instanceof VisualSwitchComponent) {           //Switch - base
                         VisualSwitchComponent vsc=(VisualSwitchComponent)vn2;
                         SwitchComponent sc=vsc.getReferencedSwitchComponent();
                         contacts_ = sc.getInputs();
@@ -732,16 +688,14 @@ public class SyncTool implements Tool {
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
                                         if(checksynclist(cnet.getName(cp_node))==1) {
                                             synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
-                                        }
-                                        else {
+                                        } else {
                                             store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else if(vn2 instanceof VisualForkComponent) {           //Fork - base
+                    } else if(vn2 instanceof VisualForkComponent) {           //Fork - base
                         VisualForkComponent vsc=(VisualForkComponent)vn2;
                         ForkComponent sc=vsc.getReferencedForkComponent();
                         contacts_ = sc.getInputs();
@@ -758,8 +712,7 @@ public class SyncTool implements Tool {
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
                                         if(checksynclist(cnet.getName(cp_node))==1) {
                                             synclist.add(new sync_(cnet.getName(cp_node),"",cnet.getName(sc),"i",sc.getGr(),0));
-                                        }
-                                        else {
+                                        } else {
                                             store_sname(cnet.getName(cp_node),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
@@ -771,11 +724,9 @@ public class SyncTool implements Tool {
 
         }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
                 e.printStackTrace();
-        }
-        finally {
+        } finally {
                 if ( writer != null ) {
                     writer.close();
                 }
@@ -882,8 +833,7 @@ public class SyncTool implements Tool {
                         //System.out.println("Found Sync Type ===========" + sc.getTyp());
                         //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
                         no++;  //shifted
-                    }
-                    else if(node instanceof VisualSourceComponent) {
+                    } else if(node instanceof VisualSourceComponent) {
                             VisualSourceComponent vsc=(VisualSourceComponent)node;
                             SourceComponent sc=vsc.getReferencedSourceComponent();
                             int sno=sc.getGr();
@@ -893,8 +843,7 @@ public class SyncTool implements Tool {
                             }
                             //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
                             sc.setGp(gp);
-                    }
-                    else if(node instanceof VisualQueueComponent) {
+                    } else if(node instanceof VisualQueueComponent) {
                             VisualQueueComponent vsc=(VisualQueueComponent)node;
                             QueueComponent sc=vsc.getReferencedQueueComponent();
                             int qno=sc.getGr();

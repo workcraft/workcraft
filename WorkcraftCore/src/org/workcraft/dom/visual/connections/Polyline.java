@@ -207,7 +207,8 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     private Point2D getAnchorPointLocation(int index) {
         if (index <= 0) {
             return connectionInfo.getFirstCenter();
-        } if (index >= getAnchorPointCount()-1) {
+        }
+        if (index >= getAnchorPointCount()-1) {
             return connectionInfo.getSecondCenter();
         }
         return getControlPoint(index-1).getPosition();

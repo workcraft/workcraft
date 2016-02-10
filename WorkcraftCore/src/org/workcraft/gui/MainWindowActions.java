@@ -19,7 +19,7 @@ public class MainWindowActions {
         }
         @Override public String getText() {
             return "Create work...";
-        };
+        }
     };
     public static final Action OPEN_WORK_ACTION = new Action() {
         @Override public void run() {
@@ -30,7 +30,7 @@ public class MainWindowActions {
         }
         @Override public String getText() {
             return "Open work...";
-        };
+        }
     };
     public static final Action MERGE_WORK_ACTION = new Action() {
         @Override public void run() {
@@ -41,7 +41,7 @@ public class MainWindowActions {
         }
         @Override public String getText() {
             return "Merge work...";
-        };
+        }
     };
     public static final Action SAVE_WORK_ACTION = new Action() {
         @Override public void run() {
@@ -53,7 +53,7 @@ public class MainWindowActions {
         }
         @Override public String getText() {
             return "Save work";
-        };
+        }
     };
     public static final Action SAVE_WORK_AS_ACTION = new Action() {
         @Override public void run() {
@@ -65,7 +65,7 @@ public class MainWindowActions {
         }
         public String getText() {
             return "Save work as...";
-        };
+        }
     };
     public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action() {
         @Override public void run() {
@@ -77,7 +77,7 @@ public class MainWindowActions {
         }
         public String getText() {
             return "Close active work";
-        };
+        }
     };
 
     public static final Action CLOSE_ALL_EDITORS_ACTION = new Action() {
@@ -90,7 +90,7 @@ public class MainWindowActions {
         }
         public String getText() {
             return "Close all works";
-        };
+        }
     };
 
     public static final Action RECONFIGURE_PLUGINS_ACTION = new Action() {
@@ -106,7 +106,7 @@ public class MainWindowActions {
             } catch (PluginInstantiationException e) {
                 e.printStackTrace();
             }
-        };
+        }
     };
 
     public static final Action SHUTDOWN_GUI_ACTION = new Action() {
@@ -118,7 +118,7 @@ public class MainWindowActions {
         }
         public String getText() {
             return "Switch to console mode";
-        };
+        }
     };
 
     public static final Action EXIT_ACTION = new Action() {
@@ -128,7 +128,7 @@ public class MainWindowActions {
         }
         public String getText() {
             return "Exit";
-        };
+        }
     };
 
     public static final Action IMPORT_ACTION = new Action() {
@@ -412,7 +412,7 @@ public class MainWindowActions {
 
         public String getText() {
             return "Overview";
-        };
+        }
     };
 
     public static final Action HELP_CONTENTS_ACTION = new Action() {
@@ -424,7 +424,7 @@ public class MainWindowActions {
 
         public String getText() {
             return "Help contents";
-        };
+        }
     };
 
     public static final Action HELP_TUTORIALS_ACTION = new Action() {
@@ -436,7 +436,7 @@ public class MainWindowActions {
 
         public String getText() {
             return "Tutorials";
-        };
+        }
     };
 
     public static final Action HELP_BUGREPORT_ACTION = new Action() {
@@ -453,7 +453,7 @@ public class MainWindowActions {
 
         public String getText() {
             return "Report a bug";
-        };
+        }
     };
 
     public static final Action HELP_QUESTION_ACTION = new Action() {
@@ -470,7 +470,7 @@ public class MainWindowActions {
 
         public String getText() {
             return "Ask a question";
-        };
+        }
     };
 
     public static final Action HELP_ABOUT_ACTION = new Action() {
@@ -485,7 +485,7 @@ public class MainWindowActions {
 
         public String getText() {
             return "About Workcraft";
-        };
+        }
     };
 
 }

@@ -146,8 +146,7 @@ public class ScencoExecutionSupport {
                     p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
                     positions.add(p);
                     n++;
-                }
-                else {
+                } else {
                     int id = events.get(vertex.getLabel());
                     count.set(id, count.get(id) + 1);
                     Point2D p = vertex.getCenter();
@@ -287,8 +286,7 @@ public class ScencoExecutionSupport {
                                     if(i < cond.length()){
                                         result += cond.charAt(i);
                                     }
-                                }
-                                else{
+                                } else{
                                     result += cond.charAt(i);;
                                 }
                             }
@@ -550,8 +548,7 @@ public class ScencoExecutionSupport {
                 if (trivial != '?') {
                     if (trivial == '1') {
                         condition = One.instance();
-                    }
-                    else {
+                    } else {
                         continue;
                     }
                 }

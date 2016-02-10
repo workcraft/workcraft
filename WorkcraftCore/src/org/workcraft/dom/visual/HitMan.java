@@ -65,7 +65,8 @@ public class HitMan {
             @Override
             public Boolean eval(Point2D point, Node node) {
                 return filter.eval(node);
-            }});
+            }
+        });
     }
 
     public static Node hitDeepest(Point2D point, Node node, final Func2<Point2D, Node, Boolean> filter) {

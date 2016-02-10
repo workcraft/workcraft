@@ -27,8 +27,7 @@ public class SolutionsDialog1 extends JDialog {
         if(n==1) {
             JLabel label = new JLabel("The system has a deadlock");
             contents.add(label,BorderLayout.NORTH);
-        }
-        else {
+        } else {
             JLabel label = new JLabel("Local deadlocks found");
             contents.add(label,BorderLayout.NORTH);
         }

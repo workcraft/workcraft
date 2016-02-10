@@ -60,8 +60,7 @@ public class NodesRef extends ArrayList<String>{
                         add(fir);
                     }
                 }
-            }
-            else
+            } else
                 add(s.trim());
             first = false;
         }

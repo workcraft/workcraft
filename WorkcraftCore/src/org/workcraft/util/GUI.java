@@ -150,8 +150,7 @@ public class GUI {
             graphicsNode.paint(g2d);
             g2d.dispose();
             return new ImageIcon(bufferedImage);
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             System.err.println ("Failed to load SVG file " + path);
             System.err.println(e);
             return null;

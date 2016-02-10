@@ -46,8 +46,7 @@ public class ConstructorParametersMatcher {
 
         try {
             return MethodParametersMatcher.match(constructors, parameters).constructor;
-        }
-        catch(NoSuchMethodException e) {
+        } catch(NoSuchMethodException e) {
             String s = "";
             for(Class<?> parameter : parameters) {
                 if(s.length()>0)

@@ -84,8 +84,7 @@ public class DnfGenerator {
                         negation = !negation;
                         try{
                         return node.getX().accept(this);
-                        }
-                        finally{
+                        } finally{
                                 negation=!negation;
                         }
                     }

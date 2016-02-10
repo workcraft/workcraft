@@ -116,8 +116,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
                     startPosition = editor.getViewport().screenToUser(e.getPoint());
                 }
                 tool.mousePressed(adaptEvent(e));
-            }
-            else {
+            } else {
                 startPosition = editor.getViewport().screenToUser(e.getPoint());
             }
         }

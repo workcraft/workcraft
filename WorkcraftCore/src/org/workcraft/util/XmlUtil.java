@@ -142,8 +142,7 @@ public class XmlUtil {
         String attributeValue = element.getAttribute(attributeName);
         try {
             return Integer.parseInt(attributeValue);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
@@ -156,8 +155,7 @@ public class XmlUtil {
         String attributeValue = element.getAttribute(attributeName);
         try {
             return Double.parseDouble(attributeValue);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return defaultValue;
         }
     }

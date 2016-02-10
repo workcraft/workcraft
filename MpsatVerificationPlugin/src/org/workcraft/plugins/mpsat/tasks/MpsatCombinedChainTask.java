@@ -104,9 +104,8 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
                     new MpsatCombinedChainResult(exportResult, null, punfResult, mpsatResultList, settingsList));
         } catch (Throwable e) {
             return new Result<MpsatCombinedChainResult>(e);
-        }
-        // Clean up
-        finally {
+        } finally {
+            // Clean up
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
         }
     }

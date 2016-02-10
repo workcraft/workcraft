@@ -89,8 +89,7 @@ public class StgSelectionTool extends SelectionTool {
             public void keyPressed(KeyEvent arg0) {
                 if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
                     editor.requestFocus();
-                }
-                else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                } else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     cancelInPlaceEdit = true;
                     editor.requestFocus();
                 }

@@ -161,8 +161,7 @@ public class BSONStructureTask extends AbstractStructuralVerification{
 
                 if(isInput && isOutput)
                     result.add(group);
-            }
-            else{
+            } else{
                 for(Node node : group.getComponents()){
                     if(net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
                         result.add(group);

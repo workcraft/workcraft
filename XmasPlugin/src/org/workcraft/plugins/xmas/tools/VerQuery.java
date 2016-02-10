@@ -114,8 +114,7 @@ public class VerQuery extends AbstractTool implements Tool {
                nxt=new Scanner(line_.next());
                targ="-t";
                targ = targ + nxt.next();
-             }
-             else if(check.startsWith("level")) {
+             } else if(check.startsWith("level")) {
                  nxt=new Scanner(line_.next());
                  larg="-v";
                  str = nxt.next();
@@ -123,25 +122,21 @@ public class VerQuery extends AbstractTool implements Tool {
                  if(str.equals("normal")) {
                       //System.out.println("Read v1");
                      larg = "-v1";
-                 }
-                 else if(str.equals("advanced")) {
+                 } else if(str.equals("advanced")) {
                      //System.out.println("Read v2");
                     larg = "-v2";
                  }
-             }
-             else if(check.startsWith("display")) {
+             } else if(check.startsWith("display")) {
                  nxt=new Scanner(line_.next());
                  str = nxt.next();
                   //System.out.println("strrr=" + str);
                   display = str;
-             }
-             else if(check.startsWith("highlight")) {
+             } else if(check.startsWith("highlight")) {
                  nxt=new Scanner(line_.next());
                  str = nxt.next();
                   //System.out.println("strrr=" + str);
                   highlight = str;
-             }
-             else if(check.startsWith("soln")) {
+             } else if(check.startsWith("soln")) {
                  nxt=new Scanner(line_.next());
                  str = nxt.next();
                   //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
@@ -248,11 +243,9 @@ public class VerQuery extends AbstractTool implements Tool {
 
         if(s.contains("DEADLOCK FREE")) {
             return 0;
-        }
-        else if(s.contains("TRACE FOUND")) {
+        } else if(s.contains("TRACE FOUND")) {
             return 1;
-        }
-        else if(s.contains("Local")) {
+        } else if(s.contains("Local")) {
             return 2;
         }
         return -1;
@@ -268,8 +261,7 @@ public class VerQuery extends AbstractTool implements Tool {
             if(node instanceof VisualQueueComponent) {
                 vqc=(VisualQueueComponent)node;
                 vqc.setForegroundColor(Color.black);
-            }
-            else if(node instanceof VisualSyncComponent) {
+            } else if(node instanceof VisualSyncComponent) {
                 vsc=(VisualSyncComponent)node;
                 vsc.setForegroundColor(Color.black);
             }
@@ -297,8 +289,7 @@ public class VerQuery extends AbstractTool implements Tool {
                         if(rstr.equals(st)) {
                             vqc.setForegroundColor(Color.red);
                         }
-                    }
-                    else if(node instanceof VisualSyncComponent) {
+                    } else if(node instanceof VisualSyncComponent) {
                         vsc=(VisualSyncComponent)node;
                         sc=vsc.getReferencedSyncComponent();
                         //if(xnet.getName(qc).contains(st)) {
@@ -342,8 +333,7 @@ public class VerQuery extends AbstractTool implements Tool {
                                 if(rstr.equals(str) && typ==0) {
                                     vqc.setForegroundColor(Color.pink);
                                 }
-                            }
-                            else if(node instanceof VisualSyncComponent) {
+                            } else if(node instanceof VisualSyncComponent) {
                                 vsc=(VisualSyncComponent)node;
                                 sc=vsc.getReferencedSyncComponent();
                                 //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
@@ -356,8 +346,7 @@ public class VerQuery extends AbstractTool implements Tool {
                             }
                         }
                     }
-                }
-                else if(st.contains("<-")) {
+                } else if(st.contains("<-")) {
                     //System.out.println("testst_" + st);
                     typ=1;
                     for(String st_ : st.split("<-")) {
@@ -373,8 +362,7 @@ public class VerQuery extends AbstractTool implements Tool {
                                 if(rstr.equals(str) && typ==1) {
                                     vqc.setForegroundColor(Color.red);
                                 }
-                            }
-                            else if(node instanceof VisualSyncComponent) {
+                            } else if(node instanceof VisualSyncComponent) {
                                 vsc=(VisualSyncComponent)node;
                                 sc=vsc.getReferencedSyncComponent();
                                 String rstr;
@@ -410,8 +398,7 @@ public class VerQuery extends AbstractTool implements Tool {
                         if(rstr.equals(ql.name)) {
                             vqc.setForegroundColor(Color.green);
                         }
-                    }
-                    else if(node instanceof VisualSyncComponent) {
+                    } else if(node instanceof VisualSyncComponent) {
                         vsc=(VisualSyncComponent)node;
                         sc=vsc.getReferencedSyncComponent();
                         String rstr;
@@ -468,8 +455,7 @@ public class VerQuery extends AbstractTool implements Tool {
         }
         if(cnt>1) {
             qscombob.addItem("ALL");
-        }
-        else {
+        } else {
             qscombob.addItem("NONE");
         }
     }
@@ -638,8 +624,7 @@ public class VerQuery extends AbstractTool implements Tool {
 
                             File queFile = XmasSettings.getTempVxmQueFile();
                             str_ = process_que(queFile.getAbsolutePath());
-                        }
-                        else if(level.equals("normal") && test==2) {
+                        } else if(level.equals("normal") && test==2) {
                             System.out.println("LEVEL IS NORMAL ");
                             File locFile = XmasSettings.getTempVxmLocFile();
                             str = process_loc(locFile.getAbsolutePath());
@@ -648,16 +633,14 @@ public class VerQuery extends AbstractTool implements Tool {
                             if(display.equals("popup")) {
                                 if(!level.equals("advanced")) {
                                     SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test,str_);
-                                }
-                                else {
+                                } else {
                                     SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test,str_);
                                 }
                             }
                             if(test==2) {
                                 if(highlight.equals("local")) {
                                     local_highlight(str,xnet,vnet);
-                                }
-                                else if(highlight.equals("rel")) {
+                                } else if(highlight.equals("rel")) {
                                     rel_highlight(str,xnet,vnet);
                                     active_highlight(xnet,vnet);
                                 }

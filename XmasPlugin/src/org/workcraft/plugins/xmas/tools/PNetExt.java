@@ -105,20 +105,17 @@ public class PNetExt {
                  name=nxt.next();
                  sourcelist.add(new source(name,name));
                  typ="Source";
-               }
-               else if(check.startsWith("//genfunction")) {
+               } else if(check.startsWith("//genfunction")) {
                  nxt=new Scanner(line_.next());
                  name=nxt.next();
                  funlist.add(new fun_(name));
                  typ="Function";
-               }
-               else if(check.startsWith("//genmerge")) {
+               } else if(check.startsWith("//genmerge")) {
                  nxt=new Scanner(line_.next());
                  name=nxt.next();
                  mergelist.add(new merge_(name,name));
                  typ="Merge";
-               }
-               else if(check.startsWith("//genswitch")) {
+               } else if(check.startsWith("//genswitch")) {
                  nxt=new Scanner(line_.next());
                  name=nxt.next();
                  switchlist.add(new switch_(name,name));

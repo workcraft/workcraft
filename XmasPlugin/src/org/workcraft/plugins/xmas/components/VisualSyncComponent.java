@@ -39,14 +39,12 @@ public class VisualSyncComponent extends VisualXmasComponent {
         if (component.getChildren().isEmpty()) {
             this.addInput("i", Positioning.LEFT);
             this.addOutput("o", Positioning.RIGHT);
-        }
-        else {
+        } else {
             int numInputs = ((XmasComponent)component).getInputs().size();
             int numOutputs = ((XmasComponent)component).getOutputs().size();
             if(numInputs>numOutputs) {
                 xOffset = numInputs - 1;
-            }
-            else {
+            } else {
                 xOffset = numOutputs - 1;
             }
         }

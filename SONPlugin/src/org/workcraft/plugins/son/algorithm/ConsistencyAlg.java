@@ -280,8 +280,7 @@ public class ConsistencyAlg extends TimeAlg{
             if(!(gsl <= hsl)){
                 result.add("Behavioural inconsistency: minStart"+node(v0)+value(gsl.toString())
                         +" > "+"minStart"+node(v1)+value(hsl.toString())+".");
-            }
-            else if(!(gsu <= hsu)){
+            } else if(!(gsu <= hsu)){
                 result.add("Behavioural inconsistency: maxStart"+node(v0)+value(gsu.toString())
                         +" > "+"maxStart"+node(v1)+value(hsu.toString())+".");
             }

@@ -56,7 +56,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
     @Override
     public boolean isApplicableTo(Node node) {
         return (node instanceof VisualTransition);
-    };
+    }
 
     @Override
     public Position getPosition() {

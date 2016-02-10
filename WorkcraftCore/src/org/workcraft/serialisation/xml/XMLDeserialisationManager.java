@@ -94,8 +94,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
                     result = (Model) ctor.newInstance(root);
                 }
 
-            }
-            else {
+            } else {
                 try {
                     ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass(), References.class);
                     result = (Model) ctor.newInstance(underlyingModel, root, rr);

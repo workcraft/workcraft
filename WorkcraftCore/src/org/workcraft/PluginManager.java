@@ -137,8 +137,7 @@ public class PluginManager implements PluginProvider {
             try {
                 LogUtils.logMessageLine("  Loading module: " + module.getDescription());
                 module.init();
-            }
-            catch(Throwable th) {
+            } catch(Throwable th) {
                 LogUtils.logErrorLine("Failed initialisation of module " + module.toString());
             }
         }

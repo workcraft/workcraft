@@ -160,8 +160,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
                                 }
                                 if(upper)
                                     cell = not(cell);
-                            }
-                            else
+                            } else
                                 throw new RuntimeException("unknown character: " + c);
                         }
                 parsedMatrix[i][j] = cell;
@@ -240,8 +239,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
                     encodings[i][j] = ZERO;
                 for(int j=0;j<0 && j<variables.length;j++)
                     encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
-            }
-            else
+            } else
                 for(int j=0;j<variables.length;j++)
                     encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
         }
@@ -289,8 +287,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
                             }
                         allVariables.add(iff(param1, param2));
                     }
-            }
-            else {
+            } else {
                 int cc = 0;
                 for(int level = 0;level<levels.length;level++) {
                     List<BooleanFormula> currentLevel = new ArrayList<BooleanFormula>();
@@ -314,8 +311,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
                     lastLevel = currentLevel;
                 }
             }
-        }
-        else {
+        } else {
             //Generate all possible functions.
             for(int i=0;i<functionCount;i++) {
                 BooleanFormula function = generateBinaryFunction(allVariables.toArray(new BooleanFormula[0]), i);

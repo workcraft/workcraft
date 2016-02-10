@@ -684,25 +684,32 @@ public class CpogParsingTool {
                         text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
                         added = true;
                     }
-                } if (text.contains("]" + k + " ")) {
+                }
+                if (text.contains("]" + k + " ")) {
                         text = text.replaceAll("]" + k + " ", "](" + refMap.get(k).getNormalForm() + ") ");
                         added = true;
-                } if (text.contains("(" + k + ")")) {
+                }
+                if (text.contains("(" + k + ")")) {
                         text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k).getNormalForm() + "\\)");
                         added = true;
-                } if (text.contains("(" + k + " ")) {
+                }
+                if (text.contains("(" + k + " ")) {
                         text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k).getNormalForm() + "\\) ");
                         added = true;
-                } if (text.contains(" " + k + ")")) {
+                }
+                if (text.contains(" " + k + ")")) {
                         text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k).getNormalForm() + "\\)\\)");
                         added = true;
-                } if (text.endsWith(" " + k)) {
+                }
+                if (text.endsWith(" " + k)) {
                         text = text.replace(" " + k, " (" + refMap.get(k).getNormalForm() + ")");
                         added = true;
-                } if (text.endsWith("]" + k)) {
+                }
+                if (text.endsWith("]" + k)) {
                         text = text.replace("]" + k, "](" + refMap.get(k).getNormalForm() + ")");
                         added = true;
-                } if (text.endsWith(" " + k + ")")) {
+                }
+                if (text.endsWith(" " + k + ")")) {
                         text = text.replace(" " + k + "\\)", " (" + refMap.get(k).getNormalForm() + "\\)\\)");
                         added = true;
                 }

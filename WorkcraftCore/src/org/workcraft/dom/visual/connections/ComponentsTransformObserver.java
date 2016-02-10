@@ -83,8 +83,7 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
     public void notify(TransformEvent e) {
         if (e instanceof TransformChangingEvent) {
             connection.getGraphic().componentsTransformChanging();
-        }
-        else if (e instanceof TransformChangedEvent) {
+        } else if (e instanceof TransformChangedEvent) {
             valid = false;
             connection.getGraphic().componentsTransformChanged();
         }

@@ -123,8 +123,7 @@ public class XMLSerialisationTestingUtils {
             stg.connect(p2, t1);
 
             return stg;
-        }
-        catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }
@@ -156,8 +155,7 @@ public class XMLSerialisationTestingUtils {
             stg.connect(p3, t3);
 
             return stg;
-        }
-        catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }
@@ -188,8 +186,7 @@ public class XMLSerialisationTestingUtils {
 
 
             return visualSTG;
-        }
-        catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }

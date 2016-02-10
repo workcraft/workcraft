@@ -95,8 +95,7 @@ public class OutputArea extends JFrame {
             fw.write(textArea.getText());
             setTitle(myfile.getName()+" - Output");
             fw.close();
-        }
-        catch(IOException e) {
+        } catch(IOException e) {
             JOptionPane.showMessageDialog(this,"Failed to save the file","Error",JOptionPane.ERROR_MESSAGE);
         }
     }

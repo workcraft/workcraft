@@ -171,8 +171,7 @@ public class DockableWindowContentPanel extends JPanel {
                 if (maximized) {
                     btnMax.setIcon(UIManager.getIcon("InternalFrame.minimizeIcon"));
                     btnMax.setToolTipText("Restore window");
-                }
-                else {
+                } else {
                     btnMax.setIcon(UIManager.getIcon("InternalFrame.maximizeIcon"));
                     btnMax.setToolTipText("Maximize window");
                 }

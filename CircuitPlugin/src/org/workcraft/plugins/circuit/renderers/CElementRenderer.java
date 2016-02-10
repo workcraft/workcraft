@@ -324,6 +324,6 @@ public class CElementRenderer extends GateRenderer {
 
         };
 
-        };
+        }
     }
 

@@ -149,8 +149,7 @@ public class Geometry {
     public static AffineTransform optimisticInverse(AffineTransform transform) {
         try {
             return transform.createInverse();
-        }
-        catch(NoninvertibleTransformException ex) {
+        } catch(NoninvertibleTransformException ex) {
             throw new RuntimeException("Matrix inverse failed! Pessimists win :( ");
         }
     }

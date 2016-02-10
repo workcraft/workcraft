@@ -108,13 +108,11 @@ public class PNetGen implements Tool {
             String check=nxt.next();
             if(check.startsWith("empty")) {
                 tst=1;
-            }
-            else if(check.startsWith("//gensync")) {
+            } else if(check.startsWith("//gensync")) {
                 nxt=new Scanner(line_.next());
                 String str = nxt.next();
                 qs = str.replace("Qs", "Sync");
-            }
-            else {
+            } else {
                 nxt=new Scanner(line_.next());
                 String str = nxt.next();
                 nxt=new Scanner(line_.next());
@@ -807,8 +805,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
           if(i==1) {
               if(init<=0) writemarking(id, "_tl"+i, writer);
               else writemarking_(id, "_tl"+i, writer);
-          }
-          else writemarking(id, "_tl"+i, writer);
+          } else writemarking(id, "_tl"+i, writer);
           writeblock(id, "_tl"+i, writer);
         }
         for(int i=1;i<=size;i++) {
@@ -912,8 +909,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                         if(idName.contains("Sync")) {
                             slsto_.add(new Info(idName1,idName,"",idNamep1));
                         }
-                      }
-                      else if(i==1) {
+                      } else if(i==1) {
                         idName2 = y.get(i).get("id").getValueAsText();
                         idNamep2 = y.get(i).get("in_port").getValueAsText();
                         if(typeName.equals("xfork")) lst.add(new Info(idName2,idName,"a",idNamep2));
@@ -923,8 +919,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                         if(idName.contains("Sync")) {
                             slsto_.add(new Info(idName2,idName,"",idNamep2));
                         }
-                      }
-                      else {
+                      } else {
                         idName1 = y.get(i).get("id").getValueAsText();
                         idNamep = y.get(i).get("in_port").getValueAsText();
                         if(idName.contains("Sync")) {
@@ -994,20 +989,17 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                     while (jp.nextToken() != JsonToken.END_ARRAY) {
                     }
                   }
-                }
-                else if (fieldName.equals("PACKET_TYPE")) {
+                } else if (fieldName.equals("PACKET_TYPE")) {
                   if (current == JsonToken.START_OBJECT) {
                     while (jp.nextToken() != JsonToken.END_OBJECT) {
                     }
                   }
-                }
-                else if (fieldName.equals("COMPOSITE_OBJECTS")) {
+                } else if (fieldName.equals("COMPOSITE_OBJECTS")) {
                   if (current == JsonToken.START_ARRAY) {
                     while (jp.nextToken() != JsonToken.END_ARRAY) {
                     }
                   }
-                }
-                else if (fieldName.equals("NETWORK")) {
+                } else if (fieldName.equals("NETWORK")) {
                     if (current == JsonToken.START_ARRAY) {
                       // For each of the records in the array
                       while (jp.nextToken() != JsonToken.END_ARRAY) {
@@ -1035,8 +1027,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                               /*if(typeName.equals("xfork")) lst.add(new Info(idName1,idName,"b"));
                               else if(typeName.equals("xswitch")) lst.add(new Info(idName1,idName,"a"));
                               else lst.add(new Info(idName1,idName,""));*/
-                            }
-                            else if(i==1) {
+                            } else if(i==1) {
                               idName2 = y.get(i).get("id").getValueAsText();
                               /*if(typeName.equals("xfork")) lst.add(new Info(idName2,idName,"a"));
                               else if(typeName.equals("xswitch")) lst.add(new Info(idName2,idName,"b"));
@@ -1051,18 +1042,15 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                                 //idNamep1 = y.get(i).get("in_port").getValueAsText();
                                 if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep1="1";
                                 else idNamep1="0";
-                              }
-                              else if(searchtyp.equals("merge")) idNamep1 = y.get(i).get("in_port").getValueAsText();
-                            }
-                            else if(i==1) {
+                              } else if(searchtyp.equals("merge")) idNamep1 = y.get(i).get("in_port").getValueAsText();
+                            } else if(i==1) {
                               String searchtyp1="";
                               searchtyp1=searchlist__(idName2);
                               if(searchtyp1.equals("join")) {
                                 //idNamep2 = y.get(i).get("in_port").getValueAsText();
                                 if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep2="1";
                                 else idNamep2="0";
-                              }
-                              else if(searchtyp1.equals("merge")) idNamep2 = y.get(i).get("in_port").getValueAsText();
+                              } else if(searchtyp1.equals("merge")) idNamep2 = y.get(i).get("in_port").getValueAsText();
                             }
                           }
                         }
@@ -1119,11 +1107,9 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                     jp.skipChildren();
                   }
                 }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
                 e.printStackTrace();
-        }
-        finally {
+        } finally {
                 if ( writer != null ) {
                     writer.close();
                     System.out.println("Control CPNs created");

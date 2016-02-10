@@ -68,8 +68,7 @@ public class SyncGen implements Tool {
                   for (JRadioButton r : rlist) {
                       if(r==button) {
                           r.setSelected(true);
-                      }
-                      else {
+                      } else {
                           r.setSelected(false);
                       }
                   }
@@ -163,11 +162,9 @@ public class SyncGen implements Tool {
           public void select_sync(int sel) {
               if(sel==0) {
                     create_synca();
-                }
-                else if(sel==1) {
+                } else if(sel==1) {
                     create_syncm();
-                }
-                else if(sel==2) {
+                } else if(sel==2) {
                     create_syncp();
                 }
           }
@@ -246,11 +243,9 @@ public class SyncGen implements Tool {
                     System.out.println("SELECTED=" + r.getText());
                                   if(r.getText().equals("asynchronous")) {
                                       sel=0;
-                                  }
-                                  else if(r.getText().equals("mesochronous")) {
+                                  } else if(r.getText().equals("mesochronous")) {
                                       sel=1;
-                                  }
-                                  else if(r.getText().equals("pausible")) {
+                                  } else if(r.getText().equals("pausible")) {
                                       sel=2;
                                   }
                                   //sel=no;
