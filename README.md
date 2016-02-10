@@ -7,43 +7,57 @@ and verify graph models. It supports a wide range of popular graph
 formalisms and provides a plugin-based framework to model and analyze
 new model types.
 
-### Building from the command line
+### Building
 
-Workcraft relies on [Gradle CI](http://gradle.org/) build sustem, version 2.7 or newer is required.
-Install Gradle build automation system:
-```shell
-$ sudo apt-get install gradle
-```
+Workcraft is built via [Gradle](https://gradle.org/). These instructions
+use `gradlew`, a wrapper that will download version `2.10` for you. If
+you want to run your own gradle, you can.
 
-Build the Workcraft core and all the plugins:
-```shell
-$ gradle assemble
-```
+Use the `assemble` task to build the core and all the plugins:
 
-If Gradle complains about missing `JAVA_HOME` even though it is set properly, the following may help in Ubuntu (replace `<JAVA-JDK>` by your Java JDK installation):
-```shell
-$ sudo /usr/lib/jvm/<JAVA-JDK> /usr/lib/jvm/default-java
-```  
+    $ gradle assemble
+
+If Gradle complains about a missing `JAVA_HOME` env var even though it
+is set properly, the following may help in Debian-like systems:
+
+    $ sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
+
+### Running the tests
+
+    $ gradle check
+
+On top of running the JUnit tests, this command will also run
+[checkstyle](https://github.com/checkstyle/checkstyle) in order to
+enforce a sane code style throughout the Java codebase.
 
 ### Building in Eclipse
 
-[Eclipse IDE](http://www.eclipse.org/)	is a convenient environemnt for developing and debuging Workcraft. When setting Eclipse from Gradle scripts it is important to separate its *Workspace* directory from the *Project* directory (otherwise Gradle integration may fail). 
+[Eclipse IDE](https://www.eclipse.org/)	is a convenient environemnt for
+developing and debuging Workcraft. When setting Eclipse from Gradle
+scripts it is important to separate its *Workspace* directory from the
+*Project* directory (otherwise Gradle integration may fail).
+
 * As an example, create `workcraft-workspace` directory and clone the workcraft git repo into it:
-```shell
-$ mkdir workcraft-workspace
-$ cd workcraft-workspace
-$ git clone https://github.com/tuura/workcraft workcraft-master
-```
 
-* Install [Buildship Gradle Integration](http://marketplace.eclipse.org/content/buildship-gradle-integration) plugin in Eclipse via	*Help->Instal New Software…* menu.
+    $ mkdir workcraft-workspace
+    $ cd workcraft-workspace
+    $ git clone https://github.com/tuura/workcraft workcraft-master
 
-* In Eclipse select the `workcraft-workspace` directory as the current *Workspace*.
+* Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
+  plugin in Eclipse via the *Help->Instal New Software…* menu.
 
-* Import the project from Gradle config via *File->Import..->Gradle* menu. Select `workcraft-workspace/workcraft-master` as the *Project* directory. Follow the import accepting the default settings.
+* In Eclipse select the `workcraft-workspace` directory as the current
+  *Workspace*.
 
-* Import `WorkcraftRunner` project via *File->Import…* as a *General->Existing Projects into Workspace* item.
+* Import the project from Gradle config via the *File->Import..->Gradle*
+  menu. Select `workcraft-workspace/workcraft-master` as the *Project*
+  directory. Follow the import accepting the default settings.
+
+* Import `WorkcraftRunner` project via the *File->Import…* as a
+  *General->Existing Projects into Workspace* item.
 
 * Create a *Java Application* runner with the following configuration:
+
   * Name: Workcraft
   * Project: WorkcraftRunner
   * Main class: org.workcraft.Console
@@ -52,8 +66,9 @@ $ git clone https://github.com/tuura/workcraft workcraft-master
 
 Use a startup script to set up the path to Java JVM and the classpath for Workcraft
 plugins:
-  * `workcraft.bat` BAT file for Windows.
-  * `workcraft` Bash script for Linux and unix-like systems.
+
+  * `workcraft.bat` - BAT file for Windows.
+  * `workcraft` - Bash script for Linux and unix-like systems.
 
 ### Help and Tutorials
 
