@@ -14,7 +14,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/PolicyNetPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SONPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/XmasPlugin"/>
-	<classpathentry kind="lib" path="/ThirdParty/"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FsmPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FstPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MpsatSynthesisPlugin"/>

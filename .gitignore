@@ -10,7 +10,11 @@ distr
 *.stackdump
 generated
 /.metadata
+.classpath
+.project
 .settings
+!/WorkcraftRunner/.classpath
+!/WorkcraftRunner/.project
 *.jar
 *.orig
 *.moved
