@@ -42,17 +42,13 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
                 inverDriven = contact.isInput();
             }
         }
-        {
-            Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
-            if (driverContact != null) {
-                driverContact.setInitToOne(initToOne != invertDriver);
-            }
+        Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
+        if (driverContact != null) {
+            driverContact.setInitToOne(initToOne != invertDriver);
         }
-        {
-            Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
-            for (Contact drivenContact: drivenContacts) {
-                drivenContact.setInitToOne(initToOne != inverDriven);
-            }
+        Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
+        for (Contact drivenContact: drivenContacts) {
+            drivenContact.setInitToOne(initToOne != inverDriven);
         }
     }
 

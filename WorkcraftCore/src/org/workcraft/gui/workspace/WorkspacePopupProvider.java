@@ -70,56 +70,50 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         if(file.isDirectory()) {
             popup.addSeparator();
-            {
-                final JMenuItem miLink = new JMenuItem("Link external files or directories...");
-                miLink.addActionListener(new ActionListener() {
-                    @Override public void actionPerformed(ActionEvent e) {
-                        wsWindow.addToWorkspace(path);
-                    }
-                });
-                popup.add(miLink);
-            }
-            {
-                final JMenuItem miCreateWork = new JMenuItem("Create work...");
-                miCreateWork.addActionListener(new ActionListener() {
-                    @Override public void actionPerformed(ActionEvent e) {
-                        try {
-                            framework.getMainWindow().createWork(path);
-                        } catch (OperationCancelledException e1) { }
-                    }
-                });
-                popup.add(miCreateWork);
-            }
-            {
-                final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
-                miCreateFolder.addActionListener(new ActionListener() {
-                    @Override public void actionPerformed(ActionEvent e) {
-                        try {
-                            createFolder(path);
-                        } catch (OperationCancelledException e1) { }
+            final JMenuItem miLink = new JMenuItem("Link external files or directories...");
+            miLink.addActionListener(new ActionListener() {
+                @Override public void actionPerformed(ActionEvent e) {
+                    wsWindow.addToWorkspace(path);
+                }
+            });
+            popup.add(miLink);
+            final JMenuItem miCreateWork = new JMenuItem("Create work...");
+            miCreateWork.addActionListener(new ActionListener() {
+                @Override public void actionPerformed(ActionEvent e) {
+                    try {
+                        framework.getMainWindow().createWork(path);
+                    } catch (OperationCancelledException e1) { }
+                }
+            });
+            popup.add(miCreateWork);
+            final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
+            miCreateFolder.addActionListener(new ActionListener() {
+                @Override public void actionPerformed(ActionEvent e) {
+                    try {
+                        createFolder(path);
+                    } catch (OperationCancelledException e1) { }
+                }
+
+                private void createFolder(Path<String> path) throws OperationCancelledException {
+                    String name;
+                    while (true) {
+                        name = JOptionPane.showInputDialog("Please enter the name of the new folder:", "");
+                        if(name==null)
+                            throw new OperationCancelledException();
+                        File newDir = workspace.getFile(Path.append(path, name));
+                        if (!newDir.mkdir()) {
+                            JOptionPane
+                                    .showMessageDialog(
+                                            framework.getMainWindow(),
+                                            "The directory could not be created. Please check that the name does not contain any special characters.");
+                        } else
+                            break;
                     }
 
-                    private void createFolder(Path<String> path) throws OperationCancelledException {
-                        String name;
-                        while (true) {
-                            name = JOptionPane.showInputDialog("Please enter the name of the new folder:", "");
-                            if(name==null)
-                                throw new OperationCancelledException();
-                            File newDir = workspace.getFile(Path.append(path, name));
-                            if (!newDir.mkdir()) {
-                                JOptionPane
-                                        .showMessageDialog(
-                                                framework.getMainWindow(),
-                                                "The directory could not be created. Please check that the name does not contain any special characters.");
-                            } else
-                                break;
-                        }
-
-                        workspace.fireWorkspaceChanged();
-                    }
-                });
-                popup.add(miCreateFolder);
-            }
+                    workspace.fireWorkspaceChanged();
+                }
+            });
+            popup.add(miCreateFolder);
         }
 
 

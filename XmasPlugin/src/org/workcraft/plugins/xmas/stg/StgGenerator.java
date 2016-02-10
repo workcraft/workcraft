@@ -90,11 +90,9 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         HashSet<VisualXmasComponent> remainingComponents = new HashSet<>();
         remainingComponents.addAll(Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualXmasComponent.class));
         try {
-            {
-                clockStg = generateClockStg();
-                clockControlSignals = new HashSet<>();
-                groupComponentStg(clockStg);
-            }
+            clockStg = generateClockStg();
+            clockControlSignals = new HashSet<>();
+            groupComponentStg(clockStg);
             for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
                 SourceStg stg = generateSourceStg(component);
                 groupComponentStg(stg);
@@ -1099,19 +1097,13 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             char suffix = (char)idx;
             suffix += 'A';
             SignalStg mem = generateBasicSignalStg(name + _MEM + suffix, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
-            ContactStg hd = null;
-            {
-                SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix +_RDY, pos.getX() + xSlot, pos.getY() - 8.0);
-                SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _HEAD + suffix + _DN, pos.getX() + xSlot, pos.getY() - 16.0, 4, 3);
-                hd = new ContactStg(rdy, dn);
-            }
-            ContactStg tl = null;
-            {
-                SignalStg rdy = generateSignalStg(XmasStgType.TRDY, name + _TAIL + suffix +_RDY, pos.getX() + xSlot, pos.getY() + 8.0);
-                SignalStg dn = generateSignalStg(XmasStgType.TDN, name + _TAIL + suffix + _DN, pos.getX() + xSlot, pos.getY() + 16.0, 4, 3);
-                setSignalInitialState(rdy, (idx == 0));
-                tl = new ContactStg(rdy, dn);
-            }
+            SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix +_RDY, pos.getX() + xSlot, pos.getY() - 8.0);
+            SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _HEAD + suffix + _DN, pos.getX() + xSlot, pos.getY() - 16.0, 4, 3);
+            ContactStg hd = new ContactStg(rdy, dn);
+            rdy = generateSignalStg(XmasStgType.TRDY, name + _TAIL + suffix +_RDY, pos.getX() + xSlot, pos.getY() + 8.0);
+            dn = generateSignalStg(XmasStgType.TDN, name + _TAIL + suffix + _DN, pos.getX() + xSlot, pos.getY() + 16.0, 4, 3);
+            setSignalInitialState(rdy, (idx == 0));
+            ContactStg tl = new ContactStg(rdy, dn);
             SlotStg slot = new SlotStg(mem, hd, tl);
             slotList.add(slot);
             // Connections of head within slot

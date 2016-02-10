@@ -192,19 +192,15 @@ public class PetriNetUtils {
                     first = copyReplicaPlace(visualModel, (VisualReplicaPlace)first);
                 }
                 visualModel.remove(readArc);
-                {
-                    consumingArc = visualModel.connect(first, second);
-                    consumingArc.copyStyle(readArc);
-                    consumingArc.setDefaultArrow();
-                    consumingArc.copyShape(readArc);
-                }
-                {
-                    producingArc = visualModel.connect(second, first);
-                    producingArc.copyStyle(readArc);
-                    producingArc.setDefaultArrow();
-                    producingArc.copyShape(readArc);
-                    producingArc.inverseShape();
-                }
+                consumingArc = visualModel.connect(first, second);
+                consumingArc.copyStyle(readArc);
+                consumingArc.setDefaultArrow();
+                consumingArc.copyShape(readArc);
+                producingArc = visualModel.connect(second, first);
+                producingArc.copyStyle(readArc);
+                producingArc.setDefaultArrow();
+                producingArc.copyShape(readArc);
+                producingArc.inverseShape();
             } catch (InvalidConnectionException e) {
             }
         }

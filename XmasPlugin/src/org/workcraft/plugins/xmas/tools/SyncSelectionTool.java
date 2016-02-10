@@ -36,30 +36,26 @@ public class SyncSelectionTool extends SelectionTool {
                 popup = new JPopupMenu();
                 popup.setFocusable(false);
             }
-            {
-                JMenuItem addInputMenuItem = new JMenuItem("Add input-output pair");
-                addInputMenuItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        editor.getWorkspaceEntry().saveMemento();
-                        component.addInput("", Positioning.TOP);
-                        component.addOutput("", Positioning.BOTTOM);
+            JMenuItem addInputMenuItem = new JMenuItem("Add input-output pair");
+            addInputMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    editor.getWorkspaceEntry().saveMemento();
+                    component.addInput("", Positioning.TOP);
+                    component.addOutput("", Positioning.BOTTOM);
+                }
+            });
+            popup.add(addInputMenuItem);
+            JMenuItem removeInputMenuItem = new JMenuItem("Remove input-output pair");
+            removeInputMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    for(VisualXmasContact contact : component.getContacts()) {
+                        contact = null;
                     }
-                });
-                popup.add(addInputMenuItem);
-            }
-            {
-                JMenuItem removeInputMenuItem = new JMenuItem("Remove input-output pair");
-                removeInputMenuItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        for(VisualXmasContact contact : component.getContacts()) {
-                            contact = null;
-                        }
-                    }
-                });
-                popup.add(removeInputMenuItem);
-            }
+                }
+            });
+            popup.add(removeInputMenuItem);
             return popup;
         }
 

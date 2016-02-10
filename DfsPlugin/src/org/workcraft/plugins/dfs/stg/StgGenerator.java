@@ -451,30 +451,28 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         Map<Node, VisualSignalTransition> fwCRs = new HashMap<Node, VisualSignalTransition>();
         Map<Node, VisualSignalTransition> fwCFs = new HashMap<Node, VisualSignalTransition>();
-        {
-            VisualSignalTransition fwCR = null;
-            VisualSignalTransition fwCF = null;
-            double dy = 0.0;
-            for (Node n: preset) {
-                if (fwCR == null || l.getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
-                    fwCR = getStgModel().createSignalTransition(nameFwC + name, type, SignalTransition.Direction.PLUS, curContainer);
-                    fwCR.setTokenColorGenerator(presetTokenColorGenerator);
-                    createConsumingArc(fwC0, fwCR, false);
-                    createProducingArc(fwCR, fwC1, true);
-                    setPosition(fwCR, x - 2.0, y - 2.0 + dy);
-                    nodes.add(fwCR);
-                }
-                fwCRs.put(n, fwCR);
-                if (fwCF == null) {
-                    fwCF = getStgModel().createSignalTransition(nameFwC + name, type, SignalTransition.Direction.MINUS, curContainer);
-                    createConsumingArc(fwC1, fwCF, false);
-                    createProducingArc(fwCF, fwC0, false);
-                    setPosition(fwCF, x - 2.0, y - 4.0 - dy);
-                    nodes.add(fwCF);
-                }
-                fwCFs.put(n, fwCF);
-                dy += 1.0;
+        VisualSignalTransition fwCR = null;
+        VisualSignalTransition fwCF = null;
+        double dy = 0.0;
+        for (Node n: preset) {
+            if (fwCR == null || l.getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
+                fwCR = getStgModel().createSignalTransition(nameFwC + name, type, SignalTransition.Direction.PLUS, curContainer);
+                fwCR.setTokenColorGenerator(presetTokenColorGenerator);
+                createConsumingArc(fwC0, fwCR, false);
+                createProducingArc(fwCR, fwC1, true);
+                setPosition(fwCR, x - 2.0, y - 2.0 + dy);
+                nodes.add(fwCR);
             }
+            fwCRs.put(n, fwCR);
+            if (fwCF == null) {
+                fwCF = getStgModel().createSignalTransition(nameFwC + name, type, SignalTransition.Direction.MINUS, curContainer);
+                createConsumingArc(fwC1, fwCF, false);
+                createProducingArc(fwCF, fwC0, false);
+                setPosition(fwCF, x - 2.0, y - 4.0 - dy);
+                nodes.add(fwCF);
+            }
+            fwCFs.put(n, fwCF);
+            dy += 1.0;
         }
 
         VisualPlace bwC0 = getStgModel().createPlace(nameBwC + name + name0, curContainer);
@@ -507,30 +505,28 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         Map<Node, VisualSignalTransition> bwCRs = new HashMap<Node, VisualSignalTransition>();
         Map<Node, VisualSignalTransition> bwCFs = new HashMap<Node, VisualSignalTransition>();
-        {
-            VisualSignalTransition bwCR = null;
-            VisualSignalTransition bwCF = null;
-            double dy = 0.0;
-            for (Node n: postset) {
-                if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
-                    bwCR = getStgModel().createSignalTransition(nameBwC + name, type, SignalTransition.Direction.PLUS, curContainer);
-                    bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
-                    createConsumingArc(bwC0, bwCR, false);
-                    createProducingArc(bwCR, bwC1, false);
-                    setPosition(bwCR, x - 2.0, y + 4.0 + dy);
-                    nodes.add(bwCR);
-                }
-                bwCRs.put(n, bwCR);
-                if (bwCF == null) {
-                    bwCF = getStgModel().createSignalTransition(nameBwC + name, type, SignalTransition.Direction.MINUS, curContainer);
-                    createConsumingArc(bwC1, bwCF, false);
-                    createProducingArc(bwCF, bwC0, false);
-                    setPosition(bwCF, x - 2.0, y + 2.0 - dy);
-                    nodes.add(bwCF);
-                }
-                bwCFs.put(n, bwCF);
-                dy += 1.0;
+        VisualSignalTransition bwCR = null;
+        VisualSignalTransition bwCF = null;
+        dy = 0.0;
+        for (Node n: postset) {
+            if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
+                bwCR = getStgModel().createSignalTransition(nameBwC + name, type, SignalTransition.Direction.PLUS, curContainer);
+                bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
+                createConsumingArc(bwC0, bwCR, false);
+                createProducingArc(bwCR, bwC1, false);
+                setPosition(bwCR, x - 2.0, y + 4.0 + dy);
+                nodes.add(bwCR);
             }
+            bwCRs.put(n, bwCR);
+            if (bwCF == null) {
+                bwCF = getStgModel().createSignalTransition(nameBwC + name, type, SignalTransition.Direction.MINUS, curContainer);
+                createConsumingArc(bwC1, bwCF, false);
+                createProducingArc(bwCF, bwC0, false);
+                setPosition(bwCF, x - 2.0, y + 2.0 - dy);
+                nodes.add(bwCF);
+            }
+            bwCFs.put(n, bwCF);
+            dy += 1.0;
         }
 
         return new CounterflowLogicStg(fwC0, fwC1, fwCRs, fwCFs, bwC0, bwC1, bwCRs, bwCFs);

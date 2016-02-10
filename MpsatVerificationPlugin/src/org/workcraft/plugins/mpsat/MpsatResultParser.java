@@ -37,38 +37,30 @@ public class MpsatResultParser {
         }
 
         solutions = new LinkedList<Solution>();
-        {
-            Matcher matcherReachability0 = patternReachability0.matcher(mpsatOutput);
-            while (matcherReachability0.find()) {
-                Solution solution = new Solution(null, null);
-                solutions.add(solution);
-            }
+        Matcher matcherReachability0 = patternReachability0.matcher(mpsatOutput);
+        while (matcherReachability0.find()) {
+            Solution solution = new Solution(null, null);
+            solutions.add(solution);
         }
-        {
-            Matcher matcherReachability1 = patternReachability1.matcher(mpsatOutput);
-            while (matcherReachability1.find()) {
-                Trace trace = getTrace(matcherReachability1.group(1));
-                Solution solution = new Solution(trace, null);
-                solutions.add(solution);
-            }
+        Matcher matcherReachability1 = patternReachability1.matcher(mpsatOutput);
+        while (matcherReachability1.find()) {
+            Trace trace = getTrace(matcherReachability1.group(1));
+            Solution solution = new Solution(trace, null);
+            solutions.add(solution);
         }
-        {
-            Matcher matcherRreachability2 = patternReachability2.matcher(mpsatOutput);
-            while (matcherRreachability2.find()) {
-                Trace mainTrace = getTrace(matcherRreachability2.group(1));
-                Trace branchTrace = getTrace(matcherRreachability2.group(2));
-                String signalName = matcherRreachability2.group(4);
-                Solution solution = new Solution(mainTrace, branchTrace, signalName);
-                solutions.add(solution);
-            }
+        Matcher matcherRreachability2 = patternReachability2.matcher(mpsatOutput);
+        while (matcherRreachability2.find()) {
+            Trace mainTrace = getTrace(matcherRreachability2.group(1));
+            Trace branchTrace = getTrace(matcherRreachability2.group(2));
+            String signalName = matcherRreachability2.group(4);
+            Solution solution = new Solution(mainTrace, branchTrace, signalName);
+            solutions.add(solution);
         }
-        {
-            Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatOutput);
-            while (matcherNormalcy.find()) {
-                Trace trace = getTrace(matcherNormalcy.group(1));
-                Solution solution = new Solution(trace, null);
-                solutions.add(solution);
-            }
+        Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatOutput);
+        while (matcherNormalcy.find()) {
+            Trace trace = getTrace(matcherNormalcy.group(1));
+            Solution solution = new Solution(trace, null);
+            solutions.add(solution);
         }
     }
 

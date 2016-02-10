@@ -34,6 +34,7 @@
 
         <module name="RedundantModifier" />
 
+        <module name="AvoidNestedBlocks" />
         <module name="LeftCurly">
             <property name="maxLineLength" value="100"/>
         </module>

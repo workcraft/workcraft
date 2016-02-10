@@ -266,19 +266,16 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-            {
-                FormulaRenderingResult renderingResult = getRenderedSetFormula();
-                if (renderingResult != null) {
-                    Point2D offset = getSetFormulaOffset();
-                    drawFormula(g, 2, offset, renderingResult);
-                }
+            FormulaRenderingResult renderingResult;
+            renderingResult = getRenderedSetFormula();
+            if (renderingResult != null) {
+                Point2D offset = getSetFormulaOffset();
+                drawFormula(g, 2, offset, renderingResult);
             }
-            {
-                FormulaRenderingResult renderingResult = getRenderedResetFormula();
-                if (renderingResult != null) {
-                    Point2D offset = getResetFormulaOffset();
-                    drawFormula(g, 1, offset, renderingResult);
-                }
+            renderingResult = getRenderedResetFormula();
+            if (renderingResult != null) {
+                Point2D offset = getResetFormulaOffset();
+                drawFormula(g, 1, offset, renderingResult);
             }
         }
         super.draw(r);
