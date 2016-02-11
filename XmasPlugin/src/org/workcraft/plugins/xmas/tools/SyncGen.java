@@ -57,10 +57,6 @@ public class SyncGen implements Tool {
 
               private JTextField textField;
 
-              public void RadioListener(JTextField textField){
-                  this.textField = textField;
-              }
-
               public void actionPerformed(ActionEvent e){
                   JRadioButton button = (JRadioButton) e.getSource();
 
@@ -75,7 +71,7 @@ public class SyncGen implements Tool {
               }
           }
 
-            public void create_d(char c,char ck) {
+            public void createD(char c,char ck) {
               System.out.println("d" + c + "_1 " + " = " + "not " + "d" + c);
               System.out.println("d" + c + "_2 " + " = " + "not (" + "d" + c + "_1 & cd" + ck + ")");
               System.out.println("d" + c + "_3 " + " = " + "not (" + "d" + c + " & cd" + ck + ")");
@@ -83,27 +79,27 @@ public class SyncGen implements Tool {
               System.out.println("d" + c + "_q_ " + " = " + "not (" + "d" + c + "_3 & d" + c + "_q)");
             }
 
-            public void create_synca() {
+            public void createSynca() {
               System.out.println("asynchronous wrapper");
-              create_d('a','t');
-              create_d('b','t');
-              create_d('c','t');
-              create_d('d','t');
+              createD('a','t');
+              createD('b','t');
+              createD('c','t');
+              createD('d','t');
               System.out.println("da1" + " = " + "db_q");
               System.out.println("dc1" + " = " + "dd_q");
               System.out.println("n1" + " = " + "WR | da_q");
               System.out.println("a1" + " = " + "not n1 & dc_q");
-              create_d('e','r');
-              create_d('f','r');
-              create_d('g','r');
-              create_d('h','r');
+              createD('e','r');
+              createD('f','r');
+              createD('g','r');
+              createD('h','r');
               System.out.println("de1" + " = " + "df_q");
               System.out.println("dg1" + " = " + "dh_q");
               System.out.println("n2" + " = " + "RD | de_q");
               System.out.println("a2" + " = " + "not n2 & dg_q");
             }
 
-          public void create_syncm() {
+          public void createSyncm() {
               System.out.println("mesochronous wrapper");
               System.out.println("s1" + " = " + "not gclk");
               System.out.println("s2" + " = " + "not s1");
@@ -128,7 +124,7 @@ public class SyncGen implements Tool {
               System.out.println("a1" + " = " + "rxtinit & clk2");
             }
 
-          public void create_syncp() {
+          public void createSyncp() {
               System.out.println("pausible wrapper");
               System.out.println("d1" + "_1 " + " = " + "not " + "d1");
               System.out.println("d1" + "_2 " + " = " + "not (" + "d1" + "_1 & cd1" + ")");
@@ -159,13 +155,13 @@ public class SyncGen implements Tool {
 
             }
 
-          public void select_sync(int sel) {
+          public void selectSync(int sel) {
               if(sel==0) {
-                    create_synca();
+                    createSynca();
                 } else if(sel==1) {
-                    create_syncm();
+                    createSyncm();
                 } else if(sel==2) {
-                    create_syncp();
+                    createSyncp();
                 }
           }
 
@@ -249,7 +245,7 @@ public class SyncGen implements Tool {
                                       sel=2;
                                   }
                                   //sel=no;
-                                  select_sync(sel);
+                                  selectSync(sel);
                               }
                               no++;
                           }

@@ -96,7 +96,7 @@ public class ScencoSolver {
         scenarios = CpogParsingTool.getScenarios(cpog);
         we.captureMemento();
 
-        cpogBuilder.reset_vars(    verbose, genMode, numSol, customFlag, customPath, effort,
+        cpogBuilder.resetVars(    verbose, genMode, numSol, customFlag, customPath, effort,
                                 espressoFlag, abcFlag, gateLibFlag, cpogSize, disableFunction, oldSynt);
 
         events = new HashMap<String, Integer>();
@@ -123,7 +123,7 @@ public class ScencoSolver {
         File encodingFile = new File(directory, "custom.enc");
         File resultDirectory = new File(directory, "result");
         resultDirectory.mkdir();
-        if((cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
+        if((cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             args.add("ERROR");
             args.add("Error on writing scenario file.");

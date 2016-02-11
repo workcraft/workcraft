@@ -30,7 +30,7 @@ import org.workcraft.util.Geometry.CurveSplitResult;
 
 public class GeometryTests {
     @Test
-    public void EmptyCurveTest() {
+    public void emptyCurveTest() {
         Geometry.splitCubicCurve(new CubicCurve2D.Double(), 0.5);
     }
 
@@ -39,7 +39,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void BordersTest1() {
+    public void bordersTest1() {
         CubicCurve2D curve = getSimpleCurve();
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0);
         Assert.assertEquals(0.0, split.curve1.getX2(), 1e-8);
@@ -51,7 +51,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void BordersTest2() {
+    public void bordersTest2() {
         CubicCurve2D curve = getSimpleCurve();
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 1);
         Assert.assertEquals(1.0, split.curve1.getX2(), 1e-8);
@@ -63,7 +63,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void CenterTest() {
+    public void centerTest() {
         CubicCurve2D curve = getSimpleCurve();
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0.5);
         Assert.assertEquals(0.5, split.curve1.getX2(), 1e-8);
@@ -76,7 +76,7 @@ public class GeometryTests {
 
 
     @Test
-    public void CenterTest2() {
+    public void centerTest2() {
         CubicCurve2D curve = new CubicCurve2D.Double(-1, -2, -1, -1, 1, 1, 1, 2);
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0.5);
         Assert.assertEquals(0.0, split.curve1.getX2(), 1e-8);
@@ -88,7 +88,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void OneThirdTest() {
+    public void oneThirdTest() {
         CubicCurve2D curve = new CubicCurve2D.Double(0, 0, 1, 1, 2, 2, 3, 3);
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0.3);
         Assert.assertEquals(0.9, split.curve1.getX2(), 1e-8);

@@ -68,8 +68,8 @@ public class BinaryNumberProvider implements
         f[7] = new FreeVariable("h");
         f[8] = new FreeVariable("i");
         BooleanFormula result = p.select(f, num);
-//        System.out.println(result.accept(new FormulaToString()));
-        Assert.assertEquals("((b3&((b2&0)|(!b2&((b1&0)|(!b1&((b0&0)|(!b0&i)))))))|(!b3&((b2&((b1&((b0&h)|(!b0&g)))|(!b1&((b0&f)|(!b0&e)))))|(!b2&((b1&((b0&d)|(!b0&c)))|(!b1&((b0&b)|(!b0&a))))))))", result.accept(new FormulaToString()));
+//        System.out.println(result.accept(new formulaToString()));
+        Assert.assertEquals("((b3&((b2&0)|(!b2&((b1&0)|(!b1&((b0&0)|(!b0&i)))))))|(!b3&((b2&((b1&((b0&h)|(!b0&g)))|(!b1&((b0&f)|(!b0&e)))))|(!b2&((b1&((b0&d)|(!b0&c)))|(!b1&((b0&b)|(!b0&a))))))))", result.accept(new formulaToString()));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class BinaryNumberProvider implements
     {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("x", 2);
-        Assert.assertEquals("1", p.getConstraints().accept(new FormulaToString()));
+        Assert.assertEquals("1", p.getConstraints().accept(new formulaToString()));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BinaryNumberProvider implements
     {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("", 1);
-        Assert.assertEquals("1", p.getConstraints().accept(new FormulaToString()));
+        Assert.assertEquals("1", p.getConstraints().accept(new formulaToString()));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class BinaryNumberProvider implements
         BooleanFormula[] f = new BooleanFormula[1];
         f[0] = new FreeVariable("x");
         BooleanFormula result = p.select(f, num);
-        Assert.assertEquals("x", result.accept(new FormulaToString()));
+        Assert.assertEquals("x", result.accept(new formulaToString()));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class BinaryNumberProvider implements
         f[0] = new FreeVariable("x");
         f[1] = new FreeVariable("y");
         BooleanFormula result = p.select(f, num);
-        Assert.assertEquals("((b0&y)|(!b0&x))", result.accept(new FormulaToString()));
+        Assert.assertEquals("((b0&y)|(!b0&x))", result.accept(new formulaToString()));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class BinaryNumberProvider implements
         f[1] = new FreeVariable("y");
         f[2] = new FreeVariable("z");
         BooleanFormula result = p.select(f, num);
-        Assert.assertEquals("((b1&((b0&0)|(!b0&z)))|(!b1&((b0&y)|(!b0&x))))", result.accept(new FormulaToString()));
+        Assert.assertEquals("((b1&((b0&0)|(!b0&z)))|(!b1&((b0&y)|(!b0&x))))", result.accept(new formulaToString()));
     }
 
     List<BooleanFormula> constraints = new ArrayList<BooleanFormula>();

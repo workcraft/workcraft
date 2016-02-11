@@ -82,7 +82,7 @@ public class PNetExt {
     }
 
 
-    private static void ReadFile(String file,int syncflag) {
+    private static void readFile(String file,int syncflag) {
            String typ=null;
            String g1=null;
            String g2=null;
@@ -125,7 +125,7 @@ public class PNetExt {
            }
     }
 
-    private static void WriteNet(PrintWriter writer, Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes) {
+    private static void writeNet(PrintWriter writer, Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes) {
            writer.println("TS");
            int no=0;
            for (SourceComponent srcNode : srcNodes) {
@@ -177,8 +177,8 @@ public class PNetExt {
         try {
             writer = new PrintWriter(pncFile);
             File cpnFile = XmasSettings.getTempVxmCpnFile();
-            ReadFile(cpnFile.getAbsolutePath(), syncflag);
-            WriteNet(writer,srcNodes,funNodes, swNodes);
+            readFile(cpnFile.getAbsolutePath(), syncflag);
+            writeNet(writer,srcNodes,funNodes, swNodes);
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {

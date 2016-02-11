@@ -70,7 +70,7 @@ public class VerTool extends AbstractTool implements Tool {
         mainFrame.setVisible(false);
     }
 
-    private static List<String> ProcessArg(String file) {
+    private static List<String> processArg(String file) {
            String typ=null;
            Scanner sc=null;
            try {
@@ -129,7 +129,7 @@ public class VerTool extends AbstractTool implements Tool {
            return args;
     }
 
-    private static String process_loc(String file) {
+    private static String processLoc(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -145,7 +145,7 @@ public class VerTool extends AbstractTool implements Tool {
         return str;
     }
 
-    private static void process_qsl(String file) {
+    private static void processQsl(String file) {
         qslist.clear();
         Scanner sc=null;
         try {
@@ -165,7 +165,7 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    private static String process_eq(String file) {
+    private static String processEq(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -181,7 +181,7 @@ public class VerTool extends AbstractTool implements Tool {
         return str;
     }
 
-    public int check_type(String s) {
+    public int checkType(String s) {
 
         if(s.contains("DEADLOCK FREE")) {
             return 0;
@@ -193,7 +193,7 @@ public class VerTool extends AbstractTool implements Tool {
         return -1;
     }
 
-    public void init_highlight(Xmas xnet,VisualXmas vnet) {
+    public void initHighlight(Xmas xnet,VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -210,7 +210,7 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    public void local_highlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void localHighlight(String s,Xmas xnet,VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -247,7 +247,7 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    public void rel_highlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void relHighlight(String s,Xmas xnet,VisualXmas vnet) {
         int typ=0;
         String str="";
         QueueComponent qc;
@@ -322,7 +322,7 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    public void active_highlight(Xmas xnet,VisualXmas vnet) {
+    public void activeHighlight(Xmas xnet,VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -375,7 +375,7 @@ public class VerTool extends AbstractTool implements Tool {
 
             ArrayList<String> vxmCommand = new ArrayList<>();
             vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
-            vxmCommand.addAll(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath()));
+            vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath()));
             ExternalProcessTask.printCommandLine(vxmCommand);
             Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
 
@@ -384,9 +384,9 @@ public class VerTool extends AbstractTool implements Tool {
             BufferedReader stdInput = new BufferedReader(inputStreamReader);
             int n=0;
             int test=-1;
-            init_highlight(xnet,vnet);
+            initHighlight(xnet,vnet);
             while ((s = stdInput.readLine()) != null) {
-                if(test==-1) test=check_type(s);
+                if(test==-1) test=checkType(s);
                 if(n>0) str = str + s + '\n';
                 n++;
                 System.out.println(s);
@@ -394,14 +394,14 @@ public class VerTool extends AbstractTool implements Tool {
             if(level.equals("advanced")) {
                 System.out.println("LEVEL IS ADVANCED ");
                 File qslFile = XmasSettings.getTempVxmQslFile();
-                process_qsl(qslFile.getAbsolutePath());
+                processQsl(qslFile.getAbsolutePath());
 
                 File equFile = XmasSettings.getTempVxmEquFile();
-                str = process_eq(equFile.getAbsolutePath());
+                str = processEq(equFile.getAbsolutePath());
             } else if(level.equals("normal") && test==2) {
                 System.out.println("LEVEL IS NORMAL ");
                 File locFile = XmasSettings.getTempVxmLocFile();
-                str = process_loc(locFile.getAbsolutePath());
+                str = processLoc(locFile.getAbsolutePath());
             }
             if(test>0) {
                 if(display.equals("popup")) {
@@ -413,11 +413,11 @@ public class VerTool extends AbstractTool implements Tool {
                 }
                 if(test==2) {
                     if(highlight.equals("local")) {
-                        local_highlight(str,xnet,vnet);
+                        localHighlight(str,xnet,vnet);
                     } else if(highlight.equals("rel")) {
-                        rel_highlight(str,xnet,vnet);
+                        relHighlight(str,xnet,vnet);
                         //System.out.println("str = " + str);
-                        active_highlight(xnet,vnet);
+                        activeHighlight(xnet,vnet);
                     }
                 }
             } else if(test==0) {

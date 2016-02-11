@@ -83,7 +83,7 @@ public class SatBasedSolver {
 
         we.captureMemento();
 
-        reset_vars();
+        resetVars();
 
         HashMap<String, Integer> events = new HashMap<String, Integer>();
         ArrayList<Point2D> positions = new ArrayList<Point2D>();
@@ -117,7 +117,7 @@ public class SatBasedSolver {
         resultDirectory.mkdir(); // ???
 
         int res;
-        if((res = cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
+        if((res = cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             if(res != -1){
                 JOptionPane.showMessageDialog(null,
@@ -347,7 +347,7 @@ public class SatBasedSolver {
     }
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
-    private void reset_vars(){
+    private void resetVars(){
         verbose = "";
         genMode= "";
         numSol= "";

@@ -72,7 +72,7 @@ public class JsonExport implements Tool {
     //public Collection<String> srcNodes;
     public Collection<VisualSourceComponent> srcNodes;
 
-    public void sync_reset() {
+    public void syncReset() {
         File syncFile = XmasSettings.getTempVxmSyncFile();
         PrintWriter writerS = null;
         try {
@@ -117,7 +117,7 @@ public class JsonExport implements Tool {
             }
         }
         if(syncr==0) {
-            sync_reset();
+            syncReset();
         }
         for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
             for(VisualComponent vp: vg.getComponents()) {

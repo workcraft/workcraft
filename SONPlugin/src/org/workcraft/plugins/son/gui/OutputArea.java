@@ -54,7 +54,7 @@ public class OutputArea extends JFrame {
 
         class Exit implements ActionListener{
             public void actionPerformed(ActionEvent e){
-                file_exit();
+                fileExit();
             }
         }
 
@@ -100,7 +100,7 @@ public class OutputArea extends JFrame {
         }
     }
 
-    public void file_exit(){
+    public void fileExit(){
         this.setVisible(false);
     }
 

@@ -86,7 +86,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestGroupWithEmptySelection() throws VisualModelInstantiationException {
+    public void testGroupWithEmptySelection() throws VisualModelInstantiationException {
         VisualModel model = new MockConcreteVisualModel();
 
         model.getCurrentLevel().add(new VisualGroup());
@@ -116,7 +116,7 @@ public class VisualModelTests {
         return diffs;
     }
 
-    public void TestGroup(VisualModel model, VisualNode[] toGroup) {
+    public void testGroup(VisualModel model, VisualNode[] toGroup) {
         model.selectNone();
         for (VisualNode node : toGroup) {
             model.addToSelection(node);
@@ -157,18 +157,18 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestGroup2Items() throws VisualModelInstantiationException {
+    public void testGroup2Items() throws VisualModelInstantiationException {
         VisualModel model = new MockConcreteVisualModel();
 
         Container root = model.getCurrentLevel();
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
 
-        TestGroup(model, new VisualNode[] {node1, node2 });
+        testGroup(model, new VisualNode[] {node1, node2 });
     }
 
     @Test
-    public void TestGroup1Item() throws VisualModelInstantiationException {
+    public void testGroup1Item() throws VisualModelInstantiationException {
         VisualModel model = createModel();
 
         Container root = model.getCurrentLevel();
@@ -183,7 +183,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestGroup5Items() throws VisualModelInstantiationException {
+    public void testGroup5Items() throws VisualModelInstantiationException {
         VisualModel model = createModel();
 
         Container root = model.getCurrentLevel();
@@ -212,11 +212,11 @@ public class VisualModelTests {
         root.add(sq4);
         root.add(sq5);
 
-        TestGroup(model, new VisualNode[] {node1, node3, sq1, sq5 });
+        testGroup(model, new VisualNode[] {node1, node3, sq1, sq5 });
     }
 
     @Test
-    public void TestUngroupRoot() throws VisualModelInstantiationException {
+    public void testUngroupRoot() throws VisualModelInstantiationException {
         VisualModel model = new MockConcreteVisualModel();
 
         Container root = model.getCurrentLevel();
@@ -249,7 +249,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestUngroupNonRoot() throws VisualModelInstantiationException {
+    public void testUngroupNonRoot() throws VisualModelInstantiationException {
         VisualModel model = new MockConcreteVisualModel();
 
         Container root = model.getCurrentLevel();
@@ -284,7 +284,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestUngroupEmpty() throws VisualModelInstantiationException {
+    public void testUngroupEmpty() throws VisualModelInstantiationException {
         VisualModel model = new MockConcreteVisualModel();
 
         Container root = model.getCurrentLevel();
@@ -307,7 +307,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestUngroupTwoGroups() throws VisualModelInstantiationException {
+    public void testUngroupTwoGroups() throws VisualModelInstantiationException {
         VisualModel model = new MockConcreteVisualModel();
 
         Container root = model.getCurrentLevel();
@@ -354,7 +354,7 @@ public class VisualModelTests {
 }
 
     @Test
-    public void testGrouping_AutoGroupConnections() {
+    public void testGroupingAutoGroupConnections() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -376,7 +376,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void testGrouping_AutoGroupConnectionsIgnoreSelection() {
+    public void testGroupingAutoGroupConnectionsIgnoreSelection() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -398,7 +398,7 @@ public class VisualModelTests {
         Assert.assertTrue(g.getChildren().contains(con));
     }
     @Test
-    public void testGrouping_AutoGroupTwoConnections() {
+    public void testGroupingAutoGroupTwoConnections() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -424,7 +424,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void testGrouping_AutoGroupConnectionsPointingDeep() {
+    public void testGroupingAutoGroupConnectionsPointingDeep() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -447,7 +447,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void testGrouping_DontGroupConnectionsSimple() {
+    public void testGroupingDontGroupConnectionsSimple() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -487,7 +487,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void testGrouping_DontGroupConnections() {
+    public void testGroupingDontGroupConnections() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -512,7 +512,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void testGrouping_DontCountConnections() {
+    public void testGroupingDontCountConnections() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -536,7 +536,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestHitNodeCurrentLevelTransformation() {
+    public void testHitNodeCurrentLevelTransformation() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();
@@ -553,7 +553,7 @@ public class VisualModelTests {
     }
 
     @Test
-    public void TestHitObjectsCurrentLevelTransformation() {
+    public void testHitObjectsCurrentLevelTransformation() {
         VisualModel model = createModel();
 
         VisualGroup root = (VisualGroup)model.getRoot();

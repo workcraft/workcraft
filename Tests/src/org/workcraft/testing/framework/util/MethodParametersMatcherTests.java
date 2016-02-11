@@ -73,7 +73,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void TestSimple() throws Exception {
+    public void testSimple() throws Exception {
         Assert.assertEquals(1, match(simple.class));
         Assert.assertEquals(-1, match(simple.class, Object.class));
     }
@@ -97,7 +97,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void TestMostSpecific() throws Exception {
+    public void testMostSpecific() throws Exception {
         Assert.assertEquals(1, match(advanced.class));
         Assert.assertEquals(2, match(advanced.class, A.class));
         Assert.assertEquals(3, match(advanced.class, ABq.class));
@@ -117,7 +117,7 @@ public class MethodParametersMatcherTests {
 
 
     @Test
-    public void TestAmbiguous() throws Exception {
+    public void testAmbiguous() throws Exception {
         Assert.assertEquals(1, match(ambiguous.class, A.class, AC.class));
         Assert.assertEquals(-1, match(ambiguous.class, AB.class, A.class));
         Assert.assertEquals(2, match(ambiguous.class, ABq.class, A.class));

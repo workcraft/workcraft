@@ -120,7 +120,7 @@ public class ScencoExecutionSupport {
     }
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
-    protected void reset_vars(String verbose, String genMode, String numSol, String customFlag, String customPath, String effort, String espressoFlag, String abcFlag, String gateLibFlag, String cpogSize, String disableFunction, String oldSynt){
+    protected void resetVars(String verbose, String genMode, String numSol, String customFlag, String customPath, String effort, String espressoFlag, String abcFlag, String gateLibFlag, String cpogSize, String disableFunction, String oldSynt){
         verbose = "";
         genMode= "";
         numSol= "";
@@ -246,7 +246,7 @@ public class ScencoExecutionSupport {
     // FUNCTION FOR PREPARING FILES NEEDED TO SCENCO TOOL TO WORK PROPERLY.
     // IT FILLS IN FILE CONTAINING ALL THE SCENARIOS AND THE CUSTOM ENCODING
     // FILE, IF USER WANTS TO USE A CUSTOM SOLUTION.
-    protected int WriteCpogIntoFile(int m, ArrayList<VisualTransformableNode> scenarios,
+    protected int writeCpogIntoFile(int m, ArrayList<VisualTransformableNode> scenarios,
             File scenarioFile, File encodingFile, EncoderSettings settings) {
         try{
 

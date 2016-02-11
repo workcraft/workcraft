@@ -131,7 +131,7 @@ public class SyncTool implements Tool {
         return 1;
     }
 
-    private static void store_sname(String str,String str_,int gr,int cno) {
+    private static void storeSname(String str,String str_,int gr,int cno) {
         for (sync_ s : synclist) {
             if(s.name1.equals(str)) {
                 s.name3=str_;
@@ -147,7 +147,7 @@ public class SyncTool implements Tool {
         }
     }
 
-    private static void store_sname_(String str,String str_,int gr,int cno) {
+    private static void storeSname2(String str,String str_,int gr,int cno) {
         for (sync_ s : synclist) {
             if(s.name1.equals(str)) {
                 s.name2=str_;
@@ -208,7 +208,7 @@ public class SyncTool implements Tool {
         }
     }
 
-    public void write_output() {
+    public void writeOutput() {
         //JPanel panelmain=mainFrame.getContentPane().get();
 
         slist.clear();
@@ -236,7 +236,7 @@ public class SyncTool implements Tool {
         }
     }
 
-    public void store_fields() {
+    public void storeFields() {
         slist1.clear();
         slist2.clear();
         for(Component con : mainFrame.getContentPane().getComponents()) {
@@ -262,7 +262,7 @@ public class SyncTool implements Tool {
         }
     }
 
-    public void set_fields() {
+    public void setFields() {
         for(Component con : mainFrame.getContentPane().getComponents()) {
             if(con instanceof JPanel) {
                 JPanel jp=(JPanel)con;
@@ -468,7 +468,7 @@ public class SyncTool implements Tool {
                                     if(checksynclist(cnet.getName(cpNode))==1) {
                                         synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),0));
                                     } else {
-                                        store_sname_(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                        storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                     }
                                 }
                             }
@@ -490,7 +490,7 @@ public class SyncTool implements Tool {
                                     if(checksynclist(cnet.getName(cpNode))==1) {
                                         synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),0));
                                     } else {
-                                        store_sname_(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                        storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                     }
                                 }
                             }
@@ -515,7 +515,7 @@ public class SyncTool implements Tool {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
                                             synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
                                         } else {
-                                            store_sname_(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                            storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
@@ -541,7 +541,7 @@ public class SyncTool implements Tool {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
                                             synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
                                         } else {
-                                            store_sname_(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                            storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
@@ -566,7 +566,7 @@ public class SyncTool implements Tool {
                                     if(checksynclist(cnet.getName(cpNode))==1) {
                                         synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
                                     } else {
-                                        store_sname_(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                        storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                     }
                                 }
                             }
@@ -594,7 +594,7 @@ public class SyncTool implements Tool {
                                             //System.out.println("Queue ___ = " + sc.getGr());
                                             synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
-                                            store_sname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                            storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
@@ -618,7 +618,7 @@ public class SyncTool implements Tool {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
                                             synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
-                                            store_sname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                            storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
@@ -645,7 +645,7 @@ public class SyncTool implements Tool {
                                             //System.out.println("  Found contact__ = merge ");
                                             synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),cno));
                                         } else {
-                                            store_sname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),cno);
+                                            storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),cno);
                                         }
                                     }
                                 }
@@ -669,7 +669,7 @@ public class SyncTool implements Tool {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
                                             synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
-                                            store_sname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                            storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
@@ -693,7 +693,7 @@ public class SyncTool implements Tool {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
                                             synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
-                                            store_sname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
+                                            storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
                                     }
                                 }
@@ -740,7 +740,7 @@ public class SyncTool implements Tool {
 
                     Object selected = comboBox.getSelectedItem();
                     if(selected.toString().equals("mesochronous")) {
-                        set_fields();
+                        setFields();
                     }
                 }
             });
@@ -778,8 +778,8 @@ public class SyncTool implements Tool {
                 int no=1;
 
                 dispose();
-                write_output();
-                store_fields();
+                writeOutput();
+                storeFields();
                 updatesynclist();
                 writesynclist();
                 String gp="";

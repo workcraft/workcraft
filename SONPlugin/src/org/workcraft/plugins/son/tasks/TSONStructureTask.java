@@ -66,7 +66,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
         //Causally Precede task result
             infoMsg("Running block structure tasks...");
             if(onCycleAlg.cycleTask(block.getComponents()).isEmpty()){
-                Collection<Node> result3 = CausallyPrecedeTask(block);
+                Collection<Node> result3 = causallyPrecedeTask(block);
                 if(!result3.isEmpty()){
                     relationErrors.addAll(result3);
                     relationErrors.add(block);
@@ -90,7 +90,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
     //Check all inputs of a block causally precede all outputs of an un-collapsed block
     //Warning: run cycle check before
-    private Collection<Node> CausallyPrecedeTask(Block block){
+    private Collection<Node> causallyPrecedeTask(Block block){
         Collection<Node> result = new ArrayList<Node>();
         for(Node input : getTSONAlg().getBlockPNInputs(block)){
             if(!getTSONAlg().isCausallyPrecede(input, getTSONAlg().getBlockPNOutputs(block)))

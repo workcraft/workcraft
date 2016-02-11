@@ -99,7 +99,7 @@ public class VerConfTool implements Tool {
 
     public List<String> slist=new ArrayList<String>();
 
-    private void init_settings() {
+    private void initSettings() {
         Scanner sc = null;
         try {
             File vsettingsFile = XmasSettings.getTempVxmVsettingsFile();
@@ -131,7 +131,7 @@ public class VerConfTool implements Tool {
         }
     }
 
-    public void write_output() {
+    public void writeOutput() {
         //JPanel panelmain=mainFrame.getContentPane().get();
 
         String trname = (String)trcombob.getSelectedItem();
@@ -210,7 +210,7 @@ public class VerConfTool implements Tool {
                 }
             }
         });
-        init_settings();
+        initSettings();
         loaded=1;
 
         for (JPanel plist : panellist) {
@@ -240,7 +240,7 @@ public class VerConfTool implements Tool {
                 int no=1;
 
                 dispose();
-                write_output();
+                writeOutput();
 
             }
 

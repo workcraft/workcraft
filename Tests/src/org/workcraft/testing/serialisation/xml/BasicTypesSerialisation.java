@@ -51,7 +51,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void EnumTest() {
+    public void enumTest() {
         try {
             Document doc = XmlUtil.createDocument();
             EnumSerialiser s = new EnumSerialiser();
@@ -77,7 +77,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void IntTest() {
+    public void intTest() {
         try {
             Document doc = XmlUtil.createDocument();
             IntSerialiser s = new IntSerialiser();
@@ -103,7 +103,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void DoubleTest() {
+    public void doubleTest() {
         try {
             Document doc = XmlUtil.createDocument();
             DoubleSerialiser s = new DoubleSerialiser();
@@ -135,7 +135,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void TransformTest() {
+    public void transformTest() {
         try {
             Document doc = XmlUtil.createDocument();
             AffineTransformSerialiser s = new AffineTransformSerialiser();
@@ -161,7 +161,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void StringTest() {
+    public void stringTest() {
         try {
             Document doc = XmlUtil.createDocument();
             StringSerialiser s = new StringSerialiser();

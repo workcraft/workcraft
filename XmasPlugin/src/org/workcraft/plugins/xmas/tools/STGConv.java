@@ -34,7 +34,7 @@ public class STGConv {
         }
     }
 
-    private void createArc_(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+    private void createArc2(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
         if (p != null && t != null) {
             stg.connect(t, p);
         }
@@ -46,7 +46,7 @@ public class STGConv {
         createArc(p1,t1);
     }
 
-    private void connections_(VisualPlace p0,VisualPlace p1,VisualSignalTransition t0,VisualSignalTransition t1) throws InvalidConnectionException {
+    private void connections2(VisualPlace p0,VisualPlace p1,VisualSignalTransition t0,VisualSignalTransition t1) throws InvalidConnectionException {
 
         createArc(p0,t1);
         createArc(p1,t0);
@@ -78,7 +78,7 @@ public class STGConv {
             setPosition(t0, x, y + 2);
             //p0.setLabel("label");
             createArc(p0,t0);
-            createArc_(p1,t0);
+            createArc2(p1,t0);
             p1.getReferencedPlace().setTokens(1);
         }
 
@@ -93,7 +93,7 @@ public class STGConv {
             }
         }
 
-        private void createArc_(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+        private void createArc2(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
             if (p != null && t != null) {
                 stg.connect(t, p);
             }
@@ -129,8 +129,8 @@ public class STGConv {
             setPosition(t1, x, y + 2);
             createArc(p0,t1);
             createArc(p1,t0);
-            createArc_(p0,t0);
-            createArc_(p1,t1);
+            createArc2(p0,t0);
+            createArc2(p1,t1);
             p1.getReferencedPlace().setTokens(1);
         }
 
@@ -145,7 +145,7 @@ public class STGConv {
             }
         }
 
-        private void createArc_(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+        private void createArc2(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
             if (p != null && t != null) {
                 stg.connect(t, p);
             }
@@ -185,9 +185,9 @@ public class STGConv {
             createArc(p0,t1);
             createArc(p0,t2);
             createArc(p1,t0);
-            createArc_(p0,t0);
-            createArc_(p1,t1);
-            createArc_(p1,t2);
+            createArc2(p0,t0);
+            createArc2(p1,t1);
+            createArc2(p1,t2);
             p1.getReferencedPlace().setTokens(1);
         }
 
@@ -202,7 +202,7 @@ public class STGConv {
             }
         }
 
-        private void createArc_(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+        private void createArc2(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
             if (p != null && t != null) {
                 stg.connect(t, p);
             }
@@ -242,9 +242,9 @@ public class STGConv {
             createArc(p0,t1);
             createArc(p0,t2);
             createArc(p1,t0);
-            createArc_(p0,t0);
-            createArc_(p1,t1);
-            createArc_(p1,t2);
+            createArc2(p0,t0);
+            createArc2(p1,t1);
+            createArc2(p1,t2);
             p1.getReferencedPlace().setTokens(1);
         }
 
@@ -259,7 +259,7 @@ public class STGConv {
             }
         }
 
-        private void createArc_(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+        private void createArc2(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
             if (p != null && t != null) {
                 stg.connect(t, p);
             }
@@ -299,10 +299,10 @@ public class STGConv {
             connections(i3.p0,i3.p1,a4.t0,a4.t2);
             connections(i5.p0,i5.p1,a2.t0,a2.t2);
 
-            connections_(a1.p0,a1.p1,i2.t0,i2.t1);
-            connections_(a2.p0,a2.p1,i3.t0,i3.t1);
-            connections_(a3.p0,a3.p1,i4.t0,i4.t1);
-            connections_(a4.p0,a4.p1,i5.t0,i5.t1);
+            connections2(a1.p0,a1.p1,i2.t0,i2.t1);
+            connections2(a2.p0,a2.p1,i3.t0,i3.t1);
+            connections2(a3.p0,a3.p1,i4.t0,i4.t1);
+            connections2(a4.p0,a4.p1,i5.t0,i5.t1);
         }
 
     }
@@ -322,7 +322,7 @@ public class STGConv {
         STGAnd a1 = new STGAnd("a1",45,0,stg);
 
         connections(s1.p0,s1.p1,o1.t1,o1.t2);
-        connections_(o1.p0,o1.p1,i1.t0,i1.t1);
+        connections2(o1.p0,o1.p1,i1.t0,i1.t1);
         connections(i1.p0,i1.p1,a1.t0,a1.t1);
 
         genSTG_ a = new genSTG_("a",0,15);
@@ -341,7 +341,7 @@ public class STGConv {
         STGAnd a2 = new STGAnd("a2",145,0,stg);
 
         connections(s2.p0,s2.p1,o2.t1,o2.t2);
-        connections_(o2.p0,o2.p1,i2.t0,i2.t1);
+        connections2(o2.p0,o2.p1,i2.t0,i2.t1);
         connections(i2.p0,i2.p1,a2.t0,a2.t1);
 
         genSTG_ e = new genSTG_("e",100,15);
@@ -381,11 +381,11 @@ public class STGConv {
         STGSignal s3 = new STGSignal("s3",60,5,stg);
         STGAnd a5 = new STGAnd("a5",75,10,stg);
 
-        connections_(s1.p0,s1.p1,i1.t0,i1.t1);
-        connections_(s1.p0,s1.p1,i5.t0,i5.t1);
-        connections_(s2.p0,s2.p1,a1.t0,a1.t2);
-        connections_(s2.p0,s2.p1,a4.t0,a4.t2);
-        connections_(s3.p0,s3.p1,a5.t0,a5.t2);
+        connections2(s1.p0,s1.p1,i1.t0,i1.t1);
+        connections2(s1.p0,s1.p1,i5.t0,i5.t1);
+        connections2(s2.p0,s2.p1,a1.t0,a1.t2);
+        connections2(s2.p0,s2.p1,a4.t0,a4.t2);
+        connections2(s3.p0,s3.p1,a5.t0,a5.t2);
 
         connections(i1.p0,i1.p1,i2.t0,i2.t1);
         connections(i2.p0,i2.p1,a1.t0,a1.t1);
@@ -395,7 +395,7 @@ public class STGConv {
         connections(i6.p0,i6.p1,a3.t0,a3.t1);
 
         connections(a1.p0,a1.p1,a2.t0,a2.t1);
-        connections_(a2.p0,a2.p1,i3.t0,i3.t1);
+        connections2(a2.p0,a2.p1,i3.t0,i3.t1);
         connections(a3.p0,a3.p1,a4.t0,a4.t1);
         connections(a4.p0,a4.p1,a5.t0,a5.t1);
 
@@ -428,12 +428,12 @@ public class STGConv {
         STGInv i4 = new STGInv("i4",120,0,stg);
         STGInv i5 = new STGInv("i5",135,0,stg);
 
-        //connections_(s1.p0,s1.p1,a1.t0,a1.t2);
+        //connections2(s1.p0,s1.p1,a1.t0,a1.t2);
         connections(s2.p0,s2.p1,o1.t0,o1.t2);
         connections(a1.p0,a1.p1,o1.t1,o1.t2);
         connections(o1.p0,o1.p1,o2.t0,o2.t1);
         connections(o2.p0,o2.p1,a2.t0,a2.t1);
-        connections_(a2.p0,a2.p1,i1.t0,i1.t1);
+        connections2(a2.p0,a2.p1,i1.t0,i1.t1);
         connections(i1.p0,i1.p1,i2.t0,i2.t1);
         connections(i2.p0,i2.p1,i3.t0,i3.t1);
         connections(i3.p0,i3.p1,i4.t0,i4.t1);
@@ -456,12 +456,12 @@ public class STGConv {
         STGInv i9 = new STGInv("i9",120,50,stg);
         STGInv i10 = new STGInv("i10",135,50,stg);
 
-        //connections_(s3.p0,s3.p1,a3.t0,a3.t2);
+        //connections2(s3.p0,s3.p1,a3.t0,a3.t2);
         connections(s4.p0,s4.p1,o3.t0,o3.t2);
         connections(a3.p0,a3.p1,o3.t1,o3.t2);
         connections(o3.p0,o3.p1,o4.t0,o4.t1);
         connections(o4.p0,o4.p1,a4.t0,a4.t1);
-        connections_(a4.p0,a4.p1,i8.t0,i8.t1);
+        connections2(a4.p0,a4.p1,i8.t0,i8.t1);
         connections(i6.p0,i6.p1,i7.t0,i7.t1);
         connections(i7.p0,i7.p1,i8.t0,i8.t1);
         connections(i8.p0,i8.p1,i9.t0,i9.t1);

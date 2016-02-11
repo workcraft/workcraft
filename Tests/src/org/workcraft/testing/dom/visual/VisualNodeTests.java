@@ -108,7 +108,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void TestGetPath() {
+    public void testGetPath() {
         VisualGroup root = createGroup(null);
         Assert.assertEquals(1, Hierarchy.getPath(root).length);
         VisualGroup node1 = createGroup(root);
@@ -118,7 +118,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void TestFindCommonParent() {
+    public void testFindCommonParent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);

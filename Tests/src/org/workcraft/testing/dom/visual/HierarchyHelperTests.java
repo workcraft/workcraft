@@ -50,7 +50,7 @@ public class HierarchyHelperTests {
     }
 
     @Test
-    public void TestGetPath() {
+    public void testGetPath() {
         MockHierarchyNode node1 = new MockHierarchyNode(null);
         MockHierarchyNode node2 = new MockHierarchyNode(node1);
         MockHierarchyNode node3 = new MockHierarchyNode(node2);

@@ -38,7 +38,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class STGSerialisationTests {
 
     @Test
-    public void SimpleVisualSaveLoadWithImplicitArcs() throws Exception {
+    public void simpleVisualSaveLoadWithImplicitArcs() throws Exception {
 
         VisualSTG stg = XMLSerialisationTestingUtils.createTestSTG3();
 

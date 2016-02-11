@@ -78,7 +78,7 @@ public class VisualComponentGroupTests {
 
 
     @Test
-    public void TestHitComponent() {
+    public void testHitComponent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         node1.setX(5);
@@ -93,7 +93,7 @@ public class VisualComponentGroupTests {
         Assert.assertEquals(null, HitMan.hitDeepestNodeOfType(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
     }
 
-    public void TestHitConnection() {
+    public void testHitConnection() {
         VisualGroup root = createGroup(null);
         VisualGroup group = createGroup(root);
         group.setX(5);
@@ -115,7 +115,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestHitNode() {
+    public void testHitNode() {
         VisualGroup group = new VisualGroup();
 
         Rectangle2D.Double r1 = new Rectangle2D.Double();
@@ -161,7 +161,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestHitSubGroup() {
+    public void testHitSubGroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -175,7 +175,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestUngroup() {
+    public void testUngroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -228,7 +228,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestTransformChangeNotification() {
+    public void testTransformChangeNotification() {
         TransformEventPropagator p = new TransformEventPropagator();
 
         VisualGroup root = createGroup(null);
