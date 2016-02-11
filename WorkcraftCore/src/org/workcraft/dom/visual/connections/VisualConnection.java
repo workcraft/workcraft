@@ -119,7 +119,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     private static double defaultArrowWidth = 0.15;
     private static double defaultArrowLength = 0.4;
     private static double defaultBubbleSize = 0.2;
-    public static double HIT_THRESHOLD = 0.2;
+    public static final double HIT_THRESHOLD = 0.2;
     private static Color defaultColor = Color.BLACK;
 
     private Color color = defaultColor;

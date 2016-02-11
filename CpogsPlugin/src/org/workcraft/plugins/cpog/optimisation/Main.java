@@ -37,14 +37,14 @@ public class Main {
         "1111",
     };
 
-    static String[] paper_simple = {
+    static String[] paperSimple = {
         "011--",
         "10---",
         "11010",
         "11-01",
     };
 
-    static String[] phase_encoder_3 = {
+    static String[] phaseEncoder3 = {
         "1010-0",
         "-00110",
         "01-010",
@@ -53,7 +53,7 @@ public class Main {
         "01010-",
     };
 
-    static String[] phase_encoder_4 = {
+    static String[] phaseEncoder4 = {
     "---000000111",
     "-11000001--0",
     "--100001001-",
@@ -132,7 +132,7 @@ public class Main {
         LegacyCpogSolver solverCnfLimboole = new LegacyDefaultCpogSolver<BooleanFormula>(cnfGenerator, new LimBooleCnfGenerator());
         LegacyCpogSolver solverOneHot = new LegacyDefaultCpogSolver<BooleanFormula>(oneHot, new LimBooleCnfGenerator());
 
-    /*    CpogOptimisationTask<BooleanFormula> formula = oneHot.getFormula(phase_encoder_3, 3, 0);
+    /*    CpogOptimisationTask<BooleanFormula> formula = oneHot.getFormula(phaseEncoder3, 3, 0);
         Cnf cnf = new CleverCnfGenerator().generateCnf(formula.getTask());
         CnfTask task = new SimpleCnfTaskProvider().getCnf(cnf);
 
@@ -155,7 +155,7 @@ public class Main {
         //System.out.println(FormulaToString.toString(oneHot.getFormula(smallscenarios, null, freeVariables, derivedVariables).getTask()));
         long start = System.currentTimeMillis();
 
-        CpogEncoding solution = solverCnf.solve(phase_encoder_4, freeVariables, derivedVariables);
+        CpogEncoding solution = solverCnf.solve(phaseEncoder4, freeVariables, derivedVariables);
         long end = System.currentTimeMillis();
 
         System.out.println("time: " + (end-start)/1000.0);

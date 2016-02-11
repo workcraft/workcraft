@@ -70,18 +70,18 @@ public class PNetGen implements Tool {
     }
 
     static List<Info> lst = new ArrayList<Info>();
-    static List<Ids> lst_ = new ArrayList<Ids>();
+    static List<Ids> lst2 = new ArrayList<Ids>();
     static List<Info> slsti = new ArrayList<Info>();
     static List<Info> slsto = new ArrayList<Info>();
-    static List<Info> slsto_ = new ArrayList<Info>();
+    static List<Info> slsto2 = new ArrayList<Info>();
 
 
     public void initlist() {
         lst.clear();
-        lst_.clear();
+        lst2.clear();
         slsti.clear();
         slsto.clear();
-        slsto_.clear();
+        slsto2.clear();
     }
 
     private static void printlst() {
@@ -161,8 +161,8 @@ public class PNetGen implements Tool {
     private static String searchList3(String id) {
         String str = "";
 
-        for(int i=0;i<lst_.size();i++) {
-          if(id.equals(lst_.get(i).a)) str = lst_.get(i).b;
+        for(int i=0;i<lst2.size();i++) {
+          if(id.equals(lst2.get(i).a)) str = lst2.get(i).b;
         }
         return str;
     }
@@ -238,8 +238,8 @@ public class PNetGen implements Tool {
     private static int searchSlsto(String id) {
         int i, pos=0;
 
-        for(i=0;i<slsto_.size();i++) {
-            if(id.equals(slsto_.get(i).b)) {
+        for(i=0;i<slsto2.size();i++) {
+            if(id.equals(slsto2.get(i).b)) {
                 pos=i;
             }
         }
@@ -251,7 +251,7 @@ public class PNetGen implements Tool {
 
         for(i=0;i<slsti.size();i++) {
             pos=searchSlsto(slsti.get(i).b);
-            slsto.add(new Info(slsto_.get(pos).a,slsto_.get(pos).b,"",slsto_.get(pos).d));
+            slsto.add(new Info(slsto2.get(pos).a,slsto2.get(pos).b,"",slsto2.get(pos).d));
         }
     }
 
@@ -867,7 +867,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                   String idNamep2 = "";
                   String typeName = node.get("type").getValueAsText();
                   //System.out.println("id: " + idName + "type: " + typeName);
-                  lst_.add(new Ids(idName,typeName));
+                  lst2.add(new Ids(idName,typeName));
                   JsonNode y = node.get("outs");
                   if(y!=null) {
                    for(int i=0;y.has(i);i++) {
@@ -884,7 +884,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                         }
                         //add o based on order of i or reverse?
                         if(idName.contains("Sync")) {
-                            slsto_.add(new Info(idName1,idName,"",idNamep1));
+                            slsto2.add(new Info(idName1,idName,"",idNamep1));
                         }
                       } else if(i==1) {
                         idName2 = y.get(i).get("id").getValueAsText();
@@ -894,13 +894,13 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                         else lst.add(new Info(idName2,idName,"",idNamep2));
                         if(idName2.contains("Sync")) slsti.add(new Info(idName,idName2,"",idNamep2));
                         if(idName.contains("Sync")) {
-                            slsto_.add(new Info(idName2,idName,"",idNamep2));
+                            slsto2.add(new Info(idName2,idName,"",idNamep2));
                         }
                       } else {
                         idName1 = y.get(i).get("id").getValueAsText();
                         idNamep = y.get(i).get("in_port").getValueAsText();
                         if(idName.contains("Sync")) {
-                            slsto_.add(new Info(idName,idName1,"",idNamep));
+                            slsto2.add(new Info(idName,idName1,"",idNamep));
                         }
                       }
                     }

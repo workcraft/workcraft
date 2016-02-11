@@ -28,6 +28,7 @@
         <module name="MemberName" />
         <module name="MethodName" />
         <module name="ParameterName" />
+        <module name="StaticVariableName" />
 
         <module name="OneStatementPerLine" />
 

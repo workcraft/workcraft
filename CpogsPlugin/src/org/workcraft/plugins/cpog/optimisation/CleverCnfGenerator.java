@@ -317,12 +317,12 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 
     @Override
     public Literal visit(Zero node) {
-        return Literal.Zero;
+        return Literal.ZERO;
     }
 
     @Override
     public Literal visit(One node) {
-        return Literal.One;
+        return Literal.ONE;
     }
 
     @Override
