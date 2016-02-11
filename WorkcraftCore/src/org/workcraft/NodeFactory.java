@@ -97,9 +97,9 @@ public class NodeFactory {
         VisualComponentGeneratorAttribute generator = component.getClass().getAnnotation(VisualComponentGeneratorAttribute.class);
         if(generator != null) {
             try {
-                return ((org.workcraft.dom.VisualComponentGenerator)Class.forName(generator.generator()).
-                        getConstructor().newInstance()).
-                        createComponent(component, constructorParameters);
+                return ((org.workcraft.dom.VisualComponentGenerator)Class.forName(generator.generator())
+                        .getConstructor().newInstance())
+                        .createComponent(component, constructorParameters);
             } catch (Exception e) {
                 throw new NodeCreationException(e);
             }

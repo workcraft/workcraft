@@ -36,6 +36,15 @@
         <module name="UnusedImports" />
         <module name="RedundantImport" />
 
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT" />
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+
         <module name="EmptyForIteratorPad" />
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />
