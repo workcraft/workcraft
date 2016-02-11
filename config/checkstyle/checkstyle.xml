@@ -27,6 +27,7 @@
         <module name="LocalVariableName" />
         <module name="MemberName" />
         <module name="MethodName" />
+        <module name="ParameterName" />
 
         <module name="OneStatementPerLine" />
 

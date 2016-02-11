@@ -155,7 +155,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     }
 
 
-    public int getNearestSegment(Point2D pt, Point2D out_pointOnSegment) {
+    public int getNearestSegment(Point2D pt, Point2D outPointOnSegment) {
         double min = Double.MAX_VALUE;
         int nearest = -1;
 
@@ -183,8 +183,8 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
             if (dist < min) {
                 min = dist;
-                if (out_pointOnSegment != null) {
-                    out_pointOnSegment.setLocation(a);
+                if (outPointOnSegment != null) {
+                    outPointOnSegment.setLocation(a);
                 }
                 nearest = i;
             }

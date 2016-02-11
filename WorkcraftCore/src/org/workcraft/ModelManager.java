@@ -135,11 +135,11 @@ public class ModelManager {
         return null;
     }
 
-    public static String getToolDisplayName(Class<?> tool_class) {
-        if (!isValidToolClass(tool_class))
+    public static String getToolDisplayName(Class<?> toolClass) {
+        if (!isValidToolClass(toolClass))
             return null;
         try {
-            return (String)tool_class.getField("_displayname").get(null);
+            return (String)toolClass.getField("_displayname").get(null);
         } catch (NoSuchFieldException e) {
             System.err.println("Tool implementation class is improperly declared: static final String "+e.getMessage()+" is required");
         } catch (IllegalAccessException e) {

@@ -62,18 +62,18 @@ public class ColorUtils {
         return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
-    public static Color getLabColor(float L, float a, float b) {
-        float[] rgb = convertFromLabToRgb(new float[] {100.0f * L, 128.0f - 255.0f * a, 128.0f - 255.0f * b});
+    public static Color getLabColor(float l, float a, float b) {
+        float[] rgb = convertFromLabToRgb(new float[] {100.0f * l, 128.0f - 255.0f * a, 128.0f - 255.0f * b});
         return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
-    public static Color[] getLabPalette(int LCount, int aCount, int bCount, float LMin, float LMax) {
+    public static Color[] getLabPalette(int lCount, int aCount, int bCount, float lMin, float lMax) {
         ArrayList<Color> palette = new ArrayList<>();
-        if ((LMax > LMin) && (LCount > 0) && (aCount > 0) && (bCount > 0)) {
-            float dL = (LMax - LMin) / LCount;
+        if ((lMax > lMin) && (lCount > 0) && (aCount > 0) && (bCount > 0)) {
+            float dL = (lMax - lMin) / lCount;
             float da = 1.0f / aCount;
             float db = 1.0f / bCount;
-            for (float l = LMax; l >= LMin; l -= dL) {
+            for (float l = lMax; l >= lMin; l -= dL) {
                 for (float a = 0.0f; a <= 1.0f; a += da) {
                     for (float b = 0.0f; b <= 1.0f; b += db) {
                         palette.add(ColorUtils.getLabColor(l, a, b));

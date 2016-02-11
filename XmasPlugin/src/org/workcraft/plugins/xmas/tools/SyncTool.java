@@ -131,10 +131,10 @@ public class SyncTool implements Tool {
         return 1;
     }
 
-    private static void storeSname(String str,String str_,int gr,int cno) {
+    private static void storeSname(String str,String str2,int gr,int cno) {
         for (sync_ s : synclist) {
             if(s.name1.equals(str)) {
-                s.name3=str_;
+                s.name3=str2;
                 if(cno==0) {
                     s.l2 = "i";
                 } else if(cno==1) {
@@ -147,10 +147,10 @@ public class SyncTool implements Tool {
         }
     }
 
-    private static void storeSname2(String str,String str_,int gr,int cno) {
+    private static void storeSname2(String str,String str2,int gr,int cno) {
         for (sync_ s : synclist) {
             if(s.name1.equals(str)) {
-                s.name2=str_;
+                s.name2=str2;
                 if(cno==0) {
                     s.l1 = "o";
                 } else if(cno==1) {
