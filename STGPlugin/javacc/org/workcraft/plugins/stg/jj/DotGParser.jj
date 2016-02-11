@@ -9,7 +9,7 @@ options {
 }
 
 PARSER_BEGIN(DotGParser)
-package org.workcraft.plugins.stg.javacc;
+package org.workcraft.plugins.stg.jj;
 
 import java.util.HashSet;
 import java.util.HashMap;
