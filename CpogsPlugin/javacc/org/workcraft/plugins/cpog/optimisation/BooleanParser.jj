@@ -8,7 +8,7 @@ options {
   UNICODE_INPUT = true;
 }
 PARSER_BEGIN(BooleanParser)
-package org.workcraft.plugins.cpog.optimisation.javacc;
+package org.workcraft.plugins.cpog.optimisation.jj;
 
 import java.util.Collection;
 import java.util.HashMap;
