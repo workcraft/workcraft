@@ -62,7 +62,7 @@ public class STGGen implements Tool {
         return "Generate STG";
     }
 
-    int cnt_syncnodes=0;
+    int cntSyncNodes=0;
     JFrame mainFrame = null;
 
     public void dispose() {
@@ -82,7 +82,7 @@ public class STGGen implements Tool {
         List<SyncComponent> scomps = new ArrayList<SyncComponent>();
         for (Node node : vnet.getNodes()) {
             if(node instanceof VisualSyncComponent) {
-                cnt_syncnodes++;
+                cntSyncNodes++;
                 VisualSyncComponent vsc=(VisualSyncComponent)node;
                 SyncComponent sc=vsc.getReferencedSyncComponent();
                 scomps.add(sc);
@@ -95,7 +95,7 @@ public class STGGen implements Tool {
         panelmain.setLayout(new BoxLayout(panelmain,BoxLayout.PAGE_AXIS));
         List<JPanel> panellist = new ArrayList<JPanel>();
         JRadioButton jr;
-        for(int no = 0; no < cnt_syncnodes; no = no+1) {
+        for(int no = 0; no < cntSyncNodes; no = no+1) {
             //if(loaded==0) slist1.add(new String("1"));
             //if(loaded==0) slist2.add(new String("1"));
             panellist.add(new JPanel());

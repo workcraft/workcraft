@@ -45,10 +45,10 @@ public class CycleAnalyserTool extends AbstractTool {
     // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final char INFINITY_SYMBOL = 0x221E;
 
-    final private int COLUMN_THROUGHPUT = 0;
-    final private int COLUMN_TOKEN = 1;
-    final private int COLUMN_DELAY = 2;
-    final private int COLUMN_CYCLE = 3;
+    private static final int COLUMN_THROUGHPUT = 0;
+    private static final int COLUMN_TOKEN = 1;
+    private static final int COLUMN_DELAY = 2;
+    private static final int COLUMN_CYCLE = 3;
 
     private VisualDfs dfs;
     private ArrayList<Cycle> cycles;

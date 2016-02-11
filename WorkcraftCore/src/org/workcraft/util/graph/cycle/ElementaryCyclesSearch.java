@@ -43,7 +43,7 @@ public class ElementaryCyclesSearch {
     private boolean[] blocked = null;
 
     /** B-Lists, used by the algorithm of Johnson */
-    private Vector[] B = null;
+    private Vector[] mB = null;
 
     /** Stack for nodes, used by the algorithm of Johnson */
     private Vector stack = null;
@@ -70,7 +70,7 @@ public class ElementaryCyclesSearch {
     public List getElementaryCycles() {
         this.cycles = new Vector();
         this.blocked = new boolean[this.adjList.length];
-        this.B = new Vector[this.adjList.length];
+        this.mB = new Vector[this.adjList.length];
         this.stack = new Vector();
         StrongConnectedComponents sccs = new StrongConnectedComponents(this.adjList);
         int s = 0;
@@ -83,7 +83,7 @@ public class ElementaryCyclesSearch {
                 for (int j = 0; j < scc.length; j++) {
                     if ((scc[j] != null) && (scc[j].size() > 0)) {
                         this.blocked[j] = false;
-                        this.B[j] = new Vector();
+                        this.mB[j] = new Vector();
                     }
                 }
 
@@ -135,8 +135,8 @@ public class ElementaryCyclesSearch {
         } else {
             for (int i = 0; i < adjList[v].size(); i++) {
                 int w = ((Integer) adjList[v].get(i)).intValue();
-                if (!this.B[w].contains(new Integer(v))) {
-                    this.B[w].add(new Integer(v));
+                if (!this.mB[w].contains(new Integer(v))) {
+                    this.mB[w].add(new Integer(v));
                 }
             }
         }
@@ -152,7 +152,7 @@ public class ElementaryCyclesSearch {
      */
     private void unblock(int node) {
         this.blocked[node] = false;
-        Vector bnode = this.B[node];
+        Vector bnode = this.mB[node];
         while (bnode.size() > 0) {
             Integer w = (Integer) bnode.get(0);
             bnode.remove(0);

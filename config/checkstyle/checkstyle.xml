@@ -25,6 +25,7 @@
         <module name="PackageName" />
         <module name="LocalFinalVariableName" />
         <module name="LocalVariableName" />
+        <module name="MemberName" />
 
         <module name="OneStatementPerLine" />
 

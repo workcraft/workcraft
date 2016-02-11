@@ -943,20 +943,20 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
           }
     }
 
-    //public Collection<VisualSourceComponent> src_nodes;
-    public Collection<SourceComponent> src_nodes;
-    public Collection<FunctionComponent> fun_nodes;
-    public Collection<SwitchComponent> sw_nodes;
+    //public Collection<VisualSourceComponent> srcNodes;
+    public Collection<SourceComponent> srcNodes;
+    public Collection<FunctionComponent> funNodes;
+    public Collection<SwitchComponent> swNodes;
 
     public void run(WorkspaceEntry we) {
         System.out.println("");
         Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
         VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
-        //src_nodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
-        src_nodes=cnet.getSourceComponents();
-        //fun_nodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
-        fun_nodes=cnet.getFunctionComponents();
-        sw_nodes=cnet.getSwitchComponents();
+        //srcNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
+        srcNodes=cnet.getSourceComponents();
+        //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
+        funNodes=cnet.getFunctionComponents();
+        swNodes=cnet.getSwitchComponents();
 
         JsonFactory f = new MappingJsonFactory();
         File cpnFile = XmasSettings.getTempVxmCpnFile();
@@ -1115,7 +1115,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                 if ( writer != null ) {
                     writer.close();
                     System.out.println("Control CPNs created");
-                    PNetExt pnconv = new PNetExt(src_nodes,fun_nodes,sw_nodes,syncflag);
+                    PNetExt pnconv = new PNetExt(srcNodes,funNodes,swNodes,syncflag);
                     //printlst();
                 }
                 /*if ( writer_s != null )

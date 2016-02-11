@@ -13,23 +13,23 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.NodeStg;
 
 public class LogicStg extends NodeStg {
-    public final VisualPlace C0;                        // C=0
-    public final VisualPlace C1;                        // C=1
-    public final Map<Node, VisualSignalTransition> CRs;    // C+
-    public final Map<Node, VisualSignalTransition> CFs;    // C-
+    public final VisualPlace c0;                        // C=0
+    public final VisualPlace c1;                        // C=1
+    public final Map<Node, VisualSignalTransition> cRs;    // C+
+    public final Map<Node, VisualSignalTransition> cFs;    // C-
 
-    public LogicStg(VisualPlace C0, VisualPlace C1, Map<Node, VisualSignalTransition> CRs, Map<Node, VisualSignalTransition> CFs) {
-        this.C0 = C0;
-        this.C1 = C1;
-        this.CRs = CRs;
-        this.CFs = CFs;
+    public LogicStg(VisualPlace c0, VisualPlace c1, Map<Node, VisualSignalTransition> cRs, Map<Node, VisualSignalTransition> cFs) {
+        this.c0 = c0;
+        this.c1 = c1;
+        this.cRs = cRs;
+        this.cFs = cFs;
     }
 
     @Override
     public List<VisualSignalTransition> getAllTransitions() {
         Set<VisualSignalTransition> tmp = new HashSet<>();
-        tmp.addAll(CRs.values());
-        tmp.addAll(CFs.values());
+        tmp.addAll(cRs.values());
+        tmp.addAll(cFs.values());
         List<VisualSignalTransition> result = new ArrayList<>();
         result.addAll(tmp);
         return result;
@@ -37,7 +37,7 @@ public class LogicStg extends NodeStg {
 
     @Override
     public List<VisualPlace> getAllPlaces() {
-        return Arrays.asList(C0, C1);
+        return Arrays.asList(c0, c1);
     }
 
 }

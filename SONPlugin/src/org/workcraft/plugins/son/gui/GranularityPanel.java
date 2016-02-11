@@ -13,26 +13,26 @@ public class GranularityPanel extends JPanel{
 
     private static final long serialVersionUID = 1L;
 
-    private JRadioButton year_yearButton, hour_minsButton;
+    private JRadioButton yearYearButton, hourMinsButton;
     private ButtonGroup granularityGroup;
 
     public GranularityPanel(Border border){
         setLayout(new FlowLayout());
         setBorder(border);
 
-        year_yearButton = new JRadioButton();
-        year_yearButton.setText("T:year D:year");
-        year_yearButton.setSelected(true);
+        yearYearButton = new JRadioButton();
+        yearYearButton.setText("T:year D:year");
+        yearYearButton.setSelected(true);
 
-        hour_minsButton = new JRadioButton();
-        hour_minsButton.setText("T:24-hour D:mins");
+        hourMinsButton = new JRadioButton();
+        hourMinsButton.setText("T:24-hour D:mins");
 
         granularityGroup = new ButtonGroup();
-        granularityGroup.add(year_yearButton);
-        granularityGroup.add(hour_minsButton);
+        granularityGroup.add(yearYearButton);
+        granularityGroup.add(hourMinsButton);
 
-        add(year_yearButton);
-        add(hour_minsButton);
+        add(yearYearButton);
+        add(hourMinsButton);
     }
 
     public GranularityPanel(){
@@ -40,26 +40,26 @@ public class GranularityPanel extends JPanel{
     }
 
     public Granularity getSelection(){
-        if(year_yearButton.isSelected())
+        if(yearYearButton.isSelected())
             return Granularity.YEAR_YEAR;
-        else if(hour_minsButton.isSelected())
+        else if(hourMinsButton.isSelected())
             return Granularity.HOUR_MINS;
         return null;
     }
 
     public void setSelection(Granularity g){
         if(g == Granularity.YEAR_YEAR){
-            year_yearButton.setSelected(true);
+            yearYearButton.setSelected(true);
         }else if(g == Granularity.HOUR_MINS){
-            hour_minsButton.setSelected(true);
+            hourMinsButton.setSelected(true);
         }
     }
 
     public JRadioButton getYearYearButton() {
-        return year_yearButton;
+        return yearYearButton;
     }
 
     public JRadioButton getHourMinsButton() {
-        return hour_minsButton;
+        return hourMinsButton;
     }
 }

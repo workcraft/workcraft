@@ -84,7 +84,7 @@ public class DockableWindowContentPanel extends JPanel {
     }
 
     class DockableViewHeader extends JPanel {
-        private final Border BORDER_TITLE = BorderFactory.createEmptyBorder(1, 3, 1, 1);
+        private final Border borderTitle = BorderFactory.createEmptyBorder(1, 3, 1, 1);
         private ActionButton btnMin, btnMax, btnClose;
         private JLabel titleLabel = null;
         private JPanel buttonPanel = null;
@@ -154,7 +154,7 @@ public class DockableWindowContentPanel extends JPanel {
             titleLabel.setOpaque(false);
             titleLabel.setForeground(UIManager.getColor("InternalFrame.activeTitleForeground"));
             titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-            titleLabel.setBorder(BORDER_TITLE);
+            titleLabel.setBorder(borderTitle);
             add(titleLabel, BorderLayout.WEST);
 
             setMaximized(false);

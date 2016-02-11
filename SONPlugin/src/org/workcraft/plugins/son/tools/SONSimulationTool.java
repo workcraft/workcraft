@@ -111,8 +111,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
 
-    final double DEFAULT_SIMULATION_DELAY = 0.3;
-    final double EDGE_SPEED_MULTIPLIER = 10;
+    final static double DEFAULT_SIMULATION_DELAY = 0.3;
+    final static double EDGE_SPEED_MULTIPLIER = 10;
 
     protected final Trace mainTrace = new Trace();
     protected final Trace branchTrace = new Trace();

@@ -61,7 +61,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
            }
     }
 
-    int cnt_syncnodes=0;
+    int cntSyncNodes=0;
     int index=1;
     JFrame mainFrame = null;
     static String level="";

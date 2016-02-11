@@ -59,13 +59,13 @@ public class SatBasedSolver {
 
     // Allocation data structures
     private Process process;
-    private String[] opt_enc;
-    private String[] opt_formulaeVertices;
+    private String[] optEnc;
+    private String[] optFormulaeVertices;
     private String[] truthTableVertices;
-    private String[] opt_vertices;
-    private String[] opt_sources;
-    private String[] opt_dests;
-    private String[] opt_formulaeArcs;
+    private String[] optVertices;
+    private String[] optSources;
+    private String[] optDests;
+    private String[] optFormulaeArcs;
     private String[] truthTableArcs;
     private String[] arcNames;
     private int v;
@@ -302,8 +302,8 @@ public class SatBasedSolver {
                 if(!modBit.isEmpty()) parameters.add(modBit);
 
                 if(cpogBuilder.callingScenco(process,settings,parameters,Double.MAX_VALUE, we, 0,
-                        false, opt_enc,opt_formulaeVertices,truthTableVertices,
-                        opt_vertices, opt_sources, opt_dests, opt_formulaeArcs,
+                        false, optEnc,optFormulaeVertices,truthTableVertices,
+                        optVertices, optSources, optDests, optFormulaeArcs,
                         truthTableArcs, arcNames, this) != 0){
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
                     we.cancelMemento();
@@ -312,14 +312,14 @@ public class SatBasedSolver {
 
                 // CONNECT FORMULAE INTO VISUAL ELEMENTS FOR OLD SCENCO MODE
                 try {
-                    cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, opt_formulaeVertices,
-                            opt_vertices, opt_formulaeArcs, arcNames);
+                    cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, optFormulaeVertices,
+                            optVertices, optFormulaeArcs, arcNames);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
                 // PRINT CONTROLLER FOR OLD SCENCO MODE
-                cpogBuilder.printController(m, resultDirectory.getAbsolutePath(), opt_enc);
+                cpogBuilder.printController(m, resultDirectory.getAbsolutePath(), optEnc);
             }catch (IOException e) {
                 System.out.println("Error: " + e);
             }
@@ -364,13 +364,13 @@ public class SatBasedSolver {
     }
 
     private void instantiateParameters(int elements, int scenarios){
-        opt_enc = new String[scenarios];
-        opt_formulaeVertices = new String[elements*elements];
+        optEnc = new String[scenarios];
+        optFormulaeVertices = new String[elements*elements];
         truthTableVertices =  new String[elements*elements];
-        opt_vertices = new String[elements];
-        opt_sources = new String[elements*elements];
-        opt_dests = new String[elements*elements];
-        opt_formulaeArcs = new String[elements*elements];
+        optVertices = new String[elements];
+        optSources = new String[elements*elements];
+        optDests = new String[elements*elements];
+        optFormulaeArcs = new String[elements*elements];
         truthTableArcs =  new String[elements*elements];
         arcNames = new String[elements*elements];
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());

@@ -73,7 +73,7 @@ public class VerQuery extends AbstractTool implements Tool {
         }
     }
 
-    int cnt_syncnodes=0;
+    int cntSyncNodes=0;
     int index=0;
     JFrame mainFrame = null;
     JComboBox mdcombob = null;

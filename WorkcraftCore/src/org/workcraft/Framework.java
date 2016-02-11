@@ -194,7 +194,7 @@ public final class Framework {
 
     private boolean inGUIMode = false;
     private boolean shutdownRequested = false;
-    private boolean GUIRestartRequested = false;
+    private boolean guiRestartRequested = false;
     private ContextFactory contextFactory = new ContextFactory();
     private MainWindow mainWindow;
     public Memento clipboard;
@@ -429,7 +429,7 @@ public final class Framework {
             System.out.println("Already in GUI mode");
             return;
         }
-        GUIRestartRequested = false;
+        guiRestartRequested = false;
         System.out.println("Switching to GUI mode...");
 
         if (SwingUtilities.isEventDispatchThread()) {
@@ -811,12 +811,12 @@ public final class Framework {
     }
 
     public void restartGUI() throws OperationCancelledException {
-        GUIRestartRequested = true;
+        guiRestartRequested = true;
         shutdownGUI();
     }
 
     public boolean isGUIRestartRequested() {
-        return GUIRestartRequested;
+        return guiRestartRequested;
     }
 
     public void loadWorkspace(File file) throws DeserialisationException {

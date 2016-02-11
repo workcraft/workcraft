@@ -125,10 +125,10 @@ public class PNetExt {
            }
     }
 
-    private static void WriteNet(PrintWriter writer, Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes) {
+    private static void WriteNet(PrintWriter writer, Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes) {
            writer.println("TS");
            int no=0;
-           for (SourceComponent srcNode : src_nodes) {
+           for (SourceComponent srcNode : srcNodes) {
              String ls = "";
              switch (srcNode.getMode()) {
              case MODE_0:
@@ -149,7 +149,7 @@ public class PNetExt {
            }
            writer.println("FN");
            no=0;
-           for (FunctionComponent funNode : fun_nodes) {
+           for (FunctionComponent funNode : funNodes) {
              writer.println(funlist.get(no).name1 + "\"" + funNode.getType() + "\"");       //changed from below
              no++;
            }
@@ -159,7 +159,7 @@ public class PNetExt {
              writer.println(sw.name1 + "\"" + sw.getType());
            }*/
            no=0;
-           for (SwitchComponent swNode : sw_nodes) {
+           for (SwitchComponent swNode : swNodes) {
              writer.println(switchlist.get(no).name1 + "\"" + swNode.getType() + "\"" + swNode.getVal());
              no++;
            }
@@ -170,7 +170,7 @@ public class PNetExt {
            System.out.print("Output written to CPNFile");
     }
 
-    public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes, int syncflag) {
+    public PNetExt(Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes, int syncflag) {
         initlist();
         File pncFile = XmasSettings.getTempVxmPncFile();
         PrintWriter writer = null;
@@ -178,7 +178,7 @@ public class PNetExt {
             writer = new PrintWriter(pncFile);
             File cpnFile = XmasSettings.getTempVxmCpnFile();
             ReadFile(cpnFile.getAbsolutePath(), syncflag);
-            WriteNet(writer,src_nodes,fun_nodes, sw_nodes);
+            WriteNet(writer,srcNodes,funNodes, swNodes);
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {

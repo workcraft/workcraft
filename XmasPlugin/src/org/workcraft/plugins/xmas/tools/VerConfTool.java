@@ -38,9 +38,6 @@ public class VerConfTool implements Tool {
     //}
 
 
-    private float LEFT_ALIGNMENT;
-
-
     public String getDisplayName() {
         return "Configure Verif";
     }
@@ -55,7 +52,7 @@ public class VerConfTool implements Tool {
         return WorkspaceUtils.canHas(we, Xmas.class);
     }
 
-    int cnt_syncnodes=0;
+    int cntSyncNodes=0;
     JFrame mainFrame = null;
     JComboBox trcombob = null;
     JComboBox lvcombob = null;
@@ -169,7 +166,7 @@ public class VerConfTool implements Tool {
         System.out.println("Running tests");
         final VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
 
-        cnt_syncnodes=0;
+        cntSyncNodes=0;
 
         Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
 
@@ -182,8 +179,8 @@ public class VerConfTool implements Tool {
 
         System.out.println("loaded = " + loaded);
         List<JPanel> panellist = new ArrayList<JPanel>();
-        cnt_syncnodes=1;
-        for(int no = 0; no < cnt_syncnodes; no = no+1) {
+        cntSyncNodes=1;
+        for(int no = 0; no < cntSyncNodes; no = no+1) {
             panellist.add(new JPanel());
             panellist.get(panellist.size()-1).add(new JLabel(" Trace "));
             panellist.get(panellist.size()-1).add(trcombob = new JComboBox(trchoices));

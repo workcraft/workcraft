@@ -176,7 +176,7 @@ public class MainWindow extends JFrame {
     private LinkedHashSet<String> recentFiles = new LinkedHashSet<String>();
 
     private int dockableIDCounter = 0;
-    private HashMap<Integer, DockableWindow> IDToDockableWindowMap = new HashMap<Integer, DockableWindow>();
+    private HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<Integer, DockableWindow>();
 
     protected void createWindows() {
         workspaceWindow = new WorkspaceWindow();
@@ -230,7 +230,7 @@ public class MainWindow extends JFrame {
 
         DockableWindow dockable = new DockableWindow(this, panel, persistentID);
         DockingManager.registerDockable(dockable);
-        IDToDockableWindowMap.put(id, dockable);
+        idToDockableWindowMap.put(id, dockable);
 
         if (neighbour != null) {
             DockingManager.dock(dockable, neighbour, relativeRegion);
@@ -491,7 +491,7 @@ public class MainWindow extends JFrame {
     }
 
     public void toggleDockableWindowMaximized(int id) {
-        DockableWindow dockableWindow = IDToDockableWindowMap.get(id);
+        DockableWindow dockableWindow = idToDockableWindowMap.get(id);
 
         if (dockableWindow != null) {
             DockingManager.toggleMaximized(dockableWindow);
@@ -502,7 +502,7 @@ public class MainWindow extends JFrame {
     }
 
     public void closeDockableWindow(int id) throws OperationCancelledException {
-        DockableWindow dockableWindow = IDToDockableWindowMap.get(id);
+        DockableWindow dockableWindow = idToDockableWindowMap.get(id);
         if (dockableWindow != null)
             closeDockableWindow(dockableWindow);
         else
@@ -580,7 +580,7 @@ public class MainWindow extends JFrame {
 
     /** For use from Javascript **/
     public void toggleDockableWindow(int id) {
-        DockableWindow window = IDToDockableWindowMap.get(id);
+        DockableWindow window = idToDockableWindowMap.get(id);
         if (window != null)
             toggleDockableWindow(window);
         else
@@ -589,7 +589,7 @@ public class MainWindow extends JFrame {
 
     /** For use from Javascript **/
     public void displayDockableWindow(int id) {
-        DockableWindow window = IDToDockableWindowMap.get(id);
+        DockableWindow window = idToDockableWindowMap.get(id);
         if (window != null)
             displayDockableWindow(window);
         else

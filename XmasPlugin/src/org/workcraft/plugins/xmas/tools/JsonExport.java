@@ -69,8 +69,8 @@ public class JsonExport implements Tool {
         return WorkspaceUtils.canHas(we, Xmas.class);
     }
 
-    //public Collection<String> src_nodes;
-    public Collection<VisualSourceComponent> src_nodes;
+    //public Collection<String> srcNodes;
+    public Collection<VisualSourceComponent> srcNodes;
 
     public void sync_reset() {
         File syncFile = XmasSettings.getTempVxmSyncFile();
@@ -95,7 +95,7 @@ public class JsonExport implements Tool {
 
         Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
 
-        //src_nodes = cnet.getSourceComponent();
+        //srcNodes = cnet.getSourceComponent();
         int no=1;
 
         SourceComponent srcNode = null;

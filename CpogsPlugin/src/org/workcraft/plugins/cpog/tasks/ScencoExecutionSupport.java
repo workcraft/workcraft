@@ -90,11 +90,11 @@ public class ScencoExecutionSupport {
 
     // FUNCTION FOR PARSING FILE CONTAINING BEST SOLUTION FOUND. IT PRINTS
     // THE MICROCONTROLLER SYNTHESISED WITH ABC TOOL
-    protected void printController(int m, String resultDirectoryPath, String[] opt_enc){
+    protected void printController(int m, String resultDirectoryPath, String[] optEnc){
         System.out.println();
         String fileName = resultDirectoryPath;
         for(int i=0; i<m; i++) {
-            fileName = fileName.concat(binaryToInt(opt_enc[i]) + "_");
+            fileName = fileName.concat(binaryToInt(optEnc[i]) + "_");
         }
         fileName = fileName.concat(".prg");
         File f = new File(fileName);
@@ -372,9 +372,9 @@ public class ScencoExecutionSupport {
     // IN ADDITION, IT PARSES THE OUTPUT OF THE TOOL INSTAINTIANING ALL THE VARIABLES NEEDED
     // TO WORKCRAFT TO BUILD THE COMPOSITIONAL GRAPH
     protected int callingScenco(Process process, EncoderSettings settings, ArrayList<String> parameters,
-            Double currArea, WorkspaceEntry we, int it, boolean continuous, String[] opt_enc,
-            String[] opt_formulaeVertices, String[] truthTableVertices, String[] opt_vertices,
-            String[] opt_sources, String[] opt_dests, String[] opt_formulaeArcs, String[] truthTableArcs,
+            Double currArea, WorkspaceEntry we, int it, boolean continuous, String[] optEnc,
+            String[] optFormulaeVertices, String[] truthTableVertices, String[] optVertices,
+            String[] optSources, String[] optDests, String[] optFormulaeArcs, String[] truthTableArcs,
             String[] arcNames, SatBasedSolver satSolver) throws IOException{
         int a = 0;
         int v = 0;
@@ -400,7 +400,7 @@ public class ScencoExecutionSupport {
                 int j = 0;
                 st2.nextElement();
                 while (st2.hasMoreElements()) {
-                    opt_enc[j++] = (String) st2.nextElement();
+                    optEnc[j++] = (String) st2.nextElement();
                 }
             }
 
@@ -413,15 +413,15 @@ public class ScencoExecutionSupport {
                     StringTokenizer st2 = new StringTokenizer(line, ",");
                     String el = (String)st2.nextElement();
                     if(el.equals("V")){ //formula of a vertex
-                        opt_vertices[v] = (String) st2.nextElement();
+                        optVertices[v] = (String) st2.nextElement();
                         truthTableVertices[v] = (String) st2.nextElement();
-                        opt_formulaeVertices[v++] = (String) st2.nextElement();
+                        optFormulaeVertices[v++] = (String) st2.nextElement();
                     }else{
-                        opt_sources[a] = (String) st2.nextElement();
-                        opt_dests[a] = (String) st2.nextElement();
-                        arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
+                        optSources[a] = (String) st2.nextElement();
+                        optDests[a] = (String) st2.nextElement();
+                        arcNames[a] = optSources[a] + "->" + optDests[a];
                         truthTableArcs[a] = (String) st2.nextElement();
-                        opt_formulaeArcs[a++] = (String) st2.nextElement();
+                        optFormulaeArcs[a++] = (String) st2.nextElement();
                     }
                     line = br.readLine();
                 }
@@ -466,13 +466,13 @@ public class ScencoExecutionSupport {
     // INTO THE CORRESPONDING FORMULA. THE KEY IS REPRESENTED BY THE NAME OF THE ELEMENT,
     // FOR THE ARCS, THE NAME CORRESPOND TO NAME OF SOURCE -> NAME OF DEST
     protected void connectFormulaeToVisualVertex(int v, int a, Variable[] vars, HashMap<String,
-            BooleanFormula> formulaeName, String[] opt_formulaeVertices, String[] opt_vertices,
-            String[] opt_formulaeArcs, String[] arcNames) throws ParseException{
+            BooleanFormula> formulaeName, String[] optFormulaeVertices, String[] optVertices,
+            String[] optFormulaeArcs, String[] arcNames) throws ParseException{
         final Variable[] variables = vars;
         for(int i=0; i<v; i++){
-            if(opt_formulaeVertices[i].contains("x")){
+            if(optFormulaeVertices[i].contains("x")){
                 BooleanFormula formulaOpt = null;
-                formulaOpt = BooleanParser.parse(opt_formulaeVertices[i], new Func<String, BooleanFormula>() {
+                formulaOpt = BooleanParser.parse(optFormulaeVertices[i], new Func<String, BooleanFormula>() {
 
                     @Override
                     public BooleanFormula eval(String arg) {
@@ -482,14 +482,14 @@ public class ScencoExecutionSupport {
                     }
                 });
 
-                formulaeName.put(opt_vertices[i], formulaOpt);
+                formulaeName.put(optVertices[i], formulaOpt);
 
             }
         }
         for(int i=0; i<a; i++){
-            if(opt_formulaeArcs[i].contains("x")){
+            if(optFormulaeArcs[i].contains("x")){
                 BooleanFormula formulaOpt = null;
-                formulaOpt = BooleanParser.parse(opt_formulaeArcs[i], new Func<String, BooleanFormula>() {
+                formulaOpt = BooleanParser.parse(optFormulaeArcs[i], new Func<String, BooleanFormula>() {
                     @Override
                     public BooleanFormula eval(String arg) {
                         arg = arg.substring("x_".length());
