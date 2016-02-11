@@ -1,10 +1,19 @@
-subprojects {
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'ca.coglinc:javacc-gradle-plugin:2.3.1'
+    }
+}
 
+subprojects {
     repositories {
         jcenter()
     }
 
     apply plugin: 'java'
+    apply plugin: 'ca.coglinc.javacc'
 
     sourceCompatibility = 1.7
 
@@ -17,6 +26,12 @@ subprojects {
                 srcDir 'res'
             }
         }
+    }
+
+    compileJjtree {
+        inputDirectory = file('javacc')
+        include '**/*.jj'
+        arguments = [grammar_encoding: 'UTF-8', static: 'false']
     }
 
     dependencies {
