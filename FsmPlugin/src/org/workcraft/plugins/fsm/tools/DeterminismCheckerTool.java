@@ -45,7 +45,7 @@ public class DeterminismCheckerTool extends VerificationTool {
             HashSet<Symbol> symbols = new HashSet<Symbol>();
             for (Event event: stateEvents.get(state)) {
                 Symbol symbol = event.getSymbol();
-                if ( !fsm.isDeterministicSymbol(symbol) || symbols.contains(symbol)) {
+                if (!fsm.isDeterministicSymbol(symbol) || symbols.contains(symbol)) {
                     nondeterministicStates.add(state);
                 } else {
                     symbols.add(symbol);

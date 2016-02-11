@@ -170,7 +170,7 @@ public class CommonEditorSettings implements Settings {
         properties.add(new PropertyDeclaration<CommonEditorSettings, String>(
                 this, "Hierarchy separator", String.class, true, false, false) {
             protected void setter(CommonEditorSettings object, String value) {
-                if ( !value.equals("/") && !value.equals(".") && !value.equals("\\") ) {
+                if (!value.equals("/") && !value.equals(".") && !value.equals("\\")) {
                     JOptionPane.showMessageDialog(null,
                             "Suggested hierarchy separators are: / \\ .",
                             "Common editor settings", JOptionPane.WARNING_MESSAGE);
@@ -194,7 +194,7 @@ public class CommonEditorSettings implements Settings {
                 boolean badValue = false;
                 for (int i = 0; i < value.length(); ++i) {
                     char c = value.charAt(i);
-                    if ( !Character.isDigit(c) && !Character.isLetter(c) && (c != '_') ) {
+                    if (!Character.isDigit(c) && !Character.isLetter(c) && (c != '_')) {
                         badValue = true;
                         break;
                     }

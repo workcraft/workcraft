@@ -622,7 +622,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                 int mainTracePosition = mainTrace.getPosition();
                 mainTrace.setPosition(0);
                 boolean work = true;
-                while (work && (mainTrace.getPosition() < mainTracePosition) ) {
+                while (work && (mainTrace.getPosition() < mainTracePosition)) {
                     work = quietStep(editor);
                 }
             } else {
@@ -822,10 +822,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     protected final class TraceTableCellRendererImplementation implements TableCellRenderer {
         JLabel label = new JLabel() {
             @Override
-            public void paint( Graphics g ) {
-                g.setColor( getBackground() );
-                g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
-                super.paint( g );
+            public void paint(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
             }
         };
 

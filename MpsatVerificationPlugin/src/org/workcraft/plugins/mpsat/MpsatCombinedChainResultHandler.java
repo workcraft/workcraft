@@ -43,7 +43,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 MpsatSettings mpsatSettings = mpsatSettingsList.get(index);
                 MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
                 List<Solution> solutions = mdp.getSolutions();
-                if ( !Solution.hasTraces(solutions) ) {
+                if (!Solution.hasTraces(solutions)) {
                     verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
                 } else {
                     violationMpsatResult = mpsatResult;

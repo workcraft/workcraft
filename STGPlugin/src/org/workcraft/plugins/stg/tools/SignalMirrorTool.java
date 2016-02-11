@@ -43,15 +43,15 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
     public void run(WorkspaceEntry we) {
         final VisualSTG model = (VisualSTG)we.getModelEntry().getVisualModel();
         HashSet<VisualSignalTransition> signalTransitions = new HashSet<>(model.getVisualSignalTransitions());
-        if ( !model.getSelection().isEmpty() ) {
+        if (!model.getSelection().isEmpty()) {
             signalTransitions.retainAll(model.getSelection());
         }
-        if ( !signalTransitions.isEmpty() ) {
+        if (!signalTransitions.isEmpty()) {
             we.saveMemento();
             HashSet<String> processedSignals = new HashSet<>();
             for (VisualSignalTransition signalTransition: signalTransitions) {
                 String signalName = signalTransition.getSignalName();
-                if ( !processedSignals.contains(signalName) ) {
+                if (!processedSignals.contains(signalName)) {
                     transform(model, signalTransition);
                     processedSignals.add(signalName);
                 }

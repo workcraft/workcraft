@@ -163,7 +163,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
         if ((firstNode instanceof VisualContact) && (secondNode instanceof VisualContact)) {
             VisualContact firstContact = (VisualContact)firstNode;
             VisualContact secondContact = (VisualContact)secondNode;
-            if ( !firstContact.isPort() && !secondContact.isPort()
+            if (!firstContact.isPort() && !secondContact.isPort()
               && (firstContact.getParent() == secondContact.getParent())) {
                 Point2D firstPos = firstContact.getRootSpacePosition();
                 Point2D secondPos = secondContact.getRootSpacePosition();

@@ -37,10 +37,10 @@ public class MakePlacesExplicitTool extends TransformationTool implements NodeTr
     public void run(WorkspaceEntry we) {
         final VisualSTG model = (VisualSTG)we.getModelEntry().getVisualModel();
         HashSet<VisualImplicitPlaceArc> connections = new HashSet<>(model.getVisualImplicitPlaceArcs());
-        if ( !model.getSelection().isEmpty() ) {
+        if (!model.getSelection().isEmpty()) {
             connections.retainAll(model.getSelection());
         }
-        if ( !connections.isEmpty() ) {
+        if (!connections.isEmpty()) {
             we.saveMemento();
             for (VisualImplicitPlaceArc connection: connections) {
                 transform(model, connection);

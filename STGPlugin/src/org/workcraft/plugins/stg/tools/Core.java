@@ -59,7 +59,7 @@ public class Core extends HashSet<String> {
         String result = "";
         boolean first = true;
         for (String s: this) {
-            if ( !first ) {
+            if (!first) {
                 result += ", ";
             }
             result += s;

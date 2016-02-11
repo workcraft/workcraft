@@ -216,7 +216,7 @@ public class STGNameManager extends UniqueNameManager {
             if (count > 0) {
                 name = prefix + count;
             }
-            while ( !isGoodSignalName(name, st.getSignalType()) ) {
+            while (!isGoodSignalName(name, st.getSignalType())) {
                 name = prefix + (++count);
             }
             setPrefixCount(prefix, count);
@@ -233,7 +233,7 @@ public class STGNameManager extends UniqueNameManager {
             String name;
             do {
                 name = prefix + (count++);
-            } while ( !isGoodDummyName(name) );
+            } while (!isGoodDummyName(name));
             dt.setName(name);
             dummyTransitions.put(name, dt);
             instancedNameManager.assign(dt);

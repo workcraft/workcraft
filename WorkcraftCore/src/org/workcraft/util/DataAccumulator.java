@@ -80,7 +80,7 @@ public class DataAccumulator extends OutputStream {
     }
 
     public void write(int b) throws IOException {
-        addDataChunk(new byte[] {(byte)b} );
+        addDataChunk(new byte[] {(byte)b});
     }
 
     public void write(byte[] b, int off, int len) throws IOException {

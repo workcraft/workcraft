@@ -134,7 +134,7 @@ public class Console {
                     framework.abortShutdown();
                 }
 
-                if ( !framework.shutdownRequested() ) {
+                if (!framework.shutdownRequested()) {
                     continue;
                 }
 
@@ -168,7 +168,7 @@ public class Console {
                     Context.enter();
                     String out = Context.toString(result);
                     Context.exit();
-                    if ( !out.equals("undefined") ) {
+                    if (!out.equals("undefined")) {
                         System.out.println(out);
                     }
                 } catch (org.mozilla.javascript.WrappedException e) {

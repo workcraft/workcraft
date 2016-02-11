@@ -618,7 +618,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         Collection<Node> ret = new HashSet<Node>();
         for (Node node: nodes) {
             if ((node instanceof Dependent) && !(node instanceof Replica)) {
-                ret.addAll( ((Dependent)node).getMathReferences());
+                ret.addAll(((Dependent)node).getMathReferences());
             } else if (node instanceof VisualGroup) {
                 ret.addAll(getMathChildren(node.getChildren()));
             }

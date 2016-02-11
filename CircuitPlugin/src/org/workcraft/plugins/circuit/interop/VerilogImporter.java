@@ -442,7 +442,7 @@ public class VerilogImporter implements Importer {
         for (Pin verilogPin: verilogInstance.connections) {
             if (index > 0) {
                 String pinName = getPrimitiveGatePinName(index);
-                if ( !expression.isEmpty() ) {
+                if (!expression.isEmpty()) {
                     expression += operator;
                 }
                 expression += pinName;
@@ -661,7 +661,7 @@ public class VerilogImporter implements Importer {
                     leafComponents.add(component);
                 }
             }
-            if ( leafComponents.isEmpty() ) {
+            if (leafComponents.isEmpty()) {
                 done = true;
             } else {
                 FunctionComponent newComponent = mergeLeafComponents(circuit, rootComponent, leafComponents);
@@ -770,7 +770,7 @@ public class VerilogImporter implements Importer {
                         hasNewContact = true;
                     }
                 }
-                if ( !hasNewContact ) {
+                if (!hasNewContact) {
                     circuit.connect(newOutputContact, toNode);
                 }
             } catch (InvalidConnectionException e) {

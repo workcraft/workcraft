@@ -38,7 +38,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<Solution> solutions = mdp.getSolutions();
-        if ( !Solution.hasTraces(solutions) ) {
+        if (!Solution.hasTraces(solutions)) {
             JOptionPane.showMessageDialog(null, "No encodning conflicts.", "Verification results", JOptionPane.INFORMATION_MESSAGE);
         } else {
             GraphEditorPanel currentEditor = getCurrentEditor(we);
@@ -80,7 +80,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
             System.out.println("    Configuration 2: " + solution.getBranchTrace());
             System.out.println("    Conflict core" + (isDuplicateCore ? " (duplicate)" : "") + ": " + core);
             System.out.println();
-            if ( !isDuplicateCore ) {
+            if (!isDuplicateCore) {
                 core.setColor(colorGenerator.updateColor());
                 cores.add(core);
             }

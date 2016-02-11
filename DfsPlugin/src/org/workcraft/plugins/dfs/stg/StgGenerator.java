@@ -600,7 +600,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         orM1.setLabel(labelOrM + name + label1);
         orM1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedCounterflowRegister().isOrMarked()) {
-            orM1.getReferencedPlace().setTokens(    1);
+            orM1.getReferencedPlace().setTokens(1);
         }
         orM1.setForegroundColor(r.getForegroundColor());
         orM1.setFillColor(r.getFillColor());

@@ -96,7 +96,7 @@ public class ScencoSolver {
         scenarios = CpogParsingTool.getScenarios(cpog);
         we.captureMemento();
 
-        cpogBuilder.resetVars(    verbose, genMode, numSol, customFlag, customPath, effort,
+        cpogBuilder.resetVars(verbose, genMode, numSol, customFlag, customPath, effort,
                                 espressoFlag, abcFlag, gateLibFlag, cpogSize, disableFunction, oldSynt);
 
         events = new HashMap<String, Integer>();

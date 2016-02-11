@@ -125,7 +125,7 @@ public class HourMins extends AbstractTimeGranularity{
                 break;
         }
 
-        if(hour > 23 || hour < 0 ){
+        if(hour > 23 || hour < 0){
             if(time != 2400)
                 throw new TimeOutOfBoundsException("Time value out of bounds " + time.toString());
         }

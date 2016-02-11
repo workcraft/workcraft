@@ -301,7 +301,7 @@ public class STG extends AbstractMathModel implements STGModel {
     public Type getSignalType(String signalReference) {
         Type type = null;
         Collection<SignalTransition> transitions = getSignalTransitions(signalReference);
-        if ( !transitions.isEmpty() ) {
+        if (!transitions.isEmpty()) {
             type = transitions.iterator().next().getSignalType();
         }
         return type;
@@ -319,7 +319,7 @@ public class STG extends AbstractMathModel implements STGModel {
     public Type getSignalType(String signalName, Container container) {
         Type type = null;
         Collection<SignalTransition> transitions = getSignalTransitions(signalName, container);
-        if ( !transitions.isEmpty() ) {
+        if (!transitions.isEmpty()) {
             type = transitions.iterator().next().getSignalType();
         }
         return type;
@@ -379,10 +379,10 @@ public class STG extends AbstractMathModel implements STGModel {
         Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
         if (implicitPlaceTransitions != null) {
             Node t1 = referenceManager.getNodeByReference(provider,
-                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst())    );
+                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst()));
 
             Node t2 = referenceManager.getNodeByReference(provider,
-                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond()) );
+                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond()));
             if ((t1 != null) && (t2 != null)) {
                 Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 

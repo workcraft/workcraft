@@ -58,7 +58,7 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writeSignalsHeader(PrintWriter out, Collection<String> signalNames, String header) {
-        if ( !signalNames.isEmpty() ) {
+        if (!signalNames.isEmpty()) {
             LinkedList<String> sortedNames = new LinkedList<String>(signalNames);
             Collections.sort(sortedNames);
             out.print(header);
@@ -90,7 +90,7 @@ public class DotGSerialiser implements ModelSerialiser {
         if (model.getPostset(node).size()>0) {
             out.write(NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(node)));
 
-            for (Node n : sortNodes(model.getPostset(node), model)  ) {
+            for (Node n : sortNodes(model.getPostset(node), model)) {
                 if (n instanceof STGPlace) {
                     if (((STGPlace)n).isImplicit()) {
                         Collection<Node> postset = model.getPostset(n);
@@ -159,7 +159,7 @@ public class DotGSerialiser implements ModelSerialiser {
             final int tokens = p.getTokens();
             final String reference;
             if (p instanceof STGPlace) {
-                if (((STGPlace)p).isImplicit() ) {
+                if (((STGPlace)p).isImplicit()) {
                     Node predNode = model.getPreset(p).iterator().next();
                     String predFlatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(predNode));
                     Node succNode = model.getPostset(p).iterator().next();

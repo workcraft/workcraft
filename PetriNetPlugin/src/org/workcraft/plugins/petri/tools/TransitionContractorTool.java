@@ -145,7 +145,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
         for (Node predNode: predNodes) {
             HashSet<Node> predSuccNodes = new HashSet<>(model.getPostset(predNode));
             predSuccNodes.remove(transition);
-            if ( !predSuccNodes.isEmpty() ) {
+            if (!predSuccNodes.isEmpty()) {
                 return false;
             }
         }
@@ -168,7 +168,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
         for (Node succNode: succNodes) {
             HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
             succPredNodes.remove(transition);
-            if ( !succPredNodes.isEmpty() ) {
+            if (!succPredNodes.isEmpty()) {
                 return false;
             }
         }
@@ -192,7 +192,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
             }
             HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
             succPredNodes.remove(transition);
-            if ( !succPredNodes.isEmpty() ) {
+            if (!succPredNodes.isEmpty()) {
                 return false;
             }
         }
@@ -216,7 +216,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
             }
             HashSet<Node> succPredNodes = new HashSet<>(model.getPreset(succNode));
             succPredNodes.remove(transition);
-            if ( !succPredNodes.isEmpty() ) {
+            if (!succPredNodes.isEmpty()) {
                 return false;
             }
         }
@@ -232,7 +232,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
         for (Node predNode: predNodes) {
             HashSet<Node> predSuccNodes = new HashSet<>(model.getPostset(predNode));
             predSuccNodes.remove(transition);
-            if ( !predSuccNodes.isEmpty() ) {
+            if (!predSuccNodes.isEmpty()) {
                 return false;
             }
         }
@@ -392,8 +392,8 @@ public class TransitionContractorTool extends TransformationTool implements Node
                     predPlaceConnection = visualModel.getConnection(predPlace, transition);
                     succPlaceConnection = visualModel.getConnection(succPlace, transition);
                 }
-                if (  ((predPlaceConnection == null) || convertedReplicaConnections.contains(predPlaceConnection))
-                      &&((succPlaceConnection == null) || convertedReplicaConnections.contains(succPlaceConnection)) ) {
+                if (((predPlaceConnection == null) || convertedReplicaConnections.contains(predPlaceConnection))
+                      &&((succPlaceConnection == null) || convertedReplicaConnections.contains(succPlaceConnection))) {
                     replicaPlaceConnections.add((VisualConnection)productConnection);
                 }
             }

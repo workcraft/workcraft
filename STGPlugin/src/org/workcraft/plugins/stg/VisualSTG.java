@@ -108,7 +108,7 @@ public class VisualSTG extends AbstractVisualModel {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
-        if ( ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
+        if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
           && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
             throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
@@ -187,19 +187,19 @@ public class VisualSTG extends AbstractVisualModel {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
-        if ( ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
+        if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
           && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
             throw new InvalidConnectionException("Read-arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Read-arcs between transitions are not allowed.");
         }
-        if ( PetriNetUtils.hasReadArcConnection(this, first, second)
+        if (PetriNetUtils.hasReadArcConnection(this, first, second)
           || PetriNetUtils.hasReadArcConnection(this, second, first)
           || PetriNetUtils.hasProducingArcConnection(this, first, second)
           || PetriNetUtils.hasProducingArcConnection(this, second, first)
           || PetriNetUtils.hasConsumingArcConnection(this, first, second)
-          || PetriNetUtils.hasConsumingArcConnection(this, second, first) ) {
+          || PetriNetUtils.hasConsumingArcConnection(this, second, first)) {
                 throw new InvalidConnectionException("Nodes are already connected.");
         }
     }

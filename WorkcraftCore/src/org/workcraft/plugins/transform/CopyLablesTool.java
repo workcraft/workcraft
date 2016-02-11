@@ -55,10 +55,10 @@ public class CopyLablesTool extends TransformationTool {
         if (visualModel != null) {
             MathModel mathModel = (MathModel)visualModel.getMathModel();
             Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class);
-            if ( !visualModel.getSelection().isEmpty() ) {
+            if (!visualModel.getSelection().isEmpty()) {
                 components.retainAll(visualModel.getSelection());
             }
-            if ( !components.isEmpty() ) {
+            if (!components.isEmpty()) {
                 we.saveMemento();
                 for (VisualComponent visualComponent : components) {
                     Node refComponent = visualComponent.getReferencedComponent();

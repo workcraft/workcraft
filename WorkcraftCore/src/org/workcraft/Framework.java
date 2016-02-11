@@ -313,7 +313,7 @@ public final class Framework {
 
                 Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
                 ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
-                //ScriptableObject.putProperty(systemScope, "importer", );
+                //ScriptableObject.putProperty(systemScope, "importer",);
                 systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
                 globalScope = (ScriptableObject) cx.newObject(systemScope);

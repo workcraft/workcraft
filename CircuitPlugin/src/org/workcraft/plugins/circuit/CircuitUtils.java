@@ -365,7 +365,7 @@ public class CircuitUtils {
             queue.add(curNode);
         }
 
-        while ( !queue.isEmpty() ) {
+        while (!queue.isEmpty()) {
             Node node = queue.remove();
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);
@@ -411,7 +411,7 @@ public class CircuitUtils {
             queue.add(curNode);
         }
 
-        while ( !queue.isEmpty() ) {
+        while (!queue.isEmpty()) {
             Node node = queue.remove();
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);
@@ -457,7 +457,7 @@ public class CircuitUtils {
             queue.add(curNode);
         }
 
-        while ( !queue.isEmpty() ) {
+        while (!queue.isEmpty()) {
             Node node = queue.remove();
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);

@@ -46,7 +46,7 @@ public class SignalNamePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        if ( !signal.equals(value) ) {
+        if (!signal.equals(value)) {
             for (SignalTransition transition : stg.getSignalTransitions(signal, container)) {
                 stg.setName(transition, (String)value);
             }

@@ -84,7 +84,7 @@ public class UniqueNameManager implements NameManager {
             String name;
             do    {
                 name = prefix + count++;
-            } while ( !isUnusedName(name) );
+            } while (!isUnusedName(name));
             setPrefixCount(prefix, count);
             nodes.put(name, node);
         }

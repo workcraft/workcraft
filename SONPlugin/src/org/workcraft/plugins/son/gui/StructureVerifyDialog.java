@@ -173,12 +173,12 @@ public class StructureVerifyDialog extends JDialog{
                     ListItem item = (ListItem)list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
-                    if(item.isSelected() ){
+                    if(item.isSelected()){
                         selectedGroups.add((ONGroup)item.getListItem());
                         item.setItemColor(Color.ORANGE);
 
                     }
-                    if(!item.isSelected() ){
+                    if(!item.isSelected()){
                         selectedGroups.remove((ONGroup)item.getListItem());
                         item.setItemColor(Color.BLACK);
                     }

@@ -49,10 +49,10 @@ public class PetrifyNetSynthesisHide extends PetrifyNetSynthesis {
             }
         }
         ArrayList<String> args = getArgs();
-        if ( !nameSet.isEmpty() ) {
+        if (!nameSet.isEmpty()) {
             String names = "";
             for (String name: nameSet) {
-                if ( !names.isEmpty() ) {
+                if (!names.isEmpty()) {
                     names += ",";
                 }
                 names += name;

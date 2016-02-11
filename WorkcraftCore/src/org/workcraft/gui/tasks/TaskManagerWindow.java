@@ -201,7 +201,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
                         @Override
                         public void finished(Result<? extends Object> result, final String description) {
-                            if (result.getOutcome() == Outcome.FINISHED ) {
+                            if (result.getOutcome() == Outcome.FINISHED) {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {

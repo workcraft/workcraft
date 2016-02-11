@@ -576,7 +576,7 @@ public class TimeValueSetterTool extends AbstractTool{
         net.refreshNodeColor();
 
         Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
-        if( node instanceof VisualSONConnection){
+        if(node instanceof VisualSONConnection){
             estimatorButton.setEnabled(false);
             VisualSONConnection con = (VisualSONConnection)node;
             selection = con.getReferencedConnection();

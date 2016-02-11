@@ -41,7 +41,7 @@ public class Negation implements Expression {
         Expression evalExpression = expression.eval(assignments);
         if (evalExpression instanceof Constant) {
             Constant constant = (Constant)evalExpression;
-            return new Constant( !constant.value );
+            return new Constant(!constant.value);
         } else {
             return new Negation(evalExpression);
         }

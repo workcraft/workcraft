@@ -234,7 +234,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
         }
         g.setTransform(savedTransform);
 
-        if ( !(getParent() instanceof VisualCircuitComponent) ) {
+        if (!(getParent() instanceof VisualCircuitComponent)) {
             rotateTransform.setToIdentity();
             if (getDirection() == Direction.NORTH || getDirection() == Direction.SOUTH) {
                 rotateTransform.quadrantRotate(-1);

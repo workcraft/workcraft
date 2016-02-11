@@ -88,8 +88,8 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         Path2D forwardShape = new Path2D.Double();
         forwardShape.moveTo(-w2, -strokeWidth4);
         forwardShape.lineTo(-w2, -h2);
-        forwardShape.lineTo( w2, -h2);
-        forwardShape.lineTo( w2, -strokeWidth4);
+        forwardShape.lineTo(w2, -h2);
+        forwardShape.lineTo(w2, -strokeWidth4);
 
         Path2D forwardEarlyShape = new Path2D.Double();
         forwardEarlyShape.moveTo(-2*dd + dd, (-kd-2) * dd);
@@ -106,8 +106,8 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         forwardEarlyShape.lineTo(+2*dd - dd, (-kd+0) * dd);
 
         Path2D backwardShape = new Path2D.Double();
-        backwardShape.moveTo( w2, strokeWidth4);
-        backwardShape.lineTo( w2, h2);
+        backwardShape.moveTo(w2, strokeWidth4);
+        backwardShape.lineTo(w2, h2);
         backwardShape.lineTo(-w2, h2);
         backwardShape.lineTo(-w2, strokeWidth4);
 

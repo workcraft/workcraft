@@ -196,7 +196,7 @@ public class NodeContextTrackerTests {
         group.remove(con1);
 
         assertTrue(nct.getPostset(n1).isEmpty());
-        assertEquals(nct.getPreset(n3).size(), 1 );
+        assertEquals(nct.getPreset(n3).size(), 1);
 
         group.remove(con2);
         assertTrue(nct.getPostset(n2).isEmpty());

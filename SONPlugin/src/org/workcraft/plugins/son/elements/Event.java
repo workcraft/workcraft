@@ -42,7 +42,7 @@ public class Event extends Transition implements TransitionNode, Time{
     @Override
     public void setFaulty(boolean fault){
         this.faulty = fault;
-        sendNotification( new PropertyChangedEvent(this, "fault") );
+        sendNotification(new PropertyChangedEvent(this, "fault"));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Event extends Transition implements TransitionNode, Time{
 
     public void setStartTime(Interval duration){
         this.statTime = duration;
-        sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
+        sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
     }
 
     public Interval getStartTime(){
@@ -61,7 +61,7 @@ public class Event extends Transition implements TransitionNode, Time{
 
     public void setEndTime(Interval endTime){
         this.endTime = endTime;
-        sendNotification( new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME) );
+        sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
     }
 
     public Interval getEndTime(){
@@ -70,7 +70,7 @@ public class Event extends Transition implements TransitionNode, Time{
 
     public void setDuration(Interval duration){
         this.duration = duration;
-        sendNotification( new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION) );
+        sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
     }
 
     public Interval getDuration(){

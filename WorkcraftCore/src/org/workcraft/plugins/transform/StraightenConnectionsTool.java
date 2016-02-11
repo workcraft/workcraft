@@ -53,10 +53,10 @@ public class StraightenConnectionsTool extends TransformationTool {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         if (visualModel != null) {
             Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class);
-            if ( !visualModel.getSelection().isEmpty() ) {
+            if (!visualModel.getSelection().isEmpty()) {
                 connections.retainAll(visualModel.getSelection());
             }
-            if ( !connections.isEmpty() ) {
+            if (!connections.isEmpty()) {
                 we.saveMemento();
                 for (VisualConnection connection: connections) {
                     connection.setConnectionType(ConnectionType.BEZIER);

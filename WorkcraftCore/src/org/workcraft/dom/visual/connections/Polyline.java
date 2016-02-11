@@ -68,7 +68,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     @Override
     public void setDefaultControlPoints() {
         resetControlPoints();
-        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001 ) {
+        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001) {
             Point2D p = connectionInfo.getFirstCenter();
 
             ControlPoint cp1 = new ControlPoint();
@@ -161,8 +161,8 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
         for (int i=0; i<getSegmentCount(); i++) {
             Line2D segment = getSegment(i);
-            Point2D a = new Point2D.Double( pt.getX() - segment.getX1(), pt.getY() - segment.getY1() );
-            Point2D b = new Point2D.Double( segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1() );
+            Point2D a = new Point2D.Double(pt.getX() - segment.getX1(), pt.getY() - segment.getY1());
+            Point2D b = new Point2D.Double(segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1());
 
             double magB = b.distance(0, 0);
             double dist;

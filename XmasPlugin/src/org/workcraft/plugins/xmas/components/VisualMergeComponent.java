@@ -50,15 +50,15 @@ public class VisualMergeComponent extends VisualXmasComponent {
         Path2D shape = new Path2D.Double();
 
         shape.moveTo(-0.50 * size, -0.50 * size);
-        shape.lineTo(       -0.08, -0.50 * size);
+        shape.lineTo(-0.08, -0.50 * size);
 
         shape.moveTo(-0.50 * size, +0.50 * size);
-        shape.lineTo(       -0.08, +0.50 * size);
+        shape.lineTo(-0.08, +0.50 * size);
 
-        shape.moveTo(       +0.00, -0.60 * size);
-        shape.lineTo(       +0.00, +0.60 * size);
+        shape.moveTo(+0.00, -0.60 * size);
+        shape.lineTo(+0.00, +0.60 * size);
 
-        shape.moveTo(       +0.00, +0.00);
+        shape.moveTo(+0.00, +0.00);
         shape.lineTo(+0.50 * size, +0.00);
 
         // Arrows

@@ -123,9 +123,9 @@ public class VerTool extends AbstractTool implements Tool {
              }
            }
            ArrayList<String> args = new ArrayList<>();
-           if ( !targ.isEmpty() ) args.add(targ);
-           if ( !larg.isEmpty() ) args.add(larg);
-           if ( !sarg.isEmpty() ) args.add(sarg);
+           if (!targ.isEmpty()) args.add(targ);
+           if (!larg.isEmpty()) args.add(larg);
+           if (!sarg.isEmpty()) args.add(sarg);
            return args;
     }
 

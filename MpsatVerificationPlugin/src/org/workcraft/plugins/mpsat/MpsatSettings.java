@@ -130,7 +130,7 @@ public class MpsatSettings {
     private static String genNameList(Collection<String> names) {
         String result = "";
         for (String name: names) {
-            if ( !result.isEmpty() ) {
+            if (!result.isEmpty()) {
                 result += ", ";
             }
             result += "\"" + name + "\"";

@@ -52,7 +52,7 @@ public class VisualLocality extends VisualGroup {
     }
 
     public void setLocality(Locality newLocality) {
-        if (refLocality != newLocality ) {
+        if (refLocality != newLocality) {
             if (refLocality != null) {
                 refLocality.reparent(refLocality.getChildren(), newLocality);
             }

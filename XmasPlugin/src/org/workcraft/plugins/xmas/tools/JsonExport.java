@@ -81,7 +81,7 @@ public class JsonExport implements Tool {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
-                if ( writerS != null ) {
+                if (writerS != null) {
                     writerS.close();
                 }
         }
@@ -473,7 +473,7 @@ public class JsonExport implements Tool {
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {
-                if ( writer != null ) {
+                if (writer != null) {
                     writer.close();
                 }
         }

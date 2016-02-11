@@ -53,7 +53,7 @@ public class MpsatConformationChecker extends VerificationTool {
             return;
         }
 
-        if ( !stg.getDummyTransitions().isEmpty() ) {
+        if (!stg.getDummyTransitions().isEmpty()) {
             // - The device STG must have no dummies.
             JOptionPane.showMessageDialog(mainWindow, "The STG must have no dummies.",
                     "Conformation check error", JOptionPane.ERROR_MESSAGE);

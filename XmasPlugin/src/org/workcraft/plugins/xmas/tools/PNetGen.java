@@ -1087,13 +1087,13 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {
-                if ( writer != null ) {
+                if (writer != null) {
                     writer.close();
                     System.out.println("Control CPNs created");
                     PNetExt pnconv = new PNetExt(srcNodes,funNodes,swNodes,syncflag);
                     //printlst();
                 }
-                /*if ( writer_s != null )
+                /*if (writer_s != null)
                 {
                     writer_s.close();
                 }*/

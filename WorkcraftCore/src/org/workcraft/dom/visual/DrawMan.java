@@ -108,7 +108,7 @@ final class DrawMan {
         if (isInsideCollapsed || !isCollapsed) {
             // First draw nodes
             for (Node childNode : node.getChildren()) {
-                if ( !(childNode instanceof VisualConnection) ) {
+                if (!(childNode instanceof VisualConnection)) {
                     draw(decoration, childNode);
                 }
             }

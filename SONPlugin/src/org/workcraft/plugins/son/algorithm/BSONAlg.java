@@ -133,7 +133,7 @@ public class BSONAlg extends RelationAlgorithm{
                             err += "\nERROR: Maximal phase " +net.toString(max) + " is not a cut:";
                         }
                     }
-                    if(err != null )
+                    if(err != null)
                         phaseCutErr.put(c, err);
                 }
             }

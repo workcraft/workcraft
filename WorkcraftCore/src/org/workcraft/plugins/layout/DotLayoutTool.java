@@ -79,7 +79,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
             String[] split = pos.split(" ");
             for (String s : split) {
                 String[] ss = s.split(",");
-                if ( (ss.length < 2) || (ss.length > 3) ) {
+                if ((ss.length < 2) || (ss.length > 3)) {
                     throw new ParseException("Bad connection position format.");
                 }
                 double pointsToInches = 1.0/72;

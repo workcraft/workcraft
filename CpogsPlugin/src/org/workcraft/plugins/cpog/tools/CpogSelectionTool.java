@@ -1072,7 +1072,7 @@ public class CpogSelectionTool extends SelectionTool {
 
 
 
-        text.addKeyListener( new KeyListener() {
+        text.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent arg0) {
                 if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {

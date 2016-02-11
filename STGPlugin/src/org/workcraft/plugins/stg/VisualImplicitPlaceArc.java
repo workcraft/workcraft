@@ -102,7 +102,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     }
 
     private void addPlaceObserver(Place implicitPlace) {
-        implicitPlace.addObserver( new StateObserver() {
+        implicitPlace.addObserver(new StateObserver() {
             public void notify(StateEvent e) {
                 observableStateImpl.sendNotification(e);
             }

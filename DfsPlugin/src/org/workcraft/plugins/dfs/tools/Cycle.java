@@ -86,7 +86,7 @@ public class Cycle implements Comparable<Cycle> {
             if (visited.contains(cur) || !components.contains(cur)) continue;
             visited.add(cur);
             for (Node pred: dfs.getPreset(cur)) {
-                if ( !(pred instanceof VisualComponent) ) continue;
+                if (!(pred instanceof VisualComponent)) continue;
                 if (pred instanceof VisualPushRegister) {
                     result.add((VisualPushRegister)pred);
                 } else     if (!(pred instanceof VisualPopRegister)) {

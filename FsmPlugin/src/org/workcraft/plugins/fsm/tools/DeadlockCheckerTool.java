@@ -41,11 +41,11 @@ public class DeadlockCheckerTool extends VerificationTool {
             }
             deadlockStates.removeAll(finalDeadlockStates);
             String message = "The model has a deadlock.";
-            if ( !deadlockStates.isEmpty() ) {
+            if (!deadlockStates.isEmpty()) {
                 String stateStr = FsmUtils.statesToString(fsm, deadlockStates);
                 message += "\n\nNon-final deadlock states: \n" + stateStr;
             }
-            if ( !finalDeadlockStates.isEmpty() ) {
+            if (!finalDeadlockStates.isEmpty()) {
                 String stateStr = FsmUtils.statesToString(fsm, finalDeadlockStates);
                 message += "\n\nFinal deadlockstates: \n" + stateStr;
             }

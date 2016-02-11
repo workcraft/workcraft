@@ -182,7 +182,7 @@ public class PNetExt {
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {
-            if ( writer != null ) {
+            if (writer != null) {
                 writer.close();
             }
         }

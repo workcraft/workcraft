@@ -52,7 +52,7 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
         connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
         connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
         connections.retainAll(model.getSelection());
-        if ( !connections.isEmpty() ) {
+        if (!connections.isEmpty()) {
             we.saveMemento();
             for (VisualConnection connection: connections) {
                 transform(model, connection);

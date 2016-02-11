@@ -81,7 +81,7 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
     public String getPrefix(Node node) {
         if (node instanceof STGPlace) return "p";
         if (node instanceof SignalTransition) {
-            switch ( ((SignalTransition)node).getSignalType() ) {
+            switch (((SignalTransition)node).getSignalType()) {
             case INPUT: return "in";
             case OUTPUT: return "out";
             case INTERNAL: return "t";

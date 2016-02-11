@@ -28,7 +28,7 @@ public class PlaceNode extends MathNode implements Time{
 
     public void setMarked(boolean token){
         this.marked=token;
-        sendNotification( new PropertyChangedEvent(this, "marked") );
+        sendNotification(new PropertyChangedEvent(this, "marked"));
     }
 
     public boolean isMarked() {
@@ -37,7 +37,7 @@ public class PlaceNode extends MathNode implements Time{
 
     public void setErrors(int errors){
         this.errors = errors;
-        sendNotification( new PropertyChangedEvent(this, "errors") );
+        sendNotification(new PropertyChangedEvent(this, "errors"));
     }
 
     public int getErrors(){
@@ -82,7 +82,7 @@ public class PlaceNode extends MathNode implements Time{
 
     public void setStartTime(Interval startTime){
         this.startTime = startTime;
-        sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
+        sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
     }
 
     public Interval getStartTime(){
@@ -91,7 +91,7 @@ public class PlaceNode extends MathNode implements Time{
 
     public void setEndTime(Interval endTime){
         this.endTime = endTime;
-        sendNotification( new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME) );
+        sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
     }
 
     public Interval getEndTime(){
@@ -100,7 +100,7 @@ public class PlaceNode extends MathNode implements Time{
 
     public void setDuration(Interval duration){
         this.duration = duration;
-        sendNotification( new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION) );
+        sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
     }
 
     public Interval getDuration(){

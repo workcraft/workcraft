@@ -44,7 +44,7 @@ public class VisualNodeTests {
     public void testTransformChangeNotify() {
         final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
         final Boolean[] hit = new Boolean[]{false};
-        node.addObserver( new StateObserver() {
+        node.addObserver(new StateObserver() {
                     public void notify(StateEvent e) {
                         if (e instanceof TransformChangedEvent) {
                             if (e.getSender() == node)

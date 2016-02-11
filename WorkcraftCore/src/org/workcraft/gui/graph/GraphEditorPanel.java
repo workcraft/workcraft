@@ -723,7 +723,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 Rectangle2D viewportBox = viewport.getShape();
                 VisualModel model = getModel();
                 Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
-                if ( !model.getSelection().isEmpty() ) {
+                if (!model.getSelection().isEmpty()) {
                     nodes.retainAll(model.getSelection());
                 }
                 Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);

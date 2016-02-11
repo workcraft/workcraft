@@ -143,10 +143,10 @@ public class VerAnalysis extends AbstractTool implements Tool {
            aarg = "-a" + index;
               //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
            ArrayList<String> args = new ArrayList<>();
-           if ( !targ.isEmpty() ) args.add(targ);
-           if ( !larg.isEmpty() ) args.add(larg);
-           if ( !sarg.isEmpty() ) args.add(sarg);
-           if ( !aarg.isEmpty() ) args.add(aarg);
+           if (!targ.isEmpty()) args.add(targ);
+           if (!larg.isEmpty()) args.add(larg);
+           if (!sarg.isEmpty()) args.add(sarg);
+           if (!aarg.isEmpty()) args.add(aarg);
            return args;
     }
 

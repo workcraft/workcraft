@@ -41,7 +41,7 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
         textField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                if ( !e.isTemporary() ) {
+                if (!e.isTemporary()) {
                     stopCellEditing();
                 }
             }

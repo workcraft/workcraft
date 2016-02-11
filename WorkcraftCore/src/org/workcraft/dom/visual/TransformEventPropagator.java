@@ -45,7 +45,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 
     private void addObserver(Node node, TransformObserver to) {
         LinkedList<TransformObserver> list = nodeToObservers.get(node);
-        if ( list == null ) {
+        if (list == null) {
             list = new LinkedList<TransformObserver>();
             nodeToObservers.put(node, list);
         }
@@ -61,7 +61,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 
     private void addObservedNode(TransformObserver to, Node node) {
         LinkedList<Node> list = observerToNodes.get(to);
-        if ( list == null ) {
+        if (list == null) {
             list = new LinkedList<Node>();
             observerToNodes.put(to, list);
         }

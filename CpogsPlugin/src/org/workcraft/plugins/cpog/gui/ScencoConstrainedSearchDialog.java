@@ -93,7 +93,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         createButtonPanel(mode);
 
         if(mode != 1){
-            if( m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+            if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
                 height = 135;
             } else {
                 height = 110;

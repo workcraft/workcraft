@@ -239,7 +239,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             String wireName = CircuitUtils.getWireName(circuit, contact);
             if ((wireName != null) && !wireName.isEmpty()) {
                 out.print(" ");
-                if ( !contact.getInitToOne() ) {
+                if (!contact.getInitToOne()) {
                     out.print("!");
                 }
                 out.print(wireName);

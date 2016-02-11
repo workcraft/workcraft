@@ -44,7 +44,7 @@ public class PetriNetToStgConverter extends DefaultModelConverter<VisualPetriNet
     @Override
     public VisualComponent convertComponent(VisualComponent srcComponent) {
         VisualComponent dstComponent = super.convertComponent(srcComponent);
-        if ( (dstComponent instanceof VisualDummyTransition) || (dstComponent instanceof VisualSignalTransition) ) {
+        if ((dstComponent instanceof VisualDummyTransition) || (dstComponent instanceof VisualSignalTransition)) {
             dstComponent.setLabel("");
         }
         return dstComponent;

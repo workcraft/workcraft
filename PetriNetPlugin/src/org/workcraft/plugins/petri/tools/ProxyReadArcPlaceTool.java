@@ -44,11 +44,11 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     public void run(WorkspaceEntry we) {
         final VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(model);
-        if ( !model.getSelection().isEmpty() ) {
+        if (!model.getSelection().isEmpty()) {
             readArcs.retainAll(model.getSelection());
         }
         HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(model);
-        if ( !model.getSelection().isEmpty() ) {
+        if (!model.getSelection().isEmpty()) {
             places.retainAll(model.getSelection());
         }
         for (VisualPlace place: places) {
@@ -59,7 +59,7 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
             }
         }
 
-        if ( !readArcs.isEmpty() ) {
+        if (!readArcs.isEmpty()) {
             we.saveMemento();
             for (VisualReadArc readArc: readArcs) {
                 transform(model, readArc);

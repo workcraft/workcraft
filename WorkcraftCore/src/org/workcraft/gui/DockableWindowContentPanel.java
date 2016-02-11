@@ -107,7 +107,7 @@ public class DockableWindowContentPanel extends JPanel {
             Color c;
             if (UIManager.getLookAndFeel().getName().contains("Substance")) {
                 c = getBackground();
-                c = new Color((int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9) );
+                c = new Color((int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9));
             } else {
                 c = UIManager.getColor("InternalFrame.activeTitleBackground");
             }

@@ -233,7 +233,7 @@ public class ScencoExecutionSupport {
 
                     if (graph[i][j] > 0) ch = '1';
                     if (graph[i][j] > 1) ch = '-';
-                    if ( constraints[k][i][i] == '0' || constraints[k][j][j] == '0' ) ch = '-';
+                    if (constraints[k][i][i] == '0' || constraints[k][j][j] == '0') ch = '-';
 
                     constraints[k][i][j] = ch;
                 }
@@ -390,7 +390,7 @@ public class ScencoExecutionSupport {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         String line;
-        while ( (line = br.readLine()) != null){
+        while ((line = br.readLine()) != null){
             if(settings.isVerboseMode())
                 System.out.println(line);
 
@@ -509,7 +509,7 @@ public class ScencoExecutionSupport {
             boolean[][] encoding, int pr, HashMap<String, Integer> events,
             VisualVertex[] vertices, VisualCPOG cpog, VisualScenario resultCpog,
             ArrayList<Point2D> positions, ArrayList<Integer> count,
-            HashMap<String, BooleanFormula> formulaeName ){
+            HashMap<String, BooleanFormula> formulaeName){
         for(int k = 0; k < m; k++) {
             for(int i = 0; i < freeVariables; i++){
                 if (scenarios.get(k) instanceof VisualScenario) {
