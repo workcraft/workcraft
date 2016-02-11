@@ -36,9 +36,11 @@
         <module name="UnusedImports" />
         <module name="RedundantImport" />
 
+        <module name="EmptyForIteratorPad" />
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
+        <module name="TypecastParenPad" />
         <module name="UnnecessaryParentheses" />
 
         <module name="RedundantModifier" />
