@@ -94,9 +94,9 @@ public class VisualModelTests {
         VisualNode[] old = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
         Assert.assertEquals(1, old.length);
         model.groupSelection();
-        VisualNode[] _new = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
-        Assert.assertEquals(1, _new.length);
-        Assert.assertEquals(old[0], _new[0]);
+        VisualNode[] newNode = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
+        Assert.assertEquals(1, newNode.length);
+        Assert.assertEquals(old[0], newNode[0]);
     }
 
     VisualNode[] findMissing(VisualNode[] oldNodes, VisualNode[] newNodes) {
@@ -126,9 +126,9 @@ public class VisualModelTests {
 
         model.groupSelection();
 
-        VisualNode[] _new = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
+        VisualNode[] newNode = model.getCurrentLevel().getChildren().toArray(new VisualNode[0]);
 
-        VisualNode[] diff = findMissing(old, _new);
+        VisualNode[] diff = findMissing(old, newNode);
 
         ArrayList<VisualNode> missingList = new ArrayList<VisualNode>();
 
@@ -143,7 +143,7 @@ public class VisualModelTests {
         for (VisualNode node : old)
             oldList.add(node);
 
-        VisualGroup newGroup = (VisualGroup) _new[_new.length - 1];
+        VisualGroup newGroup = (VisualGroup) newNode[newNode.length - 1];
         Assert.assertFalse(oldList.contains(newGroup));
         Assert.assertTrue(newGroup instanceof VisualGroup);
 

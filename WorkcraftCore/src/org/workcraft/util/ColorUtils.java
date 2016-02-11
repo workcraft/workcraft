@@ -27,18 +27,18 @@ public class ColorUtils {
 
     public static float[] convertFromXyzToLab(float[] value) {
         float l = f(value[1]);
-        float L = 116.0f * l - 16.0f;
+        float nl = 116.0f * l - 16.0f;
         float a = 500.0f * (f(value[0]) - l);
         float b = 200.0f * (l - f(value[2]));
-        return new float[] {(float) L, (float) a, (float) b};
+        return new float[] {(float) nl, (float) a, (float) b};
     }
 
     public static float[] convertFromLabToXyz(float[] value) {
         float i = (value[0] + 16.0f) / 116.0f;
-        float X = fInv(i + value[1] / 500.0f);
-        float Y = fInv(i);
-        float Z = fInv(i - value[2] / 200.0f);
-        return new float[] {(float) X, (float) Y, (float) Z};
+        float x = fInv(i + value[1] / 500.0f);
+        float y = fInv(i);
+        float z = fInv(i - value[2] / 200.0f);
+        return new float[] {(float) x, (float) y, (float) z};
     }
 
     private static float f(float x) {
@@ -73,10 +73,10 @@ public class ColorUtils {
             float dL = (LMax - LMin) / LCount;
             float da = 1.0f / aCount;
             float db = 1.0f / bCount;
-            for (float L = LMax; L >= LMin; L -= dL) {
+            for (float l = LMax; l >= LMin; l -= dL) {
                 for (float a = 0.0f; a <= 1.0f; a += da) {
                     for (float b = 0.0f; b <= 1.0f; b += db) {
-                        palette.add(ColorUtils.getLabColor(L, a, b));
+                        palette.add(ColorUtils.getLabColor(l, a, b));
                     }
                 }
             }

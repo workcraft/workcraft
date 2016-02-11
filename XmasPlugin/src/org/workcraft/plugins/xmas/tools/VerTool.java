@@ -84,16 +84,16 @@ public class VerTool extends AbstractTool implements Tool {
            String arg="";
            int num;
            while(sc.hasNextLine()) {
-             Scanner line_=new Scanner(sc.nextLine());
-             Scanner nxt=new Scanner(line_.next());
+             Scanner line=new Scanner(sc.nextLine());
+             Scanner nxt=new Scanner(line.next());
              String check=nxt.next();
              String str;
              if(check.startsWith("trace")) {
-               nxt=new Scanner(line_.next());
+               nxt=new Scanner(line.next());
                targ="-t";
                targ = targ + nxt.next();
              } else if(check.startsWith("level")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  larg="-v";
                  str = nxt.next();
                  level = str;
@@ -105,17 +105,17 @@ public class VerTool extends AbstractTool implements Tool {
                     larg = "-v2";
                  }
              } else if(check.startsWith("display")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  str = nxt.next();
                   //System.out.println("strrr=" + str);
                   display = str;
              } else if(check.startsWith("highlight")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  str = nxt.next();
                   //System.out.println("strrr=" + str);
                   highlight = str;
              } else if(check.startsWith("soln")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  str = nxt.next();
                   //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
                   soln = str;
@@ -138,9 +138,9 @@ public class VerTool extends AbstractTool implements Tool {
         }
         String str="";
         while(sc.hasNextLine()) {
-            String line_ = sc.nextLine();
+            String line = sc.nextLine();
             //System.out.println(sc.next());
-            str = str + line_ + '\n';
+            str = str + line + '\n';
         }
         return str;
     }
@@ -154,10 +154,10 @@ public class VerTool extends AbstractTool implements Tool {
             LogUtils.logErrorLine(e.getMessage());
         }
         while(sc.hasNextLine()) {
-            Scanner line_=new Scanner(sc.nextLine());
-            Scanner nxt=new Scanner(line_.next());
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
             String check=nxt.next();
-            nxt=new Scanner(line_.next());
+            nxt=new Scanner(line.next());
             String str = nxt.next();
             int num = Integer.parseInt(str);
             //System.out.println("qsl " + check + " " + str + " " + num);
@@ -174,9 +174,9 @@ public class VerTool extends AbstractTool implements Tool {
         }
         String str="";
         while(sc.hasNextLine()) {
-            String line_ = sc.nextLine();
+            String line = sc.nextLine();
             //System.out.println(sc.next());
-            str = str + line_ + '\n';
+            str = str + line + '\n';
         }
         return str;
     }
@@ -261,8 +261,8 @@ public class VerTool extends AbstractTool implements Tool {
                 if(st.contains("->")) {
                     //System.out.println("testst" + st);
                     typ=0;
-                    for(String st_ : st.split("->")) {
-                        str=st_;
+                    for(String st2 : st.split("->")) {
+                        str=st2;
                         //System.out.println("str===" + str);
                         for(Node node : vnet.getNodes()) {
                             if(node instanceof VisualQueueComponent) {
@@ -291,8 +291,8 @@ public class VerTool extends AbstractTool implements Tool {
                 } else if(st.contains("<-")) {
                     //System.out.println("testst_" + st);
                     typ=1;
-                    for(String st_ : st.split("<-")) {
-                        str=st_;
+                    for(String st2 : st.split("<-")) {
+                        str=st2;
                         //System.out.println("str===" + str);
                         for(Node node : vnet.getNodes()) {
                             if(node instanceof VisualQueueComponent) {

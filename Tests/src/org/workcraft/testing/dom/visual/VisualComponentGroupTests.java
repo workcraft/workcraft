@@ -119,22 +119,22 @@ public class VisualComponentGroupTests {
         VisualGroup group = new VisualGroup();
 
         Rectangle2D.Double r1 = new Rectangle2D.Double();
-        Rectangle2D.Double r1_ = new Rectangle2D.Double();
+        Rectangle2D.Double r1b = new Rectangle2D.Double();
         Rectangle2D.Double r2 = new Rectangle2D.Double();
-        Rectangle2D.Double r2_ = new Rectangle2D.Double();
+        Rectangle2D.Double r2b = new Rectangle2D.Double();
         Rectangle2D.Double r3 = new Rectangle2D.Double();
-        Rectangle2D.Double r3_ = new Rectangle2D.Double();
+        Rectangle2D.Double r3b = new Rectangle2D.Double();
 
         r1.setRect(0, 0, 2, 2);
-        r1_.setRect(0.1, 0.1, 1.8, 1.8);
+        r1b.setRect(0.1, 0.1, 1.8, 1.8);
         r2.setRect(0.5, 0.5, 2, 2);
-        r2_.setRect(0.6, 0.6, 1.8, 1.8);
+        r2b.setRect(0.6, 0.6, 1.8, 1.8);
         r3.setRect(1, 1, 2, 2);
-        r3_.setRect(1.1, 1.1, 1.8, 1.8);
+        r3b.setRect(1.1, 1.1, 1.8, 1.8);
 
-        VisualNode node1 = new SquareNode(group, r1, r1_);
-        VisualNode node2 = new SquareNode(group, r2, r2_);
-        VisualNode node3 = new SquareNode(group, r3, r3_);
+        VisualNode node1 = new SquareNode(group, r1, r1b);
+        VisualNode node2 = new SquareNode(group, r2, r2b);
+        VisualNode node3 = new SquareNode(group, r3, r3b);
 
     //    Assert.assertNull(group.getBoundingBoxInLocalSpace());
 

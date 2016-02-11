@@ -132,7 +132,7 @@ public class SatBasedSolver {
         instantiateParameters(n, m);
 
         // CALLING SCENCO
-        boolean SCENCO = false;
+        boolean callScenco = false;
         if(settings.isAbcFlag()){
             File f = new File(abcFolder);
             if(!f.exists() || !f.isDirectory()){
@@ -173,7 +173,7 @@ public class SatBasedSolver {
             customPath = encodingFile.getAbsolutePath();
         }
 
-        SCENCO = true;
+        callScenco = true;
         customFlag = "-set";
         genMode = "-top";
         numSol = "1";
@@ -211,7 +211,7 @@ public class SatBasedSolver {
         CpogEncoding solution = null;
         try {
             // OLD SCENCO EXECUTION
-            if (SCENCO) {
+            if (callScenco) {
                 if (pr > 0) {
                     we.cancelMemento();
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
@@ -224,7 +224,7 @@ public class SatBasedSolver {
                 solverCnf.getTask(instance, vars, derivedVariables);
 
                 if (solution == null) {
-                    if (SCENCO) {
+                    if (callScenco) {
                         we.cancelMemento();
                         JOptionPane.showMessageDialog(null, "SCENCO is not able to solve the CPOG, try other options.",
                                 "Encoding result", JOptionPane.ERROR_MESSAGE);
@@ -256,24 +256,24 @@ public class SatBasedSolver {
             // AND AREA INFORMATION
 
             try{
-                PrintStream Output = new PrintStream(encodingFile);
+                PrintStream output = new PrintStream(encodingFile);
 
                 for(int i=0; i<m; i++){
                     for(int j=0; j<settings.getBits(); j++){
                         if(encoding[i][j]){
-                            Output.print("1");
+                            output.print("1");
                             //System.out.print("1");
                         } else{
-                            Output.print("0");
+                            output.print("0");
                             //System.out.print("0");
                         }
                     }
-                    Output.println();
+                    output.println();
                     // System.out.println();
                 }
-                Output.println(settings.getBits());
+                output.println(settings.getBits());
                 //System.out.println(settings.getBits());
-                Output.close();
+                output.close();
                 customPath = encodingFile.getAbsolutePath();
 
                 // setting all the arguments for calling Scenco for synthesys

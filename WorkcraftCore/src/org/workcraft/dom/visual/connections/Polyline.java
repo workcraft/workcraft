@@ -143,9 +143,9 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     protected int getSegmentIndex(double t) {
         int segments = getSegmentCount();
         double l = 1.0 / segments;
-        double t_l = t/l;
+        double tl = t/l;
 
-        int n = (int)Math.floor(t_l);
+        int n = (int)Math.floor(tl);
         if (n==segments) n -= 1;
         return n;
     }

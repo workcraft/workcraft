@@ -376,19 +376,19 @@ public class ScencoSolver {
             solution.setFormule(formule);
 
             // Set optimal encoding to graphs
-            boolean[][] opt_encoding = new boolean[m][];
+            boolean[][] optEncoding = new boolean[m][];
             for(int i=0;i<m;i++) {
-                opt_encoding[i] = new boolean[freeVariables + pr];
+                optEncoding[i] = new boolean[freeVariables + pr];
                 for(int j=0;j<freeVariables;j++){
-                    if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') opt_encoding[i][j] = false;
-                    else    opt_encoding[i][j] = true;
+                    if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') optEncoding[i][j] = false;
+                    else    optEncoding[i][j] = true;
                 }
                 for(int j=freeVariables;j<freeVariables + pr;j++){
-                    opt_encoding[i][j] = false;
+                    optEncoding[i][j] = false;
                 }
 
             }
-            solution.setEncoding(opt_encoding);
+            solution.setEncoding(optEncoding);
 
             boolean[][] encoding = solution.getEncoding();
 

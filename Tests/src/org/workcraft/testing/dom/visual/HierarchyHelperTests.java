@@ -54,11 +54,11 @@ public class HierarchyHelperTests {
         MockHierarchyNode node1 = new MockHierarchyNode(null);
         MockHierarchyNode node2 = new MockHierarchyNode(node1);
         MockHierarchyNode node3 = new MockHierarchyNode(node2);
-        MockHierarchyNode node3_ = new MockHierarchyNode(node2);
+        MockHierarchyNode node3b = new MockHierarchyNode(node2);
 
         Assert.assertArrayEquals(new Node[]{node1}, Hierarchy.getPath(node1));
         Assert.assertArrayEquals(new Node[]{node1, node2}, Hierarchy.getPath(node2));
         Assert.assertArrayEquals(new Node[]{node1, node2, node3}, Hierarchy.getPath(node3));
-        Assert.assertArrayEquals(new Node[]{node1, node2, node3_}, Hierarchy.getPath(node3_));
+        Assert.assertArrayEquals(new Node[]{node1, node2, node3b}, Hierarchy.getPath(node3b));
     }
 }

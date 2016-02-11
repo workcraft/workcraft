@@ -111,24 +111,24 @@ public class VerConfTool implements Tool {
             LogUtils.logErrorLine(e.getMessage());
         }
         while(sc.hasNextLine()) {
-            Scanner line_=new Scanner(sc.nextLine());
-            Scanner nxt=new Scanner(line_.next());
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
             String check=nxt.next();
             String str;
             if(check.startsWith("trace")) {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 trcombob.setSelectedItem(nxt.next());
             } else if(check.startsWith("level")) {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 lvcombob.setSelectedItem(nxt.next());
             } else if(check.startsWith("display")) {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 dycombob.setSelectedItem(nxt.next());
             } else if(check.startsWith("highlight")) {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 hlcombob.setSelectedItem(nxt.next());
             } else if(check.startsWith("soln")) {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 slcombob.setSelectedItem(nxt.next());
             }
         }
@@ -174,8 +174,6 @@ public class VerConfTool implements Tool {
         Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
 
         //SyncMenu dialog = new SyncMenu();
-
-        int num_nodes=0;
 
         mainFrame = new JFrame("Configure Verification");
         JPanel panelmain = new JPanel();

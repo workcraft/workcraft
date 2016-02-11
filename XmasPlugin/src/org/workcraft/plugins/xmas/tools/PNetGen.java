@@ -103,21 +103,21 @@ public class PNetGen implements Tool {
         String dn="";
         int tst=0;
         while(sc.hasNextLine() && tst==0) {
-            Scanner line_=new Scanner(sc.nextLine());
-            Scanner nxt=new Scanner(line_.next());
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
             String check=nxt.next();
             if(check.startsWith("empty")) {
                 tst=1;
             } else if(check.startsWith("//gensync")) {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 String str = nxt.next();
                 qs = str.replace("Qs", "Sync");
             } else {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 String str = nxt.next();
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 cn = nxt.next();
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 dn = nxt.next();
                 String d="0";
                 if(dn.equals("b")) {
@@ -489,20 +489,20 @@ public class PNetGen implements Tool {
         }
         writer.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus1");
         writer.println("t_"+id+"i_trdyminus1  p_"+id+"i_trdy0");
-        String id2_ = searchlist(id);
+        String id2b = searchlist(id);
         String id3 = searchlist_(id);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "a_irdyminus1", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "a_irdyminus1", writer);
-        else writelink(id, id2_, "o_irdy0", "a_irdyminus1", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "a_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "a_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "b_irdyminus1", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "b_irdyminus1", writer);
-        else writelink(id, id2_, "o_irdy0", "b_irdyminus1", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "b_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "b_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "a_irdyminus1", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "a_irdyminus1", writer);
+        else writelink(id, id2b, "o_irdy0", "a_irdyminus1", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "b_irdyminus1", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "b_irdyminus1", writer);
+        else writelink(id, id2b, "o_irdy0", "b_irdyminus1", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
         writelinkp(id, id1, "_trdy0", "a_irdyminus", idp1, writer);
         writelinkp(id, id1, "_trdy1", "a_irdyplus", idp1, writer);
         writelinkp(id, id2, "_trdy0", "b_irdyminus", idp2, writer);
@@ -621,20 +621,20 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         writebidir(id, "a_irdy0", "i_trdyminus2", writer);
         writebidir(id, "b_irdy0", "i_trdyminus3", writer);
         writebidir(id, "b_irdy0", "i_trdyminus1", writer);
-        String id2_ = searchlist(id);
+        String id2b = searchlist(id);
         String id3 = searchlist_(id);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "a_irdyminus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "a_irdyminus", writer);
-        else writelink(id, id2_, "o_irdy0", "a_irdyminus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "a_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "a_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "b_irdyminus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "b_irdyminus", writer);
-        else writelink(id, id2_, "o_irdy0", "b_irdyminus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "b_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "b_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "a_irdyminus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "a_irdyminus", writer);
+        else writelink(id, id2b, "o_irdy0", "a_irdyminus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "b_irdyminus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "b_irdyminus", writer);
+        else writelink(id, id2b, "o_irdy0", "b_irdyminus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
         writelinkp(id, id1, "_trdy1", "i_trdyplus", idp1, writer);
         writelinkp(id, id2, "_trdy1", "i_trdyplus1", idp2, writer);
         writelinkp(id, id1, "_trdy0", "i_trdyminus", idp1, writer);
@@ -1057,29 +1057,29 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                           }
                         }
                       }
-                      JsonNode y_ = node.get("fields");
-                      if(y_!=null) {
-                        for(int i=0;y_.has(i);i++) {
-                          if(y_.get(i).has("size")) {
-                            fieldsize = y_.get(i).get("size").getValueAsText();
+                      JsonNode y2 = node.get("fields");
+                      if(y2!=null) {
+                        for(int i=0;y2.has(i);i++) {
+                          if(y2.get(i).has("size")) {
+                            fieldsize = y2.get(i).get("size").getValueAsText();
                           }
-                          if(y_.get(i).has("init")) {
-                            fieldinit = y_.get(i).get("init").getValueAsInt();
+                          if(y2.get(i).has("init")) {
+                            fieldinit = y2.get(i).get("init").getValueAsInt();
                           }
-                          if(y_.get(i).has("gr")) {
-                            fieldgr = y_.get(i).get("gr").getValueAsInt();
+                          if(y2.get(i).has("gr")) {
+                            fieldgr = y2.get(i).get("gr").getValueAsInt();
                           }
-                          if(y_.get(i).has("gpf")) {
-                            fieldgpf = y_.get(i).get("gpf").getValueAsText();
+                          if(y2.get(i).has("gpf")) {
+                            fieldgpf = y2.get(i).get("gpf").getValueAsText();
                           }
-                          if(y_.get(i).has("gpf1")) {
-                            fieldgpf = y_.get(i).get("gpf1").getValueAsText();
+                          if(y2.get(i).has("gpf1")) {
+                            fieldgpf = y2.get(i).get("gpf1").getValueAsText();
                           }
-                          if(y_.get(i).has("gpf2")) {
-                            fieldgpf1 = y_.get(i).get("gpf2").getValueAsText();
+                          if(y2.get(i).has("gpf2")) {
+                            fieldgpf1 = y2.get(i).get("gpf2").getValueAsText();
                           }
-                          if(y_.get(i).has("typ")) {
-                            styp = y_.get(i).get("typ").getValueAsText();
+                          if(y2.get(i).has("typ")) {
+                            styp = y2.get(i).get("typ").getValueAsText();
                           }
                         }
                       }

@@ -152,10 +152,10 @@ public class ElementaryCyclesSearch {
      */
     private void unblock(int node) {
         this.blocked[node] = false;
-        Vector Bnode = this.B[node];
-        while (Bnode.size() > 0) {
-            Integer w = (Integer) Bnode.get(0);
-            Bnode.remove(0);
+        Vector bnode = this.B[node];
+        while (bnode.size() > 0) {
+            Integer w = (Integer) bnode.get(0);
+            bnode.remove(0);
             if (this.blocked[w.intValue()]) {
                 this.unblock(w.intValue());
             }

@@ -96,27 +96,27 @@ public class PNetExt {
            String name;
            int num;
            while(sc.hasNextLine()) {
-             Scanner line_=new Scanner(sc.nextLine());
-             Scanner nxt=new Scanner(line_.next());
+             Scanner line=new Scanner(sc.nextLine());
+             Scanner nxt=new Scanner(line.next());
              String check=nxt.next();
              if(check.startsWith("//gen")) {
                if(check.startsWith("//gensource")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
                  sourcelist.add(new source(name,name));
                  typ="Source";
                } else if(check.startsWith("//genfunction")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
                  funlist.add(new fun_(name));
                  typ="Function";
                } else if(check.startsWith("//genmerge")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
                  mergelist.add(new merge_(name,name));
                  typ="Merge";
                } else if(check.startsWith("//genswitch")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
                  switchlist.add(new switch_(name,name));
                  typ="Switch";
@@ -128,9 +128,9 @@ public class PNetExt {
     private static void WriteNet(PrintWriter writer, Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes) {
            writer.println("TS");
            int no=0;
-           for (SourceComponent src_node : src_nodes) {
+           for (SourceComponent srcNode : src_nodes) {
              String ls = "";
-             switch (src_node.getMode()) {
+             switch (srcNode.getMode()) {
              case MODE_0:
                  ls = "d";
                  //writer.println("d");
@@ -144,13 +144,13 @@ public class PNetExt {
                  //writer.println("n");
                  break;
              }
-             writer.println(sourcelist.get(no).name1 + "\"" + src_node.getType() + "\"" + ls);
+             writer.println(sourcelist.get(no).name1 + "\"" + srcNode.getType() + "\"" + ls);
              no++;
            }
            writer.println("FN");
            no=0;
-           for (FunctionComponent fun_node : fun_nodes) {
-             writer.println(funlist.get(no).name1 + "\"" + fun_node.getType() + "\"");       //changed from below
+           for (FunctionComponent funNode : fun_nodes) {
+             writer.println(funlist.get(no).name1 + "\"" + funNode.getType() + "\"");       //changed from below
              no++;
            }
            writer.println("ST");
@@ -159,8 +159,8 @@ public class PNetExt {
              writer.println(sw.name1 + "\"" + sw.getType());
            }*/
            no=0;
-           for (SwitchComponent sw_node : sw_nodes) {
-             writer.println(switchlist.get(no).name1 + "\"" + sw_node.getType() + "\"" + sw_node.getVal());
+           for (SwitchComponent swNode : sw_nodes) {
+             writer.println(switchlist.get(no).name1 + "\"" + swNode.getType() + "\"" + swNode.getVal());
              no++;
            }
            writer.println("MT");

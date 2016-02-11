@@ -250,12 +250,12 @@ public class ScencoExecutionSupport {
             File scenarioFile, File encodingFile, EncoderSettings settings) {
         try{
 
-             PrintStream Output = new PrintStream(scenarioFile);
+             PrintStream output = new PrintStream(scenarioFile);
 
             for(int k = 0; k < m; k++) {
                 Map<String, Integer> nodes = new HashMap<String, Integer>();
                 // Print arcs
-                Output.println(".scenario CPOG_" + k);
+                output.println(".scenario CPOG_" + k);
                 for(VisualConnection c : scenarios.get(k).getConnections()){
                     if (c instanceof VisualArc) {
                         VisualArc arc = (VisualArc)c;
@@ -263,7 +263,7 @@ public class ScencoExecutionSupport {
                         if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
                             nodes.put(((VisualVertex)c1).getLabel(), 0);
                             nodes.put(((VisualVertex)c2).getLabel(), 0);
-                            Output.println(((VisualVertex)c1).getLabel() + " " + ((VisualVertex)c2).getLabel());
+                            output.println(((VisualVertex)c1).getLabel() + " " + ((VisualVertex)c2).getLabel());
                         }
                     }
                 }
@@ -309,32 +309,32 @@ public class ScencoExecutionSupport {
                             }
 
                             // Print conditions on each vertices
-                            Output.print(":");
+                            output.print(":");
                             for(int i=end.length()-1; i>=0; i--){
-                                Output.print(end.charAt(i));
+                                output.print(end.charAt(i));
                             }
-                            Output.println(" " + vertex.getLabel());
+                            output.println(" " + vertex.getLabel());
                         }
 
                         //VisualVertex vertex = (VisualVertex)component;
                         if(!nodes.containsKey(vertex.getLabel())){
-                            Output.println(vertex.getLabel());
+                            output.println(vertex.getLabel());
                         }
                     }
 
                 }
-                Output.println(".end");
+                output.println(".end");
                 if(k != m-1){
-                    Output.println();
+                    output.println();
                 }
             }
-            Output.close();
+            output.close();
 
             // WRITING CUSTOM ENCODING FILE
             if(settings.getGenMode() != GenerationMode.SCENCO){
 
                 if(settings.isCustomEncMode()){
-                        PrintStream Output1 = new PrintStream(encodingFile);
+                        PrintStream output1 = new PrintStream(encodingFile);
 
                         String[] enc = settings.getCustomEnc();
                         for(int k = 0; k < m; k++) {
@@ -345,20 +345,20 @@ public class ScencoExecutionSupport {
                                         "Op-code " + enc[k] + " not allowed.",
                                         "Custom encoding error",
                                         JOptionPane.ERROR_MESSAGE);
-                                Output1.close();
+                                output1.close();
                                 return -1;
 
                             }
                             String empty = "";
                             for (int i=0; i<settings.getBits(); i++) empty += 'X';
                             if (enc[k].isEmpty() || enc[k].equals(empty)){
-                                Output1.println("/");
+                                output1.println("/");
                             } else {
-                                Output1.println(enc[k]);
+                                output1.println(enc[k]);
                             }
                         }
-                        Output1.println(settings.getBits());
-                        Output1.close();
+                        output1.println(settings.getBits());
+                        output1.close();
                 }
             }
         }catch (IOException e) {
@@ -471,8 +471,8 @@ public class ScencoExecutionSupport {
         final Variable[] variables = vars;
         for(int i=0; i<v; i++){
             if(opt_formulaeVertices[i].contains("x")){
-                BooleanFormula formula_opt = null;
-                formula_opt = BooleanParser.parse(opt_formulaeVertices[i], new Func<String, BooleanFormula>() {
+                BooleanFormula formulaOpt = null;
+                formulaOpt = BooleanParser.parse(opt_formulaeVertices[i], new Func<String, BooleanFormula>() {
 
                     @Override
                     public BooleanFormula eval(String arg) {
@@ -482,14 +482,14 @@ public class ScencoExecutionSupport {
                     }
                 });
 
-                formulaeName.put(opt_vertices[i], formula_opt);
+                formulaeName.put(opt_vertices[i], formulaOpt);
 
             }
         }
         for(int i=0; i<a; i++){
             if(opt_formulaeArcs[i].contains("x")){
-                BooleanFormula formula_opt = null;
-                formula_opt = BooleanParser.parse(opt_formulaeArcs[i], new Func<String, BooleanFormula>() {
+                BooleanFormula formulaOpt = null;
+                formulaOpt = BooleanParser.parse(opt_formulaeArcs[i], new Func<String, BooleanFormula>() {
                     @Override
                     public BooleanFormula eval(String arg) {
                         arg = arg.substring("x_".length());
@@ -498,7 +498,7 @@ public class ScencoExecutionSupport {
                     }
                 });
 
-                formulaeName.put(arcNames[i], formula_opt);
+                formulaeName.put(arcNames[i], formulaOpt);
             }
         }
     }
