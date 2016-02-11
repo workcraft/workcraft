@@ -21,7 +21,9 @@
         <module name="OuterTypeFilename"/>
         <!--<module name="OneTopLevelClass"/>-->
         <module name="NoLineWrap" />
+
         <module name="PackageName" />
+        <module name="LocalFinalVariableName" />
 
         <module name="OneStatementPerLine" />
 

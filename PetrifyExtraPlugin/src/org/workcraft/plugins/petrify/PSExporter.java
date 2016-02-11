@@ -70,17 +70,17 @@ public class PSExporter implements Exporter {
 
         DrawAstgTask task = new DrawAstgTask(dotG.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>());
 
-        final Result<? extends ExternalProcessResult> draw_astgResult = framework.getTaskManager().execute(task, "Executing draw_astg");
+        final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(task, "Executing draw_astg");
 
-        if (draw_astgResult.getOutcome() != Outcome.FINISHED) {
-            if (draw_astgResult.getOutcome() == Outcome.CANCELLED) {
+        if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
+            if (drawAstgResult.getOutcome() == Outcome.CANCELLED) {
                 return;
             } else {
-                if (draw_astgResult.getCause() != null) {
-                    throw new SerialisationException(draw_astgResult.getCause());
+                if (drawAstgResult.getCause() != null) {
+                    throw new SerialisationException(drawAstgResult.getCause());
                 } else {
-                    throw new SerialisationException("draw_astg failed with return code " + draw_astgResult.getReturnValue().getReturnCode() + "\n\n" +
-                            new String(draw_astgResult.getReturnValue().getErrors()) +"\n");
+                    throw new SerialisationException("draw_astg failed with return code " + drawAstgResult.getReturnValue().getReturnCode() + "\n\n" +
+                            new String(drawAstgResult.getReturnValue().getErrors()) +"\n");
                 }
             }
         }
