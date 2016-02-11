@@ -44,6 +44,5 @@ subprojects {
     checkstyle {
         toolVersion = "6.15"
         configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
-        checkstyleMain.exclude '**/javacc/*.java'
     }
 }
