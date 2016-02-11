@@ -7,7 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 
 public class VisualContactFormulaProperties {
     VisualCircuit circuit;

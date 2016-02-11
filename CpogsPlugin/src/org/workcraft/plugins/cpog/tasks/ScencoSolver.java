@@ -17,7 +17,7 @@ import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
-import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;

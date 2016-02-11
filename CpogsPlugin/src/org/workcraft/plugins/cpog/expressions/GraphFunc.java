@@ -12,7 +12,7 @@ public interface GraphFunc <Arg, Result> extends Func<Arg, Result>{
 
     GraphFunc<Arg, Result> removeGraphName(String graphName);
 
-    CpogFormula eval(String label, String boolExpression) throws org.workcraft.plugins.cpog.expressions.javacc.ParseException;
+    CpogFormula eval(String label, String boolExpression) throws org.workcraft.plugins.cpog.expressions.jj.ParseException;
 
     void setSequenceCondition(CpogFormula formula, String boolForm);
 

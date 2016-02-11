@@ -24,7 +24,7 @@ import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
-import org.workcraft.plugins.cpog.optimisation.javacc.ParseException;
+import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;

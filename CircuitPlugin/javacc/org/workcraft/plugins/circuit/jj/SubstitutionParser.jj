@@ -1,0 +1,100 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.7";
+  LOOKAHEAD = 1;
+  STATIC = false;
+  DEBUG_PARSER = true;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+}
+
+PARSER_BEGIN(SubstitutionParser)
+package org.workcraft.plugins.circuit.jj;
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.workcraft.util.Pair;
+import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
+
+public class SubstitutionParser {
+}
+PARSER_END(SubstitutionParser)
+
+SKIP:
+{
+    " "
+|   "\t"
+|   "\r"
+|   "\n"
+|   <"//" (~["\r", "\n"])*>
+|   < "`" (~["\r", "\n"])*> 
+}
+
+TOKEN :
+{
+    <EXTENDED_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
+|   "("
+|   ")"
+|   ","
+}    
+    
+List<SubstitutionRule> parseSubstitutionRules() :
+{
+	SubstitutionRule rule;
+    List<SubstitutionRule> rules = new LinkedList<SubstitutionRule>();
+}
+{
+    (
+        rule = parseSubstitutionRule()
+        {
+            rules.add(rule);
+        }
+    )*
+    {
+        return rules;
+    }
+}
+    
+SubstitutionRule parseSubstitutionRule() :
+{
+	Pair<String, String> gateSubstitution;
+	Pair<String, String> portSubstitution;
+    Map<String, String> portSubstitutions = new HashMap<String, String>();
+}
+{
+    gateSubstitution = parseSubstitution()
+    [ "("
+    	(
+    		portSubstitution = parseSubstitution() [","] 
+        	{
+		    	String oldPortName = portSubstitution.getFirst();
+    			String newPortName = portSubstitution.getSecond();
+            	portSubstitutions.put(oldPortName, newPortName);
+        	}
+    	)*
+    	")"
+    ]
+    {
+    	String oldGateName = gateSubstitution.getFirst();
+    	String newGateName = gateSubstitution.getSecond();
+        return new SubstitutionRule(oldGateName, newGateName, portSubstitutions);
+    }
+}
+
+Pair<String, String> parseSubstitution():
+{
+    Token oldName;
+    Token newName;
+}
+{
+    oldName = <EXTENDED_NAME> "=" newName = <EXTENDED_NAME>
+    {
+        return new Pair(oldName.image, newName.image);
+    }
+}

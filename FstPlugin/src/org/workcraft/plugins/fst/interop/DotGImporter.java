@@ -29,8 +29,8 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.Fst;
-import org.workcraft.plugins.fst.javacc.DotGParser;
-import org.workcraft.plugins.fst.javacc.ParseException;
+import org.workcraft.plugins.fst.jj.DotGParser;
+import org.workcraft.plugins.fst.jj.ParseException;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 

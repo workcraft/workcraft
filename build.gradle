@@ -1,10 +1,19 @@
-subprojects {
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'ca.coglinc:javacc-gradle-plugin:2.3.1'
+    }
+}
 
+subprojects {
     repositories {
         jcenter()
     }
 
     apply plugin: 'java'
+    apply plugin: 'ca.coglinc.javacc'
 
     sourceCompatibility = 1.7
 
@@ -19,6 +28,12 @@ subprojects {
         }
     }
 
+    compileJjtree {
+        inputDirectory = file('javacc')
+        include '**/*.jj'
+        arguments = [grammar_encoding: 'UTF-8', static: 'false']
+    }
+
     dependencies {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
@@ -29,6 +44,5 @@ subprojects {
     checkstyle {
         toolVersion = "6.15"
         configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
-        checkstyleMain.exclude '**/javacc/*.java'
     }
 }

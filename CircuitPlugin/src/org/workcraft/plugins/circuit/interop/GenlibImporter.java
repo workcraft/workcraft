@@ -31,8 +31,8 @@ import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
-import org.workcraft.plugins.circuit.javacc.GenlibParser;
-import org.workcraft.plugins.circuit.javacc.ParseException;
+import org.workcraft.plugins.circuit.jj.GenlibParser;
+import org.workcraft.plugins.circuit.jj.ParseException;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.workspace.ModelEntry;
 

@@ -1,0 +1,511 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.7";
+  LOOKAHEAD = 1;
+  STATIC = false;
+  DEBUG_PARSER = true;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+}
+
+PARSER_BEGIN(VerilogParser)
+package org.workcraft.plugins.circuit.jj;
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
+
+import org.workcraft.plugins.circuit.verilog.Module;
+import org.workcraft.plugins.circuit.verilog.Port;
+import org.workcraft.plugins.circuit.verilog.Assign;
+import org.workcraft.plugins.circuit.verilog.Instance;
+import org.workcraft.plugins.circuit.verilog.Pin;
+
+public class VerilogParser {
+}
+PARSER_END(VerilogParser)
+
+SKIP:
+{
+    " "
+|   "\t"
+|   "\r"
+|   "\n"
+|   <"//" (~["\r", "\n"])*>
+|   < "`" (~["\r", "\n"])*> 
+|   "specify" : WITHIN_SPECIFY 
+|   "primitive" : WITHIN_PRIMITIVE
+}
+
+<WITHIN_SPECIFY> SKIP:
+{
+	"endspecify" : DEFAULT
+|	<~[]>
+}
+
+<WITHIN_PRIMITIVE> SKIP:
+{
+	"endprimitive" : DEFAULT
+|	<~[]>
+}
+
+TOKEN :
+{
+    <MODULE : "module">
+|   <ENDMODULE : "endmodule">
+|   <INPUT : "input">
+|   <OUTPUT : "output">
+|   <INOUT : "inout">
+|   <REG : "reg">
+|   <WIRE : "wire">
+|   <ASSIGN : "assign">
+|   <NAME : ["A"-"Z", "a"-"z", "_"] ([ "A"-"Z", "a"-"z", "_", "0"-"9"])*>
+|   <FORMULA: "=" (~[";"])* ";">
+|   <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/"] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
+|   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
+|   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
+|   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
+|   <LOGIC0 : "1'b0">
+|   <LOGIC1 : "1'b1">
+|   <INTEGER : ([ "0"-"9" ])+>
+|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* <NL>>
+|   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:"  <WS> <NL>>
+|   <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
+|   <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
+|   <PETRIFY_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
+|   <MPSAT_INIT_STATE : "// initial values of the signals" <WS> <NL> <WS> "//">
+|	<#WS: ([" ", "\t"])*>
+|	<#NL: (["\n", "\r"])+>
+|   "("
+|   ")"
+|   "["
+|   "]"
+|   ","
+|   "!"
+|   ";"
+|   "."
+}    
+    
+List<Module> parseCircuit() :
+{
+    List<Module> modules; 
+}
+{
+    modules = parseModules()
+    {
+        return modules;
+    }
+}
+
+List<Module> parseModules():
+{
+    Module module;
+    List<Module> modules = new LinkedList<Module>();}
+{
+    (        module = parseModule()
+        {            modules.add(module);
+        }
+    )*
+    {        return modules;
+    }
+}
+    
+Module parseModule():
+{
+    String name;
+    List<Port> ports; 
+    List<Assign> assigns;
+    List<Instance> instances;
+    List<Instance> group;
+    Set<List<Instance>> groups = new HashSet<List<Instance>>();
+    Map<String, Boolean> signalStates = null; 
+}
+{
+    <MODULE> name = parseModuleName() 
+    ports = parsePorts()
+    assigns = parseAssigns()
+    instances = parseInstances()
+    [<PETRIFY_UNMAPPED>
+    	(<PETRIFY_EQUATION> 
+    		group = parseInstances()
+    		{
+    			instances.addAll(group);
+    			groups.add(group);
+    		}
+    	)*
+    ]
+    [ (<PETRIFY_INIT_STATE> | <MPSAT_INIT_STATE>) 
+    	signalStates = parseInitialState()
+    ]
+    <ENDMODULE>
+    {        return new Module(name, ports, assigns, instances, signalStates, groups);
+    }
+}
+
+String parseModuleName():
+{
+    Token nameToken;
+}
+{
+    (nameToken = <NAME> | nameToken = <PETRIFY_NAME>)
+    {
+        return nameToken.image;
+    }
+}
+
+List<Port> parsePorts():
+{
+    List<Port> ports;
+}
+{
+    (
+    	LOOKAHEAD(parseCompactPorts())        ports = parseCompactPorts()
+  	|   ports = parseComplexPorts()
+    )
+    {
+        return ports;
+    }
+}
+
+List<Port> parseCompactPorts():
+{
+    Port port;
+    List<Port> ports = new LinkedList<Port>();
+}
+{
+	[
+		"("
+   		(
+       		port = parseCompactPort() [","]
+       		{
+	           	ports.add(port);
+    	   	}
+   		)*
+    	")"
+    ]
+    ";"
+    {
+        return ports;
+    }
+}
+
+Port parseCompactPort():
+{
+    Port.Type type;
+    Token nameToken;
+}
+{
+    type = parsePortType() nameToken = <NAME>
+    {
+    	return new Port(nameToken.image, type);
+    }
+}
+
+Port.Type parsePortType():
+{
+}
+{
+    (
+    	<INPUT>
+    	{
+    		return Port.Type.INPUT;
+    	} 
+    |	<OUTPUT>
+    	{
+    		return Port.Type.OUTPUT;
+    	} 
+    )
+}
+
+List<Port> parseComplexPorts():
+{
+    List<String> declarations;
+    List<Port> definitions;
+}
+{
+	declarations = parsePortsDeclaration()
+	definitions = parsePortsDefinitions()
+    {
+    	HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
+    	for (Port port: definitions) {
+    		nameToType.put(port.name, port.type);
+    	}
+    	List<Port> ports = new LinkedList<Port>();
+   		for (String name: declarations) {
+   			Port.Type type = nameToType.get(name);
+    		ports.add(new Port(name, type));
+    	}
+        return ports;
+    }
+}
+
+List<String> parsePortsDeclaration():
+{
+    List<String> names = null;
+}
+{
+    ["(" names = parseNames() ")"] ";"
+	{
+		List<String> ports = new LinkedList<String>();
+		if (names != null) {
+			ports.addAll(names);
+		}
+		return ports;
+	}
+}
+
+List<Port> parsePortsDefinitions():
+{
+    List<Port> ports;
+    List<Port> allPorts = new LinkedList<Port>();
+}
+{
+    (
+    	ports = parsePortsDefinition()
+    	{
+    		if (ports != null) {
+    			allPorts.addAll(ports);
+    		}
+    	}
+    )*
+    {
+    	return allPorts;
+    }
+}
+
+List<Port> parsePortsDefinition():
+{    List<String> names;
+    Port.Type type;
+}
+{
+   	(
+   		( type = parsePortType() names = parseNames() ";") 
+	    {
+    		List<Port> ports = new LinkedList<Port>();
+    		for (String name: names) {
+    			Port port = new Port(name, type);
+    			ports.add(port);        	}
+     		return ports;
+    	}
+   	| 	( (<WIRE> | <INOUT> | <REG>) parseNames() ";")
+   		{
+   			return null;
+   		}
+   	) 
+}
+
+List<String> parseNames():
+{
+    Token nameToken;
+    List<String> names = new LinkedList<String>();
+}
+{
+    (
+        nameToken = <NAME> [","]
+        {
+        	String name = nameToken.image;
+            names.add(name);
+        }
+    )*
+    {
+    	return names;
+    }
+}
+
+Map<String, Boolean> parseInitialState():
+{
+	Boolean state;
+    Token nameToken;
+    Map<String, Boolean> signalStates = new HashMap<String, Boolean>();
+}
+{
+    (
+        (
+        	("!" nameToken = <NAME>)
+        	{
+        		state = false;
+        	} 
+        |	(nameToken = <NAME>)
+	        {
+    	    	state = true;
+        	}
+        ) [","]
+        {
+   	    	String name = nameToken.image;
+       	    signalStates.put(name, state);
+       	}
+    )*
+    {
+    	return signalStates;
+    }
+}
+
+List<Assign> parseAssigns():
+{
+	Assign assign;
+    List<Assign> assigns = new LinkedList<Assign>();
+}
+{
+    (
+        assign = parseAssign()
+        {
+        	assigns.add(assign);
+        }
+    )*
+    {
+        return assigns;
+    }
+}
+
+Assign parseAssign():
+{
+    Token nameToken;
+    Token formulaToken;
+}
+{
+    <ASSIGN> nameToken = <NAME> formulaToken = <FORMULA>
+    {
+        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        return new Assign(nameToken.image, formula);
+    }
+}
+
+List<Instance> parseInstances():
+{
+    Instance instance;
+    List<Instance> instances = new LinkedList<Instance>();
+}
+{
+    (
+       	instance = parseInstance()
+        {
+            instances.add(instance);
+        }
+    )*
+    {
+        return instances;
+    }
+}
+
+Instance parseInstance():
+{
+    boolean zeroDelay = false;
+    String moduleName;
+    Token nameToken = null;
+    List<String> parameters;
+    List<Pin> pins;
+}
+{
+    [ (<PETRIFY_ZERO_DELAY> | <MPSAT_ZERO_DELAY>)
+    	{
+    		zeroDelay = true;
+    	} 
+    ]
+    moduleName = parseModuleName()
+    [nameToken = <NAME>]
+    "(" pins = parsePins() ")" ";"
+    {
+    	String name = (nameToken == null ? null : nameToken.image);
+        return new Instance(name, moduleName, pins, zeroDelay);
+    }
+}
+
+List<Pin> parsePins():
+{
+    List<Pin> pins;
+}
+{
+    (
+   		LOOKAHEAD(parseNamedPins())
+        pins = parseNamedPins()
+    |   pins = parseOrderedPins()
+    )
+    {
+        return pins;
+    }
+}
+
+List<Pin> parseNamedPins():
+{
+    Pin pin;
+    List<Pin> pins = new LinkedList<Pin>();
+}
+{
+    (
+        pin = parseNamedPin()
+        {
+            pins.add(pin);
+        }
+    )+
+    {
+        return pins;
+    }
+}
+
+Pin parseNamedPin():
+{
+    Token portName;
+    Token netName;
+}
+{
+    "." portName = <NAME> "(" netName = <NAME> ")" [","]
+    {
+        return new Pin(portName.image, netName.image);
+    }
+}
+
+List<Pin> parseOrderedPins():
+{
+    List<String> wires;
+    List<Pin> pins = new LinkedList<Pin>();
+}
+{
+	wires = parseNames()
+    {
+    	for (String wire: wires) {
+    		Pin pin = new Pin(null, wire);
+    		pins.add(pin);
+    	}
+        return pins;
+    }
+}
+
+/*
+List<String> parseWires():
+{
+	String wire;
+    List<String> wires = new LinkedList<String>();
+}
+{
+    (
+        wire = parseWire() [","]
+        {
+            wires.add(wire);
+        }
+    )*
+    {
+    	return wires;
+    }
+}
+
+String parseWire():
+{
+	Token wireToken = null;
+}
+{
+    (
+    	wireToken = <NAME> 
+    |	wireToken = <LOGIC0> 
+    |	wireToken = <LOGIC1>
+    ) 
+	{
+		return (wireToken == null ? null : wireToken.image);
+	}
+}
+*/

@@ -60,10 +60,10 @@ import org.workcraft.plugins.circuit.genlib.Function;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
-import org.workcraft.plugins.circuit.javacc.ExpressionParser;
-import org.workcraft.plugins.circuit.javacc.GenlibParser;
-import org.workcraft.plugins.circuit.javacc.ParseException;
-import org.workcraft.plugins.circuit.javacc.VerilogParser;
+import org.workcraft.plugins.circuit.jj.ExpressionParser;
+import org.workcraft.plugins.circuit.jj.GenlibParser;
+import org.workcraft.plugins.circuit.jj.ParseException;
+import org.workcraft.plugins.circuit.jj.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.Assign;
 import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Module;
@@ -295,7 +295,7 @@ public class VerilogImporter implements Importer {
                 outContact.setSetFunction(setFormula);
                 BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.resetFunction);
                 outContact.setResetFunction(resetFormula);
-            } catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e) {
+            } catch (org.workcraft.plugins.cpog.optimisation.jj.ParseException e) {
                 throw new RuntimeException(e);
             }
         }
