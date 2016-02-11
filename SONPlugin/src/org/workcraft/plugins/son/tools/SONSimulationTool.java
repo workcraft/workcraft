@@ -111,8 +111,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
 
-    final double DEFAULT_SIMULATION_DELAY = 0.3;
-    final double EDGE_SPEED_MULTIPLIER = 10;
+    final static double DEFAULT_SIMULATION_DELAY = 0.3;
+    final static double EDGE_SPEED_MULTIPLIER = 10;
 
     protected final Trace mainTrace = new Trace();
     protected final Trace branchTrace = new Trace();
@@ -622,7 +622,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                 int mainTracePosition = mainTrace.getPosition();
                 mainTrace.setPosition(0);
                 boolean work = true;
-                while (work && (mainTrace.getPosition() < mainTracePosition) ) {
+                while (work && (mainTrace.getPosition() < mainTracePosition)) {
                     work = quietStep(editor);
                 }
             } else {
@@ -822,10 +822,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     protected final class TraceTableCellRendererImplementation implements TableCellRenderer {
         JLabel label = new JLabel() {
             @Override
-            public void paint( Graphics g ) {
-                g.setColor( getBackground() );
-                g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
-                super.paint( g );
+            public void paint(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
             }
         };
 

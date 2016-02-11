@@ -59,7 +59,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
     public VisualConnection finishConnection(GraphEditorMouseEvent e) {
         VisualConnection connection = super.finishConnection(e);
         if (connection != null) {
-            if ( (connection.getFirst() instanceof VisualPlace)
+            if ((connection.getFirst() instanceof VisualPlace)
               || (connection.getSecond() instanceof VisualPlace)) {
 
                 if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {

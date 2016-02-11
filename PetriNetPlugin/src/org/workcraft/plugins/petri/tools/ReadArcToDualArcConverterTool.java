@@ -42,10 +42,10 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
     public void run(WorkspaceEntry we) {
         final VisualModel visualModel = we.getModelEntry().getVisualModel();
         HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
-        if ( !visualModel.getSelection().isEmpty() ) {
+        if (!visualModel.getSelection().isEmpty()) {
             readArcs.retainAll(visualModel.getSelection());
         }
-        if ( !readArcs.isEmpty() ) {
+        if (!readArcs.isEmpty()) {
             we.saveMemento();
             connections = new HashSet<>(2 * readArcs.size());
             for (VisualReadArc readArc: readArcs) {

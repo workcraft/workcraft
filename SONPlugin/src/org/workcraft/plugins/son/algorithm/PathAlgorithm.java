@@ -55,7 +55,7 @@ public class PathAlgorithm{
         }
     }
 
-    private void DFStest(Collection<Node> nodes, LinkedList<Node> visited, Collection<Condition> v){
+    private void dfsTest(Collection<Node> nodes, LinkedList<Node> visited, Collection<Condition> v){
         LinkedList<Node> post = getPostset(visited.getLast(), nodes);
         for(Node node : post){
             visited.add(node);
@@ -65,7 +65,7 @@ public class PathAlgorithm{
                 pathResult.add(path);
                 visited.removeLast();
             } else if(!visited.contains(node)){
-                DFStest(nodes, visited, v);
+                dfsTest(nodes, visited, v);
                 visited.removeLast();
             }
         }
@@ -76,7 +76,7 @@ public class PathAlgorithm{
         pathResult.clear();
         LinkedList<Node> visited = new LinkedList<Node>();
         visited.add(s);
-        DFStest(nodes, visited, v);
+        dfsTest(nodes, visited, v);
         return pathResult;
     }
 

@@ -21,16 +21,37 @@
         <module name="OuterTypeFilename"/>
         <!--<module name="OneTopLevelClass"/>-->
         <module name="NoLineWrap" />
+
         <module name="PackageName" />
+        <module name="LocalFinalVariableName" />
+        <module name="LocalVariableName" />
+        <module name="MemberName" />
+        <module name="MethodName" />
+        <module name="ParameterName" />
+        <module name="StaticVariableName" />
+        <module name="TypeName" />
 
         <module name="OneStatementPerLine" />
 
         <module name="UnusedImports" />
         <module name="RedundantImport" />
 
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT" />
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <module name="NoLineWrap"/>
+
+        <module name="EmptyForIteratorPad" />
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />
         <module name="NoWhitespaceBefore" />
+        <module name="ParenPad" />
+        <module name="TypecastParenPad" />
         <module name="UnnecessaryParentheses" />
 
         <module name="RedundantModifier" />

@@ -8,27 +8,27 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.NodeStg;
 
 public class RegisterStg extends NodeStg {
-    public final VisualPlace M0;            // M=0
-    public final VisualPlace M1;            // M=1
-    public final VisualSignalTransition MR;    // M+
-    public final VisualSignalTransition MF;    // M-
+    public final VisualPlace m0;            // M=0
+    public final VisualPlace m1;            // M=1
+    public final VisualSignalTransition mR;    // M+
+    public final VisualSignalTransition mF;    // M-
 
     public RegisterStg(
-            VisualPlace M0, VisualPlace M1, VisualSignalTransition MR, VisualSignalTransition MF) {
-        this.M0 = M0;
-        this.M1 = M1;
-        this.MR = MR;
-        this.MF = MF;
+            VisualPlace m0, VisualPlace m1, VisualSignalTransition mR, VisualSignalTransition mF) {
+        this.m0 = m0;
+        this.m1 = m1;
+        this.mR = mR;
+        this.mF = mF;
     }
 
     @Override
     public List<VisualSignalTransition> getAllTransitions() {
-        return Arrays.asList(MR, MF);
+        return Arrays.asList(mR, mF);
     }
 
     @Override
     public List<VisualPlace> getAllPlaces() {
-        return Arrays.asList(M0, M1);
+        return Arrays.asList(m0, m1);
     }
 
 }

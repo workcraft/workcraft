@@ -252,7 +252,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isComputed() {
-                            return lstg.C0.getReferencedPlace().getTokens() == 0;
+                            return lstg.c0.getReferencedPlace().getTokens() == 0;
                         }
                     };
                 }
@@ -277,17 +277,17 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isMarked() {
-                            return rstg.M0.getReferencedPlace().getTokens() == 0;
+                            return rstg.m0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isExcited() {
-                            return getExcitedTransitionOfCollection(Arrays.asList(rstg.MR, rstg.MF)) != null;
+                            return getExcitedTransitionOfCollection(Arrays.asList(rstg.mR, rstg.mF)) != null;
                         }
 
                         @Override
                         public Color getTokenColor() {
-                            return rstg.M1.getTokenColor();
+                            return rstg.m1.getTokenColor();
                         }
                     };
                 }
@@ -437,7 +437,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public Color getTokenColor() {
-                            return rstg.M1.getTokenColor();
+                            return rstg.m1.getTokenColor();
                         }
                     };
                 }

@@ -39,7 +39,7 @@ public class NodeContextTrackerTests {
     }
 
     @Test
-    public void TestInit() {
+    public void testInit() {
         MathGroup group = new MathGroup();
 
         MockNode n1 = new MockNode();
@@ -84,7 +84,7 @@ public class NodeContextTrackerTests {
     }
 
     @Test
-    public void TestAddRemove1() {
+    public void testAddRemove1() {
         MathGroup group = new MathGroup();
 
         NodeContextTracker nct = new NodeContextTracker();
@@ -149,7 +149,7 @@ public class NodeContextTrackerTests {
     }
 
     @Test
-    public void TestAddRemove2() {
+    public void testAddRemove2() {
         MathGroup group = new MathGroup();
 
         NodeContextTracker nct = new NodeContextTracker();
@@ -196,7 +196,7 @@ public class NodeContextTrackerTests {
         group.remove(con1);
 
         assertTrue(nct.getPostset(n1).isEmpty());
-        assertEquals(nct.getPreset(n3).size(), 1 );
+        assertEquals(nct.getPreset(n3).size(), 1);
 
         group.remove(con2);
         assertTrue(nct.getPostset(n2).isEmpty());

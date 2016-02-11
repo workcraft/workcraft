@@ -176,7 +176,7 @@ public class MainWindow extends JFrame {
     private LinkedHashSet<String> recentFiles = new LinkedHashSet<String>();
 
     private int dockableIDCounter = 0;
-    private HashMap<Integer, DockableWindow> IDToDockableWindowMap = new HashMap<Integer, DockableWindow>();
+    private HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<Integer, DockableWindow>();
 
     protected void createWindows() {
         workspaceWindow = new WorkspaceWindow();
@@ -225,12 +225,12 @@ public class MainWindow extends JFrame {
     private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour, int options,
             String relativeRegion, String persistentID) {
 
-        int ID = getNextDockableID();
-        DockableWindowContentPanel panel = new DockableWindowContentPanel(this, ID, title, component, options);
+        int id = getNextDockableID();
+        DockableWindowContentPanel panel = new DockableWindowContentPanel(this, id, title, component, options);
 
         DockableWindow dockable = new DockableWindow(this, panel, persistentID);
         DockingManager.registerDockable(dockable);
-        IDToDockableWindowMap.put(ID, dockable);
+        idToDockableWindowMap.put(id, dockable);
 
         if (neighbour != null) {
             DockingManager.dock(dockable, neighbour, relativeRegion);
@@ -490,30 +490,30 @@ public class MainWindow extends JFrame {
         return defaultActionListener;
     }
 
-    public void toggleDockableWindowMaximized(int ID) {
-        DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+    public void toggleDockableWindowMaximized(int id) {
+        DockableWindow dockableWindow = idToDockableWindowMap.get(id);
 
         if (dockableWindow != null) {
             DockingManager.toggleMaximized(dockableWindow);
             dockableWindow.setMaximized(!dockableWindow.isMaximized());
         } else {
-            System.err.println("toggleDockableWindowMaximized: window with ID=" + ID + " was not found.");
+            System.err.println("toggleDockableWindowMaximized: window with ID=" + id + " was not found.");
         }
     }
 
-    public void closeDockableWindow(int ID) throws OperationCancelledException {
-        DockableWindow dockableWindow = IDToDockableWindowMap.get(ID);
+    public void closeDockableWindow(int id) throws OperationCancelledException {
+        DockableWindow dockableWindow = idToDockableWindowMap.get(id);
         if (dockableWindow != null)
             closeDockableWindow(dockableWindow);
         else
-            System.err.println("closeDockableWindow: window with ID=" + ID + " was not found.");
+            System.err.println("closeDockableWindow: window with ID=" + id + " was not found.");
     }
 
     public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
         if (dockableWindow == null) {
             throw new NullPointerException();
         }
-        int ID = dockableWindow.getID();
+        int id = dockableWindow.getID();
         GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
         if (editor != null) {
             // handle editor window close
@@ -567,7 +567,7 @@ public class MainWindow extends JFrame {
             dockableWindow.setClosed(true);
         } else {
             // handle utility window close
-            mainMenu.utilityWindowClosed(ID);
+            mainMenu.utilityWindowClosed(id);
             DockingManager.close(dockableWindow);
             dockableWindow.setClosed(true);
         }
@@ -580,7 +580,7 @@ public class MainWindow extends JFrame {
 
     /** For use from Javascript **/
     public void toggleDockableWindow(int id) {
-        DockableWindow window = IDToDockableWindowMap.get(id);
+        DockableWindow window = idToDockableWindowMap.get(id);
         if (window != null)
             toggleDockableWindow(window);
         else
@@ -589,7 +589,7 @@ public class MainWindow extends JFrame {
 
     /** For use from Javascript **/
     public void displayDockableWindow(int id) {
-        DockableWindow window = IDToDockableWindowMap.get(id);
+        DockableWindow window = idToDockableWindowMap.get(id);
         if (window != null)
             displayDockableWindow(window);
         else

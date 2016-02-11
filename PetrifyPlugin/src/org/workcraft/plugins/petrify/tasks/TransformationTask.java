@@ -69,7 +69,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
             }
         }
         for (String arg : extraArgs.split("\\s")) {
-            if ( !arg.isEmpty() ) {
+            if (!arg.isEmpty()) {
                 command.add(arg);
             }
         }

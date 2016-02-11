@@ -59,13 +59,13 @@ public class SatBasedSolver {
 
     // Allocation data structures
     private Process process;
-    private String[] opt_enc;
-    private String[] opt_formulaeVertices;
+    private String[] optEnc;
+    private String[] optFormulaeVertices;
     private String[] truthTableVertices;
-    private String[] opt_vertices;
-    private String[] opt_sources;
-    private String[] opt_dests;
-    private String[] opt_formulaeArcs;
+    private String[] optVertices;
+    private String[] optSources;
+    private String[] optDests;
+    private String[] optFormulaeArcs;
     private String[] truthTableArcs;
     private String[] arcNames;
     private int v;
@@ -83,7 +83,7 @@ public class SatBasedSolver {
 
         we.captureMemento();
 
-        reset_vars();
+        resetVars();
 
         HashMap<String, Integer> events = new HashMap<String, Integer>();
         ArrayList<Point2D> positions = new ArrayList<Point2D>();
@@ -117,7 +117,7 @@ public class SatBasedSolver {
         resultDirectory.mkdir(); // ???
 
         int res;
-        if((res = cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
+        if((res = cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             if(res != -1){
                 JOptionPane.showMessageDialog(null,
@@ -132,7 +132,7 @@ public class SatBasedSolver {
         instantiateParameters(n, m);
 
         // CALLING SCENCO
-        boolean SCENCO = false;
+        boolean callScenco = false;
         if(settings.isAbcFlag()){
             File f = new File(abcFolder);
             if(!f.exists() || !f.isDirectory()){
@@ -173,7 +173,7 @@ public class SatBasedSolver {
             customPath = encodingFile.getAbsolutePath();
         }
 
-        SCENCO = true;
+        callScenco = true;
         customFlag = "-set";
         genMode = "-top";
         numSol = "1";
@@ -211,7 +211,7 @@ public class SatBasedSolver {
         CpogEncoding solution = null;
         try {
             // OLD SCENCO EXECUTION
-            if (SCENCO) {
+            if (callScenco) {
                 if (pr > 0) {
                     we.cancelMemento();
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
@@ -224,7 +224,7 @@ public class SatBasedSolver {
                 solverCnf.getTask(instance, vars, derivedVariables);
 
                 if (solution == null) {
-                    if (SCENCO) {
+                    if (callScenco) {
                         we.cancelMemento();
                         JOptionPane.showMessageDialog(null, "SCENCO is not able to solve the CPOG, try other options.",
                                 "Encoding result", JOptionPane.ERROR_MESSAGE);
@@ -256,24 +256,24 @@ public class SatBasedSolver {
             // AND AREA INFORMATION
 
             try{
-                PrintStream Output = new PrintStream(encodingFile);
+                PrintStream output = new PrintStream(encodingFile);
 
                 for(int i=0; i<m; i++){
                     for(int j=0; j<settings.getBits(); j++){
                         if(encoding[i][j]){
-                            Output.print("1");
+                            output.print("1");
                             //System.out.print("1");
                         } else{
-                            Output.print("0");
+                            output.print("0");
                             //System.out.print("0");
                         }
                     }
-                    Output.println();
+                    output.println();
                     // System.out.println();
                 }
-                Output.println(settings.getBits());
+                output.println(settings.getBits());
                 //System.out.println(settings.getBits());
-                Output.close();
+                output.close();
                 customPath = encodingFile.getAbsolutePath();
 
                 // setting all the arguments for calling Scenco for synthesys
@@ -302,8 +302,8 @@ public class SatBasedSolver {
                 if(!modBit.isEmpty()) parameters.add(modBit);
 
                 if(cpogBuilder.callingScenco(process,settings,parameters,Double.MAX_VALUE, we, 0,
-                        false, opt_enc,opt_formulaeVertices,truthTableVertices,
-                        opt_vertices, opt_sources, opt_dests, opt_formulaeArcs,
+                        false, optEnc,optFormulaeVertices,truthTableVertices,
+                        optVertices, optSources, optDests, optFormulaeArcs,
                         truthTableArcs, arcNames, this) != 0){
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
                     we.cancelMemento();
@@ -312,14 +312,14 @@ public class SatBasedSolver {
 
                 // CONNECT FORMULAE INTO VISUAL ELEMENTS FOR OLD SCENCO MODE
                 try {
-                    cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, opt_formulaeVertices,
-                            opt_vertices, opt_formulaeArcs, arcNames);
+                    cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, optFormulaeVertices,
+                            optVertices, optFormulaeArcs, arcNames);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
                 // PRINT CONTROLLER FOR OLD SCENCO MODE
-                cpogBuilder.printController(m, resultDirectory.getAbsolutePath(), opt_enc);
+                cpogBuilder.printController(m, resultDirectory.getAbsolutePath(), optEnc);
             }catch (IOException e) {
                 System.out.println("Error: " + e);
             }
@@ -347,7 +347,7 @@ public class SatBasedSolver {
     }
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
-    private void reset_vars(){
+    private void resetVars(){
         verbose = "";
         genMode= "";
         numSol= "";
@@ -364,13 +364,13 @@ public class SatBasedSolver {
     }
 
     private void instantiateParameters(int elements, int scenarios){
-        opt_enc = new String[scenarios];
-        opt_formulaeVertices = new String[elements*elements];
+        optEnc = new String[scenarios];
+        optFormulaeVertices = new String[elements*elements];
         truthTableVertices =  new String[elements*elements];
-        opt_vertices = new String[elements];
-        opt_sources = new String[elements*elements];
-        opt_dests = new String[elements*elements];
-        opt_formulaeArcs = new String[elements*elements];
+        optVertices = new String[elements];
+        optSources = new String[elements*elements];
+        optDests = new String[elements*elements];
+        optFormulaeArcs = new String[elements*elements];
         truthTableArcs =  new String[elements*elements];
         arcNames = new String[elements*elements];
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());

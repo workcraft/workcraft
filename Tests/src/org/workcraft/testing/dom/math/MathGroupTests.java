@@ -47,7 +47,7 @@ public class MathGroupTests {
     private MathGroup group;
 
     @Test
-    public void ObservationTest() {
+    public void observationTest() {
         group = new MathGroup();
 
         group.addObserver(new HierarchyObserver() {

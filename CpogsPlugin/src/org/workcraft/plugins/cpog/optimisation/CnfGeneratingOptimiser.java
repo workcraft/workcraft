@@ -58,7 +58,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
             encodings[i] = new Literal[nonDerivedVariables];
             if(i == 0)
                 for(int j=0;j<nonDerivedVariables;j++)
-                    encodings[i][j] = Literal.Zero;
+                    encodings[i][j] = Literal.ZERO;
             else
                 for(int j=0;j<nonDerivedVariables;j++)
                     encodings[i][j] = literal(new FreeVariable("x"+j+"_s"+i));
@@ -187,10 +187,10 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
 
     private Literal parseBoolean(char ch) {
         if(ch == '0')
-            return Literal.Zero;
+            return Literal.ZERO;
         else
             if(ch=='1')
-                return Literal.One;
+                return Literal.ONE;
             else
                 throw new RuntimeException("o_O");
     }

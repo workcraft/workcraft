@@ -68,7 +68,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     @Override
     public void setDefaultControlPoints() {
         resetControlPoints();
-        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001 ) {
+        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001) {
             Point2D p = connectionInfo.getFirstCenter();
 
             ControlPoint cp1 = new ControlPoint();
@@ -143,9 +143,9 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     protected int getSegmentIndex(double t) {
         int segments = getSegmentCount();
         double l = 1.0 / segments;
-        double t_l = t/l;
+        double tl = t/l;
 
-        int n = (int)Math.floor(t_l);
+        int n = (int)Math.floor(tl);
         if (n==segments) n -= 1;
         return n;
     }
@@ -155,14 +155,14 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     }
 
 
-    public int getNearestSegment(Point2D pt, Point2D out_pointOnSegment) {
+    public int getNearestSegment(Point2D pt, Point2D outPointOnSegment) {
         double min = Double.MAX_VALUE;
         int nearest = -1;
 
         for (int i=0; i<getSegmentCount(); i++) {
             Line2D segment = getSegment(i);
-            Point2D a = new Point2D.Double( pt.getX() - segment.getX1(), pt.getY() - segment.getY1() );
-            Point2D b = new Point2D.Double( segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1() );
+            Point2D a = new Point2D.Double(pt.getX() - segment.getX1(), pt.getY() - segment.getY1());
+            Point2D b = new Point2D.Double(segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1());
 
             double magB = b.distance(0, 0);
             double dist;
@@ -183,8 +183,8 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
             if (dist < min) {
                 min = dist;
-                if (out_pointOnSegment != null) {
-                    out_pointOnSegment.setLocation(a);
+                if (outPointOnSegment != null) {
+                    outPointOnSegment.setLocation(a);
                 }
                 nearest = i;
             }

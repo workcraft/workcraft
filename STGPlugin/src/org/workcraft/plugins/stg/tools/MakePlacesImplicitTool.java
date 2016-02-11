@@ -37,7 +37,7 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
     public void run(WorkspaceEntry we) {
         final VisualSTG model = (VisualSTG)we.getModelEntry().getVisualModel();
         HashSet<VisualPlace> places = new HashSet<>(model.getVisualPlaces());
-        if ( !model.getSelection().isEmpty() ) {
+        if (!model.getSelection().isEmpty()) {
             places.retainAll(model.getSelection());
         }
         if (!places.isEmpty()) {

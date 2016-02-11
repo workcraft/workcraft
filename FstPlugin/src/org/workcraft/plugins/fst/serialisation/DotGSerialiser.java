@@ -121,7 +121,7 @@ public class DotGSerialiser implements ModelSerialiser {
             String name = getSrialisedNodeName(fst, signal);
             names.add(name);
         }
-        if ( !names.isEmpty() ) {
+        if (!names.isEmpty()) {
             switch (type) {
             case INPUT:
                 out.write(".inputs");
@@ -149,7 +149,7 @@ public class DotGSerialiser implements ModelSerialiser {
             String name = getSrialisedEventName(fsm, event);
             names.add(name);
         }
-        if ( !names.isEmpty() ) {
+        if (!names.isEmpty()) {
             out.write(".dummy");
             for (String s: names) {
                 out.write(" " + s);

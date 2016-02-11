@@ -61,7 +61,7 @@ public class MultiSet<T> implements Set<T> {
             @Override
             public boolean hasNext() {
                 boolean result = cursor.hasNext();
-                if ( !result && (current != null)) {
+                if (!result && (current != null)) {
                     result = count(current) > currentIdx;
                 }
                 return result;

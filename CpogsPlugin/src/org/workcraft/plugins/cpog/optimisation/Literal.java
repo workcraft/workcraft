@@ -30,8 +30,8 @@ public class Literal implements BooleanFormula {
     public Literal() {
     }
 
-    public static Literal Zero = new Literal(new FreeVariable("0"));
-    public static Literal One = new Literal(new FreeVariable("1"));
+    public static final Literal ZERO = new Literal(new FreeVariable("0"));
+    public static final Literal ONE = new Literal(new FreeVariable("1"));
 
     public Literal(BooleanVariable variable) {
         this.variable = variable;

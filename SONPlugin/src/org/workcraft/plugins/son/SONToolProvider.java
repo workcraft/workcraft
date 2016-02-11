@@ -30,8 +30,8 @@ public class SONToolProvider implements CustomToolsProvider{
         result.add(channelPlaceTool);
         result.add(new SONSimulationTool());
         result.add(new ScenarioGeneratorTool());
-        GraphEditorTool TimeSettingTool = new TimeValueSetterTool();
-        result.add(TimeSettingTool);
+        GraphEditorTool timeSettingTool = new TimeValueSetterTool();
+        result.add(timeSettingTool);
 
         return result;
     }

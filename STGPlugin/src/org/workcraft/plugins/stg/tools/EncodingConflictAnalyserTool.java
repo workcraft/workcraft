@@ -83,7 +83,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
         coresTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if ( !coresRadio.isSelected() ) {
+                if (!coresRadio.isSelected()) {
                     coresRadio.setSelected(true);
                 }
             }
@@ -136,7 +136,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
         densityTable.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if ( !densityRadio.isSelected() ) {
+                if (!densityRadio.isSelected()) {
                     densityRadio.setSelected(true);
                 }
             }

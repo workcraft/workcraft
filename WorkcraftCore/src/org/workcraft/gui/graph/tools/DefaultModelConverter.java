@@ -151,7 +151,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
                 dstSelection.add(dstNode);
             }
         }
-        if ( !dstSelection.isEmpty() ) {
+        if (!dstSelection.isEmpty()) {
             Container c = Hierarchy.getNearestContainer(dstSelection);
             getDstModel().setCurrentLevel(c);
             getDstModel().addToSelection(dstSelection);

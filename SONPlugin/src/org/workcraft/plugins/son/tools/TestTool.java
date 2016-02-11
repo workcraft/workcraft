@@ -158,14 +158,14 @@ public class TestTool extends AbstractTool implements Tool{
 
         for(ONGroup group : lowerGroups){
             for(Condition c : group.getConditions()){
-                if(net.getInputPNConnections(c).isEmpty() ){
+                if(net.getInputPNConnections(c).isEmpty()){
                     System.out.println("ini: "+net.getNodeReference(c));
                     for(String str : timeAlg.bsonConsistency2(c)){
                         System.out.println(str);
                     }
                 }
 
-                if(net.getOutputPNConnections(c).isEmpty() ){
+                if(net.getOutputPNConnections(c).isEmpty()){
                     System.out.println("fine: "+net.getNodeReference(c));
                     for(String str : timeAlg.bsonConsistency3(c)){
                         System.out.println(str);

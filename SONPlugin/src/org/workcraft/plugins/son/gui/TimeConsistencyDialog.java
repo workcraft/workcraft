@@ -161,11 +161,11 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
                     ListItem item = (ListItem)list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
-                    if(item.isSelected() ){
+                    if(item.isSelected()){
                         selectedNodes.add((Node)item.getListItem());
                         item.setItemColor(Color.ORANGE);
                     }
-                    if(!item.isSelected() ){
+                    if(!item.isSelected()){
                         selectedNodes.remove((Node)item.getListItem());
                         item.setItemColor(Color.BLACK);
                     }

@@ -31,7 +31,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 
 public class VisualPlaceTests {
     @Test
-    public void TestHitTest() {
+    public void testHitTest() {
         Place p = new Place();
         VisualPlace vp = new VisualPlace(p);
 

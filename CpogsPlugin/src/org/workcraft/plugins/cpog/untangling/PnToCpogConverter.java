@@ -194,7 +194,7 @@ public class PnToCpogConverter {
 
             //rearrange vertices
             VisualVertex first = null;
-            for (VisualVertex v : visualCpog.getVertices() ){
+            for (VisualVertex v : visualCpog.getVertices()){
                 if(visualCpog.getPreset(v).isEmpty()){
                     first = v;
                     break;

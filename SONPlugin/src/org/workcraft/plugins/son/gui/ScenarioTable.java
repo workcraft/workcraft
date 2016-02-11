@@ -69,10 +69,10 @@ public class ScenarioTable extends JTable{
 
         JLabel label = new JLabel() {
             @Override
-            public void paint( Graphics g ) {
-                g.setColor( getBackground() );
-                g.fillRect( 0, 0, getWidth() - 1, getHeight() - 1 );
-                super.paint( g );
+            public void paint(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                super.paint(g);
             }
         };
 

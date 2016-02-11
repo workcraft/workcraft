@@ -210,16 +210,16 @@ public class CircuitUtils {
                 result = NamespaceHelper.hierarchicalToFlatName(outputPortRef);
             } else {
                 // If the component has a single output, use the component name. Otherwise append the contact.
-                int output_cnt = 0;
+                int outputCount = 0;
                 for (Node node: component.getChildren()) {
                     if (node instanceof Contact) {
                         Contact vc = (Contact)node;
                         if (vc.isOutput()) {
-                            output_cnt++;
+                            outputCount++;
                         }
                     }
                 }
-                if (output_cnt == 1) {
+                if (outputCount == 1) {
                     String componentRef = circuit.getNodeReference(component);
                     result = NamespaceHelper.hierarchicalToFlatName(componentRef);
                 } else {
@@ -365,7 +365,7 @@ public class CircuitUtils {
             queue.add(curNode);
         }
 
-        while ( !queue.isEmpty() ) {
+        while (!queue.isEmpty()) {
             Node node = queue.remove();
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);
@@ -411,7 +411,7 @@ public class CircuitUtils {
             queue.add(curNode);
         }
 
-        while ( !queue.isEmpty() ) {
+        while (!queue.isEmpty()) {
             Node node = queue.remove();
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);
@@ -457,7 +457,7 @@ public class CircuitUtils {
             queue.add(curNode);
         }
 
-        while ( !queue.isEmpty() ) {
+        while (!queue.isEmpty()) {
             Node node = queue.remove();
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);

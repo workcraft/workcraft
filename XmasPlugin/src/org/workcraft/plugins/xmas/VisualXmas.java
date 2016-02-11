@@ -55,7 +55,7 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName("xMAS Circuit")
 @ShortName("xMAS")
-@CustomTools ( XmasToolsProvider.class )
+@CustomTools (XmasToolsProvider.class)
 public class VisualXmas extends AbstractVisualModel {
 
     private Xmas circuit;
@@ -124,7 +124,7 @@ public class VisualXmas extends AbstractVisualModel {
     public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)){
-            if ( (node instanceof VisualSourceComponent)
+            if ((node instanceof VisualSourceComponent)
               || (node instanceof VisualFunctionComponent)
               || (node instanceof VisualQueueComponent)
               || (node instanceof VisualForkComponent)
@@ -133,7 +133,7 @@ public class VisualXmas extends AbstractVisualModel {
               || (node instanceof VisualMergeComponent)
               || (node instanceof VisualSinkComponent)
               || (node instanceof VisualCreditComponent)
-              || (node instanceof VisualSyncComponent) ) {
+              || (node instanceof VisualSyncComponent)) {
                 result.add(node);
             }
         }

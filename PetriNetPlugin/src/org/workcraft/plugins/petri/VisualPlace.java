@@ -171,7 +171,7 @@ public class VisualPlace extends VisualComponent {
                 radius -= separation;
                 for(int i = 0; i < count; i++)     {
                     if (i == 6) {
-                        shape = new Ellipse2D.Double( -radius, -radius, radius * 2, radius * 2);
+                        shape = new Ellipse2D.Double(-radius, -radius, radius * 2, radius * 2);
                     } else {
                         shape = new Ellipse2D.Double(
                                 -step * Math.sin(i * alpha * 2) - radius,

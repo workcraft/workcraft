@@ -150,7 +150,7 @@ public class Geometry {
         try {
             return transform.createInverse();
         } catch(NoninvertibleTransformException ex) {
-            throw new RuntimeException("Matrix inverse failed! Pessimists win :( ");
+            throw new RuntimeException("Matrix inverse failed! Pessimists win :(");
         }
     }
 

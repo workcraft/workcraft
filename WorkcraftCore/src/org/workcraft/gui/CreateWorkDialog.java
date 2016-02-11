@@ -127,7 +127,7 @@ public class CreateWorkDialog extends JDialog {
         modelList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if ((e.getClickCount() == 2 ) && (modelList.getSelectedIndex() != -1)) {
+                if ((e.getClickCount() == 2) && (modelList.getSelectedIndex() != -1)) {
                     ok();
                 }
             }

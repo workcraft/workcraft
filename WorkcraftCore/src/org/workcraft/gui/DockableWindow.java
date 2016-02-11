@@ -151,7 +151,7 @@ public class DockableWindow extends AbstractDockable {
     }
 
     public void setTitle(String title) {
-        if ( !getTitle().equals(title) ) {
+        if (!getTitle().equals(title)) {
             getContentPanel().setTitle(title);
             setTabText(title);
         }

@@ -171,7 +171,7 @@ public class Grid implements ViewportListener {
      * <li> Minor grid lines frequency = 10 per major line interval
      * <li> Dynamic scaling factor = 2
      * <li> Dynamic magnification threshold = 5 (see <code>setMagThreshold</code>)
-     * <li> Dynamic minimisation threshold = 2.5 ( see <code>setMinThreshold</code>)
+     * <li> Dynamic minimisation threshold = 2.5 (see <code>setMinThreshold</code>)
      * </ul>
      **/
     public Grid() {

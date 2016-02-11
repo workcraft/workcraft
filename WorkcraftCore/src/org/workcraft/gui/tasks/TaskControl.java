@@ -81,7 +81,7 @@ public class TaskControl extends JPanel {
         });
 
         add(label, "0,0,2,0");
-        add(progressBar, "0,1,2,1" );
+        add(progressBar, "0,1,2,1");
         add(btnCancel, "2,2");
     }
 

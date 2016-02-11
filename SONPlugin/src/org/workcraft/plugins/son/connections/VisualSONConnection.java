@@ -99,7 +99,7 @@ public class VisualSONConnection extends VisualConnection {
         case ASYNLINE:
             return new BasicStroke(0.15f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.5f, new float[]{0.1f, 0.075f,}, 0f);
         case BHVLINE:
-            return new BasicStroke( 0.02f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 2.0f, new float[]{0.24f, 0.15f,}, 0f);
+            return new BasicStroke(0.02f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 2.0f, new float[]{0.24f, 0.15f,}, 0f);
         default:
             return super.getStroke();
         }

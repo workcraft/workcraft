@@ -67,7 +67,7 @@ public class SerialisationTestingUtils {
         Iterator<VisualComponent> i1 = c1.getPreset().iterator();
         Iterator<VisualComponent> i2 = c2.getPreset().iterator();
 
-        while ( i1.hasNext() ) {
+        while (i1.hasNext()) {
             VisualComponent n1 = i1.next();
             VisualComponent n2 = i2.next();
 
@@ -77,7 +77,7 @@ public class SerialisationTestingUtils {
         i1 = c1.getPostset().iterator();
         i2 = c2.getPostset().iterator();
 
-        while ( i1.hasNext() ) {
+        while (i1.hasNext()) {
             VisualComponent n1 = i1.next();
             VisualComponent n2 = i2.next();
 
@@ -85,14 +85,14 @@ public class SerialisationTestingUtils {
         }*/
     }
 
-    public static void comparePreAndPostSets( MathNode c1, MathNode c2) {
+    public static void comparePreAndPostSets(MathNode c1, MathNode c2) {
         /*assertEquals(c1.getPreset().size(),c2.getPreset().size());
         assertEquals(c1.getPostset().size(),c2.getPostset().size());
 
         Iterator<MathComponent> i1 = c1.getPreset().iterator();
         Iterator<MathComponent> i2 = c2.getPreset().iterator();
 
-        while ( i1.hasNext() ) {
+        while (i1.hasNext()) {
             Component n1 = i1.next();
             Component n2 = i2.next();
 
@@ -102,7 +102,7 @@ public class SerialisationTestingUtils {
         i1 = c1.getPostset().iterator();
         i2 = c2.getPostset().iterator();
 
-        while ( i1.hasNext() ) {
+        while (i1.hasNext()) {
             Component n1 = i1.next();
             Component n2 = i2.next();
 
@@ -164,25 +164,25 @@ public class SerialisationTestingUtils {
         assertEquals(node1.getClass(), node2.getClass());
 
         if (node1 instanceof MathNode)
-            comparePreAndPostSets((MathNode) node1, (MathNode) node2 );
+            comparePreAndPostSets((MathNode) node1, (MathNode) node2);
         else if (node1 instanceof VisualComponent)
-            comparePreAndPostSets((VisualComponent) node1, (VisualComponent) node2 );
+            comparePreAndPostSets((VisualComponent) node1, (VisualComponent) node2);
         else if (node1 instanceof Place)
             comparePlaces((Place)node1, (Place)node2);
         else if (node1 instanceof MathConnection)
-            compareConnections((MathConnection)node1, (MathConnection)node2 );
+            compareConnections((MathConnection)node1, (MathConnection)node2);
         else if (node1 instanceof SignalTransition)
-            compareTransitions((SignalTransition)node1, (SignalTransition)node2 );
+            compareTransitions((SignalTransition)node1, (SignalTransition)node2);
         else if (node1 instanceof VisualPlace)
-            compareVisualPlaces((VisualPlace)node1, (VisualPlace)node2 );
+            compareVisualPlaces((VisualPlace)node1, (VisualPlace)node2);
         else if (node1 instanceof VisualSignalTransition)
-            compareVisualSignalTransitions((VisualSignalTransition)node1, (VisualSignalTransition)node2 );
+            compareVisualSignalTransitions((VisualSignalTransition)node1, (VisualSignalTransition)node2);
         else if (node1 instanceof VisualDummyTransition)
-            compareVisualDummyTransitions((VisualDummyTransition)node1, (VisualDummyTransition)node2 );
+            compareVisualDummyTransitions((VisualDummyTransition)node1, (VisualDummyTransition)node2);
         else if (node1 instanceof VisualImplicitPlaceArc)
-            compareImplicitPlaceArcs((VisualImplicitPlaceArc)node1, (VisualImplicitPlaceArc)node2 );
+            compareImplicitPlaceArcs((VisualImplicitPlaceArc)node1, (VisualImplicitPlaceArc)node2);
         else if (node1 instanceof VisualConnection)
-            compareVisualConnections((VisualConnection)node1, (VisualConnection)node2 );
+            compareVisualConnections((VisualConnection)node1, (VisualConnection)node2);
         else if (node1 instanceof Polyline)
             comparePolylines((Polyline)node1, (Polyline)node2);
         else if (node1 instanceof MathGroup);
@@ -198,7 +198,7 @@ public class SerialisationTestingUtils {
         Iterator<Node> i1 = ch1.iterator();
         Iterator<Node> i2 = ch2.iterator();
 
-        while ( i1.hasNext() ) {
+        while (i1.hasNext()) {
             Node n1 = i1.next();
             Node n2 = i2.next();
 

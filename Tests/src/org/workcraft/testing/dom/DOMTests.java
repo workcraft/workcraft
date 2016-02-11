@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class DOMTests {
 
     @Test
-    public void Test1() throws InvalidConnectionException {
+    public void test1() throws InvalidConnectionException {
         PetriNet pn = new PetriNet();
 
         Place p1 = new Place();

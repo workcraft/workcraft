@@ -70,7 +70,7 @@ public class SaveLoadTests {
     }
 
     //@Test
-    public void TestMathModelLoad() throws Exception {
+    public void testMathModelLoad() throws Exception {
         Framework framework = Framework.getInstance();
         framework.getPluginManager().loadManifest();
 
@@ -85,7 +85,7 @@ public class SaveLoadTests {
     }
 
     //@Test
-    public void TestVisualModelLoad() throws Exception {
+    public void testVisualModelLoad() throws Exception {
         Framework framework = Framework.getInstance();
         framework.getPluginManager().loadManifest();
 
@@ -107,7 +107,7 @@ public class SaveLoadTests {
     }
 
     @Test
-    public void EnsureMathSamplesUpToDate() throws Exception {
+    public void ensureMathSamplesUpToDate() throws Exception {
         System.out.println("If the serialisation format has changed, you can use these new serialisation samples:");
         ensureSampleUpToDate("testDataMathModel", buildSamplePetri(), testDataMathModel);
         ensureSampleUpToDate("testDataVisualModel", buildSampleVisualPetri(), testDataVisualModel);

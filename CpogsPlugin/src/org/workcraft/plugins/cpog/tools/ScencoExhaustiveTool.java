@@ -46,10 +46,10 @@ public class ScencoExhaustiveTool implements Tool {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        if ( !CpogParsingTool.hasEnoughScenarios(we) ) {
+        if (!CpogParsingTool.hasEnoughScenarios(we)) {
             JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS,
                     ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
-        }  else if ( CpogParsingTool.hasTooScenarios(we) ) {
+        }  else if (CpogParsingTool.hasTooScenarios(we)) {
             JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_TOO_MANY_SCENARIOS,
                     ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
         } else {

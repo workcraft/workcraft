@@ -72,7 +72,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
             File dotG = new File(directory, "model.g");
             Model model = WorkspaceUtils.getAs(we, PetriNetModel.class);
             ExportTask exportTask = Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager());
-            final Result<? extends Object> dotGResult = framework.getTaskManager().execute(exportTask, "Exporting to .g" );
+            final Result<? extends Object> dotGResult = framework.getTaskManager().execute(exportTask, "Exporting to .g");
 
             if (dotGResult.getOutcome() != Outcome.FINISHED) {
                 if (dotGResult.getOutcome() != Outcome.CANCELLED) {

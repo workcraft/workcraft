@@ -62,13 +62,13 @@ public class ScencoSolver {
     private String disableFunction = "";
     private String oldSynt = "";
 
-    private String[] opt_enc;
-    private String[] opt_formulaeVertices;
+    private String[] optEnc;
+    private String[] optFormulaeVertices;
     private String[] truthTableVertices;
-    private String[] opt_vertices;
-    private String[] opt_sources;
-    private String[] opt_dests;
-    private String[] opt_formulaeArcs;
+    private String[] optVertices;
+    private String[] optSources;
+    private String[] optDests;
+    private String[] optFormulaeArcs;
     private String[] truthTableArcs;
     private String[] arcNames;
     private int v;
@@ -96,7 +96,7 @@ public class ScencoSolver {
         scenarios = CpogParsingTool.getScenarios(cpog);
         we.captureMemento();
 
-        cpogBuilder.reset_vars(    verbose, genMode, numSol, customFlag, customPath, effort,
+        cpogBuilder.resetVars(verbose, genMode, numSol, customFlag, customPath, effort,
                                 espressoFlag, abcFlag, gateLibFlag, cpogSize, disableFunction, oldSynt);
 
         events = new HashMap<String, Integer>();
@@ -123,7 +123,7 @@ public class ScencoSolver {
         File encodingFile = new File(directory, "custom.enc");
         File resultDirectory = new File(directory, "result");
         resultDirectory.mkdir();
-        if((cpogBuilder.WriteCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
+        if((cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             args.add("ERROR");
             args.add("Error on writing scenario file.");
@@ -247,13 +247,13 @@ public class ScencoSolver {
     }
 
     public void handleResult(String[] outputLines, String resultDirectoryPath){
-        opt_enc = new String[m];
-        opt_formulaeVertices = new String[n*n];
+        optEnc = new String[m];
+        optFormulaeVertices = new String[n*n];
         truthTableVertices =  new String[n*n];
-        opt_vertices = new String[n];
-        opt_sources = new String[n*n];
-        opt_dests = new String[n*n];
-        opt_formulaeArcs = new String[n*n];
+        optVertices = new String[n];
+        optSources = new String[n*n];
+        optDests = new String[n*n];
+        optFormulaeArcs = new String[n*n];
         truthTableArcs =  new String[n*n];
         arcNames = new String[n*n];
 
@@ -269,7 +269,7 @@ public class ScencoSolver {
                     int j = 0;
                     string.nextElement();
                     while (j < m) {
-                        opt_enc[j++] = (String) string.nextElement();
+                        optEnc[j++] = (String) string.nextElement();
                     }
                 }
 
@@ -284,15 +284,15 @@ public class ScencoSolver {
                         StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
                         String el = (String)st2.nextElement();
                         if(el.equals("V")){ //formula of a vertex
-                            opt_vertices[v] = (String) st2.nextElement();
+                            optVertices[v] = (String) st2.nextElement();
                             truthTableVertices[v] = (String) st2.nextElement();
-                            opt_formulaeVertices[v++] = (String) st2.nextElement();
+                            optFormulaeVertices[v++] = (String) st2.nextElement();
                         }else{
-                            opt_sources[a] = (String) st2.nextElement();
-                            opt_dests[a] = (String) st2.nextElement();
-                            arcNames[a] = opt_sources[a] + "->" + opt_dests[a];
+                            optSources[a] = (String) st2.nextElement();
+                            optDests[a] = (String) st2.nextElement();
+                            arcNames[a] = optSources[a] + "->" + optDests[a];
                             truthTableArcs[a] = (String) st2.nextElement();
-                            opt_formulaeArcs[a++] = (String) st2.nextElement();
+                            optFormulaeArcs[a++] = (String) st2.nextElement();
                         }
                         i++;
                     }
@@ -310,7 +310,7 @@ public class ScencoSolver {
             }
 
             // Print controller
-            cpogBuilder.printController(m, resultDirectoryPath, opt_enc);
+            cpogBuilder.printController(m, resultDirectoryPath, optEnc);
 
             // group similar constraints
             HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
@@ -327,7 +327,7 @@ public class ScencoSolver {
 
             int freeVariables;
             if(settings.getGenMode() != GenerationMode.SCENCO)
-                freeVariables = opt_enc[0].length();
+                freeVariables = optEnc[0].length();
             else{
                 freeVariables = settings.getBits();
             }
@@ -350,24 +350,24 @@ public class ScencoSolver {
             // AND CONNECTING IT TO EACH VISUAL VERTEX EXPLOITING A MAP
             System.out.println("Op-code selected for graphs:");
             for(int i=0; i<m; i++){
-                opt_enc[i] = opt_enc[i].replace('-', 'X');
+                optEnc[i] = optEnc[i].replace('-', 'X');
                 String name;
                 if (scenarios.get(i).getLabel().isEmpty()) {
                     name = "CPOG " + i;
                 } else {
                     name = scenarios.get(i).getLabel();
                 }
-                System.out.println(name + ": " + opt_enc[i]);
+                System.out.println(name + ": " + optEnc[i]);
             }
 
             solution = new CpogEncoding(null, null);
-            //BooleanFormula[][] encodingVars = opt_task.getEncodingVars();
+            //BooleanFormula[][] encodingVars = optTask.getEncodingVars();
             BooleanFormula[] formule = new BooleanFormula[v + a];
 
             // Set optimal formulae to graphs
             try {
-                cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, opt_formulaeVertices,
-                        opt_vertices, opt_formulaeArcs, arcNames);
+                cpogBuilder.connectFormulaeToVisualVertex(v, a, vars, formulaeName, optFormulaeVertices,
+                        optVertices, optFormulaeArcs, arcNames);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -376,19 +376,19 @@ public class ScencoSolver {
             solution.setFormule(formule);
 
             // Set optimal encoding to graphs
-            boolean[][] opt_encoding = new boolean[m][];
+            boolean[][] optEncoding = new boolean[m][];
             for(int i=0;i<m;i++) {
-                opt_encoding[i] = new boolean[freeVariables + pr];
+                optEncoding[i] = new boolean[freeVariables + pr];
                 for(int j=0;j<freeVariables;j++){
-                    if(opt_enc[i].charAt(j) == '0' || opt_enc[i].charAt(j) == '-') opt_encoding[i][j] = false;
-                    else    opt_encoding[i][j] = true;
+                    if(optEnc[i].charAt(j) == '0' || optEnc[i].charAt(j) == '-') optEncoding[i][j] = false;
+                    else    optEncoding[i][j] = true;
                 }
                 for(int j=freeVariables;j<freeVariables + pr;j++){
-                    opt_encoding[i][j] = false;
+                    optEncoding[i][j] = false;
                 }
 
             }
-            solution.setEncoding(opt_encoding);
+            solution.setEncoding(optEncoding);
 
             boolean[][] encoding = solution.getEncoding();
 

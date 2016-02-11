@@ -15,7 +15,7 @@ public interface Decorator {
 
     class Empty implements Decorator {
 
-        public static Empty INSTANCE = new Empty();
+        public static final Empty INSTANCE = new Empty();
 
         @Override
         public Decoration getDecoration(Node node) {

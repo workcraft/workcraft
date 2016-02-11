@@ -95,15 +95,15 @@ import org.xml.sax.SAXException;
 
 
 public final class Framework {
-    private static String SETTINGS_DIRECTORY_NAME = ".workcraft";
-    private static String CONFIG_FILE_NAME = "config.xml";
-    private static String PLUGINS_FILE_NAME = "plugins.xml";
-    private static String UILAYOUT_FILE_NAME = "uilayout.xml";
+    private static final String SETTINGS_DIRECTORY_NAME = ".workcraft";
+    private static final String CONFIG_FILE_NAME = "config.xml";
+    private static final String PLUGINS_FILE_NAME = "plugins.xml";
+    private static final String UILAYOUT_FILE_NAME = "uilayout.xml";
 
-    public static String SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + File.separator + SETTINGS_DIRECTORY_NAME;
-    public static String CONFIG_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
-    public static String PLUGINS_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
-    public static String UILAYOUT_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
+    public static final String SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + File.separator + SETTINGS_DIRECTORY_NAME;
+    public static final String CONFIG_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
+    public static final String PLUGINS_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
+    public static final String UILAYOUT_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static Framework instance = null;
 
@@ -194,7 +194,7 @@ public final class Framework {
 
     private boolean inGUIMode = false;
     private boolean shutdownRequested = false;
-    private boolean GUIRestartRequested = false;
+    private boolean guiRestartRequested = false;
     private ContextFactory contextFactory = new ContextFactory();
     private MainWindow mainWindow;
     public Memento clipboard;
@@ -313,7 +313,7 @@ public final class Framework {
 
                 Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
                 ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
-                //ScriptableObject.putProperty(systemScope, "importer", );
+                //ScriptableObject.putProperty(systemScope, "importer",);
                 systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
                 globalScope = (ScriptableObject) cx.newObject(systemScope);
@@ -429,7 +429,7 @@ public final class Framework {
             System.out.println("Already in GUI mode");
             return;
         }
-        GUIRestartRequested = false;
+        guiRestartRequested = false;
         System.out.println("Switching to GUI mode...");
 
         if (SwingUtilities.isEventDispatchThread()) {
@@ -811,12 +811,12 @@ public final class Framework {
     }
 
     public void restartGUI() throws OperationCancelledException {
-        GUIRestartRequested = true;
+        guiRestartRequested = true;
         shutdownGUI();
     }
 
     public boolean isGUIRestartRequested() {
-        return GUIRestartRequested;
+        return guiRestartRequested;
     }
 
     public void loadWorkspace(File file) throws DeserialisationException {

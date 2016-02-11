@@ -35,7 +35,7 @@ public class DoubleSerialiser implements BasicXMLSerialiser{
         return doubleToString(d.doubleValue());
     }
 
-    public static double doubleFromString(String s ) {
+    public static double doubleFromString(String s) {
         return Double.parseDouble(s);
     }
 

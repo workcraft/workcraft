@@ -44,7 +44,7 @@ public class DirectedArcToReadArcConverterTool extends TransformationTool implem
         connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
         connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
         connections.retainAll(model.getSelection());
-        if ( !connections.isEmpty() ) {
+        if (!connections.isEmpty()) {
             we.saveMemento();
             readArcs = new HashSet<>();
             for (VisualConnection connection: connections) {

@@ -50,7 +50,7 @@ public class PresetManagerPanel<T> extends JPanel {
         for (Preset<T> p : presetManager.list()) {
             presetCombo.addItem(p);
         }
-        presetCombo.addActionListener( new ActionListener() {
+        presetCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Preset<T> p = (Preset<T>)presetCombo.getSelectedItem();

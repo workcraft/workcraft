@@ -73,7 +73,7 @@ public class VisualPushRegister extends VisualBinaryRegister {
         Path2D falseInnerShape = new Path2D.Double();
         falseInnerShape.moveTo(+w2 - dx, +h2  - 2 * dt - eps);
         falseInnerShape.lineTo(+w2 - dx, +h2 - 2 * dt);
-        falseInnerShape.lineTo(       0, +h2 - dy);
+        falseInnerShape.lineTo(0, +h2 - dy);
         falseInnerShape.lineTo(-w2 + dx, +h2 - 2 * dt);
         falseInnerShape.lineTo(-w2 + dx, +h2 - 2 * dt - eps);
 

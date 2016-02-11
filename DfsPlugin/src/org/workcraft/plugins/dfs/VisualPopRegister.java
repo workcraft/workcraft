@@ -71,7 +71,7 @@ public class VisualPopRegister extends VisualBinaryRegister {
 
         Path2D falseInnerShape = new Path2D.Double();
         falseInnerShape.moveTo(+w2 - dx, +h2 - dy);
-        falseInnerShape.lineTo(       0, +h2 - 2 * dt);
+        falseInnerShape.lineTo(0, +h2 - 2 * dt);
         falseInnerShape.lineTo(-w2 + dx, +h2 - dy);
 
         Shape tokenShape = new Ellipse2D.Double(-dt, -dt, 2 * dt, 2 * dt);

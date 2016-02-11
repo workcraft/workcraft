@@ -77,7 +77,7 @@ public class HitmanTests {
     }
 
     @Test
-    public void TestHitDeepestSkipNulls() {
+    public void testHitDeepestSkipNulls() {
         final HitableNode toHit = new HitableNode();
         Node node = new DummyNode(
             new Node[]{

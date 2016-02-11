@@ -115,8 +115,8 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
 
-    final double DEFAULT_SIMULATION_DELAY = 0.3;
-    final double EDGE_SPEED_MULTIPLIER = 10;
+    final static double DEFAULT_SIMULATION_DELAY = 0.3;
+    final static double EDGE_SPEED_MULTIPLIER = 10;
 
     protected Map<Place, Integer> initialMarking;
     protected final Trace mainTrace = new Trace();

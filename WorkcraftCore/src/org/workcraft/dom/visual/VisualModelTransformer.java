@@ -144,7 +144,7 @@ public class VisualModelTransformer {
             // First reposition vertices.
             for (Entry<VisualTransformableNode, Point2D> entry: componentToPositionMap.entrySet()) {
                 VisualTransformableNode vn = entry.getKey();
-                if ( !(vn instanceof ControlPoint) ) {
+                if (!(vn instanceof ControlPoint)) {
                     Point2D position = entry.getValue();
                     vn.setRootSpacePosition(position);
                 }

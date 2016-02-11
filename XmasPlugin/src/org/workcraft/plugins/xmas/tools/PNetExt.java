@@ -26,53 +26,53 @@ public class PNetExt {
     private static boolean printoutput=true;
 
 
-    private static class source {
+    private static class Source {
 
            String name1;
            String name2;
 
-           source(String s1,String s2) {
+           Source(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
     }
 
-    private static class switch_ {
+    private static class Switch {
 
            String name1;
            String name2;
 
-           switch_(String s1,String s2) {
+           Switch(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
     }
 
-    private static class merge_ {
+    private static class Merge {
 
            String name1;
            String name2;
 
-           merge_(String s1,String s2) {
+           Merge(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
     }
 
-    private static class fun_ {
+    private static class Fun {
 
            String name1;
 
-           fun_(String s1) {
+           Fun(String s1) {
              name1 = s1;
            }
     }
 
 
-    static List<source> sourcelist = new ArrayList<source>();
-    static List<switch_> switchlist = new ArrayList<switch_>();
-    static List<merge_> mergelist = new ArrayList<merge_>();
-    static List<fun_> funlist = new ArrayList<fun_>();
+    static List<Source> sourcelist = new ArrayList<Source>();
+    static List<Switch> switchlist = new ArrayList<Switch>();
+    static List<Merge> mergelist = new ArrayList<Merge>();
+    static List<Fun> funlist = new ArrayList<Fun>();
 
     private static void initlist() {
         funlist.clear();
@@ -82,7 +82,7 @@ public class PNetExt {
     }
 
 
-    private static void ReadFile(String file,int syncflag) {
+    private static void readFile(String file,int syncflag) {
            String typ=null;
            String g1=null;
            String g2=null;
@@ -96,41 +96,41 @@ public class PNetExt {
            String name;
            int num;
            while(sc.hasNextLine()) {
-             Scanner line_=new Scanner(sc.nextLine());
-             Scanner nxt=new Scanner(line_.next());
+             Scanner line=new Scanner(sc.nextLine());
+             Scanner nxt=new Scanner(line.next());
              String check=nxt.next();
              if(check.startsWith("//gen")) {
                if(check.startsWith("//gensource")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
-                 sourcelist.add(new source(name,name));
+                 sourcelist.add(new Source(name,name));
                  typ="Source";
                } else if(check.startsWith("//genfunction")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
-                 funlist.add(new fun_(name));
+                 funlist.add(new Fun(name));
                  typ="Function";
                } else if(check.startsWith("//genmerge")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
-                 mergelist.add(new merge_(name,name));
+                 mergelist.add(new Merge(name,name));
                  typ="Merge";
                } else if(check.startsWith("//genswitch")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  name=nxt.next();
-                 switchlist.add(new switch_(name,name));
+                 switchlist.add(new Switch(name,name));
                  typ="Switch";
                }
              }
            }
     }
 
-    private static void WriteNet(PrintWriter writer, Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes) {
+    private static void writeNet(PrintWriter writer, Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes) {
            writer.println("TS");
            int no=0;
-           for (SourceComponent src_node : src_nodes) {
+           for (SourceComponent srcNode : srcNodes) {
              String ls = "";
-             switch (src_node.getMode()) {
+             switch (srcNode.getMode()) {
              case MODE_0:
                  ls = "d";
                  //writer.println("d");
@@ -144,45 +144,45 @@ public class PNetExt {
                  //writer.println("n");
                  break;
              }
-             writer.println(sourcelist.get(no).name1 + "\"" + src_node.getType() + "\"" + ls);
+             writer.println(sourcelist.get(no).name1 + "\"" + srcNode.getType() + "\"" + ls);
              no++;
            }
            writer.println("FN");
            no=0;
-           for (FunctionComponent fun_node : fun_nodes) {
-             writer.println(funlist.get(no).name1 + "\"" + fun_node.getType() + "\"");       //changed from below
+           for (FunctionComponent funNode : funNodes) {
+             writer.println(funlist.get(no).name1 + "\"" + funNode.getType() + "\"");       //changed from below
              no++;
            }
            writer.println("ST");
-           /*for (switch_ sw : switchlist) {
+           /*for (Switch sw : switchlist) {
              //writer.println(sw.name1 + "\"" + "t");
              writer.println(sw.name1 + "\"" + sw.getType());
            }*/
            no=0;
-           for (SwitchComponent sw_node : sw_nodes) {
-             writer.println(switchlist.get(no).name1 + "\"" + sw_node.getType() + "\"" + sw_node.getVal());
+           for (SwitchComponent swNode : swNodes) {
+             writer.println(switchlist.get(no).name1 + "\"" + swNode.getType() + "\"" + swNode.getVal());
              no++;
            }
            writer.println("MT");
-           for (merge_ mrg : mergelist) {
+           for (Merge mrg : mergelist) {
              writer.println(mrg.name1 + "\"" + mrg.name2);
            }
            System.out.print("Output written to CPNFile");
     }
 
-    public PNetExt(Collection<SourceComponent> src_nodes, Collection<FunctionComponent> fun_nodes, Collection<SwitchComponent> sw_nodes, int syncflag) {
+    public PNetExt(Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes, int syncflag) {
         initlist();
         File pncFile = XmasSettings.getTempVxmPncFile();
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(pncFile);
             File cpnFile = XmasSettings.getTempVxmCpnFile();
-            ReadFile(cpnFile.getAbsolutePath(), syncflag);
-            WriteNet(writer,src_nodes,fun_nodes, sw_nodes);
+            readFile(cpnFile.getAbsolutePath(), syncflag);
+            writeNet(writer,srcNodes,funNodes, swNodes);
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {
-            if ( writer != null ) {
+            if (writer != null) {
                 writer.close();
             }
         }

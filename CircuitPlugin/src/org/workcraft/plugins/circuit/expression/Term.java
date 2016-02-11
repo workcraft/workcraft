@@ -55,7 +55,7 @@ public class Term implements Expression {
             Expression evalExpression = expression.eval(assignments);
             if (evalExpression instanceof Constant) {
                 Constant constant = (Constant)evalExpression;
-                if ( !constant.value ) {
+                if (!constant.value) {
                     return new Constant(false);
                 }
             } else {

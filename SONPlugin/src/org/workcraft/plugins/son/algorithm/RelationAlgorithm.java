@@ -236,7 +236,7 @@ public class RelationAlgorithm{
      */
     public Collection<TransitionNode> getPostAsynEvents(TransitionNode e){
         Collection<TransitionNode> result = new ArrayList<TransitionNode>();
-        for(Node post : net.getPostset(e) )
+        for(Node post : net.getPostset(e))
             if((post instanceof ChannelPlace) && net.getSONConnectionType(post, e) == Semantics.ASYNLINE){
 
                 Iterator<Node> it = net.getPostset(post).iterator();

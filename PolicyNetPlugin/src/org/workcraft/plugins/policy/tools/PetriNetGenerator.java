@@ -39,7 +39,7 @@ public class PetriNetGenerator {
         try {
             connectTransitions();
             connectBundles();
-        } catch ( InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }

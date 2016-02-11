@@ -171,7 +171,7 @@ public class VisualDfs extends AbstractVisualModel {
             if (visited.contains(cur)) continue;
             visited.add(cur);
             for (Node succ: getPostset(cur)) {
-                if ( !(succ instanceof VisualComponent) ) continue;
+                if (!(succ instanceof VisualComponent)) continue;
                 try {
                     result.add(rType.cast(succ));
                 } catch (ClassCastException e) {
@@ -194,7 +194,7 @@ public class VisualDfs extends AbstractVisualModel {
             if (visited.contains(cur)) continue;
             visited.add(cur);
             for (Node pred: getPreset(cur)) {
-                if ( !(pred instanceof VisualComponent) ) continue;
+                if (!(pred instanceof VisualComponent)) continue;
                 try {
                     result.add(rType.cast(pred));
                 } catch (ClassCastException e) {

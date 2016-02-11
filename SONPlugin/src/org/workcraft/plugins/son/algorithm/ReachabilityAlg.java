@@ -55,13 +55,13 @@ public class ReachabilityAlg extends RelationAlgorithm{
 //        }
 //    }
 
-    private void CausalPredecessors(LinkedList<Node> visited, Node n, Before before){
+    private void causalPredecessors(LinkedList<Node> visited, Node n, Before before){
         predecessors.add(n);
          visited.add(n);
 
         for(Node n2 : getCausalPreset(n, before)){
             if(!visited.contains(n2))
-                CausalPredecessors(visited, n2, before);
+                causalPredecessors(visited, n2, before);
         }
     }
 
@@ -72,7 +72,7 @@ public class ReachabilityAlg extends RelationAlgorithm{
         Before before =  bsonAlg.getBeforeList();
         visited.add(s);
         //dfs(visited, v, before);
-        CausalPredecessors(visited, s, before);
+        causalPredecessors(visited, s, before);
         return predecessors;
     }
 

@@ -201,7 +201,7 @@ public class Untanglings {
             transitions.rename();
 
             // sorting and renaming places
-            if ( !settings.isRemoveNodes() ) {
+            if (!settings.isRemoveNodes()) {
                 places.sort();
                 places.rename();
             }
@@ -254,7 +254,7 @@ public class Untanglings {
             PartialOrder process, HashMap<Integer, UntanglingNode> idToTransitionMap) {
 
         for(Flow edge1 : pi.getOccurrenceNet().getEdges()){
-            if ( !(edge1.getSource() instanceof Transition) ) continue;
+            if (!(edge1.getSource() instanceof Transition)) continue;
             for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
 
                 String sourceName = edge2.getSource().getLabel();

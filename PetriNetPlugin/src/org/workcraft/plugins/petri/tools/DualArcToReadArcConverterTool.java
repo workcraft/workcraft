@@ -34,7 +34,7 @@ public class DualArcToReadArcConverterTool extends TransformationTool {
     public void run(WorkspaceEntry we) {
         final VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(model);
-        if ( !dualArcs.isEmpty() ) {
+        if (!dualArcs.isEmpty()) {
             we.saveMemento();
             HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(model, dualArcs);
             model.select(new LinkedList<Node>(readArcs));

@@ -70,18 +70,18 @@ public class PNetGen implements Tool {
     }
 
     static List<Info> lst = new ArrayList<Info>();
-    static List<Ids> lst_ = new ArrayList<Ids>();
+    static List<Ids> lst2 = new ArrayList<Ids>();
     static List<Info> slsti = new ArrayList<Info>();
     static List<Info> slsto = new ArrayList<Info>();
-    static List<Info> slsto_ = new ArrayList<Info>();
+    static List<Info> slsto2 = new ArrayList<Info>();
 
 
     public void initlist() {
         lst.clear();
-        lst_.clear();
+        lst2.clear();
         slsti.clear();
         slsto.clear();
-        slsto_.clear();
+        slsto2.clear();
     }
 
     private static void printlst() {
@@ -91,7 +91,7 @@ public class PNetGen implements Tool {
         }
     }
 
-    private static void Process_file(String file) {
+    private static void processFile(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -103,21 +103,21 @@ public class PNetGen implements Tool {
         String dn="";
         int tst=0;
         while(sc.hasNextLine() && tst==0) {
-            Scanner line_=new Scanner(sc.nextLine());
-            Scanner nxt=new Scanner(line_.next());
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
             String check=nxt.next();
             if(check.startsWith("empty")) {
                 tst=1;
             } else if(check.startsWith("//gensync")) {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 String str = nxt.next();
                 qs = str.replace("Qs", "Sync");
             } else {
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 String str = nxt.next();
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 cn = nxt.next();
-                nxt=new Scanner(line_.next());
+                nxt=new Scanner(line.next());
                 dn = nxt.next();
                 String d="0";
                 if(dn.equals("b")) {
@@ -140,7 +140,7 @@ public class PNetGen implements Tool {
         return WorkspaceUtils.canHas(we, Xmas.class);
     }
 
-    private static String searchlist(String id) {
+    private static String searchList(String id) {
         String str = "";
 
         for(int i=0;i<lst.size();i++) {
@@ -149,7 +149,7 @@ public class PNetGen implements Tool {
         return str;
     }
 
-    private static String searchlist_(String id) {
+    private static String searchList2(String id) {
         String str = "";
 
         for(int i=0;i<lst.size();i++) {
@@ -158,27 +158,16 @@ public class PNetGen implements Tool {
         return str;
     }
 
-    private static String search_lst_(String id1,String id2) {
+    private static String searchList3(String id) {
         String str = "";
 
-        for(int i=0;i<lst.size();i++) {
-          if(id2.equals(lst.get(i).a) && id1.equals(lst.get(i).b)) {
-            str = lst.get(i).c;
-          }
+        for(int i=0;i<lst2.size();i++) {
+          if(id.equals(lst2.get(i).a)) str = lst2.get(i).b;
         }
         return str;
     }
 
-    private static String searchlist__(String id) {
-        String str = "";
-
-        for(int i=0;i<lst_.size();i++) {
-          if(id.equals(lst_.get(i).a)) str = lst_.get(i).b;
-        }
-        return str;
-    }
-
-    private static String searchlist_first(String id) {
+    private static String searchListFirst(String id) {
         int tst=0;
         String str = "";
 
@@ -195,7 +184,7 @@ public class PNetGen implements Tool {
         return str;
     }
 
-    private static String searchlist_second(String id) {
+    private static String searchListSecond(String id) {
         int tst=0;
         String str = "";
 
@@ -212,7 +201,7 @@ public class PNetGen implements Tool {
         return str;
     }
 
-    private static String searchlist_first_(String id) {
+    private static String searchListFirst2(String id) {
         int tst=0;
         String str = "";
 
@@ -229,7 +218,7 @@ public class PNetGen implements Tool {
         return str;
       }
 
-      private static String searchlist_second_(String id) {
+      private static String searchListSecond2(String id) {
         int tst=0;
         String str = "";
 
@@ -246,23 +235,23 @@ public class PNetGen implements Tool {
         return str;
     }
 
-    private static int search_slsto_(String id) {
+    private static int searchSlsto(String id) {
         int i, pos=0;
 
-        for(i=0;i<slsto_.size();i++) {
-            if(id.equals(slsto_.get(i).b)) {
+        for(i=0;i<slsto2.size();i++) {
+            if(id.equals(slsto2.get(i).b)) {
                 pos=i;
             }
         }
         return pos;
     }
 
-    private static void create_slsto() {  //patch new
+    private static void createSlsto() {  //patch new
         int i, j, pos=0;
 
         for(i=0;i<slsti.size();i++) {
-            pos=search_slsto_(slsti.get(i).b);
-            slsto.add(new Info(slsto_.get(pos).a,slsto_.get(pos).b,"",slsto_.get(pos).d));
+            pos=searchSlsto(slsti.get(i).b);
+            slsto.add(new Info(slsto2.get(pos).a,slsto2.get(pos).b,"",slsto2.get(pos).d));
         }
     }
 
@@ -357,7 +346,7 @@ public class PNetGen implements Tool {
         writer.println("marking p_"+id+label+"1 0");
     }
 
-    private static void writemarking_(String id, String label, PrintWriter writer) {
+    private static void writeMarking2(String id, String label, PrintWriter writer) {
         if(printoutput) {
             System.out.println("marking p_"+id+label+"0 0");
             System.out.println("marking p_"+id+label+"1 1");
@@ -373,20 +362,6 @@ public class PNetGen implements Tool {
         }
         writer.println("priority t_"+id+label+"plus "+p);
         writer.println("priority t_"+id+label+"minus "+p);
-    }
-
-    private static void writepriority_(String id, String label, int n, int p, PrintWriter writer) {
-        if(printoutput) {
-            System.out.println("priority t_"+id+label+"plus"+n+" "+p);
-        }
-        writer.println("priority t_"+id+label+"plus"+n+" "+p);
-    }
-
-    private static void writepriority__(String id, String label, int n, int p, PrintWriter writer) {
-        if(printoutput) {
-            System.out.println("priority t_"+id+label+"minus"+n+" "+p);
-        }
-        writer.println("priority t_"+id+label+"minus"+n+" "+p);
     }
 
     private static void gensource(String id, String id1, String idp, JsonNode y, int fieldgr, PrintWriter writer) {
@@ -422,8 +397,8 @@ public class PNetGen implements Tool {
         writeblock(id, "i_trdy", writer);
         writebidir(id, "_oracle0", "i_trdyminus", writer);
         writebidir(id, "_oracle1", "i_trdyplus", writer);
-        String id2 = searchlist(id);
-        String id3 = searchlist_(id);
+        String id2 = searchList(id);
+        String id3 = searchList2(id);
         if(id3.equals("a")) writelink(id, id2, "a_irdy1", "i_trdyminus", writer);
         else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "i_trdyminus", writer);
         else writelink(id, id2, "o_irdy1", "i_trdyminus", writer);
@@ -442,8 +417,8 @@ public class PNetGen implements Tool {
         writeblock(id, "o_irdy", writer);
         writemarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
-        String id2 = searchlist(id);
-        String id3 = searchlist_(id);
+        String id2 = searchList(id);
+        String id3 = searchList2(id);
         if(id3.equals("a")) writelink(id, id2, "a_irdy0", "o_irdyminus", writer);
         else if(id3.equals("b")) writelink(id, id2, "b_irdy0", "o_irdyminus", writer);
         else writelink(id, id2, "o_irdy0", "o_irdyminus", writer);
@@ -489,20 +464,20 @@ public class PNetGen implements Tool {
         }
         writer.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus1");
         writer.println("t_"+id+"i_trdyminus1  p_"+id+"i_trdy0");
-        String id2_ = searchlist(id);
-        String id3 = searchlist_(id);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "a_irdyminus1", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "a_irdyminus1", writer);
-        else writelink(id, id2_, "o_irdy0", "a_irdyminus1", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "a_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "a_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "b_irdyminus1", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "b_irdyminus1", writer);
-        else writelink(id, id2_, "o_irdy0", "b_irdyminus1", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "b_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "b_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
+        String id2b = searchList(id);
+        String id3 = searchList2(id);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "a_irdyminus1", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "a_irdyminus1", writer);
+        else writelink(id, id2b, "o_irdy0", "a_irdyminus1", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "b_irdyminus1", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "b_irdyminus1", writer);
+        else writelink(id, id2b, "o_irdy0", "b_irdyminus1", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
         writelinkp(id, id1, "_trdy0", "a_irdyminus", idp1, writer);
         writelinkp(id, id1, "_trdy1", "a_irdyplus", idp1, writer);
         writelinkp(id, id2, "_trdy0", "b_irdyminus", idp2, writer);
@@ -547,10 +522,10 @@ public class PNetGen implements Tool {
         }
         writer.println("p_"+id+"o_irdy1  t_"+id+"o_irdyminus1");
         writer.println("t_"+id+"o_irdyminus1  p_"+id+"o_irdy0");
-        String id3 = searchlist_first(id);
-        String id4 = searchlist_second(id);
-        String id5 = searchlist_first_(id);
-        String id6 = searchlist_second_(id);
+        String id3 = searchListFirst(id);
+        String id4 = searchListSecond(id);
+        String id5 = searchListFirst2(id);
+        String id6 = searchListSecond2(id);
         writelinki(id, id3, "_irdy0", "a_trdyminus1", id5, writer);
         writelinki(id, id3, "_irdy1", "a_trdyplus", id5, writer);
         writelinki(id, id4, "_irdy0", "b_trdyminus1", id6, writer);
@@ -621,20 +596,20 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         writebidir(id, "a_irdy0", "i_trdyminus2", writer);
         writebidir(id, "b_irdy0", "i_trdyminus3", writer);
         writebidir(id, "b_irdy0", "i_trdyminus1", writer);
-        String id2_ = searchlist(id);
-        String id3 = searchlist_(id);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "a_irdyminus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "a_irdyminus", writer);
-        else writelink(id, id2_, "o_irdy0", "a_irdyminus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "a_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "a_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "a_irdyplus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy0", "b_irdyminus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy0", "b_irdyminus", writer);
-        else writelink(id, id2_, "o_irdy0", "b_irdyminus", writer);
-        if(id3.equals("a")) writelink(id, id2_, "a_irdy1", "b_irdyplus", writer);
-        else if(id3.equals("b")) writelink(id, id2_, "b_irdy1", "b_irdyplus", writer);
-        else writelink(id, id2_, "o_irdy1", "b_irdyplus", writer);
+        String id2b = searchList(id);
+        String id3 = searchList2(id);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "a_irdyminus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "a_irdyminus", writer);
+        else writelink(id, id2b, "o_irdy0", "a_irdyminus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy0", "b_irdyminus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy0", "b_irdyminus", writer);
+        else writelink(id, id2b, "o_irdy0", "b_irdyminus", writer);
+        if(id3.equals("a")) writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
+        else if(id3.equals("b")) writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
+        else writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
         writelinkp(id, id1, "_trdy1", "i_trdyplus", idp1, writer);
         writelinkp(id, id2, "_trdy1", "i_trdyplus1", idp2, writer);
         writelinkp(id, id1, "_trdy0", "i_trdyminus", idp1, writer);
@@ -695,10 +670,10 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         writebidir(id, "_u1", "a_trdyplus", writer);
         writebidir(id, "_u0", "b_trdyplus", writer);
         writebidir(id, "_u1", "b_trdyminus", writer);
-        String id3 = searchlist_first(id);
-        String id4 = searchlist_second(id);
-        String id5 = searchlist_first_(id);
-        String id6 = searchlist_second_(id);
+        String id3 = searchListFirst(id);
+        String id4 = searchListSecond(id);
+        String id5 = searchListFirst2(id);
+        String id6 = searchListSecond2(id);
         writelinki(id, id3, "_irdy0", "_uminus", id5, writer);
         writelinki(id, id3, "_irdy1", "_uplus", id5, writer);
         writelinki(id, id4, "_irdy0", "_uplus", id6, writer);
@@ -728,13 +703,13 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
             writer.println("//g " + fieldgr);
         }
         if(init==0) writemarking(id, "o_irdy", writer);
-        else writemarking_(id, "o_irdy", writer);
+        else writeMarking2(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
-        if(init==0) writemarking_(id, "i_trdy", writer);
+        if(init==0) writeMarking2(id, "i_trdy", writer);
         else writemarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         if(init==0) writemarking(id, "_q", writer);
-        else writemarking_(id, "_q", writer);
+        else writeMarking2(id, "_q", writer);
         writeblock(id, "_q", writer);
         writebidir(id, "_q0", "o_irdyminus", writer);
         writebidir(id, "_q0", "i_trdyplus", writer);
@@ -742,8 +717,8 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         writebidir(id, "_q1", "i_trdyminus", writer);
         writebidir(id, "o_irdy1", "_qminus", writer);
         writebidir(id, "i_trdy1", "_qplus", writer);
-        String id2 = searchlist(id);
-        String id3 = searchlist_(id);
+        String id2 = searchList(id);
+        String id3 = searchList2(id);
         if(id3.equals("a")) writelink(id, id2, "a_irdy1", "_qplus", writer);
         else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "_qplus", writer);
         else writelink(id, id2, "o_irdy1", "_qplus", writer);
@@ -769,7 +744,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
             System.out.println("//g " + fieldgr);
             writer.println("//g " + fieldgr);
         }
-        if(init>0) writemarking_(id, "o_irdy", writer);
+        if(init>0) writeMarking2(id, "o_irdy", writer);
         else writemarking(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
         for(int i=1;i<size;i++) {
@@ -781,7 +756,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
           writer.println("t_"+id+"o_irdyplus"+i+" p_"+id+"o_irdy1");
         }
         if(init>=size) writemarking(id, "i_trdy", writer);
-        else writemarking_(id, "i_trdy", writer);
+        else writeMarking2(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         for(int i=1;i<size;i++) {
           if(printoutput) {
@@ -792,19 +767,19 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
           writer.println("t_"+id+"i_trdyplus"+i+" p_"+id+"i_trdy1");
         }
         for(int i=1;i<=size;i++) {
-          if(init>=i) writemarking_(id, "_q"+i, writer);
+          if(init>=i) writeMarking2(id, "_q"+i, writer);
           else writemarking(id, "_q"+i, writer);
           writeblock(id, "_q"+i, writer);
         }
         for(int i=1;i<=size;i++) {
-          if(i==init+1) writemarking_(id, "_hd"+i, writer);
+          if(i==init+1) writeMarking2(id, "_hd"+i, writer);
           else writemarking(id, "_hd"+i, writer);
           writeblock(id, "_hd"+i, writer);
         }
         for(int i=1;i<=size;i++) {
           if(i==1) {
               if(init<=0) writemarking(id, "_tl"+i, writer);
-              else writemarking_(id, "_tl"+i, writer);
+              else writeMarking2(id, "_tl"+i, writer);
           } else writemarking(id, "_tl"+i, writer);
           writeblock(id, "_tl"+i, writer);
         }
@@ -844,8 +819,8 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         for(int i=1;i<=size;i++) {
             writebidir(id, "_tl"+i+"1", "_q"+i+"minus", writer);
         }
-        String id2 = searchlist(id);
-        String id3 = searchlist_(id);
+        String id2 = searchList(id);
+        String id3 = searchList2(id);
         for(int i=1;i<=size;i++) {
             if(id3.equals("a")) writelink(id, id2, "a_irdy1", "_q"+i+"plus", writer);
             else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "_q"+i+"plus", writer);
@@ -861,7 +836,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         }
     }
 
-    public static void init_parse(String args) throws Exception {
+    public static void initParse(String args) throws Exception {
         JsonFactory f = new MappingJsonFactory();
         JsonParser jp = f.createJsonParser(new File(args));
 
@@ -892,7 +867,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                   String idNamep2 = "";
                   String typeName = node.get("type").getValueAsText();
                   //System.out.println("id: " + idName + "type: " + typeName);
-                  lst_.add(new Ids(idName,typeName));
+                  lst2.add(new Ids(idName,typeName));
                   JsonNode y = node.get("outs");
                   if(y!=null) {
                    for(int i=0;y.has(i);i++) {
@@ -909,7 +884,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                         }
                         //add o based on order of i or reverse?
                         if(idName.contains("Sync")) {
-                            slsto_.add(new Info(idName1,idName,"",idNamep1));
+                            slsto2.add(new Info(idName1,idName,"",idNamep1));
                         }
                       } else if(i==1) {
                         idName2 = y.get(i).get("id").getValueAsText();
@@ -919,13 +894,13 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                         else lst.add(new Info(idName2,idName,"",idNamep2));
                         if(idName2.contains("Sync")) slsti.add(new Info(idName,idName2,"",idNamep2));
                         if(idName.contains("Sync")) {
-                            slsto_.add(new Info(idName2,idName,"",idNamep2));
+                            slsto2.add(new Info(idName2,idName,"",idNamep2));
                         }
                       } else {
                         idName1 = y.get(i).get("id").getValueAsText();
                         idNamep = y.get(i).get("in_port").getValueAsText();
                         if(idName.contains("Sync")) {
-                            slsto_.add(new Info(idName,idName1,"",idNamep));
+                            slsto2.add(new Info(idName,idName1,"",idNamep));
                         }
                       }
                     }
@@ -943,20 +918,20 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
           }
     }
 
-    //public Collection<VisualSourceComponent> src_nodes;
-    public Collection<SourceComponent> src_nodes;
-    public Collection<FunctionComponent> fun_nodes;
-    public Collection<SwitchComponent> sw_nodes;
+    //public Collection<VisualSourceComponent> srcNodes;
+    public Collection<SourceComponent> srcNodes;
+    public Collection<FunctionComponent> funNodes;
+    public Collection<SwitchComponent> swNodes;
 
     public void run(WorkspaceEntry we) {
         System.out.println("");
         Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
         VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
-        //src_nodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
-        src_nodes=cnet.getSourceComponents();
-        //fun_nodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
-        fun_nodes=cnet.getFunctionComponents();
-        sw_nodes=cnet.getSwitchComponents();
+        //srcNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
+        srcNodes=cnet.getSourceComponents();
+        //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
+        funNodes=cnet.getFunctionComponents();
+        swNodes=cnet.getSwitchComponents();
 
         JsonFactory f = new MappingJsonFactory();
         File cpnFile = XmasSettings.getTempVxmCpnFile();
@@ -965,11 +940,11 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 
             initlist();
             File syncFile = XmasSettings.getTempVxmSyncFile();
-            Process_file(syncFile.getAbsolutePath());
+            processFile(syncFile.getAbsolutePath());
 
             File jsonFile = XmasSettings.getTempVxmJsonFile();
-            init_parse(jsonFile.getAbsolutePath());
-            //create_slsto();
+            initParse(jsonFile.getAbsolutePath());
+            //createSlsto();
 
             writer = new PrintWriter(cpnFile);
             //writer_s = new PrintWriter(syncFile);
@@ -1039,7 +1014,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                           if(y.get(i).has("in_port")) {
                             if(i==0) {
                               String searchtyp="";
-                              searchtyp=searchlist__(idName1);
+                              searchtyp=searchList3(idName1);
                               if(searchtyp.equals("join")) {
                                 //idNamep1 = y.get(i).get("in_port").getValueAsText();
                                 if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep1="1";
@@ -1047,7 +1022,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                               } else if(searchtyp.equals("merge")) idNamep1 = y.get(i).get("in_port").getValueAsText();
                             } else if(i==1) {
                               String searchtyp1="";
-                              searchtyp1=searchlist__(idName2);
+                              searchtyp1=searchList3(idName2);
                               if(searchtyp1.equals("join")) {
                                 //idNamep2 = y.get(i).get("in_port").getValueAsText();
                                 if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep2="1";
@@ -1057,29 +1032,29 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                           }
                         }
                       }
-                      JsonNode y_ = node.get("fields");
-                      if(y_!=null) {
-                        for(int i=0;y_.has(i);i++) {
-                          if(y_.get(i).has("size")) {
-                            fieldsize = y_.get(i).get("size").getValueAsText();
+                      JsonNode y2 = node.get("fields");
+                      if(y2!=null) {
+                        for(int i=0;y2.has(i);i++) {
+                          if(y2.get(i).has("size")) {
+                            fieldsize = y2.get(i).get("size").getValueAsText();
                           }
-                          if(y_.get(i).has("init")) {
-                            fieldinit = y_.get(i).get("init").getValueAsInt();
+                          if(y2.get(i).has("init")) {
+                            fieldinit = y2.get(i).get("init").getValueAsInt();
                           }
-                          if(y_.get(i).has("gr")) {
-                            fieldgr = y_.get(i).get("gr").getValueAsInt();
+                          if(y2.get(i).has("gr")) {
+                            fieldgr = y2.get(i).get("gr").getValueAsInt();
                           }
-                          if(y_.get(i).has("gpf")) {
-                            fieldgpf = y_.get(i).get("gpf").getValueAsText();
+                          if(y2.get(i).has("gpf")) {
+                            fieldgpf = y2.get(i).get("gpf").getValueAsText();
                           }
-                          if(y_.get(i).has("gpf1")) {
-                            fieldgpf = y_.get(i).get("gpf1").getValueAsText();
+                          if(y2.get(i).has("gpf1")) {
+                            fieldgpf = y2.get(i).get("gpf1").getValueAsText();
                           }
-                          if(y_.get(i).has("gpf2")) {
-                            fieldgpf1 = y_.get(i).get("gpf2").getValueAsText();
+                          if(y2.get(i).has("gpf2")) {
+                            fieldgpf1 = y2.get(i).get("gpf2").getValueAsText();
                           }
-                          if(y_.get(i).has("typ")) {
-                            styp = y_.get(i).get("typ").getValueAsText();
+                          if(y2.get(i).has("typ")) {
+                            styp = y2.get(i).get("typ").getValueAsText();
                           }
                         }
                       }
@@ -1112,13 +1087,13 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {
-                if ( writer != null ) {
+                if (writer != null) {
                     writer.close();
                     System.out.println("Control CPNs created");
-                    PNetExt pnconv = new PNetExt(src_nodes,fun_nodes,sw_nodes,syncflag);
+                    PNetExt pnconv = new PNetExt(srcNodes,funNodes,swNodes,syncflag);
                     //printlst();
                 }
-                /*if ( writer_s != null )
+                /*if (writer_s != null)
                 {
                     writer_s.close();
                 }*/

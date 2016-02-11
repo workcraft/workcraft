@@ -18,7 +18,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
     private ScencoExternalToolTask scenco;
     private ScencoSolver solver;
 
-    public ScencoResultHandler(    ScencoExternalToolTask scencoTask) {
+    public ScencoResultHandler(ScencoExternalToolTask scencoTask) {
         this.scenco = scencoTask;
         this.solver = scencoTask.getSolver();
     }

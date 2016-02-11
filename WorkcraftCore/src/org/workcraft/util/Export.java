@@ -152,7 +152,7 @@ public class Export {
             ok = true;
         } finally {
             fos.close();
-            if ( !ok ) {
+            if (!ok) {
                 file.delete();
             }
         }

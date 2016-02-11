@@ -38,7 +38,7 @@ public class Block extends PageNode implements TransitionNode, Time{
 
     public void setIsCollapsed(boolean isCollapsed) {
         this.isCollapsed = isCollapsed;
-        sendNotification( new PropertyChangedEvent(this, "Is collapsed") );
+        sendNotification(new PropertyChangedEvent(this, "Is collapsed"));
     }
 
     public Collection<Condition> getConditions(){
@@ -112,7 +112,7 @@ public class Block extends PageNode implements TransitionNode, Time{
 
     public void setDuration(Interval duration){
         this.duration = duration;
-        sendNotification( new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION) );
+        sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
     }
 
     @Override
@@ -131,7 +131,7 @@ public class Block extends PageNode implements TransitionNode, Time{
     @Override
     public void setStartTime(Interval duration){
         this.statTime = duration;
-        sendNotification( new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME) );
+        sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
     }
 
     @Override
@@ -142,7 +142,7 @@ public class Block extends PageNode implements TransitionNode, Time{
     @Override
     public void setEndTime(Interval endTime){
         this.endTime = endTime;
-        sendNotification( new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME) );
+        sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
     }
 
     @Override

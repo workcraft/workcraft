@@ -284,7 +284,7 @@ public class EstimationAlg extends TimeAlg{
                 }
                 SONConnection preCon = net.getSONConnection(path.get(i-1), path.get(i));
                 Interval time = granularity.plusTD(preCon.getTime(), n.getDuration());
-                if( (i+1) < path.size()){
+                if((i+1) < path.size()){
                     SONConnection postCon = net.getSONConnection(path.get(i), path.get(i+1));
                     postCon.setTime(time);
                     postCon.setTimeLabelColor(color);
@@ -302,7 +302,7 @@ public class EstimationAlg extends TimeAlg{
                 }
                 SONConnection preCon = net.getSONConnection(path.get(i-1), path.get(i));
                 Interval time = granularity.subtractTD(preCon.getTime(), n.getDuration());
-                if( (i+1) < path.size()){
+                if((i+1) < path.size()){
                     SONConnection postCon = net.getSONConnection(path.get(i), path.get(i+1));
                     postCon.setTime(time);
                     postCon.setTimeLabelColor(color);

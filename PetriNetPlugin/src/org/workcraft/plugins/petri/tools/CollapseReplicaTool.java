@@ -39,15 +39,15 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
     public void run(WorkspaceEntry we) {
         final VisualModel visualModel = we.getModelEntry().getVisualModel();
         HashSet<VisualReplicaPlace> replicas = PetriNetUtils.getVisualReplicaPlaces(visualModel);
-        if ( !visualModel.getSelection().isEmpty() ) {
+        if (!visualModel.getSelection().isEmpty()) {
             replicas.retainAll(visualModel.getSelection());
         }
 
         HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
-        if ( !visualModel.getSelection().isEmpty() ) {
+        if (!visualModel.getSelection().isEmpty()) {
             readArcs.retainAll(visualModel.getSelection());
         }
-        if ( !readArcs.isEmpty() ) {
+        if (!readArcs.isEmpty()) {
             for (VisualReadArc readArc: readArcs) {
                 if (readArc.getFirst() instanceof VisualReplicaPlace) {
                     VisualReplicaPlace replica = (VisualReplicaPlace)readArc.getFirst();
@@ -55,7 +55,7 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
                 }
             }
         }
-        if ( !replicas.isEmpty() ) {
+        if (!replicas.isEmpty()) {
             we.saveMemento();
             for (VisualReplicaPlace replica: replicas) {
                 transform(visualModel, replica);

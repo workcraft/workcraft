@@ -51,7 +51,7 @@ public class VisualSuperGroup extends VisualGroup{
         for(VisualComponent v: Hierarchy.getChildrenOfType(this, VisualComponent.class))
             bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
 
-        for( VisualONGroup v: Hierarchy.getChildrenOfType(this, VisualONGroup.class))
+        for(VisualONGroup v: Hierarchy.getChildrenOfType(this, VisualONGroup.class))
             bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
 
         for(VisualSONConnection v: Hierarchy.getChildrenOfType(this, VisualSONConnection.class))

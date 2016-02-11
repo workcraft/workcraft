@@ -132,7 +132,7 @@ public class ParallelSimDialog  extends JDialog{
 
         eventList = new JList(listModel);
         eventList.setCellRenderer(new CheckListRenderer());
-        eventList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
+        eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         eventList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent event) {
@@ -150,7 +150,7 @@ public class ParallelSimDialog  extends JDialog{
 
                     if(item instanceof EventItem){
                         SimulationAlg simuAlg = new SimulationAlg(net);
-                        if(item.isSelected() ){
+                        if(item.isSelected()){
                             selectedEvents.add(item.getEvent());
 
                             Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, isRev);
@@ -167,7 +167,7 @@ public class ParallelSimDialog  extends JDialog{
                             item.setFillColor(selectedColor);
                         }
 
-                        if(!item.isSelected() ){
+                        if(!item.isSelected()){
                             selectedEvents.remove(item.getEvent());
 
                             Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);

@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class CycleAlgorithm {
     /** number of vertices **/
-    private int V;
+    private int mV;
     /** preorder number counter **/
     private int preCount;
     /** low number of v **/
@@ -21,14 +21,14 @@ public class CycleAlgorithm {
 
     /** function to get all strongly connected components - Tarjan algorithm **/
     public List<List<Integer>> getCycles(List<Integer>[] graph){
-        V = graph.length;
+        mV = graph.length;
         this.graph = graph;
-        low = new int[V];
-        visited = new boolean[V];
+        low = new int[mV];
+        visited = new boolean[mV];
         stack = new Stack<Integer>();
         sccComp = new ArrayList<List<Integer>>();
 
-        for (int v = 0; v < V; v++)
+        for (int v = 0; v < mV; v++)
             if (!visited[v])
                 dfs(v);
         return sccComp;
@@ -59,7 +59,7 @@ public class CycleAlgorithm {
         do{
             w = stack.pop();
             component.add(w);
-            low[w] = V;
+            low[w] = mV;
         } while (w != v);
         sccComp.add(component);
     }

@@ -308,7 +308,7 @@ public class CircuitToStgConverter {
                 }
             }
 
-            if ( !isDeadTransition ) {
+            if (!isDeadTransition) {
                 VisualSignalTransition transition = stg.createSignalTransition(signalName, signalType, direction, container);
                 transition.setLabel(FormulaToString.toString(clause));
                 transitions.add(transition);
@@ -499,11 +499,11 @@ public class CircuitToStgConverter {
             direction = direction.flip();
         }
         switch (direction) {
-            case WEST: return new Point2D.Double( 6.0, 0.0);
+            case WEST: return new Point2D.Double(6.0, 0.0);
             case EAST: return new Point2D.Double(-6.0, 0.0);
-            case NORTH: return new Point2D.Double( 6.0, 0.0);
+            case NORTH: return new Point2D.Double(6.0, 0.0);
             case SOUTH: return new Point2D.Double(-6.0, 0.0);
-            default: return new Point2D.Double( 0.0, 0.0);
+            default: return new Point2D.Double(0.0, 0.0);
         }
     }
 

@@ -136,7 +136,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     for (PluginInfo<? extends FileHandler> info : framework.getPluginManager().getPlugins(FileHandler.class)) {
                         FileHandler handler = info.getSingleton();
 
-                        if ( !handler.accept(file) ) {
+                        if (!handler.accept(file)) {
                             continue;
                         }
                         JMenuItem mi = new JMenuItem(handler.getDisplayName());
@@ -152,7 +152,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 }
             } else if (openFile.getModelEntry() != null) {
                 final Model model = openFile.getModelEntry().getModel();
-                JLabel label = new JLabel(model.getDisplayName()+ " " + (model.getTitle().isEmpty()?"" : ("'" + model.getTitle() + "'" )));
+                JLabel label = new JLabel(model.getDisplayName()+ " " + (model.getTitle().isEmpty()?"" : ("'" + model.getTitle() + "'")));
                 popup.add(label);
                 popup.addSeparator();
 

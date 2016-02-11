@@ -45,7 +45,7 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
     }
 
     private void putSrcToDstNode(VisualNode srcNode, VisualNode dstNode) {
-        if ( (srcNode != null) && (dstNode != null) ) {
+        if ((srcNode != null) && (dstNode != null)) {
             srcToDstNodes.put(srcNode, dstNode);
         }
     }

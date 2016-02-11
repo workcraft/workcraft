@@ -36,7 +36,7 @@ public class FstToStgConverter {
         refToEventLabelMap = cacheLabels();
         try {
             connectEvents();
-        } catch ( InvalidConnectionException e) {
+        } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
     }

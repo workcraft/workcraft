@@ -301,7 +301,7 @@ public class SelectionTool extends AbstractTool {
                         Rectangle2D bb = currentGroup.getBoundingBox();
                         Point2D pos = currentGroup.getRootSpacePosition();
                         Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
-                        if ( !bbInRootSpace.contains(e.getPosition()) ) {
+                        if (!bbInRootSpace.contains(e.getPosition())) {
                             changeLevelUp(e.getEditor());
                             return;
                         }
@@ -311,7 +311,7 @@ public class SelectionTool extends AbstractTool {
                         Rectangle2D bb = currentPage.getBoundingBox();
                         Point2D pos = currentPage.getRootSpacePosition();
                         Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
-                        if ( !bbInRootSpace.contains(e.getPosition()) ) {
+                        if (!bbInRootSpace.contains(e.getPosition())) {
                             changeLevelUp(e.getEditor());
                             return;
                         }
@@ -376,7 +376,7 @@ public class SelectionTool extends AbstractTool {
                 }
             }
         }
-        if ( !applicableTools.isEmpty() ) {
+        if (!applicableTools.isEmpty()) {
             popup = new JPopupMenu();
             popup.setFocusable(false);
             MainWindow mainWindow = editor.getMainWindow();
@@ -641,8 +641,8 @@ public class SelectionTool extends AbstractTool {
                  *   c = selected.contains(node)
                  *   s = model.getSelection().contains(node)
                  */
-                if ( ((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
-                    || (!selected.contains(node) && model.getSelection().contains(node)) ) {
+                if (((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
+                    || (!selected.contains(node) && model.getSelection().contains(node))) {
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {
@@ -698,7 +698,7 @@ public class SelectionTool extends AbstractTool {
         editor.getOverlay().add(scrollPane);
         textPane.requestFocusInWindow();
 
-        textPane.addKeyListener( new KeyListener() {
+        textPane.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent arg0) {
                 if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {

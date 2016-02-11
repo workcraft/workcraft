@@ -34,7 +34,7 @@ public     class FstToFsmConverter extends DefaultModelConverter<VisualFst, Visu
     @Override
     public VisualConnection convertConnection(VisualConnection srcConnection) {
         VisualConnection dstConnection = super.convertConnection(srcConnection);
-        if ( (srcConnection instanceof VisualSignalEvent) && (dstConnection instanceof VisualEvent) ) {
+        if ((srcConnection instanceof VisualSignalEvent) && (dstConnection instanceof VisualEvent)) {
             Fst fst = (Fst)getSrcModel().getMathModel();
             SignalEvent srcSignalEvent = (SignalEvent)srcConnection.getReferencedConnection();
             Signal srcSignal = srcSignalEvent.getSignal();

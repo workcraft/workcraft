@@ -39,7 +39,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class VisualModelSerialisation {
 
     @Test
-    public void SimpleSaveLoad() throws Exception {
+    public void simpleSaveLoad() throws Exception {
 
         STG stg = XMLSerialisationTestingUtils.createTestSTG1();
         VisualSTG visualstg = new VisualSTG(stg);

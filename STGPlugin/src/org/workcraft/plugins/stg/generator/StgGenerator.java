@@ -224,11 +224,11 @@ abstract public class StgGenerator {
         double x = pos.getX();
         double y = pos.getY();
         int xSign = 1;
-        if ( (layoutType == SignalLayoutType.RIGHT_TO_LEFT)    || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED) ) {
+        if ((layoutType == SignalLayoutType.RIGHT_TO_LEFT)    || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED)) {
             xSign = -1;
         }
         int ySign = 1;
-        if ( (layoutType == SignalLayoutType.LEFT_TO_RIGHT_INVERTED) || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED) ) {
+        if ((layoutType == SignalLayoutType.LEFT_TO_RIGHT_INVERTED) || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED)) {
             ySign = -1;
         }
 

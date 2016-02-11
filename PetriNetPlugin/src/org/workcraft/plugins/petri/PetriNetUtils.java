@@ -63,7 +63,7 @@ public class PetriNetUtils {
         VisualReadArc readArc = null;
         if (isVisualDualArcs(consumingArc, producingArc)) {
             VisualConnection connection = consumingArc;
-            if ( !isVisualConsumingArc(consumingArc) ) {
+            if (!isVisualConsumingArc(consumingArc)) {
                 connection = producingArc;
             }
             VisualNode place = connection.getFirst();
@@ -335,7 +335,7 @@ public class PetriNetUtils {
                     found = connection instanceof VisualReadArc;
                 }
             }
-            if ( !found ) {
+            if (!found) {
                 Connection connection = visualModel.getConnection(place, transition);
                 found = connection instanceof VisualReadArc;
             }
@@ -364,7 +364,7 @@ public class PetriNetUtils {
                     found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
                 }
             }
-            if ( !found ) {
+            if (!found) {
                 Connection connection = visualModel.getConnection(transition, place);
                 found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
             }
@@ -393,7 +393,7 @@ public class PetriNetUtils {
                     found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
                 }
             }
-            if ( !found ) {
+            if (!found) {
                 Connection connection = visualModel.getConnection(place, transition);
                 found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
             }

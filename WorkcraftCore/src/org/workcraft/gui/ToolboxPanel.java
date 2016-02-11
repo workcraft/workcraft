@@ -142,7 +142,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         }
 
         int hotKeyCode = tool.getHotKeyCode();
-        if ( hotKeyCode != -1) {
+        if (hotKeyCode != -1) {
             button.setToolTipText("["+Character.toString((char)hotKeyCode)+"] " + tool.getLabel());
         } else {
             button.setToolTipText(tool.getLabel());

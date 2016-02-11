@@ -78,7 +78,7 @@ public class VisualComponentGroupTests {
 
 
     @Test
-    public void TestHitComponent() {
+    public void testHitComponent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         node1.setX(5);
@@ -93,7 +93,7 @@ public class VisualComponentGroupTests {
         Assert.assertEquals(null, HitMan.hitDeepestNodeOfType(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
     }
 
-    public void TestHitConnection() {
+    public void testHitConnection() {
         VisualGroup root = createGroup(null);
         VisualGroup group = createGroup(root);
         group.setX(5);
@@ -115,26 +115,26 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestHitNode() {
+    public void testHitNode() {
         VisualGroup group = new VisualGroup();
 
         Rectangle2D.Double r1 = new Rectangle2D.Double();
-        Rectangle2D.Double r1_ = new Rectangle2D.Double();
+        Rectangle2D.Double r1b = new Rectangle2D.Double();
         Rectangle2D.Double r2 = new Rectangle2D.Double();
-        Rectangle2D.Double r2_ = new Rectangle2D.Double();
+        Rectangle2D.Double r2b = new Rectangle2D.Double();
         Rectangle2D.Double r3 = new Rectangle2D.Double();
-        Rectangle2D.Double r3_ = new Rectangle2D.Double();
+        Rectangle2D.Double r3b = new Rectangle2D.Double();
 
         r1.setRect(0, 0, 2, 2);
-        r1_.setRect(0.1, 0.1, 1.8, 1.8);
+        r1b.setRect(0.1, 0.1, 1.8, 1.8);
         r2.setRect(0.5, 0.5, 2, 2);
-        r2_.setRect(0.6, 0.6, 1.8, 1.8);
+        r2b.setRect(0.6, 0.6, 1.8, 1.8);
         r3.setRect(1, 1, 2, 2);
-        r3_.setRect(1.1, 1.1, 1.8, 1.8);
+        r3b.setRect(1.1, 1.1, 1.8, 1.8);
 
-        VisualNode node1 = new SquareNode(group, r1, r1_);
-        VisualNode node2 = new SquareNode(group, r2, r2_);
-        VisualNode node3 = new SquareNode(group, r3, r3_);
+        VisualNode node1 = new SquareNode(group, r1, r1b);
+        VisualNode node2 = new SquareNode(group, r2, r2b);
+        VisualNode node3 = new SquareNode(group, r3, r3b);
 
     //    Assert.assertNull(group.getBoundingBoxInLocalSpace());
 
@@ -161,7 +161,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestHitSubGroup() {
+    public void testHitSubGroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -175,7 +175,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestUngroup() {
+    public void testUngroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -228,7 +228,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void TestTransformChangeNotification() {
+    public void testTransformChangeNotification() {
         TransformEventPropagator p = new TransformEventPropagator();
 
         VisualGroup root = createGroup(null);

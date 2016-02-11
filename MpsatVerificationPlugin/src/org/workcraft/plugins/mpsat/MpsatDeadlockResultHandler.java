@@ -33,7 +33,7 @@ final class MpsatDeadlockResultHandler implements Runnable {
         if (solutions.isEmpty()) {
             String message = "The system is deadlock-free.";
             JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
-        } else if ( !Solution.hasTraces(solutions) ) {
+        } else if (!Solution.hasTraces(solutions)) {
             String message = "The system has a deadlock.";
             JOptionPane.showMessageDialog(null, message, title, JOptionPane.WARNING_MESSAGE);
         } else {

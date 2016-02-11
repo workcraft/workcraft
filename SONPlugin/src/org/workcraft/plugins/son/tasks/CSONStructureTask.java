@@ -80,7 +80,7 @@ public class CSONStructureTask extends AbstractStructuralVerification{
         infoMsg("Running cycle detection task...");
         cycleErrors.addAll(getCSONCycleAlg().cycleTask(components));
 
-        if (cycleErrors.isEmpty() )
+        if (cycleErrors.isEmpty())
             infoMsg("Communication-SON is cycle free");
         else{
             errNumber++;

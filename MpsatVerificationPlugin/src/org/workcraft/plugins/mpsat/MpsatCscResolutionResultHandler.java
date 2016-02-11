@@ -51,7 +51,7 @@ public class MpsatCscResolutionResultHandler implements Runnable {
         if (model == null) {
             JOptionPane.showMessageDialog(framework.getMainWindow(),
                     "MPSat output: \n\n" + new String(result.getReturnValue().getErrors()),
-                    "Conflict resolution failed", JOptionPane.WARNING_MESSAGE );
+                    "Conflict resolution failed", JOptionPane.WARNING_MESSAGE);
         } else {
             Path<String> directory = path.getParent();
             String name = fileName + "_resolved";

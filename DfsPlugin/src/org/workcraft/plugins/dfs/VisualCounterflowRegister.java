@@ -69,12 +69,12 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         Path2D forwardShape = new Path2D.Double();
         forwardShape.moveTo(-v2, -h2);
         forwardShape.lineTo(-v2, 0);
-        forwardShape.lineTo( v2, 0);
-        forwardShape.lineTo( v2, -h2);
+        forwardShape.lineTo(v2, 0);
+        forwardShape.lineTo(v2, -h2);
 
         Path2D backwardShape = new Path2D.Double();
-        backwardShape.moveTo( v2, h2);
-        backwardShape.lineTo( v2, 0);
+        backwardShape.moveTo(v2, h2);
+        backwardShape.lineTo(v2, 0);
         backwardShape.lineTo(-v2, 0);
         backwardShape.lineTo(-v2, h2);
 

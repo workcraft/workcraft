@@ -48,7 +48,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             customEncLabel, bitsLabel, optimiseLabel,
             abcLabel, circuitSizeLabel;
     private JCheckBox verboseModeCheck, customEncodings, abcCheck;
-    private JComboBox<String> OptimiseBox;
+    private JComboBox<String> optimiseBox;
     private JPanel generationPanel, buttonsPanel, content, customPanel,
             standardPanel;
     private JButton saveButton, closeButton;
@@ -93,7 +93,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         createButtonPanel(mode);
 
         if(mode != 1){
-            if( m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+            if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
                 height = 135;
             } else {
                 height = 110;
@@ -271,13 +271,13 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
         optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
-        OptimiseBox = new JComboBox<String>();
-        OptimiseBox.setEditable(false);
-        OptimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
-        OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
-        OptimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
-        OptimiseBox.setSelectedIndex(settings.isCpogSize() ? 1 : 0);
-        OptimiseBox.setBackground(Color.WHITE);
+        optimiseBox = new JComboBox<String>();
+        optimiseBox.setEditable(false);
+        optimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
+        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
+        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
+        optimiseBox.setSelectedIndex(settings.isCpogSize() ? 1 : 0);
+        optimiseBox.setBackground(Color.WHITE);
 
         // ABC TOOL DISABLE FLAG
         abcCheck = new JCheckBox("", settings.isAbcFlag());
@@ -300,7 +300,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
         // ADD EVERYTHING INTO THE PANEL
         standardPanel.add(optimiseLabel);
-        standardPanel.add(OptimiseBox);
+        standardPanel.add(optimiseBox);
         standardPanel.add(new SimpleFlowLayout.LineBreak());
         standardPanel.add(abcCheck);
         standardPanel.add(abcLabel);
@@ -366,7 +366,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                 settings.setCostFunc(false);
 
                 // optimise for option
-                settings.setCpogSize(OptimiseBox.getSelectedIndex() == 0 ? false
+                settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false
                         : true);
 
                 // verbose mode

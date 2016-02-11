@@ -65,7 +65,7 @@ public class OutputWindow extends JPanel {
     }
 
     public void captureStream() {
-        if ( !streamCaptured ) {
+        if (!streamCaptured) {
             OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), txtStdOut);
             PrintStream outStream = new PrintStream(outView);
             systemOut = System.out;
@@ -128,7 +128,7 @@ public class OutputWindow extends JPanel {
                 prefix = LogUtils.PREFIX_STDERR;
                 text = text.substring(prefix.length());
                 painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
-            } else if ( !text.equals("\n") ) {
+            } else if (!text.equals("\n")) {
                 prefix = null;
                 painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
             }

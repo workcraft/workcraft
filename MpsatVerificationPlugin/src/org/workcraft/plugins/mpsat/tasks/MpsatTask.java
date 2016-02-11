@@ -63,7 +63,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
             }
         }
         for (String arg : extraArgs.split("\\s")) {
-            if ( !arg.isEmpty() ) {
+            if (!arg.isEmpty()) {
                 command.add(arg);
             }
         }

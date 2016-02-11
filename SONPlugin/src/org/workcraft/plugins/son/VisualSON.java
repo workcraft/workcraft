@@ -45,7 +45,7 @@ import org.workcraft.util.Hierarchy;
 
 
 @DisplayName ("Structured Occurrence Nets")
-@CustomTools ( SONToolProvider.class )
+@CustomTools (SONToolProvider.class)
 
 public class VisualSON extends AbstractVisualModel {
 
@@ -98,7 +98,7 @@ public class VisualSON extends AbstractVisualModel {
             throw new InvalidConnectionException("Connections between channel place and condition are not valid (A/Syn Communication)");
 
         if(isGrouped(first) && isGrouped(second) && !isInSameGroup(first, second)  &&
-                (currentConnectonSemantics == Semantics.PNLINE || currentConnectonSemantics == Semantics.ASYNLINE || currentConnectonSemantics == Semantics.SYNCLINE) )
+                (currentConnectonSemantics == Semantics.PNLINE || currentConnectonSemantics == Semantics.ASYNLINE || currentConnectonSemantics == Semantics.SYNCLINE))
             throw new InvalidConnectionException("Direct connections between two different groups are not valid (PN Connection, A/Syn Communication)");
 
         if(!(first instanceof VisualChannelPlace) &&  !(second instanceof VisualChannelPlace)){
@@ -109,7 +109,7 @@ public class VisualSON extends AbstractVisualModel {
         if (currentConnectonSemantics == Semantics.BHVLINE) {
             if ((first instanceof VisualEvent) || (second instanceof VisualEvent))
                 throw new InvalidConnectionException("Connections between non-conditions are not valid (Behavioural Abstraction)");
-            if (!isGrouped(first) || !isGrouped(second) )
+            if (!isGrouped(first) || !isGrouped(second))
                 throw new InvalidConnectionException("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
             if (isInSameGroup(first, second))
                 throw new InvalidConnectionException("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
@@ -154,7 +154,7 @@ public class VisualSON extends AbstractVisualModel {
 
     private boolean isInSameGroup(Node first, Node second){
         for (VisualONGroup group : getVisualONGroups()){
-            if ( group.getVisualComponents().contains(first) && group.getVisualComponents().contains(second)){
+            if (group.getVisualComponents().contains(first) && group.getVisualComponents().contains(second)){
                 return true;
             }
         }
@@ -243,7 +243,7 @@ public class VisualSON extends AbstractVisualModel {
         if(isPure(selection)){
             for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
                 if(node instanceof VisualTransformableNode){
-                    if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup) ){
+                    if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup)){
                             result.add(node);
                     }else{
                         JOptionPane.showMessageDialog(mainWindow,

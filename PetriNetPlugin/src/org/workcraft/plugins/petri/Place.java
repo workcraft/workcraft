@@ -47,7 +47,7 @@ public class Place extends MathNode {
                 setCapacity(value);
             }
             this.tokens = value;
-            sendNotification( new PropertyChangedEvent(this, PROPERTY_TOKENS) );
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKENS));
         }
     }
 
@@ -64,7 +64,7 @@ public class Place extends MathNode {
                 throw new ArgumentException("The place capacity "+ value + " is too small for the current number of tokens " + tokens + " .");
             }
             this.capacity = value;
-            sendNotification( new PropertyChangedEvent(this, PROPERTY_CAPACITY));
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_CAPACITY));
         }
     }
 

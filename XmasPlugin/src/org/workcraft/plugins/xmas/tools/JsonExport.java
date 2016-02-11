@@ -69,20 +69,20 @@ public class JsonExport implements Tool {
         return WorkspaceUtils.canHas(we, Xmas.class);
     }
 
-    //public Collection<String> src_nodes;
-    public Collection<VisualSourceComponent> src_nodes;
+    //public Collection<String> srcNodes;
+    public Collection<VisualSourceComponent> srcNodes;
 
-    public void sync_reset() {
+    public void syncReset() {
         File syncFile = XmasSettings.getTempVxmSyncFile();
-        PrintWriter writer_s = null;
+        PrintWriter writerS = null;
         try {
-            writer_s = new PrintWriter(syncFile);
-            writer_s.println("empty");
+            writerS = new PrintWriter(syncFile);
+            writerS.println("empty");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
-                if ( writer_s != null ) {
-                    writer_s.close();
+                if (writerS != null) {
+                    writerS.close();
                 }
         }
     }
@@ -95,20 +95,20 @@ public class JsonExport implements Tool {
 
         Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
 
-        //src_nodes = cnet.getSourceComponent();
+        //srcNodes = cnet.getSourceComponent();
         int no=1;
 
-        SourceComponent src_node = null;
-        SinkComponent snk_node = null;
+        SourceComponent srcNode = null;
+        SinkComponent snkNode = null;
 
-        FunctionComponent fun_node = null;
-        QueueComponent qu_node = null;
+        FunctionComponent funNode = null;
+        QueueComponent quNode = null;
 
-        ForkComponent frk_node = null;
-        JoinComponent jn_node = null;
+        ForkComponent frkNode = null;
+        JoinComponent jnNode = null;
 
-        SwitchComponent sw_node = null;
-        MergeComponent mrg_node = null;
+        SwitchComponent swNode = null;
+        MergeComponent mrgNode = null;
 
         int syncr=0;
         for (Node node : vnet.getNodes()) {
@@ -117,7 +117,7 @@ public class JsonExport implements Tool {
             }
         }
         if(syncr==0) {
-            sync_reset();
+            syncReset();
         }
         for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
             for(VisualComponent vp: vg.getComponents()) {
@@ -168,45 +168,45 @@ public class JsonExport implements Tool {
             //System.out.println("Name =" + cnet.getName(node));
             //((SourceComponent)node).setVal('b');
             //System.out.println("Val =" + ((SourceComponent)node).getType());
-            src_node=node;
+            srcNode=node;
         }
-        //System.out.println("Name_ =" + cnet.getName(src_node));
-        XmasContact contact_node = null;
-        //Collection<Contact> contacts = src_node.getContacts();
-        Collection<XmasContact> contacts = src_node.getOutputs();
-        Collection<XmasContact> contacts_ = src_node.getOutputs();
+        //System.out.println("Name_ =" + cnet.getName(srcNode));
+        XmasContact contactNode = null;
+        //Collection<Contact> contacts = srcNode.getContacts();
+        Collection<XmasContact> contacts = srcNode.getOutputs();
+        Collection<XmasContact> contacts2 = srcNode.getOutputs();
         for(XmasContact node : contacts) {
             //System.out.println("OutputContact =" + cnet.getName(node));
-            contact_node=node;
+            contactNode=node;
         }
         /* //All contacts
         for (Contact node : cnet.getContact()) {
             System.out.println("Name =" + cnet.getName(node));
-            contact_node=node;
+            contactNode=node;
         }*/
-        //System.out.println("Name_ =" + cnet.getName(contact_node));
-        for (Connection c : cnet.getConnections(contact_node)) {
+        //System.out.println("Name_ =" + cnet.getName(contactNode));
+        for (Connection c : cnet.getConnections(contactNode)) {
             //System.out.println("OutputConnection =" + cnet.getName(c));
             //if(c.getFirst() instanceof Contact) System.out.println("Found First Contact");
             if(c.getSecond() instanceof XmasContact) {
                 //System.out.println("Found Output Contact" + cnet.getName(c.getSecond()));
-                Node cp_node = c.getSecond().getParent();
-                //System.out.println("Found Output Component" + cnet.getName(cp_node));
+                Node cpNode = c.getSecond().getParent();
+                //System.out.println("Found Output Component" + cnet.getName(cpNode));
             }
         }
-        int num_nodes=0;
+        int numNodes=0;
         for (Node node : cnet.getNodes()) {
             //System.out.println("Name =" + cnet.getName(node));
             //cnet.getLabel(node);
-            num_nodes++;
+            numNodes++;
         }
         //GEN JSON
         File file = XmasSettings.getTempVxmJsonFile();
         PrintWriter writer = null;
         try {
         writer = new PrintWriter(file);
-        int cnt_nodes=0;
-        int num_outputs=0;
+        int countNodes=0;
+        int numOutputs=0;
         System.out.println("Generate Json");
         System.out.println("{");
         writer.println("{");
@@ -219,7 +219,7 @@ public class JsonExport implements Tool {
         System.out.println("  \"NETWORK\": [");
         writer.println("  \"NETWORK\": [");
         for (Node node : cnet.getNodes()) {
-            cnt_nodes++;
+            countNodes++;
             System.out.println("    {");
             writer.println("    {");
             String rstr;
@@ -241,79 +241,79 @@ public class JsonExport implements Tool {
             System.out.println("      \"outs\" : [");
             writer.println("      \"outs\" : [");
             if(node instanceof SourceComponent) {
-                src_node=(SourceComponent)node;
-                contacts=src_node.getOutputs();
-                num_outputs=1;
+                srcNode=(SourceComponent)node;
+                contacts=srcNode.getOutputs();
+                numOutputs=1;
             } else if(node instanceof SinkComponent) {
-                snk_node=(SinkComponent)node;
-                contacts=snk_node.getOutputs();
-                num_outputs=1;
+                snkNode=(SinkComponent)node;
+                contacts=snkNode.getOutputs();
+                numOutputs=1;
             } else if(node instanceof FunctionComponent) {
-                fun_node=(FunctionComponent)node;
-                contacts=fun_node.getOutputs();
-                num_outputs=1;
+                funNode=(FunctionComponent)node;
+                contacts=funNode.getOutputs();
+                numOutputs=1;
             } else if(node instanceof QueueComponent) {
-                qu_node=(QueueComponent)node;
-                contacts=qu_node.getOutputs();
-                num_outputs=1;
+                quNode=(QueueComponent)node;
+                contacts=quNode.getOutputs();
+                numOutputs=1;
             } else if(node instanceof ForkComponent) {
-                frk_node=(ForkComponent)node;
-                contacts=frk_node.getOutputs();
-                num_outputs=2;
+                frkNode=(ForkComponent)node;
+                contacts=frkNode.getOutputs();
+                numOutputs=2;
             } else if(node instanceof JoinComponent) {
-                jn_node=(JoinComponent)node;
-                contacts=jn_node.getOutputs();
-                num_outputs=1;
+                jnNode=(JoinComponent)node;
+                contacts=jnNode.getOutputs();
+                numOutputs=1;
             } else if(node instanceof SwitchComponent) {
-                sw_node=(SwitchComponent)node;
-                contacts=sw_node.getOutputs();
-                num_outputs=2;
+                swNode=(SwitchComponent)node;
+                contacts=swNode.getOutputs();
+                numOutputs=2;
             } else if(node instanceof MergeComponent) {
-                mrg_node=(MergeComponent)node;
-                contacts=mrg_node.getOutputs();
-                num_outputs=1;
+                mrgNode=(MergeComponent)node;
+                contacts=mrgNode.getOutputs();
+                numOutputs=1;
             }
-            for(XmasContact contact_node_ : contacts) {
-                for (Connection c : cnet.getConnections(contact_node_)) {
+            for(XmasContact contactNode2 : contacts) {
+                for (Connection c : cnet.getConnections(contactNode2)) {
                     if(c.getSecond() instanceof XmasContact) {
                         //System.out.println("Output Contact" + cnet.getName(c.getSecond()));
                         System.out.println("        {");
                         writer.println("        {");
-                        Node cp_node = c.getSecond().getParent();
-                        int contact_cnt=1;
-                        int contact_no=1;
-                        if(cp_node instanceof JoinComponent) {
-                            JoinComponent jn_node_=(JoinComponent)cp_node;
-                            contacts_=jn_node_.getInputs();
-                            for(XmasContact jncnt_node : contacts_) {
-                                if(jncnt_node==c.getSecond()) {
-                                    //System.out.println("  Found jn contact = " + contact_no);
-                                    contact_no=contact_cnt;
+                        Node cpNode = c.getSecond().getParent();
+                        int contactCount=1;
+                        int contactNo=1;
+                        if(cpNode instanceof JoinComponent) {
+                            JoinComponent jnNode2=(JoinComponent)cpNode;
+                            contacts2=jnNode2.getInputs();
+                            for(XmasContact jncntNode : contacts2) {
+                                if(jncntNode==c.getSecond()) {
+                                    //System.out.println("  Found jn contact = " + contactNo);
+                                    contactNo=contactCount;
                                 }
-                                contact_cnt++;
+                                contactCount++;
                             }
-                        } else if(cp_node instanceof MergeComponent) {
-                            MergeComponent mrg_node_=(MergeComponent)cp_node;
-                            contacts_=mrg_node_.getInputs();
-                            for(XmasContact mrgcnt_node : contacts_) {
-                                if(mrgcnt_node==c.getSecond()) {
-                                    //System.out.println("  Found mrg contact = " + contact_no);
-                                    contact_no=contact_cnt;
+                        } else if(cpNode instanceof MergeComponent) {
+                            MergeComponent mrgNode2=(MergeComponent)cpNode;
+                            contacts2=mrgNode2.getInputs();
+                            for(XmasContact mrgcntNode : contacts2) {
+                                if(mrgcntNode==c.getSecond()) {
+                                    //System.out.println("  Found mrg contact = " + contactNo);
+                                    contactNo=contactCount;
                                 }
-                                contact_cnt++;
+                                contactCount++;
                             }
                         }
-                        rstr = cnet.getName(cp_node);
+                        rstr = cnet.getName(cpNode);
                         rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
-                        System.out.println("          \"id\": " + "\"" + cnet.getName(cp_node) + "\",");
-                        //writer.println("          \"id\": " + "\"" + cnet.getName(cp_node) + "\",");
+                        System.out.println("          \"id\": " + "\"" + cnet.getName(cpNode) + "\",");
+                        //writer.println("          \"id\": " + "\"" + cnet.getName(cpNode) + "\",");
                         writer.println("          \"id\": " + "\"" + rstr + "\",");
-                        System.out.println("          \"in_port\": " + (contact_no-1));
-                        writer.println("          \"in_port\": " + (contact_no-1));
-                        if(num_outputs>1) {
+                        System.out.println("          \"in_port\": " + (contactNo-1));
+                        writer.println("          \"in_port\": " + (contactNo-1));
+                        if(numOutputs>1) {
                             System.out.println("         },");
                             writer.println("         },");
-                            num_outputs=1;  //fpb
+                            numOutputs=1;  //fpb
                         } else {
                             System.out.println("        }");
                             writer.println("        }");
@@ -336,18 +336,18 @@ public class JsonExport implements Tool {
               writer.println("      ]");
             }*/
             if(node instanceof SourceComponent) {
-                //char srcchecktype = src_node.getVal();
+                //char srcchecktype = srcNode.getVal();
                 //System.out.println("type = " + srcchecktype);
-                //int srccheckmode = src_node.getMode();
+                //int srccheckmode = srcNode.getMode();
                 //System.out.println("mode = " + srccheckmode);
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                int sgr = src_node.getGr();
+                int sgr = srcNode.getGr();
                 System.out.println("          \"gr\": " + sgr + ",");
                 writer.println("          \"gr\": " + sgr + ",");
-                String srcgp = src_node.getGp();
+                String srcgp = srcNode.getGp();
                 System.out.println("          \"gpf\": " + srcgp);
                 writer.println("          \"gpf\": " + srcgp);
                 System.out.println("        }");
@@ -359,7 +359,7 @@ public class JsonExport implements Tool {
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                int sgr = snk_node.getGr();
+                int sgr = snkNode.getGr();
                 System.out.println("          \"gr\": " + sgr);
                 writer.println("          \"gr\": " + sgr);
                 System.out.println("        }");
@@ -367,16 +367,16 @@ public class JsonExport implements Tool {
                   System.out.println("      ]");
                   writer.println("      ]");
             } else if(node instanceof FunctionComponent) {
-                //char fncheckfn = fun_node.getVal();
+                //char fncheckfn = funNode.getVal();
                 //System.out.println("val = " + fncheckfn);
                 System.out.println("      \"fields\": [");
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                //String fs = fun_node.getFun();
+                //String fs = funNode.getFun();
                 //System.out.println("          \"fn\": " + fs);
                 //writer.println("          \"fn\": " + fs + ",");
-                int fgr = fun_node.getGr();
+                int fgr = funNode.getGr();
                 System.out.println("          \"gr\": " + fgr);
                 writer.println("          \"gr\": " + fgr);
                 System.out.println("        }");
@@ -388,20 +388,20 @@ public class JsonExport implements Tool {
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                int quchecksize = qu_node.getCapacity();
+                int quchecksize = quNode.getCapacity();
                 //System.out.println("capacity = " + quchecksize + ",");
-                int qusize = qu_node.getCapacity();
+                int qusize = quNode.getCapacity();
                 //int qusize = 2;    //hardwire
                 //int qusize = 3;    //hardwire
                 System.out.println("          \"size\": " + qusize + ",");
                 writer.println("          \"size\": " + qusize + ",");
-                int quinit = qu_node.getInit();
+                int quinit = quNode.getInit();
                 System.out.println("          \"init\": " + quinit + ",");
                 writer.println("          \"init\": " + quinit + ",");
-                int qgr = qu_node.getGr();
+                int qgr = quNode.getGr();
                 System.out.println("          \"gr\": " + qgr + ",");
                 writer.println("          \"gr\": " + qgr + ",");
-                String qugp = qu_node.getGp();
+                String qugp = quNode.getGp();
                 System.out.println("          \"gpf\": " + qugp);
                 writer.println("          \"gpf\": " + qugp);
                 System.out.println("        }");
@@ -413,7 +413,7 @@ public class JsonExport implements Tool {
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                int fgr = frk_node.getGr();
+                int fgr = frkNode.getGr();
                 System.out.println("          \"gr\": " + fgr);
                 writer.println("          \"gr\": " + fgr);
                 System.out.println("        }");
@@ -425,7 +425,7 @@ public class JsonExport implements Tool {
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                int jgr = jn_node.getGr();
+                int jgr = jnNode.getGr();
                 System.out.println("          \"gr\": " + jgr);
                 writer.println("          \"gr\": " + jgr);
                 System.out.println("        }");
@@ -437,7 +437,7 @@ public class JsonExport implements Tool {
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                int sgr = sw_node.getGr();
+                int sgr = swNode.getGr();
                 System.out.println("          \"gr\": " + sgr);
                 writer.println("          \"gr\": " + sgr);
                 System.out.println("        }");
@@ -449,7 +449,7 @@ public class JsonExport implements Tool {
                 writer.println("      \"fields\": [");
                 System.out.println("        {");
                 writer.println("        {");
-                int mgr = mrg_node.getGr();
+                int mgr = mrgNode.getGr();
                 System.out.println("          \"gr\": " + mgr);
                 writer.println("          \"gr\": " + mgr);
                 System.out.println("        }");
@@ -457,7 +457,7 @@ public class JsonExport implements Tool {
                   System.out.println("      ]");
                   writer.println("      ]");
             }
-            if(cnt_nodes<num_nodes) {
+            if(countNodes<numNodes) {
               System.out.println("    },");
               writer.println("    },");
             } else {
@@ -473,7 +473,7 @@ public class JsonExport implements Tool {
         } catch (Exception e) {
                 e.printStackTrace();
         } finally {
-                if ( writer != null ) {
+                if (writer != null) {
                     writer.close();
                 }
         }

@@ -96,7 +96,7 @@ public class Tools {
     public static List<Tool> getUnpositionedTools(List<Tool> tools) {
         List<Tool> result = new ArrayList<>();
         for (Tool tool: tools) {
-            if ( !(tool instanceof MenuOrdering) || (((MenuOrdering)tool).getPosition() == null)) {
+            if (!(tool instanceof MenuOrdering) || (((MenuOrdering)tool).getPosition() == null)) {
                 result.add(tool);
             }
         }

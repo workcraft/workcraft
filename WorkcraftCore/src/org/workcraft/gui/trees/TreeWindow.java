@@ -151,7 +151,7 @@ public class TreeWindow<Node> extends JPanel {
                         final int y = e.getY();
                         tree.setSelectionPath(tree.getClosestPathForLocation(x, y));
                         final Rectangle rowBounds = tree.getRowBounds(tree.getSelectionRows()[0]);
-                        if (y < rowBounds.getMinY() || y > rowBounds.getMaxY() ) {
+                        if (y < rowBounds.getMinY() || y > rowBounds.getMaxY()) {
                             tree.setSelectionPath(null);
                             popupProvider.getPopup(source.getRoot()).show(tree, x, y);
                         } else
@@ -197,7 +197,7 @@ public class TreeWindow<Node> extends JPanel {
             private JPanel cellRenderer;
 
             {
-                cellRenderer = new JPanel(new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.PREFERRED }, {TableLayout.PREFERRED} } ));
+                cellRenderer = new JPanel(new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.PREFERRED }, {TableLayout.PREFERRED} }));
             }
 
 

@@ -49,7 +49,7 @@ public class InitialStateSupervisor extends StateSupervisor {
 
     private void handleInitialStateChange(State state) {
         for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-            if ( !s.equals(state) ) {
+            if (!s.equals(state)) {
                 if (state.isInitial()) {
                     s.setInitialQuiet(false);
                 } else {
@@ -63,7 +63,7 @@ public class InitialStateSupervisor extends StateSupervisor {
     private void handleStateRemoval(State state) {
         if (state.isInitial()) {
             for (State s: fsm.getStates()) {
-                if ( !s.equals(state) ) {
+                if (!s.equals(state)) {
                     s.setInitial(true);
                     break;
                 }

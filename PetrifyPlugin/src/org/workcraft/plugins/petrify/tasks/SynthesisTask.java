@@ -68,7 +68,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
             }
         }
         for (String arg : extraArgs.split("\\s")) {
-            if ( !arg.isEmpty() ) {
+            if (!arg.isEmpty()) {
                 command.add(arg);
             }
         }

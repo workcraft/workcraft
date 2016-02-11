@@ -340,11 +340,11 @@ public class CpogSelectionTool extends SelectionTool {
         }
 
         CpogFormula f = null;
-        GraphFunc<String, CpogFormula> PGF = null;
+        GraphFunc<String, CpogFormula> pgf = null;
         final HashMap<String, VisualVertex> localVertices = new HashMap<String, VisualVertex>();
         try {
             f = CpogExpressionParser.parse(text,
-                    PGF = new GraphFunc<String, CpogFormula>() {
+                    pgf = new GraphFunc<String, CpogFormula>() {
 
                         boolean ref;
 
@@ -1072,7 +1072,7 @@ public class CpogSelectionTool extends SelectionTool {
 
 
 
-        text.addKeyListener( new KeyListener() {
+        text.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent arg0) {
                 if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -1148,7 +1148,7 @@ public class CpogSelectionTool extends SelectionTool {
     private void renderTypeChangeHandler() {
         final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
 
-        final class renderTypeChangedHandler extends StateSupervisor {
+        final class RenderTypeChangedHandler extends StateSupervisor {
 
             @Override
             public void handleEvent(StateEvent e) {
@@ -1166,7 +1166,7 @@ public class CpogSelectionTool extends SelectionTool {
 
             }
     }
-    new renderTypeChangedHandler().attach(visualCpog.getRoot());
+    new RenderTypeChangedHandler().attach(visualCpog.getRoot());
 
     }
 }

@@ -73,7 +73,7 @@ abstract public class AbstractMergerTool extends TransformationTool {
                 x += component.getRootSpaceX();
                 y += component.getRootSpaceY();
             }
-            if ( !components.isEmpty() ) {
+            if (!components.isEmpty()) {
                 Container vContainer = Hierarchy.getNearestContainer(new ArrayList<Node>(components));
                 Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
                 Class<? extends MathNode> mathNodeClass = components.iterator().next().getReferencedComponent().getClass();

@@ -48,29 +48,29 @@ public class VerTool extends AbstractTool implements Tool {
         return "Verification";
     }
 
-    private static class qslist {
+    private static class Qslist {
         String name;
         int chk;
 
-        qslist(String s1,int n) {
+        Qslist(String s1,int n) {
             name = s1;
             chk=n;
         }
     }
 
-    int cnt_syncnodes=0;
+    int cntSyncNodes=0;
     JFrame mainFrame = null;
     static String level="";
     static String display="";
     static String highlight="";
     static String soln="";
-    static List<qslist> qslist = new ArrayList<qslist>();
+    static List<Qslist> qslist = new ArrayList<Qslist>();
 
     public void dispose() {
         mainFrame.setVisible(false);
     }
 
-    private static List<String> ProcessArg(String file) {
+    private static List<String> processArg(String file) {
            String typ=null;
            Scanner sc=null;
            try {
@@ -84,16 +84,16 @@ public class VerTool extends AbstractTool implements Tool {
            String arg="";
            int num;
            while(sc.hasNextLine()) {
-             Scanner line_=new Scanner(sc.nextLine());
-             Scanner nxt=new Scanner(line_.next());
+             Scanner line=new Scanner(sc.nextLine());
+             Scanner nxt=new Scanner(line.next());
              String check=nxt.next();
              String str;
              if(check.startsWith("trace")) {
-               nxt=new Scanner(line_.next());
+               nxt=new Scanner(line.next());
                targ="-t";
                targ = targ + nxt.next();
              } else if(check.startsWith("level")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  larg="-v";
                  str = nxt.next();
                  level = str;
@@ -105,17 +105,17 @@ public class VerTool extends AbstractTool implements Tool {
                     larg = "-v2";
                  }
              } else if(check.startsWith("display")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  str = nxt.next();
                   //System.out.println("strrr=" + str);
                   display = str;
              } else if(check.startsWith("highlight")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  str = nxt.next();
                   //System.out.println("strrr=" + str);
                   highlight = str;
              } else if(check.startsWith("soln")) {
-                 nxt=new Scanner(line_.next());
+                 nxt=new Scanner(line.next());
                  str = nxt.next();
                   //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
                   soln = str;
@@ -123,13 +123,13 @@ public class VerTool extends AbstractTool implements Tool {
              }
            }
            ArrayList<String> args = new ArrayList<>();
-           if ( !targ.isEmpty() ) args.add(targ);
-           if ( !larg.isEmpty() ) args.add(larg);
-           if ( !sarg.isEmpty() ) args.add(sarg);
+           if (!targ.isEmpty()) args.add(targ);
+           if (!larg.isEmpty()) args.add(larg);
+           if (!sarg.isEmpty()) args.add(sarg);
            return args;
     }
 
-    private static String process_loc(String file) {
+    private static String processLoc(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -138,14 +138,14 @@ public class VerTool extends AbstractTool implements Tool {
         }
         String str="";
         while(sc.hasNextLine()) {
-            String line_ = sc.nextLine();
+            String line = sc.nextLine();
             //System.out.println(sc.next());
-            str = str + line_ + '\n';
+            str = str + line + '\n';
         }
         return str;
     }
 
-    private static void process_qsl(String file) {
+    private static void processQsl(String file) {
         qslist.clear();
         Scanner sc=null;
         try {
@@ -154,18 +154,18 @@ public class VerTool extends AbstractTool implements Tool {
             LogUtils.logErrorLine(e.getMessage());
         }
         while(sc.hasNextLine()) {
-            Scanner line_=new Scanner(sc.nextLine());
-            Scanner nxt=new Scanner(line_.next());
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
             String check=nxt.next();
-            nxt=new Scanner(line_.next());
+            nxt=new Scanner(line.next());
             String str = nxt.next();
             int num = Integer.parseInt(str);
             //System.out.println("qsl " + check + " " + str + " " + num);
-            qslist.add(new qslist(check,num));
+            qslist.add(new Qslist(check,num));
         }
     }
 
-    private static String process_eq(String file) {
+    private static String processEq(String file) {
         Scanner sc=null;
         try {
             sc=new Scanner(new File(file));
@@ -174,14 +174,14 @@ public class VerTool extends AbstractTool implements Tool {
         }
         String str="";
         while(sc.hasNextLine()) {
-            String line_ = sc.nextLine();
+            String line = sc.nextLine();
             //System.out.println(sc.next());
-            str = str + line_ + '\n';
+            str = str + line + '\n';
         }
         return str;
     }
 
-    public int check_type(String s) {
+    public int checkType(String s) {
 
         if(s.contains("DEADLOCK FREE")) {
             return 0;
@@ -193,7 +193,7 @@ public class VerTool extends AbstractTool implements Tool {
         return -1;
     }
 
-    public void init_highlight(Xmas xnet,VisualXmas vnet) {
+    public void initHighlight(Xmas xnet,VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -210,7 +210,7 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    public void local_highlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void localHighlight(String s,Xmas xnet,VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -247,7 +247,7 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    public void rel_highlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void relHighlight(String s,Xmas xnet,VisualXmas vnet) {
         int typ=0;
         String str="";
         QueueComponent qc;
@@ -261,8 +261,8 @@ public class VerTool extends AbstractTool implements Tool {
                 if(st.contains("->")) {
                     //System.out.println("testst" + st);
                     typ=0;
-                    for(String st_ : st.split("->")) {
-                        str=st_;
+                    for(String st2 : st.split("->")) {
+                        str=st2;
                         //System.out.println("str===" + str);
                         for(Node node : vnet.getNodes()) {
                             if(node instanceof VisualQueueComponent) {
@@ -291,8 +291,8 @@ public class VerTool extends AbstractTool implements Tool {
                 } else if(st.contains("<-")) {
                     //System.out.println("testst_" + st);
                     typ=1;
-                    for(String st_ : st.split("<-")) {
-                        str=st_;
+                    for(String st2 : st.split("<-")) {
+                        str=st2;
                         //System.out.println("str===" + str);
                         for(Node node : vnet.getNodes()) {
                             if(node instanceof VisualQueueComponent) {
@@ -322,13 +322,13 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    public void active_highlight(Xmas xnet,VisualXmas vnet) {
+    public void activeHighlight(Xmas xnet,VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
         VisualSyncComponent vsc;
 
-        for (qslist ql : qslist) {
+        for (Qslist ql : qslist) {
             if(ql.chk==0) {
                 for(Node node : vnet.getNodes()) {
                     if(node instanceof VisualQueueComponent) {
@@ -375,7 +375,7 @@ public class VerTool extends AbstractTool implements Tool {
 
             ArrayList<String> vxmCommand = new ArrayList<>();
             vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
-            vxmCommand.addAll(ProcessArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath()));
+            vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath()));
             ExternalProcessTask.printCommandLine(vxmCommand);
             Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
 
@@ -384,9 +384,9 @@ public class VerTool extends AbstractTool implements Tool {
             BufferedReader stdInput = new BufferedReader(inputStreamReader);
             int n=0;
             int test=-1;
-            init_highlight(xnet,vnet);
+            initHighlight(xnet,vnet);
             while ((s = stdInput.readLine()) != null) {
-                if(test==-1) test=check_type(s);
+                if(test==-1) test=checkType(s);
                 if(n>0) str = str + s + '\n';
                 n++;
                 System.out.println(s);
@@ -394,14 +394,14 @@ public class VerTool extends AbstractTool implements Tool {
             if(level.equals("advanced")) {
                 System.out.println("LEVEL IS ADVANCED ");
                 File qslFile = XmasSettings.getTempVxmQslFile();
-                process_qsl(qslFile.getAbsolutePath());
+                processQsl(qslFile.getAbsolutePath());
 
                 File equFile = XmasSettings.getTempVxmEquFile();
-                str = process_eq(equFile.getAbsolutePath());
+                str = processEq(equFile.getAbsolutePath());
             } else if(level.equals("normal") && test==2) {
                 System.out.println("LEVEL IS NORMAL ");
                 File locFile = XmasSettings.getTempVxmLocFile();
-                str = process_loc(locFile.getAbsolutePath());
+                str = processLoc(locFile.getAbsolutePath());
             }
             if(test>0) {
                 if(display.equals("popup")) {
@@ -413,11 +413,11 @@ public class VerTool extends AbstractTool implements Tool {
                 }
                 if(test==2) {
                     if(highlight.equals("local")) {
-                        local_highlight(str,xnet,vnet);
+                        localHighlight(str,xnet,vnet);
                     } else if(highlight.equals("rel")) {
-                        rel_highlight(str,xnet,vnet);
+                        relHighlight(str,xnet,vnet);
                         //System.out.println("str = " + str);
-                        active_highlight(xnet,vnet);
+                        activeHighlight(xnet,vnet);
                     }
                 }
             } else if(test==0) {

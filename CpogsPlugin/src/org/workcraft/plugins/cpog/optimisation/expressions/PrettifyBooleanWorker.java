@@ -24,8 +24,8 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class PrettifyBooleanWorker implements BooleanWorker {
     private final ReducedBooleanWorker worker;
-    private static Zero ZERO = Zero.instance();
-    private static One ONE = One.instance();
+    private static final Zero ZERO = Zero.instance();
+    private static final One ONE = One.instance();
 
     public PrettifyBooleanWorker(ReducedBooleanWorker worker) {
         this.worker = worker;

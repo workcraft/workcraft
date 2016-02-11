@@ -22,13 +22,13 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
             PropertyChangedEvent pce = (PropertyChangedEvent)e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
-            if ( (sender instanceof FunctionContact)
-              && ( propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
-                || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION) ) )  {
+            if ((sender instanceof FunctionContact)
+              && (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
+                || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)))  {
                 handleFunctionChange((FunctionContact)sender);
             }
-            if ( (sender instanceof FunctionComponent)
-              && propertyName.equals(FunctionComponent.PROPERTY_IS_ZERO_DELAY) ) {
+            if ((sender instanceof FunctionComponent)
+              && propertyName.equals(FunctionComponent.PROPERTY_IS_ZERO_DELAY)) {
                 handleZeroDelayChange((FunctionComponent)sender);
             }
         }
@@ -44,7 +44,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
 
     private void handleZeroDelayChange(FunctionComponent component) {
         if (component.getIsZeroDelay()) {
-            if ( !component.isInverter() && !component.isBuffer() ) {
+            if (!component.isInverter() && !component.isBuffer()) {
                 component.setIsZeroDelay(false);
                 throw new ArgumentException("Only inverters and buffers can be zero-delay.");
             }

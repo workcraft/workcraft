@@ -29,15 +29,15 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
         List<BooleanFormula> conditions = new ArrayList<BooleanFormula>();
 
         List<BooleanVariable> digits = number.getVars();
-        int N = digits.size();
-        if(N+1 != vars.length)
+        int n = digits.size();
+        if(n+1 != vars.length)
             throw new RuntimeException("Lengths do not match");
-        if(N==0)
+        if(n==0)
             return vars[0];
 
         conditions.add(imply(not(digits.get(0)), vars[0]));
-        conditions.add(imply(digits.get(N-1), vars[N]));
-        for(int i=0;i<N-1;i++) {
+        conditions.add(imply(digits.get(n-1), vars[n]));
+        for(int i=0;i<n-1;i++) {
             conditions.add(imply(and(digits.get(i), not(digits.get(i+1))), vars[i+1]));
         }
 

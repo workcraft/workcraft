@@ -39,8 +39,8 @@ public class SimpleCnfTaskProvider implements RawCnfGenerator<Cnf> {
                     vars.put(label, variable);
             }
 
-        cnf.getClauses().add(or(not(Literal.Zero)));
-        cnf.getClauses().add(or(Literal.One));
+        cnf.getClauses().add(or(not(Literal.ZERO)));
+        cnf.getClauses().add(or(Literal.ONE));
 
         return new CnfTask(cnf.toString(new MiniSatCnfPrinter()), vars);
     }

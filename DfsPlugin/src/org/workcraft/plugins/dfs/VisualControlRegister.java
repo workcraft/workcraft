@@ -82,20 +82,20 @@ public class VisualControlRegister extends VisualBinaryRegister {
         Path2D trueInnerShape = new Path2D.Double();
         trueInnerShape.moveTo(-w2 + dx, -dy);
         trueInnerShape.lineTo(-w2 + dx, -h2);
-        trueInnerShape.lineTo( w2 - dx, -h2);
-        trueInnerShape.lineTo( w2 - dx, -dy);
+        trueInnerShape.lineTo(w2 - dx, -h2);
+        trueInnerShape.lineTo(w2 - dx, -dy);
 
         Path2D falseInnerShape = new Path2D.Double();
-        falseInnerShape.moveTo( w2 - dx, dy);
-        falseInnerShape.lineTo( w2 - dx, h2);
+        falseInnerShape.moveTo(w2 - dx, dy);
+        falseInnerShape.lineTo(w2 - dx, h2);
         falseInnerShape.lineTo(-w2 + dx, h2);
         falseInnerShape.lineTo(-w2 + dx, dy);
 
         Path2D trueMarkerShape = new Path2D.Double();
         trueMarkerShape.moveTo(-dd, (-kd-2) * dd);
         trueMarkerShape.lineTo(+dd, (-kd-2) * dd);
-        trueMarkerShape.moveTo(  0, (-kd-2) * dd);
-        trueMarkerShape.lineTo(  0, (-kd+2) * dd);
+        trueMarkerShape.moveTo(0, (-kd-2) * dd);
+        trueMarkerShape.lineTo(0, (-kd+2) * dd);
 
         Path2D falseMarkerShape = new Path2D.Double();
         falseMarkerShape.moveTo(+dd, (+kd-2) * dd);
@@ -104,7 +104,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
         falseMarkerShape.moveTo(+dd, (+kd+0) * dd);
         falseMarkerShape.lineTo(-dd, (+kd+0) * dd);
 
-        Shape trueTokenShape = new Ellipse2D.Double( -tr, -w4 - tr + strokeWidth4, 2*tr, 2*tr);
+        Shape trueTokenShape = new Ellipse2D.Double(-tr, -w4 - tr + strokeWidth4, 2*tr, 2*tr);
         Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
         Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
 

@@ -44,7 +44,7 @@ public class VisualNodeTests {
     public void testTransformChangeNotify() {
         final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
         final Boolean[] hit = new Boolean[]{false};
-        node.addObserver( new StateObserver() {
+        node.addObserver(new StateObserver() {
                     public void notify(StateEvent e) {
                         if (e instanceof TransformChangedEvent) {
                             if (e.getSender() == node)
@@ -108,7 +108,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void TestGetPath() {
+    public void testGetPath() {
         VisualGroup root = createGroup(null);
         Assert.assertEquals(1, Hierarchy.getPath(root).length);
         VisualGroup node1 = createGroup(root);
@@ -118,7 +118,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void TestFindCommonParent() {
+    public void testFindCommonParent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);

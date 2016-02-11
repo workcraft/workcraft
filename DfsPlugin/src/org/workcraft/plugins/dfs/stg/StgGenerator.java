@@ -180,27 +180,27 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 
         Container curContainer = null;
 
-        VisualPlace C0 = getStgModel().createPlace(nameC + name + name0, curContainer);
-        C0.setLabel(labelC + name + label0);
-        C0.setLabelPositioning(Positioning.BOTTOM);
+        VisualPlace c0 = getStgModel().createPlace(nameC + name + name0, curContainer);
+        c0.setLabel(labelC + name + label0);
+        c0.setLabelPositioning(Positioning.BOTTOM);
         if (!l.getReferencedLogic().isComputed()) {
-            C0.getReferencedPlace().setTokens(1);
+            c0.getReferencedPlace().setTokens(1);
         }
-        C0.setForegroundColor(l.getForegroundColor());
-        C0.setFillColor(l.getFillColor());
-        setPosition(C0, x + 2.0, y + 1.0);
-        nodes.add(C0);
+        c0.setForegroundColor(l.getForegroundColor());
+        c0.setFillColor(l.getFillColor());
+        setPosition(c0, x + 2.0, y + 1.0);
+        nodes.add(c0);
 
-        VisualPlace C1 = getStgModel().createPlace(nameC + name + name1, curContainer);
-        C1.setLabel(labelC + name + label1);
-        C1.setLabelPositioning(Positioning.TOP);
+        VisualPlace c1 = getStgModel().createPlace(nameC + name + name1, curContainer);
+        c1.setLabel(labelC + name + label1);
+        c1.setLabelPositioning(Positioning.TOP);
         if (l.getReferencedLogic().isComputed()) {
-            C1.getReferencedPlace().setTokens(1);
+            c1.getReferencedPlace().setTokens(1);
         }
-        C1.setForegroundColor(l.getForegroundColor());
-        C1.setFillColor(l.getFillColor());
-        setPosition(C1, x + 2.0, y - 1.0);
-        nodes.add(C1);
+        c1.setForegroundColor(l.getForegroundColor());
+        c1.setFillColor(l.getFillColor());
+        setPosition(c1, x + 2.0, y - 1.0);
+        nodes.add(c1);
 
         Set<Node> preset = new HashSet<Node>();
         preset.addAll(getDfsModel().getPreset(l, VisualLogic.class));
@@ -211,61 +211,61 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         if (preset.size() == 0) {
             preset.add(l);
         }
-        Map<Node, VisualSignalTransition> CRs = new HashMap<Node, VisualSignalTransition>();
-        Map<Node, VisualSignalTransition> CFs = new HashMap<Node, VisualSignalTransition>();
-        VisualSignalTransition CR = null;
-        VisualSignalTransition CF = null;
+        Map<Node, VisualSignalTransition> cRs = new HashMap<Node, VisualSignalTransition>();
+        Map<Node, VisualSignalTransition> cFs = new HashMap<Node, VisualSignalTransition>();
+        VisualSignalTransition cR = null;
+        VisualSignalTransition cF = null;
         double dy = 0.0;
         for (Node n: preset) {
-            if (CR == null || l.getReferencedLogic().isEarlyEvaluation()) {
-                CR = getStgModel().createSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS, curContainer);
-                CR.setTokenColorGenerator(tokenColorGenerator);
-                createConsumingArc(C0, CR, false);
-                createProducingArc(CR, C1, true);
-                setPosition(CR, x - 2.0, y + 1.0 + dy);
-                nodes.add(CR);
+            if (cR == null || l.getReferencedLogic().isEarlyEvaluation()) {
+                cR = getStgModel().createSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS, curContainer);
+                cR.setTokenColorGenerator(tokenColorGenerator);
+                createConsumingArc(c0, cR, false);
+                createProducingArc(cR, c1, true);
+                setPosition(cR, x - 2.0, y + 1.0 + dy);
+                nodes.add(cR);
             }
-            CRs.put(n, CR);
-            if (CF == null) {
-                CF = getStgModel().createSignalTransition(nameC + name, type, SignalTransition.Direction.MINUS, curContainer);
-                createConsumingArc(C1, CF, false);
-                createProducingArc(CF, C0, false);
-                setPosition(CF, x - 2.0, y - 1.0 - dy);
-                nodes.add(CF);
+            cRs.put(n, cR);
+            if (cF == null) {
+                cF = getStgModel().createSignalTransition(nameC + name, type, SignalTransition.Direction.MINUS, curContainer);
+                createConsumingArc(c1, cF, false);
+                createProducingArc(cF, c0, false);
+                setPosition(cF, x - 2.0, y - 1.0 - dy);
+                nodes.add(cF);
             }
-            CFs.put(n, CF);
+            cFs.put(n, cF);
             dy += 1.0;
         }
 
-        return new LogicStg(C0, C1, CRs, CFs);
+        return new LogicStg(c0, c1, cRs, cFs);
     }
 
     private void connectLogicStg(VisualLogic l) throws InvalidConnectionException {
         LogicStg lstg = getLogicStg(l);
         for (VisualLogic n: getDfsModel().getPreset(l, VisualLogic.class)) {
             LogicStg nstg = getLogicStg(n);
-            createReadArc(nstg.C1, lstg.CRs.get(n), true);
-            createReadArc(nstg.C0, lstg.CFs.get(n), false);
+            createReadArc(nstg.c1, lstg.cRs.get(n), true);
+            createReadArc(nstg.c0, lstg.cFs.get(n), false);
         }
         for (VisualRegister n: getDfsModel().getPreset(l, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, lstg.CRs.get(n), true);
-            createReadArc(nstg.M0, lstg.CFs.get(n), false);
+            createReadArc(nstg.m1, lstg.cRs.get(n), true);
+            createReadArc(nstg.m0, lstg.cFs.get(n), false);
         }
         for (VisualControlRegister n: getDfsModel().getPreset(l, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.M1, lstg.CRs.get(n), true);
-            createReadArc(nstg.M0, lstg.CFs.get(n), false);
+            createReadArc(nstg.m1, lstg.cRs.get(n), true);
+            createReadArc(nstg.m0, lstg.cFs.get(n), false);
         }
         for (VisualPushRegister n: getDfsModel().getPreset(l, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.tM1, lstg.CRs.get(n), true);
-            createReadArc(nstg.tM0, lstg.CFs.get(n), false);
+            createReadArc(nstg.tM1, lstg.cRs.get(n), true);
+            createReadArc(nstg.tM0, lstg.cFs.get(n), false);
         }
         for (VisualPopRegister n: getDfsModel().getPreset(l, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.M1, lstg.CRs.get(n), true);
-            createReadArc(nstg.M0, lstg.CFs.get(n), false);
+            createReadArc(nstg.m1, lstg.cRs.get(n), true);
+            createReadArc(nstg.m0, lstg.cFs.get(n), false);
         }
     }
 
@@ -296,41 +296,41 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
         Container curContainer = null;
 
-        VisualPlace M0 = getStgModel().createPlace(nameM + name + name0, curContainer);
-        M0.setLabel(labelM + name + label0);
-        M0.setLabelPositioning(Positioning.BOTTOM);
+        VisualPlace m0 = getStgModel().createPlace(nameM + name + name0, curContainer);
+        m0.setLabel(labelM + name + label0);
+        m0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedRegister().isMarked()) {
-            M0.getReferencedPlace().setTokens(1);
+            m0.getReferencedPlace().setTokens(1);
         }
-        M0.setForegroundColor(r.getForegroundColor());
-        M0.setFillColor(r.getFillColor());
-        setPosition(M0, x + 2.0, y + 1.0);
-        nodes.add(M0);
+        m0.setForegroundColor(r.getForegroundColor());
+        m0.setFillColor(r.getFillColor());
+        setPosition(m0, x + 2.0, y + 1.0);
+        nodes.add(m0);
 
-        VisualPlace M1 = getStgModel().createPlace(nameM + name + name1, curContainer);
-        M1.setLabel(labelM + name + label1);
-        M1.setLabelPositioning(Positioning.TOP);
+        VisualPlace m1 = getStgModel().createPlace(nameM + name + name1, curContainer);
+        m1.setLabel(labelM + name + label1);
+        m1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedRegister().isMarked()) {
-            M1.getReferencedPlace().setTokens(1);
+            m1.getReferencedPlace().setTokens(1);
         }
-        M1.setTokenColor(r.getTokenColor());
-        setPosition(M1, x + 2.0, y - 1.0);
-        nodes.add(M1);
+        m1.setTokenColor(r.getTokenColor());
+        setPosition(m1, x + 2.0, y - 1.0);
+        nodes.add(m1);
 
-        VisualSignalTransition MR = getStgModel().createSignalTransition(nameM + name, type, SignalTransition.Direction.PLUS, curContainer);
-        MR.setTokenColorGenerator(tokenColorGenerator);
-        createConsumingArc(M0, MR, false);
-        createProducingArc(MR, M1, true);
-        setPosition(MR, x - 2.0, y + 1.0);
-        nodes.add(MR);
+        VisualSignalTransition mR = getStgModel().createSignalTransition(nameM + name, type, SignalTransition.Direction.PLUS, curContainer);
+        mR.setTokenColorGenerator(tokenColorGenerator);
+        createConsumingArc(m0, mR, false);
+        createProducingArc(mR, m1, true);
+        setPosition(mR, x - 2.0, y + 1.0);
+        nodes.add(mR);
 
-        VisualSignalTransition MF = getStgModel().createSignalTransition(nameM + name, type, SignalTransition.Direction.MINUS, curContainer);
-        createConsumingArc(M1, MF, false);
-        createProducingArc(MF, M0, false);
-        setPosition(MF, x - 2.0, y - 1.0);
-        nodes.add(MF);
+        VisualSignalTransition mF = getStgModel().createSignalTransition(nameM + name, type, SignalTransition.Direction.MINUS, curContainer);
+        createConsumingArc(m1, mF, false);
+        createProducingArc(mF, m0, false);
+        setPosition(mF, x - 2.0, y - 1.0);
+        nodes.add(mF);
 
-        return new RegisterStg(M0, M1, MR, MF);
+        return new RegisterStg(m0, m1, mR, mF);
     }
 
     private void connectRegisterStg(VisualRegister r) throws InvalidConnectionException {
@@ -338,62 +338,62 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         // preset
         for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
             LogicStg nstg = getLogicStg(n);
-            createReadArc(nstg.C1, rstg.MR, true);
-            createReadArc(nstg.C0, rstg.MF, false);
+            createReadArc(nstg.c1, rstg.mR, true);
+            createReadArc(nstg.c0, rstg.mF, false);
         }
         // R-preset
         for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, rstg.MR, true);
-            createReadArc(nstg.M0, rstg.MF, false);
+            createReadArc(nstg.m1, rstg.mR, true);
+            createReadArc(nstg.m0, rstg.mF, false);
         }
         for (VisualCounterflowRegister n: getDfsModel().getRPreset(r, VisualCounterflowRegister.class)) {
             CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.orM1, rstg.MR, true);
-            createReadArc(nstg.orM0, rstg.MF, false);
-            createReadArc(nstg.andM1, rstg.MF, false);
-            createReadArc(nstg.andM0, rstg.MR, false);
+            createReadArc(nstg.orM1, rstg.mR, true);
+            createReadArc(nstg.orM0, rstg.mF, false);
+            createReadArc(nstg.andM1, rstg.mF, false);
+            createReadArc(nstg.andM0, rstg.mR, false);
         }
         for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.M1, rstg.MR, true);
-            createReadArc(nstg.M0, rstg.MF, false);
+            createReadArc(nstg.m1, rstg.mR, true);
+            createReadArc(nstg.m0, rstg.mF, false);
         }
         for (VisualPushRegister n: getDfsModel().getRPreset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.tM1, rstg.MR, true);
-            createReadArc(nstg.tM0, rstg.MF, false);
+            createReadArc(nstg.tM1, rstg.mR, true);
+            createReadArc(nstg.tM0, rstg.mF, false);
         }
         for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.M1, rstg.MR, true);
-            createReadArc(nstg.M0, rstg.MF, false);
+            createReadArc(nstg.m1, rstg.mR, true);
+            createReadArc(nstg.m0, rstg.mF, false);
         }
         // R-postset
         for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, rstg.MF, false);
-            createReadArc(nstg.M0, rstg.MR, false);
+            createReadArc(nstg.m1, rstg.mF, false);
+            createReadArc(nstg.m0, rstg.mR, false);
         }
         for (VisualCounterflowRegister n: getDfsModel().getRPostset(r, VisualCounterflowRegister.class)) {
             CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.andM1, rstg.MF, false);
-            createReadArc(nstg.andM0, rstg.MR, false);
+            createReadArc(nstg.andM1, rstg.mF, false);
+            createReadArc(nstg.andM0, rstg.mR, false);
         }
         for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.M1, rstg.MF, false);
-            createReadArc(nstg.M0, rstg.MR, false);
+            createReadArc(nstg.m1, rstg.mF, false);
+            createReadArc(nstg.m0, rstg.mR, false);
         }
         for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.M1, rstg.MF, false);
-            createReadArc(nstg.M0, rstg.MR, false);
+            createReadArc(nstg.m1, rstg.mF, false);
+            createReadArc(nstg.m0, rstg.mR, false);
         }
         for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.tM1, rstg.MF, false);
-            createReadArc(nstg.tM0, rstg.MR, false);
+            createReadArc(nstg.tM1, rstg.mF, false);
+            createReadArc(nstg.tM0, rstg.mR, false);
         }
     }
 
@@ -600,7 +600,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         orM1.setLabel(labelOrM + name + label1);
         orM1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedCounterflowRegister().isOrMarked()) {
-            orM1.getReferencedPlace().setTokens(    1);
+            orM1.getReferencedPlace().setTokens(1);
         }
         orM1.setForegroundColor(r.getForegroundColor());
         orM1.setFillColor(r.getFillColor());
@@ -675,17 +675,17 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 
         for (VisualRegister n: getDfsModel().getPreset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, rstg.orMRfw, true);
-            createReadArc(nstg.M1, rstg.andMR, false);
-            createReadArc(nstg.M0, rstg.orMFfw, false);
-            createReadArc(nstg.M0, rstg.andMF, false);
+            createReadArc(nstg.m1, rstg.orMRfw, true);
+            createReadArc(nstg.m1, rstg.andMR, false);
+            createReadArc(nstg.m0, rstg.orMFfw, false);
+            createReadArc(nstg.m0, rstg.andMF, false);
         }
         for (VisualRegister n: getDfsModel().getPostset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, rstg.orMRbw, true);
-            createReadArc(nstg.M1, rstg.andMR, false);
-            createReadArc(nstg.M0, rstg.orMFbw, false);
-            createReadArc(nstg.M0, rstg.andMF, false);
+            createReadArc(nstg.m1, rstg.orMRbw, true);
+            createReadArc(nstg.m1, rstg.andMR, false);
+            createReadArc(nstg.m0, rstg.orMFbw, false);
+            createReadArc(nstg.m0, rstg.andMF, false);
         }
 
         for (VisualCounterflowLogic n: getDfsModel().getPreset(r, VisualCounterflowLogic.class)) {
@@ -757,27 +757,27 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
         Container curContainer = null;
 
-        VisualPlace M0 = getStgModel().createPlace(nameM + name + name0, curContainer);
-        M0.setLabel(labelM + name + label0);
-        M0.setLabelPositioning(Positioning.BOTTOM);
+        VisualPlace m0 = getStgModel().createPlace(nameM + name + name0, curContainer);
+        m0.setLabel(labelM + name + label0);
+        m0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedBinaryRegister().isTrueMarked() && !r.getReferencedBinaryRegister().isFalseMarked()) {
-            M0.getReferencedPlace().setTokens(1);
+            m0.getReferencedPlace().setTokens(1);
         }
-        M0.setForegroundColor(r.getForegroundColor());
-        M0.setFillColor(r.getFillColor());
-        setPosition(M0, x - 4.0, y + 1.0);
-        nodes.add(M0);
+        m0.setForegroundColor(r.getForegroundColor());
+        m0.setFillColor(r.getFillColor());
+        setPosition(m0, x - 4.0, y + 1.0);
+        nodes.add(m0);
 
-        VisualPlace M1 = getStgModel().createPlace(nameM + name + name1, curContainer);
-        M1.setLabel(labelM + name + label1);
-        M1.setLabelPositioning(Positioning.TOP);
+        VisualPlace m1 = getStgModel().createPlace(nameM + name + name1, curContainer);
+        m1.setLabel(labelM + name + label1);
+        m1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedBinaryRegister().isTrueMarked() || r.getReferencedBinaryRegister().isFalseMarked()) {
-            M1.getReferencedPlace().setTokens(1);
+            m1.getReferencedPlace().setTokens(1);
         }
-        M1.setForegroundColor(r.getForegroundColor());
-        M1.setFillColor(r.getFillColor());
-        setPosition(M1, x - 4.0, y - 1.0);
-        nodes.add(M1);
+        m1.setForegroundColor(r.getForegroundColor());
+        m1.setFillColor(r.getFillColor());
+        setPosition(m1, x - 4.0, y - 1.0);
+        nodes.add(m1);
 
         VisualPlace tM0 = getStgModel().createPlace(nameTrueM + name + name0, curContainer);
         tM0.setLabel(labelTrueM + name + label0);
@@ -816,8 +816,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 tMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(tM0, tMR, false);
                 createProducingArc(tMR, tM1, true);
-                createConsumingArc(M0, tMR, false);
-                createProducingArc(tMR, M1, true);
+                createConsumingArc(m0, tMR, false);
+                createProducingArc(tMR, m1, true);
                 setPosition(tMR, x, y - 2.0 + dy);
                 nodes.add(tMR);
             }
@@ -827,8 +827,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         VisualSignalTransition tMF = getStgModel().createSignalTransition(nameTrueM + name, type, SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(tM1, tMF, false);
         createProducingArc(tMF, tM0, false);
-        createConsumingArc(M1, tMF, false);
-        createProducingArc(tMF, M0, false);
+        createConsumingArc(m1, tMF, false);
+        createProducingArc(tMF, m0, false);
         setPosition(tMF, x, y - 4.0 - dy);
         nodes.add(tMF);
 
@@ -864,8 +864,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 fMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(fM0, fMR, false);
                 createProducingArc(fMR, fM1, true);
-                createConsumingArc(M0, fMR, false);
-                createProducingArc(fMR, M1, true);
+                createConsumingArc(m0, fMR, false);
+                createProducingArc(fMR, m1, true);
                 setPosition(fMR, x, y + 4.0 + dy);
                 nodes.add(fMR);
             }
@@ -875,8 +875,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         VisualSignalTransition fMF = getStgModel().createSignalTransition(nameFalseM + name, type, SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(fM1, fMF, false);
         createProducingArc(fMF, fM0, false);
-        createConsumingArc(M1, fMF, false);
-        createProducingArc(fMF, M0, false);
+        createConsumingArc(m1, fMF, false);
+        createProducingArc(fMF, m0, false);
         setPosition(fMF, x, y + 2.0 - dy);
         nodes.add(fMF);
 
@@ -884,7 +884,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         createReadArcs(tM0, fMRs.values(), false);
         createReadArcs(fM0, tMRs.values(), false);
 
-        return new BinaryRegisterStg(M0, M1, tM0, tM1, tMRs, tMF, fM0, fM1, fMRs, fMF);
+        return new BinaryRegisterStg(m0, m1, tM0, tM1, tMRs, tMF, fM0, fM1, fMRs, fMF);
     }
 
     private BinaryRegisterStg generateControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
@@ -898,18 +898,18 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         // preset
         for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
             LogicStg nstg = getLogicStg(n);
-            createReadArcs(nstg.C1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.C1, rstg.fMRs.values(), true);
-            createReadArc(nstg.C0, rstg.tMF, false);
-            createReadArc(nstg.C0, rstg.fMF, false);
+            createReadArcs(nstg.c1, rstg.tMRs.values(), true);
+            createReadArcs(nstg.c1, rstg.fMRs.values(), true);
+            createReadArc(nstg.c0, rstg.tMF, false);
+            createReadArc(nstg.c0, rstg.fMF, false);
         }
         // R-preset
         for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArcs(nstg.M1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.M1, rstg.fMRs.values(), true);
-            createReadArc(nstg.M0, rstg.tMF, false);
-            createReadArc(nstg.M0, rstg.fMF, false);
+            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
+            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
+            createReadArc(nstg.m0, rstg.tMF, false);
+            createReadArc(nstg.m0, rstg.fMF, false);
         }
         Collection<VisualControlRegister> crPreset = getDfsModel().getRPreset(r, VisualControlRegister.class);
         for (VisualControlRegister n: crPreset) {
@@ -927,15 +927,15 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                     if (m == n) continue;
                     BinaryRegisterStg mstg = getControlRegisterStg(m);
                     if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.OR) {
-                        createReadArc(mstg.M1, rstg.tMRs.get(n), true);
+                        createReadArc(mstg.m1, rstg.tMRs.get(n), true);
                     }
                     if (r.getReferencedControlRegister().getSynchronisationType() == SynchronisationType.AND) {
-                        createReadArc(mstg.M1, rstg.fMRs.get(n), true);
+                        createReadArc(mstg.m1, rstg.fMRs.get(n), true);
                     }
                 }
             }
-            createReadArc(nstg.M0, rstg.tMF, false);
-            createReadArc(nstg.M0, rstg.fMF, false);
+            createReadArc(nstg.m0, rstg.tMF, false);
+            createReadArc(nstg.m0, rstg.fMF, false);
         }
         for (VisualPushRegister n: getDfsModel().getRPreset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
@@ -946,25 +946,25 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArcs(nstg.M1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.M1, rstg.fMRs.values(), true);
-            createReadArc(nstg.M0, rstg.tMF, false);
-            createReadArc(nstg.M0, rstg.fMF, false);
+            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
+            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
+            createReadArc(nstg.m0, rstg.tMF, false);
+            createReadArc(nstg.m0, rstg.fMF, false);
         }
         // R-postset
         for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false);
-            createReadArc(nstg.M1, rstg.fMF, false);
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.M0, rstg.fMRs.values(), false);
+            createReadArc(nstg.m1, rstg.tMF, false);
+            createReadArc(nstg.m1, rstg.fMF, false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
         }
         for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false);
-            createReadArc(nstg.M1, rstg.fMF, false);
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.M0, rstg.fMRs.values(), false);
+            createReadArc(nstg.m1, rstg.tMF, false);
+            createReadArc(nstg.m1, rstg.fMF, false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
         }
         for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
@@ -976,8 +976,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 createReadArc(nstg.tM1, rstg.tMF, false);
                 createReadArc(nstg.fM1, rstg.fMF, false);
             }
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.M0, rstg.fMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
         }
         for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
@@ -989,8 +989,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 createReadArc(nstg.tM1, rstg.tMF, false);
                 createReadArc(nstg.fM1, rstg.fMF, false);
             }
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.M0, rstg.fMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
         }
     }
 
@@ -1015,18 +1015,18 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         // preset
         for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
             LogicStg nstg = getLogicStg(n);
-            createReadArcs(nstg.C1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.C1, rstg.fMRs.values(), true);
-            createReadArc(nstg.C0, rstg.tMF, false);
-            createReadArc(nstg.C0, rstg.fMF, false);
+            createReadArcs(nstg.c1, rstg.tMRs.values(), true);
+            createReadArcs(nstg.c1, rstg.fMRs.values(), true);
+            createReadArc(nstg.c0, rstg.tMF, false);
+            createReadArc(nstg.c0, rstg.fMF, false);
         }
         // R-preset
         for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArcs(nstg.M1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.M1, rstg.fMRs.values(), true);
-            createReadArc(nstg.M0, rstg.tMF, false);
-            createReadArc(nstg.M0, rstg.fMF, false);
+            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
+            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
+            createReadArc(nstg.m0, rstg.tMF, false);
+            createReadArc(nstg.m0, rstg.fMF, false);
         }
         for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
@@ -1052,26 +1052,26 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArcs(nstg.M1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.M1, rstg.fMRs.values(), true);
-            createReadArc(nstg.M0, rstg.tMF, false);
-            createReadArc(nstg.M0, rstg.fMF, false);
+            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
+            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
+            createReadArc(nstg.m0, rstg.tMF, false);
+            createReadArc(nstg.m0, rstg.fMF, false);
         }
         // R-postset
         for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false); // register M1 in R-postset is read only by tMF
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false); // register M0 in R-postset is read only by tMR
+            createReadArc(nstg.m1, rstg.tMF, false); // register m1 in R-postset is read only by tMF
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false); // register m0 in R-postset is read only by tMR
         }
         for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false);
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
+            createReadArc(nstg.m1, rstg.tMF, false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
         }
         for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false);
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
+            createReadArc(nstg.m1, rstg.tMF, false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
         }
         for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
@@ -1101,14 +1101,14 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         // preset
         for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
             LogicStg nstg = getLogicStg(n);
-            createReadArcs(nstg.C1, rstg.tMRs.values(), true);
-            createReadArc(nstg.C0, rstg.tMF, false);
+            createReadArcs(nstg.c1, rstg.tMRs.values(), true);
+            createReadArc(nstg.c0, rstg.tMF, false);
         }
         // R-preset
         for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArcs(nstg.M1, rstg.tMRs.values(), true);
-            createReadArc(nstg.M0, rstg.tMF, false);
+            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
+            createReadArc(nstg.m0, rstg.tMF, false);
         }
         for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
@@ -1132,30 +1132,30 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArcs(nstg.M1, rstg.tMRs.values(), true);
-            createReadArc(nstg.M0, rstg.tMF, false);
+            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
+            createReadArc(nstg.m0, rstg.tMF, false);
         }
         // R-postset
         for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
             RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false);
-            createReadArc(nstg.M1, rstg.fMF, false);
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.M0, rstg.fMRs.values(), false);
+            createReadArc(nstg.m1, rstg.tMF, false);
+            createReadArc(nstg.m1, rstg.fMF, false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
         }
         for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false);
-            createReadArc(nstg.M1, rstg.fMF, false);
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.M0, rstg.fMRs.values(), false);
+            createReadArc(nstg.m1, rstg.tMF, false);
+            createReadArc(nstg.m1, rstg.fMF, false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
         }
         for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.M1, rstg.tMF, false);
-            createReadArc(nstg.M1, rstg.fMF, false);
-            createReadArcs(nstg.M0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.M0, rstg.fMRs.values(), false);
+            createReadArc(nstg.m1, rstg.tMF, false);
+            createReadArc(nstg.m1, rstg.fMF, false);
+            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
         }
         for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);

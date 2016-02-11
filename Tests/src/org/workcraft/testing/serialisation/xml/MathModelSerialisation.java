@@ -71,12 +71,12 @@ public class MathModelSerialisation {
     }
 
     @Test
-    public void SimpleSaveLoad() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
+    public void simpleSaveLoad() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
         runTest(XMLSerialisationTestingUtils.createTestSTG1());
     }
 
     @Test
-    public void SaveLoadWithGroups() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
+    public void saveLoadWithGroups() throws InvalidConnectionException, SerialisationException, PluginInstantiationException, IOException, FormatException, DeserialisationException {
         runTest(XMLSerialisationTestingUtils.createTestSTG2());
     }
 

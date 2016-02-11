@@ -60,7 +60,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
     @Override
     public void setDefaultControlPoints() {
         initControlPoints(new BezierControlPoint(), new BezierControlPoint());
-        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001 ) {
+        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001) {
             Point2D p = connectionInfo.getFirstCenter();
             cp1.setPosition(new Point2D.Double(p.getX() - 2.0, p.getY() + 2.0));
             cp2.setPosition(new Point2D.Double(p.getX() + 2.0, p.getY() + 2.0));
@@ -86,7 +86,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
     @Override
     public List<ControlPoint> getControlPoints() {
-        return Arrays.asList( new ControlPoint[] {cp1, cp2 });
+        return Arrays.asList(new ControlPoint[] {cp1, cp2 });
     }
 
     public BezierControlPoint[] getBezierControlPoints() {
@@ -168,14 +168,14 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         fullCurve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
 
         CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
-        CurveSplitResult secondSplit = Geometry.splitCubicCurve(firstSplit.curve2, (tEnd-tStart)/(1-tStart) );
+        CurveSplitResult secondSplit = Geometry.splitCubicCurve(firstSplit.curve2, (tEnd-tStart)/(1-tStart));
 
         return secondSplit.curve1;
     }
 
     @Override
     public Collection<Node> getChildren() {
-        return Arrays.asList( new Node[] {cp1, cp2 });
+        return Arrays.asList(new Node[] {cp1, cp2 });
     }
 
     @Override

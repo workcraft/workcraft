@@ -13,7 +13,7 @@ public class ExpressionUtils {
     public static String extactSetExpression(String expression, String seqLiteral) {
         String result = null;
         for (String term: ExpressionUtils.getTerms(expression)) {
-            if ( !isResetTerm(term, seqLiteral)) {
+            if (!isResetTerm(term, seqLiteral)) {
                 if (result == null) {
                     result = "";
                 } else {
