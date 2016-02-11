@@ -40,7 +40,7 @@ public class GenlibUtils {
             contact.setSetFunction(setFormula);
             BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetFunction);
             contact.setResetFunction(resetFormula);
-        } catch (org.workcraft.plugins.cpog.optimisation.javacc.ParseException e) {
+        } catch (org.workcraft.plugins.cpog.optimisation.jj.ParseException e) {
             throw new RuntimeException(e);
         }
         return component;

@@ -12,7 +12,7 @@ options {
 }
 
 PARSER_BEGIN(SubstitutionParser)
-package org.workcraft.plugins.circuit.javacc;
+package org.workcraft.plugins.circuit.jj;
 
 import java.util.List;
 import java.util.LinkedList;
