@@ -266,13 +266,13 @@ public class STGConv {
         }
     }
 
-    private class  genSTG_ {
+    private class  GenSTG {
 
         public final STGInv i1;
         public final STGInv i3;
         public final STGAnd a3;
 
-        genSTG_(String name, int x, int offset) throws InvalidConnectionException {
+        GenSTG(String name, int x, int offset) throws InvalidConnectionException {
 
             Collection<VisualPlace> p=null;
 
@@ -325,10 +325,10 @@ public class STGConv {
         connections2(o1.p0,o1.p1,i1.t0,i1.t1);
         connections(i1.p0,i1.p1,a1.t0,a1.t1);
 
-        genSTG_ a = new genSTG_("a",0,15);
-        genSTG_ b = new genSTG_("b",0,40);
-        genSTG_ c = new genSTG_("c",0,65);
-        genSTG_ d = new genSTG_("d",0,90);
+        GenSTG a = new GenSTG("a",0,15);
+        GenSTG b = new GenSTG("b",0,40);
+        GenSTG c = new GenSTG("c",0,65);
+        GenSTG d = new GenSTG("d",0,90);
 
         connections(a.i3.p0,a.i3.p1,o1.t0,o1.t2);
         connections(c.i3.p0,c.i3.p1,a1.t0,a1.t2);
@@ -344,10 +344,10 @@ public class STGConv {
         connections2(o2.p0,o2.p1,i2.t0,i2.t1);
         connections(i2.p0,i2.p1,a2.t0,a2.t1);
 
-        genSTG_ e = new genSTG_("e",100,15);
-        genSTG_ f = new genSTG_("f",100,40);
-        genSTG_ g = new genSTG_("g",100,65);
-        genSTG_ h = new genSTG_("h",100,90);
+        GenSTG e = new GenSTG("e",100,15);
+        GenSTG f = new GenSTG("f",100,40);
+        GenSTG g = new GenSTG("g",100,65);
+        GenSTG h = new GenSTG("h",100,90);
 
         connections(e.i3.p0,e.i3.p1,o2.t0,o2.t2);
         connections(f.i3.p0,f.i3.p1,a2.t0,a2.t2);
@@ -399,8 +399,8 @@ public class STGConv {
         connections(a3.p0,a3.p1,a4.t0,a4.t1);
         connections(a4.p0,a4.p1,a5.t0,a5.t1);
 
-        genSTG_ a = new genSTG_("a",0,20);
-        genSTG_ b =new genSTG_("b",0,45);
+        GenSTG a = new GenSTG("a",0,20);
+        GenSTG b =new GenSTG("b",0,45);
 
         connections(b.i3.p0,b.i3.p1,a3.t0,a3.t2);
         connections(i6.p0,i6.p1,a.i1.t0,a.i1.t1);
@@ -439,7 +439,7 @@ public class STGConv {
         connections(i3.p0,i3.p1,i4.t0,i4.t1);
         connections(i4.p0,i4.p1,i5.t0,i5.t1);
 
-        genSTG_ a = new genSTG_("a",0,20);
+        GenSTG a = new GenSTG("a",0,20);
 
         connections(i2.p0,i2.p1,a.i1.t0,a.i1.t1);
         connections(a.i3.p0,a.i3.p1,a1.t0,a1.t2);
@@ -467,7 +467,7 @@ public class STGConv {
         connections(i8.p0,i8.p1,i9.t0,i9.t1);
         connections(i9.p0,i9.p1,i10.t0,i10.t1);
 
-        genSTG_ b = new genSTG_("b",0,70);
+        GenSTG b = new GenSTG("b",0,70);
 
         connections(i6.p0,i6.p1,b.i1.t0,b.i1.t1);
         connections(b.i3.p0,b.i3.p1,a3.t0,a3.t2);

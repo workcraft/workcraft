@@ -26,53 +26,53 @@ public class PNetExt {
     private static boolean printoutput=true;
 
 
-    private static class source {
+    private static class Source {
 
            String name1;
            String name2;
 
-           source(String s1,String s2) {
+           Source(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
     }
 
-    private static class switch_ {
+    private static class Switch {
 
            String name1;
            String name2;
 
-           switch_(String s1,String s2) {
+           Switch(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
     }
 
-    private static class merge_ {
+    private static class Merge {
 
            String name1;
            String name2;
 
-           merge_(String s1,String s2) {
+           Merge(String s1,String s2) {
              name1 = s1;
              name2 = s2;
            }
     }
 
-    private static class fun_ {
+    private static class Fun {
 
            String name1;
 
-           fun_(String s1) {
+           Fun(String s1) {
              name1 = s1;
            }
     }
 
 
-    static List<source> sourcelist = new ArrayList<source>();
-    static List<switch_> switchlist = new ArrayList<switch_>();
-    static List<merge_> mergelist = new ArrayList<merge_>();
-    static List<fun_> funlist = new ArrayList<fun_>();
+    static List<Source> sourcelist = new ArrayList<Source>();
+    static List<Switch> switchlist = new ArrayList<Switch>();
+    static List<Merge> mergelist = new ArrayList<Merge>();
+    static List<Fun> funlist = new ArrayList<Fun>();
 
     private static void initlist() {
         funlist.clear();
@@ -103,22 +103,22 @@ public class PNetExt {
                if(check.startsWith("//gensource")) {
                  nxt=new Scanner(line.next());
                  name=nxt.next();
-                 sourcelist.add(new source(name,name));
+                 sourcelist.add(new Source(name,name));
                  typ="Source";
                } else if(check.startsWith("//genfunction")) {
                  nxt=new Scanner(line.next());
                  name=nxt.next();
-                 funlist.add(new fun_(name));
+                 funlist.add(new Fun(name));
                  typ="Function";
                } else if(check.startsWith("//genmerge")) {
                  nxt=new Scanner(line.next());
                  name=nxt.next();
-                 mergelist.add(new merge_(name,name));
+                 mergelist.add(new Merge(name,name));
                  typ="Merge";
                } else if(check.startsWith("//genswitch")) {
                  nxt=new Scanner(line.next());
                  name=nxt.next();
-                 switchlist.add(new switch_(name,name));
+                 switchlist.add(new Switch(name,name));
                  typ="Switch";
                }
              }
@@ -154,7 +154,7 @@ public class PNetExt {
              no++;
            }
            writer.println("ST");
-           /*for (switch_ sw : switchlist) {
+           /*for (Switch sw : switchlist) {
              //writer.println(sw.name1 + "\"" + "t");
              writer.println(sw.name1 + "\"" + sw.getType());
            }*/
@@ -164,7 +164,7 @@ public class PNetExt {
              no++;
            }
            writer.println("MT");
-           for (merge_ mrg : mergelist) {
+           for (Merge mrg : mergelist) {
              writer.println(mrg.name1 + "\"" + mrg.name2);
            }
            System.out.print("Output written to CPNFile");

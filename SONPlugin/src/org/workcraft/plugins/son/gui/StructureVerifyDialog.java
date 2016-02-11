@@ -56,11 +56,11 @@ public class StructureVerifyDialog extends JDialog{
     protected int run = 0;
     protected Window owner;
 
-    class typeMode {
+    class TypeMode {
         public int value;
         public String description;
 
-        typeMode(int value, String description) {
+        TypeMode(int value, String description) {
             this.value = value;
             this.description = description;
         }
@@ -135,11 +135,11 @@ public class StructureVerifyDialog extends JDialog{
     @SuppressWarnings("unchecked")
     protected void createTypePanel(){
         typeCombo = new JComboBox();
-        typeCombo.addItem(new typeMode(0, "Structured Occurrence Nets"));
-        typeCombo.addItem(new typeMode(1, "Occurrence Net (Group)"));
-        typeCombo.addItem(new typeMode(2, "Communication Structured Occurrence Nets"));
-        typeCombo.addItem(new typeMode(3, "Behavioural Structured Occurrence Nets"));
-        typeCombo.addItem(new typeMode(4, "Temporal Structured Occurrence Nets"));
+        typeCombo.addItem(new TypeMode(0, "Structured Occurrence Nets"));
+        typeCombo.addItem(new TypeMode(1, "Occurrence Net (Group)"));
+        typeCombo.addItem(new TypeMode(2, "Communication Structured Occurrence Nets"));
+        typeCombo.addItem(new TypeMode(3, "Behavioural Structured Occurrence Nets"));
+        typeCombo.addItem(new TypeMode(4, "Temporal Structured Occurrence Nets"));
 
         typePanel = new JPanel();
         typePanel.add(GUI.createLabeledComponent(typeCombo, "Types:"));

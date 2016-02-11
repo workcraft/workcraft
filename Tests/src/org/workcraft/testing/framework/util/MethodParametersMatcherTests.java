@@ -66,7 +66,7 @@ public class MethodParametersMatcherTests {
     }
 
 
-    static class simple{
+    static class Simple{
         public static int qq(){
             return 1;
         }
@@ -74,11 +74,11 @@ public class MethodParametersMatcherTests {
 
     @Test
     public void testSimple() throws Exception {
-        Assert.assertEquals(1, match(simple.class));
-        Assert.assertEquals(-1, match(simple.class, Object.class));
+        Assert.assertEquals(1, match(Simple.class));
+        Assert.assertEquals(-1, match(Simple.class, Object.class));
     }
 
-    static class advanced{
+    static class Advanced{
         public static int qq(){
             return 1;
         }
@@ -98,15 +98,15 @@ public class MethodParametersMatcherTests {
 
     @Test
     public void testMostSpecific() throws Exception {
-        Assert.assertEquals(1, match(advanced.class));
-        Assert.assertEquals(2, match(advanced.class, A.class));
-        Assert.assertEquals(3, match(advanced.class, ABq.class));
-        Assert.assertEquals(4, match(advanced.class, ABp.class));
-        Assert.assertEquals(4, match(advanced.class, AB.class));
-        Assert.assertEquals(5, match(advanced.class, AC.class));
+        Assert.assertEquals(1, match(Advanced.class));
+        Assert.assertEquals(2, match(Advanced.class, A.class));
+        Assert.assertEquals(3, match(Advanced.class, ABq.class));
+        Assert.assertEquals(4, match(Advanced.class, ABp.class));
+        Assert.assertEquals(4, match(Advanced.class, AB.class));
+        Assert.assertEquals(5, match(Advanced.class, AC.class));
     }
 
-    static class ambiguous{
+    static class Ambiguous{
         public static int qq(A a, AC b){
             return 1;
         }
@@ -118,11 +118,11 @@ public class MethodParametersMatcherTests {
 
     @Test
     public void testAmbiguous() throws Exception {
-        Assert.assertEquals(1, match(ambiguous.class, A.class, AC.class));
-        Assert.assertEquals(-1, match(ambiguous.class, AB.class, A.class));
-        Assert.assertEquals(2, match(ambiguous.class, ABq.class, A.class));
-        Assert.assertEquals(1, match(ambiguous.class, AB.class, AC.class));
-        Assert.assertEquals(-2, match(ambiguous.class, ABq.class, AC.class));
+        Assert.assertEquals(1, match(Ambiguous.class, A.class, AC.class));
+        Assert.assertEquals(-1, match(Ambiguous.class, AB.class, A.class));
+        Assert.assertEquals(2, match(Ambiguous.class, ABq.class, A.class));
+        Assert.assertEquals(1, match(Ambiguous.class, AB.class, AC.class));
+        Assert.assertEquals(-2, match(Ambiguous.class, ABq.class, AC.class));
     }
 
     class TestMethodInfo implements MethodInfo {

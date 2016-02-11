@@ -1148,7 +1148,7 @@ public class CpogSelectionTool extends SelectionTool {
     private void renderTypeChangeHandler() {
         final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
 
-        final class renderTypeChangedHandler extends StateSupervisor {
+        final class RenderTypeChangedHandler extends StateSupervisor {
 
             @Override
             public void handleEvent(StateEvent e) {
@@ -1166,7 +1166,7 @@ public class CpogSelectionTool extends SelectionTool {
 
             }
     }
-    new renderTypeChangedHandler().attach(visualCpog.getRoot());
+    new RenderTypeChangedHandler().attach(visualCpog.getRoot());
 
     }
 }

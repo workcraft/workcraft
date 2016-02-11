@@ -63,11 +63,11 @@ public class VerQuery extends AbstractTool implements Tool {
         return "Query";
     }
 
-    private static class qslist {
+    private static class Qslist {
         String name;
         int chk;
 
-        qslist(String s1,int n) {
+        Qslist(String s1,int n) {
             name = s1;
             chk=n;
         }
@@ -84,7 +84,7 @@ public class VerQuery extends AbstractTool implements Tool {
     static String display="";
     static String highlight="";
     static String soln="";
-    static List<qslist> qslist = new ArrayList<qslist>();
+    static List<Qslist> qslist = new ArrayList<Qslist>();
 
     public void dispose() {
         mainFrame.setVisible(false);
@@ -203,7 +203,7 @@ public class VerQuery extends AbstractTool implements Tool {
             String str = nxt.next();
             int num = Integer.parseInt(str);
             //System.out.println("qsl " + check + " " + str + " " + num);
-            qslist.add(new qslist(check,num));
+            qslist.add(new Qslist(check,num));
         }
     }
 
@@ -386,7 +386,7 @@ public class VerQuery extends AbstractTool implements Tool {
         VisualQueueComponent vqc;
         VisualSyncComponent vsc;
 
-        for (qslist ql : qslist) {
+        for (Qslist ql : qslist) {
             if(ql.chk==0) {
                 for(Node node : vnet.getNodes()) {
                     if(node instanceof VisualQueueComponent) {

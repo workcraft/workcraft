@@ -80,7 +80,7 @@ public class SyncTool implements Tool {
         mainFrame.setVisible(false);
     }
 
-    private static class sync_ {
+    private static class Sync {
 
            String name1;
            String name2;
@@ -93,7 +93,7 @@ public class SyncTool implements Tool {
            String g1;
            String g2;
 
-           sync_(String s1,String s2,String s3,String s4,int gr,int cno) {
+           Sync(String s1,String s2,String s3,String s4,int gr,int cno) {
              name1 = s1;
              name2 = s2;
              name3 = s3;
@@ -120,10 +120,10 @@ public class SyncTool implements Tool {
     }
 
     public List<String> slist=new ArrayList<String>();
-    static List<sync_> synclist=new ArrayList<sync_>();
+    static List<Sync> synclist=new ArrayList<Sync>();
 
     private static int checksynclist(String str) {
-        for (sync_ s : synclist) {
+        for (Sync s : synclist) {
             if(s.name1.equals(str)) {
                 return 0;
             }
@@ -132,7 +132,7 @@ public class SyncTool implements Tool {
     }
 
     private static void storeSname(String str,String str2,int gr,int cno) {
-        for (sync_ s : synclist) {
+        for (Sync s : synclist) {
             if(s.name1.equals(str)) {
                 s.name3=str2;
                 if(cno==0) {
@@ -148,7 +148,7 @@ public class SyncTool implements Tool {
     }
 
     private static void storeSname2(String str,String str2,int gr,int cno) {
-        for (sync_ s : synclist) {
+        for (Sync s : synclist) {
             if(s.name1.equals(str)) {
                 s.name2=str2;
                 if(cno==0) {
@@ -165,7 +165,7 @@ public class SyncTool implements Tool {
 
     public void updatesynclist() {
         int no=0;
-        for (sync_ s : synclist) {
+        for (Sync s : synclist) {
             if(slist.get(no).equals("asynchronous")) {
                 s.typ="a";
             } else if(slist.get(no).equals("mesochronous")) {
@@ -184,7 +184,7 @@ public class SyncTool implements Tool {
         PrintWriter writerS = null;
         try {
             writerS = new PrintWriter(syncFile);
-            for (sync_ s : synclist) {
+            for (Sync s : synclist) {
                 String str;
                 str = s.name1.replace("Sync", "Qs");
                 str = s.name1.replace("sync", "Qs");
@@ -367,7 +367,7 @@ public class SyncTool implements Tool {
                                 Node cpNode = c.getSecond().getParent();
                                 System.out.println("  Found contact = " + cnet.getName(cpNode));
                                 //if(checksynclist(cnet.getName(cpNode))==1) {
-                                //    synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o"));
+                                //    synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o"));
                                 //}
                             }
                         }
@@ -466,7 +466,7 @@ public class SyncTool implements Tool {
                                     Node cpNode = c.getSecond().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(checksynclist(cnet.getName(cpNode))==1) {
-                                        synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),0));
+                                        synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),0));
                                     } else {
                                         storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                     }
@@ -488,7 +488,7 @@ public class SyncTool implements Tool {
                                     Node cpNode = c.getSecond().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(checksynclist(cnet.getName(cpNode))==1) {
-                                        synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),0));
+                                        synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),0));
                                     } else {
                                         storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                     }
@@ -513,7 +513,7 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
-                                            synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
+                                            synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
                                         } else {
                                             storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
@@ -539,7 +539,7 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
-                                            synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
+                                            synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
                                         } else {
                                             storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
@@ -564,7 +564,7 @@ public class SyncTool implements Tool {
                                     cno++;
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(checksynclist(cnet.getName(cpNode))==1) {
-                                        synclist.add(new sync_(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
+                                        synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o",sc.getGr(),cno));
                                     } else {
                                         storeSname2(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                     }
@@ -592,7 +592,7 @@ public class SyncTool implements Tool {
                                     if(cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
                                             //System.out.println("Queue ___ = " + sc.getGr());
-                                            synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
+                                            synclist.add(new Sync(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
                                             storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
@@ -616,7 +616,7 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
-                                            synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
+                                            synclist.add(new Sync(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
                                             storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
@@ -643,7 +643,7 @@ public class SyncTool implements Tool {
                                     if(cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
                                             //System.out.println("  Found contact__ = merge ");
-                                            synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),cno));
+                                            synclist.add(new Sync(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),cno));
                                         } else {
                                             storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),cno);
                                         }
@@ -667,7 +667,7 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
-                                            synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
+                                            synclist.add(new Sync(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
                                             storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
@@ -691,7 +691,7 @@ public class SyncTool implements Tool {
                                     //System.out.println("  Found contact = " + cnet.getName(cpNode));
                                     if(cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if(checksynclist(cnet.getName(cpNode))==1) {
-                                            synclist.add(new sync_(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
+                                            synclist.add(new Sync(cnet.getName(cpNode),"",cnet.getName(sc),"i",sc.getGr(),0));
                                         } else {
                                             storeSname(cnet.getName(cpNode),cnet.getName(sc),sc.getGr(),0);
                                         }
@@ -785,7 +785,7 @@ public class SyncTool implements Tool {
                 String gp="";
 
                 no=0;
-                for (sync_ s : synclist) {
+                for (Sync s : synclist) {
                     grnums1.set(no,s.gr1);
                     grnums2.set(no,s.gr2);
                     no++;
