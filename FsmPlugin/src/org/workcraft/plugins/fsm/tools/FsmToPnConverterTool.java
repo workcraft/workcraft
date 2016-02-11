@@ -24,7 +24,7 @@ public class FsmToPnConverterTool extends ConversionTool {
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         MathModel mathModel = we.getModelEntry().getMathModel();
-        return (mathModel.getClass().equals(Fsm.class));
+        return mathModel.getClass().equals(Fsm.class);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class FsmToPnConverterTool extends ConversionTool {
         final Path<String> directory = we.getWorkspacePath().getParent();
         final String desiredName = we.getWorkspacePath().getNode();
         final ModelEntry me = new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
-        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
         workspace.add(directory, desiredName, me, false, openInEditor);
     }
 }

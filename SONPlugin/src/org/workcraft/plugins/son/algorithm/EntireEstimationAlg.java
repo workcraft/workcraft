@@ -146,7 +146,7 @@ public class EntireEstimationAlg extends EstimationAlg{
                     con.setTime(((Time)first).getEndTime());
                     con.setTimeLabelColor(color);
                 } else{
-                    if((!con.getTime().isSpecified())){
+                    if(!con.getTime().isSpecified()){
                         con.setTime(((Time)first).getEndTime());
                         con.setTimeLabelColor(color);
                         }

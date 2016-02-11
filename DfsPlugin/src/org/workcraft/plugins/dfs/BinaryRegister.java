@@ -35,11 +35,11 @@ public class BinaryRegister extends MathDelayNode {
     }
 
     public boolean isFalseMarked() {
-        return (this.marking == Marking.FALSE_TOKEN);
+        return this.marking == Marking.FALSE_TOKEN;
     }
 
     public boolean isTrueMarked() {
-        return (this.marking == Marking.TRUE_TOKEN);
+        return this.marking == Marking.TRUE_TOKEN;
     }
 
 }

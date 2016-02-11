@@ -72,7 +72,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
     @Override
     public boolean isApplicableTo(Model model) {
-        return (model instanceof Fsm);
+        return model instanceof Fsm;
     }
 
     @Override

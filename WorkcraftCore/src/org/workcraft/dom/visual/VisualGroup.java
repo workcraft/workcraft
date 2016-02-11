@@ -102,7 +102,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
     @Override
     public boolean getIsCollapsed() {
-        return (isCollapsed && !isExcited);
+        return isCollapsed && !isExcited;
     }
 
     @Override

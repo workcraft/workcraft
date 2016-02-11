@@ -107,7 +107,7 @@ public class Cycle implements Comparable<Cycle> {
             probability *= control.getReferencedControlRegister().getProbability();
         }
         double delay = ((MathDelayNode)component.getReferencedComponent()).getDelay();
-        return (delay * probability);
+        return delay * probability;
     }
 
     private double getMinDelay() {

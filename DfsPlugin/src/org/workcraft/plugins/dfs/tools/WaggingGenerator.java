@@ -184,7 +184,7 @@ public class WaggingGenerator {
             // create control registers
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos - 2.0, yPos + iPos * 2.0),
-                    (predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN), SynchronisationType.AND);
+                    predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
             reg0.getReferencedControlRegister().setProbability(1.0/count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos - 4.0, yPos + iPos * 2.0),
@@ -233,7 +233,7 @@ public class WaggingGenerator {
             // create control registers
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos + 2.0, yPos + iPos * 2.0),
-                    (predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN), SynchronisationType.AND);
+                    predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
             reg0.getReferencedControlRegister().setProbability(1.0/count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos + 4.0, yPos + iPos * 2.0),
@@ -271,34 +271,28 @@ public class WaggingGenerator {
     private void createGroups() {
         dfs.deleteSelection();
         // data components
-        {
-            ArrayList<Node> dataNodes = new ArrayList<Node>();
-            for (WaggingData waggingData: wagging) {
-                dataNodes.addAll(waggingData.dataComponents);
-                dataNodes.addAll(waggingData.pushRegisters);
-                dataNodes.addAll(waggingData.popRegisters);
-            }
-            dfs.select(dataNodes);
-            dfs.groupSelection();
+        ArrayList<Node> dataNodes = new ArrayList<Node>();
+        for (WaggingData waggingData: wagging) {
+            dataNodes.addAll(waggingData.dataComponents);
+            dataNodes.addAll(waggingData.pushRegisters);
+            dataNodes.addAll(waggingData.popRegisters);
         }
+        dfs.select(dataNodes);
+        dfs.groupSelection();
         // push control
-        {
-            ArrayList<Node> pushNodes = new ArrayList<Node>();
-            for (WaggingData waggingData: wagging) {
-                pushNodes.addAll(waggingData.pushControls);
-            }
-            dfs.select(pushNodes);
-            dfs.groupSelection();
+        ArrayList<Node> pushNodes = new ArrayList<Node>();
+        for (WaggingData waggingData: wagging) {
+            pushNodes.addAll(waggingData.pushControls);
         }
+        dfs.select(pushNodes);
+        dfs.groupSelection();
         // pop control
-        {
-            ArrayList<Node> popNodes = new ArrayList<Node>();
-            for (WaggingData waggingData: wagging) {
-                popNodes.addAll(waggingData.popControls);
-            }
-            dfs.select(popNodes);
-            dfs.groupSelection();
+        ArrayList<Node> popNodes = new ArrayList<Node>();
+        for (WaggingData waggingData: wagging) {
+            popNodes.addAll(waggingData.popControls);
         }
+        dfs.select(popNodes);
+        dfs.groupSelection();
     }
 
     private Rectangle2D getBoundingBox() {

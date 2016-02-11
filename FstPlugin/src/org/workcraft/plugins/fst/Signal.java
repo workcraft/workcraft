@@ -50,7 +50,7 @@ public class Signal extends Symbol {
     }
 
     public boolean hasDirection() {
-        return (getType() != Type.DUMMY);
+        return getType() != Type.DUMMY;
     }
 
 }

@@ -224,7 +224,7 @@ public class VisualCircuitComponent extends VisualComponent implements
                 new Func<VisualConnection, Boolean>() {
                     @Override
                     public Boolean eval(VisualConnection arg) {
-                        return (contactsHashSet.contains(arg.getFirst()) || contactsHashSet.contains(arg.getSecond()));
+                        return contactsHashSet.contains(arg.getFirst()) || contactsHashSet.contains(arg.getSecond());
                     }
                 });
         }
@@ -498,7 +498,7 @@ public class VisualCircuitComponent extends VisualComponent implements
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         Color colorisation = d.getColorisation();
-        Color color = (vc.isInput() ? inputColor : outputColor);
+        Color color = vc.isInput() ? inputColor : outputColor;
         g.setColor(Coloriser.colorise(color, colorisation));
 
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
@@ -536,7 +536,7 @@ public class VisualCircuitComponent extends VisualComponent implements
                 new Func<VisualContact, Boolean>() {
                     @Override
                     public Boolean eval(VisualContact arg) {
-                        return ((arg.getDirection() == Direction.WEST) || (arg.getDirection() == Direction.EAST));
+                        return (arg.getDirection() == Direction.WEST) || (arg.getDirection() == Direction.EAST);
                     }
                 })) {
             drawContactLabel(r, vc);
@@ -550,7 +550,7 @@ public class VisualCircuitComponent extends VisualComponent implements
                 new Func<VisualContact, Boolean>() {
                     @Override
                     public Boolean eval(VisualContact arg) {
-                        return ((arg.getDirection() == Direction.NORTH) || (arg.getDirection() == Direction.SOUTH));
+                        return (arg.getDirection() == Direction.NORTH) || (arg.getDirection() == Direction.SOUTH);
                     }
                 })) {
             drawContactLabel(r, vc);
@@ -682,7 +682,7 @@ public class VisualCircuitComponent extends VisualComponent implements
                 }
             }
         }
-        return (hitTest(point) ? this : null);
+        return hitTest(point) ? this : null;
     }
 
     @Override

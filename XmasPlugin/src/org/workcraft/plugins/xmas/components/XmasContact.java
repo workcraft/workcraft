@@ -70,11 +70,11 @@ public class XmasContact extends MathNode {
     }
 
     public boolean isInput() {
-        return (getIOType() == IOType.INPUT);
+        return getIOType() == IOType.INPUT;
     }
 
     public boolean isOutput() {
-        return (getIOType() == IOType.OUTPUT);
+        return getIOType() == IOType.OUTPUT;
     }
 
 }

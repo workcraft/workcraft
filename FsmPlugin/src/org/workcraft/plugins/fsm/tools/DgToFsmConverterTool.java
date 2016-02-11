@@ -22,7 +22,7 @@ public class DgToFsmConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return (we.getModelEntry().getMathModel() instanceof Graph);
+        return we.getModelEntry().getMathModel() instanceof Graph;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class DgToFsmConverterTool extends ConversionTool {
         final Path<String> directory = we.getWorkspacePath().getParent();
         final String desiredName = we.getWorkspacePath().getNode();
         final ModelEntry me = new ModelEntry(new FsmDescriptor(), converter.getDstModel());
-        boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
         workspace.add(directory, desiredName, me, false, openInEditor);
     }
 }

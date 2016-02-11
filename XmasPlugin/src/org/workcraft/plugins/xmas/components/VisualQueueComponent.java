@@ -109,12 +109,12 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
 
     private boolean isInitialised() {
-        return (getReferencedQueueComponent() != null);
+        return getReferencedQueueComponent() != null;
     }
 
     private double getSlotOffset(int i) {
         int capacity = getReferencedQueueComponent().getCapacity();
-        return (slotWidth * (i - 0.5 * (capacity - 1)));
+        return slotWidth * (i - 0.5 * (capacity - 1));
     }
 
     public Shape getSlotShape(int index) {

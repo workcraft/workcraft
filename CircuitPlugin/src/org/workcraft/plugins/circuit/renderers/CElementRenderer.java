@@ -105,7 +105,7 @@ public class CElementRenderer extends GateRenderer {
             isFirstNode = false;
             LinkedList<Pair<String,Boolean>> ret = new LinkedList<Pair<String,Boolean>>();
 
-            Pair<String,Boolean> vv = new Pair<String,Boolean>(variable.getLabel(), (doNegate)?!isNegated:isNegated);
+            Pair<String,Boolean> vv = new Pair<String,Boolean>(variable.getLabel(), doNegate?!isNegated:isNegated);
 
             ret.add(vv);
             return ret;

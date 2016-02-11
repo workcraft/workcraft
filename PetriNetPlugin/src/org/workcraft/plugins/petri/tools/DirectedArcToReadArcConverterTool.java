@@ -24,12 +24,12 @@ public class DirectedArcToReadArcConverterTool extends TransformationTool implem
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return (we.getModelEntry().getMathModel() instanceof PetriNetModel);
+        return we.getModelEntry().getMathModel() instanceof PetriNetModel;
     }
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return (PetriNetUtils.isVisualConsumingArc(node) || PetriNetUtils.isVisualProducingArc(node));
+        return PetriNetUtils.isVisualConsumingArc(node) || PetriNetUtils.isVisualProducingArc(node);
     }
 
     @Override

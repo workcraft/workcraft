@@ -507,7 +507,7 @@ public class VerilogImporter implements Importer {
         int index = 0;
         for (Pin verilogPin: verilogInstance.connections) {
             Wire wire = getOrCreateWire(verilogPin.netName, wires);
-            String pinName = (gate.isPrimititve() ? getPrimitiveGatePinName(index++) : verilogPin.name);
+            String pinName = gate.isPrimititve() ? getPrimitiveGatePinName(index++) : verilogPin.name;
             Node node = circuit.getNodeByReference(component, pinName);
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact)node;

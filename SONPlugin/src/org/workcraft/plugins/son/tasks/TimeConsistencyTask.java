@@ -169,7 +169,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
                 }
             }
 
-            str=(startResult?"":"start() ");
+            str=startResult?"":"start() ";
             str= str+(endResult?"":"end() ");
             str= str+(durResult?"":"duration() ");
             str= str+(cpResult.equals("")?"":cpResult);

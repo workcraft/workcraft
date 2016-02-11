@@ -131,15 +131,15 @@ public class DesktopApi {
         UNKNOWN;
 
         public boolean isLinux() {
-            return ((this == LINUX) || (this == SOLARIS));
+            return (this == LINUX) || (this == SOLARIS);
         }
 
         public boolean isMac() {
-            return (this == MACOS);
+            return this == MACOS;
         }
 
         public boolean isWindows() {
-            return (this == WINDOWS);
+            return this == WINDOWS;
         }
     }
 

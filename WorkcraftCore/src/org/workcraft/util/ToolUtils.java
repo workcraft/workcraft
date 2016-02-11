@@ -41,7 +41,7 @@ public class ToolUtils {
     }
 
     public static String getCommandWithSuffix(String name, String suffix) {
-        String extension = (name.endsWith(EXE_EXTENSION) ? EXE_EXTENSION : "");
+        String extension = name.endsWith(EXE_EXTENSION) ? EXE_EXTENSION : "";
         String prefix = name.substring(0, name.length() - extension.length());
         return prefix + suffix + extension;
     }

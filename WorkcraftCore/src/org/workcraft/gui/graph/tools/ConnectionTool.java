@@ -118,9 +118,9 @@ public class ConnectionTool extends AbstractTool {
     }
 
     public boolean isConnectable(Node node) {
-        return ( (node != null)
+        return (node != null)
               && !(node instanceof VisualConnection)
-              && !(node instanceof VisualComment) );
+              && !(node instanceof VisualComment);
     }
 
     @Override
@@ -311,7 +311,7 @@ public class ConnectionTool extends AbstractTool {
 
     @Override
     public String getHintMessage() {
-        return ((firstNode == null) ? getFirstHintMessage() : getSecondHintMessage());
+        return (firstNode == null) ? getFirstHintMessage() : getSecondHintMessage();
     }
 
     public String getFirstHintMessage() {

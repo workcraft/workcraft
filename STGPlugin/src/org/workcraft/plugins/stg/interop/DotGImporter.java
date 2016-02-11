@@ -40,8 +40,8 @@ public class DotGImporter implements Importer {
 
     @Override
     public boolean accept(File file) {
-        return (file.getName().endsWith(".g")
-                && FileUtils.fileContainsKeyword(file, GRAPH_KEYWORD));
+        return file.getName().endsWith(".g")
+                && FileUtils.fileContainsKeyword(file, GRAPH_KEYWORD);
     }
 
     @Override

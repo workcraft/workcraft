@@ -158,7 +158,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 final Path<String> directory = path.getParent();
                 final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-                boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+                boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
 
                 final Framework framework = Framework.getInstance();
                 final Workspace workspace = framework.getWorkspace();

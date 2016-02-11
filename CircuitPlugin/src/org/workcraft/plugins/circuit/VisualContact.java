@@ -207,7 +207,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
-        boolean inSimulationMode = ((d.getColorisation() != null) || (d.getBackground() != null));
+        boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         Color colorisation = d.getColorisation();
         Color fillColor = d.getBackground();
         if (fillColor == null) {
@@ -260,7 +260,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
     @Override
     public Color getNameColor() {
-        return (isInput() ? inputColor : outputColor);
+        return isInput() ? inputColor : outputColor;
     }
 
     @Override

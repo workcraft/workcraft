@@ -113,7 +113,7 @@ public class ExternalProcess {
     }
 
     public ExternalProcess(String[] array, File workingDir) {
-        this(array, (workingDir == null ? null : workingDir.getAbsolutePath()));
+        this(array, workingDir == null ? null : workingDir.getAbsolutePath());
     }
 
     private void outputData(byte[] data) {

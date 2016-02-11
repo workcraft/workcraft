@@ -181,7 +181,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         } else if (node instanceof VisualReplica) {
             component = ((VisualReplica)node).getMaster();
         }
-        return ((component == null) ? null : component.getReferencedComponent());
+        return (component == null) ? null : component.getReferencedComponent();
     }
 
 
@@ -469,7 +469,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     @Override
     public boolean isGroupable(Node node) {
-        return (node instanceof VisualNode);
+        return node instanceof VisualNode;
     }
 
     @Override
@@ -538,14 +538,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         deleteSelection(new Func<Node, Boolean>() {
             @Override
             public Boolean eval(Node node) {
-                return (node instanceof VisualConnection);
+                return node instanceof VisualConnection;
             }
         });
         // Remove selected replica nodes
         deleteSelection(new Func<Node, Boolean>() {
             @Override
             public Boolean eval(Node node) {
-                return (node instanceof Replica);
+                return node instanceof Replica;
             }
         });
         // Remove remaining selected nodes

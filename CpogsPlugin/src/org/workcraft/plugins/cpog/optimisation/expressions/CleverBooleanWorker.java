@@ -126,7 +126,7 @@ public class CleverBooleanWorker implements BooleanWorker {
                 return true;
             } else if (x.endsWith(op + y)) {
                 return true;
-            } else if (x.contains((op + y + op))) {
+            } else if (x.contains(op + y + op)) {
                 return true;
             }
         }

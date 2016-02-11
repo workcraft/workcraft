@@ -22,7 +22,7 @@ public class StgToFstConverterTool extends ConversionTool {
 
     @Override
     public String getDisplayName() {
-        return (binary ? "Finate State Transducer (binary-encoded) [Petrify]" : "Finate State Transducer (basic) [Petrify]");
+        return binary ? "Finate State Transducer (binary-encoded) [Petrify]" : "Finate State Transducer (basic) [Petrify]";
     }
 
     @Override

@@ -85,7 +85,7 @@ public class FormulaToGraphics {
             res = print(text.charAt(0), defaultFont.deriveFont(fontSize), fontRenderContext);
         }
 
-        int subIndex = (CpogSettings.getUseSubscript() ? text.lastIndexOf('_') : -1);
+        int subIndex = CpogSettings.getUseSubscript() ? text.lastIndexOf('_') : -1;
         if (subIndex < 0) subIndex = text.length();
 
         for(int i = 1; i < text.length(); i++) {

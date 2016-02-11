@@ -174,7 +174,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
                     Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
                     h = bb.getHeight();
                 }
-                double d = (firstPos.getY() - secondPos.getY());
+                double d = firstPos.getY() - secondPos.getY();
                 double dx = 1.0 - Math.abs(d);
                 if (dx < 0.0) dx = 0.0;
                 double dy = (d > 0) ? h - d : -h - d;

@@ -222,7 +222,7 @@ public class VisualCircuit extends AbstractVisualModel {
             Container vContainer = (Container)Hierarchy.getNearestAncestor(vParent, new Func<Node, Boolean>() {
                 @Override
                 public Boolean eval(Node node) {
-                    return ((node instanceof VisualGroup) || (node instanceof VisualPage));
+                    return (node instanceof VisualGroup) || (node instanceof VisualPage);
                 }
             });
             if (mConnection == null) {
@@ -292,7 +292,7 @@ public class VisualCircuit extends AbstractVisualModel {
     private WorkspaceEntry getWorkspaceEntry() {
         Framework framework = Framework.getInstance();
         GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-        return (editor == null ? null : editor.getWorkspaceEntry());
+        return editor == null ? null : editor.getWorkspaceEntry();
     }
 
     @NoAutoSerialisation
@@ -306,7 +306,7 @@ public class VisualCircuit extends AbstractVisualModel {
                 String filePath = file.getPath().replaceAll("\\\\", "/");
                 if (filePath.startsWith(basePath)) {
                     WorkspaceEntry we = getWorkspaceEntry();
-                    File newBase = (we == null ? null : we.getFile().getParentFile());
+                    File newBase = we == null ? null : we.getFile().getParentFile();
                     if (newBase != null) {
                         String relativePath = filePath.substring(basePath.length(),filePath.length());
                         while (relativePath.startsWith("/")) {

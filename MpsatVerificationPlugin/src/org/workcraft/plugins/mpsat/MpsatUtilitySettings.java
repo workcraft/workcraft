@@ -43,7 +43,7 @@ public class MpsatUtilitySettings implements Settings {
     private static final String keyPrintStderr= prefix + ".printStderr";
     private static final String keyDebugReach = prefix + ".debugReach";
 
-    private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat");
+    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat";
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;

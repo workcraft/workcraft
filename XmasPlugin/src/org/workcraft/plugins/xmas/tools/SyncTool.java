@@ -365,7 +365,7 @@ public class SyncTool implements Tool {
                     Collection<XmasContact> ccontacts = sc.getOutputs();
                     for(XmasContact contact_node_ : ccontacts) {
                         for (Connection c : cnet.getConnections(contact_node_)) {
-                            if((c.getSecond() instanceof XmasContact)) {
+                            if(c.getSecond() instanceof XmasContact) {
                                 Node cp_node = c.getSecond().getParent();
                                 System.out.println("  Found contact = " + cnet.getName(cp_node));
                                 //if(checksynclist(cnet.getName(cp_node))==1) {
@@ -482,7 +482,7 @@ public class SyncTool implements Tool {
                         }
                         for(XmasContact contact_node_ : ccontacts) {
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getSecond().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(checksynclist(cnet.getName(cp_node))==1) {
@@ -504,7 +504,7 @@ public class SyncTool implements Tool {
                         }
                         for(XmasContact contact_node_ : ccontacts) {
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getSecond().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(checksynclist(cnet.getName(cp_node))==1) {
@@ -527,7 +527,7 @@ public class SyncTool implements Tool {
                         for(XmasContact contact_node_ : ccontacts) {
                             int cno=0;
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getSecond().getParent();
                                     cno++;
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
@@ -553,7 +553,7 @@ public class SyncTool implements Tool {
                         for(XmasContact contact_node_ : ccontacts) {
                             int cno=0;
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getSecond().getParent();
                                     cno++;
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
@@ -579,7 +579,7 @@ public class SyncTool implements Tool {
                         for(XmasContact contact_node_ : ccontacts) {
                             int cno=0;
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getSecond().getParent();
                                     cno++;
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
@@ -606,7 +606,7 @@ public class SyncTool implements Tool {
                         }
                         for(XmasContact contact_node_ : ccontacts) {
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getFirst().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
@@ -631,7 +631,7 @@ public class SyncTool implements Tool {
                         }
                         for(XmasContact contact_node_ : ccontacts) {
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getFirst().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
@@ -656,7 +656,7 @@ public class SyncTool implements Tool {
                         for(XmasContact contact_node_ : ccontacts) {
                             int cno=0;
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getFirst().getParent();
                                     cno++;
                                     //System.out.println("  Found contact__ = " + cnet.getName(cp_node));
@@ -682,7 +682,7 @@ public class SyncTool implements Tool {
                         }
                         for(XmasContact contact_node_ : ccontacts) {
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getFirst().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {
@@ -706,7 +706,7 @@ public class SyncTool implements Tool {
                         }
                         for(XmasContact contact_node_ : ccontacts) {
                             for (Connection c : cnet.getConnections(contact_node_)) {
-                                if((c.getSecond() instanceof XmasContact)) {
+                                if(c.getSecond() instanceof XmasContact) {
                                     Node cp_node = c.getFirst().getParent();
                                     //System.out.println("  Found contact = " + cnet.getName(cp_node));
                                     if(cnet.getName(cp_node).contains("Sync") || cnet.getName(cp_node).contains("sync")) {

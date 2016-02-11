@@ -56,12 +56,12 @@ public class UniqueNameManager implements NameManager {
 
     @Override
     public boolean isNamed(Node node) {
-        return (nodes.getKey(node) != null);
+        return nodes.getKey(node) != null;
     }
 
     @Override
     public boolean isUnusedName(String name) {
-        return (getNode(name) == null);
+        return getNode(name) == null;
     }
 
     @Override

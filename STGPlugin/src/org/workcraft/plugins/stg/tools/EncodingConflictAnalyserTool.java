@@ -214,7 +214,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
                     VisualNamedTransition t = (VisualNamedTransition)node;
                     final String name = stg.getNodeMathReference(node);
                     if (selectedCores == null) {
-                        final Color color = ((density == null) ? null : density.getColor(name));
+                        final Color color = (density == null) ? null : density.getColor(name);
                         return new Decoration(){
                             @Override
                             public Color getColorisation() {
@@ -385,7 +385,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
     private final class HeightmapTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
-            return ((density == null) ? 0 : density.getPaletteSize());
+            return (density == null) ? 0 : density.getPaletteSize();
         }
 
         @Override

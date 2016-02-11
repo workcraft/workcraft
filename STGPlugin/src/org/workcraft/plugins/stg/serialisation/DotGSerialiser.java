@@ -223,7 +223,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
     @Override
     public boolean isApplicableTo(Model model) {
-        return ((model instanceof STGModel) || (model instanceof PetriNetModel));
+        return (model instanceof STGModel) || (model instanceof PetriNetModel);
     }
 
     @Override

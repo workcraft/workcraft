@@ -57,7 +57,7 @@ public class MpsatCscResolutionResultHandler implements Runnable {
             String name = fileName + "_resolved";
             ModelEntry me = new ModelEntry(new StgDescriptor(), model);
             Workspace workspace = framework.getWorkspace();
-            boolean openInEditor = (me.isVisual() || CommonEditorSettings.getOpenNonvisual());
+            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
             workspace.add(directory, name, me, true, openInEditor);
         }
     }

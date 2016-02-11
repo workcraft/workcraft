@@ -67,7 +67,7 @@ public class Fst extends Fsm {
         boolean result = false;
         if (symbol instanceof Signal) {
             Signal signal = (Signal)symbol;
-            result = (signal.getType() != Type.DUMMY);
+            result = signal.getType() != Type.DUMMY;
         } else {
             result = super.isDeterministicSymbol(symbol);
         }
@@ -112,7 +112,7 @@ public class Fst extends Fsm {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class, new Func<Signal, Boolean>() {
             @Override
             public Boolean eval(Signal arg) {
-                return ((arg != null) && (arg.getType() == type));
+                return (arg != null) && (arg.getType() == type);
             }
         });
     }

@@ -95,7 +95,7 @@ public class Fsm extends AbstractMathModel {
     }
 
     public boolean isDeterministicSymbol(Symbol symbol) {
-        return (symbol != null);
+        return symbol != null;
     }
 
     final public Collection<Event> getEvents() {
@@ -106,7 +106,7 @@ public class Fsm extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), Event.class, new Func<Event, Boolean>() {
             @Override
             public Boolean eval(Event arg) {
-                return (arg.getSymbol() == symbol);
+                return arg.getSymbol() == symbol;
             }
         });
     }

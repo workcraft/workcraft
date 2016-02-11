@@ -107,7 +107,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
                     outcome = Outcome.FAILED;
                 }
                 try {
-                    String out = (outFile.exists() ? FileUtils.readAllText(outFile) : "");
+                    String out = outFile.exists() ? FileUtils.readAllText(outFile) : "";
                     ByteArrayInputStream outStream = new ByteArrayInputStream(out.getBytes());
                     outStg = new DotGImporter().importSTG(outStream);
                 } catch (DeserialisationException e) {

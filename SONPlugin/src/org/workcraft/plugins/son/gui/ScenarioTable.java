@@ -80,7 +80,7 @@ public class ScenarioTable extends JTable{
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus,int row, int column) {
             if(value instanceof String)
-                label.setText(((String)value));
+                label.setText((String)value);
             else if(value instanceof ScenarioRef){
                 label.setText("Senario "+(row+1));
             } else

@@ -163,9 +163,9 @@ public class XmasSimulationTool extends StgSimulationTool {
                 if (node instanceof VisualXmasContact) {
                     final VisualXmasContact contact = (VisualXmasContact)node;
                     final ContactStg contactStg = generator.getContactStg(contact);
-                    final boolean isExcited = (getExcitedTransition(contactStg.rdy.getAllTransitions()) != null);
+                    final boolean isExcited = getExcitedTransition(contactStg.rdy.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isReady = (contactStg.rdy.zero.getReferencedPlace().getTokens() == 0);
+                    final boolean isReady = contactStg.rdy.zero.getReferencedPlace().getTokens() == 0;
 
                     return new Decoration() {
                         @Override
@@ -206,8 +206,8 @@ public class XmasSimulationTool extends StgSimulationTool {
                     final VisualXmasContact secondContact = (VisualXmasContact)connection.getSecond();
                     final ContactStg firstStg = generator.getContactStg(firstContact);
                     final ContactStg secondStg = generator.getContactStg(secondContact);
-                    final boolean firstReady = (firstStg.rdy.zero.getReferencedPlace().getTokens() == 0);
-                    final boolean secondReady = (secondStg.rdy.zero.getReferencedPlace().getTokens() == 0);
+                    final boolean firstReady = firstStg.rdy.zero.getReferencedPlace().getTokens() == 0;
+                    final boolean secondReady = secondStg.rdy.zero.getReferencedPlace().getTokens() == 0;
 
                     return new Decoration() {
                         @Override
@@ -231,9 +231,9 @@ public class XmasSimulationTool extends StgSimulationTool {
                     };
                 } else if (node instanceof VisualSourceComponent) {
                     final SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
-                    final boolean isExcited = (getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null);
+                    final boolean isExcited = getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isActive = (sourceStg.oracle.one.getReferencedPlace().getTokens() != 0);
+                    final boolean isActive = sourceStg.oracle.one.getReferencedPlace().getTokens() != 0;
 
                     return new StateDecoration() {
                         @Override
@@ -267,9 +267,9 @@ public class XmasSimulationTool extends StgSimulationTool {
                     };
                 } else if (node instanceof VisualSinkComponent) {
                     final SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent)node);
-                    final boolean isExcited = (getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null);
+                    final boolean isExcited = getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isActive = (sinkStg.oracle.one.getReferencedPlace().getTokens() != 0);
+                    final boolean isActive = sinkStg.oracle.one.getReferencedPlace().getTokens() != 0;
 
                     return new StateDecoration() {
                         @Override
@@ -303,9 +303,9 @@ public class XmasSimulationTool extends StgSimulationTool {
                     };
                 } else if (node instanceof VisualSwitchComponent) {
                     final SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent)node);
-                    final boolean isExcited = (getExcitedTransition(switchStg.oracle.getAllTransitions()) != null);
+                    final boolean isExcited = getExcitedTransition(switchStg.oracle.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isActive = (switchStg.oracle.one.getReferencedPlace().getTokens() != 0);
+                    final boolean isActive = switchStg.oracle.one.getReferencedPlace().getTokens() != 0;
 
                     return new StateDecoration() {
                         @Override
@@ -349,12 +349,12 @@ public class XmasSimulationTool extends StgSimulationTool {
                             int capacity = queue.getReferencedQueueComponent().getCapacity();
                             if ((i >= 0) && (i < capacity)) {
                                 SlotStg slot = queueStg.slotList.get(i);
-                                boolean isFull = (slot.mem.one.getReferencedPlace().getTokens() != 0);
-                                boolean isHead = (slot.hd.rdy.one.getReferencedPlace().getTokens() != 0);
-                                boolean isTail= (slot.tl.rdy.one.getReferencedPlace().getTokens() != 0);
-                                boolean isMemExcited = (getExcitedTransition(slot.mem.getAllTransitions()) != null);
-                                boolean isHeadExcited = (getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null);
-                                boolean isTailExcited = (getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null);
+                                boolean isFull = slot.mem.one.getReferencedPlace().getTokens() != 0;
+                                boolean isHead = slot.hd.rdy.one.getReferencedPlace().getTokens() != 0;
+                                boolean isTail= slot.tl.rdy.one.getReferencedPlace().getTokens() != 0;
+                                boolean isMemExcited = getExcitedTransition(slot.mem.getAllTransitions()) != null;
+                                boolean isHeadExcited = getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null;
+                                boolean isTailExcited = getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null;
                                 result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
                             }
                             return result;

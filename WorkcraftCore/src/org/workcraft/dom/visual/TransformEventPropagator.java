@@ -140,7 +140,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
     @Override
     public void notify(StateEvent e) {
         if (e instanceof TransformEvent)
-            propagate(((TransformEvent)e).getSender(), ((TransformEvent)e));
+            propagate(((TransformEvent)e).getSender(), (TransformEvent)e);
     }
 
     @Override

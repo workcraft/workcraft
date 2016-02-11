@@ -218,7 +218,7 @@ public class StructureVerifyDialog extends JDialog{
                     ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
                     Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
                     if(obj instanceof ONGroup)
-                        selectedGroups.add(((ONGroup)obj));
+                        selectedGroups.add((ONGroup)obj);
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
                 }
                 getList().repaint();

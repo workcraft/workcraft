@@ -30,7 +30,7 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return (node instanceof VisualReadArc);
+        return node instanceof VisualReadArc;
     }
 
     @Override

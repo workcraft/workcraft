@@ -122,38 +122,32 @@ public class ConnectionHelper {
         PartialCurveInfo curveInfo = polyline.getCurveInfo();
         Point2D startPos = polyline.getPointOnCurve(curveInfo.tStart);
         Point2D endPos = polyline.getPointOnCurve(curveInfo.tEnd);
-        {
-            // Forward filtering by distance
-            List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
-            filterControlPointsByDistance(polyline, startPos, controlPoints, distanceThreshold);
-        }
-        {
-            // Backward filtering by distance
-            List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
-            Collections.reverse(controlPoints);
-            filterControlPointsByDistance(polyline, endPos, controlPoints, distanceThreshold);
-        }
-        {
-            // Filtering by gradient
-            int i = 0;
-            while (i < polyline.getControlPointCount()) {
-                Point2D predPos = startPos;
-                if (i > 0) {
-                    ControlPoint pred = polyline.getControlPoint(i-1);
-                    predPos = pred.getPosition();
-                }
-                Point2D succPos = endPos;
-                if (i < polyline.getControlPointCount() - 1) {
-                    ControlPoint succ = polyline.getControlPoint(i+1);
-                    succPos = succ.getPosition();
-                }
-                ControlPoint cur = polyline.getControlPoint(i);
-                Point2D curPos = cur.getPosition();
-                if (Math.abs(clacGradient(predPos, curPos, succPos)) < gradientThreshold) {
-                    polyline.remove(cur);
-                } else {
-                    i++;
-                }
+        // Forward filtering by distance
+        List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
+        filterControlPointsByDistance(polyline, startPos, controlPoints, distanceThreshold);
+        // Backward filtering by distance
+        controlPoints = new LinkedList<>(polyline.getControlPoints());
+        Collections.reverse(controlPoints);
+        filterControlPointsByDistance(polyline, endPos, controlPoints, distanceThreshold);
+        // Filtering by gradient
+        int i = 0;
+        while (i < polyline.getControlPointCount()) {
+            Point2D predPos = startPos;
+            if (i > 0) {
+                ControlPoint pred = polyline.getControlPoint(i-1);
+                predPos = pred.getPosition();
+            }
+            Point2D succPos = endPos;
+            if (i < polyline.getControlPointCount() - 1) {
+                ControlPoint succ = polyline.getControlPoint(i+1);
+                succPos = succ.getPosition();
+            }
+            ControlPoint cur = polyline.getControlPoint(i);
+            Point2D curPos = cur.getPosition();
+            if (Math.abs(clacGradient(predPos, curPos, succPos)) < gradientThreshold) {
+                polyline.remove(cur);
+            } else {
+                i++;
             }
         }
     }
@@ -179,7 +173,7 @@ public class ConnectionHelper {
         double p2y = p2.getY();
         double p3x = p3.getX();
         double p3y = p3.getY();
-        double result = (p1x * (p2y - p3y) + p2x * (p3y - p1y) + p3x * (p1y - p2y));
+        double result = p1x * (p2y - p3y) + p2x * (p3y - p1y) + p3x * (p1y - p2y);
         return result;
     }
 

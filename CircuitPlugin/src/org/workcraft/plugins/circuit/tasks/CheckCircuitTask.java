@@ -72,7 +72,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             monitor.progressUpdate(0.05);
             VisualCircuit visualCircuit = (VisualCircuit)we.getModelEntry().getVisualModel();
             File envFile = visualCircuit.getEnvironmentFile();
-            boolean hasEnvironment = ((envFile != null) && envFile.exists());
+            boolean hasEnvironment = (envFile != null) && envFile.exists();
 
             String prefix = FileUtils.getTempPrefix(we.getTitle());
             directory = FileUtils.createTempDirectory(prefix);
@@ -338,7 +338,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
     private String getSuccessMessage(File environmentFile) {
         String message = "";
-        boolean hasEnvironment = ((environmentFile != null) && environmentFile.exists());
+        boolean hasEnvironment = (environmentFile != null) && environmentFile.exists();
         if (hasEnvironment) {
             message = "Under the given environment (" + environmentFile.getName() + ")";
         } else {

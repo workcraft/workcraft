@@ -96,7 +96,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             String refC = StgGenerator.nameC + dfs.getNodeMathReference(l) + StgGenerator.name1;
             Node nodeC = net.getNodeByReference(refC);
             if ((nodeC instanceof Place) && savedState.containsKey(nodeC)) {
-                boolean computed = (savedState.get(nodeC) > 0);
+                boolean computed = savedState.get(nodeC) > 0;
                 l.getReferencedLogic().setComputed(computed);
             }
         }
@@ -104,7 +104,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             String refM = StgGenerator.nameM + dfs.getNodeMathReference(r) + StgGenerator.name1;
             Node nodeM = net.getNodeByReference(refM);
             if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
-                boolean marked = (savedState.get(nodeM) > 0);
+                boolean marked = savedState.get(nodeM) > 0;
                 r.getReferencedRegister().setMarked(marked);
                 copyTokenColor(r, nodeM);
             }
@@ -113,13 +113,13 @@ public class DfsSimulationTool extends StgSimulationTool {
             String refFwC = StgGenerator.nameFwC + dfs.getNodeMathReference(l) + StgGenerator.name1;
             Node nodeFwC = net.getNodeByReference(refFwC);
             if ((nodeFwC instanceof Place) && savedState.containsKey(nodeFwC)) {
-                boolean forwardComputed = (savedState.get(nodeFwC) > 0);
+                boolean forwardComputed = savedState.get(nodeFwC) > 0;
                 l.getReferencedCounterflowLogic().setForwardComputed(forwardComputed);
             }
             String refBwC = StgGenerator.nameBwC + dfs.getNodeMathReference(l) + StgGenerator.name1;
             Node nodeBwC = net.getNodeByReference(refBwC);
             if ((nodeBwC instanceof Place) && savedState.containsKey(nodeBwC)) {
-                boolean backwardComputed = (savedState.get(nodeBwC) > 0);
+                boolean backwardComputed = savedState.get(nodeBwC) > 0;
                 l.getReferencedCounterflowLogic().setBackwardComputed(backwardComputed);
             }
         }
@@ -127,14 +127,14 @@ public class DfsSimulationTool extends StgSimulationTool {
             String refOrM = StgGenerator.nameOrM + dfs.getNodeMathReference(r) + StgGenerator.name1;
             Node nodeOrM = net.getNodeByReference(refOrM);
             if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
-                boolean orMarked = (savedState.get(nodeOrM) > 0);
+                boolean orMarked = savedState.get(nodeOrM) > 0;
                 r.getReferencedCounterflowRegister().setOrMarked(orMarked);
                 copyTokenColor(r, nodeOrM);
             }
             String refAndM = StgGenerator.nameAndM + dfs.getNodeMathReference(r) + StgGenerator.name1;
             Node nodeAndM = net.getNodeByReference(refAndM);
             if ((nodeAndM instanceof Place) && savedState.containsKey(nodeAndM)) {
-                boolean andMarked = (savedState.get(nodeAndM) > 0);
+                boolean andMarked = savedState.get(nodeAndM) > 0;
                 r.getReferencedCounterflowRegister().setAndMarked(andMarked);
                 copyTokenColor(r, nodeAndM);
             }
@@ -167,7 +167,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             new Func<Node, Boolean>() {
                 @Override
                 public Boolean eval(Node node) {
-                    return (getExcitedTransitionOfNode(node) != null);
+                    return getExcitedTransitionOfNode(node) != null;
                 }
             });
 
@@ -229,7 +229,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             @Override
             public Decoration getDecoration(Node node) {
                 Node transition = getTraceCurrentNode();
-                final boolean isExcited = (getExcitedTransitionOfNode(node) != null);
+                final boolean isExcited = getExcitedTransitionOfNode(node) != null;
                 final boolean isHighlighted = generator.isRelated(node, transition);
 
                 if (node instanceof VisualLogic) {
@@ -252,7 +252,7 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isComputed() {
-                            return (lstg.C0.getReferencedPlace().getTokens() == 0);
+                            return lstg.C0.getReferencedPlace().getTokens() == 0;
                         }
                     };
                 }
@@ -277,12 +277,12 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isMarked() {
-                            return (rstg.M0.getReferencedPlace().getTokens() == 0);
+                            return rstg.M0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isExcited() {
-                            return (getExcitedTransitionOfCollection(Arrays.asList(rstg.MR, rstg.MF)) != null);
+                            return getExcitedTransitionOfCollection(Arrays.asList(rstg.MR, rstg.MF)) != null;
                         }
 
                         @Override
@@ -312,22 +312,22 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isForwardComputed() {
-                            return (lstg.fwC0.getReferencedPlace().getTokens() == 0);
+                            return lstg.fwC0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isBackwardComputed() {
-                            return (lstg.bwC0.getReferencedPlace().getTokens() == 0);
+                            return lstg.bwC0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isForwardComputedExcited() {
-                            return (getExcitedTransitionOfCollection(lstg.getForwardTransitions()) != null);
+                            return getExcitedTransitionOfCollection(lstg.getForwardTransitions()) != null;
                         }
 
                         @Override
                         public boolean isBackwardComputedExcited() {
-                            return (getExcitedTransitionOfCollection(lstg.getBackwardTransitions()) != null);
+                            return getExcitedTransitionOfCollection(lstg.getBackwardTransitions()) != null;
                         }
                     };
                 }
@@ -352,32 +352,32 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isForwardExcited() {
-                            return (getExcitedTransitionOfCollection(rstg.getForwardTransitions()) != null);
+                            return getExcitedTransitionOfCollection(rstg.getForwardTransitions()) != null;
                         }
 
                         @Override
                         public boolean isBackwardExcited() {
-                            return (getExcitedTransitionOfCollection(rstg.getBackwardTransitions()) != null);
+                            return getExcitedTransitionOfCollection(rstg.getBackwardTransitions()) != null;
                         }
 
                         @Override
                         public boolean isOrMarked() {
-                            return (rstg.orM0.getReferencedPlace().getTokens() == 0);
+                            return rstg.orM0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isAndMarked() {
-                            return (rstg.andM0.getReferencedPlace().getTokens() == 0);
+                            return rstg.andM0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isOrExcited() {
-                            return (getExcitedTransitionOfCollection(rstg.getOrTransitions()) != null);
+                            return getExcitedTransitionOfCollection(rstg.getOrTransitions()) != null;
                         }
 
                         @Override
                         public boolean isAndExcited() {
-                            return (getExcitedTransitionOfCollection(rstg.getAndTransitions()) != null);
+                            return getExcitedTransitionOfCollection(rstg.getAndTransitions()) != null;
                         }
 
                         @Override
@@ -417,22 +417,22 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isTrueMarked() {
-                            return (rstg.tM0.getReferencedPlace().getTokens() == 0);
+                            return rstg.tM0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isTrueExcited() {
-                            return (getExcitedTransitionOfCollection(rstg.getTrueTransitions()) != null);
+                            return getExcitedTransitionOfCollection(rstg.getTrueTransitions()) != null;
                         }
 
                         @Override
                         public boolean isFalseMarked() {
-                            return (rstg.fM0.getReferencedPlace().getTokens() == 0);
+                            return rstg.fM0.getReferencedPlace().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isFalseExcited() {
-                            return (getExcitedTransitionOfCollection(rstg.getFalseTransitions()) != null);
+                            return getExcitedTransitionOfCollection(rstg.getFalseTransitions()) != null;
                         }
 
                         @Override

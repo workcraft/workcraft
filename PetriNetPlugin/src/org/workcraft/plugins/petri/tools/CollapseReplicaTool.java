@@ -27,7 +27,7 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return (node instanceof VisualReplicaPlace);
+        return node instanceof VisualReplicaPlace;
     }
 
     @Override

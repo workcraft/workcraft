@@ -98,7 +98,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
     @Override
     public BooleanFormula visit(BooleanVariable node) {
         BooleanFormula replacement = map.get(node);
-        return (replacement != null ? replacement : node);
+        return replacement != null ? replacement : node;
     }
 
     @Override

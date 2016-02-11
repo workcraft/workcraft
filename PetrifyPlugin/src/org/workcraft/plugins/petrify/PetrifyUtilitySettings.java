@@ -40,7 +40,7 @@ public class PetrifyUtilitySettings implements Settings {
     private static final String keyPrintStdout= prefix + ".printStdout";
     private static final String keyPrintStderr= prefix + ".printStderr";
 
-    private static final String defaultCommand = (DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify");
+    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify";
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
     private static final Boolean defaultPrintStdout = true;

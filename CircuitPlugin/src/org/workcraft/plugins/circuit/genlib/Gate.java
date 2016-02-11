@@ -14,7 +14,7 @@ public class Gate {
     }
 
     public boolean isSequential() {
-        return (seq != null);
+        return seq != null;
     }
 
     public boolean isPrimititve() {

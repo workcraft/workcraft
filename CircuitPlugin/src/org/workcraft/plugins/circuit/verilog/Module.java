@@ -22,7 +22,7 @@ public class Module {
     }
 
     public boolean isEmpty() {
-        return (assigns.isEmpty() && instances.isEmpty());
+        return assigns.isEmpty() && instances.isEmpty();
     }
 
 }

@@ -29,7 +29,7 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
         if (node instanceof VisualSignalTransition) {
             VisualSignalTransition signalTransition = (VisualSignalTransition)node;
             Type signalType = signalTransition.getSignalType();
-            return ((signalType == Type.INPUT) || (signalType == Type.OUTPUT));
+            return (signalType == Type.INPUT) || (signalType == Type.OUTPUT);
         }
         return false;
     }

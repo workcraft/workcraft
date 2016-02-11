@@ -260,9 +260,9 @@ public class CircuitToStgConverter {
 
     private void createSignalStgTransitions(VisualContact driver, Dnf dnf, Direction direction) {
         SignalStg driverStg = driverToStgMap.getValue(driver);
-        VisualPlace predPlace = (direction == Direction.PLUS ? driverStg.zero : driverStg.one);
-        VisualPlace succPlace = (direction == Direction.PLUS ? driverStg.one : driverStg.zero);
-        Collection<VisualSignalTransition> transitions = (direction == Direction.PLUS ? driverStg.riseList : driverStg.fallList);
+        VisualPlace predPlace = direction == Direction.PLUS ? driverStg.zero : driverStg.one;
+        VisualPlace succPlace = direction == Direction.PLUS ? driverStg.one : driverStg.zero;
+        Collection<VisualSignalTransition> transitions = direction == Direction.PLUS ? driverStg.riseList : driverStg.fallList;
 
         TreeSet<DnfClause> clauses = new TreeSet<DnfClause>(
                 new Comparator<DnfClause>() {
@@ -296,7 +296,7 @@ public class CircuitToStgConverter {
                 if (sourceDriverStg == null) {
                     throw new RuntimeException("No source for '" + circuit.getMathName(sourceContact) + "' while generating '" + signalName + "'.");
                 }
-                VisualPlace place = ((literal.getNegation() != sourceInversion) ? sourceDriverStg.zero : sourceDriverStg.one);
+                VisualPlace place = (literal.getNegation() != sourceInversion) ? sourceDriverStg.zero : sourceDriverStg.one;
                 if (place != predPlace) {
                     // 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
                     placesToRead.add(place);

@@ -511,7 +511,7 @@ public class MainMenu extends JMenuBar {
     }
 
     public static boolean isPromotedSection(String section) {
-        return ((section != null) && section.startsWith(MENU_SECTION_PROMOTED_PREFIX));
+        return (section != null) && section.startsWith(MENU_SECTION_PROMOTED_PREFIX);
     }
 
     public static String getMenuNameFromSection(String section) {

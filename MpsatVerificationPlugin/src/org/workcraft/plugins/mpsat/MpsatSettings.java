@@ -194,7 +194,7 @@ public class MpsatSettings {
                     reachFile = File.createTempFile(PROPERTY_FILE_PREFIX, PROPERTY_FILE_EXTENTION);
                     reachFile.deleteOnExit();
                 } else {
-                    String prefix = (name == null ? PROPERTY_FILE_PREFIX : PROPERTY_FILE_PREFIX + "-" + name.replaceAll("\\s", "_"));
+                    String prefix = name == null ? PROPERTY_FILE_PREFIX : PROPERTY_FILE_PREFIX + "-" + name.replaceAll("\\s", "_");
                     reachFile = new File(workingDirectory, prefix + PROPERTY_FILE_EXTENTION);
                 }
                 FileUtils.dumpString(reachFile, getReach());

@@ -1,4 +1,4 @@
- package org.workcraft.plugins.son.elements;
+package org.workcraft.plugins.son.elements;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -31,15 +31,13 @@ public class VisualChannelPlace extends VisualPlaceNode{
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
-        {
-            double s = size-strokeWidth;
-            Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
-            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-            g.fill(shape);
-            g.setStroke(new BasicStroke(strokeWidth));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-            g.draw(shape);
-        }
+        double s = size-strokeWidth;
+        Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
+        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+        g.fill(shape);
+        g.setStroke(new BasicStroke(strokeWidth));
+        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+        g.draw(shape);
 
         drawToken(r);
         drawErrorInLocalSpace(r);

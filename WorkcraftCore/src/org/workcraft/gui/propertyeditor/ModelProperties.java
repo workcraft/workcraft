@@ -61,7 +61,7 @@ public class ModelProperties implements Properties {
             Collections.sort(sortedDescriptors, new Comparator<PropertyDescriptor>() {
                 @Override
                 public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {
-                    return (o1.getName().compareTo(o2.getName()));
+                    return o1.getName().compareTo(o2.getName());
                 }
             });
             propertyDescriptors.addAll(sortedDescriptors);

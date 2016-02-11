@@ -26,7 +26,7 @@ public class Trace extends ArrayList<StepRef>{
     }
 
     public boolean canProgress() {
-        return (!isEmpty() && (position < size()));
+        return !isEmpty() && (position < size());
     }
 
     public StepRef getCurrent() {

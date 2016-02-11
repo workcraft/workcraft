@@ -29,7 +29,7 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return (node instanceof VisualDummyTransition);
+        return node instanceof VisualDummyTransition;
     }
 
     @Override

@@ -213,9 +213,9 @@ public class CycleAnalyserTool extends AbstractTool {
                 if (node instanceof VisualDelayComponent) {
                     if (selectedCycle == null) {
                         double delay = ((VisualDelayComponent)node).getReferencedDelayComponent().getDelay();
-                        double range = (maxDelay - minDelay);
-                        double offset = (delay - minDelay);
-                        final Color fgColor = ((range > 0 &&  offset > 0.8 * range) ? Color.RED : null);
+                        double range = maxDelay - minDelay;
+                        double offset = delay - minDelay;
+                        final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
                         return new Decoration(){
                             @Override
                             public Color getColorisation() {
@@ -228,13 +228,13 @@ public class CycleAnalyserTool extends AbstractTool {
                         };
                     } else if (selectedCycle.components.contains(node)) {
                         double delay = selectedCycle.getEffectiveDelay((VisualDelayComponent)node);
-                        double range = (selectedCycle.maxDelay - selectedCycle.minDelay);
-                        double offset = (delay - selectedCycle.minDelay);
+                        double range = selectedCycle.maxDelay - selectedCycle.minDelay;
+                        double offset = delay - selectedCycle.minDelay;
                         int bgIintencity = 150;
                         if (range > 0) {
                             bgIintencity = (int)(bgIintencity + (255 - bgIintencity) * offset / range);
                         }
-                        final Color fgColor = ((range > 0 &&  offset > 0.8 * range) ? Color.RED : null);
+                        final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
                         final Color bgColor = new Color(bgIintencity, 0, 0);
                         return new Decoration(){
                             @Override

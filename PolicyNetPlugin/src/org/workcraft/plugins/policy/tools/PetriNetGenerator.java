@@ -215,7 +215,7 @@ public class PetriNetGenerator {
                 }
             }
         } else if (highLevelNode instanceof VisualPlace) {
-            result = (node == getRelatedPlace((VisualPlace)highLevelNode));
+            result = node == getRelatedPlace((VisualPlace)highLevelNode);
         }
         return result;
     }

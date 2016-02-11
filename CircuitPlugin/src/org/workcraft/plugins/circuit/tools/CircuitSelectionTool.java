@@ -36,55 +36,47 @@ public class CircuitSelectionTool extends SelectionTool {
                 popup = new JPopupMenu();
                 popup.setFocusable(false);
             }
-            {
-                JMenuItem addOutputMenuItem = new JMenuItem("Add output (EAST)");
-                addOutputMenuItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        editor.getWorkspaceEntry().saveMemento();
-                        VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-                        vcircuit.getOrCreateContact(component, null, IOType.OUTPUT);
-                        component.setContactsDefaultPosition();
-                    }
-                });
-                popup.add(addOutputMenuItem);
-            }
-            {
-                JMenuItem addInputMenuItem = new JMenuItem("Add input (WEST)");
-                addInputMenuItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        editor.getWorkspaceEntry().saveMemento();
-                        VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
-                        vcircuit.getOrCreateContact(component, null, IOType.INPUT);
-                        component.setContactsDefaultPosition();
-                    }
-                });
-                popup.add(addInputMenuItem);
-            }
+            JMenuItem addOutputMenuItem = new JMenuItem("Add output (EAST)");
+            addOutputMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    editor.getWorkspaceEntry().saveMemento();
+                    VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+                    vcircuit.getOrCreateContact(component, null, IOType.OUTPUT);
+                    component.setContactsDefaultPosition();
+                }
+            });
+            popup.add(addOutputMenuItem);
+            JMenuItem addInputMenuItem = new JMenuItem("Add input (WEST)");
+            addInputMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    editor.getWorkspaceEntry().saveMemento();
+                    VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+                    vcircuit.getOrCreateContact(component, null, IOType.INPUT);
+                    component.setContactsDefaultPosition();
+                }
+            });
+            popup.add(addInputMenuItem);
             popup.addSeparator();
-            {
-                JMenuItem defaultContactPositionMenuItem = new JMenuItem("Set contacts in default position");
-                defaultContactPositionMenuItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        editor.getWorkspaceEntry().saveMemento();
-                        component.setContactsDefaultPosition();
-                    }
-                });
-                popup.add(defaultContactPositionMenuItem);
-            }
-            {
-                JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
-                centerPivotPointMenuItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        editor.getWorkspaceEntry().saveMemento();
-                        component.centerPivotPoint();
-                    }
-                });
-                popup.add(centerPivotPointMenuItem);
-            }
+            JMenuItem defaultContactPositionMenuItem = new JMenuItem("Set contacts in default position");
+            defaultContactPositionMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    editor.getWorkspaceEntry().saveMemento();
+                    component.setContactsDefaultPosition();
+                }
+            });
+            popup.add(defaultContactPositionMenuItem);
+            JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
+            centerPivotPointMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    editor.getWorkspaceEntry().saveMemento();
+                    component.centerPivotPoint();
+                }
+            });
+            popup.add(centerPivotPointMenuItem);
         }
         return popup;
     }
