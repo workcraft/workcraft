@@ -21,6 +21,7 @@ subprojects {
         main {
             java {
                 srcDir 'src'
+                srcDir 'src-gen'
             }
             resources {
                 srcDir 'res'
@@ -28,8 +29,9 @@ subprojects {
         }
     }
 
-    compileJjtree {
+    compileJavacc {
         inputDirectory = file('javacc')
+        outputDirectory = file('src-gen')
         include '**/*.jj'
         arguments = [grammar_encoding: 'UTF-8', static: 'false']
     }
@@ -45,4 +47,5 @@ subprojects {
         toolVersion = "6.15"
         configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
+    checkstyleMain.source = 'src'
 }
