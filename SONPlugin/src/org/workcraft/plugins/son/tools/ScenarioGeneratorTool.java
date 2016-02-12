@@ -84,8 +84,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
         super.createInterfacePanel(editor);
 
         //workcraft invoke this method before activate method
-        visualNet = (VisualSON)editor.getModel();
-        net = (SON)visualNet.getMathModel();
+        visualNet = (VisualSON) editor.getModel();
+        net = (SON) visualNet.getMathModel();
         net.refreshAllColor();
 
         startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-start.svg"), "Generate");
@@ -95,8 +95,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
         importButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-import.svg"), "Import scenarios");
         exportButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/son-scenario-export.svg"), "Export scenarios");
 
-        int buttonWidth = (int)Math.round(startButton.getPreferredSize().getWidth() + 5);
-        int buttonHeight = (int)Math.round(startButton.getPreferredSize().getHeight() + 5);
+        int buttonWidth = (int) Math.round(startButton.getPreferredSize().getWidth() + 5);
+        int buttonHeight = (int) Math.round(startButton.getPreferredSize().getHeight() + 5);
         Dimension panelSize = new Dimension(buttonWidth * 6, buttonHeight);
 
         controlPanel = new JPanel();
@@ -200,7 +200,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
                         startButton.setSelected(false);
                         scenarioTable.setIsCellColor(true);
                         scenarioRef.clear();
-                        scenarioRef.addAll(((ScenarioRef)obj).getNodeRefs(net));
+                        scenarioRef.addAll(((ScenarioRef) obj).getNodeRefs(net));
                         updateState(editor);
                         scenarioTable.runtimeUpdateColor();
                     }
@@ -368,9 +368,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool{
             for(SONConnection con : net.getSONConnections(e)){
                 if(con.getSemantics() == Semantics.ASYNLINE || con.getSemantics() == Semantics.SYNCLINE){
                     if(con.getFirst() == e)
-                        result.add((ChannelPlace)con.getSecond());
+                        result.add((ChannelPlace) con.getSecond());
                     else
-                        result.add((ChannelPlace)con.getFirst());
+                        result.add((ChannelPlace) con.getFirst());
                 }
             }
         }

@@ -21,7 +21,7 @@ public class CompatibilityManager {
     private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
     @SuppressWarnings("serial")
-    private class CompatibilityMap extends HashMap<String, String> { };
+    private class CompatibilityMap extends HashMap<String, String> { }
 
     private final CompatibilityMap metaCompatibilityMap = new CompatibilityMap();
     private final CompatibilityMap modelCompatibilityMap = new CompatibilityMap();

@@ -77,7 +77,7 @@ public class SatBasedSolver {
     }
 
     public void run(WorkspaceEntry we) {
-        VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+        VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
         ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
         ArrayList<String> check;
 
@@ -97,7 +97,7 @@ public class SatBasedSolver {
         // construct constraints
         char[][][] constraints = new char[m][n][n];
         int[][] graph = new int[n][n];
-        check = cpogBuilder.constructConstraints(constraints,graph,m,n,
+        check = cpogBuilder.constructConstraints(constraints, graph, m, n,
                 scenarios, events, positions, count);
         if(check.get(0).contains("ERROR")){
             JOptionPane.showMessageDialog(null,
@@ -181,7 +181,7 @@ public class SatBasedSolver {
         // group similar constraints
         HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
         HashMap<String, Integer> task = new HashMap<String, Integer>();
-        cpogBuilder.groupConstraints(n,m,constraints,task);
+        cpogBuilder.groupConstraints(n, m, constraints, task);
 
         char[][] matrix = new char[m][task.size()];
 
@@ -301,8 +301,8 @@ public class SatBasedSolver {
                 if(!modBitFlag.isEmpty()) parameters.add(modBitFlag);
                 if(!modBit.isEmpty()) parameters.add(modBit);
 
-                if(cpogBuilder.callingScenco(process,settings,parameters,Double.MAX_VALUE, we, 0,
-                        false, optEnc,optFormulaeVertices,truthTableVertices,
+                if(cpogBuilder.callingScenco(process, settings, parameters, Double.MAX_VALUE, we, 0,
+                        false, optEnc, optFormulaeVertices, truthTableVertices,
                         optVertices, optSources, optDests, optFormulaeArcs,
                         truthTableArcs, arcNames, this) != 0){
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
@@ -324,17 +324,16 @@ public class SatBasedSolver {
                 System.out.println("Error: " + e);
             }
 
-
             // CREATE RESULT PART
             VisualScenario resultCpog = cpog.createVisualScenario();
             resultCpog.setLabel("Composition");
             VisualVertex[] vertices = new VisualVertex[n];
 
-            cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,
+            cpogBuilder.instantiateEncoding(m, freeVariables, scenarios, vars, encoding, pr,
                     events, vertices, cpog, resultCpog, positions, count, formulaeName);
 
             // Building CPOG
-            cpogBuilder.buildCpog(n,m, constraints, cpog, vertices, formulaeName);
+            cpogBuilder.buildCpog(n, m, constraints, cpog, vertices, formulaeName);
 
             we.saveMemento();
         }finally{
@@ -381,7 +380,6 @@ public class SatBasedSolver {
         v=0;
         a=0;
     }
-
 
     public void setV(int v) {
         this.v = v;

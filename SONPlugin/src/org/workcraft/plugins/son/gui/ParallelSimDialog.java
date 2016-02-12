@@ -107,7 +107,7 @@ public class ParallelSimDialog  extends JDialog{
                 boolean isSelected, boolean hasFocus) {
 
             setEnabled(list.isEnabled());
-            setSelected(((EventItem)value).isSelected());
+            setSelected(((EventItem) value).isSelected());
             setFont(list.getFont());
 
             setBackground(list.getBackground());
@@ -129,7 +129,6 @@ public class ParallelSimDialog  extends JDialog{
             listModel.addElement(item);
         }
 
-
         eventList = new JList(listModel);
         eventList.setCellRenderer(new CheckListRenderer());
         eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -140,12 +139,12 @@ public class ParallelSimDialog  extends JDialog{
 
                 int index = list.locationToIndex(event.getPoint());
                 try{
-                    EventItem item = (EventItem)list.getModel().getElementAt(index);
+                    EventItem item = (EventItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
                     ArrayList<EventItem> itemList = new ArrayList<EventItem>();
                     for(int i=0; i<list.getModel().getSize(); i++){
-                        itemList.add((EventItem)list.getModel().getElementAt(i));
+                        itemList.add((EventItem) list.getModel().getElementAt(i));
                     }
 
                     if(item instanceof EventItem){
@@ -172,7 +171,7 @@ public class ParallelSimDialog  extends JDialog{
 
                             Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
 
-                                //unselected related synchronous events.
+                            //unselected related synchronous events.
                             for(TransitionNode e : minFire){
                                 for(EventItem eventItem : itemList){
                                     if(e==eventItem.getEvent()){
@@ -191,7 +190,7 @@ public class ParallelSimDialog  extends JDialog{
                     }
                 }catch (ArrayIndexOutOfBoundsException e){}
             }
-    });
+        });
 
         eventList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane listScroller = new JScrollPane(eventList);
@@ -291,16 +290,16 @@ public class ParallelSimDialog  extends JDialog{
 
         interfacePanel = new JPanel(new BorderLayout(10, 10));
         interfacePanel.add(eventInfoPanel, BorderLayout.NORTH);
-        interfacePanel.add(eventPanel,BorderLayout.CENTER);
+        interfacePanel.add(eventPanel, BorderLayout.CENTER);
         interfacePanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         this.add(interfacePanel);
         this.pack();
 
         this.addWindowListener(new WindowAdapter() {
-          public void windowClosing(WindowEvent e) {
-              getSONModel().refreshAllColor();
-          }
+            public void windowClosing(WindowEvent e) {
+                getSONModel().refreshAllColor();
+            }
         });
 
         this.addWindowFocusListener(new WindowFocusListener() {

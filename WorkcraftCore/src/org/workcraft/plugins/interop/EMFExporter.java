@@ -43,7 +43,6 @@ import org.workcraft.serialisation.Format;
 
 public class EMFExporter implements Exporter {
 
-
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         InputStream svg = SVGExportUtils.stream(model);
 
@@ -58,7 +57,7 @@ public class EMFExporter implements Exporter {
                 GraphicsNode rootNode = gvtBuilder.build(bridgeContext, svgDocument);
 
                 Rectangle2D bounds = rootNode.getBounds();
-                Dimension size = new Dimension((int)bounds.getWidth(), (int)bounds.getHeight());
+                Dimension size = new Dimension((int) bounds.getWidth(), (int) bounds.getHeight());
                 // FIXME: freehep SVG2EMF converter does not seem to produce good results
 //                EMFGraphics2D eg2d = new EMFGraphics2D(out, size);
 //                eg2d.startExport();

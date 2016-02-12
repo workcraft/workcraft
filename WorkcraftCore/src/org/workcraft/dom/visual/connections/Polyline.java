@@ -50,7 +50,7 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 public class Polyline implements ConnectionGraphic, Container, StateObserver,
-    HierarchyObserver, ObservableHierarchy, SelectionObserver {
+        HierarchyObserver, ObservableHierarchy, SelectionObserver {
 
     private ArbitraryInsertionGroupImpl groupImpl;
     protected VisualConnectionProperties connectionInfo;
@@ -61,7 +61,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     public Polyline(VisualConnection parent) {
         groupImpl = new ArbitraryInsertionGroupImpl(this);
         groupImpl.setParent(parent);
-        groupImpl.addObserver((HierarchyObserver)this);
+        groupImpl.addObserver((HierarchyObserver) this);
         connectionInfo = parent;
     }
 
@@ -145,7 +145,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         double l = 1.0 / segments;
         double tl = t/l;
 
-        int n = (int)Math.floor(tl);
+        int n = (int) Math.floor(tl);
         if (n==segments) n -= 1;
         return n;
     }
@@ -153,7 +153,6 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     private double getParameterOnSegment(double t, int segmentIndex) {
         return t * getSegmentCount() - segmentIndex;
     }
-
 
     public int getNearestSegment(Point2D pt, Point2D outPointOnSegment) {
         double min = Double.MAX_VALUE;
@@ -178,7 +177,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
                     magAonB = magB;
                 }
                 a.setLocation(segment.getX1() + b.getX() * magAonB, segment.getY1() + b.getY() * magAonB);
-                dist = new Point2D.Double(pt.getX() - a.getX(), pt.getY() - a.getY()).distance(0,0);
+                dist = new Point2D.Double(pt.getX() - a.getX(), pt.getY() - a.getY()).distance(0, 0);
             }
 
             if (dist < min) {
@@ -217,7 +216,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     @SuppressWarnings("unchecked")
     @Override
     public List<ControlPoint> getControlPoints() {
-        return Collections.unmodifiableList((List)getChildren());
+        return Collections.unmodifiableList((List) getChildren());
     }
 
     public ControlPoint getControlPoint(int index) {
@@ -390,13 +389,13 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         if (e instanceof NodesDeletingEvent)
             for (Node n : e.getAffectedNodes())
                 if (n instanceof ControlPoint) {
-                    ControlPoint cp = (ControlPoint)n;
+                    ControlPoint cp = (ControlPoint) n;
                     cp.removeObserver(this);
-            }
+                }
         if (e instanceof NodesAddedEvent)
             for (Node n : e.getAffectedNodes())
                 if (n instanceof ControlPoint) {
-                    ControlPoint cp = (ControlPoint)n;
+                    ControlPoint cp = (ControlPoint) n;
                     cp.addObserver(this);
                 }
 
@@ -413,7 +412,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
             }
         }
         for (Node n : getChildren()) {
-            ((ControlPoint)n).setHidden(!controlsVisible);
+            ((ControlPoint) n).setHidden(!controlsVisible);
         }
     }
 

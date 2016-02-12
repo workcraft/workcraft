@@ -49,7 +49,7 @@ public class StgSelectionTool extends SelectionTool {
                         processed = true;
                     }
                 } else if (node instanceof VisualNamedTransition) {
-                    VisualNamedTransition transition = (VisualNamedTransition)node;
+                    VisualNamedTransition transition = (VisualNamedTransition) node;
                     editNameInPlace(editor, transition, transition.getName());
                     processed = true;
                 }
@@ -76,7 +76,7 @@ public class StgSelectionTool extends SelectionTool {
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
         Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
         Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
-        float fontSize = VisualNamedTransition.font.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+        float fontSize = VisualNamedTransition.font.getSize2D() * (float) editor.getViewport().getTransform().getScaleY();
         text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
         text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
         text.setHorizontalAlignment(JTextField.CENTER);
@@ -104,7 +104,7 @@ public class StgSelectionTool extends SelectionTool {
             }
         });
 
-        final STG model = (STG)editor.getModel().getMathModel();
+        final STG model = (STG) editor.getModel().getMathModel();
         text.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {

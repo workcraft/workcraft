@@ -26,8 +26,8 @@ public class LegacyDefaultCpogSolver<T> implements LegacyCpogSolver {
 
     public LegacyDefaultCpogSolver(CpogSATProblemGenerator<? extends T> problemGenerator,
             RawCnfGenerator<? super T> simpleCnfTaskProvider) {
-                this.problemGenerator = problemGenerator;
-                this.cnfConverter = simpleCnfTaskProvider;
+        this.problemGenerator = problemGenerator;
+        this.cnfConverter = simpleCnfTaskProvider;
     }
 
     @Override

@@ -55,7 +55,7 @@ public class FstSimulationTool extends StgSimulationTool {
 
     @Override
     public VisualModel getUnderlyingModel(VisualModel model) {
-        final VisualFst fst = (VisualFst)model;
+        final VisualFst fst = (VisualFst) model;
         final VisualSTG stg = new VisualSTG(new STG());
         generator = new FstToStgConverter(fst, stg);
         return generator.getDstModel();
@@ -69,12 +69,12 @@ public class FstSimulationTool extends StgSimulationTool {
         MathModel model = editor.getModel().getMathModel();
         if (model instanceof Fst) {
             editor.getWorkspaceEntry().saveMemento();
-            Fst fst = (Fst)model;
+            Fst fst = (Fst) model;
             for (State state: fst.getStates()) {
                 String ref = fst.getNodeReference(state);
                 Node node = net.getNodeByReference(ref);
                 if (node instanceof Place) {
-                    boolean isInitial = ((Place)node).getTokens() > 0;
+                    boolean isInitial = ((Place) node).getTokens() > 0;
                     state.setInitial(isInitial);
                 }
             }
@@ -85,12 +85,12 @@ public class FstSimulationTool extends StgSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         Point2D posRoot = e.getPosition();
         Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-            new Func<Node, Boolean>() {
-                @Override
-                public Boolean eval(Node node) {
-                    return getExcitedTransitionOfNode(node) != null;
-                }
-            });
+                new Func<Node, Boolean>() {
+                    @Override
+                    public Boolean eval(Node node) {
+                        return getExcitedTransitionOfNode(node) != null;
+                    }
+                });
 
         Transition transition = null;
         if (node instanceof VisualTransformableNode) {
@@ -113,7 +113,7 @@ public class FstSimulationTool extends StgSimulationTool {
                 ret=ret || (getExcitedTransitionOfNode(node) != null);
             }
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container)node);
+                ret = ret || isContainerExcited((Container) node);
             }
             if (ret) break;
         }
@@ -149,7 +149,7 @@ public class FstSimulationTool extends StgSimulationTool {
                 }
 
                 if (node instanceof VisualState) {
-                    final VisualPlace p = generator.getRelatedPlace((VisualState)node);
+                    final VisualPlace p = generator.getRelatedPlace((VisualState) node);
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {
@@ -165,7 +165,7 @@ public class FstSimulationTool extends StgSimulationTool {
 
                 if (node instanceof VisualPage || node instanceof VisualGroup) {
                     if (node.getParent()==null) return null; // do not work with the root node
-                    final boolean ret = isContainerExcited((Container)node);
+                    final boolean ret = isContainerExcited((Container) node);
                     return new ContainerDecoration() {
                         @Override
                         public Color getColorisation() {
@@ -190,7 +190,7 @@ public class FstSimulationTool extends StgSimulationTool {
 
     private Transition getExcitedTransitionOfNode(Node node) {
         if ((node != null) && (node instanceof VisualEvent)) {
-            VisualTransition vTransition = generator.getRelatedTransition((VisualEvent)node);
+            VisualTransition vTransition = generator.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
                 if (net.isEnabled(transition)) {

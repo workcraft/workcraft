@@ -2,7 +2,6 @@ package org.workcraft.util.graph.cycle;
 
 import java.util.Vector;
 
-
 /**
  * Calculates the adjacency-list for a given adjacency-matrix.
  *

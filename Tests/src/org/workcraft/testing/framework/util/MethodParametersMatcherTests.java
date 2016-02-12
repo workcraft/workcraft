@@ -65,7 +65,6 @@ public class MethodParametersMatcherTests {
         return match.execute();
     }
 
-
     static class Simple{
         public static int qq(){
             return 1;
@@ -115,7 +114,6 @@ public class MethodParametersMatcherTests {
         }
     }
 
-
     @Test
     public void testAmbiguous() throws Exception {
         Assert.assertEquals(1, match(Ambiguous.class, A.class, AC.class));
@@ -138,7 +136,7 @@ public class MethodParametersMatcherTests {
 
         public int execute() throws Exception {
             Object[] args = new Object[getParameterTypes().length];
-            return (Integer)method.invoke(null, args);
+            return (Integer) method.invoke(null, args);
         }
     }
 

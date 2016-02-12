@@ -11,7 +11,6 @@ import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 
-
 public class CSONStructureTask extends AbstractStructuralVerification{
 
     private SON net;
@@ -115,7 +114,6 @@ public class CSONStructureTask extends AbstractStructuralVerification{
         }
         return result;
     }
-
 
     public CSONCycleAlg getCSONCycleAlg(){
         return csonCycleAlg;

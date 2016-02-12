@@ -38,9 +38,9 @@ public class PetrifyNetSynthesisHide extends PetrifyNetSynthesis {
         for (VisualTransition transition: transitions) {
             String name = null;
             if (transition instanceof VisualSignalTransition) {
-                name = ((VisualSignalTransition)transition).getSignalName();
+                name = ((VisualSignalTransition) transition).getSignalName();
             } else if (transition instanceof VisualDummyTransition) {
-                name = ((VisualDummyTransition)transition).getReferencedTransition().getName();
+                name = ((VisualDummyTransition) transition).getReferencedTransition().getName();
             } else {
                 name = visualModel.getMathName(transition);
             }

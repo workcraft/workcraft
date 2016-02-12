@@ -29,7 +29,6 @@ public final class Zero implements BooleanFormula {
     private Zero() {
     }
 
-
     public static Zero instance() {
         return instance;
     }

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.untangling;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,8 +18,6 @@ import org.jbpt.petri.untangling.ReductionBasedRepresentativeUntangling;
 import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
-
-
 
 public class Untanglings {
 
@@ -42,15 +39,15 @@ public class Untanglings {
         this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();
         this.setup.REDUCE = settings.isReduce();
         switch(settings.getSignificance()){
-            case 0 :
-                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
-                break;
-            case 1 :
-                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.HASHMAP_BASED;
-                break;
-            case 2 :
-                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.TREE_OF_RUNS;
-                break;
+        case 0 :
+            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
+            break;
+        case 1 :
+            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.HASHMAP_BASED;
+            break;
+        case 2 :
+            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.TREE_OF_RUNS;
+            break;
         }
 
     }
@@ -148,9 +145,8 @@ public class Untanglings {
      *  processes which compose the untangling         **/
     public boolean startConversion(){
 
-
         // starting conversion
-        untangling = new ReductionBasedRepresentativeUntangling(sys,setup);
+        untangling = new ReductionBasedRepresentativeUntangling(sys, setup);
 
         // if Petri Net is not safe, stop the conversion
         if(untangling.isSafe() == false){

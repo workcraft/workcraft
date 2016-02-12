@@ -1,6 +1,5 @@
 package org.workcraft.plugins.xmas;
 
-
 import java.util.ArrayList;
 
 import org.workcraft.gui.graph.tools.CommentGeneratorTool;

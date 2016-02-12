@@ -4,7 +4,6 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
-
 public class SONDescriptor implements ModelDescriptor{
 
     public String getDisplayName(){
@@ -18,6 +17,5 @@ public class SONDescriptor implements ModelDescriptor{
     public VisualModelDescriptor getVisualModelDescriptor(){
         return new VisualSONDescriptor();
     }
-
 
 }

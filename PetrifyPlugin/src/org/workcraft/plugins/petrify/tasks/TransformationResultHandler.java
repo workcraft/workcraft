@@ -116,7 +116,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
         candidateName = candidateName.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
 
         HierarchicalUniqueNameReferenceManager refManager
-            = (HierarchicalUniqueNameReferenceManager)dstModel.getReferenceManager();
+                = (HierarchicalUniqueNameReferenceManager) dstModel.getReferenceManager();
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(dstModel.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);

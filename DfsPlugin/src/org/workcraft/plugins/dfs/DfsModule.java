@@ -108,7 +108,6 @@ public class DfsModule implements Module {
             }
         });
 
-
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override
             public Tool create() {

@@ -103,9 +103,9 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
                 int index = list.locationToIndex(event.getPoint());
                 try{
-                    for(int i=0; i<list.getModel().getSize();i++){
+                    for(int i=0; i<list.getModel().getSize(); i++){
                         ListItem item;
-                        item = (ListItem)list.getModel().getElementAt(i);
+                        item = (ListItem) list.getModel().getElementAt(i);
                         if(item != null)item.setSelected(false);
                     }
                     setScenarioFromList(index);
@@ -124,7 +124,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
             item.setSelected(true);
             obj = item.getListItem();
             if(obj instanceof ScenarioRef){
-                selectedScenario = (ScenarioRef)obj;
+                selectedScenario = (ScenarioRef) obj;
             }
         }
     }
@@ -132,11 +132,10 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
     @SuppressWarnings("unchecked")
     protected void createNodeItemPanel(){
         nodeItemPanel = new JPanel();
-        vNet = (VisualSON)we.getModelEntry().getVisualModel();
+        vNet = (VisualSON) we.getModelEntry().getVisualModel();
         selectedNodes = new ArrayList<Node>();
 
         DefaultListModel<ListItem> listModel = new DefaultListModel<ListItem>();
-
 
         for(Node vn : vNet.getSelection()){
             if(vn instanceof VisualComponent){
@@ -158,15 +157,15 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
                 int index = list.locationToIndex(event.getPoint());
                 try{
-                    ListItem item = (ListItem)list.getModel().getElementAt(index);
+                    ListItem item = (ListItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
                     if(item.isSelected()){
-                        selectedNodes.add((Node)item.getListItem());
+                        selectedNodes.add((Node) item.getListItem());
                         item.setItemColor(Color.ORANGE);
                     }
                     if(!item.isSelected()){
-                        selectedNodes.remove((Node)item.getListItem());
+                        selectedNodes.remove((Node) item.getListItem());
                         item.setItemColor(Color.BLACK);
                     }
                     list.repaint(list.getCellBounds(index, index));
@@ -196,7 +195,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
     }
 
     protected void createSelectionPane(){
-        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(1,1,1,1));
+        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(1, 1, 1, 1));
         UIManager.getDefaults().put("TabbedPane.tabsOverlapBorder", false);
 
         createGroupItemsPanel();
@@ -210,32 +209,32 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
         selectionTabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                 net.refreshAllColor();
-                 addAllButton.setEnabled(true);
-                 removeAllButton.setEnabled(true);
-                 int index = getTabIndex();
+                net.refreshAllColor();
+                addAllButton.setEnabled(true);
+                removeAllButton.setEnabled(true);
+                int index = getTabIndex();
 
-                 if(index == 0){
-                     updateCausalConsistencyPanel(false);
-                     for(int i=0;i<groupList.getModel().getSize();i++){
-                         ListItem item = (ListItem)groupList.getModel().getElementAt(i);
-                         item.setItemColor(Color.ORANGE);
-                     }
+                if(index == 0){
+                    updateCausalConsistencyPanel(false);
+                    for(int i=0; i<groupList.getModel().getSize(); i++){
+                        ListItem item = (ListItem) groupList.getModel().getElementAt(i);
+                        item.setItemColor(Color.ORANGE);
+                    }
 
-                 }else if(index == 1){
-                     addAllButton.setEnabled(false);
-                     removeAllButton.setEnabled(false);
-                     updateCausalConsistencyPanel(true);
-                     updateScenarioColor();
+                }else if(index == 1){
+                    addAllButton.setEnabled(false);
+                    removeAllButton.setEnabled(false);
+                    updateCausalConsistencyPanel(true);
+                    updateScenarioColor();
 
-                 }else if(index == 2){
-                     updateCausalConsistencyPanel(false);
-                     for(int i=0;i<nodeList.getModel().getSize();i++){
-                         ListItem item = (ListItem)nodeList.getModel().getElementAt(i);
-                         item.setItemColor(Color.ORANGE);
-                     }
-                     vNet.selectNone();
-                 }
+                }else if(index == 2){
+                    updateCausalConsistencyPanel(false);
+                    for(int i=0; i<nodeList.getModel().getSize(); i++){
+                        ListItem item = (ListItem) nodeList.getModel().getElementAt(i);
+                        item.setItemColor(Color.ORANGE);
+                    }
+                    vNet.selectNone();
+                }
             }
         });
     }
@@ -257,15 +256,14 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
                     ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
                     Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
                     if(obj instanceof ONGroup)
-                        selectedGroups.add((ONGroup)obj);
+                        selectedGroups.add((ONGroup) obj);
                     else if(obj instanceof Time)
-                        selectedNodes.add((Time)obj);
+                        selectedNodes.add((Time) obj);
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
                 }
                 getList().repaint();
             }
         });
-
 
         removeAllButton.addActionListener(new ActionListener() {
             @Override
@@ -477,7 +475,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
     public int getTabIndex(){
         return selectionTabbedPane.getSelectedIndex();
     }
-
 
     public TimeConsistencySettings getTimeConsistencySettings(){
         return new TimeConsistencySettings(inconsistencyHighLight.isSelected(), unspecifyHighlight.isSelected(),

@@ -28,7 +28,6 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
     private DataAccumulator stdoutAccum = new DataAccumulator();
     private DataAccumulator stderrAccum = new DataAccumulator();
 
-
     public WriteSgTask(String inputPath, String outputPath, List<String> options) {
         this.inputPath = inputPath;
         this.outputPath = outputPath;
@@ -82,7 +81,6 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
             return Result.failed(retVal);
         }
     }
-
 
     @Override
     public void errorData(byte[] data) {

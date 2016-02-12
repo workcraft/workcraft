@@ -115,7 +115,6 @@ public class XMLSerialisationTestingUtils {
             SignalTransition t1 = stg.createSignalTransition();
             SignalTransition t2 = stg.createSignalTransition();
 
-
             stg.connect(t1, p1);
 
             stg.connect(p1, t2);
@@ -137,7 +136,6 @@ public class XMLSerialisationTestingUtils {
 
             SignalTransition t1 = stg.createSignalTransition();
             SignalTransition t2 = stg.createSignalTransition();
-
 
             stg.connect(t1, p1);
 
@@ -186,8 +184,6 @@ public class XMLSerialisationTestingUtils {
             visualSTG.connect(vt2, vt3);
             visualSTG.connect(vt3, vt4);
             visualSTG.connect(vt4, vt1);
-
-
 
             return visualSTG;
         } catch (InvalidConnectionException e) {

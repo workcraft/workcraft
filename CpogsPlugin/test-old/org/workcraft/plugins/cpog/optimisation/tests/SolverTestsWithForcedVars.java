@@ -34,7 +34,6 @@ import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 
-
 public class SolverTestsWithForcedVars {
     String[] smallTest1 = new String[] {
                "a",
@@ -76,8 +75,6 @@ public class SolverTestsWithForcedVars {
             "A01-0101111A",
             "A111010111aA",
                                      };
-
-
 
     @Test
     public void solveProcessor_3_4_3_3_2_solvable() {
@@ -172,7 +169,6 @@ public class SolverTestsWithForcedVars {
     public void solveSmall5_2_1_unsolvable() {
         testSolve(smallTest5, 2, 1, false);
     }
-
 
     @Test
     public void solveSmall5_2_2_solvable() {

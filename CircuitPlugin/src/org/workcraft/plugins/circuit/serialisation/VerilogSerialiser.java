@@ -76,7 +76,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         ReferenceResolver resolver = new ReferenceResolver();
 
         if (model instanceof Circuit) {
-            writeCircuit(out, (Circuit)model);
+            writeCircuit(out, (Circuit) model);
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }

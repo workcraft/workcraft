@@ -50,7 +50,7 @@ public class HitMan {
                 if (!(arg instanceof Touchable)) {
                     return true;
                 }
-                Rectangle2D boundingBox = ((Touchable)arg).getBoundingBox();
+                Rectangle2D boundingBox = ((Touchable) arg).getBoundingBox();
                 return (boundingBox != null) && boundingBox.contains(pointInLocalSpace);
             }
         });
@@ -81,9 +81,9 @@ public class HitMan {
     }
 
     public static boolean isBranchHit(Point2D point, Node node) {
-        if (node instanceof Touchable && ((Touchable)node).hitTest(point)) {
+        if (node instanceof Touchable && ((Touchable) node).hitTest(point)) {
             if (node instanceof Hidable) {
-                return !((Hidable)node).isHidden();
+                return !((Hidable) node).isHidden();
             } else {
                 return true;
             }
@@ -115,7 +115,7 @@ public class HitMan {
 
     private static Node hitBranch(Point2D point, Node node) {
         if(node instanceof CustomTouchable) {
-            return ((CustomTouchable)node).customHitTest(point);
+            return ((CustomTouchable) node).customHitTest(point);
         }
         return isBranchHit(point, node) ? node : null;
     }
@@ -145,14 +145,13 @@ public class HitMan {
         Point2D transformedPoint;
         if (node instanceof Movable) {
             transformedPoint = new Point2D.Double();
-            AffineTransform at = Geometry.optimisticInverse(((Movable)node).getTransform());
+            AffineTransform at = Geometry.optimisticInverse(((Movable) node).getTransform());
             at.transform(point, transformedPoint);
         } else {
             transformedPoint = point;
         }
         return transformedPoint;
     }
-
 
     private static <T> Iterable<T> reverse(Iterable<T> original) {
         final ArrayList<T> list = new ArrayList<T>();
@@ -179,9 +178,8 @@ public class HitMan {
 
     @SuppressWarnings("unchecked")
     public static <T extends Node> T hitDeepestNodeOfType(Point2D point, Node group, final Class<T> type) {
-        return (T)hitDeepest(point, group, Hierarchy.getTypeFilter(type));
+        return (T) hitDeepest(point, group, Hierarchy.getTypeFilter(type));
     }
-
 
     public static Node hitTestForSelection(Point2D point, VisualModel model) {
         AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
@@ -192,7 +190,7 @@ public class HitMan {
         Node result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node n) {
                 boolean isMovable = n instanceof Movable;
-                boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
+                boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
                 return isMovable && isShown;
             }
         });
@@ -200,7 +198,7 @@ public class HitMan {
             result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
                 public Boolean eval(Node n) {
                     boolean isConnection = n instanceof VisualConnection;
-                    boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
+                    boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
                     return isConnection && isShown;
                 }
             });
@@ -217,9 +215,9 @@ public class HitMan {
         Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node n) {
                 boolean isMovable = n instanceof Movable;
-                boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
+                boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
                 boolean isContainer = n instanceof Container;
-                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible)n).getIsCollapsed();
+                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible) n).getIsCollapsed();
                 return isMovable && isShown && !(isContainer && isExpanded);
             }
         });
@@ -227,14 +225,13 @@ public class HitMan {
             result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
                 public Boolean eval(Node n) {
                     boolean isConnection = n instanceof VisualConnection;
-                    boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
+                    boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
                     return isConnection && isShown;
                 }
             });
         }
         return result;
     }
-
 
     public static Node hitTestForPopup(Point2D point, VisualModel model) {
         AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
@@ -245,9 +242,9 @@ public class HitMan {
         Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node n) {
                 boolean isMovable = n instanceof Movable;
-                boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
+                boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
                 boolean isContainer = n instanceof Container;
-                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible)n).getIsCollapsed();
+                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible) n).getIsCollapsed();
                 return isMovable && isShown && !(isContainer && isExpanded);
             }
         });
@@ -255,7 +252,7 @@ public class HitMan {
             result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
                 public Boolean eval(Node n) {
                     boolean isConnection = n instanceof VisualConnection;
-                    boolean isShown = !((n instanceof Hidable) && ((Hidable)n).isHidden());
+                    boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
                     return isConnection && isShown;
                 }
             });
@@ -287,15 +284,15 @@ public class HitMan {
                 Math.abs(p1.getY()-p2.getY()));
 
         for (Touchable n : Hierarchy.getChildrenOfType(container, Touchable.class)) {
-            if (n instanceof Hidable && ((Hidable)n).isHidden())
+            if (n instanceof Hidable && ((Hidable) n).isHidden())
                 continue;
 
             if (p1.getX()<=p2.getX()) {
                 if (TouchableHelper.insideRectangle(n, rect))
-                    hit.add((Node)n);
+                    hit.add((Node) n);
             } else {
                 if (TouchableHelper.touchesRectangle(n, rect))
-                    hit.add((Node)n);
+                    hit.add((Node) n);
             }
         }
         return hit;

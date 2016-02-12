@@ -19,7 +19,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;
 
-
 @SuppressWarnings("serial")
 public class ReachibilityDialog extends JDialog {
     private JPanel contents;
@@ -32,7 +31,6 @@ public class ReachibilityDialog extends JDialog {
                 {TableLayout.FILL },
                 {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED },
         };
-
 
         solutionsPanel = new JPanel();
         solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
@@ -56,16 +54,14 @@ public class ReachibilityDialog extends JDialog {
             }
         });
 
-
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                close();
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
-
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        close();
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         buttonsPanel.add(closeButton);
 

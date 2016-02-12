@@ -61,7 +61,7 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         double dx = size / 5;
         double v2 = w2 - dx;
         double dt = (size - strokeWidth) / 8;
-        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth1 = (float) strokeWidth;
         float strokeWidth2 = strokeWidth1 / 2;
 
         Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
@@ -95,13 +95,13 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         boolean andMarkedExcited = false;
         if (d instanceof CounterflowRegisterDecoration) {
             defaultColor = getForegroundColor();
-            tokenColor = ((CounterflowRegisterDecoration)d).getTokenColor();
-            forwardExcited = ((CounterflowRegisterDecoration)d).isForwardExcited();
-            backwardExcited = ((CounterflowRegisterDecoration)d).isBackwardExcited();
-            orMarked = ((CounterflowRegisterDecoration)d).isOrMarked();
-            orMarkedExcited = ((CounterflowRegisterDecoration)d).isOrExcited();
-            andMarked = ((CounterflowRegisterDecoration)d).isAndMarked();
-            andMarkedExcited = ((CounterflowRegisterDecoration)d).isAndExcited();
+            tokenColor = ((CounterflowRegisterDecoration) d).getTokenColor();
+            forwardExcited = ((CounterflowRegisterDecoration) d).isForwardExcited();
+            backwardExcited = ((CounterflowRegisterDecoration) d).isBackwardExcited();
+            orMarked = ((CounterflowRegisterDecoration) d).isOrMarked();
+            orMarkedExcited = ((CounterflowRegisterDecoration) d).isOrExcited();
+            andMarked = ((CounterflowRegisterDecoration) d).isAndMarked();
+            andMarkedExcited = ((CounterflowRegisterDecoration) d).isAndExcited();
         }
 
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
@@ -146,14 +146,14 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
     }
 
     public CounterflowRegister getReferencedCounterflowRegister() {
-        return (CounterflowRegister)getReferencedComponent();
+        return (CounterflowRegister) getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualCounterflowRegister) {
-            CounterflowRegister srcRegister = ((VisualCounterflowRegister)src).getReferencedCounterflowRegister();
+            CounterflowRegister srcRegister = ((VisualCounterflowRegister) src).getReferencedCounterflowRegister();
             getReferencedCounterflowRegister().setOrMarked(srcRegister.isOrMarked());
             getReferencedCounterflowRegister().setAndMarked(srcRegister.isAndMarked());
         }

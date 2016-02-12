@@ -40,7 +40,7 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
 
     @Override
     public VisualModel getUnderlyingModel(VisualModel model) {
-        generator = new PetriNetGenerator((VisualPolicyNet)model);
+        generator = new PetriNetGenerator((VisualPolicyNet) model);
         return generator.getPetriNet();
     }
 
@@ -52,12 +52,12 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
         MathModel model = editor.getModel().getMathModel();
         if (model instanceof PolicyNet) {
             editor.getWorkspaceEntry().saveMemento();
-            PolicyNet policy = (PolicyNet)model;
+            PolicyNet policy = (PolicyNet) model;
             for (Place place: policy.getPlaces()) {
                 String ref = policy.getNodeReference(place);
                 Node node = net.getNodeByReference(ref);
                 if (node instanceof Place) {
-                    int tokens = ((Place)node).getTokens();
+                    int tokens = ((Place) node).getTokens();
                     place.setTokens(tokens);
                 }
             }
@@ -68,12 +68,12 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         Point2D posRoot = e.getPosition();
         Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-            new Func<Node, Boolean>() {
-                @Override
-                public Boolean eval(Node node) {
-                    return getExcitedTransitionOfNode(node) != null;
-                }
-            });
+                new Func<Node, Boolean>() {
+                    @Override
+                    public Boolean eval(Node node) {
+                        return getExcitedTransitionOfNode(node) != null;
+                    }
+                });
 
         Transition transition = null;
         if (node instanceof VisualTransformableNode) {
@@ -99,7 +99,7 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
             }
 
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container)node);
+                ret = ret || isContainerExcited((Container) node);
             }
 
             if (ret) break;
@@ -137,7 +137,7 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
                 }
 
                 if (node instanceof VisualPlace) {
-                    final VisualPlace p = generator.getRelatedPlace((VisualPlace)node);
+                    final VisualPlace p = generator.getRelatedPlace((VisualPlace) node);
                     return new PlaceDecoration() {
                         @Override
                         public Color getColorisation() {
@@ -162,7 +162,7 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
 
                     if (node.getParent()==null) return null; // do not work with the root node
 
-                    final boolean ret = isContainerExcited((Container)node);
+                    final boolean ret = isContainerExcited((Container) node);
 
                     return new ContainerDecoration() {
 
@@ -184,7 +184,6 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
 
                 }
 
-
                 return null;
             }
         };
@@ -193,7 +192,7 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
     private Transition getExcitedTransitionOfNode(Node node) {
         Collection<VisualTransition> ts = null;
         if (node != null && node instanceof VisualBundledTransition) {
-            ts = generator.getRelatedTransitions((VisualBundledTransition)node);
+            ts = generator.getRelatedTransitions((VisualBundledTransition) node);
         }
         return getExcitedTransitionOfCollection(ts);
     }

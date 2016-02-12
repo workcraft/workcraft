@@ -42,7 +42,7 @@ public class ConstructorParametersMatcher {
     public <T> Constructor<? extends T> match(Class<? extends T> c, Class<?>... parameters) throws NoSuchMethodException {
         ArrayList<ConstructorInfo<T>> constructors = new ArrayList<ConstructorInfo<T>>();
         for(Constructor<?> constructor : c.getConstructors())
-            constructors.add(new ConstructorInfo<T>((Constructor<? extends T>)constructor));
+            constructors.add(new ConstructorInfo<T>((Constructor<? extends T>) constructor));
 
         try {
             return MethodParametersMatcher.match(constructors, parameters).constructor;

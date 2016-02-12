@@ -40,7 +40,7 @@ public class PropertyEditorWindow extends JPanel {
         scrollProperties = new JScrollPane();
         scrollProperties.setViewportView(propertyTable);
 
-        setLayout(new BorderLayout(0,0));
+        setLayout(new BorderLayout(0, 0));
         add(new DisabledPanel(), BorderLayout.CENTER);
         validate();
     }

@@ -28,40 +28,40 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
     public void finished(final Result<? extends ExternalProcessResult> result, String description) {
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
-            @Override
+                @Override
                 public void run() {
 
-                final Framework framework = Framework.getInstance();
-                MainWindow mainWindow = framework.getMainWindow();
-                if (result.getOutcome() == Outcome.FAILED) {
-                    String message;
-                    if (result.getCause() != null) {
-                        message = result.getCause().getMessage();
-                        result.getCause().printStackTrace();
-                    } else {
-                        message = "Pcomp errors: \n" + new String(result.getReturnValue().getErrors());
-                    }
-                    JOptionPane.showMessageDialog(mainWindow, message, "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
-                } else if (result.getOutcome() == Outcome.FINISHED) {
-                    try {
-                        File pcompResult = File.createTempFile("pcompresult", ".g");
-                        FileUtils.writeAllText(pcompResult, new String(result.getReturnValue().getOutput()));
-
-                        if (showInEditor) {
-                            WorkspaceEntry we = framework.getWorkspace().open(pcompResult, false);
-                            mainWindow.createEditorWindow(we);
+                    final Framework framework = Framework.getInstance();
+                    MainWindow mainWindow = framework.getMainWindow();
+                    if (result.getOutcome() == Outcome.FAILED) {
+                        String message;
+                        if (result.getCause() != null) {
+                            message = result.getCause().getMessage();
+                            result.getCause().printStackTrace();
                         } else {
-                            framework.getWorkspace().add(pcompResult.getName(), pcompResult, true);
+                            message = "Pcomp errors: \n" + new String(result.getReturnValue().getErrors());
                         }
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
-                    } catch (DeserialisationException e) {
-                        JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
-                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(mainWindow, message, "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+                    } else if (result.getOutcome() == Outcome.FINISHED) {
+                        try {
+                            File pcompResult = File.createTempFile("pcompresult", ".g");
+                            FileUtils.writeAllText(pcompResult, new String(result.getReturnValue().getOutput()));
+
+                            if (showInEditor) {
+                                WorkspaceEntry we = framework.getWorkspace().open(pcompResult, false);
+                                mainWindow.createEditorWindow(we);
+                            } else {
+                                framework.getWorkspace().add(pcompResult.getName(), pcompResult, true);
+                            }
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        } catch (DeserialisationException e) {
+                            JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
             });
         } catch (InterruptedException e) {
             e.printStackTrace();

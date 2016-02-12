@@ -250,7 +250,6 @@ public class WorkspaceEntry implements ObservableState {
         updateActionState();
     }
 
-
     public void undo() {
         if (history.canUndo()) {
             Memento undoMemento = history.pullUndo();

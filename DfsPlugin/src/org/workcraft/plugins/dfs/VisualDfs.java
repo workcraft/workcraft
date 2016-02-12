@@ -142,12 +142,12 @@ public class VisualDfs extends AbstractVisualModel {
         VisualConnection ret = null;
         if (first instanceof VisualControlRegister) {
             if (mConnection == null) {
-                mConnection = ((Dfs)getMathModel()).controlConnect(ref1, ref2);
+                mConnection = ((Dfs) getMathModel()).controlConnect(ref1, ref2);
             }
-            ret = new VisualControlConnection((ControlConnection)mConnection, c1, c2);
+            ret = new VisualControlConnection((ControlConnection) mConnection, c1, c2);
         } else {
             if (mConnection == null) {
-                mConnection = ((Dfs)getMathModel()).connect(ref1, ref2);
+                mConnection = ((Dfs) getMathModel()).connect(ref1, ref2);
             }
             ret = new VisualConnection(mConnection, c1, c2);
         }
@@ -158,7 +158,7 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     public String getName(VisualComponent component) {
-        return ((Dfs)getMathModel()).getName(component.getReferencedComponent());
+        return ((Dfs) getMathModel()).getName(component.getReferencedComponent());
     }
 
     public <R> Set<R> getRPostset(Node node, Class<R> rType) {

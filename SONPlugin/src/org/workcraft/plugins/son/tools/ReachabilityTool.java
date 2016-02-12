@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.tools;
 
-
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.son.SON;

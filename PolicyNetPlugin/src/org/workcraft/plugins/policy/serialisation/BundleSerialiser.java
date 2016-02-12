@@ -35,7 +35,7 @@ public class BundleSerialiser implements CustomXMLSerialiser {
             ReferenceProducer externalReferences,
             NodeSerialiser nodeSerialiser) throws SerialisationException {
 
-        Bundle b = (Bundle)object;
+        Bundle b = (Bundle) object;
         String s = "";
         for (BundledTransition t: b.getTransitions()) {
             if (s != "") {

@@ -93,7 +93,6 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
 
-
 public final class Framework {
     private static final String SETTINGS_DIRECTORY_NAME = ".workcraft";
     private static final String CONFIG_FILE_NAME = "config.xml";
@@ -313,7 +312,7 @@ public final class Framework {
 
                 Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
                 ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
-                //ScriptableObject.putProperty(systemScope, "importer",);
+                //ScriptableObject.putProperty(systemScope, "importer", );
                 systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
                 globalScope = (ScriptableObject) cx.newObject(systemScope);
@@ -399,9 +398,9 @@ public final class Framework {
             System.out.println("Script stack trace: " + ex.getScriptStackTrace());
             Object value = ex.getValue();
             if(value instanceof NativeJavaObject) {
-                Object wrapped = ((NativeJavaObject)value).unwrap();
+                Object wrapped = ((NativeJavaObject) value).unwrap();
                 if(wrapped instanceof Throwable)
-                    throw new JavascriptPassThroughException((Throwable)wrapped, ex.getScriptStackTrace());
+                    throw new JavascriptPassThroughException((Throwable) wrapped, ex.getScriptStackTrace());
             }
             throw ex;
         }
@@ -583,7 +582,7 @@ public final class Framework {
             throws InstantiationException, IllegalAccessException,    ClassNotFoundException {
         Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
         String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
-        ModelDescriptor descriptor = (ModelDescriptor)Class.forName(descriptorClass).newInstance();
+        ModelDescriptor descriptor = (ModelDescriptor) Class.forName(descriptorClass).newInstance();
         return descriptor;
     }
 
@@ -608,7 +607,7 @@ public final class Framework {
             Element levelElement = XmlUtil.getChildElement("level", stateElement);
             Object currentLevel = references.getObject(levelElement.getAttribute("ref"));
             if (currentLevel instanceof Container) {
-                model.setCurrentLevel((Container)currentLevel);
+                model.setCurrentLevel((Container) currentLevel);
             }
             // selection
             Element selectionElement = XmlUtil.getChildElement("selection", stateElement);
@@ -616,7 +615,7 @@ public final class Framework {
             for (Element nodeElement: XmlUtil.getChildElements("node", selectionElement)) {
                 Object node = references.getObject(nodeElement.getAttribute("ref"));
                 if (node instanceof Node) {
-                    nodes.add((Node)node);
+                    nodes.add((Node) node);
                 }
             }
             model.addToSelection(nodes);
@@ -647,7 +646,7 @@ public final class Framework {
 
             // load current level and selection
             if (visualResult.model instanceof VisualModel) {
-                loadVisualModelState(bi, (VisualModel)visualResult.model, visualResult.references);
+                loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
             return new ModelEntry(descriptor, visualResult.model);
         } catch (IOException e) {
@@ -674,26 +673,26 @@ public final class Framework {
     }
 
     public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
-            ModelEntry me1 = load(is1);
-            ModelEntry me2 = load(is2);
+        ModelEntry me1 = load(is1);
+        ModelEntry me2 = load(is2);
 
-            VisualModel vmodel1 = me1.getVisualModel();
-            VisualModel vmodel2 = me2.getVisualModel();
+        VisualModel vmodel1 = me1.getVisualModel();
+        VisualModel vmodel2 = me2.getVisualModel();
 
-            if (!me1.getDescriptor().getDisplayName().equals(me2.getDescriptor().getDisplayName())) {
-                throw new DeserialisationException("Incompatible models cannot be merged");
-            }
+        if (!me1.getDescriptor().getDisplayName().equals(me2.getDescriptor().getDisplayName())) {
+            throw new DeserialisationException("Incompatible models cannot be merged");
+        }
 
-            Collection<Node> children = new HashSet<Node>(vmodel2.getRoot().getChildren());
+        Collection<Node> children = new HashSet<Node>(vmodel2.getRoot().getChildren());
 
-            vmodel1.selectNone();
-            vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
-            vmodel1.select(children);
+        vmodel1.selectNone();
+        vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
+        vmodel1.select(children);
 
-            // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
-            Memento memo = save(me1);
-            ModelEntry me3 = load(memo);
-            return me3;
+        // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
+        Memento memo = save(me1);
+        ModelEntry me3 = load(memo);
+        return me3;
     }
 
     public void save(ModelEntry model, String path) throws SerialisationException {
@@ -710,7 +709,7 @@ public final class Framework {
     }
 
     private void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
-            throws ParserConfigurationException, IOException {
+        throws ParserConfigurationException, IOException {
         Document stateDoc = XmlUtil.createDocument();
         Element stateRoot = stateDoc.createElement("workcraft-state");
         stateDoc.appendChild(stateRoot);
@@ -731,7 +730,7 @@ public final class Framework {
 
     public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
         Model model = modelEntry.getModel();
-        VisualModel visualModel = (model instanceof VisualModel)? (VisualModel)model : null;
+        VisualModel visualModel = (model instanceof VisualModel)? (VisualModel) model : null;
         Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
         ZipOutputStream zos = new ZipOutputStream(out);
         try {

@@ -57,7 +57,7 @@ public class ReachabilityAlg extends RelationAlgorithm{
 
     private void causalPredecessors(LinkedList<Node> visited, Node n, Before before){
         predecessors.add(n);
-         visited.add(n);
+        visited.add(n);
 
         for(Node n2 : getCausalPreset(n, before)){
             if(!visited.contains(n2))
@@ -76,12 +76,11 @@ public class ReachabilityAlg extends RelationAlgorithm{
         return predecessors;
     }
 
-
     private LinkedList<Node> getCausalPreset(Node n, Before before){
         LinkedList<Node> result = new LinkedList<Node>();
 
         if(isInitial(n) && (n instanceof Condition)){
-            result.addAll(getPostBhvSet((Condition)n));
+            result.addAll(getPostBhvSet((Condition) n));
         }
 
         for(TransitionNode[] pre : before){
@@ -92,7 +91,7 @@ public class ReachabilityAlg extends RelationAlgorithm{
         result.addAll(getPrePNSet(n));
 
         if(isInitial(n) && (n instanceof Condition)){
-            result.addAll(getPostBhvSet((Condition)n));
+            result.addAll(getPostBhvSet((Condition) n));
         }else if(n instanceof TransitionNode){
             for(SONConnection con : net.getSONConnections(n)){
                 if(con.getSemantics() == Semantics.SYNCLINE){

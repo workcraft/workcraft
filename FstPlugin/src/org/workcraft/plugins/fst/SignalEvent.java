@@ -58,7 +58,7 @@ public class SignalEvent extends Event {
     }
 
     public Signal getSignal() {
-        return (Signal)getSymbol();
+        return (Signal) getSymbol();
     }
 
 }

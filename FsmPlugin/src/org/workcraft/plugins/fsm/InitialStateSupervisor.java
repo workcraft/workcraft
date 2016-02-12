@@ -19,11 +19,11 @@ public class InitialStateSupervisor extends StateSupervisor {
     @Override
     public void handleEvent(StateEvent e) {
         if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent)e;
+            PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             if ((sender instanceof State) && pce.getPropertyName().equals(State.PROPERTY_INITIAL)) {
                 // Update all the states on a change of the initial property
-                handleInitialStateChange((State)sender);
+                handleInitialStateChange((State) sender);
             }
         }
     }
@@ -34,14 +34,14 @@ public class InitialStateSupervisor extends StateSupervisor {
             for (Node node: e.getAffectedNodes()) {
                 if (node instanceof State) {
                     // Move the initial property to another state on state removal
-                    handleStateRemoval((State)node);
+                    handleStateRemoval((State) node);
                 }
             }
         } else if (e instanceof NodesAddingEvent) {
             for (Node node: e.getAffectedNodes()) {
                 if (node instanceof State) {
                     // Make pasted states non-initial
-                    ((State)node).setInitialQuiet(false);
+                    ((State) node).setInitialQuiet(false);
                 }
             }
         }

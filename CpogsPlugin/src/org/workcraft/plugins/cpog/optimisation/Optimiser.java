@@ -42,7 +42,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
     }
 
     BooleanFormula generateBinaryFunction(BooleanFormula[] arg1, BooleanFormula[] arg2, int funcId) {
-        BooleanFormula isIff = ZERO;//*/new FV("f"+funcId + "_isIff");
+        BooleanFormula isIff = ZERO; //*/new FV("f"+funcId + "_isIff");
         BooleanNumber var1Number = generateInt("f"+funcId + "_v1_", arg1.length);
         BooleanNumber var2Number = generateInt("f"+funcId + "_v2_", arg2.length);
         //BooleanFormula less = numberProvider.less(var1Number, var2Number);
@@ -95,7 +95,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
                 );
 
         //if(true)
-        //    return not(and(var1,var2));
+        //    return not(and(var1, var2));
         BooleanFormula iff = iff(var1, var2);
 
         return or(
@@ -130,10 +130,10 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
         BooleanFormula[][] parsedMatrix = new BooleanFormula[scenarios.length][];
 
-        for(int i=0;i<scenarios.length;i++) {
+        for(int i=0; i<scenarios.length; i++) {
             String s = scenarios[i];
             parsedMatrix[i] = new BooleanFormula[s.length()];
-            for(int j=0;j<s.length();j++) {
+            for(int j=0; j<s.length(); j++) {
                 Character c = s.charAt(j);
                 BooleanFormula cell;
                 if(c == '1')
@@ -166,7 +166,6 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
                 parsedMatrix[i][j] = cell;
             }
         }
-
 
         CpogOptimisationTask<BooleanFormula> preResult = getFormula(parsedMatrix, new ArrayList<BooleanVariable>(forcedVariables.values()), variables, derivedVariables);
 
@@ -221,8 +220,8 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
         List<BooleanFormula> tableConditions = new ArrayList<BooleanFormula>();
         //Try to match CPOG functions with generated functions.
-        for(int i=0;i<functionCount;i++) {
-            BooleanNumber varId = generateInt("cpog_f"+i+"_",allVariables.size());
+        for(int i=0; i<functionCount; i++) {
+            BooleanNumber varId = generateInt("cpog_f"+i+"_", allVariables.size());
             BooleanFormula plain = new FreeVariable("cpog_f"+i+"_plain");
 
             BooleanFormula value = iff(plain, numberProvider.select(allVariables.toArray(new BooleanFormula[0]), varId));
@@ -232,22 +231,22 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
         //Generate all possible encodings...
         BooleanFormula[][] encodings = new BooleanFormula[scenarios.length][];
-        for(int i=0;i<scenarios.length;i++) {
+        for(int i=0; i<scenarios.length; i++) {
             encodings[i] = new BooleanFormula[variables.length];
             if(i == 0) {
-                for(int j=0;j<variables.length;j++)
+                for(int j=0; j<variables.length; j++)
                     encodings[i][j] = ZERO;
-                for(int j=0;j<0 && j<variables.length;j++)
+                for(int j=0; j<0 && j<variables.length; j++)
                     encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
             } else
-                for(int j=0;j<variables.length;j++)
+                for(int j=0; j<variables.length; j++)
                     encodings[i][j] = new FreeVariable("x"+j+"_s"+i);
         }
 
         //Verify results
-        for(int i=0;i<functionCount;i++) {
+        for(int i=0; i<functionCount; i++) {
             BooleanFormula value = cpogFunctions[i];
-            for(int j=0;j<scenarios.length;j++) {
+            for(int j=0; j<scenarios.length; j++) {
                 BooleanFormula substituted = BooleanUtils.prettifyReplace(value, Arrays.asList(variables), Arrays.asList(encodings[j]));
 
                 BooleanFormula required = scenarios[j][i];
@@ -275,12 +274,12 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
         if(levels != null) {
             if(levels.length == 1 && levels[0]==-1) {
-                for(int i=0;i<parameters.size();i++)
-                    for(int j=i+1;j<parameters.size();j++) {
+                for(int i=0; i<parameters.size(); i++)
+                    for(int j=i+1; j<parameters.size(); j++) {
                         BooleanFormula param1 = parameters.get(i);
                         BooleanFormula param2 = parameters.get(j);
-                        for(int p=0;p<2;p++)
-                            for(int q=0;q<2;q++) {
+                        for(int p=0; p<2; p++)
+                            for(int q=0; q<2; q++) {
                                 BooleanFormula arg1 = p!=0 ? not(param1) : param1;
                                 BooleanFormula arg2 = q!=0 ? not(param2) : param2;
                                 allVariables.add(and(arg1, arg2));
@@ -289,18 +288,18 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
                     }
             } else {
                 int cc = 0;
-                for(int level = 0;level<levels.length;level++) {
+                for(int level = 0; level<levels.length; level++) {
                     List<BooleanFormula> currentLevel = new ArrayList<BooleanFormula>();
                     if(levels[level] == 0)
                         throw new RuntimeException("wtf?");
-                    for(int i=0;i<levels[level];i++) {
+                    for(int i=0; i<levels[level]; i++) {
                         BooleanFormula[] firstArgPool;
                         int firstArgPoolSize = i*2+1;
                         if(firstArgPoolSize > lastLevel.size())
                             firstArgPool = lastLevel.toArray(new BooleanFormula[0]);
                         else {
                             firstArgPool = new BooleanFormula[firstArgPoolSize];
-                            for(int k=0;k<firstArgPoolSize;k++)
+                            for(int k=0; k<firstArgPoolSize; k++)
                                 firstArgPool[k] = lastLevel.get(k);
                         }
                         BooleanFormula function = generateBinaryFunction(firstArgPool, allVariables.toArray(new BooleanFormula[0]), cc);
@@ -313,7 +312,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
             }
         } else {
             //Generate all possible functions.
-            for(int i=0;i<functionCount;i++) {
+            for(int i=0; i<functionCount; i++) {
                 BooleanFormula function = generateBinaryFunction(allVariables.toArray(new BooleanFormula[0]), i);
                 allVariables.add(function);
             }

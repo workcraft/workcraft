@@ -32,6 +32,6 @@ public class StringSerialiser implements BasicXMLSerialiser{
 
     public void serialise(Element element, Object object)
             throws SerialisationException {
-        element.setAttribute("value", (String)object);
+        element.setAttribute("value", (String) object);
     }
 }

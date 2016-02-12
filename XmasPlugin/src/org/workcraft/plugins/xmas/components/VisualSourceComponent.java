@@ -42,7 +42,6 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SourceComponent.Mode;
 import org.workcraft.plugins.xmas.components.SourceComponent.Type;
 
-
 @DisplayName("Source")
 @Hotkey(KeyEvent.VK_I)
 @SVGIcon("images/icons/svg/xmas-source.svg")
@@ -52,7 +51,6 @@ public class VisualSourceComponent extends VisualXmasComponent {
     public Color color = new Color(0, 255, 0, 255);
     private VisualXmasContact oContact = null;
     public final double tokenSize = 0.18 * size;
-
 
     public VisualSourceComponent(SourceComponent component) {
         super(component);
@@ -84,7 +82,7 @@ public class VisualSourceComponent extends VisualXmasComponent {
     }
 
     public SourceComponent getReferencedSourceComponent() {
-        return (SourceComponent)getReferencedComponent();
+        return (SourceComponent) getReferencedComponent();
     }
 
     public VisualXmasContact getOContact() {
@@ -114,8 +112,8 @@ public class VisualSourceComponent extends VisualXmasComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (d instanceof StateDecoration) {
-            if (((StateDecoration)d).getState()) {
-                g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+            if (((StateDecoration) d).getState()) {
+                g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
                 g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
                 Shape shape = transformShape(getTokenShape());
                 g.fill(shape);
@@ -128,7 +126,7 @@ public class VisualSourceComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualSourceComponent) {
-            SourceComponent srcComponent = ((VisualSourceComponent)src).getReferencedSourceComponent();
+            SourceComponent srcComponent = ((VisualSourceComponent) src).getReferencedSourceComponent();
             getReferencedSourceComponent().setType(srcComponent.getType());
             getReferencedSourceComponent().setMode(srcComponent.getMode());
         }

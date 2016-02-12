@@ -31,7 +31,7 @@ public class CpogToGraphConverterTool extends ConversionTool {
     public void run(WorkspaceEntry we) {
         we.captureMemento();
         try {
-            final VisualCPOG cpog = (VisualCPOG)we.getModelEntry().getVisualModel();
+            final VisualCPOG cpog = (VisualCPOG) we.getModelEntry().getVisualModel();
             final VisualGraph graph = new VisualGraph(new Graph());
             final CpogToGraphConverter converter = new CpogToGraphConverter(cpog, graph);
             final Framework framework = Framework.getInstance();

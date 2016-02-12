@@ -52,4 +52,4 @@ public class TreeSourceAdapter<Node> implements TreeSource<Node> {
         return source.getPath(node);
     }
 
-};
+}

@@ -142,7 +142,7 @@ public class SettingsEditorDialog extends JDialog {
             if (!(child.getUserObject() instanceof String)) {
                 continue;
             }
-            if (((String)child.getUserObject()).equals(thisLevel)) {
+            if (((String) child.getUserObject()).equals(thisLevel)) {
                 thisLevelNode = child;
                 break;
             }
@@ -241,7 +241,7 @@ public class SettingsEditorDialog extends JDialog {
 
         sectionTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                Object userObject = ((DefaultMutableTreeNode)e.getPath().getLastPathComponent()).getUserObject();
+                Object userObject = ((DefaultMutableTreeNode) e.getPath().getLastPathComponent()).getUserObject();
                 if (userObject instanceof SettingsPageNode) {
                     Settings page = ((SettingsPageNode) userObject).getPage();
                     setObject(page);
@@ -252,13 +252,13 @@ public class SettingsEditorDialog extends JDialog {
         });
 
         sectionPane.setViewportView(sectionTree);
-        sectionPane.setMinimumSize(new Dimension(50,0));
-        sectionPane.setPreferredSize(new Dimension(250,0));
+        sectionPane.setMinimumSize(new Dimension(50, 0));
+        sectionPane.setPreferredSize(new Dimension(250, 0));
         sectionPane.setBorder(BorderFactory.createTitledBorder("Section"));
 
         propertiesPane = new JScrollPane();
-        propertiesPane.setMinimumSize(new Dimension(250,0));
-        propertiesPane.setPreferredSize(new Dimension(450,0));
+        propertiesPane.setMinimumSize(new Dimension(250, 0));
+        propertiesPane.setPreferredSize(new Dimension(450, 0));
         propertiesPane.setBorder(BorderFactory.createTitledBorder("Selection properties"));
         propertiesPane.setViewportView(propertiesTable);
 
@@ -303,22 +303,22 @@ public class SettingsEditorDialog extends JDialog {
         getRootPane().setDefaultButton(okButton);
 
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ok();
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ok();
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancel();
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        cancel();
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     private void ok() {

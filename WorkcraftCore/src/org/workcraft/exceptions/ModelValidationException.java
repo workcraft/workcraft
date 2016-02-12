@@ -39,7 +39,6 @@ public class ModelValidationException extends Exception {
         return errors;
     }
 
-
     @Override
     public String getMessage() {
         String r = "Model contains following errors:\n";

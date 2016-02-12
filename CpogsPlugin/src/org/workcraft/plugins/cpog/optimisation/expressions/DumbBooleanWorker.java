@@ -25,17 +25,17 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 public class DumbBooleanWorker implements BooleanWorker {
     @Override
     public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
-        return new And(x,y);
+        return new And(x, y);
     }
 
     @Override
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
-        return new Iff(x,y);
+        return new Iff(x, y);
     }
 
     @Override
     public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
-        return new Imply(x,y);
+        return new Imply(x, y);
     }
 
     @Override
@@ -50,12 +50,12 @@ public class DumbBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula or(BooleanFormula x, BooleanFormula y) {
-        return new Or(x,y);
+        return new Or(x, y);
     }
 
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
-        return not(new Iff(x,y));
+        return not(new Iff(x, y));
     }
 
     @Override

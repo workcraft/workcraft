@@ -39,7 +39,7 @@ public class DoubleProperty implements PropertyClass {
 
     public Object fromCellEditorValue(Object editorComponentValue) {
         try {
-            String s = (String)editorComponentValue;
+            String s = (String) editorComponentValue;
             return Double.parseDouble(s.replace(",", "."));
         } catch (NumberFormatException e) {
             return 0.0;

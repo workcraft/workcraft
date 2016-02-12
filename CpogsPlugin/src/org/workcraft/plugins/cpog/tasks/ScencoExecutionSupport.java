@@ -61,7 +61,6 @@ public class ScencoExecutionSupport {
         return "0";
     }
 
-
     // BUILD CONSTRAINT FOR EACH ELEMENTS LOOPING ON THE SCENARIOS
     protected String generateConstraint(char[][][] constraints, int numScenarios, int event1, int event2) {
         StringBuilder s = new StringBuilder();
@@ -101,16 +100,16 @@ public class ScencoExecutionSupport {
         if(f.exists() && !f.isDirectory()){
             System.out.println("Boolean controller:");
             try{
-                  FileInputStream fstream = new FileInputStream(fileName);
-                  DataInputStream in = new DataInputStream(fstream);
-                  BufferedReader bre = new BufferedReader(new InputStreamReader(in));
-                  String strLine;
-                  bre.readLine();
-                  bre.readLine();
-                  while ((strLine = bre.readLine()) != null) {
-                      System.out.println(strLine);
-                  }
-                  in.close();
+                FileInputStream fstream = new FileInputStream(fileName);
+                DataInputStream in = new DataInputStream(fstream);
+                BufferedReader bre = new BufferedReader(new InputStreamReader(in));
+                String strLine;
+                bre.readLine();
+                bre.readLine();
+                while ((strLine = bre.readLine()) != null) {
+                    System.out.println(strLine);
+                }
+                in.close();
             }catch (Exception e){ //Catch exception if any
                 System.err.println("Error: " + e.getMessage());
             }
@@ -145,25 +144,25 @@ public class ScencoExecutionSupport {
 
             // Scan every elements of each scenario
             for(VisualComponent component : scenarios.get(k).getComponents())
-            if (component instanceof VisualVertex) {
-                // If element is a vertex
-                VisualVertex vertex = (VisualVertex)component;
+                if (component instanceof VisualVertex) {
+                    // If element is a vertex
+                    VisualVertex vertex = (VisualVertex) component;
 
-                if (!events.containsKey(vertex.getLabel())) { // Check if a condition is present on vertex
-                    events.put(vertex.getLabel(), n);
-                    count.add(1);
-                    Point2D p = vertex.getCenter();
-                    p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
-                    positions.add(p);
-                    n++;
-                } else {
-                    int id = events.get(vertex.getLabel());
-                    count.set(id, count.get(id) + 1);
-                    Point2D p = vertex.getCenter();
-                    p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
-                    positions.set(id, Geometry.add(positions.get(id), p));
+                    if (!events.containsKey(vertex.getLabel())) { // Check if a condition is present on vertex
+                        events.put(vertex.getLabel(), n);
+                        count.add(1);
+                        Point2D p = vertex.getCenter();
+                        p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
+                        positions.add(p);
+                        n++;
+                    } else {
+                        int id = events.get(vertex.getLabel());
+                        count.set(id, count.get(id) + 1);
+                        Point2D p = vertex.getCenter();
+                        p.setLocation(p.getX() - scenarios.get(k).getBoundingBox().getMinX(), p.getY() - scenarios.get(k).getBoundingBox().getMinY());
+                        positions.set(id, Geometry.add(positions.get(id), p));
+                    }
                 }
-            }
         }
         return n;
     }
@@ -176,29 +175,32 @@ public class ScencoExecutionSupport {
         ArrayList<String> args = new ArrayList<String>();
 
         for(int k = 0; k < m; k++) {
-            for(int i = 0; i < n; i++) for(int j = 0; j < n; j++) {
-                constraints[k][i][j] = '0';
-            }
+            for(int i = 0; i < n; i++)
+                for(int j = 0; j < n; j++) {
+                    constraints[k][i][j] = '0';
+                }
 
             for(VisualComponent component : scenarios.get(k).getComponents())
-            if (component instanceof VisualVertex) {
-                VisualVertex vertex = (VisualVertex)component;
-                int id = events.get(vertex.getLabel());
-                constraints[k][id][id] = '1';
-            }
+                if (component instanceof VisualVertex) {
+                    VisualVertex vertex = (VisualVertex) component;
+                    int id = events.get(vertex.getLabel());
+                    constraints[k][id][id] = '1';
+                }
 
-            for(int i = 0; i < n; i++) for(int j = 0; j < n; j++) graph[i][j] = 0;
+            for(int i = 0; i < n; i++)
+                for(int j = 0; j < n; j++)
+                    graph[i][j] = 0;
 
             for(VisualConnection c : scenarios.get(k).getConnections())
-            if (c instanceof VisualArc) {
-                VisualArc arc = (VisualArc)c;
-                VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
-                if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
-                    int id1 = events.get(((VisualVertex)c1).getLabel());
-                    int id2 = events.get(((VisualVertex)c2).getLabel());
-                    graph[id1][id2] = 1;
+                if (c instanceof VisualArc) {
+                    VisualArc arc = (VisualArc) c;
+                    VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
+                    if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
+                        int id1 = events.get(((VisualVertex) c1).getLabel());
+                        int id2 = events.get(((VisualVertex) c2).getLabel());
+                        graph[id1][id2] = 1;
+                    }
                 }
-            }
 
             // compute transitive closure
 
@@ -228,15 +230,15 @@ public class ScencoExecutionSupport {
 
             for(int i = 0; i < n; i++)
                 for(int j = 0; j < n; j++)
-                if (i != j) {
-                    char ch = '0';
+                    if (i != j) {
+                        char ch = '0';
 
-                    if (graph[i][j] > 0) ch = '1';
-                    if (graph[i][j] > 1) ch = '-';
-                    if (constraints[k][i][i] == '0' || constraints[k][j][j] == '0') ch = '-';
+                        if (graph[i][j] > 0) ch = '1';
+                        if (graph[i][j] > 1) ch = '-';
+                        if (constraints[k][i][i] == '0' || constraints[k][j][j] == '0') ch = '-';
 
-                    constraints[k][i][j] = ch;
-                }
+                        constraints[k][i][j] = ch;
+                    }
         }
 
         args.add("OK");
@@ -250,7 +252,7 @@ public class ScencoExecutionSupport {
             File scenarioFile, File encodingFile, EncoderSettings settings) {
         try{
 
-             PrintStream output = new PrintStream(scenarioFile);
+            PrintStream output = new PrintStream(scenarioFile);
 
             for(int k = 0; k < m; k++) {
                 Map<String, Integer> nodes = new HashMap<String, Integer>();
@@ -258,12 +260,12 @@ public class ScencoExecutionSupport {
                 output.println(".scenario CPOG_" + k);
                 for(VisualConnection c : scenarios.get(k).getConnections()){
                     if (c instanceof VisualArc) {
-                        VisualArc arc = (VisualArc)c;
+                        VisualArc arc = (VisualArc) c;
                         VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
                         if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
-                            nodes.put(((VisualVertex)c1).getLabel(), 0);
-                            nodes.put(((VisualVertex)c2).getLabel(), 0);
-                            output.println(((VisualVertex)c1).getLabel() + " " + ((VisualVertex)c2).getLabel());
+                            nodes.put(((VisualVertex) c1).getLabel(), 0);
+                            nodes.put(((VisualVertex) c2).getLabel(), 0);
+                            output.println(((VisualVertex) c1).getLabel() + " " + ((VisualVertex) c2).getLabel());
                         }
                     }
                 }
@@ -271,7 +273,7 @@ public class ScencoExecutionSupport {
                 // Print conditions on vertices
                 for(VisualComponent component : scenarios.get(k).getComponents()){
                     if(component instanceof VisualVertex){
-                        VisualVertex vertex = (VisualVertex)component;
+                        VisualVertex vertex = (VisualVertex) component;
                         BooleanFormula condition = vertex.getCondition();
                         if (condition != One.instance() && condition != Zero.instance()){
 
@@ -283,8 +285,8 @@ public class ScencoExecutionSupport {
                                 if(cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
                                         cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' '){
                                     tmp = "";
-                                    while(i < cond.length() && cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
-                                            cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' '){
+                                    while (i < cond.length() && cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
+                                            cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' ') {
                                         tmp += cond.charAt(i);
                                         i++;
                                     }
@@ -297,7 +299,7 @@ public class ScencoExecutionSupport {
                                         result += cond.charAt(i);
                                     }
                                 } else{
-                                    result += cond.charAt(i);;
+                                    result += cond.charAt(i); ;
                                 }
                             }
 
@@ -316,7 +318,7 @@ public class ScencoExecutionSupport {
                             output.println(" " + vertex.getLabel());
                         }
 
-                        //VisualVertex vertex = (VisualVertex)component;
+                        //VisualVertex vertex = (VisualVertex) component;
                         if(!nodes.containsKey(vertex.getLabel())){
                             output.println(vertex.getLabel());
                         }
@@ -334,31 +336,31 @@ public class ScencoExecutionSupport {
             if(settings.getGenMode() != GenerationMode.SCENCO){
 
                 if(settings.isCustomEncMode()){
-                        PrintStream output1 = new PrintStream(encodingFile);
+                    PrintStream output1 = new PrintStream(encodingFile);
 
-                        String[] enc = settings.getCustomEnc();
-                        for(int k = 0; k < m; k++) {
-                            if(enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
-                                    enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
-                                    enc[k].contains("8") || enc[k].contains("9")){
-                                JOptionPane.showMessageDialog(null,
-                                        "Op-code " + enc[k] + " not allowed.",
-                                        "Custom encoding error",
-                                        JOptionPane.ERROR_MESSAGE);
-                                output1.close();
-                                return -1;
+                    String[] enc = settings.getCustomEnc();
+                    for(int k = 0; k < m; k++) {
+                        if(enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
+                                enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
+                                enc[k].contains("8") || enc[k].contains("9")){
+                            JOptionPane.showMessageDialog(null,
+                                    "Op-code " + enc[k] + " not allowed.",
+                                    "Custom encoding error",
+                                    JOptionPane.ERROR_MESSAGE);
+                            output1.close();
+                            return -1;
 
-                            }
-                            String empty = "";
-                            for (int i=0; i<settings.getBits(); i++) empty += 'X';
-                            if (enc[k].isEmpty() || enc[k].equals(empty)){
-                                output1.println("/");
-                            } else {
-                                output1.println(enc[k]);
-                            }
                         }
-                        output1.println(settings.getBits());
-                        output1.close();
+                        String empty = "";
+                        for (int i=0; i<settings.getBits(); i++) empty += 'X';
+                        if (enc[k].isEmpty() || enc[k].equals(empty)){
+                            output1.println("/");
+                        } else {
+                            output1.println(enc[k]);
+                        }
+                    }
+                    output1.println(settings.getBits());
+                    output1.close();
                 }
             }
         }catch (IOException e) {
@@ -380,12 +382,12 @@ public class ScencoExecutionSupport {
         int v = 0;
         //Debug Printing: launching executable
         /*System.out.println("CALLING SCENCO: " + scencoCommand + " " + scenarioFile.getAbsolutePath() + " " +
-        "-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
-        verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
-        espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
-        gatesLibrary + " " + modBitFlag + " " + modBit);*/
+          "-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
+          verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
+          espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
+          gatesLibrary + " " + modBitFlag + " " + modBit); */
 
-                process = new ProcessBuilder(parameters).start();
+        process = new ProcessBuilder(parameters).start();
         InputStream is = process.getInputStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
@@ -411,7 +413,7 @@ public class ScencoExecutionSupport {
                     if(settings.isVerboseMode())
                         System.out.println(line);
                     StringTokenizer st2 = new StringTokenizer(line, ",");
-                    String el = (String)st2.nextElement();
+                    String el = (String) st2.nextElement();
                     if(el.equals("V")){ //formula of a vertex
                         optVertices[v] = (String) st2.nextElement();
                         truthTableVertices[v] = (String) st2.nextElement();
@@ -504,7 +506,7 @@ public class ScencoExecutionSupport {
     }
 
     // Instantiating encoding into graphs
-    protected void instantiateEncoding(int m,int freeVariables,
+    protected void instantiateEncoding(int m, int freeVariables,
             ArrayList<VisualTransformableNode> scenarios, Variable[] vars,
             boolean[][] encoding, int pr, HashMap<String, Integer> events,
             VisualVertex[] vertices, VisualCPOG cpog, VisualScenario resultCpog,

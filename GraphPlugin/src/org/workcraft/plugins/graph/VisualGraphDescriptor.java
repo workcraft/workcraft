@@ -10,7 +10,7 @@ public class VisualGraphDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-        return new VisualGraph((Graph)mathModel);
+        return new VisualGraph((Graph) mathModel);
     }
 
     @Override

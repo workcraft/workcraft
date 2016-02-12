@@ -31,7 +31,7 @@ public class FstToFsmConverterTool extends ConversionTool {
     public void run(WorkspaceEntry we) {
         we.captureMemento();
         try {
-            final VisualFst src = (VisualFst)we.getModelEntry().getVisualModel();
+            final VisualFst src = (VisualFst) we.getModelEntry().getVisualModel();
             final VisualFsm dst = new VisualFsm(new Fsm());
             final FstToFsmConverter converter = new FstToFsmConverter(src, dst);
             final Framework framework = Framework.getInstance();

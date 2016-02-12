@@ -62,7 +62,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
     @Override
     public void layout(VisualModel model) {
         if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit)model;
+            VisualCircuit circuit = (VisualCircuit) model;
             setComponentPosition(circuit);
             setPolylineConnections(circuit);
             //alignPorts(circuit);
@@ -78,7 +78,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
                 Point2D pos = new Point2D.Double(x, y);
                 component.setPosition(pos);
                 if (component instanceof VisualCircuitComponent) {
-                    VisualCircuitComponent circuitComponent = (VisualCircuitComponent)component;
+                    VisualCircuitComponent circuitComponent = (VisualCircuitComponent) component;
                     setContactPositions(circuitComponent);
                 }
                 y += DY;
@@ -161,16 +161,16 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
         VisualNode firstNode = connection.getFirst();
         VisualNode secondNode = connection.getSecond();
         if ((firstNode instanceof VisualContact) && (secondNode instanceof VisualContact)) {
-            VisualContact firstContact = (VisualContact)firstNode;
-            VisualContact secondContact = (VisualContact)secondNode;
+            VisualContact firstContact = (VisualContact) firstNode;
+            VisualContact secondContact = (VisualContact) secondNode;
             if (!firstContact.isPort() && !secondContact.isPort()
-              && (firstContact.getParent() == secondContact.getParent())) {
+                    && (firstContact.getParent() == secondContact.getParent())) {
                 Point2D firstPos = firstContact.getRootSpacePosition();
                 Point2D secondPos = secondContact.getRootSpacePosition();
                 Node parent = firstContact.getParent();
                 double h = 2.0;
                 if (parent instanceof VisualCircuitComponent) {
-                    VisualCircuitComponent component = (VisualCircuitComponent)parent;
+                    VisualCircuitComponent component = (VisualCircuitComponent) parent;
                     Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
                     h = bb.getHeight();
                 }
@@ -180,7 +180,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
                 double dy = (d > 0) ? h - d : -h - d;
                 ConnectionGraphic graphic = connection.getGraphic();
                 if (graphic instanceof Polyline) {
-                    Polyline polyline = (Polyline)graphic;
+                    Polyline polyline = (Polyline) graphic;
                     polyline.addControlPoint(new Point2D.Double(firstPos.getX(), firstPos.getY() - dy));
                     polyline.addControlPoint(new Point2D.Double(secondPos.getX() - dx, firstPos.getY() - dy));
                     polyline.addControlPoint(new Point2D.Double(secondPos.getX() - dx, secondPos.getY()));
@@ -205,7 +205,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
                     count++;
                 }
                 if (count > 0) {
-                    contact.setRootSpaceY(y / (double)count);
+                    contact.setRootSpaceY(y / (double) count);
                 }
             }
         }

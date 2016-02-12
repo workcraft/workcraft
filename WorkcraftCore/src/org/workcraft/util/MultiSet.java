@@ -102,7 +102,7 @@ public class MultiSet<T> implements Set<T> {
         for (T o: map.keySet()) {
             for (int i = 0; i < count(o); i++) {
                 if (idx > a.length)
-                a[idx] = (R)o;
+                a[idx] = (R) o;
             }
         }
         return a;
@@ -141,7 +141,7 @@ public class MultiSet<T> implements Set<T> {
         }
         if (count > n) {
             count -= n;
-            map.put((T)o, count);
+            map.put((T) o, count);
             result = true;
         } else {
             map.remove(o);
@@ -162,7 +162,7 @@ public class MultiSet<T> implements Set<T> {
     public boolean addAll(Collection<? extends T> c) {
         boolean result = false;
         if (c instanceof MultiSet<?>) {
-            MultiSet<? extends T> otherMultiSet = (MultiSet<? extends T>)c;
+            MultiSet<? extends T> otherMultiSet = (MultiSet<? extends T>) c;
             for (T o: otherMultiSet.map.keySet()) {
                 result |= add(o, otherMultiSet.count(o));
             }
@@ -185,7 +185,7 @@ public class MultiSet<T> implements Set<T> {
 
         MultiSet<Object> otherMultiset = null;
         if (c instanceof MultiSet<?>) {
-            otherMultiset = (MultiSet<Object>)c;
+            otherMultiset = (MultiSet<Object>) c;
         } else {
             otherMultiset = new MultiSet<>();
             otherMultiset.addAll(c);
@@ -198,7 +198,7 @@ public class MultiSet<T> implements Set<T> {
                 map.remove(o);
                 result = true;
             } else if (thisCount > otherCount) {
-                map.put((T)o, otherCount);
+                map.put((T) o, otherCount);
                 result = true;
             }
         }
@@ -209,7 +209,7 @@ public class MultiSet<T> implements Set<T> {
     public boolean removeAll(Collection<?> c) {
         boolean result = false;
         if (c instanceof MultiSet<?>) {
-            MultiSet<?> otherMultiSet = (MultiSet<?>)c;
+            MultiSet<?> otherMultiSet = (MultiSet<?>) c;
             for (Object o: otherMultiSet.map.keySet()) {
                 result |= remove(o, otherMultiSet.count(o));
             }

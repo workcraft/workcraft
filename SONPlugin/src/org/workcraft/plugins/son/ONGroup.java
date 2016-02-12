@@ -57,7 +57,7 @@ public class ONGroup extends PageNode{
         for(Node node: nodes){
             if(!this.contains(node))
                 return false;
-            }
+        }
         return true;
     }
 
@@ -65,7 +65,7 @@ public class ONGroup extends PageNode{
         ArrayList<Condition> result =  new ArrayList<Condition>();
         for(Node node : getComponents())
             if(node instanceof Condition)
-                result.add((Condition)node);
+                result.add((Condition) node);
 
         return result;
     }
@@ -74,7 +74,7 @@ public class ONGroup extends PageNode{
         ArrayList<Event> result =  new ArrayList<Event>();
         for(Node node : getComponents())
             if(node instanceof Event)
-                result.add((Event)node);
+                result.add((Event) node);
 
         return result;
     }
@@ -83,10 +83,10 @@ public class ONGroup extends PageNode{
         ArrayList<TransitionNode> result =  new ArrayList<TransitionNode>();
         for(Node node : getComponents()){
             if(node instanceof Event)
-                result.add((Event)node);
+                result.add((Event) node);
             if(node instanceof Block)
-                if(((Block)node).getIsCollapsed())
-                    result.add((Block)node);
+                if(((Block) node).getIsCollapsed())
+                    result.add((Block) node);
         }
 
         return result;

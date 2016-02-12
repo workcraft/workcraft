@@ -351,13 +351,13 @@ public class VisualModelTests {
         Assert.assertTrue(newList.contains(node2c));
         Assert.assertTrue(newList.contains(node3c));
         Assert.assertTrue(newList.contains(node4c));
-}
+    }
 
     @Test
     public void testGroupingAutoGroupConnections() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualComponent c1 = createComponent(root);
         VisualComponent c2 = createComponent(root);
         VisualConnection con = createConnection(c1, c2, root);
@@ -379,7 +379,7 @@ public class VisualModelTests {
     public void testGroupingAutoGroupConnectionsIgnoreSelection() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualComponent c1 = createComponent(root);
         VisualComponent c2 = createComponent(root);
         VisualConnection con = createConnection(c1, c2, root);
@@ -401,7 +401,7 @@ public class VisualModelTests {
     public void testGroupingAutoGroupTwoConnections() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualComponent c1 = createComponent(root);
         VisualComponent c2 = createComponent(root);
         VisualConnection con1 = createConnection(c1, c2, root);
@@ -427,7 +427,7 @@ public class VisualModelTests {
     public void testGroupingAutoGroupConnectionsPointingDeep() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualGroup node1 = createGroup(root);
         VisualComponent c1 = createComponent(node1);
         VisualComponent c2 = createComponent(root);
@@ -450,7 +450,7 @@ public class VisualModelTests {
     public void testGroupingDontGroupConnectionsSimple() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualComponent c1 = createComponent(root);
         VisualComponent c2 = createComponent(root);
         VisualComponent c3 = createComponent(root);
@@ -481,7 +481,7 @@ public class VisualModelTests {
 
         public boolean equals(Object obj) {
             Assert.assertTrue("Should be a visual group", obj instanceof VisualGroup);
-            assertEquals((Node)obj);
+            assertEquals((Node) obj);
             return true;
         }
     }
@@ -490,7 +490,7 @@ public class VisualModelTests {
     public void testGroupingDontGroupConnections() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualComponent c1 = createComponent(root);
         VisualComponent c2 = createComponent(root);
         VisualComponent c3 = createComponent(root);
@@ -515,7 +515,7 @@ public class VisualModelTests {
     public void testGroupingDontCountConnections() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualComponent c1 = createComponent(root);
         VisualComponent c2 = createComponent(root);
         VisualConnection con = createConnection(c1, c2, root);
@@ -539,7 +539,7 @@ public class VisualModelTests {
     public void testHitNodeCurrentLevelTransformation() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualGroup group1 = createGroup(root);
         group1.setX(101);
         SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
@@ -556,7 +556,7 @@ public class VisualModelTests {
     public void testHitObjectsCurrentLevelTransformation() {
         VisualModel model = createModel();
 
-        VisualGroup root = (VisualGroup)model.getRoot();
+        VisualGroup root = (VisualGroup) model.getRoot();
         VisualGroup group1 = createGroup(root);
         group1.setX(101);
         // Note that VisualGroup nodes have margin of 0.1 on each side.

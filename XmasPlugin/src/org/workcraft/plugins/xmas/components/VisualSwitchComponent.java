@@ -37,7 +37,6 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
 
-
 @DisplayName("Switch")
 @SVGIcon("images/icons/svg/xmas-switch.svg")
 public class VisualSwitchComponent extends VisualXmasComponent {
@@ -76,7 +75,7 @@ public class VisualSwitchComponent extends VisualXmasComponent {
     }
 
     public SwitchComponent getReferencedSwitchComponent() {
-        return (SwitchComponent)getReferencedComponent();
+        return (SwitchComponent) getReferencedComponent();
     }
 
     public Shape getUpPointerShape() {
@@ -103,9 +102,9 @@ public class VisualSwitchComponent extends VisualXmasComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (d instanceof StateDecoration) {
-            g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+            g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-            if (((StateDecoration)d).getState()) {
+            if (((StateDecoration) d).getState()) {
                 Shape shape = transformShape(getUpPointerShape());
                 g.fill(shape);
                 g.draw(shape);

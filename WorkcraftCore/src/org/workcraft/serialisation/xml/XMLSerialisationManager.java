@@ -34,7 +34,7 @@ import org.workcraft.util.XmlUtil;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
     private HashMap<String, XMLSerialiser> serialisers = new HashMap<String, XMLSerialiser>();
-    private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this,this);
+    private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this, this);
     private XMLSerialiserState state = null;
 
     private void registerSerialiser(XMLSerialiser serialiser) {
@@ -66,7 +66,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
         nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);
 
         if (object instanceof Container)
-            for (Node child : ((Container)object).getChildren()) {
+            for (Node child : ((Container) object).getChildren()) {
                 Element childElement = XmlUtil.createChildElement("node", element);
                 serialise(childElement, child);
             }

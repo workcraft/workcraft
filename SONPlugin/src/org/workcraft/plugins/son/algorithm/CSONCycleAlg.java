@@ -100,13 +100,12 @@ public class CSONCycleAlg extends ONCycleAlg{
         return super.cycleTask(fliter);
     }
 
-
     /**
      *     get a/synchronous cycles
      */
     @Override
     public Collection<Path> cycleTask(Collection<? extends Node> nodes){
-         return cycleFliter(super.cycleTask(nodes));
+        return cycleFliter(super.cycleTask(nodes));
     }
 
     /**

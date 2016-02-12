@@ -93,7 +93,7 @@ public class UniqueNameManager implements NameManager {
     private static String codeToString(int code) {
         String result = "";
         do {
-            result += (char)('a' + code % 26);
+            result += (char) ('a' + code % 26);
             code /= 26;
         } while (code > 0);
         return result;

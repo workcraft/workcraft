@@ -50,7 +50,7 @@ import org.workcraft.util.Hierarchy;
 public class Xmas extends AbstractMathModel {
 
     public Xmas() {
-        this(new MathGroup(), (References)null);
+        this(new MathGroup(), (References) null);
     }
 
     public Xmas(Container root, References refs) {
@@ -74,7 +74,7 @@ public class Xmas extends AbstractMathModel {
     }
 
     public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-        MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);
         return con;
     }

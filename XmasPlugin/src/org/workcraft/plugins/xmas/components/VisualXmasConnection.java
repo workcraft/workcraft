@@ -41,7 +41,7 @@ public class VisualXmasConnection extends VisualConnection {
         boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         Color colorisation = d.getColorisation();
         g.setColor(Coloriser.colorise(getColor(), colorisation));
-        g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));
+        g.setStroke(new BasicStroke((float) XmasSettings.getWireWidth()));
 
         if (!inSimulationMode && !XmasSettings.getShowContacts()) {
             double tStart = Geometry.getBorderPointParameter(getFirstShape(), getGraphic(), 0, 1);

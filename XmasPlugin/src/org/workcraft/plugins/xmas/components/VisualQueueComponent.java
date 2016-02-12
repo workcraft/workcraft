@@ -96,7 +96,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
     }
 
     public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
-        double factor2 = (double)getReferencedQueueComponent().getCapacity() / 2.0;
+        double factor2 = (double) getReferencedQueueComponent().getCapacity() / 2.0;
         double offset = factor2 * (size / 2 - contactLength) + contactLength;
         double x = positioning.xSign * offset;
         double y = positioning.ySign * offset;
@@ -104,9 +104,8 @@ public class VisualQueueComponent extends VisualXmasComponent {
     }
 
     public QueueComponent getReferencedQueueComponent() {
-        return (QueueComponent)getReferencedComponent();
+        return (QueueComponent) getReferencedComponent();
     }
-
 
     private boolean isInitialised() {
         return getReferencedQueueComponent() != null;
@@ -197,7 +196,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
             // Quiescent elements
             g.setColor(getForegroundColor());
             for (int i = 0; i < capacity; i++) {
-                SlotState slot = ((QueueDecoration)d).getSlotState(i);
+                SlotState slot = ((QueueDecoration) d).getSlotState(i);
                 Shape slotShape = transformShape(getSlotShape(i));
                 g.draw(slotShape);
                 if (!slot.isMemExcited && slot.isFull) {
@@ -219,7 +218,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
             // Excited elements
             g.setColor(Coloriser.colorise(getForegroundColor(), CommonSimulationSettings.getEnabledForegroundColor()));
             for (int i = 0; i < capacity; i++) {
-                SlotState slot = ((QueueDecoration)d).getSlotState(i);
+                SlotState slot = ((QueueDecoration) d).getSlotState(i);
                 if (slot.isMemExcited) {
                     Shape tokenShape = transformShape(getTokenShape(i));
                     g.draw(tokenShape);
@@ -251,7 +250,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualQueueComponent) {
-            QueueComponent srcComponent = ((VisualQueueComponent)src).getReferencedQueueComponent();
+            QueueComponent srcComponent = ((VisualQueueComponent) src).getReferencedQueueComponent();
             getReferencedQueueComponent().setCapacity(srcComponent.getCapacity());
             getReferencedQueueComponent().setInit(srcComponent.getInit());
         }

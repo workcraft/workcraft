@@ -84,7 +84,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
     @Override
     public void attach(Node root) {
         // root must be a namespace provider
-        topProvider = (NamespaceProvider)root;
+        topProvider = (NamespaceProvider) root;
         if (refs != null) {
             for(Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
                 setExistingReference(n);
@@ -145,7 +145,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
         Node node;
         node = man.getNode(head);
         if ((node != null) && (node instanceof NamespaceProvider)) {
-            return getNodeByReference((NamespaceProvider)node, tail);
+            return getNodeByReference((NamespaceProvider) node, tail);
         }
         return node;
     }

@@ -10,7 +10,7 @@ public class VisualCpogDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-        return new VisualCPOG((CPOG)mathModel);
+        return new VisualCPOG((CPOG) mathModel);
     }
 
     @Override

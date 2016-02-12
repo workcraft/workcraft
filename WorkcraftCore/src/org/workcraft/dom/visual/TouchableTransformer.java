@@ -19,7 +19,6 @@
 *
 */
 
-
 package org.workcraft.dom.visual;
 
 import java.awt.geom.AffineTransform;
@@ -42,7 +41,7 @@ public class TouchableTransformer implements Touchable {
 
     private void minMax(double[] x, double[] minMax) {
         minMax[0] = minMax[1] = x[0];
-        for(int i=1;i<x.length;i++) {
+        for(int i=1; i<x.length; i++) {
             if(x[i]>minMax[1])
                 minMax[1] = x[i];
             if(x[i]<minMax[0])

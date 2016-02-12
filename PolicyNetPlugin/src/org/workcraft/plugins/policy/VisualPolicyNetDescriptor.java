@@ -10,7 +10,7 @@ public class VisualPolicyNetDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-        return new VisualPolicyNet((PolicyNet)mathModel);
+        return new VisualPolicyNet((PolicyNet) mathModel);
     }
 
     @Override

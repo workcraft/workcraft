@@ -30,7 +30,6 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
     private final class HugeSgRunnable implements Runnable {
@@ -45,10 +44,10 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
         public void run() {
             final Framework framework = Framework.getInstance();
             int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
-                "The state graph contains " + stateCountMsg + " states."
-                + "It may take a very long time to be processed.\n\n"
-                + "Are you sure you want to display it?",
-                "Please confirm", JOptionPane.YES_NO_OPTION);
+                    "The state graph contains " + stateCountMsg + " states."
+                    + "It may take a very long time to be processed.\n\n"
+                    + "Are you sure you want to display it?",
+                    "Please confirm", JOptionPane.YES_NO_OPTION);
             hugeSgConfirmed = answer == JOptionPane.YES_OPTION;
         }
 
@@ -77,7 +76,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
         try {
             // Common variables
             monitor.progressUpdate(0.05);
-            PetriNetModel pn = (PetriNetModel)getWorkspaceEntry().getModelEntry().getMathModel();
+            PetriNetModel pn = (PetriNetModel) getWorkspaceEntry().getModelEntry().getMathModel();
             pn.setTitle(getWorkspaceEntry().getTitle());
             Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
             if (pnExporter == null) {

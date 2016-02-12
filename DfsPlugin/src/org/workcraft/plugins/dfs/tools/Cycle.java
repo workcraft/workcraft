@@ -49,10 +49,10 @@ public class Cycle implements Comparable<Cycle> {
             if (c instanceof VisualRegister || c instanceof VisualBinaryRegister) {
                 boolean hasToken = false;
                 if (c instanceof VisualRegister) {
-                    hasToken = ((VisualRegister)c).getReferencedRegister().isMarked();
+                    hasToken = ((VisualRegister) c).getReferencedRegister().isMarked();
                 }
                 if (c instanceof VisualBinaryRegister) {
-                    BinaryRegister ref = ((VisualBinaryRegister)c).getReferencedBinaryRegister();
+                    BinaryRegister ref = ((VisualBinaryRegister) c).getReferencedBinaryRegister();
                     hasToken = ref.isTrueMarked() || ref.isFalseMarked();
                 }
                 if (!hasToken) {
@@ -88,7 +88,7 @@ public class Cycle implements Comparable<Cycle> {
             for (Node pred: dfs.getPreset(cur)) {
                 if (!(pred instanceof VisualComponent)) continue;
                 if (pred instanceof VisualPushRegister) {
-                    result.add((VisualPushRegister)pred);
+                    result.add((VisualPushRegister) pred);
                 } else     if (!(pred instanceof VisualPopRegister)) {
                     queue.add(pred);
                 }
@@ -106,7 +106,7 @@ public class Cycle implements Comparable<Cycle> {
         for (VisualControlRegister control: controls) {
             probability *= control.getReferencedControlRegister().getProbability();
         }
-        double delay = ((MathDelayNode)component.getReferencedComponent()).getDelay();
+        double delay = ((MathDelayNode) component.getReferencedComponent()).getDelay();
         return delay * probability;
     }
 

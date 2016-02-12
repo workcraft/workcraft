@@ -41,9 +41,9 @@ public class ConnectionDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-        MathConnection con = (MathConnection)instance;
-        MathNode first = (MathNode)internalReferenceResolver.getObject(element.getAttribute("first"));
-        MathNode second = (MathNode)internalReferenceResolver.getObject(element.getAttribute("second"));
+        MathConnection con = (MathConnection) instance;
+        MathNode first = (MathNode) internalReferenceResolver.getObject(element.getAttribute("first"));
+        MathNode second = (MathNode) internalReferenceResolver.getObject(element.getAttribute("second"));
 
         con.setDependencies(first, second);
     }

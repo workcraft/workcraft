@@ -47,7 +47,7 @@ public class PnToCpogDialog extends JDialog {
     private JPanel buttonPanel, content, settingPanel;
     protected int modalResult;
 
-    public PnToCpogDialog(Window owner, PnToCpogSettings settings,WorkspaceEntry we) {
+    public PnToCpogDialog(Window owner, PnToCpogSettings settings, WorkspaceEntry we) {
         super(owner, "Petri Net to CPOG conversion [Untanglings]", ModalityType.APPLICATION_MODAL);
         modalResult = 0;
 
@@ -72,13 +72,13 @@ public class PnToCpogDialog extends JDialog {
         setContentPane(content);
 
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        setVisible(false);
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         sizeWindow(560, 200, 200, 100);
     }
@@ -177,8 +177,8 @@ public class PnToCpogDialog extends JDialog {
     }
 
     private void sizeWindow(int width, int height, int row1, int row2){
-        setMinimumSize(new Dimension(width,height));
-        //setPreferredSize(new Dimension(width,height));
+        setMinimumSize(new Dimension(width, height));
+        //setPreferredSize(new Dimension(width, height));
         setResizable(false);
         pack();
     }

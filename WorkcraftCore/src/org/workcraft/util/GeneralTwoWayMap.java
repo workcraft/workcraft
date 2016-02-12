@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.workcraft.exceptions.ArgumentException;
 
-public class GeneralTwoWayMap<T1,T2> {
+public class GeneralTwoWayMap<T1, T2> {
     public GeneralTwoWayMap(Map<T1, T2> map1, Map<T2, T1> map2) {
         if(!map1.isEmpty() || !map2.isEmpty())
             throw new ArgumentException("maps should be empty");
@@ -58,12 +58,12 @@ public class GeneralTwoWayMap<T1,T2> {
     public void removeKey(T1 first) {
         T2 second = getValue(first);
         if(second != null)
-            remove(first,second);
+            remove(first, second);
     }
     public void removeValue(T2 second) {
         T1 first = getKey(second);
         if(first != null)
-            remove(first,second);
+            remove(first, second);
     }
     private void remove(T1 first, T2 second) {
         from1to2.remove(first);

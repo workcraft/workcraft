@@ -176,7 +176,8 @@ public class VisualScenario extends VisualGroup {
 
             boolean perfectMatch = true;
 
-            for(Variable var : sortedVariables) if (!var.getState().matches(encoding.getState(var))) perfectMatch = false;
+            for(Variable var : sortedVariables)
+                if (!var.getState().matches(encoding.getState(var))) perfectMatch = false;
 
             for(Variable var : sortedVariables) {
                 String text = var.getLabel();

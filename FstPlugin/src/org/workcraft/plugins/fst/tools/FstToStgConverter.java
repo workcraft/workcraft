@@ -154,9 +154,9 @@ public class FstToStgConverter {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualEvent) {
-            result = node == getRelatedTransition((VisualEvent)highLevelNode);
+            result = node == getRelatedTransition((VisualEvent) highLevelNode);
         } else if (highLevelNode instanceof VisualState) {
-            result = node == getRelatedPlace((VisualState)highLevelNode);
+            result = node == getRelatedPlace((VisualState) highLevelNode);
         }
         return result;
     }

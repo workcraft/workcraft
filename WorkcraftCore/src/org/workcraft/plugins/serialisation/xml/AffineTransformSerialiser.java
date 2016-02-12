@@ -46,6 +46,6 @@ public class AffineTransformSerialiser implements BasicXMLSerialiser {
                 DoubleSerialiser.doubleToString(matrix[3]),
                 DoubleSerialiser.doubleToString(matrix[4]),
                 DoubleSerialiser.doubleToString(matrix[5]))
-            );
+        );
     }
 }

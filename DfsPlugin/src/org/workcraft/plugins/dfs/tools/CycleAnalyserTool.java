@@ -171,7 +171,7 @@ public class CycleAnalyserTool extends AbstractTool {
 
     @Override
     public void activated(final GraphEditor editor) {
-        dfs = (VisualDfs)editor.getModel();
+        dfs = (VisualDfs) editor.getModel();
         cycleTable.clearSelection();
         selectedCycle = null;
         cycles = findCycles();
@@ -212,7 +212,7 @@ public class CycleAnalyserTool extends AbstractTool {
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualDelayComponent) {
                     if (selectedCycle == null) {
-                        double delay = ((VisualDelayComponent)node).getReferencedDelayComponent().getDelay();
+                        double delay = ((VisualDelayComponent) node).getReferencedDelayComponent().getDelay();
                         double range = maxDelay - minDelay;
                         double offset = delay - minDelay;
                         final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
@@ -227,12 +227,12 @@ public class CycleAnalyserTool extends AbstractTool {
                             }
                         };
                     } else if (selectedCycle.components.contains(node)) {
-                        double delay = selectedCycle.getEffectiveDelay((VisualDelayComponent)node);
+                        double delay = selectedCycle.getEffectiveDelay((VisualDelayComponent) node);
                         double range = selectedCycle.maxDelay - selectedCycle.minDelay;
                         double offset = delay - selectedCycle.minDelay;
                         int bgIintencity = 150;
                         if (range > 0) {
-                            bgIintencity = (int)(bgIintencity + (255 - bgIintencity) * offset / range);
+                            bgIintencity = (int) (bgIintencity + (255 - bgIintencity) * offset / range);
                         }
                         final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
                         final Color bgColor = new Color(bgIintencity, 0, 0);
@@ -288,9 +288,9 @@ public class CycleAnalyserTool extends AbstractTool {
             String toString = "";
             LinkedHashSet<VisualDelayComponent> components = new LinkedHashSet<VisualDelayComponent>();
             for (int j = 0; j < tmpCycle.size(); j++) {
-                VisualDelayComponent component = (VisualDelayComponent)tmpCycle.get(j);
+                VisualDelayComponent component = (VisualDelayComponent) tmpCycle.get(j);
                 if (toString.length() > 0) {
-                    toString += Character.toString((char)0x2192); // arrow symbol
+                    toString += Character.toString((char) 0x2192); // arrow symbol
                 }
                 toString += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
                 components.add(component);

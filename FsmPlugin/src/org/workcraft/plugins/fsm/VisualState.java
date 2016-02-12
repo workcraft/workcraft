@@ -118,14 +118,14 @@ public class VisualState extends VisualComponent {
     }
 
     public State getReferencedState() {
-        return (State)getReferencedComponent();
+        return (State) getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualState) {
-            VisualState srcComponent = (VisualState)src;
+            VisualState srcComponent = (VisualState) src;
             getReferencedState().setFinal(srcComponent.getReferencedState().isFinal());
         }
     }
@@ -137,7 +137,7 @@ public class VisualState extends VisualComponent {
         boolean isInitial = false;
         for (Stylable src: srcs) {
             if (src instanceof VisualState) {
-                VisualState srcState = (VisualState)src;
+                VisualState srcState = (VisualState) src;
                 if (srcState.getReferencedState().isFinal()) {
                     isFinal = true;
                 }

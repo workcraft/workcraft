@@ -5,7 +5,6 @@ import java.awt.Color;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
-
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
 public class Condition extends PlaceNode{
 

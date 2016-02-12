@@ -28,7 +28,6 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 
-
 public interface Model extends NodeContext {
     void setTitle(String title);
     String getTitle();

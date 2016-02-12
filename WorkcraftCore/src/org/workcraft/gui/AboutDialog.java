@@ -59,7 +59,6 @@ public class AboutDialog extends JDialog {
 
         owner.getLocationOnScreen();
 
-
         BufferedImage logoImage = null;
         try {
             logoImage = GUI.loadImageFromResource("images/logo.png");
@@ -74,13 +73,12 @@ public class AboutDialog extends JDialog {
             Font font = logoLabel.getFont();
             logoLabel.setFont(font.deriveFont(72.0f));
         }
-        logoLabel.setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
+        logoLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
         infoPane = new JEditorPane();
         infoPane.setFocusable(false);
 
         infoPane.setContentType("text/html");
-
 
         infoPane.setEditable(false);
         infoPane.setOpaque(false);
@@ -125,22 +123,22 @@ public class AboutDialog extends JDialog {
         getRootPane().setDefaultButton(okButton);
 
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ok();
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ok();
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ok();
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ok();
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
     }
 

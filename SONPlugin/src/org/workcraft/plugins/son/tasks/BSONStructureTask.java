@@ -21,7 +21,6 @@ import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 
-
 public class BSONStructureTask extends AbstractStructuralVerification{
 
     private SON net;
@@ -70,9 +69,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
             return;
         }
 
-         ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
-         relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
-         components.addAll(relatedCPlaces);
+        ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
+        relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
+        components.addAll(relatedCPlaces);
 
         //Upper-level group structure task
         infoMsg("Running model structure and component relation tasks...");
@@ -118,7 +117,6 @@ public class BSONStructureTask extends AbstractStructuralVerification{
             infoMsg("Valid phase structure.");
 
         infoMsg("Phase checking tasks complete.");
-
 
         //BSON cycle task
         infoMsg("Running cycle detection task...");
@@ -191,8 +189,8 @@ public class BSONStructureTask extends AbstractStructuralVerification{
             }
 
             if(inUpperGroup < connectedNodes.size() && inUpperGroup != 0)
-                    result.add(cPlace);
-            }
+                result.add(cPlace);
+        }
 
         return result;
     }
@@ -253,7 +251,6 @@ public class BSONStructureTask extends AbstractStructuralVerification{
         }
         return result;
     }
-
 
     //check for joint
     private Map<Condition, String> phaseTask3(ONGroup upperGroup){

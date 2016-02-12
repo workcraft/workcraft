@@ -82,7 +82,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     private VisualXmas getXmasModel() {
-        return (VisualXmas)getSrcModel();
+        return (VisualXmas) getSrcModel();
     }
 
     @Override
@@ -189,7 +189,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         createReplicaReadArcs(from.zero, to.fallList, new Point2D.Double(xFall, yFall + yOffset));
         createReplicaReadArcs(from.one, to.riseList, new Point2D.Double(xRise, yRise + yOffset));
     }
-
 
     private void createReplicaReadArcsFromDoneToClock(SignalStg dn) throws InvalidConnectionException {
         clockControlSignals.add(dn);
@@ -382,7 +381,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         return clockStg;
     }
 
-
     private SourceStg generateSourceStg(VisualSourceComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
         Point2D pos = getComponentPosition(component);
@@ -443,7 +441,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         sourceMap.put(component, stg);
     }
 
-
     private SinkStg generateSinkStg(VisualSinkComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
         Point2D pos = getComponentPosition(component);
@@ -503,7 +500,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         sinkMap.put(component, stg);
     }
-
 
     private FunctionStg generateFunctionStg(VisualFunctionComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
@@ -584,7 +580,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         functionMap.put(component, stg);
     }
-
 
     private ForkStg generateForkStg(VisualForkComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
@@ -708,7 +703,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         forkMap.put(component, stg);
     }
 
-
     private JoinStg generateJoinStg(VisualJoinComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
         Point2D pos = getComponentPosition(component);
@@ -822,7 +816,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         joinMap.put(component, stg);
     }
-
 
     private SwitchStg generateSwitchStg(VisualSwitchComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
@@ -952,7 +945,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         switchMap.put(component, stg);
     }
 
-
     private MergeStg generateMergeStg(VisualMergeComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
         Point2D pos = getComponentPosition(component);
@@ -1069,7 +1061,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         mergeMap.put(component, stg);
     }
 
-
     private QueueStg generateQueueStg(VisualQueueComponent component) throws InvalidConnectionException {
         String name = getXmasModel().getMathName(component);
         Point2D pos = getComponentPosition(component);
@@ -1094,7 +1085,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         for (int idx = 0; idx < capacity; idx++) {
             double xSlot = QUEUE_SLOT_SPACING * (idx - 0.5 * (capacity - 1));
-            char suffix = (char)idx;
+            char suffix = (char) idx;
             suffix += 'A';
             SignalStg mem = generateBasicSignalStg(name + _MEM + suffix, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
             SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix +_RDY, pos.getX() + xSlot, pos.getY() - 8.0);
@@ -1258,25 +1249,24 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         queueMap.put(component, stg);
     }
 
-
     public boolean isRelated(Node highLevelNode, Node node) {
         NodeStg nodeStg = null;
         if (highLevelNode instanceof VisualSourceComponent) {
-            nodeStg = getSourceStg((VisualSourceComponent)highLevelNode);
+            nodeStg = getSourceStg((VisualSourceComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualSinkComponent) {
-            nodeStg = getSinkStg((VisualSinkComponent)highLevelNode);
+            nodeStg = getSinkStg((VisualSinkComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualFunctionComponent) {
-            nodeStg = getFunctionStg((VisualFunctionComponent)highLevelNode);
+            nodeStg = getFunctionStg((VisualFunctionComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualForkComponent) {
-            nodeStg = getForkStg((VisualForkComponent)highLevelNode);
+            nodeStg = getForkStg((VisualForkComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualJoinComponent) {
-            nodeStg = getJoinStg((VisualJoinComponent)highLevelNode);
+            nodeStg = getJoinStg((VisualJoinComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualSwitchComponent) {
-            nodeStg = getSwitchStg((VisualSwitchComponent)highLevelNode);
+            nodeStg = getSwitchStg((VisualSwitchComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualMergeComponent) {
-            nodeStg = getMergeStg((VisualMergeComponent)highLevelNode);
+            nodeStg = getMergeStg((VisualMergeComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualQueueComponent) {
-            nodeStg = getQueueStg((VisualQueueComponent)highLevelNode);
+            nodeStg = getQueueStg((VisualQueueComponent) highLevelNode);
         }
         return (nodeStg != null) && nodeStg.contains(node);
     }

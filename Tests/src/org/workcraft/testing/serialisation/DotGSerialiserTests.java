@@ -48,7 +48,7 @@ public class DotGSerialiserTests {
         ArrayList<String> goodIds = getSortedIds(good, goodTokenized);
         print(goodIds);
 
-        for(int i=0;i<50;i++) {
+        for(int i=0; i<50; i++) {
             STG bad = getModel(false);
 
             Set<Place> badTokenized = getTokenizedPlaces(bad);

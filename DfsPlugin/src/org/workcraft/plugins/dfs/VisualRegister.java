@@ -50,7 +50,7 @@ public class VisualRegister extends VisualAbstractRegister {
     }
 
     public Register getReferencedRegister() {
-        return (Register)getReferencedComponent();
+        return (Register) getReferencedComponent();
     }
 
     private void addPropertyDeclarations() {
@@ -76,7 +76,7 @@ public class VisualRegister extends VisualAbstractRegister {
         double dx = size / 5;
         double dy = strokeWidth / 4;
         double dt = (size - strokeWidth) / 8;
-        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth1 = (float) strokeWidth;
         float strokeWidth2 = strokeWidth1 / 2;
 
         Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
@@ -89,9 +89,9 @@ public class VisualRegister extends VisualAbstractRegister {
         boolean excited = false;
         if (d instanceof RegisterDecoration) {
             defaultColor = getForegroundColor();
-            tokenColor = ((RegisterDecoration)d).getTokenColor();
-            marked = ((RegisterDecoration)d).isMarked();
-            excited = ((RegisterDecoration)d).isExcited();
+            tokenColor = ((RegisterDecoration) d).getTokenColor();
+            marked = ((RegisterDecoration) d).isMarked();
+            excited = ((RegisterDecoration) d).isExcited();
         }
 
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
@@ -118,7 +118,7 @@ public class VisualRegister extends VisualAbstractRegister {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualRegister) {
-            Register srcRegister = ((VisualRegister)src).getReferencedRegister();
+            Register srcRegister = ((VisualRegister) src).getReferencedRegister();
             getReferencedRegister().setMarked(srcRegister.isMarked());
         }
     }

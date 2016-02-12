@@ -24,7 +24,6 @@ public class CustomToolsProvider implements
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Variable.class)));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(RhoClause.class)));
 
-
         return result;
     }
 

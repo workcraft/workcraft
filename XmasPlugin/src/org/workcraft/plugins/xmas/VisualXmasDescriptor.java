@@ -10,7 +10,7 @@ public class VisualXmasDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-        return new VisualXmas((Xmas)mathModel);
+        return new VisualXmas((Xmas) mathModel);
     }
 
     @Override

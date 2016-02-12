@@ -29,7 +29,7 @@ public class CircuitSelectionTool extends SelectionTool {
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
         JPopupMenu popup = super.createPopupMenu(node, editor);
         if (node instanceof VisualFunctionComponent) {
-            final VisualFunctionComponent component = (VisualFunctionComponent)node;
+            final VisualFunctionComponent component = (VisualFunctionComponent) node;
             if (popup != null) {
                 popup.addSeparator();
             } else {
@@ -41,7 +41,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     editor.getWorkspaceEntry().saveMemento();
-                    VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+                    VisualCircuit vcircuit = (VisualCircuit) editor.getModel();
                     vcircuit.getOrCreateContact(component, null, IOType.OUTPUT);
                     component.setContactsDefaultPosition();
                 }
@@ -52,7 +52,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     editor.getWorkspaceEntry().saveMemento();
-                    VisualCircuit vcircuit = (VisualCircuit)editor.getModel();
+                    VisualCircuit vcircuit = (VisualCircuit) editor.getModel();
                     vcircuit.getOrCreateContact(component, null, IOType.INPUT);
                     component.setContactsDefaultPosition();
                 }

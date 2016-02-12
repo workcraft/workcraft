@@ -43,7 +43,7 @@ public class TabButton extends JLabel implements MouseListener {
     public TabButton(String label, String toolTipText, Action action, ScriptedActionListener actionListener) {
         super(label);
         setVerticalAlignment(JLabel.CENTER);
-        setFont(getFont().deriveFont(Font.PLAIN));//.deriveFont(AffineTransform.getScaleInstance(0.8, 0.8)));
+        setFont(getFont().deriveFont(Font.PLAIN)); //.deriveFont(AffineTransform.getScaleInstance(0.8, 0.8)));
         setOpaque(false);
         setForeground(Color.GRAY);
         addMouseListener(this);
@@ -63,7 +63,7 @@ public class TabButton extends JLabel implements MouseListener {
     }
 
     public void mouseEntered(MouseEvent e) {
-        setForeground(new Color(200,0,0));
+        setForeground(new Color(200, 0, 0));
         //    this.setBorder(mouseOverBorder);
     }
 

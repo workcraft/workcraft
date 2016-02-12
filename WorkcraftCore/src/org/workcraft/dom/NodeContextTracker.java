@@ -64,7 +64,7 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
         initHashes(n);
 
         if (n instanceof Connection) {
-            Connection con = (Connection)n;
+            Connection con = (Connection) n;
             Node c1 = con.getFirst();
             Node c2 = con.getSecond();
 
@@ -104,7 +104,7 @@ public class NodeContextTracker extends HierarchySupervisor implements NodeConte
         removeHashes(node);
 
         if (node instanceof Connection) {
-            Connection connection = (Connection)node;
+            Connection connection = (Connection) node;
             Node first = connection.getFirst();
             Node second = connection.getSecond();
 

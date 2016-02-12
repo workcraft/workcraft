@@ -49,7 +49,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     public AbstractMathModel(Container root, ReferenceManager man) {
         super((root == null) ? new MathGroup() : root, man);
         new DefaultHangingConnectionRemover(this).attach(getRoot());
-     }
+    }
 
     @SuppressWarnings("unchecked")
     public <T extends MathNode> T createNode(String name, Container container, Class<T> type) {
@@ -66,7 +66,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         } catch (NodeCreationException e) {
             throw new RuntimeException("Cannot create math node '" + name + "' of class '" + type +"'");
         }
-        return (T)node;
+        return (T) node;
     }
 
     private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager dstRefManager, Container dstContainer,
@@ -82,10 +82,10 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 
         NamespaceProvider dstProvider = dstRefManager.getNamespaceProvider(dstContainer);
         if (dstContainer instanceof NamespaceProvider) {
-            dstProvider = (NamespaceProvider)dstContainer;
+            dstProvider = (NamespaceProvider) dstContainer;
         }
 
-        HierarchicalUniqueNameReferenceManager srcRefManager = (HierarchicalUniqueNameReferenceManager)srcModel.getReferenceManager();
+        HierarchicalUniqueNameReferenceManager srcRefManager = (HierarchicalUniqueNameReferenceManager) srcModel.getReferenceManager();
         dstRefManager.setNamespaceProvider(nodes, srcRefManager, dstProvider);
 
         srcRoot.reparent(nodes, dstContainer);
@@ -98,7 +98,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
 
         for (Node node: nodes) {
             if (node instanceof Container) {
-                Container container = (Container)node;
+                Container container = (Container) node;
                 setNamespaceRecursively(dstRefManager, container, srcModel, container, null);
             }
         }
@@ -111,12 +111,12 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         }
         HierarchicalUniqueNameReferenceManager manager = null;
         if (getReferenceManager() instanceof HierarchicalUniqueNameReferenceManager) {
-            manager = (HierarchicalUniqueNameReferenceManager)getReferenceManager();
+            manager = (HierarchicalUniqueNameReferenceManager) getReferenceManager();
         }
         if (manager != null) {
             NamespaceProvider provider = null;
             if (dstContainer instanceof NamespaceProvider) {
-                provider = (NamespaceProvider)dstContainer;
+                provider = (NamespaceProvider) dstContainer;
             } else {
                 provider = manager.getNamespaceProvider(dstContainer);
             }

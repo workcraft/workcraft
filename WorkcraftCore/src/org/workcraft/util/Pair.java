@@ -34,7 +34,7 @@ public class Pair <T1, T2> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Pair<?,?> other = (Pair<?,?>) obj;
+        Pair<?, ?> other = (Pair<?, ?>) obj;
         if (first == null) {
             if (other.first != null)
                 return false;
@@ -49,7 +49,7 @@ public class Pair <T1, T2> {
     }
 
     public static <T1, T2> Pair<T1, T2> of(T1 o1, T2 o2) {
-        return new Pair<T1,T2>(o1,o2);
+        return new Pair<T1, T2>(o1, o2);
     }
 
     @Override

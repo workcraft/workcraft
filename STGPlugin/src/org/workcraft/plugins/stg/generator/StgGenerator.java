@@ -55,7 +55,6 @@ abstract public class StgGenerator {
         TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));
     }
 
-
     public VisualConnection createConsumingArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
         VisualConnection connection = null;
         if (p != null && t != null) {
@@ -72,7 +71,6 @@ abstract public class StgGenerator {
         }
         return connection;
     }
-
 
     public VisualConnection createProducingArc(VisualSignalTransition t, VisualPlace p) throws InvalidConnectionException {
         VisualConnection connection = null;
@@ -128,7 +126,6 @@ abstract public class StgGenerator {
             createReadArcs(from.zero, to.fallList);
         }
     }
-
 
     public void createReplicaReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
         double dx = (p.getRootSpaceX() > t.getRootSpaceX()) ? 6.0 : -6.0;

@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 
 import org.workcraft.Trace;
 
-
 @SuppressWarnings("serial")
 public class SolutionsDialog extends JDialog {
     private JPanel contents;
@@ -36,7 +35,7 @@ public class SolutionsDialog extends JDialog {
                 public void actionPerformed(ActionEvent e) {
                     SolutionsDialog.this.setVisible(false);
                 }
-            }));*/
+            })); */
 
         contents.add(solutionsPanel, "0 1");
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -48,7 +47,6 @@ public class SolutionsDialog extends JDialog {
                 SolutionsDialog.this.setVisible(false);
             }
         });
-
 
         buttonsPanel.add(okButton);
         contents.add(buttonsPanel, "0 2");

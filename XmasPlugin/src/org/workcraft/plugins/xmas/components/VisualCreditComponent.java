@@ -68,7 +68,7 @@ public class VisualCreditComponent extends VisualXmasComponent {
     }
 
     public CreditComponent getReferencedCreditComponent() {
-        return (CreditComponent)getReferencedComponent();
+        return (CreditComponent) getReferencedComponent();
     }
 
     @Override
@@ -98,7 +98,7 @@ public class VisualCreditComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualCreditComponent) {
-            CreditComponent srcComponent = ((VisualCreditComponent)src).getReferencedCreditComponent();
+            CreditComponent srcComponent = ((VisualCreditComponent) src).getReferencedCreditComponent();
             getReferencedCreditComponent().setCapacity(srcComponent.getCapacity());
             getReferencedCreditComponent().setInit(srcComponent.getInit());
         }

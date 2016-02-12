@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.workcraft.Framework;
 
-
 public class PGMinerImportDialog extends JDialog {
 
     private JTextField filePath;
@@ -40,7 +39,6 @@ public class PGMinerImportDialog extends JDialog {
         filePanel = new JPanel();
         filePanel.add(filePath);
         filePanel.add(selectFileBtn);
-
 
         extractConcurrencyCB = new JCheckBox("Perform concurrency extraction", false);
         splitCB = new JCheckBox("Split traces into scenarios", false);
@@ -78,7 +76,6 @@ public class PGMinerImportDialog extends JDialog {
     public boolean getSplit() {
         return splitCB.isSelected();
     }
-
 
     public String getFilePath() {
         return filePath.getText();

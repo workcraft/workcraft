@@ -18,14 +18,13 @@ public class TransitionBundlerTool extends ConversionTool {
         return we.getModelEntry().getMathModel() instanceof PolicyNet;
     }
 
-
     @Override
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         framework.getMainWindow().getCurrentEditor().getToolBox().selectDefaultTool();
         we.saveMemento();
 
-        final VisualPolicyNet visualModel = (VisualPolicyNet)we.getModelEntry().getVisualModel();
+        final VisualPolicyNet visualModel = (VisualPolicyNet) we.getModelEntry().getVisualModel();
         visualModel.unbundleTransitions(visualModel.getVisualBundledTransitions());
 
         final PetriNetGenerator generator = new PetriNetGenerator(visualModel);

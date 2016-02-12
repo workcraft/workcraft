@@ -48,7 +48,7 @@ public class StartTimePropertyDescriptor implements PropertyDescriptor{
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        String input = (String)value;
+        String input = (String) value;
         Interval result = new Interval(Interval.getMin(input), Interval.getMax(input));
         t.setStartTime(result);
     }

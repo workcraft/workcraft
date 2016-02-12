@@ -28,7 +28,6 @@ public class MpsatResultParser {
     final static private Pattern patternNormalcy1 =
             Pattern.compile("SOLUTION .+\n(.*)\ntriggers: .+\n", Pattern.UNIX_LINES);
 
-
     public MpsatResultParser(ExternalProcessResult result) {
         try {
             mpsatOutput = new String(result.getOutput(), "ISO-8859-1"); // iso-latin-1
@@ -68,11 +67,11 @@ public class MpsatResultParser {
         Trace trace = null;
         if (mpsatTrace != null) {
             trace = new Trace();
-            String[] mpsatFlatTransitions = mpsatTrace.replaceAll("\\s","").split(",");
+            String[] mpsatFlatTransitions = mpsatTrace.replaceAll("\\s", "").split(",");
             for (String mpsatFlatTransition: mpsatFlatTransitions) {
-                   String mpsatTransition = mpsatFlatTransition.replace(NamespaceHelper.getFlatNameSeparator(), NamespaceHelper.getHierarchySeparator());
-                   String transition = mpsatTransition.substring(mpsatTransition.indexOf('.') + 1);
-                   if (!transition.isEmpty()) {
+                String mpsatTransition = mpsatFlatTransition.replace(NamespaceHelper.getFlatNameSeparator(), NamespaceHelper.getHierarchySeparator());
+                String transition = mpsatTransition.substring(mpsatTransition.indexOf('.') + 1);
+                if (!transition.isEmpty()) {
                     trace.add(transition);
                 }
             }

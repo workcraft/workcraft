@@ -51,7 +51,7 @@ public class DockableWindow extends AbstractDockable {
     private ChangeListener tabChangeListener = new ChangeListener() {
         @Override
         public void stateChanged(ChangeEvent e) {
-            JTabbedPane tabbedPane = (JTabbedPane)e.getSource();
+            JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
             int myTabIndex = getTabIndex(tabbedPane, DockableWindow.this);
             if (tabbedPane.getSelectedIndex() == myTabIndex) {
                 for (DockableWindowTabListener l : tabListeners) {
@@ -132,12 +132,12 @@ public class DockableWindow extends AbstractDockable {
 
     public static void updateHeaders(DockingPort port, ScriptedActionListener actionListener) {
         for (Object d : port.getDockables()) {
-            DockableWindow dockable = (DockableWindow)d;
+            DockableWindow dockable = (DockableWindow) d;
             boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
             DockableWindowContentPanel contentPanel = dockable.getContentPanel();
             if (inTab && !dockable.isMaximized()) {
                 contentPanel.setHeaderVisible(false);
-                JTabbedPane tabbedPane = (JTabbedPane)dockable.getComponent().getParent();
+                JTabbedPane tabbedPane = (JTabbedPane) dockable.getComponent().getParent();
                 for (int i=0; i<tabbedPane.getComponentCount(); i++) {
                     if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
                         tabbedPane.setTabComponentAt(i, new DockableTab(dockable, actionListener));
@@ -167,14 +167,14 @@ public class DockableWindow extends AbstractDockable {
 
     private static void processTabEvents(DockingPort port) {
         for (Object d : port.getDockables()) {
-            DockableWindow dockable = (DockableWindow)d;
+            DockableWindow dockable = (DockableWindow) d;
             dockable.processTabEvents();
         }
     }
 
     public void processTabEvents() {
         if (getComponent().getParent() instanceof JTabbedPane) {
-            JTabbedPane tabbedPane = (JTabbedPane)getComponent().getParent();
+            JTabbedPane tabbedPane = (JTabbedPane) getComponent().getParent();
             if (!inTab) {
                 inTab = true;
                 for (DockableWindowTabListener l : tabListeners) {

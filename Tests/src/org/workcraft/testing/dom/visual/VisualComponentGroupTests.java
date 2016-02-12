@@ -75,8 +75,6 @@ public class VisualComponentGroupTests {
         }
     }
 
-
-
     @Test
     public void testHitComponent() {
         VisualGroup root = createGroup(null);
@@ -167,7 +165,7 @@ public class VisualComponentGroupTests {
         VisualGroup node1 = new VisualGroup();
         VisualGroup node2 = new VisualGroup();
         root.add(node1);
-        root.add((VisualNode)node2);
+        root.add((VisualNode) node2);
         node1.add(getSquareNode(node1, 0, 0));
         node2.add(getSquareNode(node2, 1, 1));
         Assert.assertEquals(node2, HitMan.hitTestForSelection(new Point2D.Double(1.5, 1.5), root));

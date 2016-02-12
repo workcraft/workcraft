@@ -47,7 +47,7 @@ public class ScenarioRef extends ArrayList<String>{
         for(String ref : this){
             Node node = net.getNodeByReference(ref);
             if(node instanceof SONConnection)
-                result.add((SONConnection)node);
+                result.add((SONConnection) node);
         }
         return result;
     }

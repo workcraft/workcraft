@@ -140,8 +140,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
         mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
 
-        int buttonWidth = (int)Math.round(playButton.getPreferredSize().getWidth() + 5);
-        int buttonHeight = (int)Math.round(playButton.getPreferredSize().getHeight() + 5);
+        int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + 5);
+        int buttonHeight = (int) Math.round(playButton.getPreferredSize().getHeight() + 5);
         Dimension panelSize = new Dimension(buttonWidth * 7, buttonHeight);
 
         JPanel simulationControl = new JPanel();
@@ -359,8 +359,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     @Override
     public void activated(final GraphEditor editor) {
-        visualNet = (VisualSON)editor.getModel();
-        net = (SON)visualNet.getMathModel();
+        visualNet = (VisualSON) editor.getModel();
+        net = (SON) visualNet.getMathModel();
         editor.getWorkspaceEntry().captureMemento();
         this.editor = editor;
         WorkspaceEntry we = editor.getWorkspaceEntry();
@@ -437,7 +437,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     }
 
     private int getAnimationDelay() {
-        return (int)(1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
+        return (int) (1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
     }
 
     @SuppressWarnings("serial")
@@ -467,11 +467,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             } else {
                 if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
                     return branchTrace.get(row - mainTrace.getPosition());
-                    }
                 }
+            }
             return "";
         }
-    };
+    }
 
     protected void errorMsg(String message, final GraphEditor editor){
 
@@ -573,7 +573,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         return result;
     }
 
-
     private void reset(final GraphEditor editor) {
         applyMarking(initialMarking);
         isRev = false;
@@ -602,7 +601,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         String str="";
         if (hasTransferableText) {
             try {
-                str = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                str = (String) contents.getTransferData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException ex){
                 System.out.println(ex);
                 ex.printStackTrace();
@@ -741,7 +740,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         for(String ref : causalPredecessorRefs){
             Node node = net.getNodeByReference(ref);
             if(node instanceof TransitionNode)
-                causalPredecessors.add((TransitionNode)net.getNodeByReference(ref));
+                causalPredecessors.add((TransitionNode) net.getNodeByReference(ref));
         }
         return reachabilitySimulationTask(editor, causalPredecessors, markingRefs);
     }
@@ -753,7 +752,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         Step step = new Step();
         for(Node node : relationAlg.getCommonElements(enabled, causalPredecessors)){
             if(node instanceof TransitionNode)
-                step.add((TransitionNode)node);
+                step.add((TransitionNode) node);
         }
 
         //causalPredecessors.removeAll(fireList);
@@ -766,8 +765,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         for(String ref : markingRefs){
             Node node = net.getNodeByReference(ref);
             if(node instanceof PlaceNode){
-                ((PlaceNode)node).setForegroundColor(Color.BLUE);
-                ((PlaceNode)node).setTokenColor(Color.BLUE);
+                ((PlaceNode) node).setForegroundColor(Color.BLUE);
+                ((PlaceNode) node).setTokenColor(Color.BLUE);
             }
         }
 
@@ -788,8 +787,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             traceList=getStep(stepRef);
         }
         if (!traceList.isEmpty() && traceList.containsAll(step) && step.containsAll(traceList)){
-                step(editor);
-                return;
+            step(editor);
+            return;
         }
         while (branchTrace.getPosition() < branchTrace.size()) {
             branchTrace.removeCurrent();
@@ -813,7 +812,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         for(int i =0; i<stepRef.size(); i++){
             final Node node = net.getNodeByReference(stepRef.get(i));
             if(node instanceof TransitionNode)
-                result.add((TransitionNode)node);
+                result.add((TransitionNode) node);
         }
         return result;
     }
@@ -844,11 +843,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus,int row, int column) {
+                boolean isSelected, boolean hasFocus, int row, int column) {
 
             if (!(value instanceof StepRef)) return null;
 
-            label.setText(((StepRef)value).toString());
+            label.setText(((StepRef) value).toString());
 
             if (isActive(row, column)) {
                 label.setBackground(Color.YELLOW);
@@ -899,21 +898,21 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
 
         Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-            new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node node) {
-                if(node instanceof VisualTransitionNode){
-                    TransitionNode node1 = ((VisualTransitionNode)node).getMathTransitionNode();
-                    Step enabled = null;
+                new Func<Node, Boolean>() {
+                    @Override
+                    public Boolean eval(Node node) {
+                        if(node instanceof VisualTransitionNode){
+                            TransitionNode node1 = ((VisualTransitionNode) node).getMathTransitionNode();
+                            Step enabled = null;
 
-                    enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
-                    if(isEnabled(node1, enabled))
-                        return true;
-                }
-                return false;
+                            enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+                            if(isEnabled(node1, enabled))
+                                return true;
+                        }
+                        return false;
 
-            }
-        });
+                    }
+                });
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
@@ -921,7 +920,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         if (node instanceof VisualTransitionNode) {
 
             Step enabled = null;
-            TransitionNode select = ((VisualTransitionNode)node).getMathTransitionNode();
+            TransitionNode select = ((VisualTransitionNode) node).getMathTransitionNode();
 
             enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
@@ -937,7 +936,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             minFire.remove(select);
 
             if(possibleFire.isEmpty()){
-                executeEvents(e.getEditor(),step);
+                executeEvents(e.getEditor(), step);
             }else{
                 e.getEditor().requestFocus();
                 ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
@@ -947,13 +946,13 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
                 if (dialog.getRun() == 1){
                     step.addAll(dialog.getSelectedEvent());
-                    executeEvents(e.getEditor(),step);
+                    executeEvents(e.getEditor(), step);
                 }
                 if(dialog.getRun()==2){
                     setDecoration(enabled);
                     return;
-                    }
                 }
+            }
 
             if(autoSimuButton.isSelected()){
                 autoSimulator(editor);
@@ -974,7 +973,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                 enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
                 if (node instanceof VisualTransitionNode) {
-                    TransitionNode event = ((VisualTransitionNode)node).getMathTransitionNode();
+                    TransitionNode event = ((VisualTransitionNode) node).getMathTransitionNode();
                     ret=ret || isEnabled(event, enabled);
                 }
             }catch(NullPointerException ex){
@@ -982,7 +981,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             }
 
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container)node);
+                ret = ret || isContainerExcited((Container) node);
             }
 
             if (ret) break;
@@ -1017,7 +1016,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if ((node instanceof VisualPage && !(node instanceof VisualBlock)) || node instanceof VisualGroup) {
-                    final boolean ret = isContainerExcited((Container)node);
+                    final boolean ret = isContainerExcited((Container) node);
 
                     return new ContainerDecoration() {
 

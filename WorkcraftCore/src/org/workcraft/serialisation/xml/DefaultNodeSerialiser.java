@@ -44,7 +44,6 @@ public class DefaultNodeSerialiser {
         this.serialiser = serialiser;
     }
 
-
     private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
         // type explicitly requested to be excluded from auto serialisation
         if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
@@ -62,10 +61,8 @@ public class DefaultNodeSerialiser {
             // property explicitly requested to be excluded from auto serialisation
             if (
                     desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
-                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null
-                    )
+                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null)
                 continue;
-
 
             // the property is writable and is not of array type, try to get a serialiser
             XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
@@ -85,7 +82,7 @@ public class DefaultNodeSerialiser {
             propertyElement.setAttribute("class", desc.getPropertyType().getName());
             propertyElement.setAttribute("name", desc.getName());
 
-            ((BasicXMLSerialiser)serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
+            ((BasicXMLSerialiser) serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
         }
     }
 
@@ -99,19 +96,18 @@ public class DefaultNodeSerialiser {
         Element curLevelElement = parentElement.getOwnerDocument()
                 .createElement(currentLevel.getSimpleName());
 
-
         autoSerialiseProperties(curLevelElement, object, currentLevel);
 
         XMLSerialiser serialiser = fac.getSerialiserFor(currentLevel);
 
         if (serialiser != null) {
             if (serialiser instanceof BasicXMLSerialiser)
-                ((BasicXMLSerialiser)serialiser).serialise(curLevelElement, object);
+                ((BasicXMLSerialiser) serialiser).serialise(curLevelElement, object);
             else if (serialiser instanceof CustomXMLSerialiser)
-                ((CustomXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
+                ((CustomXMLSerialiser) serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
         } else {
             if (object.getClass().equals(currentLevel) && (object instanceof Dependent)) {
-                Collection<MathNode> refs = ((Dependent)object).getMathReferences();
+                Collection<MathNode> refs = ((Dependent) object).getMathReferences();
                 if (refs.size() == 1) {
                     curLevelElement.setAttribute("ref", externalReferences.getReference(refs.iterator().next()));
                 }

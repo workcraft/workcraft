@@ -55,7 +55,7 @@ public class RandomLayoutTool extends AbstractLayoutTool {
             double y = start.getY() + r.nextDouble() * range.getY();
             Point2D pos = new Point2D.Double(x, y);
             if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode transformableNode = (VisualTransformableNode)node;
+                VisualTransformableNode transformableNode = (VisualTransformableNode) node;
                 transformableNode.setRootSpacePosition(pos);
             }
             if (node instanceof Container) {
@@ -63,7 +63,7 @@ public class RandomLayoutTool extends AbstractLayoutTool {
                 double childenX = pos.getX() - childrenRange.getX()/2.0;
                 double childenY = pos.getY() - childrenRange.getY()/2.0;
                 Point2D childrenStart = new Point2D.Double(childenX, childenY);
-                setChildrenRandomPosition((Container)node, childrenStart, childrenRange);
+                setChildrenRandomPosition((Container) node, childrenStart, childrenRange);
             }
         }
     }

@@ -29,7 +29,7 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     @Override
     public boolean isApplicableTo(Node node) {
         if (node instanceof VisualReadArc) {
-            VisualReadArc readArc = (VisualReadArc)node;
+            VisualReadArc readArc = (VisualReadArc) node;
             return readArc.getFirst() instanceof VisualPlace;
         }
         return false;
@@ -54,7 +54,7 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
         for (VisualPlace place: places) {
             for (Connection connection: model.getConnections(place)) {
                 if (connection instanceof VisualReadArc) {
-                    readArcs.add((VisualReadArc)connection);
+                    readArcs.add((VisualReadArc) connection);
                 }
             }
         }
@@ -71,8 +71,8 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualModel) && (node instanceof VisualReadArc)) {
-            VisualModel visualModel = (VisualModel)model;
-            VisualReadArc readArc = (VisualReadArc)node;
+            VisualModel visualModel = (VisualModel) model;
+            VisualReadArc readArc = (VisualReadArc) node;
             PetriNetUtils.replicateConnectedPlace(visualModel, readArc);
         }
     }

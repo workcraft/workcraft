@@ -48,17 +48,16 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class VerAnalysis extends AbstractTool implements Tool {
 
     private static class Qslist {
-           String name;
-           int chk;
+        String name;
+        int chk;
 
-           Qslist(String s1,int n) {
-             name = s1;
-             chk=n;
-           }
+        Qslist(String s1, int n) {
+            name = s1;
+            chk=n;
+        }
     }
 
     int cntSyncNodes=0;
@@ -86,68 +85,68 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
     public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
 
-    private static List<String> processArg(String file,int index) {
-           String typ=null;
-           Scanner sc=null;
-           try {
-              sc=new Scanner(new File(file));
-           } catch (FileNotFoundException e) {
-               LogUtils.logErrorLine(e.getMessage());
-           }
-           String targ="";
-           String larg="";
-           String sarg="";
-           String aarg="";
-           String arg="";
-           int num;
-           while(sc.hasNextLine()) {
-             Scanner line=new Scanner(sc.nextLine());
-             Scanner nxt=new Scanner(line.next());
-             String check=nxt.next();
-             String str;
-             if(check.startsWith("trace")) {
-               nxt=new Scanner(line.next());
-               targ="-t";
-               targ = targ + nxt.next();
-             } else if(check.startsWith("level")) {
-                 nxt=new Scanner(line.next());
-                 larg="-v";
-                 str = nxt.next();
-                 level = str;
-                 if(str.equals("normal")) {
-                      //System.out.println("Read v1");
-                     larg = "-v1";
-                 } else if(str.equals("advanced")) {
-                     //System.out.println("Read v2");
+    private static List<String> processArg(String file, int index) {
+        String typ=null;
+        Scanner sc=null;
+        try {
+            sc=new Scanner(new File(file));
+        } catch (FileNotFoundException e) {
+            LogUtils.logErrorLine(e.getMessage());
+        }
+        String targ="";
+        String larg="";
+        String sarg="";
+        String aarg="";
+        String arg="";
+        int num;
+        while(sc.hasNextLine()) {
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
+            String check=nxt.next();
+            String str;
+            if(check.startsWith("trace")) {
+                nxt=new Scanner(line.next());
+                targ="-t";
+                targ = targ + nxt.next();
+            } else if(check.startsWith("level")) {
+                nxt=new Scanner(line.next());
+                larg="-v";
+                str = nxt.next();
+                level = str;
+                if(str.equals("normal")) {
+                    //System.out.println("Read v1");
+                    larg = "-v1";
+                } else if(str.equals("advanced")) {
+                    //System.out.println("Read v2");
                     larg = "-v2";
-                 }
-             } else if(check.startsWith("display")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("strrr=" + str);
-                  display = str;
-             } else if(check.startsWith("highlight")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("strrr=" + str);
-                  highlight = str;
-             } else if(check.startsWith("soln")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
-                  soln = str;
-                  sarg = "-s" + str;
-             }
-           }
-           //System.out.println("aaaaaaaaaaaindex==============" + index);
-           aarg = "-a" + index;
-              //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
-           ArrayList<String> args = new ArrayList<>();
-           if (!targ.isEmpty()) args.add(targ);
-           if (!larg.isEmpty()) args.add(larg);
-           if (!sarg.isEmpty()) args.add(sarg);
-           if (!aarg.isEmpty()) args.add(aarg);
-           return args;
+                }
+            } else if(check.startsWith("display")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("strrr=" + str);
+                display = str;
+            } else if(check.startsWith("highlight")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("strrr=" + str);
+                highlight = str;
+            } else if(check.startsWith("soln")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
+                soln = str;
+                sarg = "-s" + str;
+            }
+        }
+        //System.out.println("aaaaaaaaaaaindex==============" + index);
+        aarg = "-a" + index;
+        //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
+        ArrayList<String> args = new ArrayList<>();
+        if (!targ.isEmpty()) args.add(targ);
+        if (!larg.isEmpty()) args.add(larg);
+        if (!sarg.isEmpty()) args.add(sarg);
+        if (!aarg.isEmpty()) args.add(aarg);
+        return args;
     }
 
     private static String processLoc(String file) {
@@ -182,7 +181,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
             String str = nxt.next();
             int num = Integer.parseInt(str);
             //System.out.println("qsl " + check + " " + str + " " + num);
-            qslist.add(new Qslist(check,num));
+            qslist.add(new Qslist(check, num));
         }
     }
 
@@ -214,7 +213,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         return -1;
     }
 
-    public void initHighlight(Xmas xnet,VisualXmas vnet) {
+    public void initHighlight(Xmas xnet, VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -222,16 +221,16 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
         for (Node node : vnet.getNodes()) {
             if(node instanceof VisualQueueComponent) {
-                vqc=(VisualQueueComponent)node;
+                vqc=(VisualQueueComponent) node;
                 vqc.setForegroundColor(Color.black);
             } else if(node instanceof VisualSyncComponent) {
-                vsc=(VisualSyncComponent)node;
+                vsc=(VisualSyncComponent) node;
                 vsc.setForegroundColor(Color.black);
             }
         }
     }
 
-    public void localHighlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void localHighlight(String s, Xmas xnet, VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -243,22 +242,22 @@ public class VerAnalysis extends AbstractTool implements Tool {
                 System.out.println(st);
                 for (Node node : vnet.getNodes()) {
                     if(node instanceof VisualQueueComponent) {
-                        vqc=(VisualQueueComponent)node;
+                        vqc=(VisualQueueComponent) node;
                         qc=vqc.getReferencedQueueComponent();
                         //if(xnet.getName(qc).contains(st)) {
                         String rstr;
                         rstr = xnet.getName(qc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(st)) {
                             vqc.setForegroundColor(Color.red);
                         }
                     } else if(node instanceof VisualSyncComponent) {
-                        vsc=(VisualSyncComponent)node;
+                        vsc=(VisualSyncComponent) node;
                         sc=vsc.getReferencedSyncComponent();
                         //if(xnet.getName(qc).contains(st)) {
                         String rstr;
                         rstr = xnet.getName(sc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(st)) {
                             vsc.setForegroundColor(Color.red);
                         }
@@ -268,7 +267,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         }
     }
 
-    public void relHighlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void relHighlight(String s, Xmas xnet, VisualXmas vnet) {
         int typ=0;
         String str="";
         QueueComponent qc;
@@ -286,22 +285,22 @@ public class VerAnalysis extends AbstractTool implements Tool {
                     //System.out.println("str===" + str);
                     for(Node node : vnet.getNodes()) {
                         if(node instanceof VisualQueueComponent) {
-                            vqc=(VisualQueueComponent)node;
+                            vqc=(VisualQueueComponent) node;
                             qc=vqc.getReferencedQueueComponent();
                             //System.out.println("x===" + xnet.getName(qc));
                             String rstr;
                             rstr = xnet.getName(qc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==0) {
                                 vqc.setForegroundColor(Color.pink);
                             }
                         } else if(node instanceof VisualSyncComponent) {
-                            vsc=(VisualSyncComponent)node;
+                            vsc=(VisualSyncComponent) node;
                             sc=vsc.getReferencedSyncComponent();
                             //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
                             String rstr;
                             rstr = xnet.getName(sc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==0) {
                                 vsc.setForegroundColor(Color.pink);
                             }
@@ -316,20 +315,20 @@ public class VerAnalysis extends AbstractTool implements Tool {
                     //System.out.println("str===" + str);
                     for(Node node : vnet.getNodes()) {
                         if(node instanceof VisualQueueComponent) {
-                            vqc=(VisualQueueComponent)node;
+                            vqc=(VisualQueueComponent) node;
                             qc=vqc.getReferencedQueueComponent();
                             String rstr;
                             rstr = xnet.getName(qc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==1) {
                                 vqc.setForegroundColor(Color.red);
                             }
                         } else if(node instanceof VisualSyncComponent) {
-                            vsc=(VisualSyncComponent)node;
+                            vsc=(VisualSyncComponent) node;
                             sc=vsc.getReferencedSyncComponent();
                             String rstr;
                             rstr = xnet.getName(sc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==1) {
                                 vsc.setForegroundColor(Color.red);
                             }
@@ -340,7 +339,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         }
     }
 
-    public void activeHighlight(Xmas xnet,VisualXmas vnet) {
+    public void activeHighlight(Xmas xnet, VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -350,20 +349,20 @@ public class VerAnalysis extends AbstractTool implements Tool {
             if(ql.chk==0) {
                 for(Node node : vnet.getNodes()) {
                     if(node instanceof VisualQueueComponent) {
-                        vqc=(VisualQueueComponent)node;
+                        vqc=(VisualQueueComponent) node;
                         qc=vqc.getReferencedQueueComponent();
                         String rstr;
                         rstr = xnet.getName(qc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(ql.name)) {
                             vqc.setForegroundColor(Color.green);
                         }
                     } else if(node instanceof VisualSyncComponent) {
-                        vsc=(VisualSyncComponent)node;
+                        vsc=(VisualSyncComponent) node;
                         sc=vsc.getReferencedSyncComponent();
                         String rstr;
                         rstr = xnet.getName(sc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(ql.name)) {
                             vsc.setForegroundColor(Color.green);
                         }
@@ -383,12 +382,12 @@ public class VerAnalysis extends AbstractTool implements Tool {
     static List<JCheckBox> jcbn = new ArrayList<JCheckBox>();
     JCheckBox jcb, jcblast;
 
-    void createPanel(List<JPanel> panellist,String file) {
+    void createPanel(List<JPanel> panellist, String file) {
         int no=1;
         String typ=null;
         Scanner sc=null;
         try {
-           sc=new Scanner(new File(file));
+            sc=new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logErrorLine(e.getMessage());
         }
@@ -399,16 +398,16 @@ public class VerAnalysis extends AbstractTool implements Tool {
                 if(no>1) {
                     panellist.get(panellist.size()-1).add(jcb=new JCheckBox(""));
                     ItemListener itemListener = new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        if(e.getSource() instanceof JCheckBox){
-                            JCheckBox sjcb=(JCheckBox) e.getSource();
-                            if(sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
-                            if(sjcb.isSelected()) System.out.println("indexa==" + index);
-                            if(jcblast!=null) jcblast.setSelected(false);
-                            jcblast=sjcb;
-                            //String name = sjcb.getName();
-                            //System.out.println(name);
+                        @Override
+                        public void itemStateChanged(ItemEvent e) {
+                            if(e.getSource() instanceof JCheckBox){
+                                JCheckBox sjcb=(JCheckBox) e.getSource();
+                                if(sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
+                                if(sjcb.isSelected()) System.out.println("indexa==" + index);
+                                if(jcblast!=null) jcblast.setSelected(false);
+                                jcblast=sjcb;
+                                //String name = sjcb.getName();
+                                //System.out.println(name);
                             }
                         }
                     };
@@ -423,7 +422,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
                 String check=nxt.next();
                 nxt=new Scanner(lineSc.next());
                 panellist.get(panellist.size()-1).add(new JLabel(check));
-                panellist.get(panellist.size()-1).add(new JTextField(nxt.next(),1));
+                panellist.get(panellist.size()-1).add(new JTextField(nxt.next(), 1));
             }
             lineSc.close();
         }
@@ -450,13 +449,13 @@ public class VerAnalysis extends AbstractTool implements Tool {
     public void run(final WorkspaceEntry we) {
         System.out.println("Analysing Model");
 
-        final Xmas xnet = (Xmas)we.getModelEntry().getMathModel();
-        final VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
+        final Xmas xnet = (Xmas) we.getModelEntry().getMathModel();
+        final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
 
         mainFrame = new JFrame("Analysis");
         JPanel panelmain = new JPanel();
-        mainFrame.getContentPane().add(panelmain,BorderLayout.PAGE_START);
-        panelmain.setLayout(new BoxLayout(panelmain,BoxLayout.PAGE_AXIS));
+        mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
+        panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
         List<JPanel> panellist = new ArrayList<JPanel>();
 
         JPanel panela = new JPanel();
@@ -514,7 +513,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
                         BufferedReader stdInput = new BufferedReader(inputStreamReader);
                         int n=0;
                         int test=-1;
-                        initHighlight(xnet,vnet);
+                        initHighlight(xnet, vnet);
                         while ((s = stdInput.readLine()) != null) {
                             //if(n==1) test=checkType(s);
                             if(test==-1) test=checkType(s);
@@ -537,17 +536,17 @@ public class VerAnalysis extends AbstractTool implements Tool {
                         if (test>0) {
                             if(display.equals("popup")) {
                                 if(!level.equals("advanced")) {
-                                    SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test,str);
+                                    SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test, str);
                                 } else {
-                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test,str);
+                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test, str);
                                 }
                             }
                             if (test==2) {
                                 if(highlight.equals("local")) {
-                                    localHighlight(str,xnet,vnet);
+                                    localHighlight(str, xnet, vnet);
                                 } else if(highlight.equals("rel")) {
-                                    relHighlight(str,xnet,vnet);
-                                    activeHighlight(xnet,vnet);
+                                    relHighlight(str, xnet, vnet);
+                                    activeHighlight(xnet, vnet);
                                 }
                             }
                         } else if(test==0) {

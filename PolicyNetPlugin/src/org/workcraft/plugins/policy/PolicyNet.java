@@ -67,7 +67,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
                     for (Node node: e.getAffectedNodes()) {
                         if (node instanceof BundledTransition) {
                             for (Bundle b: new ArrayList<Bundle>(getBundles())) {
-                                b.remove((BundledTransition)node);
+                                b.remove((BundledTransition) node);
                             }
                         }
                     }
@@ -139,7 +139,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
         HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<Bundle, HashSet<BundledTransition>>();
         for (Node node: nodes) {
             if (node instanceof BundledTransition) {
-                BundledTransition t = (BundledTransition)node;
+                BundledTransition t = (BundledTransition) node;
                 for (Bundle b: getBundlesOfTransition(t)) {
                     HashSet<BundledTransition> transitions = subBundles.get(b);
                     if (transitions == null) {

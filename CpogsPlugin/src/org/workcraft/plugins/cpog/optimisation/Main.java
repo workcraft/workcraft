@@ -54,30 +54,30 @@ public class Main {
     };
 
     static String[] phaseEncoder4 = {
-    "---000000111",
-    "-11000001--0",
-    "--100001001-",
-    "1-00001-00-1",
-    "-1000010-1-0",
-    "1-0000-110-0",
-    "-1-00100010-",
-    "-0101000--10",
-    "1--00101000-",
-    "0-0100--0011",
-    "10001010---0",
-    "010100--10-0",
-    "10-01-000-01",
-    "10-0-1001-00",
-    "01110-0-000-",
-    "010-011-000-",
-    "0001-0-0-110",
-    "000-10-1-010",
-    "00-1--000101",
-    "0011--001-00",
-    "001-1-01000-",
-    "000-1-1-0001",
-    "000--110-100",
-    "000--1-11000",
+        "---000000111",
+        "-11000001--0",
+        "--100001001-",
+        "1-00001-00-1",
+        "-1000010-1-0",
+        "1-0000-110-0",
+        "-1-00100010-",
+        "-0101000--10",
+        "1--00101000-",
+        "0-0100--0011",
+        "10001010---0",
+        "010100--10-0",
+        "10-01-000-01",
+        "10-0-1001-00",
+        "01110-0-000-",
+        "010-011-000-",
+        "0001-0-0-110",
+        "000-10-1-010",
+        "00-1--000101",
+        "0011--001-00",
+        "001-1-01000-",
+        "000-1-1-0001",
+        "000--110-100",
+        "000--1-11000",
     };
 
     static String[] smallscenarios = {
@@ -103,16 +103,15 @@ public class Main {
     };
 
     static String[] withGe = new String[] {
-
-            "1---00001100",
-            "1--000111110",
-            "1---01000100",
-            "1---00111100",
-            "1---1--01000",
-            "1-0-0000110A",
-            "A01-0101111A",
-            "A111010111aA",
-                                     };
+        "1---00001100",
+        "1--000111110",
+        "1---01000100",
+        "1---00111100",
+        "1---1--01000",
+        "1-0-0000110A",
+        "A01-0101111A",
+        "A111010111aA",
+    };
 
     public static void main(String[] args) throws Exception, IOException {
 
@@ -146,8 +145,7 @@ public class Main {
             System.out.println(var.getLabel()+"\t"+sol.getSolution(var));
         }
         if(true)
-            throw new RuntimeException("qwe");*/
-
+            throw new RuntimeException("qwe"); */
 
         //System.out.println(cnf.toString(new MiniSatCnfPrinter()));
 
@@ -160,24 +158,22 @@ public class Main {
 
         System.out.println("time: " + (end-start)/1000.0);
 
-
         if(solution == null)
             System.out.println("No solution.");
         else {
             boolean[][] encoding = solution.getEncoding();
-            for(int i=0;i<encoding.length;i++) {
-                for(int j=0;j<encoding[i].length;j++)
+            for(int i=0; i<encoding.length; i++) {
+                for(int j=0; j<encoding[i].length; j++)
                     System.out.print(encoding[i][j]?1:0);
                 System.out.println();
             }
 
             System.out.println("Functions:");
             BooleanFormula[] functions = solution.getFunctions();
-            for(int i=0;i<functions.length;i++) {
+            for(int i=0; i<functions.length; i++) {
                 System.out.println(FormulaToString.toString(functions[i]));
             }
         }
-
 
     }
 }

@@ -25,7 +25,7 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
             for (Node node: e.getAffectedNodes()) {
                 if (node instanceof Contact) {
                     // Update all set/reset functions when a contact is removed
-                    final Contact contact = (Contact)node;
+                    final Contact contact = (Contact) node;
                     handleContactRemoval(contact);
                 }
             }

@@ -77,20 +77,20 @@ public class VisualCPOG extends AbstractVisualModel {
 
         @Override
         public Object getValue() throws InvocationTargetException {
-            if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause)node).getFormula());
-            if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex)node).getCondition());
-            return FormulaToString.toString(((VisualArc)node).getCondition());
+            if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause) node).getFormula());
+            if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex) node).getCondition());
+            return FormulaToString.toString(((VisualArc) node).getCondition());
         }
 
         @Override
         public void setValue(Object value) throws InvocationTargetException {
             try {
                 if (node instanceof VisualRhoClause) {
-                    ((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
+                    ((VisualRhoClause) node).setFormula(BooleanParser.parse((String) value, mathModel.getVariables()));
                 } else if (node instanceof VisualArc) {
-                    ((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+                    ((VisualArc) node).setCondition(BooleanParser.parse((String) value, mathModel.getVariables()));
                 } else if (node instanceof VisualVertex) {
-                    ((VisualVertex)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+                    ((VisualVertex) node).setCondition(BooleanParser.parse((String) value, mathModel.getVariables()));
                 }
             } catch (ParseException e) {
                 throw new InvocationTargetException(e);
@@ -174,7 +174,7 @@ public class VisualCPOG extends AbstractVisualModel {
             if (mConnection == null) {
                 mConnection = mathModel.connect(v.getMathVertex(), u.getMathVariable());
             }
-            ret = new VisualDynamicVariableConnection((DynamicVariableConnection)mConnection, v, u);
+            ret = new VisualDynamicVariableConnection((DynamicVariableConnection) mConnection, v, u);
             Hierarchy.getNearestContainer(v, u).add(ret);
         }
         return ret;
@@ -274,8 +274,8 @@ public class VisualCPOG extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         if (node != null) {
             if (node instanceof VisualRhoClause ||
-                node instanceof VisualVertex ||
-                node instanceof VisualArc) {
+                    node instanceof VisualVertex ||
+                    node instanceof VisualArc) {
                 properties.add(new BooleanFormulaPropertyDescriptor(node));
             }
         }
@@ -292,7 +292,7 @@ public class VisualCPOG extends AbstractVisualModel {
 
     public VisualScenarioPage groupScenarioPageSelection(String graphName) {
         VisualScenarioPage scenario = null;
-         PageNode pageNode = new PageNode();
+        PageNode pageNode = new PageNode();
         Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
         if (nodes.size() >= 1) {
             scenario = new VisualScenarioPage(pageNode);

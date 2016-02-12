@@ -29,7 +29,6 @@ public class VisualSONConnection extends VisualConnection {
     public static final Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
     private RenderedText timeRenderedText = new RenderedText("", timeFont, Positioning.CENTER, new Point2D.Double());
 
-
     public VisualSONConnection() {
         this(null, null, null);
     }
@@ -80,7 +79,7 @@ public class VisualSONConnection extends VisualConnection {
     }
 
     public SONConnection getReferencedSONConnection() {
-        return (SONConnection)getReferencedConnection();
+        return (SONConnection) getReferencedConnection();
     }
 
     public Semantics getSemantics() {
@@ -97,9 +96,9 @@ public class VisualSONConnection extends VisualConnection {
         switch (getSemantics()) {
         case SYNCLINE:
         case ASYNLINE:
-            return new BasicStroke(0.15f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.5f, new float[]{0.1f, 0.075f,}, 0f);
+            return new BasicStroke(0.15f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.5f, new float[]{0.1f, 0.075f}, 0f);
         case BHVLINE:
-            return new BasicStroke(0.02f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 2.0f, new float[]{0.24f, 0.15f,}, 0f);
+            return new BasicStroke(0.02f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 2.0f, new float[]{0.24f, 0.15f}, 0f);
         default:
             return super.getStroke();
         }

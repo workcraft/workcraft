@@ -58,7 +58,7 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     public PetriNet getPetriNet() {
-        return (PetriNet)getMathModel();
+        return (PetriNet) getMathModel();
     }
 
     public VisualPlace createPlace(String mathName, Container container) {
@@ -89,7 +89,7 @@ public class VisualPetriNet extends AbstractVisualModel {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
         if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
-          && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
+                && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
             throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
@@ -114,15 +114,14 @@ public class VisualPetriNet extends AbstractVisualModel {
             MathNode firstRef = getMathReference(first);
             MathNode secondRef = getMathReference(second);
             if ((firstRef != null) && (secondRef != null)) {
-                PetriNet petriNet = (PetriNet)getMathModel();
+                PetriNet petriNet = (PetriNet) getMathModel();
                 mConnection = petriNet.connect(firstRef, secondRef);
             }
         }
-        VisualConnection connection = new VisualConnection(mConnection, (VisualNode)first, (VisualNode)second);
+        VisualConnection connection = new VisualConnection(mConnection, (VisualNode) first, (VisualNode) second);
         Hierarchy.getNearestContainer(first, second).add(connection);
         return connection;
     }
-
 
     @Override
     public void validateUndirectedConnection(Node first, Node second)    throws InvalidConnectionException {
@@ -130,18 +129,18 @@ public class VisualPetriNet extends AbstractVisualModel {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
         if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
-          && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
+                && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
             throw new InvalidConnectionException("Read-arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Read-arcs between transitions are not allowed.");
         }
         if (PetriNetUtils.hasReadArcConnection(this, first, second)
-          || PetriNetUtils.hasReadArcConnection(this, second, first)
-          || PetriNetUtils.hasProducingArcConnection(this, first, second)
-          || PetriNetUtils.hasProducingArcConnection(this, second, first)
-          || PetriNetUtils.hasConsumingArcConnection(this, first, second)
-          || PetriNetUtils.hasConsumingArcConnection(this, second, first)) {
+                || PetriNetUtils.hasReadArcConnection(this, second, first)
+                || PetriNetUtils.hasProducingArcConnection(this, first, second)
+                || PetriNetUtils.hasProducingArcConnection(this, second, first)
+                || PetriNetUtils.hasConsumingArcConnection(this, first, second)
+                || PetriNetUtils.hasConsumingArcConnection(this, second, first)) {
             throw new InvalidConnectionException("Nodes are already connected.");
         }
     }
@@ -153,11 +152,11 @@ public class VisualPetriNet extends AbstractVisualModel {
         VisualNode place = null;
         VisualNode transition = null;
         if (first instanceof VisualTransition) {
-            place = (VisualNode)second;
-            transition = (VisualNode)first;
+            place = (VisualNode) second;
+            transition = (VisualNode) first;
         } else if (second instanceof VisualTransition) {
-            place = (VisualNode)first;
-            transition = (VisualNode)second;
+            place = (VisualNode) first;
+            transition = (VisualNode) second;
         }
         VisualConnection connection = null;
         if ((place != null) && (transition != null)) {
@@ -168,22 +167,22 @@ public class VisualPetriNet extends AbstractVisualModel {
 
     private VisualReadArc createReadArcConnection(VisualNode place, VisualNode transition)
              throws InvalidConnectionException {
-        PetriNet petriNet = (PetriNet)getMathModel();
+        PetriNet petriNet = (PetriNet) getMathModel();
 
         Place mPlace = null;
         if (place instanceof VisualPlace) {
-            mPlace = ((VisualPlace)place).getReferencedPlace();
+            mPlace = ((VisualPlace) place).getReferencedPlace();
         } else if (place instanceof VisualReplicaPlace) {
-            mPlace = ((VisualReplicaPlace)place).getReferencedPlace();
+            mPlace = ((VisualReplicaPlace) place).getReferencedPlace();
         }
         Transition mTransition = null;
         if (transition instanceof VisualTransition) {
-            mTransition = ((VisualTransition)transition).getReferencedTransition();
+            mTransition = ((VisualTransition) transition).getReferencedTransition();
         }
 
         VisualReadArc connection = null;
         if ((mPlace != null) && (mTransition !=null)) {
-             MathConnection mConsumingConnection = petriNet.connect(mPlace, mTransition);
+            MathConnection mConsumingConnection = petriNet.connect(mPlace, mTransition);
             MathConnection mProducingConnection = petriNet.connect(mTransition, mPlace);
 
             connection = new VisualReadArc(place, transition, mConsumingConnection, mProducingConnection);

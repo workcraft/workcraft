@@ -109,7 +109,7 @@ public abstract class Path<Node> {
         }
         int n = list.size();
         List<Node> result = new ArrayList<Node>();
-        for(int i=0;i<n;i++) {
+        for(int i=0; i<n; i++) {
             result.add(list.get(n-1-i));
         }
         return result;

@@ -43,8 +43,8 @@ public class VisualReplicaDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-        VisualReplica replica = (VisualReplica)instance;
-        replica.setMaster((VisualComponent)internalReferenceResolver.getObject(element.getAttribute("master")));
+        VisualReplica replica = (VisualReplica) instance;
+        replica.setMaster((VisualComponent) internalReferenceResolver.getObject(element.getAttribute("master")));
     }
 
     @Override

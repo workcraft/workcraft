@@ -50,14 +50,14 @@ class ConnectionByComponentsIdentifier implements
 
         @Override
         public boolean equals(Object obj) {
-            Pair other = (Pair)obj;
+            Pair other = (Pair) obj;
             return o1.equals(other.o1) && o2.equals(other.o2);
         }
     }
 
     ConnectionByComponentsIdentifier(
             KeyProvider<MathNode> componentKeyProvider) {
-                this.componentKeyProvider = componentKeyProvider;
+        this.componentKeyProvider = componentKeyProvider;
     }
 
     public Object getKey(MathConnection item) {

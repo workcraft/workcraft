@@ -27,7 +27,7 @@ public class PetriNetToStgConverterTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualPetriNet pn = (VisualPetriNet)we.getModelEntry().getVisualModel();
+        final VisualPetriNet pn = (VisualPetriNet) we.getModelEntry().getVisualModel();
         final VisualSTG stg = new VisualSTG(new STG());
         final PetriNetToStgConverter converter = new PetriNetToStgConverter(pn, stg);
         final Framework framework = Framework.getInstance();

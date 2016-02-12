@@ -117,7 +117,6 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miAddFiles = new ActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
         miAddFiles.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-
         ActionMenuItem miSaveWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
         miSaveWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
 

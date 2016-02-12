@@ -82,11 +82,11 @@ public class VisualRhoClause extends VisualComponent {
 
         Rectangle2D textBB = result.boundingBox;
 
-        float textX = (float)-textBB.getCenterX();
-        float textY = (float)-textBB.getCenterY();
+        float textX = (float) -textBB.getCenterX();
+        float textY = (float) -textBB.getCenterY();
 
-        float width = (float)textBB.getWidth() + 0.4f;
-        float height = (float)textBB.getHeight() + 0.2f;
+        float width = (float) textBB.getWidth() + 0.4f;
+        float height = (float) textBB.getHeight() + 0.2f;
 
         boudingBox = new Rectangle2D.Float(-width / 2, -height / 2, width, height);
 
@@ -129,7 +129,7 @@ public class VisualRhoClause extends VisualComponent {
     }
 
     public RhoClause getMathRhoClause() {
-        return (RhoClause)getReferencedComponent();
+        return (RhoClause) getReferencedComponent();
     }
 
     public BooleanFormula getFormula() {

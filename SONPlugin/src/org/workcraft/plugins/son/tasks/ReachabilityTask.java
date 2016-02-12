@@ -40,10 +40,9 @@ public class ReachabilityTask implements Task<VerificationResult>{
     private Collection<Node> causalPredecessors;
     private Collection<String> causalPredecessorRefs;
 
-
     public ReachabilityTask(WorkspaceEntry we){
         this.we = we;
-        net = (SON)we.getModelEntry().getMathModel();
+        net = (SON) we.getModelEntry().getMathModel();
 
         if(hasConflict()){
             JOptionPane.showMessageDialog(null, "Model has alternative behaviours", "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
@@ -90,7 +89,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
         }
 
         if(reachabilityTask()){
-            net = (SON)we.getModelEntry().getMathModel();
+            net = (SON) we.getModelEntry().getMathModel();
             int result = JOptionPane.showConfirmDialog(mainWindow,
                     "The selected marking is REACHABLE from the initial states. \n" +
                     "Select OK to analyze the trace leading to the marking in the simulation tool.",
@@ -123,13 +122,11 @@ public class ReachabilityTask implements Task<VerificationResult>{
         return result;
     }
 
-
     private boolean reachabilityTask(){
         //Collection<Node> initial = new HashSet<Node>();
         Collection<Node> sync= new HashSet<Node>();
         for(Path path : getSyncCycles())
             sync.addAll(path);
-
 
         //if marking contains a synchronous channel place, it's unreachable.
         for(String ref : markingRefs){

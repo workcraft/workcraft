@@ -26,7 +26,6 @@ import org.workcraft.plugins.cpog.optimisation.Nf;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-
 public class Dnf extends Nf<DnfClause> {
 
     public Dnf() {

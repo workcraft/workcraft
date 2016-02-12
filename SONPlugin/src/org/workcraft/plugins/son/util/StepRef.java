@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.util;
 
-
 @SuppressWarnings("serial")
 public class StepRef extends NodesRef{
 

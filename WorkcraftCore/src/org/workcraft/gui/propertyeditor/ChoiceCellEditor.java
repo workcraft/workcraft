@@ -36,7 +36,6 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
     private JComboBox comboBox;
     private ChoiceWrapper[] wrappers;
 
-
     public ChoiceCellEditor(PropertyDescriptor decl) {
         comboBox = new JComboBox();
         comboBox.setEditable(false);
@@ -55,7 +54,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
     }
 
     public Object getCellEditorValue() {
-        return ((ChoiceWrapper)comboBox.getSelectedItem()).value;
+        return ((ChoiceWrapper) comboBox.getSelectedItem()).value;
     }
 
     public Component getTableCellEditorComponent(JTable table,    Object value,

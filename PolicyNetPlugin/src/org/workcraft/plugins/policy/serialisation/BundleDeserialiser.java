@@ -38,10 +38,10 @@ public class BundleDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-        Bundle b = (Bundle)instance;
+        Bundle b = (Bundle) instance;
         String s = element.getAttribute("transitions");
         for (String ref : s.split("\\s*,\\s*")) {
-            b.add((BundledTransition)internalReferenceResolver.getObject(ref));
+            b.add((BundledTransition) internalReferenceResolver.getObject(ref));
         }
     }
 

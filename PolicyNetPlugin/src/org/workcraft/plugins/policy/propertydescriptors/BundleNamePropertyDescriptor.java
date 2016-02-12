@@ -44,7 +44,7 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        model.getPolicyNet().setName(bundle.getReferencedBundle(), (String)value);
+        model.getPolicyNet().setName(bundle.getReferencedBundle(), (String) value);
     }
 
     @Override

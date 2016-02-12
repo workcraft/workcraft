@@ -127,7 +127,7 @@ public class PcompDialog extends JDialog {
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         options.add(showInEditor, 0);
         options.add(outputOptions, 1);
-        options.add(sharedOutputs,2);
+        options.add(sharedOutputs, 2);
         options.add(improvedPcomp, 3);
 
         content.add(options, "1 0");
@@ -154,26 +154,25 @@ public class PcompDialog extends JDialog {
         content.add(buttonsPanel, "1 1");
 
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                runAction();
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        runAction();
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancelAction();
-            }
-        },
-        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-        JComponent.WHEN_IN_FOCUSED_WINDOW);
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        cancelAction();
+                    }
+                },
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         return content;
     }
-
 
     private void runAction() {
         result = true;

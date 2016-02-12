@@ -52,7 +52,6 @@ import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 import org.workcraft.util.Hierarchy;
 
-
 @DisplayName("xMAS Circuit")
 @ShortName("xMAS")
 @CustomTools (XmasToolsProvider.class)
@@ -65,10 +64,10 @@ public class VisualXmas extends AbstractVisualModel {
         if (!(first instanceof VisualXmasContact) || !(second instanceof VisualXmasContact)) {
             throw new InvalidConnectionException("Connection is only allowed between ports");
         } else {
-            if (((VisualXmasContact)first).getIOType() != IOType.OUTPUT) {
+            if (((VisualXmasContact) first).getIOType() != IOType.OUTPUT) {
                 throw new InvalidConnectionException("Connection is only allowed from output port.");
             }
-            if (((VisualXmasContact)second).getIOType() != IOType.INPUT) {
+            if (((VisualXmasContact) second).getIOType() != IOType.INPUT) {
                 throw new InvalidConnectionException("Connection is only allowed to input port.");
             }
             for (Connection c: this.getConnections(first)) {
@@ -104,8 +103,8 @@ public class VisualXmas extends AbstractVisualModel {
         validateConnection(first, second);
         VisualXmasConnection connection = null;
         if (first instanceof VisualComponent && second instanceof VisualComponent) {
-            VisualComponent c1 = (VisualComponent)first;
-            VisualComponent c2 = (VisualComponent)second;
+            VisualComponent c1 = (VisualComponent) first;
+            VisualComponent c2 = (VisualComponent) second;
             if (mConnection == null) {
                 mConnection = circuit.connect(c1.getReferencedComponent(), c2.getReferencedComponent());
             }
@@ -125,15 +124,15 @@ public class VisualXmas extends AbstractVisualModel {
         ArrayList<Node> result =  new ArrayList<Node>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)){
             if ((node instanceof VisualSourceComponent)
-              || (node instanceof VisualFunctionComponent)
-              || (node instanceof VisualQueueComponent)
-              || (node instanceof VisualForkComponent)
-              || (node instanceof VisualJoinComponent)
-              || (node instanceof VisualSwitchComponent)
-              || (node instanceof VisualMergeComponent)
-              || (node instanceof VisualSinkComponent)
-              || (node instanceof VisualCreditComponent)
-              || (node instanceof VisualSyncComponent)) {
+                    || (node instanceof VisualFunctionComponent)
+                    || (node instanceof VisualQueueComponent)
+                    || (node instanceof VisualForkComponent)
+                    || (node instanceof VisualJoinComponent)
+                    || (node instanceof VisualSwitchComponent)
+                    || (node instanceof VisualMergeComponent)
+                    || (node instanceof VisualSinkComponent)
+                    || (node instanceof VisualCreditComponent)
+                    || (node instanceof VisualSyncComponent)) {
                 result.add(node);
             }
         }

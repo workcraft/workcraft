@@ -1,6 +1,5 @@
 package org.workcraft.plugins.policy.tools;
 
-
 import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;

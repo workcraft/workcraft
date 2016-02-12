@@ -38,7 +38,7 @@ public class ModelEntry {
         if (isVisual()) {
             return getVisualModel().getMathModel();
         } else {
-            return (MathModel)model;
+            return (MathModel) model;
         }
     }
 

@@ -70,7 +70,7 @@ public class NodesRef extends ArrayList<String>{
     public boolean equals(Object o){
         if (!(o instanceof NodesRef)) return false;
 
-        NodesRef ref = (NodesRef)o;
+        NodesRef ref = (NodesRef) o;
         if(ref.size() != size()) return false;
 
         for(String str : ref){

@@ -27,7 +27,7 @@ public class FunctionComponent extends CircuitComponent {
             if (e instanceof NodesDeletingEvent) {
                 for (Node node: e.getAffectedNodes()) {
                     if (node instanceof Contact) {
-                        final Contact contact = (Contact)node;
+                        final Contact contact = (Contact) node;
                         removeContactfromFunctions(contact);
                     }
                 }
@@ -48,7 +48,6 @@ public class FunctionComponent extends CircuitComponent {
         // Update all set/reset functions of the component when its contact is removed
         new CircuitHierarchySupervisor().attach(this);
     }
-
 
     public void setIsZeroDelay(boolean value) {
         if (this.isZeroDelay != value) {
@@ -71,8 +70,8 @@ public class FunctionComponent extends CircuitComponent {
         FunctionContact inputContact = null;
         FunctionContact outputContact = null;
         if (contacts.size() == 2) {
-            inputContact = (FunctionContact)getFirstInput();
-            outputContact = (FunctionContact)getFirstOutput();
+            inputContact = (FunctionContact) getFirstInput();
+            outputContact = (FunctionContact) getFirstOutput();
         }
         if ((inputContact != null) && (outputContact != null)) {
             BooleanFormula setFunction = outputContact.getSetFunction();
@@ -91,8 +90,8 @@ public class FunctionComponent extends CircuitComponent {
         FunctionContact inputContact = null;
         FunctionContact outputContact = null;
         if (contacts.size() == 2) {
-            inputContact = (FunctionContact)getFirstInput();
-            outputContact = (FunctionContact)getFirstOutput();
+            inputContact = (FunctionContact) getFirstInput();
+            outputContact = (FunctionContact) getFirstOutput();
         }
         if ((inputContact != null) && (outputContact != null)) {
             BooleanFormula setFunction = outputContact.getSetFunction();

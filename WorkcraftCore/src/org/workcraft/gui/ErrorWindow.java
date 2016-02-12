@@ -61,13 +61,13 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         txtStdErr.setForeground(Color.RED);
         txtStdErr.addMouseListener(new LogAreaMouseListener());
 
-        DefaultCaret caret = (DefaultCaret)txtStdErr.getCaret();
+        DefaultCaret caret = (DefaultCaret) txtStdErr.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         scrollStdErr = new JScrollPane();
         scrollStdErr.setViewportView(txtStdErr);
 
-        setLayout(new BorderLayout(0,0));
+        setLayout(new BorderLayout(0, 0));
         this.add(scrollStdErr, BorderLayout.CENTER);
 
         addComponentListener(this);

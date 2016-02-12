@@ -48,7 +48,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
             if (ref.startsWith("var_")) {
                 ref = ref.substring("var_".length());
 
-                BooleanVariable bv = (BooleanVariable)internalReferenceResolver.getObject(ref);
+                BooleanVariable bv = (BooleanVariable) internalReferenceResolver.getObject(ref);
                 if (bv!=null)
                     return bv;
 

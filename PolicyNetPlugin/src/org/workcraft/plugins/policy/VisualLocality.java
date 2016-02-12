@@ -20,12 +20,12 @@ public class VisualLocality extends VisualGroup {
     public void add(Node node) {
         Node mathNode = null;
         if (node instanceof VisualComponent) {
-            mathNode = ((VisualComponent)node).getReferencedComponent();
+            mathNode = ((VisualComponent) node).getReferencedComponent();
         } else if (node instanceof VisualLocality) {
-            mathNode = ((VisualLocality)node).getLocality();
+            mathNode = ((VisualLocality) node).getLocality();
         }
         if (mathNode != null) {
-            Locality oldLocality = (Locality)mathNode.getParent();
+            Locality oldLocality = (Locality) mathNode.getParent();
             oldLocality.reparent(Arrays.asList(mathNode), refLocality);
         }
         super.add(node);
@@ -65,9 +65,9 @@ public class VisualLocality extends VisualGroup {
         for (Node node: nodes) {
             Node refNode = null;
             if (node instanceof VisualComponent) {
-                refNode = ((VisualComponent)node).getReferencedComponent();
+                refNode = ((VisualComponent) node).getReferencedComponent();
             } else if (node instanceof VisualLocality){
-                refNode = ((VisualLocality)node).getLocality();
+                refNode = ((VisualLocality) node).getLocality();
             }
             if (refNode != null && refNode.getParent() == locality) {
                 result.add(refNode);
@@ -79,7 +79,7 @@ public class VisualLocality extends VisualGroup {
     @Override
     public void reparent(Collection<Node> nodes, Container newParent) {
         if (newParent instanceof VisualLocality) {
-            VisualLocality newLocality = (VisualLocality)newParent;
+            VisualLocality newLocality = (VisualLocality) newParent;
             refLocality.reparent(filterRefNodesByLocality(nodes, refLocality), newLocality.getLocality());
         }
         super.reparent(nodes, newParent);

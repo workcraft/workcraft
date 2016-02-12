@@ -49,7 +49,6 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
             }
         });
 
-
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
                 this, CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION, Boolean.class, true, true, true) {
             public void setter(VisualCounterflowLogic object, Boolean value) {
@@ -79,7 +78,7 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         double h = size - strokeWidth;
         double w2 = w/2;
         double h2 = h/2;
-        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth1 = (float) strokeWidth;
         float strokeWidth2 = strokeWidth1 / 2;
         float strokeWidth4 = strokeWidth1 / 4;
         int kd = 6;
@@ -134,10 +133,10 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         boolean backwardComputedExcited = false;
         if (d instanceof CounterflowLogicDecoration) {
             defaultColor = getForegroundColor();
-            forwardComputed = ((CounterflowLogicDecoration)d).isForwardComputed();
-            forwardComputedExcited = ((CounterflowLogicDecoration)d).isForwardComputedExcited();
-            backwardComputed = ((CounterflowLogicDecoration)d).isBackwardComputed();
-            backwardComputedExcited = ((CounterflowLogicDecoration)d).isBackwardComputedExcited();
+            forwardComputed = ((CounterflowLogicDecoration) d).isForwardComputed();
+            forwardComputedExcited = ((CounterflowLogicDecoration) d).isForwardComputedExcited();
+            backwardComputed = ((CounterflowLogicDecoration) d).isBackwardComputed();
+            backwardComputedExcited = ((CounterflowLogicDecoration) d).isBackwardComputedExcited();
         }
 
         if (forwardComputed) {
@@ -203,14 +202,14 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
     }
 
     public CounterflowLogic getReferencedCounterflowLogic() {
-        return (CounterflowLogic)getReferencedComponent();
+        return (CounterflowLogic) getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualCounterflowLogic) {
-            CounterflowLogic srcLogic = ((VisualCounterflowLogic)src).getReferencedCounterflowLogic();
+            CounterflowLogic srcLogic = ((VisualCounterflowLogic) src).getReferencedCounterflowLogic();
             getReferencedCounterflowLogic().setForwardComputed(srcLogic.isForwardComputed());
             getReferencedCounterflowLogic().setBackwardComputed(srcLogic.isBackwardComputed());
             getReferencedCounterflowLogic().setForwardEarlyEvaluation(srcLogic.isForwardEarlyEvaluation());

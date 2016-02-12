@@ -40,7 +40,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
             HashSet<Dependent> refs = referenceTracker.get(mathNode);
             if (refs == null) {
                 refs = new HashSet<Dependent>();
-                referenceTracker.put(mathNode,refs);
+                referenceTracker.put(mathNode, refs);
             }
             refs.add(dependentNode);
         }
@@ -56,7 +56,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
                 referenceTracker.remove(mathNode);
                 Node parent = mathNode.getParent();
                 if (parent instanceof Container) {
-                    ((Container)parent).remove(mathNode);
+                    ((Container) parent).remove(mathNode);
                 }
             }
         }
@@ -78,7 +78,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 
     private void nodeAdded(Node node) {
         if (node instanceof Dependent) {
-            Dependent dependentNode = (Dependent)node;
+            Dependent dependentNode = (Dependent) node;
             for (MathNode mathNode : dependentNode.getMathReferences()) {
                 addReference(mathNode, dependentNode);
             }
@@ -92,7 +92,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 
     private void nodeRemoved(Node node) {
         if (node instanceof Dependent) {
-            Dependent dependentNode = (Dependent)node;
+            Dependent dependentNode = (Dependent) node;
             for (MathNode mathNode : dependentNode.getMathReferences()) {
                 removeReference(mathNode, dependentNode);
             }

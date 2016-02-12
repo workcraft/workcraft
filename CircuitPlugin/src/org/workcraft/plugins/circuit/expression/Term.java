@@ -54,7 +54,7 @@ public class Term implements Expression {
         for (Expression expression: expressions) {
             Expression evalExpression = expression.eval(assignments);
             if (evalExpression instanceof Constant) {
-                Constant constant = (Constant)evalExpression;
+                Constant constant = (Constant) evalExpression;
                 if (!constant.value) {
                     return new Constant(false);
                 }
@@ -70,6 +70,5 @@ public class Term implements Expression {
             return new Term(evalExpressions);
         }
     }
-
 
 }

@@ -54,7 +54,6 @@ public class Hierarchy {
         return result;
     }
 
-
     public static <T extends Node> Collection <T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
         LinkedList<T> result = new LinkedList<T>();
         for (Node node : nodes) {
@@ -99,7 +98,7 @@ public class Hierarchy {
         }
 
         Node result = null;
-        for(int i=0;i<minPathLength;i++) {
+        for(int i=0; i<minPathLength; i++) {
             Node node = paths.get(0)[i];
             boolean good = true;
             for (Node[] path : paths) {
@@ -156,7 +155,7 @@ public class Hierarchy {
 
     @SuppressWarnings({ "unchecked" })
     public static <T> T getNearestAncestor(Node node, final Class<T> type) {
-        return (T)getNearestAncestor(node, new Func<Node, Boolean>() {
+        return (T) getNearestAncestor(node, new Func<Node, Boolean>() {
             @Override
             public Boolean eval(Node node) {
                 return type.isInstance(node);

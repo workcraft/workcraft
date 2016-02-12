@@ -42,8 +42,8 @@ public class SONMainTask implements Task<VerificationResult>{
     public Result<? extends VerificationResult> run(ProgressMonitor <? super VerificationResult> monitor){
         clearConsole();
         //all tasks
-        SON net=(SON)we.getModelEntry().getMathModel();
-        VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
+        SON net=(SON) we.getModelEntry().getMathModel();
+        VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
 
         if(settings.getType() == 0){
 
@@ -160,7 +160,6 @@ public class SONMainTask implements Task<VerificationResult>{
 
         logger.info("\n\nVerification-Result : "+ err + " Error(s), " + warning + " Warning(s).");
 
-
         return new Result<VerificationResult>(Outcome.FINISHED);
     }
 
@@ -198,7 +197,6 @@ public class SONMainTask implements Task<VerificationResult>{
             }
         }
     }
-
 
     private void errNodesHighlight(boolean b, SON net){
         if(b){

@@ -151,7 +151,6 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
         return modelFile;
     }
 
-
     @Override
     public void processFinished(int returnCode) {
     }

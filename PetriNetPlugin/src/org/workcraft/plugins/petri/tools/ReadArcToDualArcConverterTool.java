@@ -59,8 +59,8 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualModel) && (node instanceof VisualReadArc)) {
-            VisualModel visualModel = (VisualModel)model;
-            VisualReadArc readArc = (VisualReadArc)node;
+            VisualModel visualModel = (VisualModel) model;
+            VisualReadArc readArc = (VisualReadArc) node;
             Pair<VisualConnection, VisualConnection> dualArc = PetriNetUtils.converReadArcTotDualArc(visualModel, readArc);
             VisualConnection consumingArc = dualArc.getFirst();
             if (consumingArc != null) {

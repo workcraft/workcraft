@@ -49,7 +49,7 @@ public class NodeFactory {
         try {
             Class<?> visualClass = vcat.value();
             Constructor<?> ctor = visualClass.getConstructor();
-            VisualConnection visual = (VisualConnection)ctor.newInstance();
+            VisualConnection visual = (VisualConnection) ctor.newInstance();
             return visual;
 
         } catch (SecurityException e) {
@@ -71,7 +71,7 @@ public class NodeFactory {
     public static <T extends Node> T createNode(Class<T> cls) throws NodeCreationException {
         try {
             Constructor<?> ctor = cls.getConstructor();
-            return (T)ctor.newInstance();
+            return (T) ctor.newInstance();
         } catch (ClassCastException ex) {
             throw new NodeCreationException(ex);
         }    catch (SecurityException ex) {
@@ -97,7 +97,7 @@ public class NodeFactory {
         VisualComponentGeneratorAttribute generator = component.getClass().getAnnotation(VisualComponentGeneratorAttribute.class);
         if(generator != null) {
             try {
-                return ((org.workcraft.dom.VisualComponentGenerator)Class.forName(generator.generator())
+                return ((org.workcraft.dom.VisualComponentGenerator) Class.forName(generator.generator())
                         .getConstructor().newInstance())
                         .createComponent(component, constructorParameters);
             } catch (Exception e) {
@@ -121,11 +121,11 @@ public class NodeFactory {
 
             Object[] args = new Object[constructorParameters.length+1];
             args[0] = component;
-            for(int i=0;i<constructorParameters.length;i++) {
+            for(int i=0; i<constructorParameters.length; i++) {
                 args[i+1] = constructorParameters[i];
             }
             Class <?>[] types = new Class <?>[args.length];
-            for(int i=0;i<args.length;i++) {
+            for(int i=0; i<args.length; i++) {
                 types[i] = args[i].getClass();
             }
             Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, types);

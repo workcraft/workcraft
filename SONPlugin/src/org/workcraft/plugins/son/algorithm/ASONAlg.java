@@ -38,12 +38,12 @@ public class ASONAlg extends RelationAlgorithm{
             if(marking.contains(n))
                 throw new UnboundedException(net.getNodeReference(n), n);
             else
-                result.add((PlaceNode)n);
+                result.add((PlaceNode) n);
         }
 
         for(Node n : marking){
             if(!getPrePNSet(t).contains(n))
-                result.add((PlaceNode)n);
+                result.add((PlaceNode) n);
         }
 
         return result;
@@ -75,9 +75,9 @@ public class ASONAlg extends RelationAlgorithm{
                             newMarkings.add(newMarking);
                     }
                     if(visited.containsKey(t)){
-                         ArrayList<Marking> markings = visited.get(t);
-                         markings.add(marking);
-                         visited.put(t, markings);
+                        ArrayList<Marking> markings = visited.get(t);
+                        markings.add(marking);
+                        visited.put(t, markings);
                     }else{
                         ArrayList<Marking> markings = new ArrayList<Marking>();
                         markings.add(marking);

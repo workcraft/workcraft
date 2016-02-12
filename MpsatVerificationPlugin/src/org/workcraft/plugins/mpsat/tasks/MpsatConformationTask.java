@@ -33,7 +33,6 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class MpsatConformationTask extends MpsatChainTask {
     private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
@@ -61,7 +60,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
             directory = FileUtils.createTempDirectory(prefix);
 
-            STG devStg = (STG)we.getModelEntry().getVisualModel().getMathModel();
+            STG devStg = (STG) we.getModelEntry().getVisualModel().getMathModel();
             Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
             if (devStgExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
@@ -89,7 +88,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             if (envFile.getName().endsWith(".g")) {
                 envStgFile = envFile;
             } else {
-                STG envStg = (STG)framework.loadFile(envFile).getMathModel();
+                STG envStg = (STG) framework.loadFile(envFile).getMathModel();
                 Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
                 envStgFile = new File(directory, "env.g");
                 ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
@@ -121,7 +120,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             }
             FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
             WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-            STG stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+            STG stg = (STG) stgWorkspaceEntry.getModelEntry().getMathModel();
             framework.getWorkspace().close(stgWorkspaceEntry);
             monitor.progressUpdate(0.50);
 
@@ -206,6 +205,5 @@ public class MpsatConformationTask extends MpsatChainTask {
         }
         return result;
     }
-
 
 }

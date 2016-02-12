@@ -32,13 +32,13 @@ public class CElementRenderer extends GateRenderer {
     static boolean isFirstNode;
     static boolean isGlobalNegation;
 
-    static BooleanVisitor<LinkedList<Pair<String,Boolean>>> defaultVisitor = new BooleanVisitor<LinkedList<Pair<String,Boolean>>>() {
+    static BooleanVisitor<LinkedList<Pair<String, Boolean>>> defaultVisitor = new BooleanVisitor<LinkedList<Pair<String, Boolean>>>() {
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(And node) {
+        public LinkedList<Pair<String, Boolean>> visit(And node) {
             isFirstNode = false;
-            LinkedList<Pair<String,Boolean>> retX = node.getX().accept(this);
-            LinkedList<Pair<String,Boolean>> retY = node.getY().accept(this);
+            LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
+            LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
             if (retX!=null&&retY!=null) {
                 retX.addAll(retY);
             } else retX = retY;
@@ -46,10 +46,10 @@ public class CElementRenderer extends GateRenderer {
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(Iff node) {
+        public LinkedList<Pair<String, Boolean>> visit(Iff node) {
             isFirstNode = false;
-            LinkedList<Pair<String,Boolean>> retX = node.getX().accept(this);
-            LinkedList<Pair<String,Boolean>> retY = node.getY().accept(this);
+            LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
+            LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
             if (retX!=null&&retY!=null) {
                 retX.addAll(retY);
             } else retX = retY;
@@ -57,10 +57,10 @@ public class CElementRenderer extends GateRenderer {
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(Xor node) {
+        public LinkedList<Pair<String, Boolean>> visit(Xor node) {
             isFirstNode = false;
-            LinkedList<Pair<String,Boolean>> retX = node.getX().accept(this);
-            LinkedList<Pair<String,Boolean>> retY = node.getY().accept(this);
+            LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
+            LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
             if (retX!=null&&retY!=null) {
                 retX.addAll(retY);
             } else retX = retY;
@@ -68,32 +68,32 @@ public class CElementRenderer extends GateRenderer {
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(Zero node) {
+        public LinkedList<Pair<String, Boolean>> visit(Zero node) {
             isFirstNode = false;
             return null;
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(One node) {
+        public LinkedList<Pair<String, Boolean>> visit(One node) {
             isFirstNode = false;
             return null;
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(Not node) {
+        public LinkedList<Pair<String, Boolean>> visit(Not node) {
             if (isFirstNode) isGlobalNegation = true;
             isFirstNode = false;
             isNegated = !isNegated;
-            LinkedList<Pair<String,Boolean>> ret = node.getX().accept(this);
+            LinkedList<Pair<String, Boolean>> ret = node.getX().accept(this);
             isNegated = !isNegated;
             return ret;
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(Imply node) {
+        public LinkedList<Pair<String, Boolean>> visit(Imply node) {
             isFirstNode = false;
-            LinkedList<Pair<String,Boolean>> retX = node.getX().accept(this);
-            LinkedList<Pair<String,Boolean>> retY = node.getY().accept(this);
+            LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
+            LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
             if (retX!=null&&retY!=null) {
                 retX.addAll(retY);
             } else retX = retY;
@@ -101,21 +101,21 @@ public class CElementRenderer extends GateRenderer {
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(BooleanVariable variable) {
+        public LinkedList<Pair<String, Boolean>> visit(BooleanVariable variable) {
             isFirstNode = false;
-            LinkedList<Pair<String,Boolean>> ret = new LinkedList<Pair<String,Boolean>>();
+            LinkedList<Pair<String, Boolean>> ret = new LinkedList<Pair<String, Boolean>>();
 
-            Pair<String,Boolean> vv = new Pair<String,Boolean>(variable.getLabel(), doNegate?!isNegated:isNegated);
+            Pair<String, Boolean> vv = new Pair<String, Boolean>(variable.getLabel(), doNegate?!isNegated:isNegated);
 
             ret.add(vv);
             return ret;
         }
 
         @Override
-        public LinkedList<Pair<String,Boolean>> visit(Or node) {
+        public LinkedList<Pair<String, Boolean>> visit(Or node) {
             isFirstNode = false;
-            LinkedList<Pair<String,Boolean>> retX = node.getX().accept(this);
-            LinkedList<Pair<String,Boolean>> retY = node.getY().accept(this);
+            LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
+            LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
             if (retX!=null&&retY!=null) {
                 retX.addAll(retY);
             } else retX = retY;
@@ -130,19 +130,19 @@ public class CElementRenderer extends GateRenderer {
         isNegated = false;
         isFirstNode = true;
         isGlobalNegation = false;
-        final LinkedList<Pair<String,Boolean>> setVars = set.accept(defaultVisitor);
+        final LinkedList<Pair<String, Boolean>> setVars = set.accept(defaultVisitor);
         doNegate = true;
         isNegated = false;
-        final LinkedList<Pair<String,Boolean>> resetVars = reset.accept(defaultVisitor);
-        final LinkedList<Pair<String,Boolean>> bothVars = new LinkedList<Pair<String,Boolean>>();
-        for (Pair<String,Boolean> p: setVars) {
+        final LinkedList<Pair<String, Boolean>> resetVars = reset.accept(defaultVisitor);
+        final LinkedList<Pair<String, Boolean>> bothVars = new LinkedList<Pair<String, Boolean>>();
+        for (Pair<String, Boolean> p: setVars) {
             int resetIndex = resetVars.indexOf(p);
             if (resetIndex != -1) {
                 bothVars.add(p);
             }
         }
 
-        for (Pair<String,Boolean> p: bothVars) {
+        for (Pair<String, Boolean> p: bothVars) {
             int setIndex = setVars.indexOf(p);
             if (setIndex != -1) {
                 setVars.remove(setIndex);
@@ -190,11 +190,11 @@ public class CElementRenderer extends GateRenderer {
                     for (Pair<String, Boolean> p3: bothVars)
                         if (p3.getSecond()^(gX!=0)) maxX = GateRenderer.bubbleSize;
 
-                    if (svs>0) plusPosition = new Point2D.Double(maxX/2-gX/2,-bvs*0.5/2-0.25);
-                    if (rvs>0) minusPosition = new Point2D.Double(maxX/2-gX/2,+bvs*0.5/2+0.25);
-                    labelPosition = new Point2D.Double(maxX/2-gX/2,0);
+                    if (svs>0) plusPosition = new Point2D.Double(maxX/2-gX/2, -bvs*0.5/2-0.25);
+                    if (rvs>0) minusPosition = new Point2D.Double(maxX/2-gX/2, +bvs*0.5/2+0.25);
+                    labelPosition = new Point2D.Double(maxX/2-gX/2, 0);
                     x += maxX + gX;
-                    cachedBB = new Rectangle2D.Double(-x/2,-svs*0.5-bvs*0.5/2,x,sumY);
+                    cachedBB = new Rectangle2D.Double(-x/2, -svs*0.5-bvs*0.5/2, x, sumY);
                 }
                 return cachedBB;
             }
@@ -230,7 +230,6 @@ public class CElementRenderer extends GateRenderer {
                 }
                 return cachedPositions;
             }
-
 
             public void drawBubble(Graphics2D g) {
                 g.setColor(GateRenderer.background);
@@ -273,7 +272,6 @@ public class CElementRenderer extends GateRenderer {
                     g.draw(line);
                 }
 
-
                 AffineTransform at= g.getTransform();
 
                 if (gX!=0) {
@@ -282,7 +280,7 @@ public class CElementRenderer extends GateRenderer {
                     g.translate(-boundingBox().getMaxX()+gX/2, 0);
                 }
 
-                g.translate(x,y);
+                g.translate(x, y);
 
                 for (Pair<String, Boolean> p: setVars) {
                     g.translate(-GateRenderer.bubbleSize/2, 0.5/2);
@@ -328,6 +326,6 @@ public class CElementRenderer extends GateRenderer {
 
         };
 
-        }
     }
+}
 

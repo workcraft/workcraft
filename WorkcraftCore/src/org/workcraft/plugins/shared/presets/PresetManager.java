@@ -19,7 +19,6 @@ public class PresetManager <T> {
     private File presetFile;
     private final SettingsSerialiser<T> serialiser;
 
-
     private void savePresets() {
         try {
             Document doc = XmlUtil.createDocument();

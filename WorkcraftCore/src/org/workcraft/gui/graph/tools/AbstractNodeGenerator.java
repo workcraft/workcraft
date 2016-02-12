@@ -53,12 +53,12 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
         Container visualNamespace = visualContainer;
 
         while (visualNamespace instanceof VisualGroup) {
-            visualNamespace = (Container)visualNamespace.getParent();
+            visualNamespace = (Container) visualNamespace.getParent();
         }
 
         //TODO: this will brake at some point
         if (visualNamespace!=null) {
-            mathContainer = (Container)((VisualComponent)visualNamespace).getReferencedComponent();
+            mathContainer = (Container) ((VisualComponent) visualNamespace).getReferencedComponent();
         }
 
         MathNode mn = createMathNode();
@@ -71,7 +71,7 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
             AffineTransform transform = TransformHelper.getTransform(model.getRoot(), vc);
             Point2D transformed = new Point2D.Double();
             transform.transform(where, transformed);
-            MovableHelper.translate((Movable)vc, transformed.getX(), transformed.getY());
+            MovableHelper.translate((Movable) vc, transformed.getX(), transformed.getY());
         }
         return vc;
     }

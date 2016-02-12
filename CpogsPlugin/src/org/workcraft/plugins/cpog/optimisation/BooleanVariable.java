@@ -20,7 +20,6 @@
 */
 package org.workcraft.plugins.cpog.optimisation;
 
-
 public interface BooleanVariable extends BooleanFormula {
     String getLabel();
 }

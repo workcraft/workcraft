@@ -43,7 +43,6 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
     HistoryProvider provider = null;
     HistoryListModel listModel = null;
 
-
     private JPanel jContentPane = null;
     private JList listHistory = null;
     private JPanel panelHistoryButtons = null;

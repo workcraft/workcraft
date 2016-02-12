@@ -148,9 +148,9 @@ public class Workspace {
     }
 
     public Path<String> getWorkspacePath(File file) {
-        Entry<Path<String>,File> bestMount = null;
+        Entry<Path<String>, File> bestMount = null;
         Path<String> bestRel = null;
-        for(Entry<Path<String>,File> e : mounts.entrySet()) {
+        for(Entry<Path<String>, File> e : mounts.entrySet()) {
             Path<String> relative = getRelative(e.getValue(), file);
             if(relative != null && (bestRel == null || Path.getPath(relative).size() < Path.getPath(bestRel).size())) {
                 bestRel = relative;
@@ -170,7 +170,7 @@ public class Workspace {
         while(descendant != null) {
             if(descendant.equals(ancestor)) {
                 Path<String> result = Path.empty();
-                for(int i=0;i<strs.size();i++)
+                for(int i=0; i<strs.size(); i++)
                     result = Path.append(result, strs.get(strs.size()-1-i));
                 return result;
             }
@@ -258,7 +258,6 @@ public class Workspace {
         }
         return desiredPath;
     }
-
 
     private boolean pathTaken(Path<String> path) {
         return mounts.containsKey(path) || openFiles.containsKey(path) || getFile(path).exists();
@@ -433,7 +432,6 @@ public class Workspace {
         this.temporary = temporary;
     }
 
-
     public MountTree getHardMountsRoot() {
         return new MountTree(baseDir(), mounts, Path.<String>empty());
     }
@@ -506,7 +504,6 @@ public class Workspace {
         }
         return result;
     }
-
 
     public WorkspaceEntry getOpenFile(Path<String> path) {
         return openFiles.getValue(path);

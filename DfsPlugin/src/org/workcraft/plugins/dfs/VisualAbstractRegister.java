@@ -41,7 +41,7 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualAbstractRegister) {
-            VisualAbstractRegister srcComponent = (VisualAbstractRegister)src;
+            VisualAbstractRegister srcComponent = (VisualAbstractRegister) src;
             setTokenColor(srcComponent.getTokenColor());
         }
     }

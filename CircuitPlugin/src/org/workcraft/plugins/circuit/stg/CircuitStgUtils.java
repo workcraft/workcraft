@@ -36,7 +36,7 @@ public class CircuitStgUtils {
         CircuitToStgConverter generator = new CircuitToStgConverter(circuit);
         File envWorkFile = circuit.getEnvironmentFile();
         if ((envWorkFile != null) && envWorkFile.exists()) {
-            STG devStg = (STG)generator.getStg().getMathModel();
+            STG devStg = (STG) generator.getStg().getMathModel();
             STG systemStg = createSystemStg(devStg, envWorkFile, circuit.getTitle());
             if (systemStg != null) {
                 generator = new CircuitToStgConverter(circuit, new VisualSTG(systemStg));
@@ -83,7 +83,7 @@ public class CircuitStgUtils {
 
         Framework framework = Framework.getInstance();
         ModelEntry modelEntry = framework.loadFile(envFile);
-        STG envStg = (STG)modelEntry.getMathModel();
+        STG envStg = (STG) modelEntry.getMathModel();
         CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
         File envStgFile = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
         return envStgFile;
@@ -150,7 +150,7 @@ public class CircuitStgUtils {
         try {
             Framework framework = Framework.getInstance();
             WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-            stg = (STG)stgWorkspaceEntry.getModelEntry().getMathModel();
+            stg = (STG) stgWorkspaceEntry.getModelEntry().getMathModel();
             framework.getWorkspace().close(stgWorkspaceEntry);
         } catch (DeserialisationException e) {
         }

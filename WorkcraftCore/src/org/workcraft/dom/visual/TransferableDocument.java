@@ -68,7 +68,6 @@ public class TransferableDocument implements Transferable {
                     DOMSource source = new DOMSource(doc);
                     StreamResult result = new StreamResult(baos);
 
-
                     transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                     transformer.transform(source, result);

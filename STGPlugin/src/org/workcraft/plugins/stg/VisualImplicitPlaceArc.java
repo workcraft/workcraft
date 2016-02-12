@@ -162,7 +162,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualImplicitPlaceArc) {
-            VisualImplicitPlaceArc srcImplicitPlaceArc = (VisualImplicitPlaceArc)src;
+            VisualImplicitPlaceArc srcImplicitPlaceArc = (VisualImplicitPlaceArc) src;
             setTokenColor(srcImplicitPlaceArc.getTokenColor());
             STGPlace srcPlace = srcImplicitPlaceArc.getImplicitPlace();
             getImplicitPlace().setTokens(srcPlace.getTokens());

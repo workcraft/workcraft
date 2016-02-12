@@ -6,7 +6,6 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.WriterAppender;
 import org.apache.log4j.spi.LoggingEvent;
 
-
 public class TextAreaAppender extends WriterAppender {
 
     static private JTextArea jTextArea = null;

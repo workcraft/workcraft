@@ -12,7 +12,6 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.text.DefaultEditorKit;
 
-
 public final class LogAreaMouseListener implements MouseListener {
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -34,7 +33,7 @@ public final class LogAreaMouseListener implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         Object src = e.getSource();
         if (src instanceof JTextArea) {
-            final JTextArea textArea = (JTextArea)src;
+            final JTextArea textArea = (JTextArea) src;
             if (e.getButton() == MouseEvent.BUTTON3) {
                 JPopupMenu popup = new JPopupMenu();
                 popup.setFocusable(false);

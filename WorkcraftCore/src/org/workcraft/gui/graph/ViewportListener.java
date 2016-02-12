@@ -35,7 +35,6 @@ public interface ViewportListener {
      */
     void shapeChanged(Viewport sender);
 
-
     /**
      * Called when viewport parameters (pan or zoom) change.
      * @param sender

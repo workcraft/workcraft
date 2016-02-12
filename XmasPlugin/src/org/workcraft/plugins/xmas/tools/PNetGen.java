@@ -24,7 +24,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.plugins.xmas.XmasSettings;
 
-
 public class PNetGen implements Tool {
 
     //private final Framework framework;
@@ -45,28 +44,28 @@ public class PNetGen implements Tool {
 
     private static class Ids {
 
-           String a;
-           String b;
+        String a;
+        String b;
 
-            Ids(String s1,String s2) {
-              a = s1;
-              b = s2;
-            }
+        Ids(String s1, String s2) {
+            a = s1;
+            b = s2;
+        }
     }
 
     private static class Info {
 
-           String a;
-           String b;
-           String c;
-           String d;
+        String a;
+        String b;
+        String c;
+        String d;
 
-            Info(String s1,String s2,String s3,String s4) {
-              a = s1;
-              b = s2;
-              c = s3;
-              d = s4;
-            }
+        Info(String s1, String s2, String s3, String s4) {
+            a = s1;
+            b = s2;
+            c = s3;
+            d = s4;
+        }
     }
 
     static List<Info> lst = new ArrayList<Info>();
@@ -74,7 +73,6 @@ public class PNetGen implements Tool {
     static List<Info> slsti = new ArrayList<Info>();
     static List<Info> slsto = new ArrayList<Info>();
     static List<Info> slsto2 = new ArrayList<Info>();
-
 
     public void initlist() {
         lst.clear();
@@ -123,7 +121,7 @@ public class PNetGen implements Tool {
                 if(dn.equals("b")) {
                     d = "1";  //Mrg conn
                 }
-                lst.add(new Info(cn,qs,"",d));
+                lst.add(new Info(cn, qs, "", d));
             }
         }
     }
@@ -143,8 +141,8 @@ public class PNetGen implements Tool {
     private static String searchList(String id) {
         String str = "";
 
-        for(int i=0;i<lst.size();i++) {
-          if(id.equals(lst.get(i).a)) str = lst.get(i).b;
+        for(int i=0; i<lst.size(); i++) {
+            if(id.equals(lst.get(i).a)) str = lst.get(i).b;
         }
         return str;
     }
@@ -152,8 +150,8 @@ public class PNetGen implements Tool {
     private static String searchList2(String id) {
         String str = "";
 
-        for(int i=0;i<lst.size();i++) {
-          if(id.equals(lst.get(i).a)) str = lst.get(i).c;
+        for(int i=0; i<lst.size(); i++) {
+            if(id.equals(lst.get(i).a)) str = lst.get(i).c;
         }
         return str;
     }
@@ -161,8 +159,8 @@ public class PNetGen implements Tool {
     private static String searchList3(String id) {
         String str = "";
 
-        for(int i=0;i<lst2.size();i++) {
-          if(id.equals(lst2.get(i).a)) str = lst2.get(i).b;
+        for(int i=0; i<lst2.size(); i++) {
+            if(id.equals(lst2.get(i).a)) str = lst2.get(i).b;
         }
         return str;
     }
@@ -173,13 +171,13 @@ public class PNetGen implements Tool {
 
         int i=0;
         while(i<lst.size() && tst==0) {
-          if(id.equals(lst.get(i).a)) {
-            if(lst.get(i).d.equals("0")) {
-              str = lst.get(i).b;
-              tst=1;
+            if(id.equals(lst.get(i).a)) {
+                if(lst.get(i).d.equals("0")) {
+                    str = lst.get(i).b;
+                    tst=1;
+                }
             }
-          }
-          i++;
+            i++;
         }
         return str;
     }
@@ -190,13 +188,13 @@ public class PNetGen implements Tool {
 
         int i=0;
         while(i<lst.size() && tst==0) {
-          if(id.equals(lst.get(i).a)) {
-            if(lst.get(i).d.equals("1")) {
-              str = lst.get(i).b;
-              tst=1;
+            if(id.equals(lst.get(i).a)) {
+                if(lst.get(i).d.equals("1")) {
+                    str = lst.get(i).b;
+                    tst=1;
+                }
             }
-          }
-          i++;
+            i++;
         }
         return str;
     }
@@ -207,30 +205,30 @@ public class PNetGen implements Tool {
 
         int i=0;
         while(i<lst.size() && tst==0) {
-          if(id.equals(lst.get(i).a)) {
-            if(lst.get(i).d.equals("0")) {
-              str = lst.get(i).c;
-              tst=1;
+            if(id.equals(lst.get(i).a)) {
+                if(lst.get(i).d.equals("0")) {
+                    str = lst.get(i).c;
+                    tst=1;
+                }
             }
-          }
-          i++;
+            i++;
         }
         return str;
-      }
+    }
 
-      private static String searchListSecond2(String id) {
+    private static String searchListSecond2(String id) {
         int tst=0;
         String str = "";
 
         int i=0;
         while(i<lst.size() && tst==0) {
-          if(id.equals(lst.get(i).a)) {
-            if(lst.get(i).d.equals("1")) {
-              str = lst.get(i).c;
-              tst=1;
+            if(id.equals(lst.get(i).a)) {
+                if(lst.get(i).d.equals("1")) {
+                    str = lst.get(i).c;
+                    tst=1;
+                }
             }
-          }
-          i++;
+            i++;
         }
         return str;
     }
@@ -238,7 +236,7 @@ public class PNetGen implements Tool {
     private static int searchSlsto(String id) {
         int i, pos=0;
 
-        for(i=0;i<slsto2.size();i++) {
+        for(i=0; i<slsto2.size(); i++) {
             if(id.equals(slsto2.get(i).b)) {
                 pos=i;
             }
@@ -249,9 +247,9 @@ public class PNetGen implements Tool {
     private static void createSlsto() {  //patch new
         int i, j, pos=0;
 
-        for(i=0;i<slsti.size();i++) {
+        for(i=0; i<slsti.size(); i++) {
             pos=searchSlsto(slsti.get(i).b);
-            slsto.add(new Info(slsto2.get(pos).a,slsto2.get(pos).b,"",slsto2.get(pos).d));
+            slsto.add(new Info(slsto2.get(pos).a, slsto2.get(pos).b, "", slsto2.get(pos).d));
         }
     }
 
@@ -277,35 +275,35 @@ public class PNetGen implements Tool {
         writer.println("t_"+id+label2+"  p_"+id+label1);
     }
 
-    private static String checkreplacei(String id1,String id) {
+    private static String checkreplacei(String id1, String id) {
 
-        for(int i=0;i<slsti.size();i++) {
-          if(slsti.get(i).b.equals(id1)) {
-            if(slsti.get(i).a.equals(id)) {
-              return "Qs" + i;
+        for(int i=0; i<slsti.size(); i++) {
+            if(slsti.get(i).b.equals(id1)) {
+                if(slsti.get(i).a.equals(id)) {
+                    return "Qs" + i;
+                }
             }
-          }
         }
         return id1;
     }
 
-    private static String checkreplaceo(String id1,String id) {
+    private static String checkreplaceo(String id1, String id) {
 
-        for(int i=0;i<slsto.size();i++) {
-          if(slsto.get(i).b.equals(id1)) {
-            if(slsto.get(i).a.equals(id)) {
-              return "Qs" + i;
+        for(int i=0; i<slsto.size(); i++) {
+            if(slsto.get(i).b.equals(id1)) {
+                if(slsto.get(i).a.equals(id)) {
+                    return "Qs" + i;
+                }
             }
-          }
         }
         return id1;
     }
 
     private static void writelink(String id, String id1, String label1, String label2, PrintWriter writer) {
         if(id1.contains("Sync")) {
-              //id1=checkreplaceo(id1,id); //patch
-              String s = id1.replace("Sync",""); //new
-              id1 = "Qs" + s;                    //new
+            //id1=checkreplaceo(id1, id); //patch
+            String s = id1.replace("Sync", ""); //new
+            id1 = "Qs" + s;                    //new
         }
         if(printoutput) {
             System.out.println("p_"+id1+label1+"  t_"+id+label2);
@@ -317,9 +315,9 @@ public class PNetGen implements Tool {
 
     private static void writelinkp(String id, String id1, String label1, String label2, String idp, PrintWriter writer) {
         if(id1.contains("Sync")) {
-              //id1=checkreplacei(id1,id); //patch
-              String s = id1.replace("Sync",""); //new
-              id1 = "Qs" + s;                    //new
+            //id1=checkreplacei(id1, id); //patch
+            String s = id1.replace("Sync", ""); //new
+            id1 = "Qs" + s;                    //new
         }
         if(idp.equals("0")) writelink(id, id1, "a"+label1, label2, writer);
         else if(idp.equals("1")) writelink(id, id1, "b"+label1, label2, writer);
@@ -328,9 +326,9 @@ public class PNetGen implements Tool {
 
     private static void writelinki(String id, String id1, String label1, String label2, String idi, PrintWriter writer) {
         if(id1.contains("Sync")) {
-              //id1=checkreplaceo(id1,id); //patch
-              String s = id1.replace("Sync",""); //new
-              id1 = "Qs" + s;                    //new
+            //id1=checkreplaceo(id1, id); //patch
+            String s = id1.replace("Sync", ""); //new
+            id1 = "Qs" + s;                    //new
         }
         if(idi.equals("a")) writelink(id, id1, "a"+label1, label2, writer);
         else if(idi.equals("b")) writelink(id, id1, "b"+label1, label2, writer);
@@ -425,7 +423,7 @@ public class PNetGen implements Tool {
         if(id3.equals("a")) writelink(id, id2, "a_irdy1", "o_irdyplus", writer);
         else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "o_irdyplus", writer);
         else writelink(id, id2, "o_irdy1", "o_irdyplus", writer);
-//writer.println("Function checking id = " + ' ' + id + "id2 = " + ' ' + id2);
+        //writer.println("Function checking id = " + ' ' + id + "id2 = " + ' ' + id2);
         writelinkp(id, id1, "_trdy0", "i_trdyminus", idp, writer);
         writelinkp(id, id1, "_trdy1", "i_trdyplus", idp, writer);
 
@@ -554,12 +552,12 @@ public class PNetGen implements Tool {
         writeblock(id, "_sw", writer);
         writemarking(id, "a_irdy", writer);
         writeblock(id, "a_irdy", writer);
-writer.println("p_"+id+"a_irdy1  t_"+id+"a_irdyminus1");
-writer.println("t_"+id+"a_irdyminus1  p_"+id+"a_irdy0");
+        writer.println("p_"+id+"a_irdy1  t_"+id+"a_irdyminus1");
+        writer.println("t_"+id+"a_irdyminus1  p_"+id+"a_irdy0");
         writemarking(id, "b_irdy", writer);
         writeblock(id, "b_irdy", writer);
-writer.println("p_"+id+"b_irdy1  t_"+id+"b_irdyminus1");
-writer.println("t_"+id+"b_irdyminus1  p_"+id+"b_irdy0");
+        writer.println("p_"+id+"b_irdy1  t_"+id+"b_irdyminus1");
+        writer.println("t_"+id+"b_irdyminus1  p_"+id+"b_irdy0");
         writemarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         if(printoutput) {
@@ -587,9 +585,9 @@ writer.println("t_"+id+"b_irdyminus1  p_"+id+"b_irdy0");
         writer.println("p_"+id+"i_trdy1  t_"+id+"i_trdyminus3");
         writer.println("t_"+id+"i_trdyminus3  p_"+id+"i_trdy0");
         writebidir(id, "_sw0", "b_irdyplus", writer);
-writebidir(id, "_sw1", "b_irdyminus1", writer);
+        writebidir(id, "_sw1", "b_irdyminus1", writer);
         writebidir(id, "_sw1", "a_irdyplus", writer);
-writebidir(id, "_sw0", "a_irdyminus1", writer);
+        writebidir(id, "_sw0", "a_irdyminus1", writer);
         writebidir(id, "a_irdy1", "i_trdyplus", writer);
         writebidir(id, "b_irdy1", "i_trdyplus1", writer);
         writebidir(id, "a_irdy0", "i_trdyminus3", writer);
@@ -747,90 +745,90 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         if(init>0) writeMarking2(id, "o_irdy", writer);
         else writemarking(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
-        for(int i=1;i<size;i++) {
-          if(printoutput) {
-              System.out.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus"+i);
-              System.out.println("t_"+id+"o_irdyplus"+i+" p_"+id+"o_irdy1");
-          }
-          writer.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus"+i);
-          writer.println("t_"+id+"o_irdyplus"+i+" p_"+id+"o_irdy1");
+        for(int i=1; i<size; i++) {
+            if(printoutput) {
+                System.out.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus"+i);
+                System.out.println("t_"+id+"o_irdyplus"+i+" p_"+id+"o_irdy1");
+            }
+            writer.println("p_"+id+"o_irdy0  t_"+id+"o_irdyplus"+i);
+            writer.println("t_"+id+"o_irdyplus"+i+" p_"+id+"o_irdy1");
         }
         if(init>=size) writemarking(id, "i_trdy", writer);
         else writeMarking2(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
-        for(int i=1;i<size;i++) {
-          if(printoutput) {
-              System.out.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus"+i);
-              System.out.println("t_"+id+"i_trdyplus"+i+" p_"+id+"i_trdy1");
-          }
-          writer.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus"+i);
-          writer.println("t_"+id+"i_trdyplus"+i+" p_"+id+"i_trdy1");
+        for(int i=1; i<size; i++) {
+            if(printoutput) {
+                System.out.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus"+i);
+                System.out.println("t_"+id+"i_trdyplus"+i+" p_"+id+"i_trdy1");
+            }
+            writer.println("p_"+id+"i_trdy0  t_"+id+"i_trdyplus"+i);
+            writer.println("t_"+id+"i_trdyplus"+i+" p_"+id+"i_trdy1");
         }
-        for(int i=1;i<=size;i++) {
-          if(init>=i) writeMarking2(id, "_q"+i, writer);
-          else writemarking(id, "_q"+i, writer);
-          writeblock(id, "_q"+i, writer);
+        for(int i=1; i<=size; i++) {
+            if(init>=i) writeMarking2(id, "_q"+i, writer);
+            else writemarking(id, "_q"+i, writer);
+            writeblock(id, "_q"+i, writer);
         }
-        for(int i=1;i<=size;i++) {
-          if(i==init+1) writeMarking2(id, "_hd"+i, writer);
-          else writemarking(id, "_hd"+i, writer);
-          writeblock(id, "_hd"+i, writer);
+        for(int i=1; i<=size; i++) {
+            if(i==init+1) writeMarking2(id, "_hd"+i, writer);
+            else writemarking(id, "_hd"+i, writer);
+            writeblock(id, "_hd"+i, writer);
         }
-        for(int i=1;i<=size;i++) {
-          if(i==1) {
-              if(init<=0) writemarking(id, "_tl"+i, writer);
-              else writeMarking2(id, "_tl"+i, writer);
-          } else writemarking(id, "_tl"+i, writer);
-          writeblock(id, "_tl"+i, writer);
+        for(int i=1; i<=size; i++) {
+            if(i==1) {
+                if(init<=0) writemarking(id, "_tl"+i, writer);
+                else writeMarking2(id, "_tl"+i, writer);
+            } else writemarking(id, "_tl"+i, writer);
+            writeblock(id, "_tl"+i, writer);
         }
-        for(int i=1;i<=size;i++) {
-          writebidir(id, "i_trdy1", "_q"+i+"plus", writer);
-          writebidir(id, "o_irdy1", "_q"+i+"minus", writer);
+        for(int i=1; i<=size; i++) {
+            writebidir(id, "i_trdy1", "_q"+i+"plus", writer);
+            writebidir(id, "o_irdy1", "_q"+i+"minus", writer);
         }
-        for(int i=1;i<=size;i++) {
-          writebidir(id, "_q"+i+"0", "o_irdyminus", writer);
-          writebidir(id, "_q"+i+"1", "i_trdyminus", writer);
+        for(int i=1; i<=size; i++) {
+            writebidir(id, "_q"+i+"0", "o_irdyminus", writer);
+            writebidir(id, "_q"+i+"1", "i_trdyminus", writer);
         }
         writebidir(id, "_q1"+"0", "i_trdyplus", writer);
-        for(int i=2;i<=size;i++) {
-          writebidir(id, "_q"+i+"0", "i_trdyplus"+(i-1), writer);
+        for(int i=2; i<=size; i++) {
+            writebidir(id, "_q"+i+"0", "i_trdyplus"+(i-1), writer);
         }
         writebidir(id, "_q1"+"1", "o_irdyplus", writer);
-        for(int i=2;i<=size;i++) {
-          writebidir(id, "_q"+i+"1", "o_irdyplus"+(i-1), writer);
+        for(int i=2; i<=size; i++) {
+            writebidir(id, "_q"+i+"1", "o_irdyplus"+(i-1), writer);
         }
-        for(int i=1;i<=size;i++) {
+        for(int i=1; i<=size; i++) {
             writebidir(id, "_q"+i+"0", "_hd"+i+"plus", writer);
             writebidir(id, "_q"+i+"1", "_hd"+i+"minus", writer);
             if(i==size) inc=1;
             else inc=i+1;
             writebidir(id, "_q"+i+"1", "_hd"+inc+"plus", writer);
         }
-        for(int i=1;i<=size;i++) {
+        for(int i=1; i<=size; i++) {
             writebidir(id, "_q"+i+"0", "_tl"+i+"minus", writer);
             writebidir(id, "_q"+i+"1", "_tl"+i+"plus", writer);
             if(i==size) inc=1;
             else inc=i+1;
             writebidir(id, "_q"+i+"0", "_tl"+inc+"plus", writer);
         }
-        for(int i=1;i<=size;i++) {
+        for(int i=1; i<=size; i++) {
             writebidir(id, "_hd"+i+"1", "_q"+i+"plus", writer);
         }
-        for(int i=1;i<=size;i++) {
+        for(int i=1; i<=size; i++) {
             writebidir(id, "_tl"+i+"1", "_q"+i+"minus", writer);
         }
         String id2 = searchList(id);
         String id3 = searchList2(id);
-        for(int i=1;i<=size;i++) {
+        for(int i=1; i<=size; i++) {
             if(id3.equals("a")) writelink(id, id2, "a_irdy1", "_q"+i+"plus", writer);
             else if(id3.equals("b")) writelink(id, id2, "b_irdy1", "_q"+i+"plus", writer);
             else writelink(id, id2, "o_irdy1", "_q"+i+"plus", writer);
         }
-        for(int i=1;i<=size;i++) {
-          writelinkp(id, id1, "_trdy1", "_q"+i+"minus", idp, writer);
+        for(int i=1; i<=size; i++) {
+            writelinkp(id, id1, "_trdy1", "_q"+i+"minus", idp, writer);
         }
         if(dl==1) {
-            for(int i=1;i<=size;i++) {
+            for(int i=1; i<=size; i++) {
                 if(!id2.contains("Src") && !id2.contains("Qu") && !id2.contains("Sync")) writelink(id, id2, "_dl1", "_q"+i+"plus", writer);
             }
         }
@@ -845,7 +843,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
         current = jp.nextToken();
         if (current != JsonToken.START_OBJECT) {
             LogUtils.logErrorLine("Root should be object: quiting.");
-          return;
+            return;
         }
 
         while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -854,68 +852,68 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
             current = jp.nextToken();
 
             if (fieldName.equals("NETWORK")) {
-              if (current == JsonToken.START_ARRAY) {
-                // For each of the records in the array
-                  System.out.println("Generate CPNs");
-                while (jp.nextToken() != JsonToken.END_ARRAY) {
-                  JsonNode node = jp.readValueAsTree();
-                  String idName = node.get("id").getValueAsText();
-                  String idName1 = "";
-                  String idName2 = "";
-                  String idNamep = "";
-                  String idNamep1 = "";
-                  String idNamep2 = "";
-                  String typeName = node.get("type").getValueAsText();
-                  //System.out.println("id: " + idName + "type: " + typeName);
-                  lst2.add(new Ids(idName,typeName));
-                  JsonNode y = node.get("outs");
-                  if(y!=null) {
-                   for(int i=0;y.has(i);i++) {
-                    if(y.get(i).has("id")) {
-                      if(i==0) {
-                        idName1 = y.get(i).get("id").getValueAsText();
-                        idNamep1 = y.get(i).get("in_port").getValueAsText();
-                        if(typeName.equals("xfork")) lst.add(new Info(idName1,idName,"b",idNamep1));
-                        else if(typeName.equals("xswitch")) lst.add(new Info(idName1,idName,"a",idNamep1));
-                        else lst.add(new Info(idName1,idName,"",idNamep1));
-                        if(idName1.contains("Sync")) {
-                              //System.out.println("id: " + idName + "sync: " + idName1);
-                            slsti.add(new Info(idName,idName1,"",idNamep1));   //swapped order slsti slsto
+                if (current == JsonToken.START_ARRAY) {
+                    // For each of the records in the array
+                    System.out.println("Generate CPNs");
+                    while (jp.nextToken() != JsonToken.END_ARRAY) {
+                        JsonNode node = jp.readValueAsTree();
+                        String idName = node.get("id").getValueAsText();
+                        String idName1 = "";
+                        String idName2 = "";
+                        String idNamep = "";
+                        String idNamep1 = "";
+                        String idNamep2 = "";
+                        String typeName = node.get("type").getValueAsText();
+                        //System.out.println("id: " + idName + "type: " + typeName);
+                        lst2.add(new Ids(idName, typeName));
+                        JsonNode y = node.get("outs");
+                        if(y!=null) {
+                            for(int i=0; y.has(i); i++) {
+                                if(y.get(i).has("id")) {
+                                    if(i==0) {
+                                        idName1 = y.get(i).get("id").getValueAsText();
+                                        idNamep1 = y.get(i).get("in_port").getValueAsText();
+                                        if(typeName.equals("xfork")) lst.add(new Info(idName1, idName, "b", idNamep1));
+                                        else if(typeName.equals("xswitch")) lst.add(new Info(idName1, idName, "a", idNamep1));
+                                        else lst.add(new Info(idName1, idName, "", idNamep1));
+                                        if(idName1.contains("Sync")) {
+                                            //System.out.println("id: " + idName + "sync: " + idName1);
+                                            slsti.add(new Info(idName, idName1, "", idNamep1));   //swapped order slsti slsto
+                                        }
+                                        //add o based on order of i or reverse?
+                                        if(idName.contains("Sync")) {
+                                            slsto2.add(new Info(idName1, idName, "", idNamep1));
+                                        }
+                                    } else if(i==1) {
+                                        idName2 = y.get(i).get("id").getValueAsText();
+                                        idNamep2 = y.get(i).get("in_port").getValueAsText();
+                                        if(typeName.equals("xfork")) lst.add(new Info(idName2, idName, "a", idNamep2));
+                                        else if(typeName.equals("xswitch")) lst.add(new Info(idName2, idName, "b", idNamep2));
+                                        else lst.add(new Info(idName2, idName, "", idNamep2));
+                                        if(idName2.contains("Sync")) slsti.add(new Info(idName, idName2, "", idNamep2));
+                                        if(idName.contains("Sync")) {
+                                            slsto2.add(new Info(idName2, idName, "", idNamep2));
+                                        }
+                                    } else {
+                                        idName1 = y.get(i).get("id").getValueAsText();
+                                        idNamep = y.get(i).get("in_port").getValueAsText();
+                                        if(idName.contains("Sync")) {
+                                            slsto2.add(new Info(idName, idName1, "", idNamep));
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        //add o based on order of i or reverse?
-                        if(idName.contains("Sync")) {
-                            slsto2.add(new Info(idName1,idName,"",idNamep1));
-                        }
-                      } else if(i==1) {
-                        idName2 = y.get(i).get("id").getValueAsText();
-                        idNamep2 = y.get(i).get("in_port").getValueAsText();
-                        if(typeName.equals("xfork")) lst.add(new Info(idName2,idName,"a",idNamep2));
-                        else if(typeName.equals("xswitch")) lst.add(new Info(idName2,idName,"b",idNamep2));
-                        else lst.add(new Info(idName2,idName,"",idNamep2));
-                        if(idName2.contains("Sync")) slsti.add(new Info(idName,idName2,"",idNamep2));
-                        if(idName.contains("Sync")) {
-                            slsto2.add(new Info(idName2,idName,"",idNamep2));
-                        }
-                      } else {
-                        idName1 = y.get(i).get("id").getValueAsText();
-                        idNamep = y.get(i).get("in_port").getValueAsText();
-                        if(idName.contains("Sync")) {
-                            slsto2.add(new Info(idName,idName1,"",idNamep));
-                        }
-                      }
                     }
-                   }
-                  }
+                } else {
+                    LogUtils.logErrorLine("Records should be an array: skipping.");
+                    jp.skipChildren();
                 }
-              } else {
-                  LogUtils.logErrorLine("Records should be an array: skipping.");
-                jp.skipChildren();
-              }
             } else {
-              //System.out.println("Unprocessed property: " + fieldName);
-              jp.skipChildren();
+                //System.out.println("Unprocessed property: " + fieldName);
+                jp.skipChildren();
             }
-          }
+        }
     }
 
     //public Collection<VisualSourceComponent> srcNodes;
@@ -925,8 +923,8 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
 
     public void run(WorkspaceEntry we) {
         System.out.println("");
-        Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
-        VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
+        Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
+        VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
         //srcNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
         srcNodes=cnet.getSourceComponents();
         //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
@@ -954,7 +952,7 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
             current = jp.nextToken();
             if (current != JsonToken.START_OBJECT) {
                 LogUtils.logErrorLine("Root should be object: quiting.");
-              return;
+                return;
             }
 
             while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -962,141 +960,141 @@ writebidir(id, "_sw0", "a_irdyminus1", writer);
                 // move from field name to field value
                 current = jp.nextToken();
                 if (fieldName.equals("VARS")) {
-                  if (current == JsonToken.START_ARRAY) {
-                    while (jp.nextToken() != JsonToken.END_ARRAY) {
+                    if (current == JsonToken.START_ARRAY) {
+                        while (jp.nextToken() != JsonToken.END_ARRAY) {
+                        }
                     }
-                  }
                 } else if (fieldName.equals("PACKET_TYPE")) {
-                  if (current == JsonToken.START_OBJECT) {
-                    while (jp.nextToken() != JsonToken.END_OBJECT) {
+                    if (current == JsonToken.START_OBJECT) {
+                        while (jp.nextToken() != JsonToken.END_OBJECT) {
+                        }
                     }
-                  }
                 } else if (fieldName.equals("COMPOSITE_OBJECTS")) {
-                  if (current == JsonToken.START_ARRAY) {
-                    while (jp.nextToken() != JsonToken.END_ARRAY) {
+                    if (current == JsonToken.START_ARRAY) {
+                        while (jp.nextToken() != JsonToken.END_ARRAY) {
+                        }
                     }
-                  }
                 } else if (fieldName.equals("NETWORK")) {
                     if (current == JsonToken.START_ARRAY) {
-                      // For each of the records in the array
-                      while (jp.nextToken() != JsonToken.END_ARRAY) {
-                        // read the record into a tree model,
-                      JsonNode node = jp.readValueAsTree();
-                      String idName = node.get("id").getValueAsText();
-                      String idName1 = "";
-                      String idName2 = "";
-                      String idNamep1 = "";
-                      String idNamep2 = "";
-                      String fieldsize = "";
-                      String fieldgpf = "";
-                      String fieldgpf1 = "";
-                      String styp = "";
-                      int fieldinit = 0;
-                      int fieldgr = 0;
-                      String typeName = node.get("type").getValueAsText();
+                        // For each of the records in the array
+                        while (jp.nextToken() != JsonToken.END_ARRAY) {
+                            // read the record into a tree model,
+                            JsonNode node = jp.readValueAsTree();
+                            String idName = node.get("id").getValueAsText();
+                            String idName1 = "";
+                            String idName2 = "";
+                            String idNamep1 = "";
+                            String idNamep2 = "";
+                            String fieldsize = "";
+                            String fieldgpf = "";
+                            String fieldgpf1 = "";
+                            String styp = "";
+                            int fieldinit = 0;
+                            int fieldgr = 0;
+                            String typeName = node.get("type").getValueAsText();
 
-                      JsonNode y = node.get("outs");
-                      if(y!=null) {
-                        for(int i=0;y.has(i);i++) {
-                          if(y.get(i).has("id")) {
-                            if(i==0) {
-                              idName1 = y.get(i).get("id").getValueAsText();
-                              /*if(typeName.equals("xfork")) lst.add(new Info(idName1,idName,"b"));
-                              else if(typeName.equals("xswitch")) lst.add(new Info(idName1,idName,"a"));
-                              else lst.add(new Info(idName1,idName,""));*/
-                            } else if(i==1) {
-                              idName2 = y.get(i).get("id").getValueAsText();
-                              /*if(typeName.equals("xfork")) lst.add(new Info(idName2,idName,"a"));
-                              else if(typeName.equals("xswitch")) lst.add(new Info(idName2,idName,"b"));
-                              else lst.add(new Info(idName2,idName,""));*/
+                            JsonNode y = node.get("outs");
+                            if(y!=null) {
+                                for(int i=0; y.has(i); i++) {
+                                    if(y.get(i).has("id")) {
+                                        if(i==0) {
+                                            idName1 = y.get(i).get("id").getValueAsText();
+                                            /*if(typeName.equals("xfork")) lst.add(new Info(idName1, idName, "b"));
+                                              else if(typeName.equals("xswitch")) lst.add(new Info(idName1, idName, "a"));
+                                              else lst.add(new Info(idName1, idName, "")); */
+                                        } else if(i==1) {
+                                            idName2 = y.get(i).get("id").getValueAsText();
+                                            /*if(typeName.equals("xfork")) lst.add(new Info(idName2, idName, "a"));
+                                              else if(typeName.equals("xswitch")) lst.add(new Info(idName2, idName, "b"));
+                                              else lst.add(new Info(idName2, idName, "")); */
+                                        }
+                                    }
+                                    if(y.get(i).has("in_port")) {
+                                        if(i==0) {
+                                            String searchtyp="";
+                                            searchtyp=searchList3(idName1);
+                                            if(searchtyp.equals("join")) {
+                                                //idNamep1 = y.get(i).get("in_port").getValueAsText();
+                                                if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep1="1";
+                                                else idNamep1="0";
+                                            } else if(searchtyp.equals("merge")) idNamep1 = y.get(i).get("in_port").getValueAsText();
+                                        } else if(i==1) {
+                                            String searchtyp1="";
+                                            searchtyp1=searchList3(idName2);
+                                            if(searchtyp1.equals("join")) {
+                                                //idNamep2 = y.get(i).get("in_port").getValueAsText();
+                                                if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep2="1";
+                                                else idNamep2="0";
+                                            } else if(searchtyp1.equals("merge")) idNamep2 = y.get(i).get("in_port").getValueAsText();
+                                        }
+                                    }
+                                }
                             }
-                          }
-                          if(y.get(i).has("in_port")) {
-                            if(i==0) {
-                              String searchtyp="";
-                              searchtyp=searchList3(idName1);
-                              if(searchtyp.equals("join")) {
-                                //idNamep1 = y.get(i).get("in_port").getValueAsText();
-                                if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep1="1";
-                                else idNamep1="0";
-                              } else if(searchtyp.equals("merge")) idNamep1 = y.get(i).get("in_port").getValueAsText();
-                            } else if(i==1) {
-                              String searchtyp1="";
-                              searchtyp1=searchList3(idName2);
-                              if(searchtyp1.equals("join")) {
-                                //idNamep2 = y.get(i).get("in_port").getValueAsText();
-                                if(y.get(i).get("in_port").getValueAsText().equals("0")) idNamep2="1";
-                                else idNamep2="0";
-                              } else if(searchtyp1.equals("merge")) idNamep2 = y.get(i).get("in_port").getValueAsText();
+                            JsonNode y2 = node.get("fields");
+                            if(y2!=null) {
+                                for(int i=0; y2.has(i); i++) {
+                                    if(y2.get(i).has("size")) {
+                                        fieldsize = y2.get(i).get("size").getValueAsText();
+                                    }
+                                    if(y2.get(i).has("init")) {
+                                        fieldinit = y2.get(i).get("init").getValueAsInt();
+                                    }
+                                    if(y2.get(i).has("gr")) {
+                                        fieldgr = y2.get(i).get("gr").getValueAsInt();
+                                    }
+                                    if(y2.get(i).has("gpf")) {
+                                        fieldgpf = y2.get(i).get("gpf").getValueAsText();
+                                    }
+                                    if(y2.get(i).has("gpf1")) {
+                                        fieldgpf = y2.get(i).get("gpf1").getValueAsText();
+                                    }
+                                    if(y2.get(i).has("gpf2")) {
+                                        fieldgpf1 = y2.get(i).get("gpf2").getValueAsText();
+                                    }
+                                    if(y2.get(i).has("typ")) {
+                                        styp = y2.get(i).get("typ").getValueAsText();
+                                    }
+                                }
                             }
-                          }
-                        }
-                      }
-                      JsonNode y2 = node.get("fields");
-                      if(y2!=null) {
-                        for(int i=0;y2.has(i);i++) {
-                          if(y2.get(i).has("size")) {
-                            fieldsize = y2.get(i).get("size").getValueAsText();
-                          }
-                          if(y2.get(i).has("init")) {
-                            fieldinit = y2.get(i).get("init").getValueAsInt();
-                          }
-                          if(y2.get(i).has("gr")) {
-                            fieldgr = y2.get(i).get("gr").getValueAsInt();
-                          }
-                          if(y2.get(i).has("gpf")) {
-                            fieldgpf = y2.get(i).get("gpf").getValueAsText();
-                          }
-                          if(y2.get(i).has("gpf1")) {
-                            fieldgpf = y2.get(i).get("gpf1").getValueAsText();
-                          }
-                          if(y2.get(i).has("gpf2")) {
-                            fieldgpf1 = y2.get(i).get("gpf2").getValueAsText();
-                          }
-                          if(y2.get(i).has("typ")) {
-                            styp = y2.get(i).get("typ").getValueAsText();
-                          }
-                        }
-                      }
 
-                      if(typeName.equals("source")) gensource(idName,idName1,idNamep1,y,fieldgr,writer);
-                      if(typeName.equals("function")) genfunction(idName,idName1,idNamep1,y,fieldgr,writer);
-                      if(typeName.equals("xfork")) genfork(idName,idName1,idName2,idNamep1,idNamep2,y,fieldgr,writer);
-                      if(typeName.equals("join")) genjoin(idName,idName1,idNamep1,y,fieldgr,writer);
-                      if(typeName.equals("xswitch")) genswitch(idName,idName1,idName2,idNamep1,idNamep2,y,fieldgr,writer);
-                      if(typeName.equals("merge")) genmerge(idName,idName1,idNamep1,y,fieldgr,writer);
-                      if(typeName.equals("queue")) {
-                        int size = Integer.parseInt(fieldsize);
-                        //if(fieldsize.equals("1")) genqueue(idName,idName1,idNamep1,y,fieldinit,writer);
-                        //else genqueue2p(2,idName,idName1,idNamep1,y,writer);
-                        if(size<=1) genqueue(idName,idName1,idNamep1,y,fieldinit,fieldgpf,fieldgr,writer);
-                        else if(size>0) genqueue2p(size,idName,idName1,idNamep1,y,fieldinit,fieldgpf,fieldgr,writer);
-                      }
-                      if(typeName.equals("sink")) gensink(idName,fieldgr,writer);
-                      //if(typeName.equals("sync")) sync_inf(idName,idName1,idName2,fieldgpf,fieldgpf1,styp,writer_s);
-                      }
+                            if(typeName.equals("source")) gensource(idName, idName1, idNamep1, y, fieldgr, writer);
+                            if(typeName.equals("function")) genfunction(idName, idName1, idNamep1, y, fieldgr, writer);
+                            if(typeName.equals("xfork")) genfork(idName, idName1, idName2, idNamep1, idNamep2, y, fieldgr, writer);
+                            if(typeName.equals("join")) genjoin(idName, idName1, idNamep1, y, fieldgr, writer);
+                            if(typeName.equals("xswitch")) genswitch(idName, idName1, idName2, idNamep1, idNamep2, y, fieldgr, writer);
+                            if(typeName.equals("merge")) genmerge(idName, idName1, idNamep1, y, fieldgr, writer);
+                            if(typeName.equals("queue")) {
+                                int size = Integer.parseInt(fieldsize);
+                                //if(fieldsize.equals("1")) genqueue(idName, idName1, idNamep1, y, fieldinit, writer);
+                                //else genqueue2p(2, idName, idName1, idNamep1, y, writer);
+                                if(size<=1) genqueue(idName, idName1, idNamep1, y, fieldinit, fieldgpf, fieldgr, writer);
+                                else if(size>0) genqueue2p(size, idName, idName1, idNamep1, y, fieldinit, fieldgpf, fieldgr, writer);
+                            }
+                            if(typeName.equals("sink")) gensink(idName, fieldgr, writer);
+                            //if(typeName.equals("sync")) sync_inf(idName, idName1, idName2, fieldgpf, fieldgpf1, styp, writer_s);
+                        }
                     } else {
                         LogUtils.logErrorLine("Records should be an array: skipping.");
-                      jp.skipChildren();
+                        jp.skipChildren();
                     }
-                  } else {
-                      LogUtils.logWarningLine("Unprocessed property: " + fieldName);
+                } else {
+                    LogUtils.logWarningLine("Unprocessed property: " + fieldName);
                     jp.skipChildren();
-                  }
                 }
+            }
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         } finally {
-                if (writer != null) {
-                    writer.close();
-                    System.out.println("Control CPNs created");
-                    PNetExt pnconv = new PNetExt(srcNodes,funNodes,swNodes,syncflag);
-                    //printlst();
-                }
-                /*if (writer_s != null)
-                {
-                    writer_s.close();
-                }*/
+            if (writer != null) {
+                writer.close();
+                System.out.println("Control CPNs created");
+                PNetExt pnconv = new PNetExt(srcNodes, funNodes, swNodes, syncflag);
+                //printlst();
+            }
+            /*if (writer_s != null)
+              {
+              writer_s.close();
+              }*/
         }
         System.out.println("");
     }

@@ -61,8 +61,8 @@ public class DirectedArcToReadArcConverterTool extends TransformationTool implem
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualModel) && (node instanceof VisualConnection)) {
-            VisualConnection connection = (VisualConnection)node;
-            VisualReadArc readArc = PetriNetUtils.convertDirectedArcToReadArc((VisualModel)model, connection);
+            VisualConnection connection = (VisualConnection) node;
+            VisualReadArc readArc = PetriNetUtils.convertDirectedArcToReadArc((VisualModel) model, connection);
             if ((readArcs != null) && (readArc != null)) {
                 readArcs.add(readArc);
             }

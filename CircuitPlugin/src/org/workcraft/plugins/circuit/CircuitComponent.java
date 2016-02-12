@@ -152,7 +152,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
         return result;
     }
 
-
     public Contact getFirstInput() {
         Contact result = null;
         for (Contact contact: getContacts()) {
@@ -174,6 +173,5 @@ public class CircuitComponent extends MathGroup implements Container, Observable
         }
         return result;
     }
-
 
 }

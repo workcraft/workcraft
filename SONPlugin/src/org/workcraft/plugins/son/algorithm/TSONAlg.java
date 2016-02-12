@@ -111,7 +111,7 @@ public class TSONAlg extends RelationAlgorithm{
 
         for(Node node:components){
             if(node instanceof TransitionNode)
-                for(Node pre : this.getPreASynEvents((TransitionNode)node)){
+                for(Node pre : this.getPreASynEvents((TransitionNode) node)){
                     if(!components.contains(pre) && pre!=null)
                         result.add(pre);
                 }
@@ -128,7 +128,7 @@ public class TSONAlg extends RelationAlgorithm{
 
         for(Node node:components){
             if(node instanceof TransitionNode)
-                for(Node post : this.getPostASynEvents((TransitionNode)node)){
+                for(Node post : this.getPostASynEvents((TransitionNode) node)){
                     if(!components.contains(post) && post!=null)
                         result.add(post);
                 }

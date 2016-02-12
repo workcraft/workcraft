@@ -107,7 +107,7 @@ public class PetriNetGenerator {
                     if (t != null) {
                         nodes.add(t);
                     }
-                    for (VisualBundle b: policyNet.getBundlesOfTransition((VisualBundledTransition)node)) {
+                    for (VisualBundle b: policyNet.getBundlesOfTransition((VisualBundledTransition) node)) {
                         VisualTransition bt = bundleMap.get(b);
                         if (bt != null) {
                             nodes.add(bt);
@@ -208,14 +208,14 @@ public class PetriNetGenerator {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualBundledTransition) {
-            for (VisualTransition t: getRelatedTransitions((VisualBundledTransition)highLevelNode)) {
+            for (VisualTransition t: getRelatedTransitions((VisualBundledTransition) highLevelNode)) {
                 if (t == node) {
                     result = true;
                     break;
                 }
             }
         } else if (highLevelNode instanceof VisualPlace) {
-            result = node == getRelatedPlace((VisualPlace)highLevelNode);
+            result = node == getRelatedPlace((VisualPlace) highLevelNode);
         }
         return result;
     }

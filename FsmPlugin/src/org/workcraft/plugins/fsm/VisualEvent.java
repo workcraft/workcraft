@@ -59,7 +59,7 @@ public class VisualEvent extends VisualConnection {
     }
 
     public Event getReferencedEvent() {
-        return (Event)getReferencedConnection();
+        return (Event) getReferencedConnection();
     }
 
     public boolean getLabelVisibility() {
@@ -155,7 +155,7 @@ public class VisualEvent extends VisualConnection {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualEvent) {
-            VisualEvent srcEvent = (VisualEvent)src;
+            VisualEvent srcEvent = (VisualEvent) src;
             getReferencedEvent().setSymbol(srcEvent.getReferencedEvent().getSymbol());
             setLabelColor(srcEvent.getLabelColor());
         }

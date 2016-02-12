@@ -212,7 +212,7 @@ public class Config {
             if (!(nl.item(i) instanceof Element)) {
                 continue;
             }
-            Element e = (Element)nl.item(i);
+            Element e = (Element) nl.item(i);
 
             if (e.getTagName().equals("var")) {
                 set(e.getAttribute("name"),  e.getAttribute("value"));
@@ -224,7 +224,7 @@ public class Config {
                         if (!(nl2.item(j) instanceof Element)) {
                             continue;
                         }
-                        Element e2 = (Element)nl2.item(j);
+                        Element e2 = (Element) nl2.item(j);
                         if (e2.getTagName().equals("var"))
                             set(name+"."+e2.getAttribute("name"),  e2.getAttribute("value"));
                     }

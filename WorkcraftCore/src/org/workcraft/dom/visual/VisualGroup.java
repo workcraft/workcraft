@@ -46,7 +46,6 @@ import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
-
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
@@ -119,7 +118,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
         Decoration dec = r.getDecoration();
         if (dec instanceof ContainerDecoration) {
-            setIsExcited(((ContainerDecoration)dec).isContainerExcited());
+            setIsExcited(((ContainerDecoration) dec).isContainerExcited());
         }
 
         // This is to update the rendered text for names (and labels) of group children,
@@ -138,13 +137,13 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
             g.draw(bb);
 
             if (d.getColorisation() != null) {
-                float s2 = (float)CommonVisualSettings.getPivotSize() / 2;
+                float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
                 Path2D p = new Path2D.Double();
                 p.moveTo(-s2, 0);
                 p.lineTo(s2, 0);
                 p.moveTo(0, -s2);
                 p.lineTo(0, s2);
-                g.setStroke(new BasicStroke((float)CommonVisualSettings.getPivotWidth()));
+                g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
                 g.draw(p);
             }
         }
@@ -219,7 +218,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
         groupImpl.removeWithoutNotify(node);
     }
 
-
     @Override
     public void removeObserver(HierarchyObserver obs) {
         groupImpl.removeObserver(obs);
@@ -264,7 +262,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualGroup) {
-            VisualGroup srcGroup = (VisualGroup)src;
+            VisualGroup srcGroup = (VisualGroup) src;
             setIsCollapsed(srcGroup.getIsCollapsed());
         }
     }

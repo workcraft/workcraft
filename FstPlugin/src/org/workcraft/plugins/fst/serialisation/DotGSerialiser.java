@@ -62,7 +62,7 @@ public class DotGSerialiser implements ModelSerialiser {
         ReferenceResolver resolver = new ReferenceResolver();
 
         if (model instanceof Fsm) {
-            writeFsm(out, (Fsm)model);
+            writeFsm(out, (Fsm) model);
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
@@ -98,7 +98,7 @@ public class DotGSerialiser implements ModelSerialiser {
     private String getSrialisedEventName(Fsm fsm, Event event) {
         String result = null;
         if (event instanceof SignalEvent) {
-            SignalEvent signalEvent = (SignalEvent)event;
+            SignalEvent signalEvent = (SignalEvent) event;
             Signal signal = signalEvent.getSignal();
             result = fsm.getNodeReference(signal);
             if (signal.hasDirection()) {
@@ -160,8 +160,8 @@ public class DotGSerialiser implements ModelSerialiser {
 
     private void writeGraphEntry(PrintWriter out, Fsm fsm, Event event) {
         if (event != null) {
-            State firstState = (State)event.getFirst();
-            State secondState = (State)event.getSecond();
+            State firstState = (State) event.getFirst();
+            State secondState = (State) event.getSecond();
             if ((firstState != null) && (secondState != null)) {
                 String eventName = getSrialisedEventName(fsm, event);
                 String firstStateName = getSrialisedNodeName(fsm, firstState);
@@ -180,7 +180,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
     private void writeFsm(PrintWriter out, Fsm fsm) {
         if (fsm instanceof Fst) {
-            Fst fst = (Fst)fsm;
+            Fst fst = (Fst) fsm;
             writeSignalHeader(out, fst, Type.INPUT);
             writeSignalHeader(out, fst, Type.OUTPUT);
             writeSignalHeader(out, fst, Type.INTERNAL);

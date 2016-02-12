@@ -40,7 +40,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
 
     private Positioning durationLabelPositioning = Positioning.BOTTOM;
-    private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0,0.0));
+    private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0, 0.0));
 
     public VisualBlock(Block refNode) {
         super(refNode);
@@ -105,7 +105,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
             }
             labelBB = glyphVector.getVisualBounds();
             Point2D bitPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());
-            g.drawGlyphVector(glyphVector, -(float)bitPosition.getX(), -(float)bitPosition.getY());
+            g.drawGlyphVector(glyphVector, -(float) bitPosition.getX(), -(float) bitPosition.getY());
         }
     }
 
@@ -126,7 +126,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     }
 
     protected void drawDurationInLocalSpace(DrawRequest r) {
-        if (SONSettings.getTimeVisibility() && ((Block)getReferencedComponent()).getDuration().isSpecified()) {
+        if (SONSettings.getTimeVisibility() && ((Block) getReferencedComponent()).getDuration().isSpecified()) {
             cahceDurationRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -145,7 +145,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-        if (SONSettings.getTimeVisibility() && ((Block)getReferencedComponent()).getDuration().isSpecified()) {
+        if (SONSettings.getTimeVisibility() && ((Block) getReferencedComponent()).getDuration().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
         }
         return bb;
@@ -164,43 +164,43 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     }
 
     public String getStartTime(){
-        return ((Block)getReferencedComponent()).getStartTime().toString();
+        return ((Block) getReferencedComponent()).getStartTime().toString();
     }
 
     public void setStartTime(String time){
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Block)getReferencedComponent()).setStartTime(input);
+        ((Block) getReferencedComponent()).setStartTime(input);
     }
 
     public String getEndTime(){
-        return ((Block)getReferencedComponent()).getEndTime().toString();
+        return ((Block) getReferencedComponent()).getEndTime().toString();
     }
 
     public void setEndTime(String time){
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Block)getReferencedComponent()).setEndTime(input);
+        ((Block) getReferencedComponent()).setEndTime(input);
     }
 
     public String getDuration(){
-        return ((Block)getReferencedComponent()).getDuration().toString();
+        return ((Block) getReferencedComponent()).getDuration().toString();
     }
 
     public void setDuration(String time){
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Block)getReferencedComponent()).setDuration(input);
+        ((Block) getReferencedComponent()).setDuration(input);
     }
 
     public Color getDurationColor(){
-        return ((Block)getReferencedComponent()).getDurationColor();
+        return ((Block) getReferencedComponent()).getDurationColor();
     }
 
     public void setDurationColor(Color value){
-        ((Block)getReferencedComponent()).setDurationColor(value);
+        ((Block) getReferencedComponent()).setDurationColor(value);
     }
 
     @Override
     public boolean isFaulty(){
-        return ((Block)getReferencedComponent()).isFaulty();
+        return ((Block) getReferencedComponent()).isFaulty();
     }
 
     @Override

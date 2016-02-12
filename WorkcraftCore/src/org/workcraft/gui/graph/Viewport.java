@@ -53,7 +53,7 @@ public class Viewport {
     /**
      * The origin point in user space.
      */
-    protected static final Point2D ORIGIN = new Point2D.Double(0,0);
+    protected static final Point2D ORIGIN = new Point2D.Double(0, 0);
 
     /**
      * Current horizontal view translation in user space.
@@ -71,7 +71,7 @@ public class Viewport {
     protected double scale = DEFAULT_SCALE;
 
     /**
-     * The transformation from user space to screen space such that the point (0,0) in user space is
+     * The transformation from user space to screen space such that the point (0, 0) in user space is
      * mapped into the centre of the viewport, the coordinate (1) on Y axis is mapped into the topmost
      * vertical coordinate of the viewport, the coordinate (-1) on Y axis is mapped into the bottom
      * vertical coordinate of the viewport, and the coordinates on the X axis are mapped in such a way
@@ -99,13 +99,10 @@ public class Viewport {
      */
     protected Rectangle shape;
 
-
     /**
      * The list of listeners to be notified in case of viewport parameters change.
      */
     protected LinkedList<ViewportListener> listeners;
-
-
 
     /**
      * Called when the viewport parameters such as pan and zoom are changed. Updates the corresponding
@@ -178,7 +175,7 @@ public class Viewport {
 
         viewChanged();
 
-        setShape(x,y,w,h);
+        setShape(x, y, w, h);
     }
 
     /**
@@ -327,8 +324,6 @@ public class Viewport {
         viewChanged();
     }
 
-
-
     /**
      * Changes the shape of the viewport.
      * @param x
@@ -344,7 +339,6 @@ public class Viewport {
         shape.setBounds(x, y, width, height);
         shapeChanged();
     }
-
 
     /**
      * Changes the shape of the viewport.

@@ -63,7 +63,7 @@ public class NodeGeneratorTool extends AbstractTool {
         lastGeneratedNode = null;
         warningMessage = null;
         editor.getModel().selectNone();
-}
+    }
 
     @Override
     public void activated(GraphEditor editor) {

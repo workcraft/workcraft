@@ -35,6 +35,4 @@ public class VisualScenarioPage extends VisualPage {
         return encoding;
     }
 
-
-
 }

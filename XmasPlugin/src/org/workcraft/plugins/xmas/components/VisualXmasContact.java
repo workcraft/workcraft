@@ -40,7 +40,6 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
-
 public class VisualXmasContact extends VisualComponent implements StateObserver {
     public static final String IO_TYPE_PROPERTY_NAME = "IOtype";
 
@@ -81,7 +80,7 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
     }
 
     public XmasContact getReferencedContact() {
-        return (XmasContact)getReferencedComponent();
+        return (XmasContact) getReferencedComponent();
     }
 
     private Shape getShape() {
@@ -101,7 +100,7 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
         boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         if (inSimulationMode || XmasSettings.getShowContacts()) {
             Shape shape = getShape();
-            g.setStroke(new BasicStroke((float)XmasSettings.getWireWidth()));
+            g.setStroke(new BasicStroke((float) XmasSettings.getWireWidth()));
 
             Color fillColor = d.getBackground();
             if (fillColor == null) {

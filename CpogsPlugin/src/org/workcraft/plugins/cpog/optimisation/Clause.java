@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-
 public abstract class Clause implements BooleanFormula {
 
     private List<Literal> literals = new ArrayList<Literal>();

@@ -40,7 +40,7 @@ public class DrawHelper {
         Path2D.Double shape = new Path2D.Double();
         shape.moveTo(-length, -width / 2);
         shape.lineTo(-length, width / 2);
-        shape.lineTo(0,0);
+        shape.lineTo(0, 0);
         shape.closePath();
 
         Shape transformedArrowShape = arrowTransform.createTransformedShape(shape);

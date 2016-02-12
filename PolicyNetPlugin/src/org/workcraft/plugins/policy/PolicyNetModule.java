@@ -67,7 +67,7 @@ public class PolicyNetModule implements Module {
         pm.registerClass(XMLSerialiser.class, BundleSerialiser.class);
         pm.registerClass(XMLDeserialiser.class, BundleDeserialiser.class);
         pm.registerClass(XMLSerialiser.class, VisualLocalitySerialiser.class);
-        pm.registerClass(XMLDeserialiser.class,VisualLocalityDeserialiser.class);
+        pm.registerClass(XMLDeserialiser.class, VisualLocalityDeserialiser.class);
     }
 
     private void initCompatibilityManager() {

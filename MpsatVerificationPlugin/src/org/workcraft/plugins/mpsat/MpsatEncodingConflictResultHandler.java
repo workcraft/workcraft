@@ -19,7 +19,6 @@ import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 final class MpsatEncodingConflictResultHandler implements Runnable {
 
     private final ColorGenerator colorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(

@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.cpog;
 
-
 public enum VariableState {
     TRUE('1', "[1] true"),
     FALSE('0', "[0] false"),
@@ -57,9 +56,9 @@ public enum VariableState {
 
     public VariableState toggle() {
         switch(this) {
-            case TRUE: return VariableState.FALSE;
-            case FALSE: return VariableState.UNDEFINED;
-            default: return VariableState.TRUE;
+        case TRUE: return VariableState.FALSE;
+        case FALSE: return VariableState.UNDEFINED;
+        default: return VariableState.TRUE;
         }
     }
 

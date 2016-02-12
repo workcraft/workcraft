@@ -32,7 +32,7 @@ public abstract class HierarchySupervisor implements HierarchyObserver {
 
     private void attachInternal(Node root) {
         if (root instanceof ObservableHierarchy) {
-            ((ObservableHierarchy)root).addObserver(this);
+            ((ObservableHierarchy) root).addObserver(this);
         }
         for (Node node : root.getChildren()) {
             attachInternal(node);
@@ -53,7 +53,7 @@ public abstract class HierarchySupervisor implements HierarchyObserver {
 
     private void detachInternal(Node root) {
         if (root instanceof ObservableHierarchy) {
-            ((ObservableHierarchy)root).removeObserver(this);
+            ((ObservableHierarchy) root).removeObserver(this);
         }
         for (Node node : root.getChildren()) {
             detachInternal(node);

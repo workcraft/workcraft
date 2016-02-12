@@ -34,7 +34,7 @@ public class CpogEncoding {
     public void setEncoding(boolean[][] encoding){
         this.encoding = encoding;
     }
-    public void setFormula(BooleanFormula formula,int index){
+    public void setFormula(BooleanFormula formula, int index){
         this.functions[index] = formula;
     }
     public void setFormule(BooleanFormula[] formula){

@@ -36,7 +36,6 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 
-
 public class Console {
     static {
         // Workaround for Java 7 bug http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7075600

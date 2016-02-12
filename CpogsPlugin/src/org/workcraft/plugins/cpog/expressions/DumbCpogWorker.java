@@ -23,11 +23,11 @@ package org.workcraft.plugins.cpog.expressions;
 public class DumbCpogWorker implements CpogWorker {
     @Override
     public CpogFormula overlay(CpogFormula x, CpogFormula y) {
-        return new Overlay(x,y);
+        return new Overlay(x, y);
     }
 
     @Override
     public CpogFormula sequence(CpogFormula x, CpogFormula y) {
-        return new Sequence(x,y);
+        return new Sequence(x, y);
     }
 }

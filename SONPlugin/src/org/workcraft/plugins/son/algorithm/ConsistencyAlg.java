@@ -202,13 +202,13 @@ public class ConsistencyAlg extends TimeAlg{
         TransitionNode input = null;
         if(net.getInputSONConnections(cp).size() == 1){
             SONConnection con = net.getInputSONConnections(cp).iterator().next();
-            input = (TransitionNode)con.getFirst();
+            input = (TransitionNode) con.getFirst();
         }
 
         TransitionNode output = null;
         if(net.getOutputSONConnections(cp).size() == 1){
             SONConnection con = net.getOutputSONConnections(cp).iterator().next();
-            output = (TransitionNode)con.getSecond();
+            output = (TransitionNode) con.getSecond();
         }
 
         if(input==null || output == null){
@@ -295,7 +295,7 @@ public class ConsistencyAlg extends TimeAlg{
                 continue;
             }
             if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == initialLow)){
-                Condition c = (Condition)con.getSecond();
+                Condition c = (Condition) con.getSecond();
                 if(!c.getStartTime().isSpecified() || !initialLow.getStartTime().isSpecified()){
                     result.add("Fail to run behavioural consistency checking: "
                             + node(c) + " or " + node(initialLow)+" is node inconsistency.");
@@ -316,7 +316,7 @@ public class ConsistencyAlg extends TimeAlg{
                 continue;
             }
             if((con.getSemantics() == Semantics.BHVLINE) && (con.getFirst() == finalLow)){
-                Condition c = (Condition)con.getSecond();
+                Condition c = (Condition) con.getSecond();
                 if(!c.getStartTime().isSpecified() || !finalLow.getStartTime().isSpecified()){
                     result.add("Fail to run behavioural consistency checking: "
                             + node(c) + " or " + node(finalLow)+" is node inconsistency.");
@@ -333,7 +333,7 @@ public class ConsistencyAlg extends TimeAlg{
     public ArrayList<String> granularityHourMinsTask(Node node){
         ArrayList<String> result = new ArrayList<String>();
         if(node instanceof Time){
-            Time t = (Time)node;
+            Time t = (Time) node;
             Integer value = null;
             try {
                 value = t.getStartTime().getMin();
@@ -377,7 +377,7 @@ public class ConsistencyAlg extends TimeAlg{
 
     public boolean hasSpecifiedDur(Node node, boolean isSync, ScenarioRef s){
 
-        if ((node instanceof Time) && !((Time)node).getDuration().isSpecified() && !isSync){
+        if ((node instanceof Time) && !((Time) node).getDuration().isSpecified() && !isSync){
             return false;
         }
 
@@ -401,7 +401,7 @@ public class ConsistencyAlg extends TimeAlg{
                 }
             }
         }else if (node instanceof Condition){
-            Condition c = (Condition)node;
+            Condition c = (Condition) node;
 
             boolean hasSpecifiedInput = false;
             //initial state
@@ -424,7 +424,6 @@ public class ConsistencyAlg extends TimeAlg{
         return true;
     }
 
-
     public boolean hasSpecifiedEnd(Node node, ScenarioRef s){
 
         Collection<SONConnection> outputConnections;
@@ -442,7 +441,7 @@ public class ConsistencyAlg extends TimeAlg{
                 }
             }
         }else if (node instanceof Condition){
-            Condition c = (Condition)node;
+            Condition c = (Condition) node;
             boolean hasSpecifiedOutput = false;
             //final state
             if(outputConnections.isEmpty()){
@@ -466,7 +465,7 @@ public class ConsistencyAlg extends TimeAlg{
     public String hasSpecifiedCP(Node node, boolean isSync, ScenarioRef s) {
         ChannelPlace cp = null;
         if(node instanceof ChannelPlace)
-            cp = (ChannelPlace)node;
+            cp = (ChannelPlace) node;
         else
             return "";
 
@@ -476,13 +475,13 @@ public class ConsistencyAlg extends TimeAlg{
 
         if(inputAsynConnection.size() == 1){
             SONConnection con = inputAsynConnection.iterator().next();
-            input = (TransitionNode)con.getFirst();
+            input = (TransitionNode) con.getFirst();
         }
 
         TransitionNode output = null;
         if(net.getOutputSONConnections(cp).size() == 1){
             SONConnection con = net.getOutputSONConnections(cp).iterator().next();
-            output = (TransitionNode)con.getSecond();
+            output = (TransitionNode) con.getSecond();
         }
 
         if(input == null){
@@ -519,7 +518,7 @@ public class ConsistencyAlg extends TimeAlg{
 
         //ON time consistency checking.
         if(node instanceof TransitionNode){
-            TransitionNode t = (TransitionNode)node;
+            TransitionNode t = (TransitionNode) node;
             ArrayList<String> concurResult = concurConsistency(t);
 
             if(concurResult.isEmpty()){
@@ -545,7 +544,7 @@ public class ConsistencyAlg extends TimeAlg{
             }
         //ON time consistency checking
         }else if(node instanceof Condition){
-            Condition c = (Condition)node;
+            Condition c = (Condition) node;
 
             if(net.getInputPNConnections(c).size() > 1 || net.getOutputPNConnections(c).size() > 1){
                 result.addAll(alterConsistency(c, s, g));

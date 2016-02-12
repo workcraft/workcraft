@@ -62,7 +62,6 @@ public class OutputArea extends JFrame {
         exit.addActionListener(new Exit());
     }
 
-
     private void export(){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -74,14 +73,14 @@ public class OutputArea extends JFrame {
 
         if (myfile != null && r == JFileChooser.APPROVE_OPTION){
 
-            Pattern pattern=Pattern.compile(".*\\.[a-z]+",Pattern.CASE_INSENSITIVE);
+            Pattern pattern=Pattern.compile(".*\\.[a-z]+", Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(myfile.getAbsolutePath());
             if(!matcher.find()){
                 myfile=new File(myfile.getAbsolutePath().concat(".txt"));
             }
         }
         if(myfile==null || myfile.getName().isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Please enter a file name!","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter a file name!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -96,7 +95,7 @@ public class OutputArea extends JFrame {
             setTitle(myfile.getName()+" - Output");
             fw.close();
         } catch(IOException e) {
-            JOptionPane.showMessageDialog(this,"Failed to save the file","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Failed to save the file", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -116,11 +115,11 @@ public class OutputArea extends JFrame {
         contentPane.add(menu, BorderLayout.NORTH);
 
         contentPane.add(
-            new JScrollPane(
-                textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
-            BorderLayout.CENTER);
+                new JScrollPane(
+                    textArea,
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
+                BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
         this.setTitle("Structure Verification Result");
@@ -129,7 +128,7 @@ public class OutputArea extends JFrame {
         Dimension screenSize=kit.getScreenSize();
         int width = screenSize.width;
         int height = screenSize.height;
-        setLocation(width/2,height/4);
+        setLocation(width/2, height/4);
 
     }
 

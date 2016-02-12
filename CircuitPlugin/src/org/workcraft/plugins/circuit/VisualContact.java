@@ -47,7 +47,6 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-
 public class VisualContact extends VisualComponent implements StateObserver {
 
     public static final String PROPERTY_DIRECTION = "Direction";
@@ -223,7 +222,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
         if (inSimulationMode || CircuitSettings.getShowContacts() || !(getParent() instanceof VisualCircuitComponent)) {
             Shape shape = getShape();
-            g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+            g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
             g.setColor(fillColor);
             g.fill(shape);
             g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
@@ -339,7 +338,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
     }
 
     public Contact getReferencedContact() {
-        return (Contact)getReferencedComponent();
+        return (Contact) getReferencedComponent();
     }
 
     public boolean isInput() {
@@ -369,7 +368,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
     @Override
     public void rotateClockwise() {
         if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent)getParent();
+            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
             if (component.getRenderType() == RenderType.BOX) {
                 AffineTransform rotateTransform = new AffineTransform();
                 rotateTransform.quadrantRotate(1);
@@ -384,7 +383,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
     @Override
     public void rotateCounterclockwise() {
         if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent)getParent();
+            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
             if (component.getRenderType() == RenderType.BOX) {
                 AffineTransform rotateTransform = new AffineTransform();
                 rotateTransform.quadrantRotate(-1);
@@ -399,7 +398,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
     @Override
     public void flipHorizontal() {
         if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent)getParent();
+            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
             if (component.getRenderType() == RenderType.BOX) {
                 setX(-getX());
             }
@@ -411,7 +410,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
     @Override
     public void flipVertical() {
         if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent)getParent();
+            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
             if (component.getRenderType() == RenderType.BOX) {
                 setY(-getY());
             }
@@ -424,7 +423,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualContact) {
-            VisualContact srcComponent = (VisualContact)src;
+            VisualContact srcComponent = (VisualContact) src;
             getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).

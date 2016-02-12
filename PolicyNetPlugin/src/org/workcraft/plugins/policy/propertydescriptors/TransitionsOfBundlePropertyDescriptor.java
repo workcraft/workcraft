@@ -39,7 +39,7 @@ public final class TransitionsOfBundlePropertyDescriptor implements PropertyDesc
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        model.setTransitionsOfBundleAsString(bundle, (String)value);
+        model.setTransitionsOfBundleAsString(bundle, (String) value);
     }
 
     @Override

@@ -55,14 +55,14 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
         if (!valid)
             update();
 
-        return (Point2D)firstCenter.clone();
+        return (Point2D) firstCenter.clone();
     }
 
     public Point2D getSecondCenter() {
         if (!valid)
             update();
 
-        return (Point2D)secondCenter.clone();
+        return (Point2D) secondCenter.clone();
     }
 
     public Touchable getFirstShape() {
@@ -106,7 +106,6 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
                 cur = (VisualNode) cur.getParent();
             }
 
-
             VisualNode secondComponent = connection.getSecond();
             cur = secondComponent;
             while (cur.getParent() != null) {
@@ -117,7 +116,6 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
                 }
                 cur = (VisualNode) cur.getParent();
             }
-
 
             firstShape = TransformHelper.transform(firstComponent, TransformHelper.getTransform(firstComponent, connection));
             secondShape = TransformHelper.transform(secondComponent, TransformHelper.getTransform(secondComponent, connection));

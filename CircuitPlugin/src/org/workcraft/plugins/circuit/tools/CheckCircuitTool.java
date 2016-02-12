@@ -31,7 +31,7 @@ public class CheckCircuitTool extends VerificationTool {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
 
-        Circuit circuit = (Circuit)we.getModelEntry().getMathModel();
+        Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
         if (circuit.getFunctionComponents().isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
                     "Circuit verification error", JOptionPane.ERROR_MESSAGE);

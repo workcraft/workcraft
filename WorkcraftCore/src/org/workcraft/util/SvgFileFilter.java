@@ -27,7 +27,6 @@ import javax.swing.filechooser.FileFilter;
 
 public class SvgFileFilter extends FileFilter {
 
-
     @Override
     public boolean accept(File f) {
         if (f.isDirectory())
@@ -36,7 +35,6 @@ public class SvgFileFilter extends FileFilter {
             return true;
         return false;
     }
-
 
     @Override
     public String getDescription() {

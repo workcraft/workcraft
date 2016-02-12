@@ -146,10 +146,10 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
         if (value == Zero.instance()) {
-            g.setStroke(new BasicStroke((float)strokeWidth, BasicStroke.CAP_BUTT,
+            g.setStroke(new BasicStroke((float) strokeWidth, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f));
         } else {
-            g.setStroke(new BasicStroke((float)strokeWidth));
+            g.setStroke(new BasicStroke((float) strokeWidth));
 // FIXME: Gray colour of vertices with undecided conditions is confusing.
 //            if (value != One.instance())
 //                g.setColor(Coloriser.colorise(Color.LIGHT_GRAY, colorisation));
@@ -248,7 +248,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualVertex) {
-            VisualVertex srcComponent = (VisualVertex)src;
+            VisualVertex srcComponent = (VisualVertex) src;
             setRenderType(srcComponent.getRenderType());
         }
     }

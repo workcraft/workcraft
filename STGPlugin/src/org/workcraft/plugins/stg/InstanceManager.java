@@ -13,7 +13,7 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
 public class InstanceManager {
-    private GeneralTwoWayMap<Node, Pair<String,Integer>> instances = new TwoWayMap<Node, Pair<String, Integer>>();
+    private GeneralTwoWayMap<Node, Pair<String, Integer>> instances = new TwoWayMap<Node, Pair<String, Integer>>();
     private Map<String, IDGenerator> generators = new HashMap<String, IDGenerator>();
 
     private IDGenerator getGenerator(String label)    {
@@ -53,7 +53,7 @@ public class InstanceManager {
      * Manually assign a new name to <i>t</i>, auto-generating instance number.
      */
     public void assign(Node node, String name) {
-        assign(node, Pair.of(name, (Integer)null), false);
+        assign(node, Pair.of(name, (Integer) null), false);
     }
 
     /**
@@ -128,7 +128,7 @@ public class InstanceManager {
             SignalTransition st = (SignalTransition) node;
             return st.getSignalName() + st.getDirection();
         } else if (node instanceof DummyTransition) {
-            DummyTransition dum = (DummyTransition)node;
+            DummyTransition dum = (DummyTransition) node;
             return dum.getName();
         } else {
             throw new RuntimeException("Unexpected class " + node.getClass().getName());

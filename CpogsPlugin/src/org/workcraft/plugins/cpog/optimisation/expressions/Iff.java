@@ -25,7 +25,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class Iff extends BinaryBooleanFormula {
     Iff(BooleanFormula x, BooleanFormula y) {
-        super(x,y);
+        super(x, y);
     }
 
     @Override

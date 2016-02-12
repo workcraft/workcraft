@@ -46,26 +46,26 @@ public class MpsatSettings {
 
     // Reach expression for checking signal consistency
     public static final String reachConsistency =
-        "exists s in SIGNALS \\ DUMMY {\n" +
-        "    let Es = ev s {\n" +
-        "        $s & exists e in Es s.t. is_plus e { @e }\n" +
-        "        |\n" +
-        "        ~$s & exists e in Es s.t. is_minus e { @e }\n" +
-        "    }\n" +
-        "}\n";
+            "exists s in SIGNALS \\ DUMMY {\n" +
+            "    let Es = ev s {\n" +
+            "        $s & exists e in Es s.t. is_plus e { @e }\n" +
+            "        |\n" +
+            "        ~$s & exists e in Es s.t. is_minus e { @e }\n" +
+            "    }\n" +
+            "}\n";
 
     // Reach expression for checking semimodularity (output persistency)
     public static final String reachSemimodularity =
-        "card DUMMY != 0 ? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
-        "    exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n" +
-        "        @t1 &\n" +
-        "        exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n" +
-        "            @t2 &\n" +
-        "            forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n" +
-        "                exists p in pre t3 \\ post t2 { ~$p }\n" +
-        "            }\n" +
-        "        }\n" +
-        "    }\n";
+            "card DUMMY != 0 ? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
+            "    exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n" +
+            "        @t1 &\n" +
+            "        exists t2 in tran EVENTS s.t. sig t2 != sig t1 & card (pre t1 * (pre t2 \\ post t2)) != 0 {\n" +
+            "            @t2 &\n" +
+            "            forall t3 in tran EVENTS * (tran sig t1 \\ {t1}) s.t. card (pre t3 * (pre t2 \\ post t2)) = 0 {\n" +
+            "                exists p in pre t3 \\ post t2 { ~$p }\n" +
+            "            }\n" +
+            "        }\n" +
+            "    }\n";
 
     // Reach expression for checking conformation (this is a template, the list of places needs to be updated for each circuit)
     private static final String reachConformationDevPlaces = "// insert device place names here"; // For example: "p0", "<a-,b+>"

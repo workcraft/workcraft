@@ -28,7 +28,6 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class CheckDataflowHazardTask extends MpsatChainTask {
     private final MpsatSettings settings;
     private final WorkspaceEntry we;
@@ -49,8 +48,8 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
             String prefix = FileUtils.getTempPrefix(we.getTitle());
             directory = FileUtils.createTempDirectory(prefix);
 
-            StgGenerator generator = new StgGenerator((VisualDfs)we.getModelEntry().getVisualModel());
-            STGModel model = (STGModel)generator.getStgModel().getMathModel();
+            StgGenerator generator = new StgGenerator((VisualDfs) we.getModelEntry().getVisualModel());
+            STGModel model = (STGModel) generator.getStgModel().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

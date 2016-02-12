@@ -54,7 +54,6 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     private VisualComponent master = null;
 
-
     public VisualReplica() {
         this(true, true);
     }
@@ -132,7 +131,6 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_POSITIONING));
     }
 
-
     public Color getForegroundColor() {
         return foregroundColor;
     }
@@ -171,12 +169,11 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         return getOffset(getNamePositioning());
     }
 
-
     private void cacheNameRenderedText(DrawRequest r) {
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         if (getMaster() instanceof VisualComponent) {
-            MathNode mathNode = ((VisualComponent)master).getReferencedComponent();
+            MathNode mathNode = ((VisualComponent) master).getReferencedComponent();
             name = mathModel.getNodeReference(mathNode);
         }
 
@@ -239,7 +236,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualReplica) {
-            VisualReplica srcReplica = (VisualReplica)src;
+            VisualReplica srcReplica = (VisualReplica) src;
             setForegroundColor(srcReplica.getForegroundColor());
             setFillColor(srcReplica.getFillColor());
             setNameColor(srcReplica.getNameColor());

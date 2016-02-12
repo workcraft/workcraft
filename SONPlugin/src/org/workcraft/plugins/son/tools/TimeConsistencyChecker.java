@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.tools;
 
-
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.gui.MainWindow;
@@ -36,8 +35,8 @@ public class TimeConsistencyChecker implements Tool{
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
-        VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
-        SON net = (SON)we.getModelEntry().getMathModel();
+        VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
+        SON net = (SON) we.getModelEntry().getMathModel();
 
         BlockConnector.blockBoundingConnector(visualNet);
         net.refreshAllColor();

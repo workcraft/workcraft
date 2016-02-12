@@ -60,7 +60,6 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
         groupImpl.removeAllObservers();
     }
 
-
     @Override
     public void add(Node node) {
         groupImpl.add(node);
@@ -119,7 +118,6 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
         }
         return result;
     }
-
 
     public void setGr(int gr) {
         this.gr = gr;

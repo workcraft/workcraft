@@ -23,7 +23,7 @@ package org.workcraft.plugins.cpog.expressions;
 public class Overlay extends BinaryCpogFormula {
 
     Overlay(CpogFormula x, CpogFormula y) {
-        super(x,y);
+        super(x, y);
     }
 
     @Override

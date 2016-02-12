@@ -61,16 +61,16 @@ public class TaskControl extends JPanel {
         setLayout(layout);
 
         label = new JLabel(taskDescription);
-        label.setMinimumSize(new Dimension(100,20));
-        label.setPreferredSize(new Dimension(300,20));
+        label.setMinimumSize(new Dimension(100, 20));
+        label.setPreferredSize(new Dimension(300, 20));
 
         progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
         progressBar.setMinimum(0);
         progressBar.setMaximum(1000);
 
-        progressBar.setMinimumSize(new Dimension(100,20));
-        progressBar.setPreferredSize(new Dimension(300,20));
+        progressBar.setMinimumSize(new Dimension(100, 20));
+        progressBar.setPreferredSize(new Dimension(300, 20));
 
         btnCancel = new JButton("Cancel");
         btnCancel.addActionListener(new ActionListener() {
@@ -87,7 +87,7 @@ public class TaskControl extends JPanel {
 
     public void progressUpdate(final double completion) {
         progressBar.setIndeterminate(false);
-        progressBar.setValue((int)(completion * 1000));
+        progressBar.setValue((int) (completion * 1000));
     }
 
     public boolean isCancelRequested() {

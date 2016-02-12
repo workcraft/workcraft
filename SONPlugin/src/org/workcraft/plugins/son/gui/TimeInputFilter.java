@@ -15,12 +15,12 @@ public class TimeInputFilter extends DocumentFilter{
 
     private boolean isInteger(String text) {
         try {
-           Integer.parseInt(text);
-           return true;
+            Integer.parseInt(text);
+            return true;
         } catch (NumberFormatException e) {
-           return false;
+            return false;
         }
-     }
+    }
 
     @Override
     public void insertString(FilterBypass fb, int offset, String string,
@@ -32,7 +32,7 @@ public class TimeInputFilter extends DocumentFilter{
         sb.insert(offset, string);
 
         if (doc.getLength() + string.length() <= maxLength
-                    && isInteger(string)) {
+                && isInteger(string)) {
             fb.insertString(offset, string, attr);
         }
     }
@@ -49,7 +49,7 @@ public class TimeInputFilter extends DocumentFilter{
         if (isInteger(sb.toString())
                 && (doc.getLength() + text.length() - length) <= maxLength) {
             super.replace(fb, offset, length, text, attrs);
-         }
+        }
     }
 
 }

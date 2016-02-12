@@ -27,7 +27,7 @@ public class StgGeneratorTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualCircuit circuit = (VisualCircuit)we.getModelEntry().getVisualModel();
+        final VisualCircuit circuit = (VisualCircuit) we.getModelEntry().getVisualModel();
         final CircuitToStgConverter converter = CircuitStgUtils.createCircuitToStgConverter(circuit);
         final Workspace workspace = Framework.getInstance().getWorkspace();
         final Path<String> directory = we.getWorkspacePath().getParent();

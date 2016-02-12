@@ -1,8 +1,6 @@
 package org.workcraft.util.graph.cycle;
 
-
 import java.util.List;
-
 
 /**
  * Testfile for elementary cycle search.
@@ -34,7 +32,7 @@ public class TestCycles {
         adjMatrix[6][7] = true;
         adjMatrix[7][8] = true;
         adjMatrix[7][9] = true;
-        adjMatrix[9][6] = true;*/
+        adjMatrix[9][6] = true; */
 
         adjMatrix[0][1] = true;
         adjMatrix[1][2] = true;

@@ -15,7 +15,6 @@ public class ColorUtils {
         return ColorSpace.getInstance(ColorSpace.CS_CIEXYZ).toRGB(value);
     }
 
-
     public static float[] convertFromRgbToLab(float[] value) {
         return convertFromXyzToLab(convertFromRgbToXyz(value));
     }
@@ -23,7 +22,6 @@ public class ColorUtils {
     public static float[] convertFromLabToRgb(float[] value) {
         return convertFromXyzToRgb(convertFromLabToXyz(value));
     }
-
 
     public static float[] convertFromXyzToLab(float[] value) {
         float l = f(value[1]);
@@ -81,7 +79,7 @@ public class ColorUtils {
                 }
             }
         }
-           Collections.shuffle(palette);
+        Collections.shuffle(palette);
         return palette.toArray(new Color[palette.size()]);
     }
 

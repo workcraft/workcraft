@@ -36,7 +36,6 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
-
 public abstract class VisualTransformableNode extends VisualNode implements Movable, Rotatable, Flippable {
     protected AffineTransform localToParentTransform = new AffineTransform();
     protected AffineTransform parentToLocalTransform = new AffineTransform();
@@ -97,7 +96,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         Node node = this;
         while (node != null) {
             if (node instanceof VisualTransformableNode) {
-                result += ((VisualTransformableNode)node).getX();
+                result += ((VisualTransformableNode) node).getX();
             }
             node = node.getParent();
         }
@@ -109,7 +108,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         Node node = getParent();
         while (node != null) {
             if (node instanceof VisualTransformableNode) {
-                value -= ((VisualTransformableNode)node).getX();
+                value -= ((VisualTransformableNode) node).getX();
             }
             node = node.getParent();
         }
@@ -135,7 +134,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         Node node = this;
         while (node != null) {
             if (node instanceof VisualTransformableNode) {
-                result += ((VisualTransformableNode)node).getY();
+                result += ((VisualTransformableNode) node).getY();
             }
             node = node.getParent();
         }
@@ -147,7 +146,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         Node node = getParent();
         while (node != null) {
             if (node instanceof VisualTransformableNode) {
-                value -= ((VisualTransformableNode)node).getY();
+                value -= ((VisualTransformableNode) node).getY();
             }
             node = node.getParent();
         }
@@ -161,7 +160,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         double y = pos.getY();
         while (node != null) {
             if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode transferableNode = (VisualTransformableNode)node;
+                VisualTransformableNode transferableNode = (VisualTransformableNode) node;
                 x -= transferableNode.getX();
                 y -= transferableNode.getY();
             }
@@ -296,7 +295,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     @Override
     public void copyPosition(Movable src) {
         if (src instanceof VisualTransformableNode) {
-            VisualTransformableNode srcNode = (VisualTransformableNode)src;
+            VisualTransformableNode srcNode = (VisualTransformableNode) src;
             setPosition(srcNode.getPosition());
         }
     }
@@ -305,7 +304,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     public void rotateClockwise() {
         for (Node node: getChildren()) {
             if (node instanceof Rotatable) {
-                ((Rotatable)node).rotateClockwise();
+                ((Rotatable) node).rotateClockwise();
             }
         }
     }
@@ -314,7 +313,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     public void rotateCounterclockwise() {
         for (Node node: getChildren()) {
             if (node instanceof Rotatable) {
-                ((Rotatable)node).rotateCounterclockwise();
+                ((Rotatable) node).rotateCounterclockwise();
             }
         }
     }
@@ -323,7 +322,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     public void flipHorizontal() {
         for (Node node: getChildren()) {
             if (node instanceof Flippable) {
-                ((Flippable)node).flipHorizontal();
+                ((Flippable) node).flipHorizontal();
             }
         }
     }
@@ -332,13 +331,13 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     public void flipVertical() {
         for (Node node: getChildren()) {
             if (node instanceof Flippable) {
-                ((Flippable)node).flipVertical();
+                ((Flippable) node).flipVertical();
             }
         }
     }
 
     public Collection<VisualComponent> getComponents() {
-         return Hierarchy.getChildrenOfType(this, VisualComponent.class);
+        return Hierarchy.getChildrenOfType(this, VisualComponent.class);
     }
 
     public Collection<VisualConnection> getConnections() {

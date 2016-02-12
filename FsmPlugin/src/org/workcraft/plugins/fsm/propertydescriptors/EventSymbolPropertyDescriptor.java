@@ -46,11 +46,11 @@ public class EventSymbolPropertyDescriptor implements PropertyDescriptor {
     @Override
     public void setValue(Object value) throws InvocationTargetException {
         Symbol symbol = null;
-        String symbolName = (String)value;
+        String symbolName = (String) value;
         if (!symbolName.isEmpty()) {
             Node node = fsm.getNodeByReference(symbolName);
             if (node instanceof Symbol) {
-                symbol = (Symbol)node;
+                symbol = (Symbol) node;
             } else {
                 symbol = fsm.createSymbol(symbolName);
             }

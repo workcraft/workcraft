@@ -103,14 +103,14 @@ public class VisualCircuit extends AbstractVisualModel {
         }
 
         if (first instanceof VisualContact) {
-            Contact contact = ((VisualContact)first).getReferencedContact();
+            Contact contact = ((VisualContact) first).getReferencedContact();
             if (contact.isInput() && !contact.isPort()) {
                 throw new InvalidConnectionException("Inputs of components cannot be drivers.");
             }
         }
 
         if (second instanceof VisualContact) {
-            Contact contact = ((VisualContact)second).getReferencedContact();
+            Contact contact = ((VisualContact) second).getReferencedContact();
             if (contact.isOutput() && !contact.isPort()) {
                 throw new InvalidConnectionException("Outputs of the components cannot be driven.");
             }
@@ -120,10 +120,10 @@ public class VisualCircuit extends AbstractVisualModel {
         }
 
         HashSet<Contact> drivenSet = new HashSet<>();
-        Circuit circuit = (Circuit)this.getMathModel();
+        Circuit circuit = (Circuit) this.getMathModel();
         Contact driver = null;
         if (first instanceof VisualConnection) {
-            VisualConnection firstConnection = (VisualConnection)first;
+            VisualConnection firstConnection = (VisualConnection) first;
             driver = CircuitUtils.findDriver(circuit, firstConnection.getReferencedConnection(), true);
             if (driver != null) {
                 drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
@@ -131,7 +131,7 @@ public class VisualCircuit extends AbstractVisualModel {
                 drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection.getReferencedConnection(), true));
             }
         } else if (first instanceof VisualComponent) {
-            VisualComponent firstComponent = (VisualComponent)first;
+            VisualComponent firstComponent = (VisualComponent) first;
             driver = CircuitUtils.findDriver(circuit, firstComponent.getReferencedComponent(), true);
             if (driver != null) {
                 drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
@@ -140,7 +140,7 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
         if (second instanceof VisualComponent) {
-            VisualComponent secondComponent = (VisualComponent)second;
+            VisualComponent secondComponent = (VisualComponent) second;
             drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent.getReferencedComponent(), true));
         }
         int outputPortCount = 0;
@@ -158,16 +158,16 @@ public class VisualCircuit extends AbstractVisualModel {
         // Handle zero-delay components
         Node firstParent = first.getParent();
         if (firstParent instanceof VisualFunctionComponent) {
-            VisualFunctionComponent firstComponent = (VisualFunctionComponent)firstParent;
+            VisualFunctionComponent firstComponent = (VisualFunctionComponent) firstParent;
             Node secondParent = second.getParent();
             if (secondParent instanceof VisualFunctionComponent) {
-                VisualFunctionComponent secondComponent = (VisualFunctionComponent)secondParent;
+                VisualFunctionComponent secondComponent = (VisualFunctionComponent) secondParent;
                 if (firstComponent.getIsZeroDelay() && secondComponent.getIsZeroDelay()) {
                     throw new InvalidConnectionException("Zero delay components cannot be connected to each other.");
                 }
             }
             if (second instanceof VisualContact) {
-                VisualContact secondContact = (VisualContact)second;
+                VisualContact secondContact = (VisualContact) second;
                 if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
                     throw new InvalidConnectionException("Zero delay components cannot be connected to the output ports.");
                 }
@@ -179,13 +179,13 @@ public class VisualCircuit extends AbstractVisualModel {
     public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
         if (first instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection)first;
+            VisualConnection connection = (VisualConnection) first;
             List<Point2D> locations = new LinkedList<Point2D>();
             int splitIndex = -1;
-             Point2D splitPoint = connection.getSplitPoint();
+            Point2D splitPoint = connection.getSplitPoint();
             if (connection.getGraphic() instanceof Polyline) {
-                 AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
-                Polyline polyline = (Polyline)connection.getGraphic();
+                AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+                Polyline polyline = (Polyline) connection.getGraphic();
                 for (ControlPoint cp:  polyline.getControlPoints()) {
                     Point2D location = localToRootTransform.transform(cp.getPosition(), null);
                     locations.add(location);
@@ -193,8 +193,8 @@ public class VisualCircuit extends AbstractVisualModel {
                 splitIndex = polyline.getNearestSegment(splitPoint, null);
             }
 
-            Container vContainer = (Container)connection.getParent();
-            Container mParent = (Container)(connection.getReferencedConnection().getParent());
+            Container vContainer = (Container) connection.getParent();
+            Container mParent = (Container) (connection.getReferencedConnection().getParent());
             Joint mJoint = new Joint();
             mParent.add(mJoint);
             VisualJoint vJoint = new VisualJoint(mJoint);
@@ -215,11 +215,11 @@ public class VisualCircuit extends AbstractVisualModel {
 
         VisualCircuitConnection vConnection = null;
         if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
-            VisualComponent vComponent1 = (VisualComponent)first;
-            VisualComponent vComponent2 = (VisualComponent)second;
+            VisualComponent vComponent1 = (VisualComponent) first;
+            VisualComponent vComponent2 = (VisualComponent) second;
 
             Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
-            Container vContainer = (Container)Hierarchy.getNearestAncestor(vParent, new Func<Node, Boolean>() {
+            Container vContainer = (Container) Hierarchy.getNearestAncestor(vParent, new Func<Node, Boolean>() {
                 @Override
                 public Boolean eval(Node node) {
                     return (node instanceof VisualGroup) || (node instanceof VisualPage);
@@ -228,7 +228,7 @@ public class VisualCircuit extends AbstractVisualModel {
             if (mConnection == null) {
                 MathNode mComponent1 = vComponent1.getReferencedComponent();
                 MathNode mComponent2 = vComponent2.getReferencedComponent();
-                mConnection = (MathConnection)circuit.connect(mComponent1, mComponent2);
+                mConnection = (MathConnection) circuit.connect(mComponent1, mComponent2);
             }
             vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
             vConnection.setArrowLength(0.0);
@@ -250,7 +250,7 @@ public class VisualCircuit extends AbstractVisualModel {
         if (name != null) {
             for (Node n: container.getChildren()) {
                 if (n instanceof VisualFunctionContact) {
-                    VisualFunctionContact contact = (VisualFunctionContact)n;
+                    VisualFunctionContact contact = (VisualFunctionContact) n;
                     String contactName = getMathModel().getName(contact.getReferencedContact());
                     if (name.equals(contactName)) {
                         return contact;
@@ -271,7 +271,7 @@ public class VisualCircuit extends AbstractVisualModel {
         vc.setDirection(direction);
 
         if (container instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent)container;
+            VisualFunctionComponent component = (VisualFunctionComponent) container;
             component.addContact(this, vc);
             component.setContactsDefaultPosition();
         } else {
@@ -308,7 +308,7 @@ public class VisualCircuit extends AbstractVisualModel {
                     WorkspaceEntry we = getWorkspaceEntry();
                     File newBase = we == null ? null : we.getFile().getParentFile();
                     if (newBase != null) {
-                        String relativePath = filePath.substring(basePath.length(),filePath.length());
+                        String relativePath = filePath.substring(basePath.length(), filePath.length());
                         while (relativePath.startsWith("/")) {
                             relativePath = relativePath.substring(1, relativePath.length());
                         }
@@ -357,7 +357,7 @@ public class VisualCircuit extends AbstractVisualModel {
         if (node == null) {
             properties.add(new EnvironmentFilePropertyDescriptor(this));
         } else if (node instanceof VisualFunctionContact) {
-            VisualFunctionContact contact = (VisualFunctionContact)node;
+            VisualFunctionContact contact = (VisualFunctionContact) node;
             VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
             properties.add(props.getSetProperty(contact));
             properties.add(props.getResetProperty(contact));

@@ -57,7 +57,7 @@ public class VisualLogic extends VisualDelayComponent {
         double h = size - strokeWidth;
         double w2 = w/2;
         double h2 = h/2;
-        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth1 = (float) strokeWidth;
         float strokeWidth4 = strokeWidth1 / 4;
         int kd = 6;
         double dd = (size - strokeWidth1 - strokeWidth1) / (4 * kd);
@@ -79,7 +79,7 @@ public class VisualLogic extends VisualDelayComponent {
 
         boolean computed = getReferencedLogic().isComputed();
         if (d instanceof LogicDecoration) {
-            computed = ((LogicDecoration)d).isComputed();
+            computed = ((LogicDecoration) d).isComputed();
         }
         if (computed) {
             g.setColor(Coloriser.colorise(DfsSettings.getComputedLogicColor(), d.getBackground()));
@@ -100,14 +100,14 @@ public class VisualLogic extends VisualDelayComponent {
     }
 
     public Logic getReferencedLogic() {
-        return (Logic)getReferencedComponent();
+        return (Logic) getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualLogic) {
-            Logic srcLogic = ((VisualLogic)src).getReferencedLogic();
+            Logic srcLogic = ((VisualLogic) src).getReferencedLogic();
             getReferencedLogic().setEarlyEvaluation(srcLogic.isEarlyEvaluation());
             getReferencedLogic().setComputed(srcLogic.isComputed());
         }

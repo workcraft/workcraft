@@ -34,7 +34,7 @@ public class StgToPetriNetConverterTool extends ConversionTool {
     public void run(WorkspaceEntry we) {
         we.captureMemento();
         try {
-            final VisualSTG stg = (VisualSTG)we.getModelEntry().getVisualModel();
+            final VisualSTG stg = (VisualSTG) we.getModelEntry().getVisualModel();
             final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
             final StgToPetriNetConverter converter = new StgToPetriNetConverter(stg, pn);
             final Framework framework = Framework.getInstance();

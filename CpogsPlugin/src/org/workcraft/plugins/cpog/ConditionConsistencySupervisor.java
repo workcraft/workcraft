@@ -23,7 +23,7 @@ public final class ConditionConsistencySupervisor extends HierarchySupervisor {
         if (e instanceof NodesDeletingEvent) {
             for (Node node: e.getAffectedNodes()) {
                 if (node instanceof Variable) {
-                    final Variable var = (Variable)node;
+                    final Variable var = (Variable) node;
                     removeVariableFromConditions(var);
                 }
             }

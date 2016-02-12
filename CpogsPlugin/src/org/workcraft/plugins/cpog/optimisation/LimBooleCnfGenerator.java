@@ -27,7 +27,6 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.RecursiveBooleanVisitor;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 
-
 public class LimBooleCnfGenerator implements RawCnfGenerator<BooleanFormula> {
 
     private static final String limboolePath = "C:\\Cygwin\\bin\\limboole.exe";

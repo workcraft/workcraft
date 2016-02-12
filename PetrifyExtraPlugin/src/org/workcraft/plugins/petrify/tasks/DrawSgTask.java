@@ -39,10 +39,10 @@ public class DrawSgTask implements Task<DrawSgResult> {
         public void run() {
             final Framework framework = Framework.getInstance();
             int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
-                "The state graph contains " + stateCountMsg + " states."
-                + "It may take a very long time to be processed.\n\n"
-                + "Are you sure you want to display it?",
-                "Please confirm", JOptionPane.YES_NO_OPTION);
+                    "The state graph contains " + stateCountMsg + " states."
+                    + "It may take a very long time to be processed.\n\n"
+                    + "Are you sure you want to display it?",
+                    "Please confirm", JOptionPane.YES_NO_OPTION);
             hugeSgConfirmed = answer == JOptionPane.YES_OPTION;
         }
 

@@ -49,7 +49,7 @@ abstract public class AbstractMergerTool extends TransformationTool {
             Set<VisualComponent> components = new HashSet<>();
             for (Node component: model.getSelection()) {
                 if (mergableClass.isInstance(component)) {
-                    components.add((VisualComponent)component);
+                    components.add((VisualComponent) component);
                 }
             }
             classComponents.put(mergableClass, components);
@@ -110,8 +110,8 @@ abstract public class AbstractMergerTool extends TransformationTool {
                         }
                     }
                     if ((newConnection != null) && (connection instanceof VisualConnection)) {
-                        newConnection.copyStyle((VisualConnection)connection);
-                        newConnection.copyShape((VisualConnection)connection);
+                        newConnection.copyStyle((VisualConnection) connection);
+                        newConnection.copyShape((VisualConnection) connection);
                     }
                 } catch (InvalidConnectionException e) {
                 }

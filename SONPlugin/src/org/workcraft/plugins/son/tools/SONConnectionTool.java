@@ -81,7 +81,7 @@ public class SONConnectionTool extends ConnectionTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        VisualSON vson = (VisualSON)e.getModel();
+        VisualSON vson = (VisualSON) e.getModel();
 
         vson.forceConnectionSemantics(semantic);
         //forbid to connect with collapsed block (bound).

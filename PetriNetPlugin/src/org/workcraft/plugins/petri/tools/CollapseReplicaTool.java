@@ -50,7 +50,7 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
         if (!readArcs.isEmpty()) {
             for (VisualReadArc readArc: readArcs) {
                 if (readArc.getFirst() instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replica = (VisualReplicaPlace)readArc.getFirst();
+                    VisualReplicaPlace replica = (VisualReplicaPlace) readArc.getFirst();
                     replicas.add(replica);
                 }
             }
@@ -67,8 +67,8 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualModel) && (node instanceof VisualReplicaPlace)) {
-            VisualModel visualModel = (VisualModel)model;
-            VisualReplicaPlace replicaPlace = (VisualReplicaPlace)node;
+            VisualModel visualModel = (VisualModel) model;
+            VisualReplicaPlace replicaPlace = (VisualReplicaPlace) node;
             PetriNetUtils.collapseReplicaPlace(visualModel, replicaPlace);
         }
     }

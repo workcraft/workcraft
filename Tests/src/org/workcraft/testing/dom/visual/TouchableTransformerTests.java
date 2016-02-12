@@ -66,7 +66,7 @@ public class TouchableTransformerTests {
         };
 
         TouchableTransformer transformer =
-            new TouchableTransformer(dummy, new AffineTransform());
+                new TouchableTransformer(dummy, new AffineTransform());
 
         assertEquals(result, transformer.hitTest(point));
     }
@@ -90,7 +90,7 @@ public class TouchableTransformerTests {
         };
 
         assertEquals(bb,
-            new TouchableTransformer(dummy, new AffineTransform()).getBoundingBox());
+                new TouchableTransformer(dummy, new AffineTransform()).getBoundingBox());
     }
 
     @Test
@@ -104,8 +104,8 @@ public class TouchableTransformerTests {
                     public Rectangle2D getBoundingBox() {
                         return bb;
                     }
-        },
-        transform).getBoundingBox();
+                },
+                transform).getBoundingBox();
 
         double sqrt2 = Math.sqrt(2.0);
         double sqrt2by2 = sqrt2 / 2.0;
@@ -116,7 +116,6 @@ public class TouchableTransformerTests {
         assertEquals(-sqrt2by2, result.getMinX(), 1e-5);
     }
 
-
     @Test
     public void testTranslateHitTest() {
         TouchableTransformer toucher = new TouchableTransformer(
@@ -125,7 +124,7 @@ public class TouchableTransformerTests {
                     public boolean hitTest(Point2D point) {
                         return point.distanceSq(0, 0) < 1.0;
                     }
-        }, AffineTransform.getTranslateInstance(10, 1));
+                }, AffineTransform.getTranslateInstance(10, 1));
 
         assertTrue(toucher.hitTest(new Point2D.Double(10, 1)));
         assertTrue(toucher.hitTest(new Point2D.Double(10.9, 1)));

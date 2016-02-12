@@ -334,7 +334,6 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             numberOfSolutionsText.setPreferredSize(ScencoDialogSupport.dimensionNumberSolutionText);
             numberOfSolutionsText.setBackground(Color.WHITE);
 
-
             generationPanel.add(numberOfSolutionsLabel);
             generationPanel.add(numberOfSolutionsText);
             generationPanel.add(new SimpleFlowLayout.LineBreak());

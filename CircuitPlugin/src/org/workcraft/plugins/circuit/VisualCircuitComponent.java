@@ -483,7 +483,7 @@ public class VisualCircuitComponent extends VisualComponent implements
     }
 
     private GlyphVector getContactLabelGlyphs(DrawRequest r, VisualContact vc) {
-        Circuit circuit = (Circuit)r.getModel().getMathModel();
+        Circuit circuit = (Circuit) r.getModel().getMathModel();
         String name = circuit.getName(vc.getReferencedContact());
         final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
         GlyphVector gv = contactLableGlyphs.get(vc);
@@ -676,7 +676,7 @@ public class VisualCircuitComponent extends VisualComponent implements
         Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
         for (Node node : getChildren()) {
             if (node instanceof VisualNode) {
-                VisualNode vn = (VisualNode)node;
+                VisualNode vn = (VisualNode) node;
                 if (vn.hitTest(pointInLocalSpace)) {
                     return vn;
                 }
@@ -690,12 +690,12 @@ public class VisualCircuitComponent extends VisualComponent implements
         if (e instanceof TransformChangedEvent) {
             TransformChangedEvent t = (TransformChangedEvent) e;
             if (t.sender instanceof VisualContact) {
-                VisualContact vc = (VisualContact)t.sender;
+                VisualContact vc = (VisualContact) t.sender;
 
                 AffineTransform at = t.sender.getTransform();
                 double x = at.getTranslateX();
                 double y = at.getTranslateY();
-                Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox();//getInternalBoundingBoxInLocalSpace();
+                Rectangle2D bb = getContactExpandedBox(); //getContactMinimalBox(); //getInternalBoundingBoxInLocalSpace();
                 if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
                     vc.setDirection(Direction.WEST);
                 }
@@ -716,8 +716,8 @@ public class VisualCircuitComponent extends VisualComponent implements
             PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(Contact.PROPERTY_NAME)
-                || propertyName.equals(Contact.PROPERTY_IO_TYPE)
-                || propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
+                    || propertyName.equals(Contact.PROPERTY_IO_TYPE)
+                    || propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
 
                 invalidateBoundingBox();
                 contactLableGlyphs.clear();
@@ -744,7 +744,7 @@ public class VisualCircuitComponent extends VisualComponent implements
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualCircuitComponent) {
-            VisualCircuitComponent srcComponent = (VisualCircuitComponent)src;
+            VisualCircuitComponent srcComponent = (VisualCircuitComponent) src;
             setIsEnvironment(srcComponent.getIsEnvironment());
         }
     }

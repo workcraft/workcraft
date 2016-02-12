@@ -7,7 +7,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ClearMarkingTool implements Tool{
 
-
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, SON.class);
     }
@@ -21,7 +20,7 @@ public class ClearMarkingTool implements Tool{
     }
 
     public void run(WorkspaceEntry we){
-        SON net=(SON)we.getModelEntry().getMathModel();
+        SON net=(SON) we.getModelEntry().getMathModel();
         net.clearMarking();
     }
 

@@ -46,8 +46,6 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Or;
 import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
-
-
 public class FormulaToGraphics {
     public final class Void{
         private Void(){}
@@ -130,7 +128,6 @@ public class FormulaToGraphics {
         return result;
     }
 
-
     public static class PrinterSuite {
         public PrinterSuite() {
             iff = new IffPrinter();
@@ -197,7 +194,6 @@ public class FormulaToGraphics {
         public FormulaRenderingResult print(String text) {
             return FormulaToGraphics.print(text, font, fontRenderContext);
         }
-
 
         protected FormulaRenderingResult visitBinary(DelegatingPrinter printer, String opSymbol, BinaryBooleanFormula node) {
             FormulaRenderingResult res = node.getX().accept(printer);

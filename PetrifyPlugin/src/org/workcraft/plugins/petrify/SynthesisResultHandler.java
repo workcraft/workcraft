@@ -25,7 +25,6 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult> {
     private final WorkspaceEntry we;
 
@@ -72,7 +71,7 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
                     WorkspaceEntry newWorkspaceEntry = workspace.add(directory, name, me, true, openInEditor);
                     VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
                     if (visualModel instanceof VisualCircuit) {
-                        VisualCircuit visualCircuit = (VisualCircuit)visualModel;
+                        VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                         String title = we.getModelEntry().getModel().getTitle();
                         visualCircuit.setTitle(title);
                         visualCircuit.setEnvironmentFile(we.getFile());

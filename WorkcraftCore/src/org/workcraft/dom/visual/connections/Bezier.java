@@ -235,8 +235,8 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
                 controlsVisible = true;
                 break;
             }
-            cp1.setHidden(!controlsVisible);
-            cp2.setHidden(!controlsVisible);
+        cp1.setHidden(!controlsVisible);
+        cp2.setHidden(!controlsVisible);
     }
 
     @Override

@@ -29,7 +29,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 
-
 final class DrawMan {
     private final Graphics2D graphics;
     private final Decorator decorator;
@@ -55,12 +54,12 @@ final class DrawMan {
         if (decoration == null) {
             decoration = currentDecoration;
         }
-        if ((node instanceof Hidable) && ((Hidable)node).isHidden()) {
+        if ((node instanceof Hidable) && ((Hidable) node).isHidden()) {
             return;
         }
         AffineTransform oldTransform = graphics.getTransform();
         if (node instanceof Movable) {
-            transformAndDraw(decoration, (Movable)node);
+            transformAndDraw(decoration, (Movable) node);
         } else {
             simpleDraw(decoration, node);
         }
@@ -83,7 +82,7 @@ final class DrawMan {
 
     private void drawNode(final Decoration decoration, Node node) {
         if (node instanceof Drawable) {
-            Drawable drawableNode = (Drawable)node;
+            Drawable drawableNode = (Drawable) node;
             drawableNode.draw(new DrawRequest(){
                 @Override
                 public Decoration getDecoration() {
@@ -103,8 +102,8 @@ final class DrawMan {
 
     private void drawChildren(final Decoration decoration, Node node) {
         // A collapsed node does not draw its contents, unless we are inside this node
-        boolean isCollapsed = (node instanceof Collapsible) && ((Collapsible)node).getIsCollapsed();
-        boolean isInsideCollapsed = isCollapsed && ((Collapsible)node).isCurrentLevelInside();
+        boolean isCollapsed = (node instanceof Collapsible) && ((Collapsible) node).getIsCollapsed();
+        boolean isInsideCollapsed = isCollapsed && ((Collapsible) node).isCurrentLevelInside();
         if (isInsideCollapsed || !isCollapsed) {
             // First draw nodes
             for (Node childNode : node.getChildren()) {

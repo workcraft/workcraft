@@ -35,7 +35,7 @@ public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        model.setEnvironmentFile((File)value);
+        model.setEnvironmentFile((File) value);
     }
 
     @Override

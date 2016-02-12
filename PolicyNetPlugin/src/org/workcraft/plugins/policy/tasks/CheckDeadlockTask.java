@@ -28,7 +28,6 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class CheckDeadlockTask extends MpsatChainTask {
     private final MpsatSettings settings;
     private final WorkspaceEntry we;
@@ -48,8 +47,8 @@ public class CheckDeadlockTask extends MpsatChainTask {
             String prefix = FileUtils.getTempPrefix(we.getTitle());
             directory = FileUtils.createTempDirectory(prefix);
 
-            PetriNetGenerator generator = new PetriNetGenerator((VisualPolicyNet)we.getModelEntry().getVisualModel());
-            PetriNet model = (PetriNet)generator.getPetriNet().getMathModel();
+            PetriNetGenerator generator = new PetriNetGenerator((VisualPolicyNet) we.getModelEntry().getVisualModel());
+            PetriNet model = (PetriNet) generator.getPetriNet().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format Petri net.");

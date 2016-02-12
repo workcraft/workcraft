@@ -19,7 +19,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;
 
-
 @SuppressWarnings("serial")
 public class SolutionPanel extends JPanel {
     private JPanel buttonsPanel;

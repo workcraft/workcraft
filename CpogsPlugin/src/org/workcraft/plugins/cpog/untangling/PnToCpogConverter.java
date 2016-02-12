@@ -18,7 +18,6 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 
-
 public class PnToCpogConverter {
 
     private PetriNet pn;
@@ -228,7 +227,7 @@ public class PnToCpogConverter {
             // counting pre vertices of last vertex
             int numberPreConnections = 0;
             for(Connection connection : visualCpog.getConnections(vertex)){
-                    numberPreConnections++;
+                numberPreConnections++;
             }
 
             // if last vertex has got more than one pre vertices
@@ -239,7 +238,7 @@ public class PnToCpogConverter {
             }
 
             // set position of last vertex
-            vertex.setPosition(new Double(xPos,yPos));
+            vertex.setPosition(new Double(xPos, yPos));
             return;
         }
 
@@ -270,7 +269,7 @@ public class PnToCpogConverter {
                 VisualVertex postVertex = (VisualVertex) connection.getSecond();
 
                 // set the position to current vertex
-                vertex.setPosition(new Double(x,y));
+                vertex.setPosition(new Double(x, y));
 
                 // increment horizontal position
                 x = x + 5;

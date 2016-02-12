@@ -35,7 +35,7 @@ public class TransformHelper {
 
     public static void applyTransform(Node node, AffineTransform transform) {
         if(node instanceof Movable) {
-            ((Movable)node).applyTransform(transform);
+            ((Movable) node).applyTransform(transform);
         }
     }
 
@@ -47,7 +47,7 @@ public class TransformHelper {
                 throw new NotAnAncestorException();
             }
             if(next instanceof Movable) {
-                t.preConcatenate(((Movable)next).getTransform());
+                t.preConcatenate(((Movable) next).getTransform());
             }
             node = next;
         }
@@ -84,7 +84,7 @@ public class TransformHelper {
         Rectangle2D bb = null;
         for(Node node : nodes) {
             if (node instanceof Touchable) {
-                Rectangle2D nodeBoundingBox = ((Touchable)node).getBoundingBox();
+                Rectangle2D nodeBoundingBox = ((Touchable) node).getBoundingBox();
                 bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
             }
         }
@@ -92,10 +92,10 @@ public class TransformHelper {
     }
 
     public static Point2D getSnappedCentre(Collection<Node> nodes) {
-            Point2D centre = getCentre(nodes);
-            double snapX = snapP5(centre.getX());
-            double snapY = snapP5(centre.getY());
-            return new Point2D.Double(snapX, snapY);
+        Point2D centre = getCentre(nodes);
+        double snapX = snapP5(centre.getX());
+        double snapY = snapP5(centre.getY());
+        return new Point2D.Double(snapX, snapY);
     }
 
 }

@@ -27,7 +27,7 @@ public class DeadlockCheckerTool extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
+        final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
         HashSet<State> deadlockStates = checkDeadlock(fsm);
         if (deadlockStates.isEmpty()) {
             JOptionPane.showMessageDialog(null,    "The model is deadlock-free.",
@@ -71,7 +71,7 @@ public class DeadlockCheckerTool extends VerificationTool {
             if (visited.contains(curState)) continue;
             visited.add(curState);
             for (Event curEvent: stateEvents.get(curState)) {
-                State nextState = (State)curEvent.getSecond();
+                State nextState = (State) curEvent.getSecond();
                 if (nextState != null) {
                     queue.add(nextState);
                 }

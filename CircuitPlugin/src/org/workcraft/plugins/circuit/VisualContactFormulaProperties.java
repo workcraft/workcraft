@@ -22,7 +22,7 @@ public class VisualContactFormulaProperties {
             Node parent = contact.getParent();
             try {
                 if (parent instanceof VisualFunctionComponent) {
-                    VisualFunctionComponent component = (VisualFunctionComponent)parent;
+                    VisualFunctionComponent component = (VisualFunctionComponent) parent;
                     formula = CircuitUtils.parseContactFuncton(circuit, component, function);
                 } else {
                     formula = CircuitUtils.parsePortFuncton(circuit, function);
@@ -39,7 +39,7 @@ public class VisualContactFormulaProperties {
 
             @Override
             public void setValue(Object value) throws InvocationTargetException {
-                BooleanFormula formula = parseContactFunction(contact, (String)value);
+                BooleanFormula formula = parseContactFunction(contact, (String) value);
                 contact.setSetFunction(formula);
             }
 
@@ -85,7 +85,7 @@ public class VisualContactFormulaProperties {
 
             @Override
             public void setValue(Object value) throws InvocationTargetException {
-                BooleanFormula formula = parseContactFunction(contact, (String)value);
+                BooleanFormula formula = parseContactFunction(contact, (String) value);
                 contact.setResetFunction(formula);
             }
 

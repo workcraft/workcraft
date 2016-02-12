@@ -44,7 +44,6 @@ class B extends A {
 
 }
 
-
 public class Annotations {
     @Test
     public void test() {

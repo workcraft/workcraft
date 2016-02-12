@@ -26,9 +26,9 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        model.setName(node, (String)value);
+        model.setName(node, (String) value);
         if (node instanceof ObservableState) {
-            ((ObservableState)node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+            ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
         }
     }
 

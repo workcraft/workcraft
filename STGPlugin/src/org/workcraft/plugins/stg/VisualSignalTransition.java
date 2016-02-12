@@ -50,17 +50,17 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         }
         final StringBuffer result = new StringBuffer(signalName);
         switch (getReferencedTransition().getDirection()) {
-            case PLUS:
-                result.append("+");
-                break;
-            case MINUS:
-                result.append("-");
-                break;
-            case TOGGLE:
-                if (STGSettings.getShowToggle()) {
-                    result.append("~");
-                }
-                break;
+        case PLUS:
+            result.append("+");
+            break;
+        case MINUS:
+            result.append("-");
+            break;
+        case TOGGLE:
+            if (STGSettings.getShowToggle()) {
+                result.append("~");
+            }
+            break;
         }
         return result.toString();
     }
@@ -68,16 +68,16 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     @Override
     public Color getColor() {
         switch (getType()) {
-            case INPUT:        return STGSettings.getInputColor();
-            case OUTPUT:    return STGSettings.getOutputColor();
-            case INTERNAL:    return STGSettings.getInternalColor();
-            default:        return STGSettings.getDummyColor();
+        case INPUT:        return STGSettings.getInputColor();
+        case OUTPUT:    return STGSettings.getOutputColor();
+        case INTERNAL:    return STGSettings.getInternalColor();
+        default:        return STGSettings.getDummyColor();
         }
     }
 
     @NoAutoSerialisation
     public SignalTransition getReferencedTransition() {
-        return (SignalTransition)getReferencedComponent();
+        return (SignalTransition) getReferencedComponent();
     }
 
     @NoAutoSerialisation
@@ -142,7 +142,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         boolean foundMinus = false;
         for (Stylable src: srcs) {
             if (src instanceof VisualSignalTransition) {
-                VisualSignalTransition srcSignalTransition = (VisualSignalTransition)src;
+                VisualSignalTransition srcSignalTransition = (VisualSignalTransition) src;
                 if (srcSignalTransition.getType() == Type.OUTPUT) {
                     foundOutput = true;
                 }

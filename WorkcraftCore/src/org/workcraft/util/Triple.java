@@ -39,7 +39,7 @@ public class Triple <T1, T2, T3> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Triple<?,?,?> other = (Triple<?,?,?>) obj;
+        Triple<?, ?, ?> other = (Triple<?, ?, ?>) obj;
         if (first == null) {
             if (other.first != null)
                 return false;

@@ -25,7 +25,7 @@ public class Fsm extends AbstractMathModel {
     public static final String EPSILON_SERIALISATION = "epsilon";
 
     public Fsm() {
-        this(null, (References)null);
+        this(null, (References) null);
     }
 
     public Fsm(Container root, References refs) {
@@ -55,7 +55,7 @@ public class Fsm extends AbstractMathModel {
         if (node == null) {
             state = createState(name);
         } else if (node instanceof State) {
-            state = (State)node;
+            state = (State) node;
         } else {
             throw new ArgumentException("Node '" + name + "' is not a state.");
         }
@@ -72,7 +72,7 @@ public class Fsm extends AbstractMathModel {
         if (node == null) {
             symbol = createSymbol(name);
         } else if (node instanceof Symbol) {
-            symbol = (Symbol)node;
+            symbol = (Symbol) node;
         } else {
             throw new ArgumentException("Node '" + name + "' already exists and it is not a symbol.");
         }
@@ -125,18 +125,18 @@ public class Fsm extends AbstractMathModel {
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)getReferenceManager();
+        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (Node srcNode: srcChildren) {
             if (srcNode instanceof Event) {
-                Event srcEvent = (Event)srcNode;
+                Event srcEvent = (Event) srcNode;
                 Symbol dstSymbol = null;
                 Symbol srcSymbol = srcEvent.getSymbol();
                 if (srcSymbol != null) {
                     String symbolName = srcModel.getNodeReference(srcSymbol);
                     Node dstNode = getNodeByReference(symbolName);
                     if (dstNode instanceof Symbol) {
-                        dstSymbol = (Symbol)dstNode;
+                        dstSymbol = (Symbol) dstNode;
                     } else {
                         if (dstNode != null) {
                             symbolName = nameManagerer.getDerivedName(null, symbolName);

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.dfs.tools;
 
-
 import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.plugins.dfs.Dfs;

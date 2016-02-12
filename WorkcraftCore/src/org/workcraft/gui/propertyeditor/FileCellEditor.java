@@ -73,7 +73,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     @Override
     public Component getTableCellEditorComponent(
             JTable table, Object value, boolean isSelected, int row, int column) {
-        file = (File)value;
+        file = (File) value;
         panel.setFont(table.getFont());
         return panel;
     }

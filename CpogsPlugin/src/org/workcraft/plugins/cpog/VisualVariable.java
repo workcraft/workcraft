@@ -104,7 +104,7 @@ public class VisualVariable extends VisualComponent {
         Shape shape = new Rectangle2D.Double(-size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
                 size - strokeWidth, size - strokeWidth);
 
-        g.setStroke(new BasicStroke((float)strokeWidth));
+        g.setStroke(new BasicStroke((float) strokeWidth));
         g.setColor(Coloriser.colorise(getFillColor(), background));
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
@@ -126,7 +126,6 @@ public class VisualVariable extends VisualComponent {
         }
         drawVariableInLocalSpace(r);
     }
-
 
     protected void cacheVariableRenderedFormula(DrawRequest r) {
         if (variableRenderedFormula.isDifferent(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset())) {
@@ -169,7 +168,7 @@ public class VisualVariable extends VisualComponent {
     }
 
     public Variable getMathVariable() {
-        return (Variable)getReferencedComponent();
+        return (Variable) getReferencedComponent();
     }
 
     public VariableState getState() {

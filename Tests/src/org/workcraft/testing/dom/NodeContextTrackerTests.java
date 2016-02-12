@@ -32,7 +32,6 @@ import org.workcraft.dom.math.MathNode;
 
 import static org.junit.Assert.*;
 
-
 public class NodeContextTrackerTests {
     class MockNode extends MathNode {
 
@@ -89,7 +88,6 @@ public class NodeContextTrackerTests {
 
         NodeContextTracker nct = new NodeContextTracker();
         nct.attach(group);
-
 
         MockNode n1 = new MockNode();
         MockNode n2 = new MockNode();
@@ -154,7 +152,6 @@ public class NodeContextTrackerTests {
 
         NodeContextTracker nct = new NodeContextTracker();
         nct.attach(group);
-
 
         MockNode n1 = new MockNode();
         MockNode n2 = new MockNode();

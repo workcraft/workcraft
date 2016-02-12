@@ -9,7 +9,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class TimeValueDisable implements Tool{
 
-
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, SON.class);
     }
@@ -23,7 +22,7 @@ public class TimeValueDisable implements Tool{
     }
 
     public void run(WorkspaceEntry we){
-        SON net = (SON)we.getModelEntry().getMathModel();
+        SON net = (SON) we.getModelEntry().getMathModel();
         ConsistencyAlg timeAlg = new ConsistencyAlg(net);
         SONSettings.setTimeVisibility(!SONSettings.getTimeVisibility());
         if(SONSettings.getTimeVisibility()){

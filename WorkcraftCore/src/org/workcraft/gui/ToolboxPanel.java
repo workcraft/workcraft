@@ -51,7 +51,6 @@ import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 
-
 @SuppressWarnings("serial")
 public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
 
@@ -123,7 +122,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
         button.setFocusable(false);
         button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setMargin(new Insets(0,0,0,0));
+        button.setMargin(new Insets(0, 0, 0, 0));
 
         Insets insets = button.getInsets();
         int iconSize = CommonEditorSettings.getIconSize();
@@ -132,18 +131,18 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         Icon icon = tool.getIcon();
         if(icon==null) {
             button.setText(tool.getLabel());
-            button.setPreferredSize(new Dimension(120,minSize));
+            button.setPreferredSize(new Dimension(120, minSize));
         } else {
             BufferedImage crop = new BufferedImage(iconSize, iconSize,
                     BufferedImage.TYPE_INT_ARGB);
             icon.paintIcon(button, crop.getGraphics(), (iconSize-icon.getIconWidth())/2, (iconSize-icon.getIconHeight())/2);
             button.setIcon(new ImageIcon(crop));
-            button.setPreferredSize(new Dimension(minSize,minSize));
+            button.setPreferredSize(new Dimension(minSize, minSize));
         }
 
         int hotKeyCode = tool.getHotKeyCode();
         if (hotKeyCode != -1) {
-            button.setToolTipText("["+Character.toString((char)hotKeyCode)+"] " + tool.getLabel());
+            button.setToolTipText("["+Character.toString((char) hotKeyCode)+"] " + tool.getLabel());
         } else {
             button.setToolTipText(tool.getLabel());
         }
@@ -161,7 +160,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
     public <T extends GraphEditorTool> T getToolInstance(Class<T> cls) {
         for (GraphEditorTool tool : tools) {
             if (cls.isInstance(tool)) {
-                return (T)tool;
+                return (T) tool;
             }
         }
         return null;

@@ -83,7 +83,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
     private void writeGraphEntry(PrintWriter out, Model model, Node node) {
         if (node instanceof STGPlace) {
-            if (((STGPlace)node).isImplicit()) {
+            if (((STGPlace) node).isImplicit()) {
                 return;
             }
         }
@@ -92,7 +92,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
             for (Node n : sortNodes(model.getPostset(node), model)) {
                 if (n instanceof STGPlace) {
-                    if (((STGPlace)n).isImplicit()) {
+                    if (((STGPlace) n).isImplicit()) {
                         Collection<Node> postset = model.getPostset(n);
                         if (postset.size() > 1)
                             throw new FormatException("Implicit place cannot have more than one node in postset");
@@ -123,9 +123,9 @@ public class DotGSerialiser implements ModelSerialiser {
         out.println(".model " + title);
         ReferenceResolver resolver = new ReferenceResolver();
         if (model instanceof STGModel) {
-            writeSTG((STGModel)model, out);
+            writeSTG((STGModel) model, out);
         } else if (model instanceof PetriNetModel) {
-            writePN((PetriNetModel)model, out);
+            writePN((PetriNetModel) model, out);
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
@@ -159,7 +159,7 @@ public class DotGSerialiser implements ModelSerialiser {
             final int tokens = p.getTokens();
             final String reference;
             if (p instanceof STGPlace) {
-                if (((STGPlace)p).isImplicit()) {
+                if (((STGPlace) p).isImplicit()) {
                     Node predNode = model.getPreset(p).iterator().next();
                     String predFlatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(predNode));
                     Node succNode = model.getPostset(p).iterator().next();
@@ -192,7 +192,7 @@ public class DotGSerialiser implements ModelSerialiser {
         StringBuilder capacity = new StringBuilder();
         for (Place p : places) {
             if (p instanceof STGPlace) {
-                STGPlace stgPlace = (STGPlace)p;
+                STGPlace stgPlace = (STGPlace) p;
                 if (stgPlace.getCapacity() != 1) {
                     String flatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(p));
                     capacity.append(" " + flatName + "=" + stgPlace.getCapacity());
@@ -216,7 +216,7 @@ public class DotGSerialiser implements ModelSerialiser {
             writeGraphEntry(out, net, t);
         }
         for (Place p : net.getPlaces()) {
-            writeGraphEntry(out,net, p);
+            writeGraphEntry(out, net, p);
         }
         writeMarking(net, net.getPlaces(), out);
     }

@@ -42,7 +42,7 @@ public class VisualForkComponent extends VisualXmasComponent {
     }
 
     public ForkComponent getReferencedForkComponent() {
-        return (ForkComponent)getReferencedComponent();
+        return (ForkComponent) getReferencedComponent();
     }
 
     @Override

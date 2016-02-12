@@ -73,7 +73,7 @@ public class ScencoSolver {
     private String[] arcNames;
     private int v;
     private int a;
-    private int n,m;
+    private int n, m;
     private char[][][] constraints;
     private int[][] graph;
     private ArrayList<VisualTransformableNode> scenarios;
@@ -92,7 +92,7 @@ public class ScencoSolver {
         ArrayList<String> args = new ArrayList<String>();
         ArrayList<String> check;
 
-        cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+        cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
         scenarios = CpogParsingTool.getScenarios(cpog);
         we.captureMemento();
 
@@ -111,7 +111,7 @@ public class ScencoSolver {
         // construct constraints
         constraints = new char[m][n][n];
         graph = new int[n][n];
-        check = cpogBuilder.constructConstraints(constraints,graph,m,n,
+        check = cpogBuilder.constructConstraints(constraints, graph, m, n,
                 scenarios, events, positions, count);
         if(check.get(0).contains("ERROR")){
             return check;
@@ -171,50 +171,50 @@ public class ScencoSolver {
             customPath = encodingFile.getAbsolutePath();
         }
         switch(settings.getGenMode()){
-            case OPTIMAL_ENCODING:
-                genMode = "-top";
-                numSol = String.valueOf(settings.getSolutionNumber());
-                break;
-            case RECURSIVE:
-                if(settings.isCustomEncMode()){
-                    modBitFlag = "-bit";
-                    modBit = String.valueOf(settings.getBits());
-                }
-                break;
-            case RANDOM:
-                genMode = "-r";
-                if(settings.isCustomEncMode()){
-                    customFlag = "-set";
-                    customPath = encodingFile.getAbsolutePath();
-                    modBitFlag = "-bit";
-                    modBit = String.valueOf(settings.getBits());
-                }
-                numSol = String.valueOf(settings.getSolutionNumber());
-                break;
-            case SCENCO:
+        case OPTIMAL_ENCODING:
+            genMode = "-top";
+            numSol = String.valueOf(settings.getSolutionNumber());
+            break;
+        case RECURSIVE:
+            if(settings.isCustomEncMode()){
+                modBitFlag = "-bit";
+                modBit = String.valueOf(settings.getBits());
+            }
+            break;
+        case RANDOM:
+            genMode = "-r";
+            if(settings.isCustomEncMode()){
+                customFlag = "-set";
+                customPath = encodingFile.getAbsolutePath();
+                modBitFlag = "-bit";
+                modBit = String.valueOf(settings.getBits());
+            }
+            numSol = String.valueOf(settings.getSolutionNumber());
+            break;
+        case SCENCO:
             customFlag = "-set";
-                genMode = "-top";
-                numSol = "1";
-                break;
-            case OLD_SYNT:
-                customFlag = "-set";
-                customPath = encodingFile.getAbsolutePath();
-                oldSynt = "-old";
-                genMode = "-top";
-                numSol = "1";
-                break;
-            case SEQUENTIAL:
-                customFlag = "-set";
-                customPath = encodingFile.getAbsolutePath();
-                genMode = "-top";
-                numSol = "1";
-                break;
-            default:
-                FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
-                args.add("ERROR");
-                args.add(MSG_SELECTION_MODE_UNDEFINED);
-                args.add(ACCESS_SCENCO_ERROR);
-                return args;
+            genMode = "-top";
+            numSol = "1";
+            break;
+        case OLD_SYNT:
+            customFlag = "-set";
+            customPath = encodingFile.getAbsolutePath();
+            oldSynt = "-old";
+            genMode = "-top";
+            numSol = "1";
+            break;
+        case SEQUENTIAL:
+            customFlag = "-set";
+            customPath = encodingFile.getAbsolutePath();
+            genMode = "-top";
+            numSol = "1";
+            break;
+        default:
+            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            args.add("ERROR");
+            args.add(MSG_SELECTION_MODE_UNDEFINED);
+            args.add(ACCESS_SCENCO_ERROR);
+            return args;
         }
 
         //Adding arguments to list
@@ -282,7 +282,7 @@ public class ScencoSolver {
                         if(settings.isVerboseMode())
                             System.out.println(outputLines[i]);
                         StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
-                        String el = (String)st2.nextElement();
+                        String el = (String) st2.nextElement();
                         if(el.equals("V")){ //formula of a vertex
                             optVertices[v] = (String) st2.nextElement();
                             truthTableVertices[v] = (String) st2.nextElement();
@@ -316,7 +316,7 @@ public class ScencoSolver {
             HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
             HashMap<String, Integer> task = new HashMap<String, Integer>();
 
-            cpogBuilder.groupConstraints(n,m,constraints,task);
+            cpogBuilder.groupConstraints(n, m, constraints, task);
 
             char[][] matrix = new char[m][task.size()];
             String[] instance = new String[m];
@@ -377,13 +377,13 @@ public class ScencoSolver {
 
             // Set optimal encoding to graphs
             boolean[][] optEncoding = new boolean[m][];
-            for(int i=0;i<m;i++) {
+            for(int i=0; i<m; i++) {
                 optEncoding[i] = new boolean[freeVariables + pr];
-                for(int j=0;j<freeVariables;j++){
+                for(int j=0; j<freeVariables; j++){
                     if(optEnc[i].charAt(j) == '0' || optEnc[i].charAt(j) == '-') optEncoding[i][j] = false;
                     else    optEncoding[i][j] = true;
                 }
-                for(int j=freeVariables;j<freeVariables + pr;j++){
+                for(int j=freeVariables; j<freeVariables + pr; j++){
                     optEncoding[i][j] = false;
                 }
 
@@ -398,11 +398,11 @@ public class ScencoSolver {
             VisualVertex[] vertices = new VisualVertex[n];
 
             //INSTANTIATING THE ENCODING INTO GRAPHS IN WORKCRAFT
-            cpogBuilder.instantiateEncoding(m, freeVariables, scenarios,vars,encoding,pr,
+            cpogBuilder.instantiateEncoding(m, freeVariables, scenarios, vars, encoding, pr,
                     events, vertices, cpog, resultCpog, positions, count, formulaeName);
 
             // Building CPOG
-            cpogBuilder.buildCpog(n,m, constraints, cpog, vertices, formulaeName);
+            cpogBuilder.buildCpog(n, m, constraints, cpog, vertices, formulaeName);
 
             we.saveMemento();
         }finally{

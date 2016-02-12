@@ -13,7 +13,7 @@ public class Marking extends ArrayList<PlaceNode>{
     public boolean equals(Object o){
         if (!(o instanceof Marking)) return false;
 
-        Marking marking = (Marking)o;
+        Marking marking = (Marking) o;
         if(marking.size() != size()) return false;
 
         for(Node node : marking){

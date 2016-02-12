@@ -124,7 +124,7 @@ final class TreeModelWrapper<Node> implements TreeModel {
 
     @SuppressWarnings("unchecked")
     private Node cast(Object node) {
-        return (Node)node;
+        return (Node) node;
     }
 
     @Override public void removeTreeModelListener(TreeModelListener l) {

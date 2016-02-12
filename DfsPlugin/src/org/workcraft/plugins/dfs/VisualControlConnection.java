@@ -40,7 +40,7 @@ public class VisualControlConnection extends VisualConnection {
     }
 
     public     ControlConnection getReferencedControlConnection() {
-        return (ControlConnection)getReferencedConnection();
+        return (ControlConnection) getReferencedConnection();
     }
 
     @Override

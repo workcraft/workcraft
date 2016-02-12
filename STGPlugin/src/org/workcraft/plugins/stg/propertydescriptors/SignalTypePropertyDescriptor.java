@@ -32,7 +32,7 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        stg.setSignalType(signal, (Type)value, container);
+        stg.setSignalType(signal, (Type) value, container);
     }
 
     @Override

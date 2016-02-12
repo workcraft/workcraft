@@ -52,7 +52,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        transition.setSignalType((Type)value);
+        transition.setSignalType((Type) value);
     }
 
     @Override

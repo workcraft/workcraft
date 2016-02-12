@@ -58,7 +58,7 @@ public class VisualPushRegister extends VisualBinaryRegister {
         double dx = size / 5;
         double dy = strokeWidth / 2;
         double dt = (size - strokeWidth) / 8;
-        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth1 = (float) strokeWidth;
         float strokeWidth2 = strokeWidth1 / 2;
         float eps = 0.001f;
 
@@ -87,11 +87,11 @@ public class VisualPushRegister extends VisualBinaryRegister {
         boolean falseExcited = false;
         if (d instanceof BinaryRegisterDecoration) {
             defaultColor = getForegroundColor();
-            tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
-            trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
-            trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
-            falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
-            falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
+            tokenColor = ((BinaryRegisterDecoration) d).getTokenColor();
+            trueMarked = ((BinaryRegisterDecoration) d).isTrueMarked();
+            trueExcited = ((BinaryRegisterDecoration) d).isTrueExcited();
+            falseMarked = ((BinaryRegisterDecoration) d).isFalseMarked();
+            falseExcited = ((BinaryRegisterDecoration) d).isFalseExcited();
         }
 
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
@@ -133,7 +133,7 @@ public class VisualPushRegister extends VisualBinaryRegister {
     }
 
     public PushRegister getReferencedPushRegister() {
-        return (PushRegister)getReferencedComponent();
+        return (PushRegister) getReferencedComponent();
     }
 
 }

@@ -41,7 +41,7 @@ public class CpogConnector implements CpogVisitor< Set<VisualVertex> > {
     public Set<VisualVertex> visit(CpogFormulaVariable variable) {
         Set<VisualVertex> singleton = new HashSet<VisualVertex>();
 
-        singleton.add((VisualVertex)variable);
+        singleton.add((VisualVertex) variable);
 
         return singleton;
     }

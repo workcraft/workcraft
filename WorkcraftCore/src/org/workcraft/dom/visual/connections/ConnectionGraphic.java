@@ -21,7 +21,6 @@
 
 package org.workcraft.dom.visual.connections;
 
-
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 

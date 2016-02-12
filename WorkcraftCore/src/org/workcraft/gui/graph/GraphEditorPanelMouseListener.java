@@ -81,7 +81,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 
     public void mouseClicked(MouseEvent e) {
         if (!editor.hasFocus()) {
-            editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
+            editor.getMainWindow().requestFocus((GraphEditorPanel) editor);
         }
         if (!isPanCombo(e)) {
             toolProvider.getTool().mouseClicked(adaptEvent(e));
@@ -105,7 +105,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 
     public void mousePressed(MouseEvent e) {
         if (!editor.hasFocus()) {
-            editor.getMainWindow().requestFocus((GraphEditorPanel)editor);
+            editor.getMainWindow().requestFocus((GraphEditorPanel) editor);
         }
         if (isPanCombo(e)) {
             panDrag = true;
@@ -134,7 +134,6 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             }
             startPosition = null;
 
-
         }
     }
 
@@ -145,5 +144,4 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
         }
     }
 }
-
 

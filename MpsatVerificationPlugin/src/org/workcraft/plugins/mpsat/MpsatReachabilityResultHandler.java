@@ -12,7 +12,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 final class MpsatReachabilityResultHandler implements Runnable {
 
     private final WorkspaceEntry we;
