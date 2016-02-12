@@ -40,8 +40,6 @@ public class ArcCondition {
 
         return list;
 
-
     }
-
 
 }

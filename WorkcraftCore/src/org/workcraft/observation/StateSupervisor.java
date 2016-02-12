@@ -23,7 +23,6 @@ package org.workcraft.observation;
 
 import org.workcraft.dom.Node;
 
-
 public abstract class StateSupervisor extends HierarchySupervisor implements StateObserver {
 
     private void nodeAdded(Node node) {

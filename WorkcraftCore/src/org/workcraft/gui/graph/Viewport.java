@@ -99,13 +99,10 @@ public class Viewport {
      */
     protected Rectangle shape;
 
-
     /**
      * The list of listeners to be notified in case of viewport parameters change.
      */
     protected LinkedList<ViewportListener> listeners;
-
-
 
     /**
      * Called when the viewport parameters such as pan and zoom are changed. Updates the corresponding
@@ -327,8 +324,6 @@ public class Viewport {
         viewChanged();
     }
 
-
-
     /**
      * Changes the shape of the viewport.
      * @param x
@@ -344,7 +339,6 @@ public class Viewport {
         shape.setBounds(x, y, width, height);
         shapeChanged();
     }
-
 
     /**
      * Changes the shape of the viewport.

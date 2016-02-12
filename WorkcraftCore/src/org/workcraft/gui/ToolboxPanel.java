@@ -51,7 +51,6 @@ import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 
-
 @SuppressWarnings("serial")
 public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
 

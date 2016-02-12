@@ -12,7 +12,6 @@ import net.sf.jga.fn.UnaryFunctor;
 
 import org.workcraft.exceptions.NotSupportedException;
 
-
 public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     public static final int LEFT     = 0;
     public static final int CENTER   = 1;
@@ -28,7 +27,6 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     private boolean alignOnBaseline;
 
     private boolean applyLayout;
-
 
     private static final long serialVersionUID = -7262534875583282631L;
 
@@ -235,7 +233,6 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         }
     }
 
-
     private boolean resize(Container target, int start, int end, int width, UnaryFunctor<Component, Dimension> extremeProvider) {
         int totalFreedom = 0;
         int extremeWidth = 0;
@@ -342,6 +339,5 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         }
         return getClass().getName() + "[hgap=" + hgap + ",vgap=" + vgap + str + "]";
     }
-
 
 }

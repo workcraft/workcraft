@@ -30,7 +30,6 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
     private final class HugeSgRunnable implements Runnable {

@@ -159,7 +159,6 @@ public class TreeWindow<Node> extends JPanel {
                     }
                 }
 
-
             }
             );
 
@@ -190,8 +189,6 @@ public class TreeWindow<Node> extends JPanel {
             }
         });
 
-
-
         tree.setCellRenderer(new DefaultTreeCellRenderer() {
             private static final long serialVersionUID = 1L;
             private JPanel cellRenderer;
@@ -200,14 +197,11 @@ public class TreeWindow<Node> extends JPanel {
                 cellRenderer = new JPanel(new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.PREFERRED }, {TableLayout.PREFERRED} }));
             }
 
-
             @SuppressWarnings("unchecked")
             @Override
             public Component getTreeCellRendererComponent(JTree tree,
                     Object value, boolean sel, boolean expanded, boolean leaf,
                     int row, boolean hasFocus) {
-
-
 
                 Node node = (Node)value;
 
@@ -217,7 +211,6 @@ public class TreeWindow<Node> extends JPanel {
                     name = name.substring(1);
                 }
                 Component res = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
-
 
                 if (tricky)
                     res.setFont(res.getFont().deriveFont(Font.ITALIC));

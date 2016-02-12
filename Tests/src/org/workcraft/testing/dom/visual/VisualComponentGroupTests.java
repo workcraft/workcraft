@@ -75,8 +75,6 @@ public class VisualComponentGroupTests {
         }
     }
 
-
-
     @Test
     public void testHitComponent() {
         VisualGroup root = createGroup(null);

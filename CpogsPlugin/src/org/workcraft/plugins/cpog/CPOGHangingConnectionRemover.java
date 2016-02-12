@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog;
 
-
 import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.dom.*;
 import org.workcraft.dom.visual.VisualGroup;
@@ -30,7 +29,6 @@ public class CPOGHangingConnectionRemover extends DefaultHangingConnectionRemove
 
             for (Node node : e.getAffectedNodes())
                 findHangingConnections(node, hangingConnections, hanging);
-
 
             for (Connection con : hangingConnections)
                 if (con.getParent() instanceof VisualPage)

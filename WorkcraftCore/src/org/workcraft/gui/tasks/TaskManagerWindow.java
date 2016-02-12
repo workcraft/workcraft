@@ -142,7 +142,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             container.revalidate();
         }
 
-    };
+    }
 
     private int counter = 0;
 

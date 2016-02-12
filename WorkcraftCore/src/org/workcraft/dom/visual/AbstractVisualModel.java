@@ -173,7 +173,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         return getMathModel().hasConnection(mFirst, mSecond);
     }
 
-
     public MathNode getMathReference(Node node) {
         VisualComponent component = null;
         if (node instanceof VisualComponent) {
@@ -183,7 +182,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         }
         return (component == null) ? null : component.getReferencedComponent();
     }
-
 
     @SuppressWarnings("unchecked")
     @Override
@@ -216,7 +214,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         }
         return result;
     }
-
 
     @SuppressWarnings("unchecked")
     @Override
@@ -529,7 +526,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         }
         select(toSelect);
     }
-
 
     @Override
     public void deleteSelection() {

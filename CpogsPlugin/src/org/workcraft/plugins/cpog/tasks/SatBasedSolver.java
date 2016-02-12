@@ -324,7 +324,6 @@ public class SatBasedSolver {
                 System.out.println("Error: " + e);
             }
 
-
             // CREATE RESULT PART
             VisualScenario resultCpog = cpog.createVisualScenario();
             resultCpog.setLabel("Composition");
@@ -381,7 +380,6 @@ public class SatBasedSolver {
         v=0;
         a=0;
     }
-
 
     public void setV(int v) {
         this.v = v;

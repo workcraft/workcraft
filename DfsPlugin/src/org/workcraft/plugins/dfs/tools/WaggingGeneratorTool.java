@@ -62,5 +62,4 @@ public class WaggingGeneratorTool implements Tool {
         return count;
     }
 
-
 }

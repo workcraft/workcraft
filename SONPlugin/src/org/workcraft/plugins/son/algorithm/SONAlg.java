@@ -55,7 +55,6 @@ public class SONAlg extends RelationAlgorithm{
         return result;
     }
 
-
     //get SON final marking
     public Collection<PlaceNode> getSONFinal(){
         Collection<PlaceNode> result = new ArrayList<PlaceNode>();

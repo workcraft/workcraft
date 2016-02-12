@@ -38,7 +38,6 @@ import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
-
 public class Circuit extends AbstractMathModel {
 
     public Circuit() {

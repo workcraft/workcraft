@@ -20,7 +20,6 @@
 */
 package org.workcraft.plugins.cpog.expressions;
 
-
 public class CleverCpogWorker implements CpogWorker {
     @Override
     public CpogFormula overlay(CpogFormula x, CpogFormula y) {

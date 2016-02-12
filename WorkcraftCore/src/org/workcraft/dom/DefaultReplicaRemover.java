@@ -30,7 +30,6 @@ import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.util.Hierarchy;
 
-
 public class DefaultReplicaRemover extends HierarchySupervisor {
     private NodeContext nct;
 

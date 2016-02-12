@@ -23,11 +23,11 @@ package org.workcraft.plugins.cpog.expressions;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class CpogFormulaToString implements CpogVisitor<String> {
     public final class Void{
         private Void(){}
     }
+
     public static class PrinterSuite {
         public PrinterSuite() {
             overlay = new OverlayPrinter();

@@ -2,7 +2,6 @@ package org.workcraft.plugins.son;
 
 import java.util.ArrayList;
 
-
 public class StructureVerifySettings {
 
     private boolean errNodesHighlight, outputBefore;

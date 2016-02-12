@@ -43,7 +43,6 @@ import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.plugins.son.elements.VisualTransitionNode;
 import org.workcraft.util.Hierarchy;
 
-
 @DisplayName ("Structured Occurrence Nets")
 @CustomTools (SONToolProvider.class)
 
@@ -450,7 +449,6 @@ public class VisualSON extends AbstractVisualModel {
             result.clear();
             return result;
         }
-
 
         if(errorType==2){
             JOptionPane.showMessageDialog(mainWindow,

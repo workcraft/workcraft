@@ -116,7 +116,6 @@ public class TouchableTransformerTests {
         assertEquals(-sqrt2by2, result.getMinX(), 1e-5);
     }
 
-
     @Test
     public void testTranslateHitTest() {
         TouchableTransformer toucher = new TouchableTransformer(

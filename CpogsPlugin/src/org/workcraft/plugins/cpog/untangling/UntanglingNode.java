@@ -11,7 +11,6 @@ public class UntanglingNode {
     private String label;
     private final NodeType type;
 
-
     public UntanglingNode(int id, String label, NodeType type) {
         this.id = id;
         this.label = label;

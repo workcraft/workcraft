@@ -48,7 +48,6 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class VerAnalysis extends AbstractTool implements Tool {
 
     private static class Qslist {

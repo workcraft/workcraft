@@ -49,7 +49,6 @@ public class FunctionComponent extends CircuitComponent {
         new CircuitHierarchySupervisor().attach(this);
     }
 
-
     public void setIsZeroDelay(boolean value) {
         if (this.isZeroDelay != value) {
             this.isZeroDelay = value;

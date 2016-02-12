@@ -1,6 +1,5 @@
 package org.workcraft.dom.visual;
 
-
 public enum Positioning {
     TOP("Top", 0.0, -0.2),
     BOTTOM("Bottom", 0.0, 0.2),

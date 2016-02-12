@@ -29,7 +29,6 @@ public class VisualSONConnection extends VisualConnection {
     public static final Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
     private RenderedText timeRenderedText = new RenderedText("", timeFont, Positioning.CENTER, new Point2D.Double());
 
-
     public VisualSONConnection() {
         this(null, null, null);
     }

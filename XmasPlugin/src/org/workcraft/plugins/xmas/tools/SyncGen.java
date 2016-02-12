@@ -32,17 +32,13 @@ public class SyncGen implements Tool {
     //VisualCircuit circuit;
     //private CheckCircuitTask checkTask;
 
-
     //ProgressMonitor<? super MpsatChainResult> monitor;
 
-
     private static boolean printoutput=true;
-
 
     public String getDisplayName() {
         return "Generate Sync";
     }
-
 
     public String getSection() {
         return "Sync";
@@ -261,7 +257,6 @@ public class SyncGen implements Tool {
 
         mainFrame.pack();
         mainFrame.setVisible(false);
-
 
     }
 

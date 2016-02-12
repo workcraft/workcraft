@@ -22,7 +22,6 @@ package org.workcraft.plugins.cpog.optimisation;
 
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-
 public interface BooleanFormula {
     <T> T accept(BooleanVisitor<T> visitor);
 }

@@ -181,7 +181,6 @@ public class VisualSTG extends AbstractVisualModel {
         return connection;
     }
 
-
     @Override
     public void validateUndirectedConnection(Node first, Node second)    throws InvalidConnectionException {
         if (first == second) {

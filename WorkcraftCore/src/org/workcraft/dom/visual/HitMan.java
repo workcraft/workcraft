@@ -153,7 +153,6 @@ public class HitMan {
         return transformedPoint;
     }
 
-
     private static <T> Iterable<T> reverse(Iterable<T> original) {
         final ArrayList<T> list = new ArrayList<T>();
         for (T node : original) {
@@ -181,7 +180,6 @@ public class HitMan {
     public static <T extends Node> T hitDeepestNodeOfType(Point2D point, Node group, final Class<T> type) {
         return (T)hitDeepest(point, group, Hierarchy.getTypeFilter(type));
     }
-
 
     public static Node hitTestForSelection(Point2D point, VisualModel model) {
         AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
@@ -234,7 +232,6 @@ public class HitMan {
         }
         return result;
     }
-
 
     public static Node hitTestForPopup(Point2D point, VisualModel model) {
         AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());

@@ -7,7 +7,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ClearMarkingTool implements Tool{
 
-
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, SON.class);
     }

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.util;
 
-
 public class EstimatedInterval extends Interval{
 
     public EstimatedInterval() {

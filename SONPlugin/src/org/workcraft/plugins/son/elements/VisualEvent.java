@@ -18,7 +18,6 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.util.Interval;
 
-
 @Hotkey(KeyEvent.VK_E)
 @DisplayName ("Event")
 @SVGIcon("images/icons/svg/transition.svg")

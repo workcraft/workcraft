@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.workcraft.gui.workspace.Path;
 
-
 public class CachedTreeSource<Node> implements TreeSource<Node> {
     private TreeSourceCache<Node> cache = new TreeSourceCache<Node>();
     private final TreeSource<Node> source;
@@ -62,7 +61,6 @@ public class CachedTreeSource<Node> implements TreeSource<Node> {
     public void removeListener(TreeListener<Node> listener) {
         listeners.remove(listener);
     }
-
 
     @Override
     public List<Node> getChildren(Node node) {

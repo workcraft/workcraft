@@ -16,7 +16,6 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 
-
 public class TransitionBundler {
 
     @SuppressWarnings("serial")

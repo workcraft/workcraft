@@ -1,6 +1,5 @@
 package org.workcraft.tasks;
 
-
 public class Result<T> {
 
     public enum Outcome {

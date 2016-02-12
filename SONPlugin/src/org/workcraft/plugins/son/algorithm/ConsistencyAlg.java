@@ -424,7 +424,6 @@ public class ConsistencyAlg extends TimeAlg{
         return true;
     }
 
-
     public boolean hasSpecifiedEnd(Node node, ScenarioRef s){
 
         Collection<SONConnection> outputConnections;

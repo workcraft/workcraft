@@ -62,7 +62,6 @@ public class OutputArea extends JFrame {
         exit.addActionListener(new Exit());
     }
 
-
     private void export(){
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

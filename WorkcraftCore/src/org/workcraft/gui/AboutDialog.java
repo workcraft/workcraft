@@ -59,7 +59,6 @@ public class AboutDialog extends JDialog {
 
         owner.getLocationOnScreen();
 
-
         BufferedImage logoImage = null;
         try {
             logoImage = GUI.loadImageFromResource("images/logo.png");
@@ -80,7 +79,6 @@ public class AboutDialog extends JDialog {
         infoPane.setFocusable(false);
 
         infoPane.setContentType("text/html");
-
 
         infoPane.setEditable(false);
         infoPane.setOpaque(false);

@@ -28,7 +28,6 @@ public class MpsatResultParser {
     final static private Pattern patternNormalcy1 =
             Pattern.compile("SOLUTION .+\n(.*)\ntriggers: .+\n", Pattern.UNIX_LINES);
 
-
     public MpsatResultParser(ExternalProcessResult result) {
         try {
             mpsatOutput = new String(result.getOutput(), "ISO-8859-1"); // iso-latin-1

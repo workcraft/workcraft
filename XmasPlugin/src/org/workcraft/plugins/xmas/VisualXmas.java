@@ -52,7 +52,6 @@ import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 import org.workcraft.util.Hierarchy;
 
-
 @DisplayName("xMAS Circuit")
 @ShortName("xMAS")
 @CustomTools (XmasToolsProvider.class)

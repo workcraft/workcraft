@@ -65,7 +65,6 @@ public class MethodParametersMatcherTests {
         return match.execute();
     }
 
-
     static class Simple{
         public static int qq(){
             return 1;
@@ -114,7 +113,6 @@ public class MethodParametersMatcherTests {
             return 2;
         }
     }
-
 
     @Test
     public void testAmbiguous() throws Exception {

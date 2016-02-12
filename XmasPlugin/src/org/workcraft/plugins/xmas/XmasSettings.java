@@ -13,7 +13,6 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.util.FileUtils;
 
-
 public class XmasSettings implements Settings {
     private static final String VSETTINGS_FILE_NAME = "vsettings";
     private static final String VSETTINGS_DEFAULT_CONTENT = "trace q1\nlevel normal\nhighlight none\ndisplay popup\nsoln 2\n";

@@ -12,7 +12,6 @@ public class YearYear extends AbstractTimeGranularity{
         return result;
     }
 
-
     @Override
     public Integer subtractTD(Integer time, Integer duration)
             throws TimeOutOfBoundsException {
@@ -21,7 +20,6 @@ public class YearYear extends AbstractTimeGranularity{
             return 0000;
         return result;
     }
-
 
     @Override
     public Integer subtractTT(Integer start, Integer end)

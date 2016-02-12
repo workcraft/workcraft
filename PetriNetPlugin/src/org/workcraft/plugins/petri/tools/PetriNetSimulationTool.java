@@ -778,7 +778,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
             }
             return getTraceLabelByReference(ref);
         }
-    };
+    }
 
     protected Map<Place, Integer> readMarking() {
         HashMap<Place, Integer> result = new HashMap<Place, Integer>();

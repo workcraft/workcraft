@@ -24,7 +24,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.plugins.xmas.XmasSettings;
 
-
 public class PNetGen implements Tool {
 
     //private final Framework framework;
@@ -74,7 +73,6 @@ public class PNetGen implements Tool {
     static List<Info> slsti = new ArrayList<Info>();
     static List<Info> slsto = new ArrayList<Info>();
     static List<Info> slsto2 = new ArrayList<Info>();
-
 
     public void initlist() {
         lst.clear();

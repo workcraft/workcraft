@@ -29,7 +29,6 @@ public class SimulationAlg extends RelationAlgorithm {
     private Collection<ONGroup> upperGroups;
     private Collection<ONGroup> lowerGroups;
 
-
     public SimulationAlg(SON net){
         super(net);
         this.net = net;
@@ -176,7 +175,6 @@ public class SimulationAlg extends RelationAlgorithm {
         return result;
     }
 
-
     private boolean isONEnabled(TransitionNode e) {
         if(net.getPreset(e).isEmpty())
             return false;
@@ -298,7 +296,6 @@ public class SimulationAlg extends RelationAlgorithm {
         result.removeAll(del);
         return result;
     }
-
 
     //reverse simulation
     private boolean isRevONEnabled(TransitionNode e) {

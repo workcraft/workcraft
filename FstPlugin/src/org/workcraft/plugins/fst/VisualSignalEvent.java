@@ -52,7 +52,6 @@ public class VisualSignalEvent extends VisualEvent {
         return (SignalEvent)getReferencedEvent();
     }
 
-
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);

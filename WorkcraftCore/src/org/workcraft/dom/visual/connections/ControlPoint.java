@@ -34,7 +34,6 @@ import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.Coloriser;
 
-
 public class ControlPoint extends VisualTransformableNode implements Drawable, Touchable {
     private double size = 0.2;
     private Color fillColor = Color.BLUE;

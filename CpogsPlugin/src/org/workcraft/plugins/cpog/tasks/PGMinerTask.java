@@ -17,7 +17,6 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
-
 public class PGMinerTask implements Task<ExternalProcessResult> {
 
     private File inputFile;

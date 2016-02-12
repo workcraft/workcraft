@@ -44,7 +44,6 @@ public class DefaultNodeSerialiser {
         this.serialiser = serialiser;
     }
 
-
     private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
         // type explicitly requested to be excluded from auto serialisation
         if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
@@ -64,7 +63,6 @@ public class DefaultNodeSerialiser {
                     desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
                     desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null)
                 continue;
-
 
             // the property is writable and is not of array type, try to get a serialiser
             XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
@@ -97,7 +95,6 @@ public class DefaultNodeSerialiser {
 
         Element curLevelElement = parentElement.getOwnerDocument()
                 .createElement(currentLevel.getSimpleName());
-
 
         autoSerialiseProperties(curLevelElement, object, currentLevel);
 

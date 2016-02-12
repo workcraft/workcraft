@@ -102,7 +102,6 @@ public class InstanceManagerTests {
         assertNull(mgr.getInstance(o1));
     }
 
-
     @Test(expected=ArgumentException.class)
     public void testDoubleAssign() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();

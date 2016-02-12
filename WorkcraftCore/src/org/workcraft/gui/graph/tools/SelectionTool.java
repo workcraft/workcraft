@@ -509,7 +509,6 @@ public class SelectionTool extends AbstractTool {
         editor.repaint();
     }
 
-
     private void cancelDrag(GraphEditor editor) {
         if(dragState == DrugState.MOVE) {
             editor.getWorkspaceEntry().cancelMemento();
@@ -654,7 +653,6 @@ public class SelectionTool extends AbstractTool {
                         }
                     };
                 }
-
 
                 //if (node==mouseOverNode) return selectedDecoration;
 

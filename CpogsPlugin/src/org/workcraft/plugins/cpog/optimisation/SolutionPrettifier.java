@@ -23,7 +23,6 @@ package org.workcraft.plugins.cpog.optimisation;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.SolutionSubstitutor;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-
 public class SolutionPrettifier {
     public static <T> CpogEncoding prettifySolution(CpogOptimisationTask<T> task, BooleanSolution solution) {
         if(solution==null)

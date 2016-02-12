@@ -2,7 +2,6 @@ package org.workcraft.plugins.son.util;
 
 import java.util.ArrayList;
 
-
 @SuppressWarnings("serial")
 public class Trace extends ArrayList<StepRef>{
 
@@ -15,7 +14,6 @@ public class Trace extends ArrayList<StepRef>{
     public void setPosition(int value) {
         position = Math.min(Math.max(0, value), size());
     }
-
 
     public void incPosition(int value) {
         setPosition(position + value);

@@ -17,7 +17,6 @@ import org.workcraft.plugins.circuit.naryformula.NaryFormulaBuilder;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 
-
 public class GateRenderer {
 
     public static final double bubbleSize = 0.3;

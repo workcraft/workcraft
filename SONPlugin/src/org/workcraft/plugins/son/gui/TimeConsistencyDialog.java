@@ -137,7 +137,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
         DefaultListModel<ListItem> listModel = new DefaultListModel<ListItem>();
 
-
         for(Node vn : vNet.getSelection()){
             if(vn instanceof VisualComponent){
                 Node node = ((VisualComponent) vn).getReferencedComponent();
@@ -265,7 +264,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
                 getList().repaint();
             }
         });
-
 
         removeAllButton.addActionListener(new ActionListener() {
             @Override
@@ -477,7 +475,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
     public int getTabIndex(){
         return selectionTabbedPane.getSelectedIndex();
     }
-
 
     public TimeConsistencySettings getTimeConsistencySettings(){
         return new TimeConsistencySettings(inconsistencyHighLight.isSelected(), unspecifyHighlight.isSelected(),

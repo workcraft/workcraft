@@ -28,7 +28,6 @@ import java.lang.annotation.Target;
 
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface CustomTools {

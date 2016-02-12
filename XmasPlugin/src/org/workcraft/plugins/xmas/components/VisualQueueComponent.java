@@ -107,7 +107,6 @@ public class VisualQueueComponent extends VisualXmasComponent {
         return (QueueComponent)getReferencedComponent();
     }
 
-
     private boolean isInitialised() {
         return getReferencedQueueComponent() != null;
     }

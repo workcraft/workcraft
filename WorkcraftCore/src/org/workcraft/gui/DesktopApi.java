@@ -13,7 +13,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class DesktopApi {
 
     public static boolean browse(URI uri) {
@@ -142,7 +141,6 @@ public class DesktopApi {
             return this == WINDOWS;
         }
     }
-
 
     public static OsType getOs() {
         String s = System.getProperty("os.name").toLowerCase();

@@ -76,7 +76,6 @@ import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
-
 public class VerilogImporter implements Importer {
 
     private class AssignGate {

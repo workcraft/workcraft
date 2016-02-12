@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog;
 
-
 public class EncoderSettings {
 
     public enum GenerationMode {

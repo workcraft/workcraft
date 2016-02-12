@@ -84,7 +84,6 @@ public class ConnectionHelper {
         return locationsInRootSpace;
     }
 
-
     static public LinkedList<Point2D> getMergedControlPoints(VisualTransformableNode mergeNode, VisualConnection con1, VisualConnection con2) {
         LinkedList<Point2D> locations = new LinkedList<>();
         Point2D lastLocation = null;

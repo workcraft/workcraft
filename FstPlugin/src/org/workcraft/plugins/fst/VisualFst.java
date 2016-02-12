@@ -46,5 +46,4 @@ public class VisualFst extends VisualFsm {
         return vEvent;
     }
 
-
 }

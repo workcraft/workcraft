@@ -122,7 +122,6 @@ public class DnfGenerator {
         return false;
     }
 
-
     // throws out all the repeated and absorbed clauses
     private static Dnf simplifyDnf(Dnf clauses) {
         Dnf result = new Dnf();
@@ -165,7 +164,6 @@ public class DnfGenerator {
         return result;
     }
 
-
     private static Dnf addDnf(Dnf left, Dnf right) {
         Dnf result = new Dnf();
 
@@ -187,7 +185,6 @@ public class DnfGenerator {
                 DnfClause newClause = new DnfClause();
 
                 newClause.add(leftClause.getLiterals());
-
 
                 for(Literal rlit : rightClause.getLiterals()) {
                     foundSameLiteral = false;

@@ -82,7 +82,6 @@ public class CircuitUtils {
         return zeroDelayInput;
     }
 
-
     public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
         return findDriven(circuit, contact, true);
     }
@@ -399,7 +398,6 @@ public class CircuitUtils {
         return result;
     }
 
-
     public static HashSet<CircuitComponent> getComponentPostset(final Circuit circuit, MathNode curNode) {
         HashSet<CircuitComponent> result = new HashSet<>();
         HashSet<Node> visited = new HashSet<>();
@@ -445,7 +443,6 @@ public class CircuitUtils {
         return result;
     }
 
-
     public static HashSet<Contact> getPortPostset(final Circuit circuit, MathNode curNode) {
         HashSet<Contact> result = new HashSet<>();
         HashSet<Node> visited = new HashSet<>();
@@ -485,7 +482,6 @@ public class CircuitUtils {
         HashSet<Contact> ports = getPortPostset(circuit, mathComponent);
         return getVisualContacts(visualCircuit, ports);
     }
-
 
     private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
         HashSet<VisualContact> result = new HashSet<>();

@@ -31,7 +31,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
-
 /**
  * The <code>Grid</code> class is used to generate and draw the background grid, guidelines,
  * as well as to handle the coordinate "snapping".
@@ -59,7 +58,6 @@ public class Grid implements ViewportListener {
     protected Color majorLinesColor = new Color(200,200,200);
     protected Color minorLinesColor = new Color(240,240,240);
     protected Color guideLinesColor = Color.RED;
-
 
     protected double majorInterval = 10.0;
 
@@ -350,7 +348,6 @@ public class Grid implements ViewportListener {
         return minorLinePositionsScreen;
     }
 
-
     /**
      * Returns major grid lines positions <i>in screen space space, integer precision</i> as a 2-dimensional array. First row of the array contains Y-coordinates of the horizontal grid lines,
      * second row contains X-coordinates of the vertical grid lines.
@@ -364,11 +361,9 @@ public class Grid implements ViewportListener {
         return majorLinePositionsScreen;
     }
 
-
     public void shapeChanged(Viewport sender) {
         updateGrid(sender);
     }
-
 
     public void viewChanged(Viewport sender) {
         updateGrid(sender);

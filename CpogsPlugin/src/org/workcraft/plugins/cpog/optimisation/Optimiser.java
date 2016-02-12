@@ -167,7 +167,6 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
             }
         }
 
-
         CpogOptimisationTask<BooleanFormula> preResult = getFormula(parsedMatrix, new ArrayList<BooleanVariable>(forcedVariables.values()), variables, derivedVariables);
 
         BooleanFormula[][] vars = preResult.getEncodingVars();

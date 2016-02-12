@@ -18,7 +18,6 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 
-
 public class PnToCpogConverter {
 
     private PetriNet pn;

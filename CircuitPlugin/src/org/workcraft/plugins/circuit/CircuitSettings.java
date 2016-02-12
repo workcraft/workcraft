@@ -10,7 +10,6 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
-
 public class CircuitSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
     private static final String prefix = "CircuitSettings";

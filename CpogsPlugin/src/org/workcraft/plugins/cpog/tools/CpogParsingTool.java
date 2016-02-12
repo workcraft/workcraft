@@ -36,7 +36,6 @@ import org.workcraft.plugins.cpog.optimisation.jj.BooleanParser;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class CpogParsingTool {
 
     private static final int MAX_SCENARIOS_LINUX = 680;
@@ -106,9 +105,7 @@ public class CpogParsingTool {
 
         double x = positionNodes(originalX, originalY, outer);
 
-
     }
-
 
     public double positionNodes(double originalX, double originalY, ArrayList<ArrayList<Node>> outer) {
         Double centre = new Double(0, originalY);
@@ -175,7 +172,6 @@ public class CpogParsingTool {
         ArrayList<Node> children = new ArrayList<>();
         HashSet<VisualArc> arcs = getAllArcs(visualCpog.getRoot(), visualCpog);
 
-
         for (VisualArc arc : arcs) {
             if (arc.getFirst().equals(node)) {
                 children.add(arc.getSecond());
@@ -216,7 +212,6 @@ public class CpogParsingTool {
                 getAllGroupVertices(vertices, group);
 
                 HashSet<Node> roots = getRoots(visualCpog, vertices);
-
 
                 VisualVertex current;
                 Set<Connection> totalConnections;
@@ -319,7 +314,6 @@ public class CpogParsingTool {
 
         }
 
-
         if (expression.get(expression.size() - 1).compareTo("+") == 0) {
             expression.remove(expression.size() - 1);
         }
@@ -346,11 +340,9 @@ public class CpogParsingTool {
         if (total.endsWith("+")) total = total.substring(0, total.length() - 1);
         total = total.trim();
 
-
         return total;
 
     }
-
 
     public static void describeArcs(ArrayList<String> expression, Set<Connection> totalConnections, HashSet<VisualVertex> visitedVertices, HashSet<Connection> visitedConnections,
             VisualVertex current, ArrayList<Node> vertices, VisualCPOG visualCpog) {
@@ -378,7 +370,6 @@ public class CpogParsingTool {
             if (!(formulaToString(child.getCondition()).equals("1")) || !(formulaToString(child.getCondition()).equals(formulaToString(arc.getCondition())))) {
                 insert = insert + "[" + formulaToString(child.getCondition()) + "]";
             }
-
 
             insert = insert + child.getLabel();
             visitedConnections.add(arc);
@@ -428,7 +419,6 @@ public class CpogParsingTool {
                 if (!formulaToString(arc.getCondition()).equals("1")) {
                     insert = "[" + formulaToString(arc.getCondition()) + "](";
                 }
-
 
                 if (!(formulaToString(current.getCondition()).equals("1")) || !(formulaToString(current.getCondition()).equals(formulaToString(arc.getCondition())))) {
                     insert = insert + "[" + formulaToString(current.getCondition()) + "]";
@@ -518,7 +508,6 @@ public class CpogParsingTool {
         }
     }
 
-
     public static void getGroups(VisualCPOG visualCpog, ArrayList<VisualTransformableNode> groups) {
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
@@ -549,7 +538,6 @@ public class CpogParsingTool {
                 }
             }
         }
-
 
         ArrayList<VisualTransformableNode> result = new ArrayList<>();
 
@@ -872,7 +860,6 @@ public class CpogParsingTool {
 
     }
 
-
     public ArrayList<String> getUsedReferences() {
         return usedReferences;
     }
@@ -889,7 +876,6 @@ public class CpogParsingTool {
         }
         return result;
     }
-
 
     public static ArrayList<Node> copySelected(VisualCPOG visualCpog) {
         ArrayList<Node> result = new ArrayList<Node>();
@@ -939,7 +925,5 @@ public class CpogParsingTool {
         }
         return t;
     }
-
-
 
 }

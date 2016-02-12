@@ -1,6 +1,5 @@
 package org.workcraft.dom.references;
 
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.observation.HierarchyEvent;

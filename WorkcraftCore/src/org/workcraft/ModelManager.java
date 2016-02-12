@@ -27,8 +27,6 @@ import java.util.UUID;
 
 import org.workcraft.dom.AbstractModel;
 
-
-
 public class ModelManager {
     private Hashtable<UUID, Class<?>> uuidModelMap;
     private Hashtable<UUID, LinkedList<Class<?>>> uuidComponentListMap;
@@ -192,6 +190,5 @@ public class ModelManager {
             System.err.println("Component implementation class is improperly declared: static final String "+e.getMessage()+" is required");
         }
     }
-
 
 }

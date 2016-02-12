@@ -174,7 +174,6 @@ public class PcompDialog extends JDialog {
         return content;
     }
 
-
     private void runAction() {
         result = true;
         sourcePaths = chooser.getCheckedNodes();

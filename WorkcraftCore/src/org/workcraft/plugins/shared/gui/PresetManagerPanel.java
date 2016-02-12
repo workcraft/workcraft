@@ -89,7 +89,6 @@ public class PresetManagerPanel<T> extends JPanel {
             }
         });
 
-
         updatePresetButton = new JButton("Update");
         updatePresetButton.addActionListener(new ActionListener() {
             @Override
@@ -111,7 +110,6 @@ public class PresetManagerPanel<T> extends JPanel {
         buttonsPanel.add(updatePresetButton);
         buttonsPanel.add(saveAsButton);
         buttonsPanel.add(manageButton);
-
 
         setBorder(BorderFactory.createTitledBorder("Presets"));
         setLayout(new BorderLayout());

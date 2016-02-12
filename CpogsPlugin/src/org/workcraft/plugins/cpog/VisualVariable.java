@@ -127,7 +127,6 @@ public class VisualVariable extends VisualComponent {
         drawVariableInLocalSpace(r);
     }
 
-
     protected void cacheVariableRenderedFormula(DrawRequest r) {
         if (variableRenderedFormula.isDifferent(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset())) {
             variableRenderedFormula = new RenderedFormula(getLabel(), One.instance(), variableFont, getLabelPositioning(), getLabelOffset());

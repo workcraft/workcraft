@@ -31,7 +31,6 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class STGGen implements Tool {
 
     private List<JRadioButton> rlist = new ArrayList<JRadioButton>();

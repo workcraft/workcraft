@@ -147,7 +147,6 @@ public class Main {
         if(true)
             throw new RuntimeException("qwe");*/
 
-
         //System.out.println(cnf.toString(new MiniSatCnfPrinter()));
 
         //System.out.println(cnfGenerator.getFormula(smallscenarios, null, freeVariables, derivedVariables).getTask().toString(new HumanReadableCnfPrinter()));
@@ -158,7 +157,6 @@ public class Main {
         long end = System.currentTimeMillis();
 
         System.out.println("time: " + (end-start)/1000.0);
-
 
         if(solution == null)
             System.out.println("No solution.");
@@ -176,7 +174,6 @@ public class Main {
                 System.out.println(FormulaToString.toString(functions[i]));
             }
         }
-
 
     }
 }

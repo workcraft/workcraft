@@ -34,7 +34,6 @@ public class ScenarioTable extends JTable{
     private boolean isCellColorized = true;
     private Color greyoutColor = Color.LIGHT_GRAY;
 
-
     public ScenarioTable(ScenarioSaveList saveList, GraphEditor editor) {
         this(saveList, editor, null, null);
     }
@@ -62,7 +61,6 @@ public class ScenarioTable extends JTable{
         this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.setDefaultRenderer(Object.class,new ScenarioTableCellRendererImplementation());
     }
-
 
     @SuppressWarnings("serial")
     protected class ScenarioTableCellRendererImplementation implements TableCellRenderer {
@@ -128,7 +126,7 @@ public class ScenarioTable extends JTable{
             }
             return "";
         }
-    };
+    }
 
     public void updateTable(final GraphEditor editor) {
         tableChanged(new TableModelEvent(getModel()));

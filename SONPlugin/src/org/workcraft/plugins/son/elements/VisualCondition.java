@@ -23,7 +23,6 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.son.SONSettings;
 
-
 @DisplayName("Condition")
 @Hotkey(KeyEvent.VK_B)
 @SVGIcon("images/icons/svg/place_empty.svg")

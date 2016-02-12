@@ -76,7 +76,6 @@ public class ReachabilityAlg extends RelationAlgorithm{
         return predecessors;
     }
 
-
     private LinkedList<Node> getCausalPreset(Node n, Before before){
         LinkedList<Node> result = new LinkedList<Node>();
 

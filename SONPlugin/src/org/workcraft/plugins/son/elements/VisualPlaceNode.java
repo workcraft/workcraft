@@ -24,7 +24,6 @@ import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.util.Interval;
 
-
 public class VisualPlaceNode extends VisualComponent{
 
     protected Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
@@ -130,7 +129,6 @@ public class VisualPlaceNode extends VisualComponent{
 
     private void cahceErrorRenderedText(DrawRequest r) {
         String error = "Err = "+((Integer)getErrors()).toString();
-
 
         Point2D offset = getOffset(errLabelPositioning);
         if (errLabelPositioning.ySign<0) {

@@ -27,7 +27,6 @@ public abstract class VisualBinaryRegister extends VisualAbstractRegister {
         return (BinaryRegister)getReferencedComponent();
     }
 
-
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);

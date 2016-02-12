@@ -17,7 +17,6 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
 
-
 public class ONStructureTask extends AbstractStructuralVerification{
 
     private SON net;

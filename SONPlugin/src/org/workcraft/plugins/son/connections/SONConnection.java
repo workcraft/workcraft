@@ -70,7 +70,6 @@ public class SONConnection extends MathConnection{
         sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
     }
 
-
     public Color getTimeLabelColor() {
         return timeColor;
     }

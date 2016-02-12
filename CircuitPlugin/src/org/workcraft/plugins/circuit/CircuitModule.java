@@ -21,7 +21,6 @@ import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
-
 public class CircuitModule implements Module {
 
     @Override

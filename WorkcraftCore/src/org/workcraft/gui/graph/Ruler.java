@@ -159,7 +159,6 @@ public class Ruler implements GridListener {
         return size;
     }
 
-
     public void gridChanged(Grid grid) {
         int[][] minorLinesScreen = grid.getMinorLinePositionsScreen();
         horizontalMinorTicks = minorLinesScreen[0];

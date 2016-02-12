@@ -37,7 +37,6 @@ public class PGMinerImportTool implements Tool {
         return false;
     }
 
-
     public File getInputFile(WorkspaceEntry we) {
         dialog = new PGMinerImportDialog();
         dialog.setVisible(true);
@@ -96,7 +95,6 @@ public class PGMinerImportTool implements Tool {
                 i++;
             }
 
-
             PrintStream expressions = new PrintStream(inputFile);
 
             for (String line : newLines) {
@@ -110,7 +108,6 @@ public class PGMinerImportTool implements Tool {
 
     }
 
-
     @Override
     public void run(WorkspaceEntry we) {
 
@@ -122,13 +119,11 @@ public class PGMinerImportTool implements Tool {
         final ToolboxPanel toolbox = editor.getToolBox();
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
 
-
         try {
             if (inputFile != null) {
 
                 if (dialog.getExtractConcurrency()) {
                     PGMinerTask task = new PGMinerTask(inputFile, dialog.getSplit());
-
 
                     PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, false);
                     framework.getTaskManager().queue(task, "PGMiner", result);

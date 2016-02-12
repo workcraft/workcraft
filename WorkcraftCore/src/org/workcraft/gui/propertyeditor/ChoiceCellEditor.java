@@ -36,7 +36,6 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
     private JComboBox comboBox;
     private ChoiceWrapper[] wrappers;
 
-
     public ChoiceCellEditor(PropertyDescriptor decl) {
         comboBox = new JComboBox();
         comboBox.setEditable(false);

@@ -40,6 +40,7 @@ public class FormulaToString implements BooleanVisitor<String> {
     public final class Void{
         private Void(){}
     }
+
     public static class PrinterSuite {
         public PrinterSuite() {
             iff = new IffPrinter();

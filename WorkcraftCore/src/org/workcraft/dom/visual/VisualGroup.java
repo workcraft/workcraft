@@ -46,7 +46,6 @@ import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Hierarchy;
 
-
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
@@ -218,7 +217,6 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     public void removeWithoutNotify(Node node) {
         groupImpl.removeWithoutNotify(node);
     }
-
 
     @Override
     public void removeObserver(HierarchyObserver obs) {

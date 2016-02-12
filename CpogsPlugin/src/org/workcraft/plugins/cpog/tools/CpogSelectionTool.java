@@ -82,8 +82,6 @@ import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
-
 public class CpogSelectionTool extends SelectionTool {
 
     final int margin = 4;
@@ -114,7 +112,6 @@ public class CpogSelectionTool extends SelectionTool {
     public CpogSelectionTool() {
         super(false);
     }
-
 
     @Override
     public void createInterfacePanel(final GraphEditor editor) {
@@ -177,8 +174,6 @@ public class CpogSelectionTool extends SelectionTool {
             }
         });
         buttonPanel.add(btnInsert);
-
-
 
         final JButton btnTextInsert = new JButton("Text File");
         btnTextInsert.addActionListener(new ActionListener() {
@@ -271,7 +266,6 @@ public class CpogSelectionTool extends SelectionTool {
         interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
 
         scenarioPageGroupButton(getGroupPanel());
-
 
         renderTypeChangeHandler();
     }
@@ -403,7 +397,6 @@ public class CpogSelectionTool extends SelectionTool {
                                 return vertex;
                             }
 
-
                             if (vertex == null) {
                                 vertex = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
                                 vertex.setLabel(label);
@@ -496,7 +489,6 @@ public class CpogSelectionTool extends SelectionTool {
                     prevSelection.add(n1);
                 }
 
-
                 ArrayList<String> usedReferences = parsingTool.getUsedReferences();
 
                 addUsedReferences(visualCpog, editor, usedReferences, localVertices, prevSelection);
@@ -508,7 +500,6 @@ public class CpogSelectionTool extends SelectionTool {
                 }
 
                 editor.requestFocus();
-
 
                 if (name != "") {
                     inserted = insertAsPage(visualCpog, name, coordinate, editor);
@@ -707,7 +698,6 @@ public class CpogSelectionTool extends SelectionTool {
         }
     }
 
-
     public void startDrag(GraphEditorMouseEvent e){
         super.startDrag(e);
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
@@ -721,7 +711,6 @@ public class CpogSelectionTool extends SelectionTool {
             }
         }
     }
-
 
     public LinkedHashSet<Node> getRootNodes(VisualCPOG visualCpog, Collection<VisualVertex> vertexMap) {
         LinkedHashSet<Node> roots = new LinkedHashSet<Node>();
@@ -926,13 +915,12 @@ public class CpogSelectionTool extends SelectionTool {
                 }
             }
         }
+
         new StateSupervisorExtension().attach(page);
     }
 
-
     public ArrayList<VisualPage> getRefPages(VisualCPOG visualCpog, String refKey, VisualVertex v) {
         ArrayList<VisualPage> result = new ArrayList<VisualPage>();
-
 
         for (VisualPage p : refPages) {
             if (p.getLabel().compareTo(refKey) == 0) {
@@ -1004,7 +992,6 @@ public class CpogSelectionTool extends SelectionTool {
                 vertexMap.put(first, vertex1);
             }
 
-
             if (vertexMap.containsKey(second)) {
                 int d = 1;
                 while (vertexMap.containsKey(second + "_" + d)) {
@@ -1029,7 +1016,6 @@ public class CpogSelectionTool extends SelectionTool {
         xPos = xPos*2.5;
         xPos = 0 - xPos/2;
 
-
         PageNode pageNode = new PageNode();
         visualCpog.getMathModel().add(pageNode);
         VisualScenarioPage page = new VisualScenarioPage(pageNode);
@@ -1038,7 +1024,6 @@ public class CpogSelectionTool extends SelectionTool {
 
         Container container = visualCpog.getCurrentLevel();
         HashSet<Node> nodes = new HashSet<>();
-
 
         visualCpog.selectNone();
         for (VisualVertex v : vertexMap.values()) {
@@ -1069,8 +1054,6 @@ public class CpogSelectionTool extends SelectionTool {
         editor.getOverlay().add(text);
         text.requestFocusInWindow();
         final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
-
-
 
         text.addKeyListener(new KeyListener() {
             @Override
@@ -1115,7 +1098,6 @@ public class CpogSelectionTool extends SelectionTool {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-
 
                 }
                 editor.getWorkspaceEntry().setCanModify(true);
@@ -1166,6 +1148,7 @@ public class CpogSelectionTool extends SelectionTool {
 
             }
         }
+
         new RenderTypeChangedHandler().attach(visualCpog.getRoot());
 
     }

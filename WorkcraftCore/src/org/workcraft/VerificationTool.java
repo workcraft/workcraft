@@ -1,6 +1,5 @@
 package org.workcraft;
 
-
 public abstract class VerificationTool extends PromotedTool implements MenuOrdering {
 
     @Override

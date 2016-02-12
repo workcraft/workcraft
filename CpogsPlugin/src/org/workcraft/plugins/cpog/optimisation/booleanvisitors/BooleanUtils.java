@@ -36,7 +36,6 @@ public class BooleanUtils {
         return result;
     }
 
-
     public static BooleanFormula dumbReplace(BooleanFormula formula,
             List<? extends BooleanVariable> params,    List<? extends BooleanFormula> values) {
         DumbBooleanWorker worker = new DumbBooleanWorker();
@@ -58,7 +57,6 @@ public class BooleanUtils {
         }
         return result;
     }
-
 
     public static BooleanFormula prettifyReplace(BooleanFormula formula,
             List<? extends BooleanVariable> params,    List<? extends BooleanFormula> values) {

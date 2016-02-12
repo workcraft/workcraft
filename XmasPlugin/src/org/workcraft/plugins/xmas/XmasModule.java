@@ -17,7 +17,6 @@ import org.workcraft.plugins.xmas.tools.VerConfTool;
 import org.workcraft.plugins.xmas.tools.VerQuery;
 import org.workcraft.plugins.xmas.tools.VerTool;
 
-
 public class XmasModule implements Module {
 
     @Override

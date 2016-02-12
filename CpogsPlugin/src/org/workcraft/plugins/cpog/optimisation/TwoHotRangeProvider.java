@@ -66,7 +66,6 @@ public class TwoHotRangeProvider {
         return literals;
     }
 
-
     public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
         List<CnfClause> conditions = new ArrayList<CnfClause>();
 

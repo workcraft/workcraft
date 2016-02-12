@@ -54,7 +54,6 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class SyncTool implements Tool {
 
     @Override

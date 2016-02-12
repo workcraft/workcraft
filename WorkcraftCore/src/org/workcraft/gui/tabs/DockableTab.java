@@ -35,7 +35,6 @@ import org.workcraft.gui.DockableWindowContentPanel;
 import org.workcraft.gui.DockableWindowContentPanel.ViewAction;
 import org.workcraft.gui.actions.ScriptedActionListener;
 
-
 @SuppressWarnings("serial")
 public class DockableTab extends JPanel {
     private JPanel buttonsPanel;
@@ -101,6 +100,5 @@ public class DockableTab extends JPanel {
     public Color getForeground() {
         return getLabel().getForeground();
     }
-
 
 }

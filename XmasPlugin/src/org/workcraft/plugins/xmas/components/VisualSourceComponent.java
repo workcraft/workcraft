@@ -42,7 +42,6 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SourceComponent.Mode;
 import org.workcraft.plugins.xmas.components.SourceComponent.Type;
 
-
 @DisplayName("Source")
 @Hotkey(KeyEvent.VK_I)
 @SVGIcon("images/icons/svg/xmas-source.svg")
@@ -52,7 +51,6 @@ public class VisualSourceComponent extends VisualXmasComponent {
     public Color color = new Color(0, 255, 0, 255);
     private VisualXmasContact oContact = null;
     public final double tokenSize = 0.18 * size;
-
 
     public VisualSourceComponent(SourceComponent component) {
         super(component);

@@ -36,7 +36,6 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
-
 public abstract class VisualTransformableNode extends VisualNode implements Movable, Rotatable, Flippable {
     protected AffineTransform localToParentTransform = new AffineTransform();
     protected AffineTransform parentToLocalTransform = new AffineTransform();

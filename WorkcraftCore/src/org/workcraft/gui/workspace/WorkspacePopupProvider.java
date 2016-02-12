@@ -116,7 +116,6 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             popup.add(miCreateFolder);
         }
 
-
         if (WorkspaceTree.isLeaf(workspace, path)) {
             popup.addSeparator();
             final WorkspaceEntry openFile = workspace.getOpenFile(path);

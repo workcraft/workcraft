@@ -30,7 +30,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
-
 @SuppressWarnings("serial")
 public class BooleanCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener{
 
@@ -56,7 +55,6 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
     public Object getCellEditorValue() {
         return checkBox.isSelected();
     }
-
 
     public void itemStateChanged(ItemEvent e) {
         fireEditingStopped();

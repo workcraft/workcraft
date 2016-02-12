@@ -12,7 +12,6 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
-
 public class STGConv {
     private final VisualSTG stg;
     private static final double xScaling = 6;

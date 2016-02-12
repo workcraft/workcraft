@@ -134,7 +134,6 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             }
             startPosition = null;
 
-
         }
     }
 
@@ -145,5 +144,4 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
         }
     }
 }
-
 

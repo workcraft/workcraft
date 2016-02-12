@@ -54,7 +54,6 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 
-
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/circuit-port.svg")

@@ -76,7 +76,6 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
             observerToNodes.remove(to);
     }
 
-
     @Override
     public void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesAddedEvent || e instanceof NodesReparentedEvent) {
@@ -131,7 +130,6 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
         if (list != null)
             for (TransformObserver to : list)
                 to.notify(e);
-
 
         for (Node n : node.getChildren())
             propagate(n,e);

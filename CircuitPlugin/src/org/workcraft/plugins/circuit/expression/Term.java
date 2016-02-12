@@ -71,5 +71,4 @@ public class Term implements Expression {
         }
     }
 
-
 }

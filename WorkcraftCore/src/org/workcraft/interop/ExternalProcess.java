@@ -29,7 +29,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 
-
 public class ExternalProcess {
 
     abstract static class StreamReaderThread extends Thread {

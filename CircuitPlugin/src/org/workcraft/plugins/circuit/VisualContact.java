@@ -47,7 +47,6 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-
 public class VisualContact extends VisualComponent implements StateObserver {
 
     public static final String PROPERTY_DIRECTION = "Direction";

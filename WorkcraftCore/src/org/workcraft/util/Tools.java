@@ -28,7 +28,6 @@ public class Tools {
         }
     }
 
-
     public static List<Tool> getApplicableTools(WorkspaceEntry we) {
         ArrayList<Tool> tools = new ArrayList<>();
 

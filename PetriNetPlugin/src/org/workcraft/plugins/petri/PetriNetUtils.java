@@ -26,7 +26,6 @@ import org.workcraft.util.Pair;
 
 public class PetriNetUtils {
 
-
     public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedOrAllDualArcs(final VisualModel visualModel) {
         HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
         HashSet<VisualConnection> consumingArcs = PetriNetUtils.getVisualConsumingArcs(visualModel);
@@ -179,7 +178,6 @@ public class PetriNetUtils {
         }
         return readArc;
     }
-
 
     public static Pair<VisualConnection, VisualConnection> converReadArcTotDualArc(VisualModel visualModel, VisualReadArc readArc) {
         VisualNode first = readArc.getFirst();

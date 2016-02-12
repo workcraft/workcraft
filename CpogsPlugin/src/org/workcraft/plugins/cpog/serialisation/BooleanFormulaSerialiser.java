@@ -66,7 +66,6 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
                 } else
                     append(flat);
 
-
                 return null;
             }
         };

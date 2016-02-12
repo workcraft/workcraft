@@ -36,14 +36,12 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class JsonExport implements Tool {
 
     //private final Framework framework;
 
     //VisualCircuit circuit;
     //private CheckCircuitTask checkTask;
-
 
     //ProgressMonitor<? super MpsatChainResult> monitor;
 
@@ -52,18 +50,15 @@ public class JsonExport implements Tool {
 //        this.ws = ws;
     }*/
 
-
     private static final Positioning LEFT = null;
 
     public String getDisplayName() {
         return "Export to JSON file";
     }
 
-
     public String getSection() {
         return "Export";
     }
-
 
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, Xmas.class);

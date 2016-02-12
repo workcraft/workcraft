@@ -43,7 +43,6 @@ import org.workcraft.util.XmlUtil;
 
 public class SVGExporter implements Exporter {
 
-
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         if (model == null) {
             throw new SerialisationException("Not a visual model");

@@ -26,7 +26,6 @@ import java.util.Collection;
 
 import org.workcraft.util.Func;
 
-
 public class NodeHelper {
 
     @SuppressWarnings("unchecked")

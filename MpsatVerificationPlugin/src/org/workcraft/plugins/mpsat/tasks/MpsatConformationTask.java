@@ -33,7 +33,6 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class MpsatConformationTask extends MpsatChainTask {
     private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
@@ -206,6 +205,5 @@ public class MpsatConformationTask extends MpsatChainTask {
         }
         return result;
     }
-
 
 }

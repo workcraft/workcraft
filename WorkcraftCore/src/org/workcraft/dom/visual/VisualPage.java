@@ -25,7 +25,6 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.util.Hierarchy;
 
-
 @Hotkey(KeyEvent.VK_P)
 @DisplayName("Page")
 @SVGIcon("images/icons/svg/selection-page.svg")

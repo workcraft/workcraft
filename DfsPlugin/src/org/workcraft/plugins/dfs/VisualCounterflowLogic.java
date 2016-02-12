@@ -49,7 +49,6 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
             }
         });
 
-
         addPropertyDeclaration(new PropertyDeclaration<VisualCounterflowLogic, Boolean>(
                 this, CounterflowLogic.PROPERTY_FORWARD_EARLY_EVALUATION, Boolean.class, true, true, true) {
             public void setter(VisualCounterflowLogic object, Boolean value) {

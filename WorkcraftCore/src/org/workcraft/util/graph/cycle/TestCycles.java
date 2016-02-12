@@ -1,8 +1,6 @@
 package org.workcraft.util.graph.cycle;
 
-
 import java.util.List;
-
 
 /**
  * Testfile for elementary cycle search.

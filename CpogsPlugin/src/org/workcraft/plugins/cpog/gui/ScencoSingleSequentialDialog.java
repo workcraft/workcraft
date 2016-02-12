@@ -133,8 +133,6 @@ public class ScencoSingleSequentialDialog extends JDialog {
         standardPanel.add(new SimpleFlowLayout.LineBreak());
     }
 
-
-
     private void createButtonPanel(final String string) {
         VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
         ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
@@ -168,7 +166,6 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
                 // generation mode selection
                 settings.setGenerationModeInt(string.matches("Single-literal encoding") ? 4 : 5);
-
 
                 // custom encodings
                 settings.setNumPO(m);

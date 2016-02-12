@@ -2,7 +2,6 @@ package org.workcraft.plugins.son.elements;
 
 import java.awt.Color;
 
-
 public interface TransitionNode extends Time{
 
     boolean isFaulty();

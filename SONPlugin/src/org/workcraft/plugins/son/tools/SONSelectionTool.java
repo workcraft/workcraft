@@ -114,7 +114,6 @@ public class SONSelectionTool extends SelectionTool {
         });
         levelPanel.add(levelUpButton);
 
-
         JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-level_down.svg"), "Level down (PageDown)");
         levelDownButton.addActionListener(new ActionListener(){
@@ -167,7 +166,6 @@ public class SONSelectionTool extends SelectionTool {
         });
         rotatePanel.add(rotateCounterclockwiseButton);
     }
-
 
     @Override
     public void mouseClicked(GraphEditorMouseEvent e){

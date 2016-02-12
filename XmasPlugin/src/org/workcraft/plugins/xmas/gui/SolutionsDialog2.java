@@ -11,8 +11,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-
-
 @SuppressWarnings("serial")
 public class SolutionsDialog2 extends JDialog {
     private JPanel contents;

@@ -73,7 +73,6 @@ public class ErrorTracingAlg extends SimulationAlg{
         }
     }
 
-
     private boolean hasCommonElements(Collection<TransitionNode> cycle1, Collection<TransitionNode> cycle2){
         for(Node n : cycle1)
             if(cycle2.contains(n))

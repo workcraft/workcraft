@@ -38,7 +38,6 @@ public class CnfClause extends Clause {
         super(literals);
     }
 
-
     @Override
     public <T> T accept(BooleanVisitor<T> visitor) {
         return BooleanOperations.or(getLiterals()).accept(visitor);

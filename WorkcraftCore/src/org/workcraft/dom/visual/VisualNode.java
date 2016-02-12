@@ -40,7 +40,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-
 public abstract class VisualNode implements Properties, Node, Touchable, Stylable, ObservableState, Hidable {
     protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
     private Node parent = null;

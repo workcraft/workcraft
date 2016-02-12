@@ -91,5 +91,4 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
         return super.getPrefix(node);
     }
 
-
 }

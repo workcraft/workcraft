@@ -100,7 +100,6 @@ public class CSONCycleAlg extends ONCycleAlg{
         return super.cycleTask(fliter);
     }
 
-
     /**
      *     get a/synchronous cycles
      */

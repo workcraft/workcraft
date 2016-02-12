@@ -61,7 +61,6 @@ public class ScencoExecutionSupport {
         return "0";
     }
 
-
     // BUILD CONSTRAINT FOR EACH ELEMENTS LOOPING ON THE SCENARIOS
     protected String generateConstraint(char[][][] constraints, int numScenarios, int event1, int event2) {
         StringBuilder s = new StringBuilder();

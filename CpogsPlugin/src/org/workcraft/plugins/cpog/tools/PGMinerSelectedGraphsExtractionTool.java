@@ -40,8 +40,6 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
             ArrayList<String> graphs = new ArrayList<>();
             inputFile = File.createTempFile("input", ".tr");
 
-
-
             int i = allGraphs.indexOf(" + ");
             while (i > -1) {
                 allGraphs = allGraphs.substring(0, i) + "\n" + allGraphs.substring(i + 2);
@@ -87,7 +85,6 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
                     JOptionPane.ERROR_MESSAGE);
             throw e2;
         }
-
 
         return inputFile;
     }

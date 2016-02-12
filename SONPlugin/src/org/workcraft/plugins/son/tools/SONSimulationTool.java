@@ -471,7 +471,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             }
             return "";
         }
-    };
+    }
 
     protected void errorMsg(String message, final GraphEditor editor){
 
@@ -572,7 +572,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
         return result;
     }
-
 
     private void reset(final GraphEditor editor) {
         applyMarking(initialMarking);

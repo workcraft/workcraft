@@ -40,7 +40,6 @@ public class StgUtils {
         return dummyTransition;
     }
 
-
     private static void replaceNamedTransition(VisualSTG stg, VisualNamedTransition oldTransition, VisualNamedTransition newTransition) {
         newTransition.copyPosition(oldTransition);
         newTransition.copyStyle(oldTransition);

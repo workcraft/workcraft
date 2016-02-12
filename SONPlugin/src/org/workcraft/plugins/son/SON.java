@@ -41,7 +41,6 @@ import org.workcraft.plugins.son.util.ScenarioSaveList;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
-
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
 
@@ -370,7 +369,6 @@ public class SON extends AbstractMathModel {
         return connection.iterator().next();
     }
 
-
     public Collection<SONConnection> getInputSONConnections(Node node){
         ArrayList<SONConnection> result =  new ArrayList<SONConnection>();
         for (SONConnection con : this.getSONConnections(node)){
@@ -455,7 +453,6 @@ public class SON extends AbstractMathModel {
         }
         return result;
     }
-
 
     public Collection<SONConnection> getInputScenarioPNConnections(Node node, ScenarioRef s){
         Collection<SONConnection> result = new ArrayList<SONConnection>();

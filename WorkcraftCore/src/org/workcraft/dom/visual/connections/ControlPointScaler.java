@@ -23,6 +23,7 @@ package org.workcraft.dom.visual.connections;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
+
 import static org.workcraft.util.Geometry.*;
 
 public class ControlPointScaler {

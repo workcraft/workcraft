@@ -372,7 +372,6 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
         return result;
     }
 
-
     protected void initialise(){
         consistencyAlg = new ConsistencyAlg(net);
         consistencyAlg.removeProperties();

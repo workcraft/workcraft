@@ -30,7 +30,6 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
-
 @DisplayName("Function")
 @Hotkey(KeyEvent.VK_F)
 @SVGIcon("images/icons/svg/circuit-formula.svg")
@@ -413,6 +412,5 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             setIsZeroDelay(srcComponent.getIsZeroDelay());
         }
     }
-
 
 }

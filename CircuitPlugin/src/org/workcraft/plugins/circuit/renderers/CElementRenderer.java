@@ -231,7 +231,6 @@ public class CElementRenderer extends GateRenderer {
                 return cachedPositions;
             }
 
-
             public void drawBubble(Graphics2D g) {
                 g.setColor(GateRenderer.background);
                 g.fill(bubbleShape);
@@ -272,7 +271,6 @@ public class CElementRenderer extends GateRenderer {
                     Line2D line = new Line2D.Double(x, y1+h, x, y1+h+0.5*resetVars.size());
                     g.draw(line);
                 }
-
 
                 AffineTransform at= g.getTransform();
 

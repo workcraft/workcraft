@@ -18,7 +18,6 @@ public class TransitionBundlerTool extends ConversionTool {
         return we.getModelEntry().getMathModel() instanceof PolicyNet;
     }
 
-
     @Override
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();

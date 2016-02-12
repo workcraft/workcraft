@@ -129,7 +129,6 @@ public class ParallelSimDialog  extends JDialog{
             listModel.addElement(item);
         }
 
-
         eventList = new JList(listModel);
         eventList.setCellRenderer(new CheckListRenderer());
         eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

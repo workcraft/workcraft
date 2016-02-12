@@ -27,7 +27,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 
-
 public class VerConfTool implements Tool {
 
     //private final Framework framework;
@@ -37,16 +36,13 @@ public class VerConfTool implements Tool {
         //this.framework = framework;
     //}
 
-
     public String getDisplayName() {
         return "Configure Verif";
     }
 
-
     public String getSection() {
         return "Verification";
     }
-
 
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, Xmas.class);

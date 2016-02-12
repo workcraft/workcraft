@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
-
 public class BooleanOperations {
     //private static BooleanWorker worker = new DumbBooleanWorker();
     //private static BooleanWorker worker = new CleverBooleanWorker();

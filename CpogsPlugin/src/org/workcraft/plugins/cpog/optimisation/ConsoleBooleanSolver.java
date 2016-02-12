@@ -22,7 +22,6 @@ package org.workcraft.plugins.cpog.optimisation;
 
 import org.workcraft.plugins.cpog.CpogSettings;
 
-
 public class ConsoleBooleanSolver {
 
     public BooleanSolution solve(CnfTask task) {

@@ -21,7 +21,6 @@ import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 
-
 public class BSONStructureTask extends AbstractStructuralVerification{
 
     private SON net;
@@ -118,7 +117,6 @@ public class BSONStructureTask extends AbstractStructuralVerification{
             infoMsg("Valid phase structure.");
 
         infoMsg("Phase checking tasks complete.");
-
 
         //BSON cycle task
         infoMsg("Running cycle detection task...");
@@ -253,7 +251,6 @@ public class BSONStructureTask extends AbstractStructuralVerification{
         }
         return result;
     }
-
 
     //check for joint
     private Map<Condition, String> phaseTask3(ONGroup upperGroup){

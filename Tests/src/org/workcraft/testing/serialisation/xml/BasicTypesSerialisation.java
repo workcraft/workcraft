@@ -66,7 +66,6 @@ public class BasicTypesSerialisation {
             Assert.assertEquals(TestEnum.ONE, ds.deserialise(e));
             Assert.assertEquals(TestEnum.TWO, ds.deserialise(e2));
 
-
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SerialisationException e) {
@@ -91,7 +90,6 @@ public class BasicTypesSerialisation {
 
             Assert.assertEquals(8, ds.deserialise(e));
             Assert.assertEquals(-500, ds.deserialise(e2));
-
 
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
@@ -119,11 +117,9 @@ public class BasicTypesSerialisation {
             Element e3 = doc.createElement("property");
             s.serialise(e3, r);
 
-
             Assert.assertEquals(-1E8, ds.deserialise(e));
             Assert.assertEquals(123.456, ds.deserialise(e2));
             Assert.assertEquals(r, ds.deserialise(e3));
-
 
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);

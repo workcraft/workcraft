@@ -35,7 +35,6 @@ import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 @SuppressWarnings("rawtypes")
 public class StructureVerifyDialog extends JDialog{
 

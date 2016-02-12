@@ -77,7 +77,6 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
         return literals;
     }
 
-
     public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
         List<CnfClause> conditions = new ArrayList<CnfClause>();
 

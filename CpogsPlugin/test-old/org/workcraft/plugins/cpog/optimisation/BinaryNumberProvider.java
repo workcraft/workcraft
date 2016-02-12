@@ -44,7 +44,6 @@ public class BinaryNumberProvider implements
         Assert.assertEquals("(!xb4|(!xb3|(!xb2&(!xb1&!xb0))))", FormulaToString.toString(p.getConstraints()));
     }
 
-
     @Test
     public void testValuesCount()
     {

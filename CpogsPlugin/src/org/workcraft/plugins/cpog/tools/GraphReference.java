@@ -65,5 +65,4 @@ public class GraphReference {
         return pageCentre;
     }
 
-
 }

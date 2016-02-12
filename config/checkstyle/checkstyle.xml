@@ -39,6 +39,10 @@
             <property name="lineWrappingIndentation" value="8"/>
             <property name="arrayInitIndent" value="4"/>
         </module>
+        <module name="EmptyLineSeparator">
+            <property name="tokens" value="IMPORT, CLASS_DEF, INTERFACE_DEF"/>
+            <property name="allowMultipleEmptyLines" value="false" />
+        </module>
 
         <module name="OneStatementPerLine" />
 

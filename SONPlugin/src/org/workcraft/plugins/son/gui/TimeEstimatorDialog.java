@@ -304,7 +304,7 @@ public class TimeEstimatorDialog extends JDialog{
             }
             return "";
         }
-    };
+    }
 
     protected void errMsg(String msg){
         JOptionPane.showMessageDialog(editor.getMainWindow(), msg, "Time estimation error", JOptionPane.ERROR_MESSAGE);

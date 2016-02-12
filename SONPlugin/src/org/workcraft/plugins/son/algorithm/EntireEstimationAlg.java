@@ -73,7 +73,6 @@ public class EntireEstimationAlg extends EstimationAlg{
         LinkedList<Time> visited = new LinkedList<Time>();
         visited.add(superIni);
 
-
         //assign specified value from connections to nodes
         for(SONConnection con : net.getSONConnections()){
             if(con.getSemantics() == Semantics.PNLINE){

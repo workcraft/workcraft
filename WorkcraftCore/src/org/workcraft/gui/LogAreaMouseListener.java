@@ -12,7 +12,6 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.text.DefaultEditorKit;
 
-
 public final class LogAreaMouseListener implements MouseListener {
     @Override
     public void mouseReleased(MouseEvent e) {

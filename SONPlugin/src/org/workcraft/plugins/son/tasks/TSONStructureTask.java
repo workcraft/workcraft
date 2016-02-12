@@ -83,7 +83,6 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
         //block connection task result
 
-
         infoMsg("Block structure checking tasks complete.");
 
     }

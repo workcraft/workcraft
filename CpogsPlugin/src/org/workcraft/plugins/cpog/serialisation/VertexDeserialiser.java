@@ -44,5 +44,4 @@ public class VertexDeserialiser extends BooleanFunctionDeserialiser {
         return new Vertex();
     }
 
-
 }

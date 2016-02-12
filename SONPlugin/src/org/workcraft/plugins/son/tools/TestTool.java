@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.tools;
 
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -176,7 +175,6 @@ public class TestTool extends AbstractTool implements Tool{
         }
     }*/
 
-
     protected Collection<ChannelPlace> getSyncCPs(SON net){
         Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
         HashSet<Node> nodes = new HashSet<Node>();
@@ -221,7 +219,6 @@ public class TestTool extends AbstractTool implements Tool{
         for(ONGroup group : groups){
             set.addAll(group.getTransitionNodes());
         }
-
 
         for(TransitionNode e : set){
             //before =  bsonAlg.before(e);
@@ -278,7 +275,6 @@ public class TestTool extends AbstractTool implements Tool{
 
     private void csonCycleTest(SON net){
         CSONCycleAlg csonPath = new CSONCycleAlg(net);
-
 
         for(Path path : csonPath.cycleTask(net.getComponents())){
             System.out.println(path.toString(net));
@@ -372,13 +368,11 @@ public class TestTool extends AbstractTool implements Tool{
         }
     }
 
-
     @Override
     public Decorator getDecorator(GraphEditor editor) {
         // TODO Auto-generated method stub
         return null;
     }
-
 
     @Override
     public String getLabel() {

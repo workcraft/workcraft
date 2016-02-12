@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.algorithm;
 
-
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;

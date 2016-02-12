@@ -44,5 +44,4 @@ public class ArcDeserialiser extends BooleanFunctionDeserialiser {
         return new Arc();
     }
 
-
 }

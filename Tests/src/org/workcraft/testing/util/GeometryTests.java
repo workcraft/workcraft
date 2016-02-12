@@ -74,7 +74,6 @@ public class GeometryTests {
         Assert.assertEquals(0.75, split.curve2.getCtrlY1(), 1e-8);
     }
 
-
     @Test
     public void centerTest2() {
         CubicCurve2D curve = new CubicCurve2D.Double(-1, -2, -1, -1, 1, 1, 1, 2);

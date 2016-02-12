@@ -76,7 +76,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
     private HashSet<Replica> replicas = new HashSet<>();
 
-
     public VisualComponent(MathNode refNode) {
         this(refNode, true, true, true);
     }
@@ -313,7 +312,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     public Point2D getNameOffset() {
         return getOffset(getNamePositioning());
     }
-
 
     private void cacheNameRenderedText(DrawRequest r) {
         String name = null;

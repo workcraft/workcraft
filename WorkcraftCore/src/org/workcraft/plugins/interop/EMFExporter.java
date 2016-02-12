@@ -43,7 +43,6 @@ import org.workcraft.serialisation.Format;
 
 public class EMFExporter implements Exporter {
 
-
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         InputStream svg = SVGExportUtils.stream(model);
 

@@ -249,7 +249,6 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
         }
     }
 
-
     public Cnf generateCnf(BooleanFormula formula) {
         //FormulaCounter counter = new FormulaCounter();
         //formula.accept(counter);

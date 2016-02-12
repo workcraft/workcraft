@@ -80,7 +80,6 @@ public class JavaScriptWindow extends JPanel {
         resetScript();
     }
 
-
     public void execScript() {
         if (txtScript.getText().length() > 0) {
             try {
@@ -103,12 +102,9 @@ public class JavaScriptWindow extends JPanel {
         }
     }
 
-
     private void resetScript() {
         isInitState = true;
         txtScript.setText("// Write a script and press Ctrl-Enter to execute it.");
     }
-
-
 
 }

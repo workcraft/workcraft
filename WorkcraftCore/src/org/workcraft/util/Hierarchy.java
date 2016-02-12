@@ -54,7 +54,6 @@ public class Hierarchy {
         return result;
     }
 
-
     public static <T extends Node> Collection <T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
         LinkedList<T> result = new LinkedList<T>();
         for (Node node : nodes) {

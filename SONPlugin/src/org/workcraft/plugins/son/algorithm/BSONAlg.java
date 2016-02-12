@@ -395,7 +395,6 @@ public class BSONAlg extends RelationAlgorithm{
         return result;
     }
 
-
     /**
      * get lower-level groups for a given group set.
      */
@@ -416,7 +415,6 @@ public class BSONAlg extends RelationAlgorithm{
         }
         return result;
     }
-
 
     /**
      * get upper-level groups for a given group set.

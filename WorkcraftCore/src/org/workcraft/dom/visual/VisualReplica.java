@@ -54,7 +54,6 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     private VisualComponent master = null;
 
-
     public VisualReplica() {
         this(true, true);
     }
@@ -132,7 +131,6 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_POSITIONING));
     }
 
-
     public Color getForegroundColor() {
         return foregroundColor;
     }
@@ -170,7 +168,6 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     public Point2D getNameOffset() {
         return getOffset(getNamePositioning());
     }
-
 
     private void cacheNameRenderedText(DrawRequest r) {
         String name = null;

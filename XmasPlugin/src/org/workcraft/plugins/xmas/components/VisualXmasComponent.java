@@ -305,7 +305,6 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         }
     }
 
-
     @Override
     public void rotateClockwise() {
         setOrientation(getOrientation().rotateClockwise());

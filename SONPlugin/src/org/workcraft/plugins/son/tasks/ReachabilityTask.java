@@ -40,7 +40,6 @@ public class ReachabilityTask implements Task<VerificationResult>{
     private Collection<Node> causalPredecessors;
     private Collection<String> causalPredecessorRefs;
 
-
     public ReachabilityTask(WorkspaceEntry we){
         this.we = we;
         net = (SON)we.getModelEntry().getMathModel();
@@ -123,13 +122,11 @@ public class ReachabilityTask implements Task<VerificationResult>{
         return result;
     }
 
-
     private boolean reachabilityTask(){
         //Collection<Node> initial = new HashSet<Node>();
         Collection<Node> sync= new HashSet<Node>();
         for(Path path : getSyncCycles())
             sync.addAll(path);
-
 
         //if marking contains a synchronous channel place, it's unreachable.
         for(String ref : markingRefs){

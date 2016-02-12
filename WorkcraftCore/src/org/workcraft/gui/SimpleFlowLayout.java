@@ -118,7 +118,6 @@ public class SimpleFlowLayout implements LayoutManager {
                 }
             }
 
-
             return new Dimension(maxwidth, y + rowh + (rowh!=0?vgap:0));
         }
     }

@@ -154,7 +154,6 @@ public class Geometry {
         }
     }
 
-
     public static double getBorderPointParameter(Touchable collisionNode, ParametricCurve curve, double tStart, double tEnd) {
         Point2D point = new Point2D.Double();
         while(Math.abs(tEnd-tStart) > 1e-6) {

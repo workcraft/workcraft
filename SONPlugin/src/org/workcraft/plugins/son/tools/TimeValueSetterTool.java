@@ -146,7 +146,6 @@ public class TimeValueSetterTool extends AbstractTool{
             }
         });
 
-
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -190,7 +189,6 @@ public class TimeValueSetterTool extends AbstractTool{
         max.setText(value.maxToString());
         max.setPreferredSize(new Dimension(labelwidth, labelheight));
         ((AbstractDocument) max.getDocument()).setDocumentFilter(new TimeInputFilter());
-
 
         timeInputPanel.add(label);
         timeInputPanel.add(min);
@@ -535,7 +533,6 @@ public class TimeValueSetterTool extends AbstractTool{
         editor.requestFocus();
         editor.repaint();
     }
-
 
     @Override
     public void activated(final GraphEditor editor) {

@@ -46,6 +46,4 @@ public class BooleanCellRenderer extends JCheckBox implements TableCellRenderer 
         return this;
     }
 
-
-
 }

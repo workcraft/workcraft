@@ -25,7 +25,6 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult> {
     private final WorkspaceEntry we;
 

@@ -259,7 +259,6 @@ public class Workspace {
         return desiredPath;
     }
 
-
     private boolean pathTaken(Path<String> path) {
         return mounts.containsKey(path) || openFiles.containsKey(path) || getFile(path).exists();
     }
@@ -433,7 +432,6 @@ public class Workspace {
         this.temporary = temporary;
     }
 
-
     public MountTree getHardMountsRoot() {
         return new MountTree(baseDir(), mounts, Path.<String>empty());
     }
@@ -506,7 +504,6 @@ public class Workspace {
         }
         return result;
     }
-
 
     public WorkspaceEntry getOpenFile(Path<String> path) {
         return openFiles.getValue(path);

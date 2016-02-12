@@ -184,7 +184,6 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
 
                 }
 
-
                 return null;
             }
         };

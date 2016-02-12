@@ -20,7 +20,6 @@
 */
 package org.workcraft.workspace;
 
-
 public class WorkspaceNode {
     public WorkspaceNode(MountTree mounts) {
         this.mounts = mounts;

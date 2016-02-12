@@ -101,7 +101,6 @@ public class CircuitToStgConverter {
         //groupDriverStgs(drivers);
     }
 
-
     public VisualSTG getStg() {
         return stg;
     }
@@ -330,7 +329,6 @@ public class CircuitToStgConverter {
             }
         }
     }
-
 
     private TwoWayMap<VisualContact, SignalStg> associateDriversToStgs(HashSet<VisualContact> drivers) {
         TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();

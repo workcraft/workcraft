@@ -55,7 +55,6 @@ public class ModelFactory {
         }
     }
 
-
     public static VisualModel createVisualModel(Model model) throws VisualModelInstantiationException {
         // Find the corresponding visual class
         VisualClass vcat = model.getClass().getAnnotation(VisualClass.class);

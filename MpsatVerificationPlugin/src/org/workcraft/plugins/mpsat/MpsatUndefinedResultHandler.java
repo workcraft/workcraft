@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat;
 
 import javax.swing.JOptionPane;
 
-
 final class MpsatUndefinedResultHandler implements Runnable {
 
     private final String message;

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.untangling;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,8 +18,6 @@ import org.jbpt.petri.untangling.ReductionBasedRepresentativeUntangling;
 import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
 import org.workcraft.plugins.cpog.PnToCpogSettings;
-
-
 
 public class Untanglings {
 
@@ -147,7 +144,6 @@ public class Untanglings {
     /** converts the Petri net introduced into multiple *
      *  processes which compose the untangling         **/
     public boolean startConversion(){
-
 
         // starting conversion
         untangling = new ReductionBasedRepresentativeUntangling(sys,setup);

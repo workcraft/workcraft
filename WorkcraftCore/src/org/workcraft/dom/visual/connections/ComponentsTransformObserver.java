@@ -106,7 +106,6 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
                 cur = (VisualNode) cur.getParent();
             }
 
-
             VisualNode secondComponent = connection.getSecond();
             cur = secondComponent;
             while (cur.getParent() != null) {
@@ -117,7 +116,6 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
                 }
                 cur = (VisualNode) cur.getParent();
             }
-
 
             firstShape = TransformHelper.transform(firstComponent, TransformHelper.getTransform(firstComponent, connection));
             secondShape = TransformHelper.transform(secondComponent, TransformHelper.getTransform(secondComponent, connection));

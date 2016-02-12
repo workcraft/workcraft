@@ -37,7 +37,6 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
 
-
 @DisplayName("Switch")
 @SVGIcon("images/icons/svg/xmas-switch.svg")
 public class VisualSwitchComponent extends VisualXmasComponent {

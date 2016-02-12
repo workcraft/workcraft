@@ -1,6 +1,5 @@
 package org.workcraft.util.graph.cycle;
 
-
 import java.util.Vector;
 
 /**

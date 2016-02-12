@@ -50,7 +50,6 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class VerQuery extends AbstractTool implements Tool {
 
     @Override

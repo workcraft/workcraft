@@ -56,7 +56,6 @@ public class BufferRenderer extends GateRenderer {
                         g.draw(path);
                     }
 
-
                 };
             }
 
@@ -345,7 +344,6 @@ public class BufferRenderer extends GateRenderer {
                             double y2 = boundingBox().getMaxY();
                             double y = y1;
 
-
                             for (ComponentRenderingResult res: results) {
                                 Rectangle2D rec = res.boundingBox();
 
@@ -373,7 +371,6 @@ public class BufferRenderer extends GateRenderer {
                         double y1 = boundingBox().getMinY();
                         double y2 = boundingBox().getMaxY();
                         double y = y1;
-
 
                         Path2D.Double path = new Path2D.Double();
 

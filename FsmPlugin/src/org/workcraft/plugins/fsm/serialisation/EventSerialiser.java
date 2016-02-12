@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.fsm.serialisation;
 
-
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.fsm.Event;

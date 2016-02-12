@@ -70,11 +70,8 @@ public class WorkspaceChooser extends JPanel {
 
         tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace), null);
 
-
-
         JScrollPane scroll = new JScrollPane();
         scroll.setViewportView(tree);
-
 
         expand(filteredSource.getRoot());
 

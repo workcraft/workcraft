@@ -167,7 +167,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         return result;
     }
 
-
     private LogicStg generateLogicStg(VisualLogic l) throws InvalidConnectionException {
         String name = getDfsModel().getName(l);
         Point2D pos = getComponentPosition(l);
@@ -176,7 +175,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         Collection<Node> nodes = new LinkedList<Node>();
         SignalTransition.Type type = SignalTransition.Type.INTERNAL;
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(l).size() == 0);
-
 
         Container curContainer = null;
 
@@ -279,7 +277,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         logicMap.put(logic, stg);
     }
-
 
     private RegisterStg generateRegisterSTG(VisualRegister r) throws InvalidConnectionException {
         String name = getDfsModel().getName(r);
@@ -407,7 +404,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         registerMap.put(register, stg);
     }
-
 
     private CounterflowLogicStg generateCounterflowLogicStg(VisualCounterflowLogic l) throws InvalidConnectionException {
         String name = getDfsModel().getName(l);
@@ -568,7 +564,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         counterflowLogicMap.put(logic, stg);
     }
-
 
     private CounterflowRegisterStg generateCounterflowRegisterSTG(VisualCounterflowRegister r) throws InvalidConnectionException {
         String name = getDfsModel().getName(r);
@@ -740,7 +735,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         counterflowRegisterMap.put(register, stg);
     }
 
-
     private BinaryRegisterStg generateBinaryRegisterSTG(VisualBinaryRegister r,
             boolean andSync, boolean orSync) throws InvalidConnectionException {
         Collection<Node> nodes = new LinkedList<Node>();
@@ -831,7 +825,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         createProducingArc(tMF, m0, false);
         setPosition(tMF, x, y - 4.0 - dy);
         nodes.add(tMF);
-
 
         VisualPlace fM0 = getStgModel().createPlace(nameFalseM + name + name0, curContainer);
         fM0.setLabel(labelFalseM + name + label0);
@@ -1005,7 +998,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         controlRegisterMap.put(register, stg);
     }
 
-
     private BinaryRegisterStg generatePushRegisterStg(VisualPushRegister r) throws InvalidConnectionException {
         return generateBinaryRegisterSTG(r, false, false);
     }
@@ -1091,7 +1083,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         pushRegisterMap.put(register, stg);
     }
 
-
     private BinaryRegisterStg generatePopRegisterStg(VisualPopRegister r) throws InvalidConnectionException {
         return generateBinaryRegisterSTG(r, false, false);
     }
@@ -1176,7 +1167,6 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         popRegisterMap.put(register, stg);
     }
-
 
     public boolean isRelated(Node highLevelNode, Node node) {
         NodeStg nodeStg = null;

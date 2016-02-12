@@ -164,7 +164,6 @@ public class CleverBooleanWorker implements BooleanWorker {
         result = result + x.charAt(op) + invertString(x.substring(op + 1));
         return result;
 
-
     }
 
 }

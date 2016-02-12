@@ -25,7 +25,6 @@ import java.util.List;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
-
 public class Cnf extends Nf<CnfClause> {
 
     public Cnf() {

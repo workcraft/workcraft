@@ -46,7 +46,6 @@ public class PresetManagerDialog<T> extends JDialog {
         this.setLayout(new BorderLayout());
         this.add(content, BorderLayout.CENTER);
 
-
         okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {
             @Override

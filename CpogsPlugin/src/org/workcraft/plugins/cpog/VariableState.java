@@ -21,7 +21,6 @@
 
 package org.workcraft.plugins.cpog;
 
-
 public enum VariableState {
     TRUE('1', "[1] true"),
     FALSE('0', "[0] false"),

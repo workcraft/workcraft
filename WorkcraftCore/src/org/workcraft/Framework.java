@@ -93,7 +93,6 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
 
-
 public final class Framework {
     private static final String SETTINGS_DIRECTORY_NAME = ".workcraft";
     private static final String CONFIG_FILE_NAME = "config.xml";

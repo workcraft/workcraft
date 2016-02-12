@@ -53,7 +53,6 @@ public class VisualGraph extends AbstractVisualModel {
         }
     }
 
-
     @Override
     public void validateConnection(Node first, Node second) throws InvalidConnectionException {
     }

@@ -79,7 +79,6 @@ public class SolutionReader {
 
         Map<Integer, String> cnfToOriginal = extractCnfMapping(task.getBody());
 
-
         List<Integer> numbers = extractNumbers(solution);
         if(numbers==null)
             return null;

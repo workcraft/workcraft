@@ -40,7 +40,6 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
-
 public class VisualXmasContact extends VisualComponent implements StateObserver {
     public static final String IO_TYPE_PROPERTY_NAME = "IOtype";
 

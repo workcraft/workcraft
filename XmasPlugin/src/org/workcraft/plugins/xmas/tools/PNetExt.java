@@ -14,7 +14,6 @@ import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.util.LogUtils;
 
-
 public class PNetExt {
 
     //private final Framework framework;
@@ -22,9 +21,7 @@ public class PNetExt {
     //VisualCircuit circuit;
     //private CheckCircuitTask checkTask;
 
-
     private static boolean printoutput=true;
-
 
     private static class Source {
 
@@ -68,7 +65,6 @@ public class PNetExt {
         }
     }
 
-
     static List<Source> sourcelist = new ArrayList<Source>();
     static List<Switch> switchlist = new ArrayList<Switch>();
     static List<Merge> mergelist = new ArrayList<Merge>();
@@ -80,7 +76,6 @@ public class PNetExt {
         switchlist.clear();
         mergelist.clear();
     }
-
 
     private static void readFile(String file,int syncflag) {
         String typ=null;

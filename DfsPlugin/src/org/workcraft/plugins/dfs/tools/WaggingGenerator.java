@@ -219,7 +219,6 @@ public class WaggingGenerator {
         }
     }
 
-
     private void insertPopControl() {
         Container container = getCommonContainer();
         Rectangle2D bb = getBoundingBox();

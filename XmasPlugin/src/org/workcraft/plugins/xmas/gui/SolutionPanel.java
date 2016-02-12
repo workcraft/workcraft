@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-
 @SuppressWarnings("serial")
 public class SolutionPanel extends JPanel {
     private JPanel buttonsPanel;
@@ -58,7 +57,6 @@ public class SolutionPanel extends JPanel {
 
         //buttonsPanel.add(saveButton);
         //buttonsPanel.add(playButton);
-
 
         add(scrollPane, "0 0");
         add(buttonsPanel, "1 0");

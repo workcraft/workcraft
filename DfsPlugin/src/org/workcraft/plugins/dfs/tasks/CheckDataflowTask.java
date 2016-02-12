@@ -28,7 +28,6 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-
 public class CheckDataflowTask extends MpsatChainTask {
     private final MpsatSettings deadlockSettings;
     private final MpsatSettings hazardSettings;

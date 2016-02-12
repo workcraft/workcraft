@@ -95,8 +95,6 @@ public class CpogModule implements Module {
 
         pm.registerClass(Tool.class, PGMinerSelectedGraphsExtractionTool.class);
 
-
-
     }
 
     private void initCompatibilityManager() {

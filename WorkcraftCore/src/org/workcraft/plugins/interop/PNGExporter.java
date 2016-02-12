@@ -39,7 +39,6 @@ import org.workcraft.serialisation.Format;
 
 public class PNGExporter implements Exporter {
 
-
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         InputStream svg = SVGExportUtils.stream(model);
         Transcoder transcoder = new PNGTranscoder();
