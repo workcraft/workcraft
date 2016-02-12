@@ -463,13 +463,13 @@ public class CpogSelectionTool extends SelectionTool {
             return localVertices;
         } else {
 
-        visualCpog.selectNone();
-        int n = vertexMap.size();
-        int i = 0;
+            visualCpog.selectNone();
+            int n = vertexMap.size();
+            int i = 0;
 
-        for (VisualVertex v : vertexMap.values()) {
-            visualCpog.addToSelection(v);
-        }
+            for (VisualVertex v : vertexMap.values()) {
+                visualCpog.addToSelection(v);
+            }
 
             CpogConnector cc = new CpogConnector(visualCpog);
             f.accept(cc);
@@ -697,8 +697,8 @@ public class CpogSelectionTool extends SelectionTool {
     public void mouseReleased(GraphEditorMouseEvent e) {
         super.mouseReleased(e);
 
-    WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
-    final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+        WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
+        final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 
         for (Node n : visualCpog.getSelection()) {
             if (n instanceof VisualVertex) {
@@ -1165,8 +1165,8 @@ public class CpogSelectionTool extends SelectionTool {
                 }
 
             }
-    }
-    new RenderTypeChangedHandler().attach(visualCpog.getRoot());
+        }
+        new RenderTypeChangedHandler().attach(visualCpog.getRoot());
 
     }
 }

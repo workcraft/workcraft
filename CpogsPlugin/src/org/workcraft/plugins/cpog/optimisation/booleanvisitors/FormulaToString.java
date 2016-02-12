@@ -234,28 +234,28 @@ public class FormulaToString implements BooleanVisitor<String> {
 
     public static class ParenthesesPrinter extends DelegatingPrinter {
         @Override public Void visit(Zero node) {
-                return enclose(node);
+            return enclose(node);
         }
         @Override public Void visit(One node) {
-                return enclose(node);
+            return enclose(node);
         }
         @Override public Void visit(BooleanVariable node) {
-                return enclose(node);
+            return enclose(node);
         }
         @Override public Void visit(And node) {
-                return enclose(node);
+            return enclose(node);
         }
         @Override public Void visit(Or node) {
-                return enclose(node);
+            return enclose(node);
         }
         @Override public Void visit(Xor node) {
-                return enclose(node);
+            return enclose(node);
         }
         @Override public Void visit(Iff node) {
-                return enclose(node);
+            return enclose(node);
         }
         @Override public Void visit(Imply node) {
-                return enclose(node);
+            return enclose(node);
         }
         Void enclose(BooleanFormula node) {
             append("(");

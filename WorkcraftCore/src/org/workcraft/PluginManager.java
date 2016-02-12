@@ -113,11 +113,11 @@ public class PluginManager implements PluginProvider {
         for(Element pluginElement : XmlUtil.getChildElements("plugin", xmlroot)) {
             LegacyPluginInfo info = new LegacyPluginInfo(pluginElement);
             for (String interfaceName : info.getInterfaces())
-            try {
-                plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
-            } catch (ClassNotFoundException e) {
-                LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
-            }
+                try {
+                    plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
+                } catch (ClassNotFoundException e) {
+                    LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
+                }
         }
 
         return true;
@@ -180,11 +180,11 @@ public class PluginManager implements PluginProvider {
 
     private void processLegacyPlugin(Class<?> cls, LegacyPluginInfo info) throws PluginInstantiationException {
         for (String interfaceName : info.getInterfaces())
-        try {
-            plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
-        } catch (ClassNotFoundException e) {
-            LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
-        }
+            try {
+                plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
+            } catch (ClassNotFoundException e) {
+                LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
+            }
     }
 
     public void reconfigure() throws PluginInstantiationException {

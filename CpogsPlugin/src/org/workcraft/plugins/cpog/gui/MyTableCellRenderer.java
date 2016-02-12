@@ -11,5 +11,5 @@ public class MyTableCellRenderer extends DefaultTableCellRenderer{
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         setHorizontalAlignment(CENTER);
         return this;
-        }
     }
+}

@@ -149,12 +149,12 @@ public class FileUtils {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         StringBuilder result = new StringBuilder();
         while (true) {
-         String s = reader.readLine();
-         if (s==null) {
-             return result.toString();
-         }
-         result.append(s);
-         result.append('\n');
+            String s = reader.readLine();
+            if (s==null) {
+                return result.toString();
+            }
+            result.append(s);
+            result.append('\n');
         }
     }
 

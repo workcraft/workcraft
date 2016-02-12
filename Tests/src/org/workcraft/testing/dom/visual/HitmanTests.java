@@ -80,10 +80,10 @@ public class HitmanTests {
     public void testHitDeepestSkipNulls() {
         final HitableNode toHit = new HitableNode();
         Node node = new DummyNode(
-            new Node[]{
-                    new DummyNode(new Node[]{toHit }),
-                    new DummyNode(),
-            }
+                new Node[]{
+                        new DummyNode(new Node[]{toHit }),
+                        new DummyNode(),
+                }
         );
         assertSame(toHit, HitMan.hitDeepestNodeOfType(new Point2D.Double(0.5, 0.5), node, HitableNode.class));
     }

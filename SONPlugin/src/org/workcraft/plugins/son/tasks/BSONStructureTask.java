@@ -70,9 +70,9 @@ public class BSONStructureTask extends AbstractStructuralVerification{
             return;
         }
 
-         ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
-         relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
-         components.addAll(relatedCPlaces);
+        ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
+        relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
+        components.addAll(relatedCPlaces);
 
         //Upper-level group structure task
         infoMsg("Running model structure and component relation tasks...");
@@ -191,8 +191,8 @@ public class BSONStructureTask extends AbstractStructuralVerification{
             }
 
             if(inUpperGroup < connectedNodes.size() && inUpperGroup != 0)
-                    result.add(cPlace);
-            }
+                result.add(cPlace);
+        }
 
         return result;
     }

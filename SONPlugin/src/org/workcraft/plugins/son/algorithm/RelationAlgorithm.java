@@ -435,7 +435,7 @@ public class RelationAlgorithm{
             for(Node pre : net.getPreset(node))
                 if(!nodes.contains(pre))
                     result.add(pre);
-         }
+        }
 
         return result;
     }

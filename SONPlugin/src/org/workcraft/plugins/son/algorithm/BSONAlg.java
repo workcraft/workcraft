@@ -47,9 +47,9 @@ public class BSONAlg extends RelationAlgorithm{
                         for (ONGroup nextGroup : groups){
                             if(nextGroup.contains(con.getSecond()))
                                 result.add(con);
+                        }
                     }
                 }
-            }
         }
         return result;
     }
@@ -154,7 +154,7 @@ public class BSONAlg extends RelationAlgorithm{
     private void dfs(LinkedList<Node> visited, Node upper, boolean getMin) {
         Node n = visited.getLast();
         if((n instanceof Condition) && getPostBhvSet((Condition)n).contains(upper)){
-              dfsResult.add((Condition)n);
+            dfsResult.add((Condition)n);
         }else{
             Collection<Node> neighbours = null;
             if(getMin)
@@ -592,7 +592,7 @@ public class BSONAlg extends RelationAlgorithm{
         for(ONGroup group : upperGroups)
             for(TransitionNode e : group.getTransitionNodes()){
                 result.put(e, before(e, phases));
-        }
+            }
 
         return result;
     }

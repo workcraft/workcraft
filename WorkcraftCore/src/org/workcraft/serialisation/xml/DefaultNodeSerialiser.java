@@ -62,8 +62,7 @@ public class DefaultNodeSerialiser {
             // property explicitly requested to be excluded from auto serialisation
             if (
                     desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
-                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null
-                    )
+                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null)
                 continue;
 
 

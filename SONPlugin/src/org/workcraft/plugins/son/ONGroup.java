@@ -57,7 +57,7 @@ public class ONGroup extends PageNode{
         for(Node node: nodes){
             if(!this.contains(node))
                 return false;
-            }
+        }
         return true;
     }
 

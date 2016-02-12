@@ -91,84 +91,84 @@ public class VerQuery extends AbstractTool implements Tool {
     }
 
     private static List<String> processArg(String file, int index) {
-           String typ=null;
-           Scanner sc=null;
-           try {
-              sc=new Scanner(new File(file));
-           } catch (FileNotFoundException e) {
-               LogUtils.logErrorLine(e.getMessage());
-           }
-           String targ="";
-           String larg="";
-           String sarg="";
-           String aarg="";
-           String qarg="";
-           String arg="";
-           int num;
-           while(sc.hasNextLine()) {
-             Scanner line=new Scanner(sc.nextLine());
-             Scanner nxt=new Scanner(line.next());
-             String check=nxt.next();
-             String str;
-             if(check.startsWith("trace")) {
-               nxt=new Scanner(line.next());
-               targ="-t";
-               targ = targ + nxt.next();
-             } else if(check.startsWith("level")) {
-                 nxt=new Scanner(line.next());
-                 larg="-v";
-                 str = nxt.next();
-                 level = str;
-                 if(str.equals("normal")) {
-                      //System.out.println("Read v1");
-                     larg = "-v1";
-                 } else if(str.equals("advanced")) {
-                     //System.out.println("Read v2");
+        String typ=null;
+        Scanner sc=null;
+        try {
+            sc=new Scanner(new File(file));
+        } catch (FileNotFoundException e) {
+            LogUtils.logErrorLine(e.getMessage());
+        }
+        String targ="";
+        String larg="";
+        String sarg="";
+        String aarg="";
+        String qarg="";
+        String arg="";
+        int num;
+        while(sc.hasNextLine()) {
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
+            String check=nxt.next();
+            String str;
+            if(check.startsWith("trace")) {
+                nxt=new Scanner(line.next());
+                targ="-t";
+                targ = targ + nxt.next();
+            } else if(check.startsWith("level")) {
+                nxt=new Scanner(line.next());
+                larg="-v";
+                str = nxt.next();
+                level = str;
+                if(str.equals("normal")) {
+                    //System.out.println("Read v1");
+                    larg = "-v1";
+                } else if(str.equals("advanced")) {
+                    //System.out.println("Read v2");
                     larg = "-v2";
-                 }
-             } else if(check.startsWith("display")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("strrr=" + str);
-                  display = str;
-             } else if(check.startsWith("highlight")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("strrr=" + str);
-                  highlight = str;
-             } else if(check.startsWith("soln")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
-                  soln = str;
-                  sarg = "-s" + str;
-             }
-           }
-           //System.out.println("aaaaaaaaaaaindex==============" + index);
-           //aarg = "-a" + index;
-           if(index>0) {
-               String queue1="";
-               String queue2="";
-               String rstr1="";
-               String rstr2="";
-               if(index==2) {
-                 queue1 = (String) q1combob.getSelectedItem();
-                 rstr1 = queue1;
-                 rstr1 = rstr1.replace(rstr1.charAt(0),Character.toUpperCase(rstr1.charAt(0)));
-                 queue2 = (String) q2combob.getSelectedItem();
-                 rstr2 = queue2;
-                 rstr2 = rstr2.replace(rstr2.charAt(0),Character.toUpperCase(rstr2.charAt(0)));
-               }
-               qarg = "-q" + index + rstr1 + rstr2;
-           }
-              //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
-           ArrayList<String> args = new ArrayList<>();
-           if (!targ.isEmpty()) args.add(targ);
-           if (!larg.isEmpty()) args.add(larg);
-           if (!sarg.isEmpty()) args.add(sarg);
-           if (!aarg.isEmpty()) args.add(aarg);
-           if (!qarg.isEmpty()) args.add(qarg);
-           return args;
+                }
+            } else if(check.startsWith("display")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("strrr=" + str);
+                display = str;
+            } else if(check.startsWith("highlight")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("strrr=" + str);
+                highlight = str;
+            } else if(check.startsWith("soln")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
+                soln = str;
+                sarg = "-s" + str;
+            }
+        }
+        //System.out.println("aaaaaaaaaaaindex==============" + index);
+        //aarg = "-a" + index;
+        if(index>0) {
+            String queue1="";
+            String queue2="";
+            String rstr1="";
+            String rstr2="";
+            if(index==2) {
+                queue1 = (String) q1combob.getSelectedItem();
+                rstr1 = queue1;
+                rstr1 = rstr1.replace(rstr1.charAt(0),Character.toUpperCase(rstr1.charAt(0)));
+                queue2 = (String) q2combob.getSelectedItem();
+                rstr2 = queue2;
+                rstr2 = rstr2.replace(rstr2.charAt(0),Character.toUpperCase(rstr2.charAt(0)));
+            }
+            qarg = "-q" + index + rstr1 + rstr2;
+        }
+        //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
+        ArrayList<String> args = new ArrayList<>();
+        if (!targ.isEmpty()) args.add(targ);
+        if (!larg.isEmpty()) args.add(larg);
+        if (!sarg.isEmpty()) args.add(sarg);
+        if (!aarg.isEmpty()) args.add(aarg);
+        if (!qarg.isEmpty()) args.add(qarg);
+        return args;
     }
 
     private static String processLoc(String file) {
@@ -316,65 +316,65 @@ public class VerQuery extends AbstractTool implements Tool {
         for(String st : s.split(" |;|\n")) {
             int n=1;
             //if(st.startsWith("Q")){
-                if(st.contains("->")) {
-                    //System.out.println("testst" + st);
-                    typ=0;
-                    for(String st2 : st.split("->")) {
-                        str=st2;
-                       // System.out.println("str===" + str);
-                        for(Node node : vnet.getNodes()) {
-                            if(node instanceof VisualQueueComponent) {
-                                vqc=(VisualQueueComponent)node;
-                                qc=vqc.getReferencedQueueComponent();
-                                //System.out.println("x===" + xnet.getName(qc));
-                                String rstr;
-                                rstr = xnet.getName(qc);
-                                rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
-                                if(rstr.equals(str) && typ==0) {
-                                    vqc.setForegroundColor(Color.pink);
-                                }
-                            } else if(node instanceof VisualSyncComponent) {
-                                vsc=(VisualSyncComponent)node;
-                                sc=vsc.getReferencedSyncComponent();
-                                //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
-                                String rstr;
-                                rstr = xnet.getName(sc);
-                                rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
-                                if(rstr.equals(str) && typ==0) {
-                                    vsc.setForegroundColor(Color.pink);
-                                }
+            if(st.contains("->")) {
+                //System.out.println("testst" + st);
+                typ=0;
+                for(String st2 : st.split("->")) {
+                    str=st2;
+                    // System.out.println("str===" + str);
+                    for(Node node : vnet.getNodes()) {
+                        if(node instanceof VisualQueueComponent) {
+                            vqc=(VisualQueueComponent)node;
+                            qc=vqc.getReferencedQueueComponent();
+                            //System.out.println("x===" + xnet.getName(qc));
+                            String rstr;
+                            rstr = xnet.getName(qc);
+                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            if(rstr.equals(str) && typ==0) {
+                                vqc.setForegroundColor(Color.pink);
                             }
-                        }
-                    }
-                } else if(st.contains("<-")) {
-                    //System.out.println("testst_" + st);
-                    typ=1;
-                    for(String st2 : st.split("<-")) {
-                        str=st2;
-                        //System.out.println("str===" + str);
-                        for(Node node : vnet.getNodes()) {
-                            if(node instanceof VisualQueueComponent) {
-                                vqc=(VisualQueueComponent)node;
-                                qc=vqc.getReferencedQueueComponent();
-                                String rstr;
-                                rstr = xnet.getName(qc);
-                                rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
-                                if(rstr.equals(str) && typ==1) {
-                                    vqc.setForegroundColor(Color.red);
-                                }
-                            } else if(node instanceof VisualSyncComponent) {
-                                vsc=(VisualSyncComponent)node;
-                                sc=vsc.getReferencedSyncComponent();
-                                String rstr;
-                                rstr = xnet.getName(sc);
-                                rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
-                                if(rstr.equals(str) && typ==1) {
-                                    vsc.setForegroundColor(Color.red);
-                                }
+                        } else if(node instanceof VisualSyncComponent) {
+                            vsc=(VisualSyncComponent)node;
+                            sc=vsc.getReferencedSyncComponent();
+                            //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
+                            String rstr;
+                            rstr = xnet.getName(sc);
+                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            if(rstr.equals(str) && typ==0) {
+                                vsc.setForegroundColor(Color.pink);
                             }
                         }
                     }
                 }
+            } else if(st.contains("<-")) {
+                //System.out.println("testst_" + st);
+                typ=1;
+                for(String st2 : st.split("<-")) {
+                    str=st2;
+                    //System.out.println("str===" + str);
+                    for(Node node : vnet.getNodes()) {
+                        if(node instanceof VisualQueueComponent) {
+                            vqc=(VisualQueueComponent)node;
+                            qc=vqc.getReferencedQueueComponent();
+                            String rstr;
+                            rstr = xnet.getName(qc);
+                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            if(rstr.equals(str) && typ==1) {
+                                vqc.setForegroundColor(Color.red);
+                            }
+                        } else if(node instanceof VisualSyncComponent) {
+                            vsc=(VisualSyncComponent)node;
+                            sc=vsc.getReferencedSyncComponent();
+                            String rstr;
+                            rstr = xnet.getName(sc);
+                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            if(rstr.equals(str) && typ==1) {
+                                vsc.setForegroundColor(Color.red);
+                            }
+                        }
+                    }
+                }
+            }
 
             //}
         }
@@ -469,18 +469,18 @@ public class VerQuery extends AbstractTool implements Tool {
         panellist.get(panellist.size()-1).add(jcb=new JCheckBox(""));
         populateMd(grnum);
         ItemListener itemListener1 = new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            if(e.getSource() instanceof JCheckBox){
-                JCheckBox sjcb=(JCheckBox) e.getSource();
-                if(sjcb.isSelected()) {
-                    index = jcbn.indexOf(sjcb) + 1;
-                    //System.out.println("indexb==" + index);
-                }
-                if(jcblast!=null) jcblast.setSelected(false);
-                jcblast=sjcb;
-                //String name = sjcb.getName();
-                //System.out.println(name);
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getSource() instanceof JCheckBox){
+                    JCheckBox sjcb=(JCheckBox) e.getSource();
+                    if(sjcb.isSelected()) {
+                        index = jcbn.indexOf(sjcb) + 1;
+                        //System.out.println("indexb==" + index);
+                    }
+                    if(jcblast!=null) jcblast.setSelected(false);
+                    jcblast=sjcb;
+                    //String name = sjcb.getName();
+                    //System.out.println(name);
                 }
             }
         };
@@ -493,18 +493,18 @@ public class VerQuery extends AbstractTool implements Tool {
         populateQlists(cnet);
         panellist.get(panellist.size()-1).add(jcb=new JCheckBox(""));
         ItemListener itemListener2 = new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            if(e.getSource() instanceof JCheckBox){
-                JCheckBox sjcb=(JCheckBox) e.getSource();
-                if(sjcb.isSelected()) {
-                    index = jcbn.indexOf(sjcb) + 1;
-                    //System.out.println("indexb==" + index);
-                }
-                if(jcblast!=null) jcblast.setSelected(false);
-                jcblast=sjcb;
-                //String name = sjcb.getName();
-                //System.out.println(name);
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getSource() instanceof JCheckBox){
+                    JCheckBox sjcb=(JCheckBox) e.getSource();
+                    if(sjcb.isSelected()) {
+                        index = jcbn.indexOf(sjcb) + 1;
+                        //System.out.println("indexb==" + index);
+                    }
+                    if(jcblast!=null) jcblast.setSelected(false);
+                    jcblast=sjcb;
+                    //String name = sjcb.getName();
+                    //System.out.println(name);
                 }
             }
         };
@@ -516,18 +516,18 @@ public class VerQuery extends AbstractTool implements Tool {
         populateQslists(cnet);
         panellist.get(panellist.size()-1).add(jcb=new JCheckBox(""));
         ItemListener itemListener = new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            if(e.getSource() instanceof JCheckBox){
-                JCheckBox sjcb=(JCheckBox) e.getSource();
-                if(sjcb.isSelected()) {
-                    index = jcbn.indexOf(sjcb) + 1;
-                    //System.out.println("indexb==" + index);
-                }
-                if(jcblast!=null) jcblast.setSelected(false);
-                jcblast=sjcb;
-                //String name = sjcb.getName();
-                //System.out.println(name);
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getSource() instanceof JCheckBox){
+                    JCheckBox sjcb=(JCheckBox) e.getSource();
+                    if(sjcb.isSelected()) {
+                        index = jcbn.indexOf(sjcb) + 1;
+                        //System.out.println("indexb==" + index);
+                    }
+                    if(jcblast!=null) jcblast.setSelected(false);
+                    jcblast=sjcb;
+                    //String name = sjcb.getName();
+                    //System.out.println(name);
                 }
             }
         };
@@ -652,7 +652,7 @@ public class VerQuery extends AbstractTool implements Tool {
                             }
                         }
                     } catch (Exception e1) {
-                           e1.printStackTrace();
+                        e1.printStackTrace();
                     }
                 }
             }

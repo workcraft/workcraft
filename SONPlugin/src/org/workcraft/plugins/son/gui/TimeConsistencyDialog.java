@@ -210,32 +210,32 @@ public class TimeConsistencyDialog extends StructureVerifyDialog{
 
         selectionTabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                 net.refreshAllColor();
-                 addAllButton.setEnabled(true);
-                 removeAllButton.setEnabled(true);
-                 int index = getTabIndex();
+                net.refreshAllColor();
+                addAllButton.setEnabled(true);
+                removeAllButton.setEnabled(true);
+                int index = getTabIndex();
 
-                 if(index == 0){
-                     updateCausalConsistencyPanel(false);
-                     for(int i=0;i<groupList.getModel().getSize();i++){
-                         ListItem item = (ListItem)groupList.getModel().getElementAt(i);
-                         item.setItemColor(Color.ORANGE);
-                     }
+                if(index == 0){
+                    updateCausalConsistencyPanel(false);
+                    for(int i=0;i<groupList.getModel().getSize();i++){
+                        ListItem item = (ListItem)groupList.getModel().getElementAt(i);
+                        item.setItemColor(Color.ORANGE);
+                    }
 
-                 }else if(index == 1){
-                     addAllButton.setEnabled(false);
-                     removeAllButton.setEnabled(false);
-                     updateCausalConsistencyPanel(true);
-                     updateScenarioColor();
+                }else if(index == 1){
+                    addAllButton.setEnabled(false);
+                    removeAllButton.setEnabled(false);
+                    updateCausalConsistencyPanel(true);
+                    updateScenarioColor();
 
-                 }else if(index == 2){
-                     updateCausalConsistencyPanel(false);
-                     for(int i=0;i<nodeList.getModel().getSize();i++){
-                         ListItem item = (ListItem)nodeList.getModel().getElementAt(i);
-                         item.setItemColor(Color.ORANGE);
-                     }
-                     vNet.selectNone();
-                 }
+                }else if(index == 2){
+                    updateCausalConsistencyPanel(false);
+                    for(int i=0;i<nodeList.getModel().getSize();i++){
+                        ListItem item = (ListItem)nodeList.getModel().getElementAt(i);
+                        item.setItemColor(Color.ORANGE);
+                    }
+                    vNet.selectNone();
+                }
             }
         });
     }

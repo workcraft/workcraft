@@ -81,7 +81,7 @@ public class ColorUtils {
                 }
             }
         }
-           Collections.shuffle(palette);
+        Collections.shuffle(palette);
         return palette.toArray(new Color[palette.size()]);
     }
 

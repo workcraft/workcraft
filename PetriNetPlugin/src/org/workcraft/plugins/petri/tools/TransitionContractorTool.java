@@ -393,7 +393,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
                     succPlaceConnection = visualModel.getConnection(succPlace, transition);
                 }
                 if (((predPlaceConnection == null) || convertedReplicaConnections.contains(predPlaceConnection))
-                      &&((succPlaceConnection == null) || convertedReplicaConnections.contains(succPlaceConnection))) {
+                        &&((succPlaceConnection == null) || convertedReplicaConnections.contains(succPlaceConnection))) {
                     replicaPlaceConnections.add((VisualConnection)productConnection);
                 }
             }

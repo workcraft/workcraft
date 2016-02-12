@@ -74,7 +74,7 @@ public class Export {
                 if (model instanceof VisualModel) {
                     if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE) {
                         if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
-                                return new Result<Boolean>(new Exception(new RuntimeException("Exporter is not applicable to the model.")));
+                            return new Result<Boolean>(new Exception(new RuntimeException("Exporter is not applicable to the model.")));
                         } else {
                             model = ((VisualModel)model).getMathModel();
                         }

@@ -60,7 +60,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
         VisualConnection connection = super.finishConnection(e);
         if (connection != null) {
             if ((connection.getFirst() instanceof VisualPlace)
-              || (connection.getSecond() instanceof VisualPlace)) {
+                    || (connection.getSecond() instanceof VisualPlace)) {
 
                 if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
                     VisualModel visualModel = e.getEditor().getModel();

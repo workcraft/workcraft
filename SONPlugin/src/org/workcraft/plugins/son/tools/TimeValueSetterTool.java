@@ -207,7 +207,7 @@ public class TimeValueSetterTool extends AbstractTool{
             public void focusGained(FocusEvent e) {
                 min.selectAll();
             }
-          });
+        });
 
         min.addKeyListener(new KeyListener(){
 
@@ -238,7 +238,7 @@ public class TimeValueSetterTool extends AbstractTool{
             public void focusGained(FocusEvent e) {
                 max.selectAll();
             }
-          });
+        });
 
         max.addKeyListener(new KeyListener(){
 
@@ -468,13 +468,13 @@ public class TimeValueSetterTool extends AbstractTool{
         int length = text.length();
 
         if(length < 4){
-           while (length < 4) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("0").append(text);
-            text = sb.toString();
-            field.setText(text);
-            length = text.length();
-           }
+            while (length < 4) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("0").append(text);
+                text = sb.toString();
+                field.setText(text);
+                length = text.length();
+            }
         }
     }
 
@@ -609,16 +609,16 @@ public class TimeValueSetterTool extends AbstractTool{
                         return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
                     }
                 });
-            if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
-                if(!(node3 instanceof VisualChannelPlace))
-                    estimatorButton.setEnabled(true);
+        if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
+            if(!(node3 instanceof VisualChannelPlace))
+                estimatorButton.setEnabled(true);
 
-                selection = ((VisualComponent) node3).getReferencedComponent();
-                visualSelection = node3;
-                ((VisualComponent) node3).setForegroundColor(selectedColor);
-                updateTimePanel(e.getEditor(), node3);
-                net.setTimeColor(selection, Color.BLACK);
-            }
+            selection = ((VisualComponent) node3).getReferencedComponent();
+            visualSelection = node3;
+            ((VisualComponent) node3).setForegroundColor(selectedColor);
+            updateTimePanel(e.getEditor(), node3);
+            net.setTimeColor(selection, Color.BLACK);
+        }
     }
 
     @Override

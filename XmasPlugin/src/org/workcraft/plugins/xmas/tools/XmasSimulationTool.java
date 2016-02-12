@@ -96,12 +96,12 @@ public class XmasSimulationTool extends StgSimulationTool {
         if (e.getButton() == MouseEvent.BUTTON1) {
             Point2D posRoot = e.getPosition();
             Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        return node instanceof VisualTransformableNode;
-                    }
-                });
+                    new Func<Node, Boolean>() {
+                        @Override
+                        public Boolean eval(Node node) {
+                            return node instanceof VisualTransformableNode;
+                        }
+                    });
 
             if (node instanceof VisualTransformableNode) {
                 AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);

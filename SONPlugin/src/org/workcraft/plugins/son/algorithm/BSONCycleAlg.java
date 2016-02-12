@@ -84,7 +84,7 @@ public class BSONCycleAlg extends ONCycleAlg{
                     TransitionNode v1 = v[1];
                     int index = nodeIndex.get(v0);
                     if(result[index] == null){
-                            result[index] = new ArrayList<Integer>();
+                        result[index] = new ArrayList<Integer>();
                     }
                     result[index].add(nodeIndex.get(v1));
                 }
@@ -96,7 +96,7 @@ public class BSONCycleAlg extends ONCycleAlg{
     @Override
     public Collection<Path> cycleTask(Collection<? extends Node> nodes){
         //remove all paths which do not involve before(e) relation.
-         return cycleFliter(super.cycleTask(nodes));
+        return cycleFliter(super.cycleTask(nodes));
     }
 
     @Override

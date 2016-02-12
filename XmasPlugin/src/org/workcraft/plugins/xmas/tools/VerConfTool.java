@@ -61,36 +61,36 @@ public class VerConfTool implements Tool {
     JComboBox slcombob = null;
 
     String[] trchoices = {
-             "q1",
-             "q2",
-             "a1",
-             "a2",
+        "q1",
+        "q2",
+        "a1",
+        "a2",
     };
 
     String[] lvlchoices = {
-             "normal",
-             "advanced",
+        "normal",
+        "advanced",
     };
 
     String[] hlchoices = {
-             "none",
-             "sel",
+        "none",
+        "sel",
     };
 
     String[] solchoices = {
-             "text",
-             "popup",
+        "text",
+        "popup",
     };
 
     String[] solno = {
-             "1",
-             "2",
-             "3",
-             "4",
-             "5",
-             "6",
-             "7",
-             "8",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
     };
 
     public void dispose() {

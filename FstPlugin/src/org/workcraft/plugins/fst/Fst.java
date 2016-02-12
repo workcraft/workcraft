@@ -83,16 +83,16 @@ public class Fst extends Fsm {
     public Signal getOrCreateSignal(String name, Type type) {
         Signal signal = null;
         Node node = getNodeByReference(name);
-           if (node == null) {
+        if (node == null) {
             signal = createSignal(name, type);
-           } else if (node instanceof Signal) {
-               signal = (Signal)node;
-               if (signal.getType() != type) {
-                   throw new ArgumentException("Signal '" + name + "' already exists and its type '"
-                           + signal.getType() + "' is different from the required \'" + type +"' type.");
-               }
-           } else {
-               throw new ArgumentException("Node '" + name + "' already exists and it is not a signal.");
+        } else if (node instanceof Signal) {
+            signal = (Signal)node;
+            if (signal.getType() != type) {
+                throw new ArgumentException("Signal '" + name + "' already exists and its type '"
+                        + signal.getType() + "' is different from the required \'" + type +"' type.");
+            }
+        } else {
+            throw new ArgumentException("Node '" + name + "' already exists and it is not a signal.");
         }
         return signal;
     }

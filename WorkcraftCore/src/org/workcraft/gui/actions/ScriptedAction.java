@@ -26,15 +26,15 @@ import org.workcraft.Framework;
 public abstract class ScriptedAction extends Action {
     public static final String tryOperation(String operation) {
         return "try\n" +
-        "{\n" +
-        operation + "\n" +
-        "}\n" +
-        "catch (err)\n" +
-        "{\n" +
-        "  if (!(err.javaException instanceof Packages.org.workcraft.exceptions.OperationCancelledException)) {\n" +
-        "    throw err.javaException;\n" +
-        "  }\n" +
-        "}";
+                "{\n" +
+                operation + "\n" +
+                "}\n" +
+                "catch (err)\n" +
+                "{\n" +
+                "  if (!(err.javaException instanceof Packages.org.workcraft.exceptions.OperationCancelledException)) {\n" +
+                "    throw err.javaException;\n" +
+                "  }\n" +
+                "}";
     }
 
     protected abstract String getScript();

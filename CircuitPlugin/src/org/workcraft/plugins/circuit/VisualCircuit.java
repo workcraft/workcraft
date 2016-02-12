@@ -182,9 +182,9 @@ public class VisualCircuit extends AbstractVisualModel {
             VisualConnection connection = (VisualConnection)first;
             List<Point2D> locations = new LinkedList<Point2D>();
             int splitIndex = -1;
-             Point2D splitPoint = connection.getSplitPoint();
+            Point2D splitPoint = connection.getSplitPoint();
             if (connection.getGraphic() instanceof Polyline) {
-                 AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+                AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
                 Polyline polyline = (Polyline)connection.getGraphic();
                 for (ControlPoint cp:  polyline.getControlPoints()) {
                     Point2D location = localToRootTransform.transform(cp.getPosition(), null);

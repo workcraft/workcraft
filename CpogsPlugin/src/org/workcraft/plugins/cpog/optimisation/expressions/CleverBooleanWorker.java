@@ -88,7 +88,7 @@ public class CleverBooleanWorker implements BooleanWorker {
             return x;
         if (checkStrings(FormulaToString.toString(x), FormulaToString.toString(y), " + "))
             return x;
-         if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y)), " + "))
+        if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y)), " + "))
             return ONE;
         if(x == ONE || y == ONE)
             return ONE;

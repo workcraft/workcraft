@@ -89,7 +89,7 @@ public class VisualPetriNet extends AbstractVisualModel {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
         if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
-          && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
+                && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
             throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
@@ -130,18 +130,18 @@ public class VisualPetriNet extends AbstractVisualModel {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
         if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
-          && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
+                && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
             throw new InvalidConnectionException("Read-arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Read-arcs between transitions are not allowed.");
         }
         if (PetriNetUtils.hasReadArcConnection(this, first, second)
-          || PetriNetUtils.hasReadArcConnection(this, second, first)
-          || PetriNetUtils.hasProducingArcConnection(this, first, second)
-          || PetriNetUtils.hasProducingArcConnection(this, second, first)
-          || PetriNetUtils.hasConsumingArcConnection(this, first, second)
-          || PetriNetUtils.hasConsumingArcConnection(this, second, first)) {
+                || PetriNetUtils.hasReadArcConnection(this, second, first)
+                || PetriNetUtils.hasProducingArcConnection(this, first, second)
+                || PetriNetUtils.hasProducingArcConnection(this, second, first)
+                || PetriNetUtils.hasConsumingArcConnection(this, first, second)
+                || PetriNetUtils.hasConsumingArcConnection(this, second, first)) {
             throw new InvalidConnectionException("Nodes are already connected.");
         }
     }
@@ -183,7 +183,7 @@ public class VisualPetriNet extends AbstractVisualModel {
 
         VisualReadArc connection = null;
         if ((mPlace != null) && (mTransition !=null)) {
-             MathConnection mConsumingConnection = petriNet.connect(mPlace, mTransition);
+            MathConnection mConsumingConnection = petriNet.connect(mPlace, mTransition);
             MathConnection mProducingConnection = petriNet.connect(mTransition, mPlace);
 
             connection = new VisualReadArc(place, transition, mConsumingConnection, mProducingConnection);

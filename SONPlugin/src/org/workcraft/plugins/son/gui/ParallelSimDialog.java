@@ -172,7 +172,7 @@ public class ParallelSimDialog  extends JDialog{
 
                             Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
 
-                                //unselected related synchronous events.
+                            //unselected related synchronous events.
                             for(TransitionNode e : minFire){
                                 for(EventItem eventItem : itemList){
                                     if(e==eventItem.getEvent()){
@@ -191,7 +191,7 @@ public class ParallelSimDialog  extends JDialog{
                     }
                 }catch (ArrayIndexOutOfBoundsException e){}
             }
-    });
+        });
 
         eventList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane listScroller = new JScrollPane(eventList);
@@ -298,9 +298,9 @@ public class ParallelSimDialog  extends JDialog{
         this.pack();
 
         this.addWindowListener(new WindowAdapter() {
-          public void windowClosing(WindowEvent e) {
-              getSONModel().refreshAllColor();
-          }
+            public void windowClosing(WindowEvent e) {
+                getSONModel().refreshAllColor();
+            }
         });
 
         this.addWindowFocusListener(new WindowFocusListener() {

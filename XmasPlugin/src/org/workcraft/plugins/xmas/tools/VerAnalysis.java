@@ -52,13 +52,13 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class VerAnalysis extends AbstractTool implements Tool {
 
     private static class Qslist {
-           String name;
-           int chk;
+        String name;
+        int chk;
 
-           Qslist(String s1,int n) {
-             name = s1;
-             chk=n;
-           }
+        Qslist(String s1,int n) {
+            name = s1;
+            chk=n;
+        }
     }
 
     int cntSyncNodes=0;
@@ -87,67 +87,67 @@ public class VerAnalysis extends AbstractTool implements Tool {
     public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
 
     private static List<String> processArg(String file,int index) {
-           String typ=null;
-           Scanner sc=null;
-           try {
-              sc=new Scanner(new File(file));
-           } catch (FileNotFoundException e) {
-               LogUtils.logErrorLine(e.getMessage());
-           }
-           String targ="";
-           String larg="";
-           String sarg="";
-           String aarg="";
-           String arg="";
-           int num;
-           while(sc.hasNextLine()) {
-             Scanner line=new Scanner(sc.nextLine());
-             Scanner nxt=new Scanner(line.next());
-             String check=nxt.next();
-             String str;
-             if(check.startsWith("trace")) {
-               nxt=new Scanner(line.next());
-               targ="-t";
-               targ = targ + nxt.next();
-             } else if(check.startsWith("level")) {
-                 nxt=new Scanner(line.next());
-                 larg="-v";
-                 str = nxt.next();
-                 level = str;
-                 if(str.equals("normal")) {
-                      //System.out.println("Read v1");
-                     larg = "-v1";
-                 } else if(str.equals("advanced")) {
-                     //System.out.println("Read v2");
+        String typ=null;
+        Scanner sc=null;
+        try {
+            sc=new Scanner(new File(file));
+        } catch (FileNotFoundException e) {
+            LogUtils.logErrorLine(e.getMessage());
+        }
+        String targ="";
+        String larg="";
+        String sarg="";
+        String aarg="";
+        String arg="";
+        int num;
+        while(sc.hasNextLine()) {
+            Scanner line=new Scanner(sc.nextLine());
+            Scanner nxt=new Scanner(line.next());
+            String check=nxt.next();
+            String str;
+            if(check.startsWith("trace")) {
+                nxt=new Scanner(line.next());
+                targ="-t";
+                targ = targ + nxt.next();
+            } else if(check.startsWith("level")) {
+                nxt=new Scanner(line.next());
+                larg="-v";
+                str = nxt.next();
+                level = str;
+                if(str.equals("normal")) {
+                    //System.out.println("Read v1");
+                    larg = "-v1";
+                } else if(str.equals("advanced")) {
+                    //System.out.println("Read v2");
                     larg = "-v2";
-                 }
-             } else if(check.startsWith("display")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("strrr=" + str);
-                  display = str;
-             } else if(check.startsWith("highlight")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("strrr=" + str);
-                  highlight = str;
-             } else if(check.startsWith("soln")) {
-                 nxt=new Scanner(line.next());
-                 str = nxt.next();
-                  //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
-                  soln = str;
-                  sarg = "-s" + str;
-             }
-           }
-           //System.out.println("aaaaaaaaaaaindex==============" + index);
-           aarg = "-a" + index;
-              //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
-           ArrayList<String> args = new ArrayList<>();
-           if (!targ.isEmpty()) args.add(targ);
-           if (!larg.isEmpty()) args.add(larg);
-           if (!sarg.isEmpty()) args.add(sarg);
-           if (!aarg.isEmpty()) args.add(aarg);
-           return args;
+                }
+            } else if(check.startsWith("display")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("strrr=" + str);
+                display = str;
+            } else if(check.startsWith("highlight")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("strrr=" + str);
+                highlight = str;
+            } else if(check.startsWith("soln")) {
+                nxt=new Scanner(line.next());
+                str = nxt.next();
+                //System.out.println("solnnnnnnnnnnnnnnnnn=" + str);
+                soln = str;
+                sarg = "-s" + str;
+            }
+        }
+        //System.out.println("aaaaaaaaaaaindex==============" + index);
+        aarg = "-a" + index;
+        //System.out.println("aaaaaaaaaaaaaaarggggg=" + aarg);
+        ArrayList<String> args = new ArrayList<>();
+        if (!targ.isEmpty()) args.add(targ);
+        if (!larg.isEmpty()) args.add(larg);
+        if (!sarg.isEmpty()) args.add(sarg);
+        if (!aarg.isEmpty()) args.add(aarg);
+        return args;
     }
 
     private static String processLoc(String file) {
@@ -388,7 +388,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         String typ=null;
         Scanner sc=null;
         try {
-           sc=new Scanner(new File(file));
+            sc=new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logErrorLine(e.getMessage());
         }
@@ -399,16 +399,16 @@ public class VerAnalysis extends AbstractTool implements Tool {
                 if(no>1) {
                     panellist.get(panellist.size()-1).add(jcb=new JCheckBox(""));
                     ItemListener itemListener = new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        if(e.getSource() instanceof JCheckBox){
-                            JCheckBox sjcb=(JCheckBox) e.getSource();
-                            if(sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
-                            if(sjcb.isSelected()) System.out.println("indexa==" + index);
-                            if(jcblast!=null) jcblast.setSelected(false);
-                            jcblast=sjcb;
-                            //String name = sjcb.getName();
-                            //System.out.println(name);
+                        @Override
+                        public void itemStateChanged(ItemEvent e) {
+                            if(e.getSource() instanceof JCheckBox){
+                                JCheckBox sjcb=(JCheckBox) e.getSource();
+                                if(sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
+                                if(sjcb.isSelected()) System.out.println("indexa==" + index);
+                                if(jcblast!=null) jcblast.setSelected(false);
+                                jcblast=sjcb;
+                                //String name = sjcb.getName();
+                                //System.out.println(name);
                             }
                         }
                     };

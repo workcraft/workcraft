@@ -50,7 +50,7 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 public class Polyline implements ConnectionGraphic, Container, StateObserver,
-    HierarchyObserver, ObservableHierarchy, SelectionObserver {
+        HierarchyObserver, ObservableHierarchy, SelectionObserver {
 
     private ArbitraryInsertionGroupImpl groupImpl;
     protected VisualConnectionProperties connectionInfo;
@@ -392,7 +392,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
                 if (n instanceof ControlPoint) {
                     ControlPoint cp = (ControlPoint)n;
                     cp.removeObserver(this);
-            }
+                }
         if (e instanceof NodesAddedEvent)
             for (Node n : e.getAffectedNodes())
                 if (n instanceof ControlPoint) {

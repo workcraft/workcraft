@@ -42,15 +42,15 @@ public class Untanglings {
         this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();
         this.setup.REDUCE = settings.isReduce();
         switch(settings.getSignificance()){
-            case 0 :
-                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
-                break;
-            case 1 :
-                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.HASHMAP_BASED;
-                break;
-            case 2 :
-                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.TREE_OF_RUNS;
-                break;
+        case 0 :
+            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
+            break;
+        case 1 :
+            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.HASHMAP_BASED;
+            break;
+        case 2 :
+            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.TREE_OF_RUNS;
+            break;
         }
 
     }

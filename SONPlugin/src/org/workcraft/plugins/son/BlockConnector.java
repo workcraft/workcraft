@@ -36,7 +36,7 @@ public class BlockConnector {
 
         Collection<VisualComponent> components = block.getComponents();
 
-         for(VisualSONConnection con : visualNet.getVisualSONConnections()){
+        for(VisualSONConnection con : visualNet.getVisualSONConnections()){
             Node first = con.getFirst();
             Node second = con.getSecond();
 
@@ -68,11 +68,11 @@ public class BlockConnector {
                         }
                     }
                 }
-             }
+            }
 
             if(components.contains(first) && !components.contains(second)){
                 if(second instanceof VisualPlaceNode){
-                     //set output value
+                    //set output value
                     String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
                     String type = "-"+con.getReferencedSONConnection().getSemantics();
                     String time = "-"+con.getTime().toString();
@@ -100,7 +100,7 @@ public class BlockConnector {
                     }
                 }
             }
-         }
+        }
     }
 
     /**
@@ -141,7 +141,7 @@ public class BlockConnector {
 
         for(VisualPlaceNode p : visualNet.getVisualPlaceNode()){
             String interfaceValue = p.getInterface();
-        //    String newValue = interfaceValue;
+            //    String newValue = interfaceValue;
 
             if(!interfaceValue.isEmpty()){
                 String[] infos = interfaceValue.trim().split(";");
@@ -193,14 +193,14 @@ public class BlockConnector {
                                 int min = 0000;
                                 int max = 9999;
                                 try{
-                                     min = Integer.parseInt(piece[3]);
-                                     max = Integer.parseInt(piece[4]);
+                                    min = Integer.parseInt(piece[3]);
+                                    max = Integer.parseInt(piece[4]);
                                 } catch (NumberFormatException e1) {
-                                      e1.printStackTrace();
+                                    e1.printStackTrace();
                                 }
                                 con.getReferencedSONConnection().setTime(new Interval(min, max));
                             }
-                        //create output connection
+                            //create output connection
                         }else if(piece[0].equals("from")){
                             VisualSONConnection con = null;
                             try {
@@ -223,10 +223,10 @@ public class BlockConnector {
                                 int min = 4444;
                                 int max = 9999;
                                 try{
-                                     min = Integer.parseInt(piece[3]);
-                                     max = Integer.parseInt(piece[4]);
+                                    min = Integer.parseInt(piece[3]);
+                                    max = Integer.parseInt(piece[4]);
                                 } catch (NumberFormatException e1) {
-                                      e1.printStackTrace();
+                                    e1.printStackTrace();
                                 }
                                 con.getReferencedSONConnection().setTime(new Interval(min, max));
                             }

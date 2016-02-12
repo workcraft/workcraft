@@ -171,50 +171,50 @@ public class ScencoSolver {
             customPath = encodingFile.getAbsolutePath();
         }
         switch(settings.getGenMode()){
-            case OPTIMAL_ENCODING:
-                genMode = "-top";
-                numSol = String.valueOf(settings.getSolutionNumber());
-                break;
-            case RECURSIVE:
-                if(settings.isCustomEncMode()){
-                    modBitFlag = "-bit";
-                    modBit = String.valueOf(settings.getBits());
-                }
-                break;
-            case RANDOM:
-                genMode = "-r";
-                if(settings.isCustomEncMode()){
-                    customFlag = "-set";
-                    customPath = encodingFile.getAbsolutePath();
-                    modBitFlag = "-bit";
-                    modBit = String.valueOf(settings.getBits());
-                }
-                numSol = String.valueOf(settings.getSolutionNumber());
-                break;
-            case SCENCO:
+        case OPTIMAL_ENCODING:
+            genMode = "-top";
+            numSol = String.valueOf(settings.getSolutionNumber());
+            break;
+        case RECURSIVE:
+            if(settings.isCustomEncMode()){
+                modBitFlag = "-bit";
+                modBit = String.valueOf(settings.getBits());
+            }
+            break;
+        case RANDOM:
+            genMode = "-r";
+            if(settings.isCustomEncMode()){
+                customFlag = "-set";
+                customPath = encodingFile.getAbsolutePath();
+                modBitFlag = "-bit";
+                modBit = String.valueOf(settings.getBits());
+            }
+            numSol = String.valueOf(settings.getSolutionNumber());
+            break;
+        case SCENCO:
             customFlag = "-set";
-                genMode = "-top";
-                numSol = "1";
-                break;
-            case OLD_SYNT:
-                customFlag = "-set";
-                customPath = encodingFile.getAbsolutePath();
-                oldSynt = "-old";
-                genMode = "-top";
-                numSol = "1";
-                break;
-            case SEQUENTIAL:
-                customFlag = "-set";
-                customPath = encodingFile.getAbsolutePath();
-                genMode = "-top";
-                numSol = "1";
-                break;
-            default:
-                FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
-                args.add("ERROR");
-                args.add(MSG_SELECTION_MODE_UNDEFINED);
-                args.add(ACCESS_SCENCO_ERROR);
-                return args;
+            genMode = "-top";
+            numSol = "1";
+            break;
+        case OLD_SYNT:
+            customFlag = "-set";
+            customPath = encodingFile.getAbsolutePath();
+            oldSynt = "-old";
+            genMode = "-top";
+            numSol = "1";
+            break;
+        case SEQUENTIAL:
+            customFlag = "-set";
+            customPath = encodingFile.getAbsolutePath();
+            genMode = "-top";
+            numSol = "1";
+            break;
+        default:
+            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            args.add("ERROR");
+            args.add(MSG_SELECTION_MODE_UNDEFINED);
+            args.add(ACCESS_SCENCO_ERROR);
+            return args;
         }
 
         //Adding arguments to list

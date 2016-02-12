@@ -69,9 +69,9 @@ public class DockableWindowContentPanel extends JPanel {
                 try {
                     final Framework framework = Framework.getInstance();
                     framework.getMainWindow().closeDockableWindow(windowID);
-                    } catch (OperationCancelledException e) {
+                } catch (OperationCancelledException e) {
 
-                    }
+                }
                 break;
             case MAXIMIZE_ACTION:
                 final Framework framework = Framework.getInstance();

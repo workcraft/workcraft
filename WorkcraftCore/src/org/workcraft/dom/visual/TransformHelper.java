@@ -92,10 +92,10 @@ public class TransformHelper {
     }
 
     public static Point2D getSnappedCentre(Collection<Node> nodes) {
-            Point2D centre = getCentre(nodes);
-            double snapX = snapP5(centre.getX());
-            double snapY = snapP5(centre.getY());
-            return new Point2D.Double(snapX, snapY);
+        Point2D centre = getCentre(nodes);
+        double snapX = snapP5(centre.getX());
+        double snapY = snapP5(centre.getY());
+        return new Point2D.Double(snapX, snapY);
     }
 
 }

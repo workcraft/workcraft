@@ -37,10 +37,10 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
     private JCheckBox checkBox;
 
     public BooleanCellEditor() {
-         checkBox = new JCheckBox();
-         checkBox.setFocusable(false);
-         checkBox.addItemListener(this);
-         checkBox.setBorderPainted(false);
+        checkBox = new JCheckBox();
+        checkBox.setFocusable(false);
+        checkBox.addItemListener(this);
+        checkBox.setBorderPainted(false);
     }
 
     public Component getTableCellEditorComponent(

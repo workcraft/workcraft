@@ -64,7 +64,7 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
                             + "Please remove this from the selection, or group this as a page to continue",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
-                            return null;
+                    return null;
                 }
                 graph = graph.trim();
                 graphs.add(graph);
@@ -78,15 +78,15 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
 
             expressions.close();
 
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            } catch (ArrayIndexOutOfBoundsException e2) {
-                JOptionPane.showMessageDialog(null,
-                        "Error: No scenarios have been selected",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                        throw e2;
-            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        } catch (ArrayIndexOutOfBoundsException e2) {
+            JOptionPane.showMessageDialog(null,
+                    "Error: No scenarios have been selected",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            throw e2;
+        }
 
 
         return inputFile;

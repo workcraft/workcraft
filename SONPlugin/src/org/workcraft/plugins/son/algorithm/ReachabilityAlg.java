@@ -57,7 +57,7 @@ public class ReachabilityAlg extends RelationAlgorithm{
 
     private void causalPredecessors(LinkedList<Node> visited, Node n, Before before){
         predecessors.add(n);
-         visited.add(n);
+        visited.add(n);
 
         for(Node n2 : getCausalPreset(n, before)){
             if(!visited.contains(n2))

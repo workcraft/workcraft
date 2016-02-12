@@ -276,8 +276,8 @@ public class CircuitUtils {
                     result = Type.OUTPUT;
                 }
             }
-          }
-          return result;
+        }
+        return result;
     }
 
     public static BooleanFormula parseContactFuncton(final Circuit circuit,
@@ -376,7 +376,7 @@ public class CircuitUtils {
                     if (contact.isPort() == contact.isOutput()) {
                         queue.addAll(circuit.getPreset(node));
                     } else {
-                           queue.add(contact.getParent());
+                        queue.add(contact.getParent());
                     }
                 } else if (node instanceof Joint) {
                     queue.addAll(circuit.getPreset(node));
@@ -422,7 +422,7 @@ public class CircuitUtils {
                     if (contact.isPort() == contact.isInput()) {
                         queue.addAll(circuit.getPostset(node));
                     } else {
-                           queue.add(contact.getParent());
+                        queue.add(contact.getParent());
                     }
                 } else if (node instanceof Joint) {
                     queue.addAll(circuit.getPostset(node));
@@ -464,7 +464,7 @@ public class CircuitUtils {
                 if (node instanceof Contact) {
                     Contact contact = (Contact)node;
                     if (contact.isOutput() && contact.isPort()) {
-                           result.add(contact);
+                        result.add(contact);
                     } else {
                         queue.addAll(circuit.getPostset(node));
                     }

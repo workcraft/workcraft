@@ -49,7 +49,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     public AbstractMathModel(Container root, ReferenceManager man) {
         super((root == null) ? new MathGroup() : root, man);
         new DefaultHangingConnectionRemover(this).attach(getRoot());
-     }
+    }
 
     @SuppressWarnings("unchecked")
     public <T extends MathNode> T createNode(String name, Container container, Class<T> type) {

@@ -716,8 +716,8 @@ public class VisualCircuitComponent extends VisualComponent implements
             PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(Contact.PROPERTY_NAME)
-                || propertyName.equals(Contact.PROPERTY_IO_TYPE)
-                || propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
+                    || propertyName.equals(Contact.PROPERTY_IO_TYPE)
+                    || propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
 
                 invalidateBoundingBox();
                 contactLableGlyphs.clear();

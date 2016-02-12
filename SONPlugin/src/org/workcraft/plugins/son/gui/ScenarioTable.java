@@ -124,8 +124,8 @@ public class ScenarioTable extends JTable{
                 ArrayList<String> nodes = getScenarioNodeRef();
                 if (!nodes.isEmpty() && (row < nodes.size())) {
                     return nodes.get(row);
-                    }
                 }
+            }
             return "";
         }
     };

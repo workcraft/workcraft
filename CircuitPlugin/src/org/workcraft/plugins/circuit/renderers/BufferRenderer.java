@@ -25,7 +25,7 @@ public class BufferRenderer extends GateRenderer {
 
         return f.accept(new NaryBooleanFormulaVisitor<ComponentRenderingResult>() {
 
-             @Override
+            @Override
             public ComponentRenderingResult visit(final BooleanVariable var) {
                 final Rectangle2D bb = new Rectangle2D.Double(-0.5,-0.5,1,1);
                 return new ComponentRenderingResult() {

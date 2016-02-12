@@ -382,7 +382,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
     @Override
     public void activated(final GraphEditor editor) {
-                editor.getWorkspaceEntry().captureMemento();
+        editor.getWorkspaceEntry().captureMemento();
         editor.getWorkspaceEntry().setCanModify(false);
         visualNet = getUnderlyingModel(editor.getModel());
         net = (PetriNetModel)visualNet.getMathModel();
@@ -412,7 +412,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
     }
 
     private void applyMarking(Map<Place, Integer> marking) {
-            for (Place p: marking.keySet()) {
+        for (Place p: marking.keySet()) {
             if (net.getPlaces().contains(p)) {
                 p.setTokens(marking.get(p));
             } else {
@@ -828,13 +828,13 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-            new Func<Node, Boolean>() {
-                @Override
-                public Boolean eval(Node node) {
-                    return node instanceof VisualTransition
-                        && net.isEnabled(((VisualTransition)node).getReferencedTransition());
-                }
-            });
+                new Func<Node, Boolean>() {
+                    @Override
+                    public Boolean eval(Node node) {
+                        return node instanceof VisualTransition
+                            && net.isEnabled(((VisualTransition)node).getReferencedTransition());
+                    }
+                });
 
         if (node instanceof VisualTransition) {
             executeTransition(e.getEditor(), ((VisualTransition)node).getReferencedTransition());

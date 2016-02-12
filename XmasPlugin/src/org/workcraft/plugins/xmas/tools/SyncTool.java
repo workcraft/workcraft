@@ -82,41 +82,41 @@ public class SyncTool implements Tool {
 
     private static class Sync {
 
-           String name1;
-           String name2;
-           String name3;
-           String l1;
-           String l2;
-           String typ;
-           int gr1;
-           int gr2;
-           String g1;
-           String g2;
+        String name1;
+        String name2;
+        String name3;
+        String l1;
+        String l2;
+        String typ;
+        int gr1;
+        int gr2;
+        String g1;
+        String g2;
 
-           Sync(String s1,String s2,String s3,String s4,int gr,int cno) {
-             name1 = s1;
-             name2 = s2;
-             name3 = s3;
-             if(s4.equals("o")) {  //new
-                 if(cno==0) {
-                   l1 = s4;
-                 } else if(cno==1) {
-                   l1 = "b";
-                 } else if(cno==2) {
-                   l1 = "a";
-                 }
-                 gr1=gr;
-             } else {
-                 if(cno==0) {
-                   l2 = s4;
-                 } else if(cno==1) {
-                   l2 = "b";
-                 } else if(cno==2) {
-                   l2 = "a";
-                 }
-                 gr2=gr;
-             }
-           }
+        Sync(String s1,String s2,String s3,String s4,int gr,int cno) {
+            name1 = s1;
+            name2 = s2;
+            name3 = s3;
+            if(s4.equals("o")) {  //new
+                if(cno==0) {
+                    l1 = s4;
+                } else if(cno==1) {
+                    l1 = "b";
+                } else if(cno==2) {
+                    l1 = "a";
+                }
+                gr1=gr;
+            } else {
+                if(cno==0) {
+                    l2 = s4;
+                } else if(cno==1) {
+                    l2 = "b";
+                } else if(cno==2) {
+                    l2 = "a";
+                }
+                gr2=gr;
+            }
+        }
     }
 
     public List<String> slist=new ArrayList<String>();
@@ -202,9 +202,9 @@ public class SyncTool implements Tool {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
-                if (writerS != null) {
-                    writerS.close();
-                }
+            if (writerS != null) {
+                writerS.close();
+            }
         }
     }
 
@@ -356,22 +356,22 @@ public class SyncTool implements Tool {
                     QueueComponent sc=vsc.getReferencedQueueComponent();
                     sc.setGr(gno);
                     /*System.out.println("Queue no = " + gno + " " + sc.getGr());
-                    Collection<XmasContact> contacts2 = sc.getOutputs();
-                    for(XmasContact node : contacts2) {
-                        System.out.println("InputContact =" + cnet.getName(sc));
-                    }
-                    Collection<XmasContact> ccontacts = sc.getOutputs();
-                    for(XmasContact contactNode2 : ccontacts) {
-                        for (Connection c : cnet.getConnections(contactNode2)) {
-                            if(c.getSecond() instanceof XmasContact) {
-                                Node cpNode = c.getSecond().getParent();
-                                System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                //if(checksynclist(cnet.getName(cpNode))==1) {
-                                //    synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o"));
-                                //}
-                            }
-                        }
-                    }*/
+                      Collection<XmasContact> contacts2 = sc.getOutputs();
+                      for(XmasContact node : contacts2) {
+                      System.out.println("InputContact =" + cnet.getName(sc));
+                      }
+                      Collection<XmasContact> ccontacts = sc.getOutputs();
+                      for(XmasContact contactNode2 : ccontacts) {
+                      for (Connection c : cnet.getConnections(contactNode2)) {
+                      if(c.getSecond() instanceof XmasContact) {
+                      Node cpNode = c.getSecond().getParent();
+                      System.out.println("  Found contact = " + cnet.getName(cpNode));
+                    //if(checksynclist(cnet.getName(cpNode))==1) {
+                    //    synclist.add(new Sync(cnet.getName(cpNode),cnet.getName(sc),"","o"));
+                    //}
+                      }
+                      }
+                      }*/
                 } else if(vp instanceof VisualForkComponent) {
                     VisualForkComponent vsc=(VisualForkComponent)vp;
                     ForkComponent sc=vsc.getReferencedForkComponent();
@@ -407,41 +407,41 @@ public class SyncTool implements Tool {
         PrintWriter writer = null;
 
         try {
-        writer = new PrintWriter(jsonFile);
-        int cntNodes=0;
-        List<VisualGroup> groups = new ArrayList<VisualGroup>();
-        List<VisualComponent> vcomps = new ArrayList<VisualComponent>();
-        List<VisualSyncComponent> vscomps = new ArrayList<VisualSyncComponent>();
+            writer = new PrintWriter(jsonFile);
+            int cntNodes=0;
+            List<VisualGroup> groups = new ArrayList<VisualGroup>();
+            List<VisualComponent> vcomps = new ArrayList<VisualComponent>();
+            List<VisualSyncComponent> vscomps = new ArrayList<VisualSyncComponent>();
 
-        for (Node node : vnet.getNodes()) {
-            cntNodes++;
-            if(node instanceof VisualSyncComponent) {
-                cntSyncnodes++;
-                vscomps.add((VisualSyncComponent)node);
-                if(loaded==0) grnums1.add(0);
-                if(loaded==0) grnums2.add(0);
+            for (Node node : vnet.getNodes()) {
+                cntNodes++;
+                if(node instanceof VisualSyncComponent) {
+                    cntSyncnodes++;
+                    vscomps.add((VisualSyncComponent)node);
+                    if(loaded==0) grnums1.add(0);
+                    if(loaded==0) grnums2.add(0);
+                }
             }
-        }
 
-        //Finds all components inside groups
-        int grnum=1;
-        for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
-            for(VisualComponent vp: vg.getComponents()) {
-                vcomps.add(vp);
-                if(loaded==0) grnums.add(grnum);
+            //Finds all components inside groups
+            int grnum=1;
+            for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
+                for(VisualComponent vp: vg.getComponents()) {
+                    vcomps.add(vp);
+                    if(loaded==0) grnums.add(grnum);
+                }
+                /*for(VisualConnection vc: vg.getConnections()) { //only connections inside group
+                  System.out.println("Found connections");
+                  }*/
+                grnum++;
             }
-            /*for(VisualConnection vc: vg.getConnections()) { //only connections inside group
-                System.out.println("Found connections");
-            }*/
-            grnum++;
-        }
 
-        synclist.clear();
-        //Finds all sync connections + groups
-        Collection <VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
-        for(VisualConnection vc: lvc) {
-            VisualNode vc1 = vc.getFirst();
-            VisualNode vc2 = vc.getSecond();
+            synclist.clear();
+            //Finds all sync connections + groups
+            Collection <VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
+            for(VisualConnection vc: lvc) {
+                VisualNode vc1 = vc.getFirst();
+                VisualNode vc2 = vc.getSecond();
                 Node vn1 = vc1.getParent();
                 Node vn2 = vc2.getParent();
 
@@ -702,20 +702,20 @@ public class SyncTool implements Tool {
                     }
                 }
 
-        }
+            }
 
         } catch (Exception e) {
-                e.printStackTrace();
+            e.printStackTrace();
         } finally {
-                if (writer != null) {
-                    writer.close();
-                }
+            if (writer != null) {
+                writer.close();
+            }
         }
 
         String[] choices = {
-                 "asynchronous",
-                 "mesochronous",
-                 "pausible",
+            "asynchronous",
+            "mesochronous",
+            "pausible",
         };
 
         mainFrame = new JFrame("Configure Synchronisation");
@@ -814,26 +814,26 @@ public class SyncTool implements Tool {
                         //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
                         no++;  //shifted
                     } else if(node instanceof VisualSourceComponent) {
-                            VisualSourceComponent vsc=(VisualSourceComponent)node;
-                            SourceComponent sc=vsc.getReferencedSourceComponent();
-                            int sno=sc.getGr();
-                            for(int i=0; i<grnums1.size(); i++) {
-                                if(grnums1.get(i)==sno) gp=slist1.get(i);
-                                if(grnums2.get(i)==sno) gp=slist2.get(i);
-                            }
-                            //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
-                            sc.setGp(gp);
+                        VisualSourceComponent vsc=(VisualSourceComponent)node;
+                        SourceComponent sc=vsc.getReferencedSourceComponent();
+                        int sno=sc.getGr();
+                        for(int i=0; i<grnums1.size(); i++) {
+                            if(grnums1.get(i)==sno) gp=slist1.get(i);
+                            if(grnums2.get(i)==sno) gp=slist2.get(i);
+                        }
+                        //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
+                        sc.setGp(gp);
                     } else if(node instanceof VisualQueueComponent) {
-                            VisualQueueComponent vsc=(VisualQueueComponent)node;
-                            QueueComponent sc=vsc.getReferencedQueueComponent();
-                            int qno=sc.getGr();
-                            for(int i=0; i<grnums1.size(); i++) {
-                                if(grnums1.get(i)==qno) gp=slist1.get(i);
-                                if(grnums2.get(i)==qno) gp=slist2.get(i);
-                            }
-                            //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
-                            //sc.setGp(Integer.parseInt(gp));
-                            sc.setGp(gp);
+                        VisualQueueComponent vsc=(VisualQueueComponent)node;
+                        QueueComponent sc=vsc.getReferencedQueueComponent();
+                        int qno=sc.getGr();
+                        for(int i=0; i<grnums1.size(); i++) {
+                            if(grnums1.get(i)==qno) gp=slist1.get(i);
+                            if(grnums2.get(i)==qno) gp=slist2.get(i);
+                        }
+                        //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
+                        //sc.setGp(Integer.parseInt(gp));
+                        sc.setGp(gp);
                     }
                     //no++;
                 }

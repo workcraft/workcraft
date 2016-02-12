@@ -25,8 +25,8 @@ public class MpsatCscResolutionResultHandler implements Runnable {
     private final Result<? extends ExternalProcessResult> result;
 
     public MpsatCscResolutionResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result) {
-                this.we = we;
-                this.result = result;
+        this.we = we;
+        this.result = result;
     }
 
     public STGModel getResolvedStg() {

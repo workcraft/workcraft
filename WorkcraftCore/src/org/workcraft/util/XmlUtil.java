@@ -52,14 +52,14 @@ import org.xml.sax.SAXException;
 
 public class XmlUtil {
     public static List<Element> getChildElements(String tagName, Element element) {
-            LinkedList<Element> result = new LinkedList<Element>();
-            NodeList nl = element.getChildNodes();
-            for (int i=0; i<nl.getLength(); i++) {
-                Node n = nl.item(i);
-                if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
-                    result.add((Element)n);
-            }
-            return result;
+        LinkedList<Element> result = new LinkedList<Element>();
+        NodeList nl = element.getChildNodes();
+        for (int i=0; i<nl.getLength(); i++) {
+            Node n = nl.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
+                result.add((Element)n);
+        }
+        return result;
     }
 
     public static Element getChildElement(String tagName, Element element) {

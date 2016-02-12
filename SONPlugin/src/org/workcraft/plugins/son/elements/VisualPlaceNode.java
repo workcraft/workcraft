@@ -113,11 +113,11 @@ public class VisualPlaceNode extends VisualComponent{
         }
 
         if(token){
-        Graphics2D g = r.getGraphics();
-        double singleTokenSize = getSingleTokenSize();
-        Color tokenColor = Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation());
+            Graphics2D g = r.getGraphics();
+            double singleTokenSize = getSingleTokenSize();
+            Color tokenColor = Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation());
 
-        Shape shape;
+            Shape shape;
             shape = new Ellipse2D.Double(
                     -singleTokenSize / 2,
                     -singleTokenSize / 2,

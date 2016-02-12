@@ -69,7 +69,7 @@ public class DefaultDurationPanel extends JPanel{
             public void focusGained(FocusEvent e) {
                 min.selectAll();
             }
-          });
+        });
 
         min.addKeyListener(new KeyListener(){
 
@@ -105,7 +105,7 @@ public class DefaultDurationPanel extends JPanel{
             public void focusGained(FocusEvent e) {
                 max.selectAll();
             }
-          });
+        });
 
         max.addKeyListener(new KeyListener(){
 
@@ -132,13 +132,13 @@ public class DefaultDurationPanel extends JPanel{
         int length = text.length();
 
         if(length < 4){
-           while (length < 4) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("0").append(text);
-            text = sb.toString();
-            field.setText(text);
-            length = text.length();
-           }
+            while (length < 4) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("0").append(text);
+                text = sb.toString();
+                field.setText(text);
+                length = text.length();
+            }
         }
     }
 

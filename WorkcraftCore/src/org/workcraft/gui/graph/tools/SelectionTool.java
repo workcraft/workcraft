@@ -642,7 +642,7 @@ public class SelectionTool extends AbstractTool {
                  *   s = model.getSelection().contains(node)
                  */
                 if (((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
-                    || (!selected.contains(node) && model.getSelection().contains(node))) {
+                        || (!selected.contains(node) && model.getSelection().contains(node))) {
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {

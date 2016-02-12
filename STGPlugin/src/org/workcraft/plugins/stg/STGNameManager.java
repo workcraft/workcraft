@@ -135,7 +135,7 @@ public class STGNameManager extends UniqueNameManager {
 
     @Override
     public boolean isUnusedName(String name) {
-    return super.isUnusedName(name)
+        return super.isUnusedName(name)
             && !instancedNameManager.containsGenerator(name + "-")
             && !instancedNameManager.containsGenerator(name + "+")
             && !instancedNameManager.containsGenerator(name + "~")

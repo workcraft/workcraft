@@ -178,10 +178,10 @@ public class NamespaceHelper {
                 dstModel.setMathName(dstPage, name);
 
                 toProcess.put(srcPage, dstPage);
-             } else if (srcNode instanceof VisualGroup) {
-                 VisualGroup srcGroup = (VisualGroup)srcNode;
+            } else if (srcNode instanceof VisualGroup) {
+                VisualGroup srcGroup = (VisualGroup)srcNode;
                 toProcess.put(srcGroup, dstContainer);
-             }
+            }
         }
 
         for (Entry<Container, Container> en: toProcess.entrySet()) {

@@ -58,10 +58,10 @@ public class ONStructureTask extends AbstractStructuralVerification{
 
         for(ONGroup group : groups){
 
-        Collection<Node> task1, task2;
-        Collection<Path> cycleResult;
+            Collection<Node> task1, task2;
+            Collection<Path> cycleResult;
 
-        //group info
+            //group info
             infoMsg("Initialising selected groups and components...");
 
             Collection<Node> groupComponents = group.getComponents();

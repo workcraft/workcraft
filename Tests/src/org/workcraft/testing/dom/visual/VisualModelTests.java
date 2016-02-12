@@ -351,7 +351,7 @@ public class VisualModelTests {
         Assert.assertTrue(newList.contains(node2c));
         Assert.assertTrue(newList.contains(node3c));
         Assert.assertTrue(newList.contains(node4c));
-}
+    }
 
     @Test
     public void testGroupingAutoGroupConnections() {

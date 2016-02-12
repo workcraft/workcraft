@@ -185,7 +185,7 @@ public class SimulationAlg extends RelationAlgorithm {
             if(n instanceof Condition)
                 if (!((Condition)n).isMarked())
                     return false;
-            }
+        }
 
         return true;
     }
@@ -202,7 +202,7 @@ public class SimulationAlg extends RelationAlgorithm {
                         if(!c2.isMarked())
                             return false;
                 }
-            return true;
+                return true;
             }
         }
 
@@ -309,7 +309,7 @@ public class SimulationAlg extends RelationAlgorithm {
             if(n instanceof Condition)
                 if (!((Condition)n).isMarked())
                     return false;
-            }
+        }
 
         return true;
     }
@@ -326,7 +326,7 @@ public class SimulationAlg extends RelationAlgorithm {
                         if(!c2.isMarked())
                             return false;
                 }
-            return true;
+                return true;
             }
         }
 

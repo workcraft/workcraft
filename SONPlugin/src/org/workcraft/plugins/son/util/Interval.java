@@ -43,7 +43,7 @@ public class Interval {
             //return decimal number
             result = Integer.parseInt(first);
         } catch (NumberFormatException e) {
-              e.printStackTrace();
+            e.printStackTrace();
         }
 
         return result;
@@ -59,7 +59,7 @@ public class Interval {
             //return decimal number
             result = Integer.parseInt(last);
         } catch (NumberFormatException e) {
-              e.printStackTrace();
+            e.printStackTrace();
         }
         return result;
     }
@@ -73,7 +73,7 @@ public class Interval {
             //return decimal number
             result = Integer.parseInt(value);
         } catch (NumberFormatException e) {
-              e.printStackTrace();
+            e.printStackTrace();
         }
         return result;
     }
@@ -156,12 +156,12 @@ public class Interval {
         int length = text.length();
 
         if(length < 4){
-           while (length < 4) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("0").append(text);
-            text = sb.toString();
-            length = text.length();
-           }
+            while (length < 4) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("0").append(text);
+                text = sb.toString();
+                length = text.length();
+            }
         }
         return text;
     }

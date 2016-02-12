@@ -31,7 +31,7 @@ public class WaggingGeneratorTool implements Tool {
         if (dfs.getSelection().size() < 1) {
             final Framework framework = Framework.getInstance();
             JOptionPane.showMessageDialog(framework.getMainWindow(),
-                "Select at least one component for wagging!", "Wagging", JOptionPane.ERROR_MESSAGE);
+                    "Select at least one component for wagging!", "Wagging", JOptionPane.ERROR_MESSAGE);
         } else {
             int count = getWayCount();
             if (count >= 2) {

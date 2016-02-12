@@ -274,8 +274,8 @@ public class VisualCPOG extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         if (node != null) {
             if (node instanceof VisualRhoClause ||
-                node instanceof VisualVertex ||
-                node instanceof VisualArc) {
+                    node instanceof VisualVertex ||
+                    node instanceof VisualArc) {
                 properties.add(new BooleanFormulaPropertyDescriptor(node));
             }
         }
@@ -292,7 +292,7 @@ public class VisualCPOG extends AbstractVisualModel {
 
     public VisualScenarioPage groupScenarioPageSelection(String graphName) {
         VisualScenarioPage scenario = null;
-         PageNode pageNode = new PageNode();
+        PageNode pageNode = new PageNode();
         Collection<Node> nodes = SelectionHelper.getGroupableCurrentLevelSelection(this);
         if (nodes.size() >= 1) {
             scenario = new VisualScenarioPage(pageNode);

@@ -27,6 +27,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 
 public interface ModelDeserialiser extends SerialFormat {
-        String getDescription();
-        DeserialisationResult deserialise(InputStream is, ReferenceResolver rr, Model underlyingModel) throws DeserialisationException;
+    String getDescription();
+    DeserialisationResult deserialise(InputStream is, ReferenceResolver rr, Model underlyingModel) throws DeserialisationException;
 }

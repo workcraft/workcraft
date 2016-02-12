@@ -228,7 +228,7 @@ public class PnToCpogConverter {
             // counting pre vertices of last vertex
             int numberPreConnections = 0;
             for(Connection connection : visualCpog.getConnections(vertex)){
-                    numberPreConnections++;
+                numberPreConnections++;
             }
 
             // if last vertex has got more than one pre vertices

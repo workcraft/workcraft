@@ -50,17 +50,17 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         }
         final StringBuffer result = new StringBuffer(signalName);
         switch (getReferencedTransition().getDirection()) {
-            case PLUS:
-                result.append("+");
-                break;
-            case MINUS:
-                result.append("-");
-                break;
-            case TOGGLE:
-                if (STGSettings.getShowToggle()) {
-                    result.append("~");
-                }
-                break;
+        case PLUS:
+            result.append("+");
+            break;
+        case MINUS:
+            result.append("-");
+            break;
+        case TOGGLE:
+            if (STGSettings.getShowToggle()) {
+                result.append("~");
+            }
+            break;
         }
         return result.toString();
     }
@@ -68,10 +68,10 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     @Override
     public Color getColor() {
         switch (getType()) {
-            case INPUT:        return STGSettings.getInputColor();
-            case OUTPUT:    return STGSettings.getOutputColor();
-            case INTERNAL:    return STGSettings.getInternalColor();
-            default:        return STGSettings.getDummyColor();
+        case INPUT:        return STGSettings.getInputColor();
+        case OUTPUT:    return STGSettings.getOutputColor();
+        case INTERNAL:    return STGSettings.getInternalColor();
+        default:        return STGSettings.getDummyColor();
         }
     }
 

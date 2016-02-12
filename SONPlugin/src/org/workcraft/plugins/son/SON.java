@@ -365,7 +365,7 @@ public class SON extends AbstractMathModel {
             throw new RuntimeException("Connection size between"+ getNodeReference(first) + "and"+  getNodeReference(first)+ "> 1");
 
         if(connection.size()  == 0)
-        return null;
+            return null;
 
         return connection.iterator().next();
     }

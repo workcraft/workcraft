@@ -85,12 +85,12 @@ public class FstSimulationTool extends StgSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         Point2D posRoot = e.getPosition();
         Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-            new Func<Node, Boolean>() {
-                @Override
-                public Boolean eval(Node node) {
-                    return getExcitedTransitionOfNode(node) != null;
-                }
-            });
+                new Func<Node, Boolean>() {
+                    @Override
+                    public Boolean eval(Node node) {
+                        return getExcitedTransitionOfNode(node) != null;
+                    }
+                });
 
         Transition transition = null;
         if (node instanceof VisualTransformableNode) {

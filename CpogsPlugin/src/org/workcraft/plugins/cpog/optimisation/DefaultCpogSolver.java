@@ -6,8 +6,8 @@ public class DefaultCpogSolver<T> {
 
     public DefaultCpogSolver(CpogSATProblemGenerator<? extends T> problemGenerator,
             RawCnfGenerator<? super T> simpleCnfTaskProvider) {
-                this.problemGenerator = problemGenerator;
-                this.cnfConverter = simpleCnfTaskProvider;
+        this.problemGenerator = problemGenerator;
+        this.cnfConverter = simpleCnfTaskProvider;
     }
 
     public CpogOptimisationTask<? extends T> getTask(String[] scenarios, BooleanVariable[] variables, int derivedVars) {

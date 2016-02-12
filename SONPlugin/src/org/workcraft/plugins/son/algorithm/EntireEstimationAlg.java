@@ -142,13 +142,13 @@ public class EntireEstimationAlg extends EstimationAlg{
             if(con.getSemantics() == Semantics.PNLINE){
                 Node first = con.getFirst();
                 if(first instanceof Time){
-                if(narrow){
-                    con.setTime(((Time)first).getEndTime());
-                    con.setTimeLabelColor(color);
-                } else{
-                    if(!con.getTime().isSpecified()){
+                    if(narrow){
                         con.setTime(((Time)first).getEndTime());
                         con.setTimeLabelColor(color);
+                    } else{
+                        if(!con.getTime().isSpecified()){
+                            con.setTime(((Time)first).getEndTime());
+                            con.setTimeLabelColor(color);
                         }
                     }
                 }
@@ -177,7 +177,7 @@ public class EntireEstimationAlg extends EstimationAlg{
 
         for(Time t : neighbours){
             if(!visited.contains(t)){
-                 if(!t.getEndTime().isSpecified()){
+                if(!t.getEndTime().isSpecified()){
                     t.setEndTime(last.getStartTime());
                     if(finalM.contains(t)){
                         ((Condition)t).setEndTimeColor(color);
@@ -189,22 +189,22 @@ public class EntireEstimationAlg extends EstimationAlg{
                         t.setEndTime(Interval.getOverlapping(t.getEndTime(), last.getEndTime()));
                     }
                 }
-                 if(!t.getDuration().isSpecified()){
-                     t.setDuration(defaultDuration);
-                     if(t instanceof PlaceNode){
-                         ((PlaceNode)t).setDurationColor(color);
-                     }else if(t instanceof Block){
-                         ((Block)t).setDurationColor(color);
-                     }
-                 }
-                 if(!t.getStartTime().isSpecified()){
-                     Interval time = granularity.plusTD(t.getEndTime(), t.getDuration());
-                     t.setStartTime(time);
+                if(!t.getDuration().isSpecified()){
+                    t.setDuration(defaultDuration);
+                    if(t instanceof PlaceNode){
+                        ((PlaceNode)t).setDurationColor(color);
+                    }else if(t instanceof Block){
+                        ((Block)t).setDurationColor(color);
+                    }
+                }
+                if(!t.getStartTime().isSpecified()){
+                    Interval time = granularity.plusTD(t.getEndTime(), t.getDuration());
+                    t.setStartTime(time);
                     if(initial.contains(t)){
                         ((Condition)t).setStartTimeColor(color);
                     }
-                 }else{
-                     ArrayList<String> check= consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
+                }else{
+                    ArrayList<String> check= consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
                     if(!check.isEmpty())
                         throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
                     if(narrow){
@@ -224,7 +224,7 @@ public class EntireEstimationAlg extends EstimationAlg{
 
         for(Time t : neighbours){
             if(!visited.contains(t)){
-                 if(!t.getStartTime().isSpecified()){
+                if(!t.getStartTime().isSpecified()){
                     t.setStartTime(last.getEndTime());
                     if(initial.contains(t)){
                         ((Condition)t).setStartTimeColor(color);
@@ -236,22 +236,22 @@ public class EntireEstimationAlg extends EstimationAlg{
                         t.setStartTime(Interval.getOverlapping(t.getStartTime(), last.getStartTime()));
                     }
                 }
-                 if(!t.getDuration().isSpecified()){
-                     t.setDuration(defaultDuration);
-                     if(t instanceof PlaceNode){
-                         ((PlaceNode)t).setDurationColor(color);
-                     }else if(t instanceof Block){
-                         ((Block)t).setDurationColor(color);
-                     }
-                 }
-                 if(!t.getEndTime().isSpecified()){
-                     Interval time = granularity.plusTD(t.getStartTime(), t.getDuration());
-                     t.setEndTime(time);
+                if(!t.getDuration().isSpecified()){
+                    t.setDuration(defaultDuration);
+                    if(t instanceof PlaceNode){
+                        ((PlaceNode)t).setDurationColor(color);
+                    }else if(t instanceof Block){
+                        ((Block)t).setDurationColor(color);
+                    }
+                }
+                if(!t.getEndTime().isSpecified()){
+                    Interval time = granularity.plusTD(t.getStartTime(), t.getDuration());
+                    t.setEndTime(time);
                     if(finalM.contains(t)){
                         ((Condition)t).setEndTimeColor(color);
                     }
-                 }else{
-                     ArrayList<String> check= consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
+                }else{
+                    ArrayList<String> check= consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
                     if(!check.isEmpty())
                         throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
                     if(narrow){

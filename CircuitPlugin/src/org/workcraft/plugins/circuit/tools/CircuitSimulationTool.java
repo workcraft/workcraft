@@ -165,12 +165,12 @@ public class CircuitSimulationTool extends StgSimulationTool {
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-            new Func<Node, Boolean>() {
-                @Override
-                public Boolean eval(Node node) {
-                    return node instanceof VisualContact;
-                }
-            });
+                new Func<Node, Boolean>() {
+                    @Override
+                    public Boolean eval(Node node) {
+                        return node instanceof VisualContact;
+                    }
+                });
 
         if (node != null) {
             SignalTransition st = getContactExcitedTransition((VisualContact) node);

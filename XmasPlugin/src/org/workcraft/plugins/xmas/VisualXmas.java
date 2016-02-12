@@ -125,15 +125,15 @@ public class VisualXmas extends AbstractVisualModel {
         ArrayList<Node> result =  new ArrayList<Node>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)){
             if ((node instanceof VisualSourceComponent)
-              || (node instanceof VisualFunctionComponent)
-              || (node instanceof VisualQueueComponent)
-              || (node instanceof VisualForkComponent)
-              || (node instanceof VisualJoinComponent)
-              || (node instanceof VisualSwitchComponent)
-              || (node instanceof VisualMergeComponent)
-              || (node instanceof VisualSinkComponent)
-              || (node instanceof VisualCreditComponent)
-              || (node instanceof VisualSyncComponent)) {
+                    || (node instanceof VisualFunctionComponent)
+                    || (node instanceof VisualQueueComponent)
+                    || (node instanceof VisualForkComponent)
+                    || (node instanceof VisualJoinComponent)
+                    || (node instanceof VisualSwitchComponent)
+                    || (node instanceof VisualMergeComponent)
+                    || (node instanceof VisualSinkComponent)
+                    || (node instanceof VisualCreditComponent)
+                    || (node instanceof VisualSyncComponent)) {
                 result.add(node);
             }
         }

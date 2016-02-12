@@ -92,18 +92,18 @@ public class HourMins extends AbstractTimeGranularity{
         Integer mins = 0;
 
         switch(str.length()){
-            case 1:
-            case 2:
-                mins = time;
-                break;
-            case 3:
-                mins = Integer.valueOf(str.substring(1, 3));
-                hour = Integer.valueOf(str.substring(0, 1));
-                break;
-            case 4:
-                mins = Integer.valueOf(str.substring(2, 4));
-                hour = Integer.valueOf(str.substring(0, 2));
-                break;
+        case 1:
+        case 2:
+            mins = time;
+            break;
+        case 3:
+            mins = Integer.valueOf(str.substring(1, 3));
+            hour = Integer.valueOf(str.substring(0, 1));
+            break;
+        case 4:
+            mins = Integer.valueOf(str.substring(2, 4));
+            hour = Integer.valueOf(str.substring(0, 2));
+            break;
         }
 
         if(hour > 23 || mins > 60 || hour < 0 || mins < 0){
@@ -117,12 +117,12 @@ public class HourMins extends AbstractTimeGranularity{
         Integer hour = 0;
 
         switch(str.length()){
-            case 3:
-                hour = Integer.valueOf(str.substring(0, 1));
-                break;
-            case 4:
-                hour = Integer.valueOf(str.substring(0, 2));
-                break;
+        case 3:
+            hour = Integer.valueOf(str.substring(0, 1));
+            break;
+        case 4:
+            hour = Integer.valueOf(str.substring(0, 2));
+            break;
         }
 
         if(hour > 23 || hour < 0){
@@ -138,16 +138,16 @@ public class HourMins extends AbstractTimeGranularity{
         Integer mins = 0;
 
         switch(str.length()){
-            case 1:
-            case 2:
-                mins = time;
-                break;
-            case 3:
-                mins = Integer.valueOf(str.substring(1, 3));
-                break;
-            case 4:
-                mins = Integer.valueOf(str.substring(2, 4));
-                break;
+        case 1:
+        case 2:
+            mins = time;
+            break;
+        case 3:
+            mins = Integer.valueOf(str.substring(1, 3));
+            break;
+        case 4:
+            mins = Integer.valueOf(str.substring(2, 4));
+            break;
         }
 
         if(mins > 60 || mins < 0){
@@ -163,12 +163,12 @@ public class HourMins extends AbstractTimeGranularity{
         int length = text.length();
 
         if(length < 2){
-           while (length < 2) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("0").append(text);
-            text = sb.toString();
-            length = text.length();
-           }
+            while (length < 2) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("0").append(text);
+                text = sb.toString();
+                length = text.length();
+            }
         }
         return text;
     }
@@ -182,15 +182,15 @@ public class HourMins extends AbstractTimeGranularity{
         return r;
     }
 
-//    public static void main(String[] args) {
-//
-//        HourMins h = new HourMins();
-//        try {
-//            System.out.println(h.subtractTT(5, 2400));
-//
-//        } catch (TimeOutOfBoundsException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
+    //    public static void main(String[] args) {
+    //
+    //        HourMins h = new HourMins();
+    //        try {
+    //            System.out.println(h.subtractTT(5, 2400));
+    //
+    //        } catch (TimeOutOfBoundsException e) {
+    //            // TODO Auto-generated catch block
+    //            e.printStackTrace();
+    //        }
+    //    }
 }

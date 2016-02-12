@@ -75,9 +75,9 @@ public class ASONAlg extends RelationAlgorithm{
                             newMarkings.add(newMarking);
                     }
                     if(visited.containsKey(t)){
-                         ArrayList<Marking> markings = visited.get(t);
-                         markings.add(marking);
-                         visited.put(t, markings);
+                        ArrayList<Marking> markings = visited.get(t);
+                        markings.add(marking);
+                        visited.put(t, markings);
                     }else{
                         ArrayList<Marking> markings = new ArrayList<Marking>();
                         markings.add(marking);

@@ -151,7 +151,7 @@ public class EstimationAlg extends TimeAlg{
                 throw new TimeInconsistencyException("Warning: Estimated start and end times are inconsistent.");
             }
             return;
-        //n has specified start and unspecified end
+            //n has specified start and unspecified end
         }else if(specifiedStart && !specifiedEnd){
             Interval start = null;
             Interval end = null;
@@ -192,7 +192,7 @@ public class EstimationAlg extends TimeAlg{
                 throw new TimeInconsistencyException("Warning: Estimated start and end times are inconsistent.");
             }
             return;
-        //n has unspecified start and unspecified end
+            //n has unspecified start and unspecified end
         }else if(!specifiedStart && !specifiedEnd){
             Interval start = null;
             Interval end = null;
@@ -344,13 +344,13 @@ public class EstimationAlg extends TimeAlg{
             //c is final
             if(cons.isEmpty() && cons2.isEmpty()){
                 return c.getEndTime();
-            //c is final state of the scenario, but not the final state of ON
+                //c is final state of the scenario, but not the final state of ON
             }else if(!cons.isEmpty() && cons2.isEmpty()){
                 if(cons.size() == 1){
                     SONConnection con = cons.iterator().next();
                     return con.getTime();
                 }
-            //c is not final state
+                //c is not final state
             }else if(!cons.isEmpty() && !cons2.isEmpty()){
                 SONConnection con = null;
                 if(cons2.size()==1)
@@ -415,17 +415,17 @@ public class EstimationAlg extends TimeAlg{
                     c.setEndTime(end);
                     throw new TimeEstimationValueException("Estimated end time = "+ end.toString() +", from "+intervals(resultTimeAndDuration));
                 }
-            //c is final state of the scenario, but not the final state of ON
+                //c is final state of the scenario, but not the final state of ON
             }else if(!cons.isEmpty() && cons2.isEmpty()){
-                    if(cons.size() == 1){
-                        SONConnection con = cons.iterator().next();
-                        c.setEndTime(con.getTime());
-                        throw new TimeEstimationValueException("End time = "+ con.getTime().toString());
-                    }else{
-                        throw new TimeEstimationException(
-                        "node has more than one possible end times (forward)");
-                    }
-            //c is not final state
+                if(cons.size() == 1){
+                    SONConnection con = cons.iterator().next();
+                    c.setEndTime(con.getTime());
+                    throw new TimeEstimationValueException("End time = "+ con.getTime().toString());
+                }else{
+                    throw new TimeEstimationException(
+                            "node has more than one possible end times (forward)");
+                }
+                //c is not final state
             }else if(!cons.isEmpty() && !cons2.isEmpty()){
                 SONConnection con = null;
                 if(cons2.size()==1)
@@ -438,7 +438,7 @@ public class EstimationAlg extends TimeAlg{
                         c.setEndTime(end);
                         throw new TimeEstimationValueException("Estimated end time = "+ end.toString() +", from "+intervals(resultTimeAndDuration));
                     }
-                //set value from output connection
+                    //set value from output connection
                 }else{
                     c.setEndTime(con.getTime());
                     throw new TimeEstimationValueException("End time = "+ con.getTime().toString());
@@ -465,7 +465,7 @@ public class EstimationAlg extends TimeAlg{
                     throw new TimeEstimationException(
                             "start times are concurrently inconsistency.");
                 }
-            //none of the connections has specified value.
+                //none of the connections has specified value.
             }else{
                 end = getEstimatedEndTime(n);
                 if(end != null){
@@ -510,7 +510,7 @@ public class EstimationAlg extends TimeAlg{
                         c.setStartTime(start);
                         throw new TimeEstimationValueException("Estimated start time = "+ start.toString() +", from "+intervals(resultTimeAndDuration));
                     }
-                //set start time from connection
+                    //set start time from connection
                 }else{
                     c.setStartTime(con.getTime());
                     throw new TimeEstimationValueException("Start time = "+ con.getTime().toString());
@@ -537,7 +537,7 @@ public class EstimationAlg extends TimeAlg{
                     throw new TimeEstimationException(
                             "end times are concurrently inconsistency.");
                 }
-            //none of the connections has specified value.
+                //none of the connections has specified value.
             }else{
                 start = getEstimatedStartTime(n);
                 if(start != null){
@@ -593,7 +593,7 @@ public class EstimationAlg extends TimeAlg{
         }else{
             clearSets();
             throw new TimeEstimationException("intervals"+
-            intervals(resultTimeAndDuration)+"are not consistent (backward).");
+                    intervals(resultTimeAndDuration)+"are not consistent (backward).");
         }
     }
 
@@ -626,7 +626,7 @@ public class EstimationAlg extends TimeAlg{
             clearSets();
             throw new TimeEstimationException(
                     "intervals"+
-            intervals(resultTimeAndDuration)+"are not consistent (forward).");
+                    intervals(resultTimeAndDuration)+"are not consistent (forward).");
         }
 
     }
@@ -640,7 +640,7 @@ public class EstimationAlg extends TimeAlg{
             result[1] = durationAccumulator1(visited);
             resultTimeAndDuration.add(result);
 
-               Path path = new Path();
+            Path path = new Path();
             path.addAll(visited);
             fwdPaths.add(path);
         }
@@ -688,7 +688,7 @@ public class EstimationAlg extends TimeAlg{
             result[1] = durationAccumulator1(visited);
             resultTimeAndDuration.add(result);
 
-               Path path = new Path();
+            Path path = new Path();
             path.addAll(visited);
             bwdPaths.add(path);
         }
@@ -766,7 +766,7 @@ public class EstimationAlg extends TimeAlg{
                     else
                         preSet.add((Time)con.getFirst());
                 }else if(con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
-                      preSet.add((Time)con.getFirst());
+                    preSet.add((Time)con.getFirst());
             }
         }else if(n instanceof ChannelPlace){
             Node input = net.getPreset(n).iterator().next();

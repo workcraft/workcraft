@@ -17,9 +17,9 @@ public class OutputRedirect {
 
         JFrame win = new OutputArea(jTextArea);
 
-           win.setVisible(true);
+        win.setVisible(true);
 
-           setupLog4JAppender(jTextArea);
+        setupLog4JAppender(jTextArea);
 
     }
 

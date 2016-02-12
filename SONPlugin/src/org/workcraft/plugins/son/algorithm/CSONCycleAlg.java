@@ -106,7 +106,7 @@ public class CSONCycleAlg extends ONCycleAlg{
      */
     @Override
     public Collection<Path> cycleTask(Collection<? extends Node> nodes){
-         return cycleFliter(super.cycleTask(nodes));
+        return cycleFliter(super.cycleTask(nodes));
     }
 
     /**

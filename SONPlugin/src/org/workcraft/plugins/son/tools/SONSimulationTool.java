@@ -467,8 +467,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             } else {
                 if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
                     return branchTrace.get(row - mainTrace.getPosition());
-                    }
                 }
+            }
             return "";
         }
     };
@@ -788,8 +788,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             traceList=getStep(stepRef);
         }
         if (!traceList.isEmpty() && traceList.containsAll(step) && step.containsAll(traceList)){
-                step(editor);
-                return;
+            step(editor);
+            return;
         }
         while (branchTrace.getPosition() < branchTrace.size()) {
             branchTrace.removeCurrent();
@@ -899,21 +899,21 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
 
         Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-            new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node node) {
-                if(node instanceof VisualTransitionNode){
-                    TransitionNode node1 = ((VisualTransitionNode)node).getMathTransitionNode();
-                    Step enabled = null;
+                new Func<Node, Boolean>() {
+                    @Override
+                    public Boolean eval(Node node) {
+                        if(node instanceof VisualTransitionNode){
+                            TransitionNode node1 = ((VisualTransitionNode)node).getMathTransitionNode();
+                            Step enabled = null;
 
-                    enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
-                    if(isEnabled(node1, enabled))
-                        return true;
-                }
-                return false;
+                            enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+                            if(isEnabled(node1, enabled))
+                                return true;
+                        }
+                        return false;
 
-            }
-        });
+                    }
+                });
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
@@ -952,8 +952,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                 if(dialog.getRun()==2){
                     setDecoration(enabled);
                     return;
-                    }
                 }
+            }
 
             if(autoSimuButton.isSelected()){
                 autoSimulator(editor);

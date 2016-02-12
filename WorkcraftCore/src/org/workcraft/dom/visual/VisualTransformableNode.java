@@ -338,7 +338,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     }
 
     public Collection<VisualComponent> getComponents() {
-         return Hierarchy.getChildrenOfType(this, VisualComponent.class);
+        return Hierarchy.getChildrenOfType(this, VisualComponent.class);
     }
 
     public Collection<VisualConnection> getConnections() {

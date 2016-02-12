@@ -231,7 +231,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                 }
             }
             if (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
-                || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
+                    || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
                 setContactsDefaultPosition();
                 for (Node node : getChildren()) {
                     if (node instanceof VisualFunctionContact) {
@@ -321,7 +321,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if ((inputPos != null) && (outputPos != null)) {
             float[] dash = {0.05f, 0.05f};
             g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
-                BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
+                        BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 
             g.setColor(GateRenderer.foreground);
             at.transform(inputPos, inputPos);
@@ -370,7 +370,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             } else {
                 float[] dash = {0.05f, 0.05f};
                 g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
-                    BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
+                            BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
             }
 
             GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());

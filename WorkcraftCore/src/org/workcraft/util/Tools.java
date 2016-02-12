@@ -22,7 +22,7 @@ public class Tools {
             tool.run(we);
         } else {
             String errorMessage = "Attempt to apply incompatible tool " +
-                tool.getClass().getName() + " to a workspace entry " + we.getWorkspacePath();
+                    tool.getClass().getName() + " to a workspace entry " + we.getWorkspacePath();
 
             throw new RuntimeException(errorMessage);
         }

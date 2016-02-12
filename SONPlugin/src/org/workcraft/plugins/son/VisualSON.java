@@ -103,20 +103,20 @@ public class VisualSON extends AbstractVisualModel {
 
         if(!(first instanceof VisualChannelPlace) &&  !(second instanceof VisualChannelPlace)){
             if (isGrouped(first) && !isGrouped(second) || isGrouped(second) && !isGrouped(first))
-            throw new InvalidConnectionException("Connections between grouped node and un-grouped nodes are not valid (Group)");
+                throw new InvalidConnectionException("Connections between grouped node and un-grouped nodes are not valid (Group)");
 
-        //Bhv Type
-        if (currentConnectonSemantics == Semantics.BHVLINE) {
-            if ((first instanceof VisualEvent) || (second instanceof VisualEvent))
-                throw new InvalidConnectionException("Connections between non-conditions are not valid (Behavioural Abstraction)");
-            if (!isGrouped(first) || !isGrouped(second))
-                throw new InvalidConnectionException("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
-            if (isInSameGroup(first, second))
-                throw new InvalidConnectionException("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
-            if (isInBlock(first) || this.isInBlock(second))
-                throw new InvalidConnectionException("Block cannot cross phases (Block)");
-            if (hasInputBhv(first) || hasOutputBhv(second))
-                throw new InvalidConnectionException("Condition with both input and output behavioural relations is not valid  (Behavioural Abstraction)");
+            //Bhv Type
+            if (currentConnectonSemantics == Semantics.BHVLINE) {
+                if ((first instanceof VisualEvent) || (second instanceof VisualEvent))
+                    throw new InvalidConnectionException("Connections between non-conditions are not valid (Behavioural Abstraction)");
+                if (!isGrouped(first) || !isGrouped(second))
+                    throw new InvalidConnectionException("Connections between ungrouped conditions are not valid (Behavioural Abstraction)");
+                if (isInSameGroup(first, second))
+                    throw new InvalidConnectionException("Connections between same grouped conditions are not valid (Behavioural Abstraction)");
+                if (isInBlock(first) || this.isInBlock(second))
+                    throw new InvalidConnectionException("Block cannot cross phases (Block)");
+                if (hasInputBhv(first) || hasOutputBhv(second))
+                    throw new InvalidConnectionException("Condition with both input and output behavioural relations is not valid  (Behavioural Abstraction)");
             }
         }
 
@@ -244,7 +244,7 @@ public class VisualSON extends AbstractVisualModel {
             for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
                 if(node instanceof VisualTransformableNode){
                     if (!(node instanceof VisualChannelPlace) && !(node instanceof VisualONGroup)){
-                            result.add(node);
+                        result.add(node);
                     }else{
                         JOptionPane.showMessageDialog(mainWindow,
                                 "Group Selection containing Channel Places or other groups is invaild",group, JOptionPane.WARNING_MESSAGE);
@@ -280,12 +280,12 @@ public class VisualSON extends AbstractVisualModel {
     private boolean isPure(Collection<Node> nodes) {
         for (VisualSONConnection connect : getVisualSONConnections()){
             if(nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
-                && !nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
-            return false;
+                    && !nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
+                return false;
 
             if(!nodes.contains(connect.getFirst()) && !(connect.getFirst() instanceof VisualChannelPlace)
                     && nodes.contains(connect.getSecond()) && !(connect.getSecond() instanceof VisualChannelPlace))
-            return false;
+                return false;
         }
         return true;
     }
@@ -457,7 +457,7 @@ public class VisualSON extends AbstractVisualModel {
                     "Only condition and event can be set as a Block", block, JOptionPane.WARNING_MESSAGE);
             result.clear();
             return result;
-            }
+        }
 
         for (VisualSONConnection connect : getVisualSONConnections()){
             if(connect.getReferencedSONConnection().getSemantics() == Semantics.PNLINE){
@@ -482,14 +482,14 @@ public class VisualSON extends AbstractVisualModel {
                     "The inputs and outputs of a block must be conditions", block, JOptionPane.WARNING_MESSAGE);
             result.clear();
             return result;
-            }
+        }
 
         if(errorType==4){
             JOptionPane.showMessageDialog(mainWindow,
                     "Block cannot cross phases", block, JOptionPane.WARNING_MESSAGE);
             result.clear();
             return result;
-            }
+        }
 
         if (result.size() == 1) {
             JOptionPane.showMessageDialog(mainWindow,

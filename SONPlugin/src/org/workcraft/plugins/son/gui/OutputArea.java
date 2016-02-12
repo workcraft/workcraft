@@ -116,11 +116,11 @@ public class OutputArea extends JFrame {
         contentPane.add(menu, BorderLayout.NORTH);
 
         contentPane.add(
-            new JScrollPane(
-                textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
-            BorderLayout.CENTER);
+                new JScrollPane(
+                    textArea,
+                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
+                BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
         this.setTitle("Structure Verification Result");
