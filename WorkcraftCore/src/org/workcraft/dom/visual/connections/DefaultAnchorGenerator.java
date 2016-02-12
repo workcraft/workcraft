@@ -36,7 +36,7 @@ public class DefaultAnchorGenerator extends DummyMouseListener {
             VisualModel model = e.getModel();
             Node node = HitMan.hitTestForSelection(e.getPosition(), model);
             if (node instanceof VisualConnection) {
-                VisualConnection connection = (VisualConnection)node;
+                VisualConnection connection = (VisualConnection) node;
                 WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
                 we.captureMemento();
                 ControlPoint cp = ConnectionHelper.createControlPoint(connection, e.getPosition());

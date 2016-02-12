@@ -34,7 +34,7 @@ public class StgUtils {
     }
 
     static public DummyTransition convertSignalToDummyTransition(STG stg, SignalTransition signalTransition) {
-        Container container = (Container)signalTransition.getParent();
+        Container container = (Container) signalTransition.getParent();
         DummyTransition dummyTransition = stg.createDummyTransition(null, container);
         replaceNamedTransition(stg, signalTransition, dummyTransition);
         return dummyTransition;
@@ -46,7 +46,7 @@ public class StgUtils {
 
         for (Node pred: stg.getPreset(oldTransition)) {
             try {
-                VisualConnection oldPredConnection = (VisualConnection)stg.getConnection(pred, oldTransition);
+                VisualConnection oldPredConnection = (VisualConnection) stg.getConnection(pred, oldTransition);
                 VisualConnection newPredConnection = stg.connect(pred, newTransition);
                 newPredConnection.copyStyle(oldPredConnection);
                 newPredConnection.copyShape(oldPredConnection);
@@ -57,7 +57,7 @@ public class StgUtils {
 
         for (Node succ: stg.getPostset(oldTransition)) {
             try {
-                VisualConnection oldSuccConnection = (VisualConnection)stg.getConnection(oldTransition, succ);
+                VisualConnection oldSuccConnection = (VisualConnection) stg.getConnection(oldTransition, succ);
                 VisualConnection newSuccConnection = stg.connect(newTransition, succ);
                 newSuccConnection.copyStyle(oldSuccConnection);
                 newSuccConnection.copyShape(oldSuccConnection);
@@ -69,14 +69,14 @@ public class StgUtils {
     }
 
     static public VisualDummyTransition convertSignalToDummyTransition(VisualSTG stg, VisualSignalTransition signalTransition) {
-        Container container = (Container)signalTransition.getParent();
+        Container container = (Container) signalTransition.getParent();
         VisualDummyTransition dummyTransition = stg.createDummyTransition(null, container);
         replaceNamedTransition(stg, signalTransition, dummyTransition);
         return dummyTransition;
     }
 
     static public VisualSignalTransition convertDummyToSignalTransition(VisualSTG stg, VisualNamedTransition dummyTransition) {
-        Container container = (Container)dummyTransition.getParent();
+        Container container = (Container) dummyTransition.getParent();
         VisualSignalTransition signalTransition = stg.createSignalTransition(null, Type.INTERNAL, Direction.TOGGLE, container);
         replaceNamedTransition(stg, dummyTransition, signalTransition);
         return signalTransition;
@@ -84,12 +84,12 @@ public class StgUtils {
 
     public static VisualDummyTransition convertDummyToDummyWithouInstance(VisualSTG stg, VisualDummyTransition dummyTransition) {
         DummyTransition mathDummyTransition = dummyTransition.getReferencedTransition();
-        STG mathStg = (STG)stg.getMathModel();
+        STG mathStg = (STG) stg.getMathModel();
         VisualDummyTransition newDummyTransition;
         if (mathStg.getInstanceNumber(mathDummyTransition) == 0) {
             newDummyTransition = dummyTransition;
         } else {
-            Container container = (Container)dummyTransition.getParent();
+            Container container = (Container) dummyTransition.getParent();
             newDummyTransition = stg.createDummyTransition(null, container);
             replaceNamedTransition(stg, dummyTransition, newDummyTransition);
         }

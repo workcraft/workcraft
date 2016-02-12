@@ -39,7 +39,7 @@ public class IntegerProperty implements PropertyClass {
 
     public Object fromCellEditorValue(Object editorComponentValue) {
         try {
-            return Integer.parseInt((String)editorComponentValue);
+            return Integer.parseInt((String) editorComponentValue);
         } catch (NumberFormatException e) {
             return 0.0;
         }

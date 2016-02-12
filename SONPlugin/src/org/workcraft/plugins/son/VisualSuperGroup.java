@@ -81,7 +81,7 @@ public class VisualSuperGroup extends VisualGroup{
             g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
             g.fill(bb);
             g.setColor(Coloriser.colorise(Color.BLACK, colorisation));
-            g.setStroke(new BasicStroke((float)(strokeWidth * 0.5)));
+            g.setStroke(new BasicStroke((float) (strokeWidth * 0.5)));
             g.draw(bb);
 
             // draw label
@@ -94,7 +94,7 @@ public class VisualSuperGroup extends VisualGroup{
 
             Point2D labelPosition = new Point2D.Double(bb.getMaxX() - labelBB.getMaxX(), bb.getMinY() - labelBB.getMaxY());
 
-            g.drawGlyphVector(glyphVector, (float)labelPosition.getX(), (float)labelPosition.getY());
+            g.drawGlyphVector(glyphVector, (float) labelPosition.getX(), (float) labelPosition.getY());
 
         }
     }

@@ -74,7 +74,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
                 Object subNode = initInstance(subNodeElement);
 
                 if (subNode instanceof Node)
-                    state.addChildNode((Container)instance, (Node)subNode);
+                    state.addChildNode((Container) instance, (Node) subNode);
             }
         }
         return instance;
@@ -131,7 +131,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         // now add children to their respective containers
         for (Object o : state.instanceElements.keySet()) {
             if (o instanceof Container) {
-                Container c = (Container)o;
+                Container c = (Container) o;
                 c.add(state.getChildren(c));
             }
         }

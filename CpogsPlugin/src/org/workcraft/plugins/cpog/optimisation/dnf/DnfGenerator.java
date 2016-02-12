@@ -32,12 +32,12 @@ public class DnfGenerator {
                         return and(left, right);
                     }
 
-                    private Dnf and(Dnf left,Dnf right) {
-                        return negation?addDnf(left,right):multiplyDnf(left, right);
+                    private Dnf and(Dnf left, Dnf right) {
+                        return negation?addDnf(left, right):multiplyDnf(left, right);
                     }
 
-                    private Dnf or(Dnf left,Dnf right) {
-                        return negation?multiplyDnf(left,right):addDnf(left, right);
+                    private Dnf or(Dnf left, Dnf right) {
+                        return negation?multiplyDnf(left, right):addDnf(left, right);
                     }
 
                     @Override
@@ -48,7 +48,7 @@ public class DnfGenerator {
                         Dnf na = node.getX().accept(this);
                         Dnf nb = node.getY().accept(this);
                         negation = !negation;
-                        return or(and(a,b), and(na, nb));
+                        return or(and(a, b), and(na, nb));
                     }
 
                     @Override
@@ -59,7 +59,7 @@ public class DnfGenerator {
                         Dnf na = node.getX().accept(this);
                         Dnf nb = node.getY().accept(this);
                         negation = !negation;
-                        return or(and(a,nb), and(na, b));
+                        return or(and(a, nb), and(na, b));
                     }
 
                     private Dnf zero() {
@@ -95,7 +95,7 @@ public class DnfGenerator {
                         Dnf x = node.getX().accept(this);
                         negation=!negation;
                         Dnf y = node.getY().accept(this);
-                        return or(x,y);
+                        return or(x, y);
                     }
 
                     @Override

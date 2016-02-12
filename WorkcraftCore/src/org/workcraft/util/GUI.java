@@ -98,7 +98,7 @@ public class GUI {
             g.drawRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
             g.setColor(color);
             LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
-            g.drawString(message, r.x, r.y+r.height-(int)(lm.getDescent()));
+            g.drawString(message, r.x, r.y+r.height-(int) (lm.getDescent()));
         }
     }
 
@@ -127,7 +127,7 @@ public class GUI {
             Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
             if (background != null) {
                 g2d.setColor(background);
-                g2d.fillRect(0,0,width, height);
+                g2d.fillRect(0, 0, width, height);
             }
 //
 //            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -169,7 +169,7 @@ public class GUI {
     public static JButton createIconButton(Icon icon, String toolTip) {
         JButton result = new JButton(icon);
         result.setToolTipText(toolTip);
-        result.setMargin(new Insets(0,0,0,0));
+        result.setMargin(new Insets(0, 0, 0, 0));
         int iconSize = CommonEditorSettings.getIconSize();
         Insets insets = result.getInsets();
         int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);

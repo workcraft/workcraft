@@ -220,7 +220,7 @@ public class PluginManager implements PluginProvider {
 
     @SuppressWarnings("unchecked")
     public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interf) {
-        return (Collection<PluginInfo<? extends T>>)(Collection<?>)Collections.unmodifiableCollection(plugins.get(interf));
+        return (Collection<PluginInfo<? extends T>>) (Collection<?>) Collections.unmodifiableCollection(plugins.get(interf));
     }
 
     public <T> void registerClass(Class<T> interf, final Class<? extends T> cls) {

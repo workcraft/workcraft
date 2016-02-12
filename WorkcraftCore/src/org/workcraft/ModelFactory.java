@@ -36,7 +36,7 @@ public class ModelFactory {
         try{
             Class<?> modelClass = Class.forName(className);
             Constructor<?> ctor = modelClass.getConstructor();
-            Model model = (Model)ctor.newInstance();
+            Model model = (Model) ctor.newInstance();
             return model;
         } catch (IllegalArgumentException e) {
             throw new ModelInstantiationException(e);
@@ -73,7 +73,7 @@ public class ModelFactory {
                         ", created for object of class " + model.getClass().getName() + ", is not inherited from "
                         + VisualModel.class.getName());
 
-            return (VisualModel)visual;
+            return (VisualModel) visual;
 
         } catch (SecurityException e) {
             throw new VisualModelInstantiationException(e);

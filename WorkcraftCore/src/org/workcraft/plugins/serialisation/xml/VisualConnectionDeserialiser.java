@@ -46,13 +46,13 @@ public class VisualConnectionDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-        VisualConnection vcon = (VisualConnection)instance;
+        VisualConnection vcon = (VisualConnection) instance;
 
         vcon.setVisualConnectionDependencies(
-                (VisualNode)internalReferenceResolver.getObject(element.getAttribute("first")),
-                (VisualNode)internalReferenceResolver.getObject(element.getAttribute("second")),
-                (ConnectionGraphic)internalReferenceResolver.getObject(XmlUtil.getChildElement("graphic", element).getAttribute("ref")),
-                (MathConnection)externalReferenceResolver.getObject(element.getAttribute("ref"))
+                (VisualNode) internalReferenceResolver.getObject(element.getAttribute("first")),
+                (VisualNode) internalReferenceResolver.getObject(element.getAttribute("second")),
+                (ConnectionGraphic) internalReferenceResolver.getObject(XmlUtil.getChildElement("graphic", element).getAttribute("ref")),
+                (MathConnection) externalReferenceResolver.getObject(element.getAttribute("ref"))
         );
 
         nodeFinaliser.finaliseInstance(vcon.getGraphic());
@@ -69,6 +69,6 @@ public class VisualConnectionDeserialiser implements CustomXMLDeserialiser {
     public void initInstance(Element element, Object instance,
             ReferenceResolver externalReferenceResolver,
             NodeInitialiser nodeInitialiser) throws DeserialisationException {
-        nodeInitialiser.initInstance(XmlUtil.getChildElement("graphic", element), (VisualConnection)instance);
+        nodeInitialiser.initInstance(XmlUtil.getChildElement("graphic", element), (VisualConnection) instance);
     }
 }

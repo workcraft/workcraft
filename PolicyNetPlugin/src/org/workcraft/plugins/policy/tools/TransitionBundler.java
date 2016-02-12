@@ -100,7 +100,7 @@ public class TransitionBundler {
         for (Transition c: enabled) {
             Set<Node> cPreset = model.getPreset(c);
             if (cPreset.equals(tPreset)) {
-                result.add((Transition)c);
+                result.add((Transition) c);
             }
         }
 //        System.out.printf("    confict(%s) = ", model.getNodeReference(t));

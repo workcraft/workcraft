@@ -10,7 +10,7 @@ public class VisualFstDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-        return new VisualFst((Fst)mathModel);
+        return new VisualFst((Fst) mathModel);
     }
 
     @Override

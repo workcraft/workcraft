@@ -52,7 +52,7 @@ public class VisualTransition extends VisualComponent {
     }
 
     public Transition getReferencedTransition() {
-        return (Transition)getReferencedComponent();
+        return (Transition) getReferencedComponent();
     }
 
     @Override

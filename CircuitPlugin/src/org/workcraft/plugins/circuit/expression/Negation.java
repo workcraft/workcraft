@@ -40,7 +40,7 @@ public class Negation implements Expression {
     public Expression eval(Map<String, Boolean> assignments) {
         Expression evalExpression = expression.eval(assignments);
         if (evalExpression instanceof Constant) {
-            Constant constant = (Constant)evalExpression;
+            Constant constant = (Constant) evalExpression;
             return new Constant(!constant.value);
         } else {
             return new Negation(evalExpression);

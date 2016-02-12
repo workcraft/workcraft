@@ -10,10 +10,10 @@ import org.workcraft.plugins.stg.generator.NodeStg;
 public class CounterflowRegisterStg extends NodeStg {
     public final VisualPlace orM0;                // orM=0
     public final VisualPlace orM1;                // orM=1
-    public final VisualSignalTransition orMRfw;// orMforward+
-    public final VisualSignalTransition orMRbw;// orMbackward+
-    public final VisualSignalTransition orMFfw;// orMforward-
-    public final VisualSignalTransition orMFbw;// orMbackward-
+    public final VisualSignalTransition orMRfw; // orMforward+
+    public final VisualSignalTransition orMRbw; // orMbackward+
+    public final VisualSignalTransition orMFfw; // orMforward-
+    public final VisualSignalTransition orMFbw; // orMbackward-
     public final VisualPlace andM0;            // andMforward=0
     public final VisualPlace andM1;            // andMforward=1
     public final VisualSignalTransition andMR;    // andMforward+

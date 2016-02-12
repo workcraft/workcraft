@@ -144,10 +144,10 @@ public class CircuitToStgConverter {
     private Container getContainer(VisualContact contact) {
         String nodeReference = circuit.getMathModel().getNodeReference(contact.getReferencedComponent());
         String parentReference = NamespaceHelper.getParentReference(nodeReference);
-        Container container = (Container)refToPageMap.get(parentReference);
+        Container container = (Container) refToPageMap.get(parentReference);
         while (container==null) {
             parentReference = NamespaceHelper.getParentReference(parentReference);
-            container = (Container)refToPageMap.get(parentReference);
+            container = (Container) refToPageMap.get(parentReference);
         }
         return container;
     }
@@ -179,10 +179,10 @@ public class CircuitToStgConverter {
         result.put(node, driverAndInversion);
         // Support for zero-delay buffers and inverters.
         if (node instanceof VisualContact) {
-            VisualContact contact = (VisualContact)node;
+            VisualContact contact = (VisualContact) node;
             Node parent = node.getParent();
             if (contact.isInput() && (parent instanceof VisualCircuitComponent)) {
-                VisualFunctionComponent component = (VisualFunctionComponent)parent;
+                VisualFunctionComponent component = (VisualFunctionComponent) parent;
                 if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
                     VisualContact driver = driverAndInversion.getFirst();
                     boolean isInverting = component.isInverter();
@@ -198,10 +198,10 @@ public class CircuitToStgConverter {
         }
         for (Connection connection: circuit.getConnections(node)) {
             if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
-                result.put((VisualCircuitConnection)connection, driverAndInversion);
+                result.put((VisualCircuitConnection) connection, driverAndInversion);
                 Node succNode = connection.getSecond();
                 if (!result.containsKey(succNode) && (succNode instanceof VisualNode)) {
-                    result.putAll(propagateDriverInversion((VisualNode)succNode, driverAndInversion));
+                    result.putAll(propagateDriverInversion((VisualNode) succNode, driverAndInversion));
                 }
             }
         }
@@ -240,8 +240,8 @@ public class CircuitToStgConverter {
             BooleanFormula setFunc = null;
             BooleanFormula resetFunc = null;
             if (driver instanceof VisualFunctionContact) {
-                setFunc = ((VisualFunctionContact)driver).getSetFunction();
-                resetFunc = ((VisualFunctionContact)driver).getResetFunction();
+                setFunc = ((VisualFunctionContact) driver).getSetFunction();
+                resetFunc = ((VisualFunctionContact) driver).getResetFunction();
             }
             // Create complementary set/reset if only one of them is defined
             if ((setFunc != null) && (resetFunc == null)) {
@@ -287,7 +287,7 @@ public class CircuitToStgConverter {
             HashSet<VisualPlace> placesToRead = new HashSet<VisualPlace>();
             for (Literal literal : clause.getLiterals()) {
                 BooleanVariable variable = literal.getVariable();
-                VisualContact sourceContact = circuit.getVisualComponent((Contact)variable, VisualContact.class);
+                VisualContact sourceContact = circuit.getVisualComponent((Contact) variable, VisualContact.class);
                 Pair<VisualContact, Boolean> sourceDriverAndInversion = nodeToDriverMap.get(sourceContact);
                 VisualContact sourceDriver = sourceDriverAndInversion.getFirst();
                 boolean sourceInversion = sourceDriverAndInversion.getSecond();
@@ -364,7 +364,7 @@ public class CircuitToStgConverter {
             if (zeroPlace == null) {
                 Connection connection = stg.getConnection(minusTransition, plusTransition);
                 if (connection instanceof VisualImplicitPlaceArc) {
-                    VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc)connection;
+                    VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
                     zeroPlace = stg.makeExplicit(implicitPlace);
                     stg.setMathName(zeroPlace, zeroName);
                 }
@@ -373,7 +373,7 @@ public class CircuitToStgConverter {
             if (onePlace == null) {
                 Connection connection = stg.getConnection(plusTransition, minusTransition);
                 if (connection instanceof VisualImplicitPlaceArc) {
-                    VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc)connection;
+                    VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
                     onePlace = stg.makeExplicit(implicitPlace);
                     stg.setMathName(onePlace, oneName);
                 }
@@ -516,7 +516,7 @@ public class CircuitToStgConverter {
                 Container oldLevel = stg.getCurrentLevel();
                 for (Node node: nodesToGroup) {
                     if (currentLevel == null) {
-                        currentLevel = (Container)node.getParent();
+                        currentLevel = (Container) node.getParent();
                     }
                     if (currentLevel != node.getParent()) {
                         throw new RuntimeException("Current level is not the same among the processed nodes");

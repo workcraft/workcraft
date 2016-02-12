@@ -55,12 +55,12 @@ public class OutputWindow extends JPanel {
         txtStdOut.setWrapStyleWord(true);
         txtStdOut.addMouseListener(new LogAreaMouseListener());
 
-        DefaultCaret caret = (DefaultCaret)txtStdOut.getCaret();
+        DefaultCaret caret = (DefaultCaret) txtStdOut.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         scrollStdOut = new JScrollPane();
         scrollStdOut.setViewportView(txtStdOut);
-        setLayout(new BorderLayout(0,0));
+        setLayout(new BorderLayout(0, 0));
         this.add(scrollStdOut, BorderLayout.CENTER);
     }
 
@@ -150,7 +150,7 @@ public class OutputWindow extends JPanel {
 
             if ((painter != null) && (toPos > fromPos)) {
                 try {
-                    DefaultHighlighter highlighter = (DefaultHighlighter)target.getHighlighter();
+                    DefaultHighlighter highlighter = (DefaultHighlighter) target.getHighlighter();
                     highlighter.setDrawsLayeredHighlights(false);
                     highlighter.addHighlight(fromPos, toPos, painter);
                 } catch (BadLocationException e) {

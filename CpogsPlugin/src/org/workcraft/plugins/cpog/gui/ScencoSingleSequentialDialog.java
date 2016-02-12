@@ -37,19 +37,19 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class ScencoSingleSequentialDialog extends JDialog {
 
-    private JLabel verboseModeLabel,optimiseLabel, abcLabel;
+    private JLabel verboseModeLabel, optimiseLabel, abcLabel;
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
     private JPanel buttonsPanel, content, standardPanel;
     private JButton saveButton, closeButton;
     JScrollPane scrollPane;
     private TableLayout layout;
-    private int m,bits;
+    private int m, bits;
     private EncoderSettings settings;
     private WorkspaceEntry we;
     private int modalResult;
 
-    public ScencoSingleSequentialDialog(Window owner, PresetManager<EncoderSettings> presetManager, EncoderSettings settings,WorkspaceEntry we, String string) {
+    public ScencoSingleSequentialDialog(Window owner, PresetManager<EncoderSettings> presetManager, EncoderSettings settings, WorkspaceEntry we, String string) {
         super(owner, string, ModalityType.APPLICATION_MODAL);
         this.settings = settings;
         this.we = we;
@@ -115,7 +115,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
         // VERBOSE MODE INSTANTIATION
         verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
         //verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
-        verboseModeCheck = new JCheckBox("",false);
+        verboseModeCheck = new JCheckBox("", false);
         verboseModeLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 verboseModeCheck.setSelected(verboseModeCheck.isSelected() ? false : true);
@@ -134,7 +134,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
     }
 
     private void createButtonPanel(final String string) {
-        VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+        VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
         ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
         m = scenarios.size();
 
@@ -201,8 +201,8 @@ public class ScencoSingleSequentialDialog extends JDialog {
     }
 
     private void sizeWindow(int width, int height, int row1, int row2){
-        setMinimumSize(new Dimension(width,height));
-        //setPreferredSize(new Dimension(width,height));
+        setMinimumSize(new Dimension(width, height));
+        //setPreferredSize(new Dimension(width, height));
         setResizable(false);
         pack();
 

@@ -56,9 +56,9 @@ public class InstanceManagerTests {
         mgr.assign(o1);
         mgr.assign(o2);
         mgr.assign(o3);
-        assertEquals(Pair.of("abc",1), mgr.getInstance(o2));
-        assertEquals(Pair.of("qwe",0), mgr.getInstance(o3));
-        assertEquals(Pair.of("abc",0), mgr.getInstance(o1));
+        assertEquals(Pair.of("abc", 1), mgr.getInstance(o2));
+        assertEquals(Pair.of("qwe", 0), mgr.getInstance(o3));
+        assertEquals(Pair.of("abc", 0), mgr.getInstance(o1));
     }
 
     @Test
@@ -76,15 +76,15 @@ public class InstanceManagerTests {
         mgr.assign(o1);
         mgr.assign(o2);
         mgr.assign(o3);
-        assertEquals(Pair.of("abc",1), mgr.getInstance(o2));
-        assertEquals(Pair.of("qwe",0), mgr.getInstance(o3));
-        assertEquals(Pair.of("abc",0), mgr.getInstance(o1));
+        assertEquals(Pair.of("abc", 1), mgr.getInstance(o2));
+        assertEquals(Pair.of("qwe", 0), mgr.getInstance(o3));
+        assertEquals(Pair.of("abc", 0), mgr.getInstance(o1));
 
         mgr.assign(o2, 1);
         mgr.assign(o2, 2);
         mgr.assign(o4);
 
-        assertEquals(Pair.of("abc",1), mgr.getInstance(o4));
+        assertEquals(Pair.of("abc", 1), mgr.getInstance(o4));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class InstanceManagerTests {
         mgr.assign(o1);
         mgr.remove(o1);
         mgr.assign(o2);
-        assertEquals(Pair.of("abc",0), mgr.getInstance(o2));
+        assertEquals(Pair.of("abc", 0), mgr.getInstance(o2));
         assertNull(mgr.getInstance(o1));
     }
 
@@ -119,7 +119,7 @@ public class InstanceManagerTests {
         expectedRequests.put(o1, "abc");
         final InstanceManager mgr = make(expectedRequests);
         mgr.assign(o1, 8);
-        assertEquals(Pair.of("abc",8), mgr.getInstance(o1));
+        assertEquals(Pair.of("abc", 8), mgr.getInstance(o1));
     }
 
     @Test(expected=DuplicateIDException.class)

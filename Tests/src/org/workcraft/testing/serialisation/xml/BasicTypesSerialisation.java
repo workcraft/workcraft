@@ -86,7 +86,7 @@ public class BasicTypesSerialisation {
             s.serialise(e, 8);
 
             Element e2 = doc.createElement("property");
-            s.serialise(e2,-500);
+            s.serialise(e2, -500);
 
             Assert.assertEquals(8, ds.deserialise(e));
             Assert.assertEquals(-500, ds.deserialise(e2));

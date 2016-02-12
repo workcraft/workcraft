@@ -53,9 +53,9 @@ public class GateRenderer {
                     public Map<String, Point2D> contactPositions() {
                         Map<String, Point2D> result = new HashMap<String, Point2D>();
                         if (isBuffer) {
-                            result.put(var.getLabel(), new Point2D.Double(-0.5,0));
+                            result.put(var.getLabel(), new Point2D.Double(-0.5, 0));
                         } else {
-                            result.put(var.getLabel(), new Point2D.Double(0,0));
+                            result.put(var.getLabel(), new Point2D.Double(0, 0));
                         }
                         return result;
                     }
@@ -87,7 +87,7 @@ public class GateRenderer {
                 final double w = bb.getWidth()+bubbleSize;
                 final double h = Math.max(bb.getHeight(), 0.5);
 
-                bb.setRect(new Rectangle2D.Double(-w/2,-h/2,w,h));
+                bb.setRect(new Rectangle2D.Double(-w/2, -h/2, w, h));
 
                 return new ComponentRenderingResult() {
 
@@ -147,7 +147,7 @@ public class GateRenderer {
                             }
 
                             maxX += sumY * ANDGateAspectRatio;
-                            cachedBB = new Rectangle2D.Double(-maxX/2,-sumY/2,maxX,sumY);
+                            cachedBB = new Rectangle2D.Double(-maxX/2, -sumY/2, maxX, sumY);
                         }
                         return cachedBB;
                     }
@@ -232,7 +232,7 @@ public class GateRenderer {
                                 if (maxX<rec.getWidth()) maxX = rec.getWidth();
                                 sumY+=rec.getHeight();
                             }
-                            cachedBB = new Rectangle2D.Double(-(sumY+maxX)/2,-sumY/2,sumY+maxX,sumY);
+                            cachedBB = new Rectangle2D.Double(-(sumY+maxX)/2, -sumY/2, sumY+maxX, sumY);
                         }
                         return cachedBB;
                     }
@@ -326,7 +326,7 @@ public class GateRenderer {
                                 sumY+=rec.getHeight();
                             }
                             maxX += sumY + XORGateAspectRatio - 1;
-                            cachedBB = new Rectangle2D.Double(-maxX/2,-sumY/2,maxX,sumY);
+                            cachedBB = new Rectangle2D.Double(-maxX/2, -sumY/2, maxX, sumY);
                         }
                         return cachedBB;
                     }

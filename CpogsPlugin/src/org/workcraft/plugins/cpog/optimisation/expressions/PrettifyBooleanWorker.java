@@ -66,7 +66,7 @@ public class PrettifyBooleanWorker implements BooleanWorker {
             return y;
         if(y == ONE)
             return x;
-        return worker.and(x,y);
+        return worker.and(x, y);
     }
 
     public BooleanFormula or(BooleanFormula x, BooleanFormula y) {
@@ -80,7 +80,7 @@ public class PrettifyBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
-        return not(iff(x,y));
+        return not(iff(x, y));
     }
 
     @Override

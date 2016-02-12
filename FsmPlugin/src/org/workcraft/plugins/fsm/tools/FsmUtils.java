@@ -20,7 +20,7 @@ public class FsmUtils {
             stateOutgoingEvents.put(state, events);
         }
         for (Event event: fsm.getEvents()) {
-            State fromState = (State)event.getFirst();
+            State fromState = (State) event.getFirst();
             HashSet<Event> events = stateOutgoingEvents.get(fromState);
             events.add(event);
         }
@@ -34,7 +34,7 @@ public class FsmUtils {
             stateIncommingEvents.put(state, events);
         }
         for (Event event: fsm.getEvents()) {
-            State toState = (State)event.getSecond();
+            State toState = (State) event.getSecond();
             HashSet<Event> events = stateIncommingEvents.get(toState);
             events.add(event);
         }
@@ -43,7 +43,7 @@ public class FsmUtils {
 
     static public String statesToString(final Fsm fsm, Collection<State> states) {
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        ArrayList<String> refs = getReferenceList(fsm, (Collection)states);
+        ArrayList<String> refs = getReferenceList(fsm, (Collection) states);
         Collections.sort(refs);
         return refsToString(refs);
     }

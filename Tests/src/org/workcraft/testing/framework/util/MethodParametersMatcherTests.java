@@ -136,7 +136,7 @@ public class MethodParametersMatcherTests {
 
         public int execute() throws Exception {
             Object[] args = new Object[getParameterTypes().length];
-            return (Integer)method.invoke(null, args);
+            return (Integer) method.invoke(null, args);
         }
     }
 

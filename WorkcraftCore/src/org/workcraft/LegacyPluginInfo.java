@@ -97,7 +97,7 @@ public class LegacyPluginInfo implements Initialiser<Object> {
         interfaceNames = new String[nl.getLength()];
 
         for (int i=0; i<nl.getLength(); i++)
-            interfaceNames[i] = ((Element)nl.item(i)).getAttribute("name");
+            interfaceNames[i] = ((Element) nl.item(i)).getAttribute("name");
     }
 
     public void toXml(Element element) {

@@ -55,14 +55,14 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
         if (!valid)
             update();
 
-        return (Point2D)firstCenter.clone();
+        return (Point2D) firstCenter.clone();
     }
 
     public Point2D getSecondCenter() {
         if (!valid)
             update();
 
-        return (Point2D)secondCenter.clone();
+        return (Point2D) secondCenter.clone();
     }
 
     public Touchable getFirstShape() {

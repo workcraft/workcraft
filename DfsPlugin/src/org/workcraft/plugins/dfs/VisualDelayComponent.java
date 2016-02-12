@@ -12,7 +12,7 @@ public abstract class VisualDelayComponent extends VisualComponent {
     }
 
     public MathDelayNode getReferencedDelayComponent() {
-        return (MathDelayNode)getReferencedComponent();
+        return (MathDelayNode) getReferencedComponent();
     }
 
     private void addPropertyDeclarations() {
@@ -31,7 +31,7 @@ public abstract class VisualDelayComponent extends VisualComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualDelayComponent) {
-            MathDelayNode srcDelay = ((VisualDelayComponent)src).getReferencedDelayComponent();
+            MathDelayNode srcDelay = ((VisualDelayComponent) src).getReferencedDelayComponent();
             getReferencedDelayComponent().setDelay(srcDelay.getDelay());
         }
     }

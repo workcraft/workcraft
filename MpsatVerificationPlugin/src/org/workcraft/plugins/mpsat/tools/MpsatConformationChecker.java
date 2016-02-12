@@ -37,7 +37,7 @@ public class MpsatConformationChecker extends VerificationTool {
     public final void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        STG stg = (STG)we.getModelEntry().getMathModel();
+        STG stg = (STG) we.getModelEntry().getMathModel();
         // Check for limitations:
         if (stg.getPlaces().isEmpty()) {
             // - The set of device STG place names is non-empty (this limitation can be easily removed).

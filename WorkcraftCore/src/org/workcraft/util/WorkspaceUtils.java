@@ -10,7 +10,7 @@ public class WorkspaceUtils {
     @SuppressWarnings("unchecked")
     public static <T> T getAs(WorkspaceEntry entry, Class<T> cls) {
         if(cls.isInstance(entry.getModelEntry().getModel())) {
-            return (T)entry.getModelEntry().getModel();
+            return (T) entry.getModelEntry().getModel();
         }
 
         if(entry.getModelEntry().isVisual()) {

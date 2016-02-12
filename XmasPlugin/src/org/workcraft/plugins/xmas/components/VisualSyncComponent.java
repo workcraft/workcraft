@@ -40,8 +40,8 @@ public class VisualSyncComponent extends VisualXmasComponent {
             this.addInput("i", Positioning.LEFT);
             this.addOutput("o", Positioning.RIGHT);
         } else {
-            int numInputs = ((XmasComponent)component).getInputs().size();
-            int numOutputs = ((XmasComponent)component).getOutputs().size();
+            int numInputs = ((XmasComponent) component).getInputs().size();
+            int numOutputs = ((XmasComponent) component).getOutputs().size();
             if(numInputs>numOutputs) {
                 xOffset = numInputs - 1;
             } else {
@@ -51,7 +51,7 @@ public class VisualSyncComponent extends VisualXmasComponent {
     }
 
     public SyncComponent getReferencedSyncComponent() {
-        return (SyncComponent)getReferencedComponent();
+        return (SyncComponent) getReferencedComponent();
     }
 
     @Override

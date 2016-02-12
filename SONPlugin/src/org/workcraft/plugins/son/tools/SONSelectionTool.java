@@ -169,7 +169,7 @@ public class SONSelectionTool extends SelectionTool {
 
     @Override
     public void mouseClicked(GraphEditorMouseEvent e){
-        VisualSON model = (VisualSON)e.getEditor().getModel();
+        VisualSON model = (VisualSON) e.getEditor().getModel();
 
         if (e.getClickCount() > 1) {
             VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
@@ -180,10 +180,10 @@ public class SONSelectionTool extends SelectionTool {
                 selectedNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
                 if (selectedNode instanceof VisualBlock) {
-                    if(!((VisualBlock)selectedNode).getIsCollapsed())
-                        ((VisualBlock)selectedNode).setIsCollapsed(true);
+                    if(!((VisualBlock) selectedNode).getIsCollapsed())
+                        ((VisualBlock) selectedNode).setIsCollapsed(true);
                     else
-                        ((VisualBlock)selectedNode).setIsCollapsed(false);
+                        ((VisualBlock) selectedNode).setIsCollapsed(false);
 
                     return;
                 }
@@ -254,7 +254,7 @@ public class SONSelectionTool extends SelectionTool {
         if (selection.size() == 1) {
             Node node = selection.iterator().next();
             if(node instanceof Container && !(node instanceof VisualBlock)) {
-                model.setCurrentLevel((Container)node);
+                model.setCurrentLevel((Container) node);
                 if(node instanceof VisualONGroup)
                     setChannelPlaceToolState(editor, false);
                 else
@@ -281,7 +281,7 @@ public class SONSelectionTool extends SelectionTool {
     }
 
     private void selectionBlock(final GraphEditor editor) {
-        ((VisualSON)editor.getModel()).groupBlockSelection();
+        ((VisualSON) editor.getModel()).groupBlockSelection();
         editor.repaint();
     }
 

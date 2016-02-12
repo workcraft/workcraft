@@ -54,7 +54,7 @@ public class ConnectionRemoverTest {
         LinkedList<Node> toDeleteThen = new LinkedList<Node>();
 
         for (Node n : vstg.getRoot().getChildren()) {
-            Dependent dn = (Dependent)n;
+            Dependent dn = (Dependent) n;
             if (!dn.getMathReferences().contains(t1))
                 toDelete.add(n);
             else

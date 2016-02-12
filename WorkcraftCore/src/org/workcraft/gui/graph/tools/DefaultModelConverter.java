@@ -57,7 +57,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
         String ref = getSrcModel().getNodeMathReference(srcPage);
         Container dstContainer = getRefToDstPage(ref);
         if (dstContainer instanceof VisualPage) {
-            dstPage = (VisualPage)dstContainer;
+            dstPage = (VisualPage) dstContainer;
             dstPage.copyPosition(srcPage);
             dstPage.copyStyle(srcPage);
         }
@@ -100,16 +100,16 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
             Node srcParent = srcReplica.getParent();
             VisualComponent srcMasterComponent = srcReplica.getMaster();
             if ((srcParent instanceof Container) && (srcParent instanceof VisualNode)) {
-                VisualNode dstParent = getSrcToDstNode((VisualNode)srcParent);
+                VisualNode dstParent = getSrcToDstNode((VisualNode) srcParent);
                 if (dstParent instanceof Container) {
-                    dstContainer = (Container)dstParent;
+                    dstContainer = (Container) dstParent;
                 }
             }
 
             VisualComponent dstMasterComponent = null;
             VisualNode dstMasterNode = getSrcToDstNode(srcMasterComponent);
             if (dstMasterNode instanceof VisualComponent) {
-                dstMasterComponent = (VisualComponent)dstMasterNode;
+                dstMasterComponent = (VisualComponent) dstMasterNode;
             }
 
             dstReplica = getDstModel().createVisualReplica(dstMasterComponent, dstContainer, dstVisualReplicaClass);
@@ -145,7 +145,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
         for (Node srcNode: srcGroup.getChildren()) {
             Node dstNode = null;
             if (srcNode instanceof VisualNode) {
-                dstNode = getSrcToDstNode((VisualNode)srcNode);
+                dstNode = getSrcToDstNode((VisualNode) srcNode);
             }
             if (dstNode != null) {
                 dstSelection.add(dstNode);

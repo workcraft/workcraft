@@ -24,14 +24,14 @@ public abstract class VisualBinaryRegister extends VisualAbstractRegister {
     }
 
     public BinaryRegister getReferencedBinaryRegister() {
-        return (BinaryRegister)getReferencedComponent();
+        return (BinaryRegister) getReferencedComponent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualBinaryRegister) {
-            BinaryRegister srcBinaryRegister = ((VisualBinaryRegister)src).getReferencedBinaryRegister();
+            BinaryRegister srcBinaryRegister = ((VisualBinaryRegister) src).getReferencedBinaryRegister();
             getReferencedBinaryRegister().setMarking(srcBinaryRegister.getMarking());
         }
     }

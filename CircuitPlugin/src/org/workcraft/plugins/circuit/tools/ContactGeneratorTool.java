@@ -17,7 +17,7 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
             @Override
             public MathNode createMathNode() throws NodeCreationException {
                 MathNode node = super.createMathNode();
-                ((FunctionContact)node).setIOType(shiftPressed ? FunctionContact.IOType.INPUT : FunctionContact.IOType.OUTPUT);
+                ((FunctionContact) node).setIOType(shiftPressed ? FunctionContact.IOType.INPUT : FunctionContact.IOType.OUTPUT);
                 return node;
             }
         });

@@ -18,11 +18,11 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
     @Override
     public void handleEvent(StateEvent e) {
         if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent)e;
+            PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
             if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_INIT_TO_ONE)) {
-                Contact contact = (Contact)sender;
+                Contact contact = (Contact) sender;
                 handleInitStateChange(contact);
             }
         }
@@ -35,7 +35,7 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
         boolean invertDriver = false;
         boolean inverDriven = false;
         if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent)parent;
+            FunctionComponent component = (FunctionComponent) parent;
             isZeroDelay = component.getIsZeroDelay();
             if (isZeroDelay && component.isInverter()) {
                 invertDriver = contact.isOutput();

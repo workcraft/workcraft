@@ -27,7 +27,7 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
     @Override
     public boolean isApplicableTo(Node node) {
         if (node instanceof VisualSignalTransition) {
-            VisualSignalTransition signalTransition = (VisualSignalTransition)node;
+            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
             Type signalType = signalTransition.getSignalType();
             return (signalType == Type.INPUT) || (signalType == Type.OUTPUT);
         }
@@ -41,7 +41,7 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualSTG model = (VisualSTG)we.getModelEntry().getVisualModel();
+        final VisualSTG model = (VisualSTG) we.getModelEntry().getVisualModel();
         HashSet<VisualSignalTransition> signalTransitions = new HashSet<>(model.getVisualSignalTransitions());
         if (!model.getSelection().isEmpty()) {
             signalTransitions.retainAll(model.getSelection());
@@ -62,9 +62,9 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualSTG) && (node instanceof VisualSignalTransition)) {
-            VisualSTG visualStg = (VisualSTG)model;
-            STG mathStg = (STG)visualStg.getMathModel();
-            VisualSignalTransition signalTransition = (VisualSignalTransition)node;
+            VisualSTG visualStg = (VisualSTG) model;
+            STG mathStg = (STG) visualStg.getMathModel();
+            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
             String signalName = signalTransition.getSignalName();
             Type signalType = signalTransition.getSignalType();
             if (signalType == Type.INPUT) {

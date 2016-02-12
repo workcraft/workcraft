@@ -58,7 +58,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 
     @Override
     public VisualModel getUnderlyingModel(VisualModel model) {
-        final VisualFsm fsm = (VisualFsm)model;
+        final VisualFsm fsm = (VisualFsm) model;
         final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
         generator = new FsmToPnConverter(fsm, pn);
         return generator.getDstModel();
@@ -72,12 +72,12 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
         MathModel model = editor.getModel().getMathModel();
         if (model instanceof Fsm) {
             editor.getWorkspaceEntry().saveMemento();
-            Fsm fsm = (Fsm)model;
+            Fsm fsm = (Fsm) model;
             for (State state: fsm.getStates()) {
                 String ref = fsm.getNodeReference(state);
                 Node node = net.getNodeByReference(ref);
                 if (node instanceof Place) {
-                    boolean isInitial = ((Place)node).getTokens() > 0;
+                    boolean isInitial = ((Place) node).getTokens() > 0;
                     state.setInitial(isInitial);
                 }
             }
@@ -116,7 +116,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
                 ret=ret || (getExcitedTransitionOfNode(node) != null);
             }
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container)node);
+                ret = ret || isContainerExcited((Container) node);
             }
             if (ret) break;
         }
@@ -152,7 +152,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
                 }
 
                 if (node instanceof VisualState) {
-                    final VisualPlace p = generator.getRelatedPlace((VisualState)node);
+                    final VisualPlace p = generator.getRelatedPlace((VisualState) node);
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {
@@ -168,7 +168,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 
                 if (node instanceof VisualPage || node instanceof VisualGroup) {
                     if (node.getParent()==null) return null; // do not work with the root node
-                    final boolean ret = isContainerExcited((Container)node);
+                    final boolean ret = isContainerExcited((Container) node);
                     return new ContainerDecoration() {
                         @Override
                         public Color getColorisation() {
@@ -193,7 +193,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 
     private Transition getExcitedTransitionOfNode(Node node) {
         if ((node != null) && (node instanceof VisualEvent)) {
-            VisualTransition vTransition = generator.getRelatedTransition((VisualEvent)node);
+            VisualTransition vTransition = generator.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
                 if (net.isEnabled(transition)) {

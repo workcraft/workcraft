@@ -29,7 +29,7 @@ public class FsmToPnConverterTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualFsm fsm = (VisualFsm)we.getModelEntry().getVisualModel();
+        final VisualFsm fsm = (VisualFsm) we.getModelEntry().getVisualModel();
         final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
         final FsmToPnConverter converter = new FsmToPnConverter(fsm, pn);
         final Framework framework = Framework.getInstance();

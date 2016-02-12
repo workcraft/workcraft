@@ -46,14 +46,14 @@ public class VisualBundledTransition extends VisualTransition {
     }
 
     public BundledTransition getReferencedTransition() {
-        return (BundledTransition)getReferencedComponent();
+        return (BundledTransition) getReferencedComponent();
     }
 
     @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
-        VisualPolicyNet model = (VisualPolicyNet)r.getModel();
+        VisualPolicyNet model = (VisualPolicyNet) r.getModel();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
         double w2 = w / 2;

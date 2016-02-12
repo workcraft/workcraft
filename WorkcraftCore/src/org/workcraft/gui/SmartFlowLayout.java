@@ -237,7 +237,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         int totalFreedom = 0;
         int extremeWidth = 0;
 
-        for(int i=start;i<end;i++) {
+        for(int i=start; i<end; i++) {
             Component component = target.getComponent(i);
             if(component.isVisible()) {
                 Dimension extreme = extremeProvider.fn(component);
@@ -253,13 +253,13 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         int totalChange = width - (extremeWidth - totalFreedom);
 
         boolean failed;
-        if((double)totalChange/totalFreedom > 1.0) {
+        if((double) totalChange/totalFreedom > 1.0) {
             failed = true;
             totalChange = totalFreedom;
         } else
             failed = false;
 
-        for(int i=start;i<end;i++) {
+        for(int i=start; i<end; i++) {
             Component component = target.getComponent(i);
             if(component.isVisible() && totalFreedom != 0) {
                 Dimension extreme = extremeProvider.fn(component);

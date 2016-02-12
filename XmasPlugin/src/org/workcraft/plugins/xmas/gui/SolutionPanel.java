@@ -51,7 +51,7 @@ public class SolutionPanel extends JPanel {
                 final PetriNetSimulationTool tool = toolbox.getToolInstance(PetriNetSimulationTool.class);
                 tool.setTrace(t);
                 toolbox.selectTool(tool);
-                closeAction.actionPerformed(null);*/
+                closeAction.actionPerformed(null); */
             }
         });
 

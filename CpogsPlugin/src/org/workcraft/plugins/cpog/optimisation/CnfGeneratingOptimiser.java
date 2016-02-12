@@ -54,19 +54,19 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
 
         //Generate all possible encodings...
         Literal[][] encodings = new Literal[scenarios.length][];
-        for(int i=0;i<scenarios.length;i++) {
+        for(int i=0; i<scenarios.length; i++) {
             encodings[i] = new Literal[nonDerivedVariables];
             if(i == 0)
-                for(int j=0;j<nonDerivedVariables;j++)
+                for(int j=0; j<nonDerivedVariables; j++)
                     encodings[i][j] = Literal.ZERO;
             else
-                for(int j=0;j<nonDerivedVariables;j++)
+                for(int j=0; j<nonDerivedVariables; j++)
                     encodings[i][j] = literal(new FreeVariable("x"+j+"_s"+i));
         }
 
         //... and all possible functions.
         TwoHotRange[] derivedFunctions = new TwoHotRange[derivedVariables];
-        for(int i=0;i<derivedVariables;i++)
+        for(int i=0; i<derivedVariables; i++)
             derivedFunctions[i] = generateBinaryFunction(nonDerivedVariables/*+i*/*2, i);
 
         orderFunctions(derivedFunctions);
@@ -74,17 +74,17 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
         //Evaluate all functions for all scenarios.
         Literal[][] functionSpace = new Literal[scenarios.length][];
         int totalVariables = nonDerivedVariables*2 + derivedVariables*2;
-        for(int i=0;i<scenarios.length;i++) {
+        for(int i=0; i<scenarios.length; i++) {
             functionSpace[i] = new Literal[totalVariables];
-            for(int j=0;j<nonDerivedVariables;j++) {
+            for(int j=0; j<nonDerivedVariables; j++) {
                 functionSpace[i][j*2] = encodings[i][j];
                 functionSpace[i][j*2+1] = not(encodings[i][j]);
             }
-            for(int j=0;j<derivedVariables;j++) {
+            for(int j=0; j<derivedVariables; j++) {
                 int jj = j+nonDerivedVariables;
                 List<Literal> availableFormulas = new ArrayList<Literal>();
 
-                for(int k=0;k</*j+*/nonDerivedVariables;k++) {
+                for(int k=0; k</*j+*/nonDerivedVariables; k++) {
                     availableFormulas.add(functionSpace[i][k*2]);
                     availableFormulas.add(functionSpace[i][k*2+1]);
                 }
@@ -102,10 +102,10 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
 
         OneHotIntBooleanFormula[] cpogSelections = new OneHotIntBooleanFormula[functionCount];
         //Try to match CPOG functions with generated functions.
-        for(int i=0;i<functionCount;i++) {
-            OneHotIntBooleanFormula varId = generateInt("cpog_f"+i+"_",totalVariables);
+        for(int i=0; i<functionCount; i++) {
+            OneHotIntBooleanFormula varId = generateInt("cpog_f"+i+"_", totalVariables);
             cpogSelections[i] = varId;
-            for(int j=0;j<scenarios.length;j++) {
+            for(int j=0; j<scenarios.length; j++) {
                 boolean inverse;
                 char ch = scenarios[j].charAt(i);
                 if(ch=='-')
@@ -129,15 +129,15 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
         // Forming solution output here
 
         BooleanFormula[] funcs = new BooleanFormula[totalVariables];
-        for(int j=0;j<nonDerivedVariables;j++) {
+        for(int j=0; j<nonDerivedVariables; j++) {
             funcs[j*2] = variables[j];
             funcs[j*2+1] = BooleanOperations.not(variables[j]);
         }
-        for(int j=0;j<derivedVariables;j++) {
+        for(int j=0; j<derivedVariables; j++) {
             int jj = j+nonDerivedVariables;
             List<BooleanFormula> availableFormulas = new ArrayList<BooleanFormula>();
 
-            for(int k=0;k</*j+*/nonDerivedVariables;k++) {
+            for(int k=0; k</*j+*/nonDerivedVariables; k++) {
                 availableFormulas.add(funcs[k*2]);
                 availableFormulas.add(funcs[k*2+1]);
             }
@@ -147,38 +147,38 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
         }
 
         BooleanFormula[] functionVars = new BooleanFormula[functionCount];
-        for(int i=0;i<functionCount;i++) {
+        for(int i=0; i<functionCount; i++) {
             functionVars[i] = numberProvider.select(funcs, cpogSelections[i]);
         }
         BooleanFormula[][] enc = new BooleanFormula[encodings.length][];
-        for(int i=0;i<enc.length;i++) {
+        for(int i=0; i<enc.length; i++) {
             enc[i] = new BooleanFormula[encodings[i].length];
-            for(int j=0;j<enc[i].length;j++)
+            for(int j=0; j<enc[i].length; j++)
                 enc[i][j] = encodings[i][j];
         }
 
-        return new CpogOptimisationTask<Cnf>(functionVars,enc,new Cnf(tableConditions));
+        return new CpogOptimisationTask<Cnf>(functionVars, enc, new Cnf(tableConditions));
     }
 
     private void orderFunctions(TwoHotRange[] derivedFunctions) {
         if(derivedFunctions.length>0) {
-            rho.add(or(derivedFunctions[0].get(0),derivedFunctions[0].get(1)));
-            rho.add(or(derivedFunctions[0].get(2),derivedFunctions[0].get(3)));
+            rho.add(or(derivedFunctions[0].get(0), derivedFunctions[0].get(1)));
+            rho.add(or(derivedFunctions[0].get(2), derivedFunctions[0].get(3)));
             if(derivedFunctions.length>1) {
-                //rho.add(or(derivedFunctions[1].get(0),derivedFunctions[1].get(1),derivedFunctions[1].get(2),derivedFunctions[1].get(3),derivedFunctions[1].get(4),derivedFunctions[1].get(5)));
-                //rho.add(or(derivedFunctions[1].get(0),derivedFunctions[1].get(1),derivedFunctions[1].get(2),derivedFunctions[1].get(3),derivedFunctions[1].get(4),derivedFunctions[1].get(5)));
+                //rho.add(or(derivedFunctions[1].get(0), derivedFunctions[1].get(1), derivedFunctions[1].get(2), derivedFunctions[1].get(3), derivedFunctions[1].get(4), derivedFunctions[1].get(5)));
+                //rho.add(or(derivedFunctions[1].get(0), derivedFunctions[1].get(1), derivedFunctions[1].get(2), derivedFunctions[1].get(3), derivedFunctions[1].get(4), derivedFunctions[1].get(5)));
             }
         }
 
-        for(int i=0;i<derivedFunctions.length;i++) {
+        for(int i=0; i<derivedFunctions.length; i++) {
             int bits = derivedFunctions[i].size();
-            for(int j=i+1;j<derivedFunctions.length;j++) {
+            for(int j=i+1; j<derivedFunctions.length; j++) {
                 int bitsj = derivedFunctions[j].size();
                 if(bits != bitsj)
                     throw new RuntimeException("Functions have different widths: "+bits+" and " + bitsj);
                 List<Literal> si = derivedFunctions[i].getThermometer();
                 List<Literal> xj = derivedFunctions[j];
-                for(int k=0;k<bits;k++) {
+                for(int k=0; k<bits; k++) {
                     rho.add(or(si.get(k), not(xj.get(k))));
                 }
             }

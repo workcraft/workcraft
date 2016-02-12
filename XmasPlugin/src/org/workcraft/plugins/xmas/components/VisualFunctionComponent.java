@@ -60,7 +60,7 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     }
 
     public FunctionComponent getReferencedFunctionComponent() {
-        return (FunctionComponent)getReferencedComponent();
+        return (FunctionComponent) getReferencedComponent();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class VisualFunctionComponent extends VisualXmasComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualFunctionComponent) {
-            FunctionComponent srcComponent = ((VisualFunctionComponent)src).getReferencedFunctionComponent();
+            FunctionComponent srcComponent = ((VisualFunctionComponent) src).getReferencedFunctionComponent();
             getReferencedFunctionComponent().setType(srcComponent.getType());
         }
     }

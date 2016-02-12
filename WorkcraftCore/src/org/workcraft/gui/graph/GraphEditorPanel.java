@@ -282,13 +282,13 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     @Override
     public void paint(Graphics g) {
-        Graphics2D g2d = (Graphics2D)g;
+        Graphics2D g2d = (Graphics2D) g;
         gridToggler.setSelected(CommonEditorSettings.getShowGrid());
         nameToggler.setSelected(CommonVisualSettings.getNameVisibility());
         labelToggler.setSelected(CommonVisualSettings.getLabelVisibility());
         rulerToggler.setSelected(CommonEditorSettings.getShowRulers());
 
-        AffineTransform screenTransform = (AffineTransform)g2d.getTransform().clone();
+        AffineTransform screenTransform = (AffineTransform) g2d.getTransform().clone();
 
         g2d.setBackground(CommonEditorSettings.getBackgroundColor());
         g2d.clearRect(0, 0, getWidth(), getHeight());
@@ -368,9 +368,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         result.add(pos);
         for (Connection connection: getModel().getConnections(component)) {
             if (connection instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection)connection;
+                VisualConnection vc = (VisualConnection) connection;
                 if (vc.getConnectionType() == ConnectionType.POLYLINE) {
-                    Polyline polyline = (Polyline)vc.getGraphic();
+                    Polyline polyline = (Polyline) vc.getGraphic();
                     ControlPoint firstControlPoint = polyline.getFirstControlPoint();
                     if ((component == connection.getFirst()) && (firstControlPoint != null)) {
                         result.add(firstControlPoint.getPosition());
@@ -390,14 +390,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         Set<Point2D> result = new HashSet<Point2D>();
         Node graphics = cp.getParent();
         if (graphics instanceof Polyline) {
-            Polyline polyline = (Polyline)cp.getParent();
+            Polyline polyline = (Polyline) cp.getParent();
             result.add(cp.getPosition());
             result.add(polyline.getPrevAnchorPointLocation(cp));
             result.add(polyline.getNextAnchorPointLocation(cp));
         }
         Node parent = graphics.getParent();
         if (parent instanceof VisualConnection) {
-            VisualConnection vc = (VisualConnection)parent;
+            VisualConnection vc = (VisualConnection) parent;
             result.addAll(calcConnectionSnaps(vc));
         }
         return result;
@@ -407,10 +407,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public Set<Point2D> getSnaps(VisualNode node) {
         Set<Point2D> result = new HashSet<Point2D>();
         if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent)node;
+            VisualComponent component = (VisualComponent) node;
             result.addAll(getComponentSnaps(component));
         } else if (node instanceof ControlPoint) {
-            ControlPoint cp = (ControlPoint)node;
+            ControlPoint cp = (ControlPoint) node;
             result.addAll(getControlPointSnaps(cp));
         }
         return result;
@@ -514,15 +514,15 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         Properties nodeProperties = getModel().getProperties(node);
         properties.addAll(nodeProperties.getDescriptors());
         if (node instanceof Properties) {
-            properties.addAll(((Properties)node).getDescriptors());
+            properties.addAll(((Properties) node).getDescriptors());
         }
         // Properties of the math node
         if (node instanceof Dependent) {
-            for (Node mathNode : ((Dependent)node).getMathReferences()) {
+            for (Node mathNode : ((Dependent) node).getMathReferences()) {
                 Properties mathNodeProperties = getModel().getMathModel().getProperties(mathNode);
                 properties.addAll(mathNodeProperties.getDescriptors());
                 if (mathNode instanceof Properties) {
-                    properties.addAll(((Properties)mathNode).getDescriptors());
+                    properties.addAll(((Properties) mathNode).getDescriptors());
                 }
             }
         }
@@ -728,8 +728,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 }
                 Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
                 if ((modelBox != null) && (viewportBox != null)) {
-                    int viewportCenterX = (int)Math.round(viewportBox.getCenterX());
-                    int viewportCenterY = (int)Math.round(viewportBox.getCenterY());
+                    int viewportCenterX = (int) Math.round(viewportBox.getCenterX());
+                    int viewportCenterY = (int) Math.round(viewportBox.getCenterY());
                     Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
                     Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
                     viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);

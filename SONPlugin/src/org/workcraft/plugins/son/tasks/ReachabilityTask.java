@@ -42,7 +42,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
 
     public ReachabilityTask(WorkspaceEntry we){
         this.we = we;
-        net = (SON)we.getModelEntry().getMathModel();
+        net = (SON) we.getModelEntry().getMathModel();
 
         if(hasConflict()){
             JOptionPane.showMessageDialog(null, "Model has alternative behaviours", "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
@@ -89,7 +89,7 @@ public class ReachabilityTask implements Task<VerificationResult>{
         }
 
         if(reachabilityTask()){
-            net = (SON)we.getModelEntry().getMathModel();
+            net = (SON) we.getModelEntry().getMathModel();
             int result = JOptionPane.showConfirmDialog(mainWindow,
                     "The selected marking is REACHABLE from the initial states. \n" +
                     "Select OK to analyze the trace leading to the marking in the simulation tool.",

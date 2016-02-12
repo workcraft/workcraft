@@ -46,11 +46,11 @@ public class EventSignalPropertyDescriptor implements PropertyDescriptor {
     @Override
     public void setValue(Object value) throws InvocationTargetException {
         Signal signal = null;
-        String signalName = (String)value;
+        String signalName = (String) value;
         if (!signalName.isEmpty()) {
             Node node = fst.getNodeByReference(signalName);
             if (node instanceof Signal) {
-                signal = (Signal)node;
+                signal = (Signal) node;
             } else {
                 Signal oldSignal = signalEvent.getSignal();
                 Type type = oldSignal.getType();

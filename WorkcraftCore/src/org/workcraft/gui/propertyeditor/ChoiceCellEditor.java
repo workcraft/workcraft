@@ -54,7 +54,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
     }
 
     public Object getCellEditorValue() {
-        return ((ChoiceWrapper)comboBox.getSelectedItem()).value;
+        return ((ChoiceWrapper) comboBox.getSelectedItem()).value;
     }
 
     public Component getTableCellEditorComponent(JTable table,    Object value,

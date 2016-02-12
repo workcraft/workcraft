@@ -42,8 +42,8 @@ public class SONMainTask implements Task<VerificationResult>{
     public Result<? extends VerificationResult> run(ProgressMonitor <? super VerificationResult> monitor){
         clearConsole();
         //all tasks
-        SON net=(SON)we.getModelEntry().getMathModel();
-        VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
+        SON net=(SON) we.getModelEntry().getMathModel();
+        VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
 
         if(settings.getType() == 0){
 

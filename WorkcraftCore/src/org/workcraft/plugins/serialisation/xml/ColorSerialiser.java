@@ -34,7 +34,7 @@ public class ColorSerialiser implements BasicXMLSerialiser {
 
     public void serialise(Element element, Object object)
             throws SerialisationException {
-        element.setAttribute("rgb", String.format("#%x", ((Color)object).getRGB() & 0xffffff));
+        element.setAttribute("rgb", String.format("#%x", ((Color) object).getRGB() & 0xffffff));
     }
 
 }

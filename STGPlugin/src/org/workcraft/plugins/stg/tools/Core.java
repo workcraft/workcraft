@@ -8,7 +8,7 @@ import org.workcraft.util.MultiSet;
 
 @SuppressWarnings("serial")
 public class Core extends HashSet<String> {
-    private Color color = Color.getHSBColor((float)Math.random(), 0.3f, 0.7f);
+    private Color color = Color.getHSBColor((float) Math.random(), 0.3f, 0.7f);
     private final Trace cut1;
     private final Trace cut2;
     private final String comment;

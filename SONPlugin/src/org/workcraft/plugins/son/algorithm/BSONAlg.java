@@ -88,7 +88,7 @@ public class BSONAlg extends RelationAlgorithm{
                     Phase phase = new Phase();
                     for(Node node : PathAlgorithm.dfs2(min, max, net)){
                         if(node instanceof Condition)
-                            phase.add((Condition)node);
+                            phase.add((Condition) node);
                     }
                     result.add(phase);
                 }else{
@@ -114,7 +114,7 @@ public class BSONAlg extends RelationAlgorithm{
                             Phase phase = new Phase();
                             for(Node node : PathAlgorithm.dfs2(min1, max1, net)){
                                 if(node instanceof Condition)
-                                    phase.add((Condition)node);
+                                    phase.add((Condition) node);
                             }
                             result.add(phase);
                         }
@@ -153,8 +153,8 @@ public class BSONAlg extends RelationAlgorithm{
 
     private void dfs(LinkedList<Node> visited, Node upper, boolean getMin) {
         Node n = visited.getLast();
-        if((n instanceof Condition) && getPostBhvSet((Condition)n).contains(upper)){
-            dfsResult.add((Condition)n);
+        if((n instanceof Condition) && getPostBhvSet((Condition) n).contains(upper)){
+            dfsResult.add((Condition) n);
         }else{
             Collection<Node> neighbours = null;
             if(getMin)
@@ -258,7 +258,7 @@ public class BSONAlg extends RelationAlgorithm{
             visit.add(node);
 
             if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-                result.addAll(getPostBhvSet((Condition)node));
+                result.addAll(getPostBhvSet((Condition) node));
             }else{
                 Collection<Node> postSet = getPostPNSet(node);
                 if(!postSet.isEmpty()){
@@ -285,7 +285,7 @@ public class BSONAlg extends RelationAlgorithm{
             visit.add(node);
 
             if(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)){
-                result.addAll(getPostBhvSet((Condition)node));
+                result.addAll(getPostBhvSet((Condition) node));
             }else{
                 Collection<Node> preSet = getPrePNSet(node);
                 if(!preSet.isEmpty()){
@@ -308,7 +308,7 @@ public class BSONAlg extends RelationAlgorithm{
 
         if(isUpperNode(node)){
             if(node instanceof Condition)
-                result.add((Condition)node);
+                result.add((Condition) node);
             else
                 return result;
         }
@@ -503,7 +503,7 @@ public class BSONAlg extends RelationAlgorithm{
      */
     public boolean isUpperEvent(TransitionNode n){
         if(getPrePNSet(n).size() == 1){
-            Condition c = (Condition)getPrePNSet(n).iterator().next();
+            Condition c = (Condition) getPrePNSet(n).iterator().next();
             if(net.getInputSONConnectionTypes(c).contains(Semantics.BHVLINE)
                     && !net.getOutputSONConnectionTypes(c).contains(Semantics.BHVLINE)){
                 return true;
@@ -542,8 +542,8 @@ public class BSONAlg extends RelationAlgorithm{
                     for(Node e1 : pre){
                         if(e1 instanceof TransitionNode){
                             TransitionNode[] subResult = new TransitionNode[2];
-                            subResult[0] = (TransitionNode)e1;
-                            subResult[1] = (TransitionNode)e;
+                            subResult[0] = (TransitionNode) e1;
+                            subResult[1] = (TransitionNode) e;
                             result.add(subResult);
                         }
                     }
@@ -570,8 +570,8 @@ public class BSONAlg extends RelationAlgorithm{
                     for(Node e1 : post){
                         if(e1 instanceof TransitionNode){
                             TransitionNode[] subResult = new TransitionNode[2];
-                            subResult[0] = (TransitionNode)e;
-                            subResult[1] = (TransitionNode)e1;
+                            subResult[0] = (TransitionNode) e;
+                            subResult[1] = (TransitionNode) e1;
                             result.add(subResult);
                         }
                     }

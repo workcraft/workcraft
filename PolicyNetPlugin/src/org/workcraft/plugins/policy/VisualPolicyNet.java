@@ -62,7 +62,7 @@ public class VisualPolicyNet extends VisualPetriNet {
     }
 
     public VisualPolicyNet(PolicyNet model, VisualGroup root) {
-        super(model, root == null ? new VisualLocality((Locality)model.getRoot()) : root);
+        super(model, root == null ? new VisualLocality((Locality) model.getRoot()) : root);
         // invalidate spanning trees of all VisualBundles when the the model is changed
         new StateSupervisor() {
             @Override
@@ -78,7 +78,7 @@ public class VisualPolicyNet extends VisualPetriNet {
     }
 
     public PolicyNet getPolicyNet() {
-        return (PolicyNet)getMathModel();
+        return (PolicyNet) getMathModel();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class VisualPolicyNet extends VisualPetriNet {
         ArrayList<Node> refSelected = new ArrayList<Node>();
         for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if(node instanceof VisualTransformableNode) {
-                selected.add((VisualTransformableNode)node);
+                selected.add((VisualTransformableNode) node);
                 if (node instanceof VisualComponent) {
                     refSelected.add(((VisualComponent) node).getReferencedComponent());
                 } else if (node instanceof VisualLocality) {
@@ -97,7 +97,7 @@ public class VisualPolicyNet extends VisualPetriNet {
         }
         VisualLocality newLocality = null;
         if (selected.size() > 0) {
-            VisualLocality curLocality = (VisualLocality)getCurrentLevel();
+            VisualLocality curLocality = (VisualLocality) getCurrentLevel();
             newLocality = new VisualLocality(getPolicyNet().createLocality(refSelected, curLocality.getLocality()));
             curLocality.add(newLocality);
             curLocality.reparent(selected, newLocality);
@@ -127,14 +127,14 @@ public class VisualPolicyNet extends VisualPetriNet {
             Collection<Node> mathNodes = new ArrayList<Node>();
             for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
                 if(node instanceof VisualLocality) {
-                    VisualLocality locality = (VisualLocality)node;
+                    VisualLocality locality = (VisualLocality) node;
                     for(Node subNode : locality.unGroup()){
                         toSelect.add(subNode);
                     }
                     for(Node child : locality.getLocality().getChildren()){
                         mathNodes.add(child);
                     }
-                    locality.getLocality().reparent(mathNodes, ((VisualLocality)getCurrentLevel()).getLocality());
+                    locality.getLocality().reparent(mathNodes, ((VisualLocality) getCurrentLevel()).getLocality());
                     getMathModel().remove(locality.getLocality());
                     getCurrentLevel().remove(locality);
 
@@ -213,7 +213,7 @@ public class VisualPolicyNet extends VisualPetriNet {
                 node = createVisualBundle(ref).getReferencedBundle();
             }
             if (node instanceof Bundle) {
-                ((Bundle)node).add(t.getReferencedTransition());
+                ((Bundle) node).add(t.getReferencedTransition());
             }
         }
         for (VisualBundle b: getVisualBundles()) {
@@ -242,7 +242,7 @@ public class VisualPolicyNet extends VisualPetriNet {
         for (String ref : s.split("\\s*,\\s*")) {
             Node node = getPetriNet().getNodeByReference(ref);
             if (node instanceof BundledTransition) {
-                b.add((BundledTransition)node);
+                b.add((BundledTransition) node);
             }
         }
     }
@@ -279,7 +279,7 @@ public class VisualPolicyNet extends VisualPetriNet {
                 properties.add(new TransitionsOfBundlePropertyDescriptor(this, vb));
             }
         } else if (node instanceof VisualBundledTransition) {
-            VisualBundledTransition t = (VisualBundledTransition)node;
+            VisualBundledTransition t = (VisualBundledTransition) node;
             properties.add(new BundlesOfTransitionPropertyDescriptor(this, t));
         }
         return properties;

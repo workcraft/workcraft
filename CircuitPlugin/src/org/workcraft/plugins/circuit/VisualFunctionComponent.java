@@ -68,7 +68,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     public FunctionComponent getReferencedFunctionComponent() {
-        return (FunctionComponent)this.getReferencedComponent();
+        return (FunctionComponent) this.getReferencedComponent();
     }
 
     public RenderType getRenderType() {
@@ -112,7 +112,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         VisualFunctionContact gateOutput = null;
         for (Node node: getChildren()) {
             if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact vc = (VisualFunctionContact)node;
+                VisualFunctionContact vc = (VisualFunctionContact) node;
                 if (vc.isOutput()) {
                     if (gateOutput == null) {
                         gateOutput = vc;
@@ -191,7 +191,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
             for (Node n: this.getChildren()) {
                 if (n instanceof VisualFunctionContact) {
-                    VisualFunctionContact vc = (VisualFunctionContact)n;
+                    VisualFunctionContact vc = (VisualFunctionContact) n;
                     bt.setTransform(at);
                     if (vc.isInput()) {
                         String vcName = vc.getName();
@@ -222,7 +222,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         super.notify(e);
 
         if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pc = (PropertyChangedEvent)e;
+            PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
                 if ((getMainContact() == pc.getSender()) && (getRenderingResult() != null)) {
@@ -234,7 +234,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                 setContactsDefaultPosition();
                 for (Node node : getChildren()) {
                     if (node instanceof VisualFunctionContact) {
-                        VisualFunctionContact vc = (VisualFunctionContact)node;
+                        VisualFunctionContact vc = (VisualFunctionContact) node;
                         vc.invalidateRenderedFormula();
                     }
                 }
@@ -258,11 +258,11 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     private void drawContactLines(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
-        g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+        g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
         g.setColor(GateRenderer.foreground);
         for (Node node: this.getChildren()) {
             if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact vc = (VisualFunctionContact)node;
+                VisualFunctionContact vc = (VisualFunctionContact) node;
                 Point2D p1 = getContactLinePositionInLocalSpace(vc, rr);
                 if (p1 != null) {
                     at.transform(p1, p1);
@@ -276,7 +276,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     private void drawCelementSymbols(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
         if (rr instanceof CElementRenderingResult) {
-            CElementRenderingResult cr = (CElementRenderingResult)rr;
+            CElementRenderingResult cr = (CElementRenderingResult) rr;
             Point2D labelPosition = cr.getLabelPosition();
             if (labelPosition != null) {
                 at.transform(labelPosition, labelPosition);
@@ -309,7 +309,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         Point2D outputPos = null;
         for (Node node: this.getChildren()) {
             if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact vc = (VisualFunctionContact)node;
+                VisualFunctionContact vc = (VisualFunctionContact) node;
                 if (vc.isInput()) {
                     inputPos = getContactLinePositionInLocalSpace(vc, rr);
                 } else {
@@ -319,7 +319,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         }
         if ((inputPos != null) && (outputPos != null)) {
             float[] dash = {0.05f, 0.05f};
-            g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
+            g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
                         BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
 
             g.setColor(GateRenderer.foreground);
@@ -365,10 +365,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             // Draw the component in its coordinates
             g.transform(at);
             if (!getIsEnvironment()) {
-                g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth()));
+                g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
             } else {
                 float[] dash = {0.05f, 0.05f};
-                g.setStroke(new BasicStroke((float)CircuitSettings.getBorderWidth(),
+                g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
                             BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
             }
 
@@ -408,7 +408,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualFunctionComponent) {
-            VisualFunctionComponent srcComponent = (VisualFunctionComponent)src;
+            VisualFunctionComponent srcComponent = (VisualFunctionComponent) src;
             setIsZeroDelay(srcComponent.getIsZeroDelay());
         }
     }

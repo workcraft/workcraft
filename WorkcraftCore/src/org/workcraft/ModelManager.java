@@ -46,7 +46,7 @@ public class ModelManager {
     public LinkedList<Class<?>> getComponentsByModelUUID(UUID uuid) {
         LinkedList<Class<?>> lst = uuidComponentListMap.get(uuid);
         if (lst!=null)
-            return (LinkedList<Class<?>>)lst.clone();
+            return (LinkedList<Class<?>>) lst.clone();
         else
             return null;
     }
@@ -55,19 +55,19 @@ public class ModelManager {
     public LinkedList<Class<?>> getToolsByModelUUID(UUID uuid) {
         LinkedList<Class<?>> lst = uuidToolListMap.get(uuid);
         if (lst!=null)
-            return (LinkedList<Class<?>>)lst.clone();
+            return (LinkedList<Class<?>>) lst.clone();
         else
             return null;
     }
 
     @SuppressWarnings("unchecked")
     public LinkedList<Tool> getMultiModelTools() {
-        return (LinkedList<Tool>)multiToolList.clone();
+        return (LinkedList<Tool>) multiToolList.clone();
     }
 
     @SuppressWarnings("unchecked")
     public LinkedList<Class<?>> getModelList() {
-        return (LinkedList<Class<?>>)modelList.clone();
+        return (LinkedList<Class<?>>) modelList.clone();
     }
 
     public Class<?> getModelByUUID(UUID uuid) {
@@ -89,7 +89,7 @@ public class ModelManager {
         if (!isValidModelClass(modelClass))
             return null;
         try {
-            uuid = (UUID)modelClass.getField("_modeluuid").get(null);
+            uuid = (UUID) modelClass.getField("_modeluuid").get(null);
         } catch (NoSuchFieldException e) {
             System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
         } catch (IllegalAccessException e) {
@@ -111,7 +111,7 @@ public class ModelManager {
             return null;
 
         try {
-            uuid = (UUID)modelClass.getField("_modeluuid").get(null);
+            uuid = (UUID) modelClass.getField("_modeluuid").get(null);
         } catch (NoSuchFieldException e) {
             System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
         } catch (IllegalAccessException e) {
@@ -124,7 +124,7 @@ public class ModelManager {
         if (!isValidModelClass(modelClass))
             return null;
         try {
-            return (String)modelClass.getField("_displayname").get(null);
+            return (String) modelClass.getField("_displayname").get(null);
         } catch (NoSuchFieldException e) {
             System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
         } catch (IllegalAccessException e) {
@@ -137,7 +137,7 @@ public class ModelManager {
         if (!isValidToolClass(toolClass))
             return null;
         try {
-            return (String)toolClass.getField("_displayname").get(null);
+            return (String) toolClass.getField("_displayname").get(null);
         } catch (NoSuchFieldException e) {
             System.err.println("Tool implementation class is improperly declared: static final String "+e.getMessage()+" is required");
         } catch (IllegalAccessException e) {
@@ -148,8 +148,8 @@ public class ModelManager {
 
     public void addModel(Class<?> cls) {
         try {
-            UUID uuid = (UUID)cls.getField("_modeluuid").get(null);
-            String modelName = (String)cls.getField("_displayname").get(null);
+            UUID uuid = (UUID) cls.getField("_modeluuid").get(null);
+            String modelName = (String) cls.getField("_displayname").get(null);
             if (uuidModelMap.get(uuid)!=null) {
                 System.err.println("Duplicate model id ("+uuid.toString()+"), skipping");
                 return;
@@ -166,8 +166,8 @@ public class ModelManager {
 
     public void addComponent(Class<?> cls) {
         try {
-            UUID uuid = (UUID)cls.getField("_modeluuid").get(null);
-            String componentName = (String)cls.getField("_displayname").get(null);
+            UUID uuid = (UUID) cls.getField("_modeluuid").get(null);
+            String componentName = (String) cls.getField("_displayname").get(null);
 
             if (uuidModelMap.get(uuid)==null) {
                 System.err.println("Component "+componentName+"(class "+cls.getName()+") refers to unknown model (id "+uuid.toString()+"), skipping");

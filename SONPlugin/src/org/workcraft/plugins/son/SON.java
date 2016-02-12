@@ -89,7 +89,7 @@ public class SON extends AbstractMathModel {
             throw new InvalidConnectionException("Duplicate Connections" + getNodeReference(first)+" " +getNodeReference(second));
         }
 
-        SONConnection con = new SONConnection((MathNode)first, (MathNode)second, semantics);
+        SONConnection con = new SONConnection((MathNode) first, (MathNode) second, semantics);
         Hierarchy.getNearestContainer(first, second).add(con);
 
         return con;
@@ -135,7 +135,7 @@ public class SON extends AbstractMathModel {
         ArrayList<Condition> result =  new ArrayList<Condition>();
         for(Node node : getComponents())
             if(node instanceof Condition)
-                result.add((Condition)node);
+                result.add((Condition) node);
 
         return result;
     }
@@ -148,7 +148,7 @@ public class SON extends AbstractMathModel {
         ArrayList<Event> result =  new ArrayList<Event>();
         for(Node node : getComponents())
             if(node instanceof Event)
-                result.add((Event)node);
+                result.add((Event) node);
 
         return result;
     }
@@ -157,7 +157,7 @@ public class SON extends AbstractMathModel {
         ArrayList<PlaceNode> result =  new ArrayList<PlaceNode>();
         for(Node node : getComponents())
             if(node instanceof PlaceNode)
-                result.add((PlaceNode)node);
+                result.add((PlaceNode) node);
 
         return result;
     }
@@ -166,17 +166,17 @@ public class SON extends AbstractMathModel {
         ArrayList<Time> result =  new ArrayList<Time>();
         for(Node node : getComponents())
             if(node instanceof Time)
-                result.add((Time)node);
+                result.add((Time) node);
 
         return result;
     }
 
     public String getComponentLabel(Node n){
         if(n instanceof PlaceNode)
-            return ((PlaceNode)n).getLabel();
+            return ((PlaceNode) n).getLabel();
 
         if(n instanceof TransitionNode)
-            return ((TransitionNode)n).getLabel();
+            return ((TransitionNode) n).getLabel();
 
         else
             return null;
@@ -193,7 +193,7 @@ public class SON extends AbstractMathModel {
             ((SONConnection) n).setColor(nodeColor);
         }
         if (n instanceof ONGroup)
-            ((ONGroup)n).setForegroundColor(nodeColor);
+            ((ONGroup) n).setForegroundColor(nodeColor);
     }
 
     public void setFillColor(Node n, Color nodeColor){
@@ -207,7 +207,7 @@ public class SON extends AbstractMathModel {
 
     public void refreshAllColor(){
         for(Node n:  getComponents()){
-            setFillColor(n,CommonVisualSettings.getFillColor());
+            setFillColor(n, CommonVisualSettings.getFillColor());
             setForegroundColor(n, CommonVisualSettings.getBorderColor());
             setTimeColor(n, Color.BLACK);
             setTokenColor(n, Color.BLACK);
@@ -228,7 +228,7 @@ public class SON extends AbstractMathModel {
 
     public void refreshNodeColor(){
         for(Node n:  getComponents()){
-            setFillColor(n,CommonVisualSettings.getFillColor());
+            setFillColor(n, CommonVisualSettings.getFillColor());
             setForegroundColor(n, CommonVisualSettings.getBorderColor());
             setTokenColor(n, Color.BLACK);
         }
@@ -349,7 +349,7 @@ public class SON extends AbstractMathModel {
         ArrayList<SONConnection> result =  new ArrayList<SONConnection>();
         for (Connection con : this.getConnections(node))
             if(con instanceof SONConnection)
-                result.add((SONConnection)con);
+                result.add((SONConnection) con);
 
         return result;
     }
@@ -491,7 +491,7 @@ public class SON extends AbstractMathModel {
         ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
         for(TransitionNode node :  Hierarchy.getDescendantsOfType(getRoot(), TransitionNode.class)){
             if(node instanceof Block){
-                if(((Block)node).getIsCollapsed())
+                if(((Block) node).getIsCollapsed())
                     result.add(node);
             }
             if(node instanceof Event)
@@ -549,15 +549,15 @@ public class SON extends AbstractMathModel {
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
         if (node instanceof SONConnection) {
-            SONConnection con = (SONConnection)node;
+            SONConnection con = (SONConnection) node;
             if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE)
-                properties.add(new ConnectionTimePropertyDescriptor((SONConnection)node));
+                properties.add(new ConnectionTimePropertyDescriptor((SONConnection) node));
         }
 
         if (node instanceof Time) {
-            properties.add(new StartTimePropertyDescriptor((Time)node));
-            properties.add(new EndTimePropertyDescriptor((Time)node));
-            properties.add(new DurationPropertyDescriptor((Time)node));
+            properties.add(new StartTimePropertyDescriptor((Time) node));
+            properties.add(new EndTimePropertyDescriptor((Time) node));
+            properties.add(new DurationPropertyDescriptor((Time) node));
         }
 
         return properties;

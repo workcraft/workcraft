@@ -44,7 +44,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 
     @Override
     public VisualModel getUnderlyingModel(VisualModel model) {
-        VisualCircuit circuit = (VisualCircuit)model;
+        VisualCircuit circuit = (VisualCircuit) model;
         converter = new CircuitToStgConverter(circuit);
         return converter.getStg();
     }
@@ -94,7 +94,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 for (Transition transition: net.getTransitions()) {
                     if (transition.getParent() != parent) continue;
                     if (!net.isEnabled(transition)) continue;
-                    String existingRef = net.getNodeReference((NamespaceProvider)parent, transition);
+                    String existingRef = net.getNodeReference((NamespaceProvider) parent, transition);
                     String existingName = LabelParser.getTransitionName(existingRef);
                     if (requiredName.equals(existingName)) {
                         result = transition;
@@ -114,7 +114,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
         MathModel model = editor.getModel().getMathModel();
         if (model instanceof Circuit) {
             editor.getWorkspaceEntry().saveMemento();
-            Circuit circuit = (Circuit)model;
+            Circuit circuit = (Circuit) model;
             for (FunctionContact contact : circuit.getFunctionContacts()) {
                 String contactName = CircuitUtils.getSignalName(circuit, contact);
                 String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
@@ -134,12 +134,12 @@ public class CircuitSimulationTool extends StgSimulationTool {
             SignalState signalState = stateMap.get(signalName);
             Node zeroNode = net.getNodeByReference(signalName + "_0");
             if (zeroNode instanceof Place) {
-                Place zeroPlace = (Place)zeroNode;
+                Place zeroPlace = (Place) zeroNode;
                 signalState.value = (zeroPlace.getTokens() > 0) ? 0 : 1;
             }
             Node oneNode= net.getNodeByReference(signalName + "_1");
             if (oneNode instanceof Place) {
-                Place onePlace = (Place)oneNode;
+                Place onePlace = (Place) oneNode;
                 signalState.value = (onePlace.getTokens() > 0) ? 1 : 0;
             }
         }
@@ -186,11 +186,11 @@ public class CircuitSimulationTool extends StgSimulationTool {
         boolean ret = false;
         for (Node node: container.getChildren()) {
             if (node instanceof VisualContact) {
-                SignalTransition transition = getContactExcitedTransition((VisualContact)node);
+                SignalTransition transition = getContactExcitedTransition((VisualContact) node);
                 ret=ret || (transition != null);
             }
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container)node);
+                ret = ret || isContainerExcited((Container) node);
             }
             if (ret) {
                 break;
@@ -207,13 +207,13 @@ public class CircuitSimulationTool extends StgSimulationTool {
             public Decoration getDecoration(Node node) {
                 if (converter == null) return null;
                 if (node instanceof VisualContact) {
-                    VisualContact contact = (VisualContact)node;
+                    VisualContact contact = (VisualContact) node;
                     Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
                     if (signalStgAndInversion != null) {
                         boolean isZeroDelay = false;
                         Node parent = contact.getParent();
                         if (parent instanceof VisualFunctionComponent) {
-                            isZeroDelay = ((VisualFunctionComponent)parent).getIsZeroDelay();
+                            isZeroDelay = ((VisualFunctionComponent) parent).getIsZeroDelay();
                         }
                         Node traceCurrentNode = getTraceCurrentNode();
                         SignalStg signalStg = signalStgAndInversion.getFirst();
@@ -255,7 +255,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                         };
                     }
                 } else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
-                    Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion((VisualNode)node);
+                    Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion((VisualNode) node);
                     if (signalStgAndInversion != null) {
                         SignalStg signalStg = signalStgAndInversion.getFirst();
                         boolean isInverting = signalStgAndInversion.getSecond();
@@ -279,7 +279,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                         };
                     }
                 } else if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    final boolean ret = isContainerExcited((Container)node);
+                    final boolean ret = isContainerExcited((Container) node);
                     return new ContainerDecoration() {
                         @Override
                         public Color getColorisation() {

@@ -66,7 +66,7 @@ public class TimeValueSetterTool extends AbstractTool{
     protected VisualSON visualNet;
     protected ConsistencyAlg timeAlg;
 
-    private JPanel interfacePanel,timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
+    private JPanel interfacePanel, timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
     private GranularityPanel granularityPanel;
     private JButton estimatorButton, clearButton;
 
@@ -90,8 +90,8 @@ public class TimeValueSetterTool extends AbstractTool{
         super.createInterfacePanel(editor);
 
         //workcraft invoke this method before activate method
-        visualNet = (VisualSON)editor.getModel();
-        net = (SON)visualNet.getMathModel();
+        visualNet = (VisualSON) editor.getModel();
+        net = (SON) visualNet.getMathModel();
         this.editor = editor;
 
         createTimeSetterPanel();
@@ -153,7 +153,7 @@ public class TimeValueSetterTool extends AbstractTool{
                 if(visualSelection!=null){
                     if(visualSelection instanceof VisualComponent){
                         if((selection instanceof Time) && !(selection instanceof Event)){
-                            Time time = (Time)selection;
+                            Time time = (Time) selection;
                             time.setDuration(interval);
                             time.setStartTime(interval);
                             time.setEndTime(interval);
@@ -275,8 +275,8 @@ public class TimeValueSetterTool extends AbstractTool{
     }
 
     private void setTimeLabelValue(Node node, JTextField field, boolean isMin){
-        VisualSONConnection vcon = (VisualSONConnection)node;
-        SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
+        VisualSONConnection vcon = (VisualSONConnection) node;
+        SONConnection con = (SONConnection) vcon.getReferencedSONConnection();
 
         Interval value = con.getTime();
         if(isMin){
@@ -320,8 +320,8 @@ public class TimeValueSetterTool extends AbstractTool{
     }
 
     private void setStartLabel(Node node, JTextField field, boolean isMin){
-        VisualCondition vc = (VisualCondition)node;
-        Condition c = (Condition)vc.getReferencedComponent();
+        VisualCondition vc = (VisualCondition) node;
+        Condition c = (Condition) vc.getReferencedComponent();
 
         Interval value = c.getStartTime();
         if(isMin){
@@ -366,8 +366,8 @@ public class TimeValueSetterTool extends AbstractTool{
     }
 
     private void setEndLabel(Node node, JTextField field, boolean isMin){
-        VisualCondition vc = (VisualCondition)node;
-        Condition c = (Condition)vc.getReferencedComponent();
+        VisualCondition vc = (VisualCondition) node;
+        Condition c = (Condition) vc.getReferencedComponent();
 
         Interval value = c.getEndTime();
         if(isMin){
@@ -415,8 +415,8 @@ public class TimeValueSetterTool extends AbstractTool{
 
         Interval value;
         if(node instanceof VisualPlaceNode){
-            VisualPlaceNode vc = (VisualPlaceNode)node;
-            PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+            VisualPlaceNode vc = (VisualPlaceNode) node;
+            PlaceNode c = (PlaceNode) vc.getReferencedComponent();
 
             value = c.getDuration();
             if(isMin){
@@ -437,8 +437,8 @@ public class TimeValueSetterTool extends AbstractTool{
                 }
             }
         } else if(node instanceof VisualBlock){
-            VisualBlock vb = (VisualBlock)node;
-            Block b = (Block)vb.getReferencedComponent();
+            VisualBlock vb = (VisualBlock) node;
+            Block b = (Block) vb.getReferencedComponent();
             value = b.getDuration();
 
             if(isMin){
@@ -493,8 +493,8 @@ public class TimeValueSetterTool extends AbstractTool{
 
         Interval value;
         if(node instanceof VisualSONConnection){
-            VisualSONConnection vcon = (VisualSONConnection)node;
-            SONConnection con = (SONConnection)vcon.getReferencedSONConnection();
+            VisualSONConnection vcon = (VisualSONConnection) node;
+            SONConnection con = (SONConnection) vcon.getReferencedSONConnection();
 
             if(con.getSemantics()==Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE){
                 value = con.getTime();
@@ -503,8 +503,8 @@ public class TimeValueSetterTool extends AbstractTool{
         } else if(node instanceof VisualPlaceNode){
 
             if(node instanceof VisualCondition){
-                VisualCondition vc2 = (VisualCondition)node;
-                Condition c2 = (Condition)vc2.getReferencedComponent();
+                VisualCondition vc2 = (VisualCondition) node;
+                Condition c2 = (Condition) vc2.getReferencedComponent();
 
                 if(c2.isInitial()){
                     value = c2.getStartTime();
@@ -516,14 +516,14 @@ public class TimeValueSetterTool extends AbstractTool{
                 }
             }
 
-            VisualPlaceNode vc = (VisualPlaceNode)node;
-            PlaceNode c = (PlaceNode)vc.getReferencedComponent();
+            VisualPlaceNode vc = (VisualPlaceNode) node;
+            PlaceNode c = (PlaceNode) vc.getReferencedComponent();
 
             value =c.getDuration();
             timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
         } else if(node instanceof VisualBlock){
-            VisualBlock vb = (VisualBlock)node;
-            Block b = (Block)vb.getReferencedComponent();
+            VisualBlock vb = (VisualBlock) node;
+            Block b = (Block) vb.getReferencedComponent();
 
             value =b.getDuration();
             timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
@@ -536,8 +536,8 @@ public class TimeValueSetterTool extends AbstractTool{
 
     @Override
     public void activated(final GraphEditor editor) {
-        visualNet = (VisualSON)editor.getModel();
-        net = (SON)visualNet.getMathModel();
+        visualNet = (VisualSON) editor.getModel();
+        net = (SON) visualNet.getMathModel();
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.setCanSelect(false);
         timeAlg = new ConsistencyAlg(net);
@@ -575,7 +575,7 @@ public class TimeValueSetterTool extends AbstractTool{
         Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
         if(node instanceof VisualSONConnection){
             estimatorButton.setEnabled(false);
-            VisualSONConnection con = (VisualSONConnection)node;
+            VisualSONConnection con = (VisualSONConnection) node;
             selection = con.getReferencedConnection();
             visualSelection = node;
             if(con.getSemantics()==Semantics.PNLINE){
@@ -588,9 +588,9 @@ public class TimeValueSetterTool extends AbstractTool{
 
         Node node2 = HitMan.hitFirstNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualBlock.class);
         if(node2 != null){
-            selection = ((VisualBlock)node2).getReferencedComponent();
+            selection = ((VisualBlock) node2).getReferencedComponent();
             visualSelection = node2;
-            if(((VisualBlock)node2).getIsCollapsed()){
+            if(((VisualBlock) node2).getIsCollapsed()){
                 estimatorButton.setEnabled(true);
                 ((VisualBlock) node2).setForegroundColor(selectedColor);
                 updateTimePanel(e.getEditor(), node2);

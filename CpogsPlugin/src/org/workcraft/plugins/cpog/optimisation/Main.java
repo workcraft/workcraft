@@ -145,7 +145,7 @@ public class Main {
             System.out.println(var.getLabel()+"\t"+sol.getSolution(var));
         }
         if(true)
-            throw new RuntimeException("qwe");*/
+            throw new RuntimeException("qwe"); */
 
         //System.out.println(cnf.toString(new MiniSatCnfPrinter()));
 
@@ -162,15 +162,15 @@ public class Main {
             System.out.println("No solution.");
         else {
             boolean[][] encoding = solution.getEncoding();
-            for(int i=0;i<encoding.length;i++) {
-                for(int j=0;j<encoding[i].length;j++)
+            for(int i=0; i<encoding.length; i++) {
+                for(int j=0; j<encoding[i].length; j++)
                     System.out.print(encoding[i][j]?1:0);
                 System.out.println();
             }
 
             System.out.println("Functions:");
             BooleanFormula[] functions = solution.getFunctions();
-            for(int i=0;i<functions.length;i++) {
+            for(int i=0; i<functions.length; i++) {
                 System.out.println(FormulaToString.toString(functions[i]));
             }
         }

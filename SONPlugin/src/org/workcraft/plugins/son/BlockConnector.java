@@ -32,7 +32,7 @@ public class BlockConnector {
     }
 
     private static void blockBoundingConnector(VisualBlock block, VisualSON visualNet){
-        SON net = (SON)visualNet.getMathModel();
+        SON net = (SON) visualNet.getMathModel();
 
         Collection<VisualComponent> components = block.getComponents();
 
@@ -43,16 +43,16 @@ public class BlockConnector {
             if(!components.contains(first) && components.contains(second)){
                 if(first instanceof VisualPlaceNode){
                     //set input value
-                    String name = net.getNodeReference(((VisualEvent)second).getReferencedComponent());
+                    String name = net.getNodeReference(((VisualEvent) second).getReferencedComponent());
                     String type = "-"+con.getReferencedSONConnection().getSemantics();
                     String time = "-"+con.getTime();
                     String value = "";
-                    if(((VisualPlaceNode)first).getInterface() == ""){
+                    if(((VisualPlaceNode) first).getInterface() == ""){
                         value = "to-"+name+type+time+";";
                     }else{
-                        value = ((VisualPlaceNode)first).getInterface()+"to-"+name+type+time+";";
+                        value = ((VisualPlaceNode) first).getInterface()+"to-"+name+type+time+";";
                     }
-                    ((VisualPlaceNode)first).setInterface(value);
+                    ((VisualPlaceNode) first).setInterface(value);
                     //remove connection
                     removeConnection(con);
                     //create connection from first to block
@@ -60,7 +60,7 @@ public class BlockConnector {
                         try {
                             visualNet.forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
                             visualNet.connect(first, block);
-                            VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent)first, (VisualComponent)block).iterator().next();
+                            VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent) first, (VisualComponent) block).iterator().next();
                             newCon.setTime(con.getTime());
 
                         } catch (InvalidConnectionException e) {
@@ -73,16 +73,16 @@ public class BlockConnector {
             if(components.contains(first) && !components.contains(second)){
                 if(second instanceof VisualPlaceNode){
                     //set output value
-                    String name = net.getNodeReference(((VisualEvent)first).getReferencedComponent());
+                    String name = net.getNodeReference(((VisualEvent) first).getReferencedComponent());
                     String type = "-"+con.getReferencedSONConnection().getSemantics();
                     String time = "-"+con.getTime().toString();
                     String value = "";
-                    if(((VisualPlaceNode)second).getInterface() == ""){
+                    if(((VisualPlaceNode) second).getInterface() == ""){
                         value = "from-"+name+type+time+";";
                     }else{
-                        value = ((VisualPlaceNode)second).getInterface()+"from-"+name+type+time+";";
+                        value = ((VisualPlaceNode) second).getInterface()+"from-"+name+type+time+";";
                     }
-                    ((VisualPlaceNode)second).setInterface(value);
+                    ((VisualPlaceNode) second).setInterface(value);
 
                     //remove connection
                     removeConnection(con);
@@ -91,7 +91,7 @@ public class BlockConnector {
                         try {
                             visualNet.forceConnectionSemantics(con.getReferencedSONConnection().getSemantics());
                             visualNet.connect(block, second);
-                            VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent)block, (VisualComponent)second).iterator().next();
+                            VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent) block, (VisualComponent) second).iterator().next();
                             newCon.setTime(con.getTime());
                         }catch (InvalidConnectionException e) {
                             // TODO Auto-generated catch block
@@ -121,7 +121,7 @@ public class BlockConnector {
     private static void connectionChecker(VisualSON visualNet){
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        SON net = (SON)visualNet.getMathModel();
+        SON net = (SON) visualNet.getMathModel();
 
         for(VisualBlock block : visualNet.getVisualBlocks()){
             if(!net.getPreset(block.getReferencedComponent()).isEmpty()
@@ -137,7 +137,7 @@ public class BlockConnector {
     }
 
     private static void blockInternalConnector(VisualBlock block, VisualSON visualNet){
-        SON net = (SON)visualNet.getMathModel();
+        SON net = (SON) visualNet.getMathModel();
 
         for(VisualPlaceNode p : visualNet.getVisualPlaceNode()){
             String interfaceValue = p.getInterface();
@@ -175,13 +175,13 @@ public class BlockConnector {
                             VisualSONConnection con = null;
                             try {
                                 if(piece[2].equals(Semantics.PNLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(p, e, Semantics.PNLINE);
+                                    con = (VisualSONConnection) visualNet.connect(p, e, Semantics.PNLINE);
                                 } else if(piece[2].equals(Semantics.SYNCLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(p, e, Semantics.SYNCLINE);
+                                    con = (VisualSONConnection) visualNet.connect(p, e, Semantics.SYNCLINE);
                                 } else if(piece[2].equals(Semantics.ASYNLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(p, e, Semantics.ASYNLINE);
+                                    con = (VisualSONConnection) visualNet.connect(p, e, Semantics.ASYNLINE);
                                 } else if(piece[2].equals(Semantics.BHVLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(p, e, Semantics.BHVLINE);
+                                    con = (VisualSONConnection) visualNet.connect(p, e, Semantics.BHVLINE);
                                 }
                                 //remove value
                                 interfaceValue=interfaceValue.replace(info+";", "");
@@ -205,13 +205,13 @@ public class BlockConnector {
                             VisualSONConnection con = null;
                             try {
                                 if(piece[2].equals(Semantics.PNLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(e, p, Semantics.PNLINE);
+                                    con = (VisualSONConnection) visualNet.connect(e, p, Semantics.PNLINE);
                                 } else if(piece[2].equals(Semantics.SYNCLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(e, p, Semantics.SYNCLINE);
+                                    con = (VisualSONConnection) visualNet.connect(e, p, Semantics.SYNCLINE);
                                 } else if(piece[2].equals(Semantics.ASYNLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(e, p, Semantics.ASYNLINE);
+                                    con = (VisualSONConnection) visualNet.connect(e, p, Semantics.ASYNLINE);
                                 } else if(piece[2].equals(Semantics.BHVLINE.toString())) {
-                                    con = (VisualSONConnection)visualNet.connect(e, p, Semantics.BHVLINE);
+                                    con = (VisualSONConnection) visualNet.connect(e, p, Semantics.BHVLINE);
                                 }
                                 //remove value
                                 interfaceValue=interfaceValue.replace(info+";", "");
@@ -240,12 +240,12 @@ public class BlockConnector {
 
     private static void removeConnection(VisualSONConnection con){
         //remove visual connection
-        Container parent = (Container)con.getParent();
+        Container parent = (Container) con.getParent();
         SONConnection mathCon = con.getReferencedSONConnection();
         parent.remove(con);
 
         //remove math connection
-        Container mathParent = (Container)mathCon.getParent();
+        Container mathParent = (Container) mathCon.getParent();
         if(mathParent != null)
             mathParent.remove(mathCon);
     }

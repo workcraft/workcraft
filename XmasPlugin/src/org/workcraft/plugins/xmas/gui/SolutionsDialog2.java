@@ -24,10 +24,10 @@ public class SolutionsDialog2 extends JDialog {
 
         if(n==1) {
             JLabel label = new JLabel("The system has a deadlock");
-            contents.add(label,BorderLayout.NORTH);
+            contents.add(label, BorderLayout.NORTH);
         } else {
             JLabel label = new JLabel("Solution found");
-            contents.add(label,BorderLayout.NORTH);
+            contents.add(label, BorderLayout.NORTH);
         }
 
         solutionsPanel = new JPanel();

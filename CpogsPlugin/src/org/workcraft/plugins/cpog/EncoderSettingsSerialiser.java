@@ -12,7 +12,7 @@ public class EncoderSettingsSerialiser implements SettingsSerialiser<EncoderSett
         String abcPath = XmlUtil.readStringAttr(e, "Abc");
         String libraryPath = XmlUtil.readStringAttr(e, "Library");
 
-        return new EncoderSettings(espressoPath,abcPath,libraryPath);
+        return new EncoderSettings(espressoPath, abcPath, libraryPath);
     }
 
     @Override

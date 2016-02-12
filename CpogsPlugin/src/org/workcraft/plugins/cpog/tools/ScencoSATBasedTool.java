@@ -60,7 +60,7 @@ public class ScencoSATBasedTool implements Tool {
             dialog.setVisible(true);
             // TASK INSERTION
             /*final ScencoChainTask scencoTask = new ScencoChainTask(we, dialog.getSettings(), framework);
-            framework.getTaskManager().queue(scencoTask, "Scenco tool chain", new ScencoChainResultHandler(scencoTask));*/
+            framework.getTaskManager().queue(scencoTask, "Scenco tool chain", new ScencoChainResultHandler(scencoTask)); */
         }
     }
 

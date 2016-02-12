@@ -62,8 +62,8 @@ public class Tools {
         Collections.sort(sectionTools, new Comparator<Tool>() {
             @Override
             public int compare(Tool o1, Tool o2) {
-                Integer p1 = (o1 instanceof MenuOrdering) ? ((MenuOrdering)o1).getPriority() : 0;
-                Integer p2 = (o2 instanceof MenuOrdering) ? ((MenuOrdering)o2).getPriority() : 0;
+                Integer p1 = (o1 instanceof MenuOrdering) ? ((MenuOrdering) o1).getPriority() : 0;
+                Integer p2 = (o2 instanceof MenuOrdering) ? ((MenuOrdering) o2).getPriority() : 0;
                 int result = -p1.compareTo(p2); // Reverse the order, so low values correspond to lower priority
                 if (result == 0) {
                     result = o1.getDisplayName().compareTo(o2.getDisplayName());
@@ -81,7 +81,7 @@ public class Tools {
     public static List<Tool> getPositionedTools(List<Tool> tools, Position position) {
         List<Tool> result = new ArrayList<>();
         for (Tool tool: tools) {
-            if ((tool instanceof MenuOrdering) && (((MenuOrdering)tool).getPosition() == position)) {
+            if ((tool instanceof MenuOrdering) && (((MenuOrdering) tool).getPosition() == position)) {
                 result.add(tool);
             }
         }
@@ -95,7 +95,7 @@ public class Tools {
     public static List<Tool> getUnpositionedTools(List<Tool> tools) {
         List<Tool> result = new ArrayList<>();
         for (Tool tool: tools) {
-            if (!(tool instanceof MenuOrdering) || (((MenuOrdering)tool).getPosition() == null)) {
+            if (!(tool instanceof MenuOrdering) || (((MenuOrdering) tool).getPosition() == null)) {
                 result.add(tool);
             }
         }

@@ -52,7 +52,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
 
     private Bundle bundle;
     protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
-    private Color color = ColorUtils.getLabColor(0.7f, (float)Math.random(), (float)Math.random());
+    private Color color = ColorUtils.getLabColor(0.7f, (float) Math.random(), (float) Math.random());
     private Collection<Line2D> spanningTree = null;
 
     public VisualBundle(Bundle bundle) {
@@ -85,7 +85,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
 
         if (spanningTree == null) {
             HashSet<Point2D> points = new HashSet<Point2D>();
-            Collection<VisualBundledTransition> transitions = ((VisualPolicyNet)r.getModel()).getTransitionsOfBundle(this);
+            Collection<VisualBundledTransition> transitions = ((VisualPolicyNet) r.getModel()).getTransitionsOfBundle(this);
             for (VisualBundledTransition t: transitions) {
                 Point2D point = TransformHelper.getTransformToRoot(t).transform(t.getCenter(), null);
                 points.add(point);

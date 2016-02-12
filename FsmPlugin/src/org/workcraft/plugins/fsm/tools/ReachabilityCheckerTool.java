@@ -27,7 +27,7 @@ public class ReachabilityCheckerTool extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
+        final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
         HashSet<State> unreachableStates = checkReachability(fsm);
         if (unreachableStates.isEmpty()) {
             JOptionPane.showMessageDialog(null,    "The model does not have unreachable states.",
@@ -55,7 +55,7 @@ public class ReachabilityCheckerTool extends VerificationTool {
             if (visited.contains(curState)) continue;
             visited.add(curState);
             for (Event curEvent: stateEvents.get(curState)) {
-                State nextState = (State)curEvent.getSecond();
+                State nextState = (State) curEvent.getSecond();
                 if (nextState != null) {
                     queue.add(nextState);
                 }

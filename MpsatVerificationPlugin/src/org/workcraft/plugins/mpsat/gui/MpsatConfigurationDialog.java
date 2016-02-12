@@ -153,7 +153,7 @@ public class MpsatConfigurationDialog extends JDialog {
         modeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MpsatMode selectedMode = (MpsatMode)modeCombo.getSelectedItem();
+                MpsatMode selectedMode = (MpsatMode) modeCombo.getSelectedItem();
                 if (selectedMode.hasReach()) {
                     predicatePanel.setVisible(true);
                     layout.setRow(2, TableLayout.FILL);
@@ -335,7 +335,7 @@ public class MpsatConfigurationDialog extends JDialog {
             solutionLimin = 0;
         }
 
-        MpsatSettings settings = new MpsatSettings(null, (MpsatMode)modeCombo.getSelectedItem(),
+        MpsatSettings settings = new MpsatSettings(null, (MpsatMode) modeCombo.getSelectedItem(),
                 0, solutionMode, solutionLimin, reachText.getText(), unsatisfiebleRadioButton.isSelected());
 
         return settings;

@@ -60,15 +60,15 @@ public class VisualFsm extends AbstractVisualModel {
     public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
-        VisualState vState1 = (VisualState)first;
-        VisualState vState2 = (VisualState)second;
+        VisualState vState1 = (VisualState) first;
+        VisualState vState2 = (VisualState) second;
         State mState1 = vState1.getReferencedState();
         State mState2 = vState2.getReferencedState();
 
         if (mConnection == null) {
-            mConnection = ((Fsm)getMathModel()).createEvent(mState1, mState2, null);
+            mConnection = ((Fsm) getMathModel()).createEvent(mState1, mState2, null);
         }
-        VisualEvent vEvent = new VisualEvent((Event)mConnection, vState1, vState2);
+        VisualEvent vEvent = new VisualEvent((Event) mConnection, vState1, vState2);
 
         Container container = Hierarchy.getNearestContainer(vState1, vState2);
         container.add(vEvent);

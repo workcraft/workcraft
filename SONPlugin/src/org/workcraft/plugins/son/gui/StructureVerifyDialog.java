@@ -97,7 +97,7 @@ public class StructureVerifyDialog extends JDialog{
 
         public void setItemColor(Color color){
             if(obj instanceof Node)
-                net.setForegroundColor((Node)obj, color);
+                net.setForegroundColor((Node) obj, color);
         }
     }
 
@@ -110,7 +110,7 @@ public class StructureVerifyDialog extends JDialog{
                 boolean isSelected, boolean hasFocus) {
 
             setEnabled(list.isEnabled());
-            setSelected(((ListItem)value).isSelected());
+            setSelected(((ListItem) value).isSelected());
             setFont(list.getFont());
 
             setBackground(list.getBackground());
@@ -169,16 +169,16 @@ public class StructureVerifyDialog extends JDialog{
 
                 int index = list.locationToIndex(event.getPoint());
                 try{
-                    ListItem item = (ListItem)list.getModel().getElementAt(index);
+                    ListItem item = (ListItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
                     if(item.isSelected()){
-                        selectedGroups.add((ONGroup)item.getListItem());
+                        selectedGroups.add((ONGroup) item.getListItem());
                         item.setItemColor(Color.ORANGE);
 
                     }
                     if(!item.isSelected()){
-                        selectedGroups.remove((ONGroup)item.getListItem());
+                        selectedGroups.remove((ONGroup) item.getListItem());
                         item.setItemColor(Color.BLACK);
                     }
                     list.repaint(list.getCellBounds(index, index));
@@ -217,7 +217,7 @@ public class StructureVerifyDialog extends JDialog{
                     ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
                     Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
                     if(obj instanceof ONGroup)
-                        selectedGroups.add((ONGroup)obj);
+                        selectedGroups.add((ONGroup) obj);
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
                 }
                 getList().repaint();
@@ -318,7 +318,7 @@ public class StructureVerifyDialog extends JDialog{
         //super(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL);
         super(owner, title, modalityType);
         this.we = we;
-        net = (SON)we.getModelEntry().getMathModel();
+        net = (SON) we.getModelEntry().getMathModel();
         this.owner = owner;
 
         createInterface();

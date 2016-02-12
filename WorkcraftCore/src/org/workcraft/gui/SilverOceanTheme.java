@@ -24,7 +24,7 @@ public class SilverOceanTheme extends OceanTheme {
     @Override
     public FontUIResource getControlTextFont() {
         int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
-        int fontSizeInPixels = (int)Math.round(FONT_SIZE * screenDpi / 72.0);
+        int fontSizeInPixels = (int) Math.round(FONT_SIZE * screenDpi / 72.0);
         return new FontUIResource(FONT_NAME, Font.PLAIN, fontSizeInPixels);
     }
 

@@ -19,17 +19,17 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
     @Override
     public void handleEvent(StateEvent e) {
         if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent)e;
+            PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
             if ((sender instanceof FunctionContact)
                     && (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
                         || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)))  {
-                handleFunctionChange((FunctionContact)sender);
+                handleFunctionChange((FunctionContact) sender);
             }
             if ((sender instanceof FunctionComponent)
                     && propertyName.equals(FunctionComponent.PROPERTY_IS_ZERO_DELAY)) {
-                handleZeroDelayChange((FunctionComponent)sender);
+                handleZeroDelayChange((FunctionComponent) sender);
             }
         }
     }
@@ -37,7 +37,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
     private void handleFunctionChange(FunctionContact contact) {
         Node parent = contact.getParent();
         if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent)parent;
+            FunctionComponent component = (FunctionComponent) parent;
             component.setIsZeroDelay(false);
         }
     }
@@ -51,7 +51,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
             HashSet<CircuitComponent> componentPreset = CircuitUtils.getComponentPreset(circuit, component);
             for (CircuitComponent predComponent: componentPreset) {
                 if (predComponent instanceof FunctionComponent) {
-                    FunctionComponent predFunctionComponent = (FunctionComponent)predComponent;
+                    FunctionComponent predFunctionComponent = (FunctionComponent) predComponent;
                     if (predFunctionComponent.getIsZeroDelay()) {
                         component.setIsZeroDelay(false);
                         throw new ArgumentException("Zero-delay components cannot be connected to each other.");
@@ -61,7 +61,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
             HashSet<CircuitComponent> componentPostset = CircuitUtils.getComponentPostset(circuit, component);
             for (CircuitComponent succComponent: componentPostset) {
                 if (succComponent instanceof FunctionComponent) {
-                    FunctionComponent succFunctionComponent = (FunctionComponent)succComponent;
+                    FunctionComponent succFunctionComponent = (FunctionComponent) succComponent;
                     if (succFunctionComponent.getIsZeroDelay()) {
                         component.setIsZeroDelay(false);
                         throw new ArgumentException("Zero-delay components cannot be connected to each other.");

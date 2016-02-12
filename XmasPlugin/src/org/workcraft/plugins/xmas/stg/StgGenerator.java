@@ -82,7 +82,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     private VisualXmas getXmasModel() {
-        return (VisualXmas)getSrcModel();
+        return (VisualXmas) getSrcModel();
     }
 
     @Override
@@ -1085,7 +1085,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         for (int idx = 0; idx < capacity; idx++) {
             double xSlot = QUEUE_SLOT_SPACING * (idx - 0.5 * (capacity - 1));
-            char suffix = (char)idx;
+            char suffix = (char) idx;
             suffix += 'A';
             SignalStg mem = generateBasicSignalStg(name + _MEM + suffix, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
             SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix +_RDY, pos.getX() + xSlot, pos.getY() - 8.0);
@@ -1252,21 +1252,21 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     public boolean isRelated(Node highLevelNode, Node node) {
         NodeStg nodeStg = null;
         if (highLevelNode instanceof VisualSourceComponent) {
-            nodeStg = getSourceStg((VisualSourceComponent)highLevelNode);
+            nodeStg = getSourceStg((VisualSourceComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualSinkComponent) {
-            nodeStg = getSinkStg((VisualSinkComponent)highLevelNode);
+            nodeStg = getSinkStg((VisualSinkComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualFunctionComponent) {
-            nodeStg = getFunctionStg((VisualFunctionComponent)highLevelNode);
+            nodeStg = getFunctionStg((VisualFunctionComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualForkComponent) {
-            nodeStg = getForkStg((VisualForkComponent)highLevelNode);
+            nodeStg = getForkStg((VisualForkComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualJoinComponent) {
-            nodeStg = getJoinStg((VisualJoinComponent)highLevelNode);
+            nodeStg = getJoinStg((VisualJoinComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualSwitchComponent) {
-            nodeStg = getSwitchStg((VisualSwitchComponent)highLevelNode);
+            nodeStg = getSwitchStg((VisualSwitchComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualMergeComponent) {
-            nodeStg = getMergeStg((VisualMergeComponent)highLevelNode);
+            nodeStg = getMergeStg((VisualMergeComponent) highLevelNode);
         } else if (highLevelNode instanceof VisualQueueComponent) {
-            nodeStg = getQueueStg((VisualQueueComponent)highLevelNode);
+            nodeStg = getQueueStg((VisualQueueComponent) highLevelNode);
         }
         return (nodeStg != null) && nodeStg.contains(node);
     }

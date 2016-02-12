@@ -32,10 +32,10 @@ public class VisualCondition extends VisualPlaceNode{
     private static float strokeWidth = 0.1f;
 
     private Positioning startTimePositioning = Positioning.LEFT;
-    private RenderedText startTimeRenderedText = new RenderedText("", timeFont, startTimePositioning, new Point2D.Double(0.0,0.0));
+    private RenderedText startTimeRenderedText = new RenderedText("", timeFont, startTimePositioning, new Point2D.Double(0.0, 0.0));
 
     private Positioning endTimePositioning = Positioning.RIGHT;
-    private RenderedText endTimeRenderedText = new RenderedText("", timeFont, endTimePositioning, new Point2D.Double(0.0,0.0));
+    private RenderedText endTimeRenderedText = new RenderedText("", timeFont, endTimePositioning, new Point2D.Double(0.0, 0.0));
 
     public VisualCondition(Condition refNode) {
         super(refNode);
@@ -114,7 +114,7 @@ public class VisualCondition extends VisualPlaceNode{
     }
 
     protected void drawStartTimeInLocalSpace(DrawRequest r) {
-        if (isInitial() && SONSettings.getTimeVisibility() && ((Condition)getReferencedComponent()).getStartTime().isSpecified()) {
+        if (isInitial() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getStartTime().isSpecified()) {
             cahceStartTimeRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -135,7 +135,7 @@ public class VisualCondition extends VisualPlaceNode{
     }
 
     protected void drawEndTimeInLocalSpace(DrawRequest r) {
-        if (isFinal() && SONSettings.getTimeVisibility() && ((Condition)getReferencedComponent()).getEndTime().isSpecified()) {
+        if (isFinal() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getEndTime().isSpecified()) {
             cahceEndTimeRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -155,48 +155,48 @@ public class VisualCondition extends VisualPlaceNode{
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-        if (isInitial() && SONSettings.getTimeVisibility() && ((Condition)getReferencedComponent()).getStartTime().isSpecified()) {
+        if (isInitial() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getStartTime().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, startTimeRenderedText.getBoundingBox());
         }
 
-        if (isFinal() && SONSettings.getTimeVisibility() && ((Condition)getReferencedComponent()).getEndTime().isSpecified()) {
+        if (isFinal() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getEndTime().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, endTimeRenderedText.getBoundingBox());
         }
         return bb;
     }
 
     public boolean isInitial() {
-        return ((Condition)getReferencedComponent()).isInitial();
+        return ((Condition) getReferencedComponent()).isInitial();
     }
 
     public void setInitial(boolean value) {
-        ((Condition)getReferencedComponent()).setInitial(value);
+        ((Condition) getReferencedComponent()).setInitial(value);
         sendNotification(new PropertyChangedEvent(this, "initial"));
     }
 
     public boolean isFinal() {
-        return ((Condition)getReferencedComponent()).isFinal();
+        return ((Condition) getReferencedComponent()).isFinal();
     }
 
     public void setFinal(boolean value) {
-        ((Condition)getReferencedComponent()).setFinal(value);
+        ((Condition) getReferencedComponent()).setFinal(value);
         sendNotification(new PropertyChangedEvent(this, "final"));
     }
 
     public Color getStartTimeColor(){
-        return ((Condition)getReferencedComponent()).getStartTimeColor();
+        return ((Condition) getReferencedComponent()).getStartTimeColor();
     }
 
     public void setStartTimeColor(Color value){
-        ((Condition)getReferencedComponent()).setStartTimeColor(value);
+        ((Condition) getReferencedComponent()).setStartTimeColor(value);
     }
 
     public Color getEndTimeColor(){
-        return ((Condition)getReferencedComponent()).getEndTimeColor();
+        return ((Condition) getReferencedComponent()).getEndTimeColor();
     }
 
     public void setEndTimeColor(Color value){
-        ((Condition)getReferencedComponent()).setEndTimeColor(value);
+        ((Condition) getReferencedComponent()).setEndTimeColor(value);
     }
 
 }

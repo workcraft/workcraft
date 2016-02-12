@@ -28,7 +28,7 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
     @Override
     public boolean isApplicableTo(Node node) {
         if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection)node;
+            VisualConnection connection = (VisualConnection) node;
             Node place = null;
             if (PetriNetUtils.isVisualConsumingArc(connection)) {
                 place = connection.getFirst();
@@ -64,8 +64,8 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualModel) && (node instanceof VisualConnection)) {
-            VisualModel visualModel = (VisualModel)model;
-            VisualConnection connection = (VisualConnection)node;
+            VisualModel visualModel = (VisualModel) model;
+            VisualConnection connection = (VisualConnection) node;
             PetriNetUtils.replicateConnectedPlace(visualModel, connection);
         }
     }

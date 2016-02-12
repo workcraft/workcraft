@@ -27,7 +27,7 @@ public class DgToFsmConverterTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualGraph dg = (VisualGraph)we.getModelEntry().getVisualModel();
+        final VisualGraph dg = (VisualGraph) we.getModelEntry().getVisualModel();
         final VisualFsm fsm = new VisualFsm(new Fsm());
         final DgToFsmConverter converter = new DgToFsmConverter(dg, fsm);
         final Framework framework = Framework.getInstance();

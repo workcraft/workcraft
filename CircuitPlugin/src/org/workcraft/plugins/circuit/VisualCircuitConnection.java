@@ -41,7 +41,7 @@ public class VisualCircuitConnection extends VisualConnection {
         boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         Color colorisation = d.getColorisation();
         g.setColor(Coloriser.colorise(getColor(), colorisation));
-        g.setStroke(new BasicStroke((float)CircuitSettings.getWireWidth()));
+        g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
 
         if (!inSimulationMode && !CircuitSettings.getShowContacts() && (getFirst().getParent() instanceof VisualCircuitComponent)) {
             double tStart = Geometry.getBorderPointParameter(getFirstShape(), getGraphic(), 0, 1);

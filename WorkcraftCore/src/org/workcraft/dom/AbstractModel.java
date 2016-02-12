@@ -71,7 +71,7 @@ public abstract class AbstractModel implements Model {
     @Override
     public void remove(Node node) {
         if (node.getParent() instanceof Container) {
-            ((Container)node.getParent()).remove(node);
+            ((Container) node.getParent()).remove(node);
         } else {
             throw new RuntimeException("Cannot remove a child node from a node that is not a Container (or null).");
         }
@@ -220,7 +220,7 @@ public abstract class AbstractModel implements Model {
     @Override
     public String getName(Node node) {
         if (mgr instanceof HierarchicalUniqueNameReferenceManager) {
-            return ((HierarchicalUniqueNameReferenceManager)mgr).getName(node);
+            return ((HierarchicalUniqueNameReferenceManager) mgr).getName(node);
         }
         return mgr.getNodeReference(null, node);
     }
@@ -228,7 +228,7 @@ public abstract class AbstractModel implements Model {
     @Override
     public void setName(Node node, String name) {
         if (mgr instanceof HierarchicalUniqueNameReferenceManager) {
-            ((HierarchicalUniqueNameReferenceManager)mgr).setName(node, name);
+            ((HierarchicalUniqueNameReferenceManager) mgr).setName(node, name);
         }
     }
 

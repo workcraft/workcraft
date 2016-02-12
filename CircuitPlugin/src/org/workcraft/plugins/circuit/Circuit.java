@@ -49,13 +49,13 @@ public class Circuit extends AbstractMathModel {
     }
 
     public Circuit(Container root, References refs) {
-        super(root, new CircuitReferenceManager((NamespaceProvider)root, refs) {
+        super(root, new CircuitReferenceManager((NamespaceProvider) root, refs) {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof CircuitComponent) return "g";
                 if (node instanceof Joint) return "j";
                 if (node instanceof Contact) {
-                    Contact contact = (Contact)node;
+                    Contact contact = (Contact) node;
                     if (contact.getIOType() == IOType.INPUT) {
                         if (contact.getParent() instanceof CircuitComponent) return "i";
                         else return "in";
@@ -75,10 +75,10 @@ public class Circuit extends AbstractMathModel {
     }
 
     public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-        MathConnection connection = new MathConnection((MathNode)first, (MathNode)second);
+        MathConnection connection = new MathConnection((MathNode) first, (MathNode) second);
         Container container = Hierarchy.getNearestContainer(first, second);
         if (container instanceof CircuitComponent) {
-            container = (Container)container.getParent();
+            container = (Container) container.getParent();
         }
         container.add(connection);
         return connection;

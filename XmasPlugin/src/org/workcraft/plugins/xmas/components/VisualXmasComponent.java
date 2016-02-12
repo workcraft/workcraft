@@ -139,7 +139,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     }
 
     public XmasComponent getReferencedXmasComponent() {
-        return (XmasComponent)getReferencedComponent();
+        return (XmasComponent) getReferencedComponent();
     }
 
     public Orientation getOrientation() {
@@ -162,7 +162,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         ArrayList<VisualXmasContact> result = new ArrayList<VisualXmasContact>();
         for (Node n: getChildren()) {
             if (n instanceof VisualXmasContact) {
-                result.add((VisualXmasContact)n);
+                result.add((VisualXmasContact) n);
             }
         }
         return result;
@@ -197,7 +197,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     public void add(Node node) {
         groupImpl.add(node);
         if (node instanceof VisualXmasContact) {
-            ((VisualXmasContact)node).addObserver(this);
+            ((VisualXmasContact) node).addObserver(this);
         }
     }
 
@@ -289,7 +289,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         Decoration d = r.getDecoration();
 
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-        g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+        g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
         g.draw(transformShape(getShape()));
 
         drawNameInLocalSpace(r);
@@ -300,7 +300,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualXmasComponent) {
-            VisualXmasComponent srcComponent = (VisualXmasComponent)src;
+            VisualXmasComponent srcComponent = (VisualXmasComponent) src;
             setOrientation(srcComponent.getOrientation());
         }
     }

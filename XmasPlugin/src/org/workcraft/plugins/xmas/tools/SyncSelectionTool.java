@@ -29,7 +29,7 @@ public class SyncSelectionTool extends SelectionTool {
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
         JPopupMenu popup = super.createPopupMenu(node, editor);
         if (node instanceof VisualSyncComponent) {
-            final VisualSyncComponent component = (VisualSyncComponent)node;
+            final VisualSyncComponent component = (VisualSyncComponent) node;
             if (popup != null) {
                 popup.addSeparator();
             } else {

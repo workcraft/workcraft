@@ -56,7 +56,7 @@ public class VisualVertex extends VisualComponent {
                 size-strokeWidth, size-strokeWidth);
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
-        g.setStroke(new BasicStroke((float)strokeWidth));
+        g.setStroke(new BasicStroke((float) strokeWidth));
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
         g.draw(shape);
         drawLabelInLocalSpace(r);

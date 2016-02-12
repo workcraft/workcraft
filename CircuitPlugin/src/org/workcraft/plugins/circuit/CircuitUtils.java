@@ -26,7 +26,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver((Circuit)circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Contact mathDriver = findDriver((Circuit) circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathDriver, VisualContact.class);
     }
 
@@ -35,7 +35,7 @@ public class CircuitUtils {
         HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {
-            queue.add(((MathConnection)curNode).getFirst());
+            queue.add(((MathConnection) curNode).getFirst());
         } else {
             queue.add(curNode);
         }
@@ -52,7 +52,7 @@ public class CircuitUtils {
             if (node instanceof Joint) {
                 queue.addAll(circuit.getPreset(node));
             } else if (node instanceof Contact) {
-                Contact contact = (Contact)node;
+                Contact contact = (Contact) node;
                 // Support for zero-delay buffers and inverters.
                 Contact zeroDelayInput = transparentZeroDelayComponents ? findZeroDelayInput(contact) : null;
                 if (zeroDelayInput != null) {
@@ -74,7 +74,7 @@ public class CircuitUtils {
         Contact zeroDelayInput = null;
         Node parent = contact.getParent();
         if (contact.isOutput() && (parent instanceof FunctionComponent)) {
-            FunctionComponent component = (FunctionComponent)parent;
+            FunctionComponent component = (FunctionComponent) parent;
             if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
                 zeroDelayInput = component.getFirstInput();
             }
@@ -87,7 +87,7 @@ public class CircuitUtils {
     }
 
     public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Collection<Contact> drivenContacts = findDriven((Circuit)circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Collection<Contact> drivenContacts = findDriven((Circuit) circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
         return getVisualContacts(circuit, drivenContacts);
     }
 
@@ -96,7 +96,7 @@ public class CircuitUtils {
         HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {
-            queue.add(((MathConnection)curNode).getSecond());
+            queue.add(((MathConnection) curNode).getSecond());
         } else {
             queue.add(curNode);
         }
@@ -107,7 +107,7 @@ public class CircuitUtils {
                 if (node instanceof Joint) {
                     queue.addAll(circuit.getPostset(node));
                 } else if (node instanceof Contact) {
-                    Contact contact = (Contact)node;
+                    Contact contact = (Contact) node;
                     // Support for zero-delay buffers and inverters.
                     Contact zeroDelayOutput = transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null;
                     if (zeroDelayOutput != null) {
@@ -130,7 +130,7 @@ public class CircuitUtils {
         Contact zeroDelayOutput = null;
         Node parent = contact.getParent();
         if (contact.isInput() && (parent instanceof FunctionComponent)) {
-            FunctionComponent component = (FunctionComponent)parent;
+            FunctionComponent component = (FunctionComponent) parent;
             if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
                 zeroDelayOutput = component.getFirstOutput();
             }
@@ -156,7 +156,7 @@ public class CircuitUtils {
     }
 
     public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathSignal = findSignal((Circuit)circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
+        Contact mathSignal = findSignal((Circuit) circuit.getMathModel(), contact.getReferencedContact(), transparentZeroDelayComponents);
         return circuit.getVisualComponent(mathSignal, VisualContact.class);
     }
 
@@ -170,7 +170,7 @@ public class CircuitUtils {
     }
 
     public static String getWireName(VisualCircuit circuit, VisualContact contact) {
-        return getWireName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+        return getWireName((Circuit) circuit.getMathModel(), contact.getReferencedContact());
     }
 
     public static String getSignalName(Circuit circuit, Contact contact) {
@@ -184,7 +184,7 @@ public class CircuitUtils {
     }
 
     public static String getSignalName(VisualCircuit circuit, VisualContact contact) {
-        return getSignalName((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+        return getSignalName((Circuit) circuit.getMathModel(), contact.getReferencedContact());
     }
 
     private static String getContactName(Circuit circuit, Contact contact) {
@@ -200,7 +200,7 @@ public class CircuitUtils {
         String result = null;
         Node parent = contact.getParent();
         if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent)parent;
+            FunctionComponent component = (FunctionComponent) parent;
 
             Contact outputPort = getDrivenOutputPort(circuit, contact);
             if (outputPort != null) {
@@ -212,7 +212,7 @@ public class CircuitUtils {
                 int outputCount = 0;
                 for (Node node: component.getChildren()) {
                     if (node instanceof Contact) {
-                        Contact vc = (Contact)node;
+                        Contact vc = (Contact) node;
                         if (vc.isOutput()) {
                             outputCount++;
                         }
@@ -248,7 +248,7 @@ public class CircuitUtils {
     }
 
     public static Type getSignalType(VisualCircuit circuit, VisualContact contact) {
-        return getSignalType((Circuit)circuit.getMathModel(), contact.getReferencedContact());
+        return getSignalType((Circuit) circuit.getMathModel(), contact.getReferencedContact());
     }
 
     public static Type getSignalType(Circuit circuit, Contact contact) {
@@ -261,7 +261,7 @@ public class CircuitUtils {
                 result = Type.OUTPUT;
             }
         } else {
-            CircuitComponent component = (CircuitComponent)contact.getParent();
+            CircuitComponent component = (CircuitComponent) contact.getParent();
             if (component.getIsEnvironment()) {
                 // Contact of an environment component
                 if (contact.isInput()) {
@@ -287,7 +287,7 @@ public class CircuitUtils {
         return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
             @Override
             public BooleanFormula eval(String name) {
-                FunctionContact contact = (FunctionContact)circuit.getNodeByReference(component, name);
+                FunctionContact contact = (FunctionContact) circuit.getNodeByReference(component, name);
                 if (contact == null) {
                     contact = new FunctionContact();
                     contact.setIOType(IOType.INPUT);
@@ -306,7 +306,7 @@ public class CircuitUtils {
         return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
             @Override
             public BooleanFormula eval(String name) {
-                FunctionContact port = (FunctionContact)circuit.getNodeByReference(null, name);
+                FunctionContact port = (FunctionContact) circuit.getNodeByReference(null, name);
                 if (port == null) {
                     port = new FunctionContact();
                     port.setIOType(IOType.OUTPUT);
@@ -329,7 +329,7 @@ public class CircuitUtils {
                 BooleanFormula result = null;
                 VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
                 if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
-                    result = (BooleanFormula)contact.getReferencedContact();
+                    result = (BooleanFormula) contact.getReferencedContact();
                 }
                 return result;
             }
@@ -346,7 +346,7 @@ public class CircuitUtils {
                 BooleanFormula result = null;
                 VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
                 if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
-                    result = (BooleanFormula)port.getReferencedContact();
+                    result = (BooleanFormula) port.getReferencedContact();
                 }
                 return result;
             }
@@ -358,7 +358,7 @@ public class CircuitUtils {
         HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
         if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent)curNode;
+            CircuitComponent component = (CircuitComponent) curNode;
             queue.addAll(component.getInputs());
         } else {
             queue.add(curNode);
@@ -369,9 +369,9 @@ public class CircuitUtils {
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);
                 if (node instanceof CircuitComponent) {
-                    result.add((CircuitComponent)node);
+                    result.add((CircuitComponent) node);
                 } else if (node instanceof Contact) {
-                    Contact contact = (Contact)node;
+                    Contact contact = (Contact) node;
                     if (contact.isPort() == contact.isOutput()) {
                         queue.addAll(circuit.getPreset(node));
                     } else {
@@ -380,7 +380,7 @@ public class CircuitUtils {
                 } else if (node instanceof Joint) {
                     queue.addAll(circuit.getPreset(node));
                 } else if (node instanceof MathConnection) {
-                    MathConnection connection = (MathConnection)node;
+                    MathConnection connection = (MathConnection) node;
                     queue.add(connection.getFirst());
                 }
             }
@@ -390,7 +390,7 @@ public class CircuitUtils {
 
     public static HashSet<VisualComponent> getComponentPreset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
         HashSet<VisualComponent> result = new HashSet<>();
-        Circuit circuit = (Circuit)visualCircuit.getMathModel();
+        Circuit circuit = (Circuit) visualCircuit.getMathModel();
         MathNode mathComponent = visualComponent.getReferencedComponent();
         for (MathNode node: getComponentPreset(circuit, mathComponent)) {
             result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
@@ -403,7 +403,7 @@ public class CircuitUtils {
         HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
         if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent)curNode;
+            CircuitComponent component = (CircuitComponent) curNode;
             queue.addAll(component.getOutputs());
         } else {
             queue.add(curNode);
@@ -414,9 +414,9 @@ public class CircuitUtils {
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);
                 if (node instanceof CircuitComponent) {
-                    result.add((CircuitComponent)node);
+                    result.add((CircuitComponent) node);
                 } else if (node instanceof Contact) {
-                    Contact contact = (Contact)node;
+                    Contact contact = (Contact) node;
                     if (contact.isPort() == contact.isInput()) {
                         queue.addAll(circuit.getPostset(node));
                     } else {
@@ -425,7 +425,7 @@ public class CircuitUtils {
                 } else if (node instanceof Joint) {
                     queue.addAll(circuit.getPostset(node));
                 } else if (node instanceof MathConnection) {
-                    MathConnection connection = (MathConnection)node;
+                    MathConnection connection = (MathConnection) node;
                     queue.add(connection.getSecond());
                 }
             }
@@ -435,7 +435,7 @@ public class CircuitUtils {
 
     public static HashSet<VisualComponent> getComponentPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
         HashSet<VisualComponent> result = new HashSet<>();
-        Circuit circuit = (Circuit)visualCircuit.getMathModel();
+        Circuit circuit = (Circuit) visualCircuit.getMathModel();
         MathNode mathComponent = visualComponent.getReferencedComponent();
         for (MathNode node: getComponentPostset(circuit, mathComponent)) {
             result.add(visualCircuit.getVisualComponent(node, VisualComponent.class));
@@ -448,7 +448,7 @@ public class CircuitUtils {
         HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
         if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent)curNode;
+            CircuitComponent component = (CircuitComponent) curNode;
             queue.addAll(component.getOutputs());
         } else {
             queue.add(curNode);
@@ -459,7 +459,7 @@ public class CircuitUtils {
             if ((node != null) && !visited.contains(node)) {
                 visited.add(node);
                 if (node instanceof Contact) {
-                    Contact contact = (Contact)node;
+                    Contact contact = (Contact) node;
                     if (contact.isOutput() && contact.isPort()) {
                         result.add(contact);
                     } else {
@@ -468,7 +468,7 @@ public class CircuitUtils {
                 } else if (node instanceof Joint) {
                     queue.addAll(circuit.getPostset(node));
                 } else if (node instanceof MathConnection) {
-                    MathConnection connection = (MathConnection)node;
+                    MathConnection connection = (MathConnection) node;
                     queue.add(connection.getSecond());
                 }
             }
@@ -477,7 +477,7 @@ public class CircuitUtils {
     }
 
     public static HashSet<VisualContact> getPortPostset(final VisualCircuit visualCircuit, VisualComponent visualComponent) {
-        Circuit circuit = (Circuit)visualCircuit.getMathModel();
+        Circuit circuit = (Circuit) visualCircuit.getMathModel();
         MathNode mathComponent = visualComponent.getReferencedComponent();
         HashSet<Contact> ports = getPortPostset(circuit, mathComponent);
         return getVisualContacts(visualCircuit, ports);

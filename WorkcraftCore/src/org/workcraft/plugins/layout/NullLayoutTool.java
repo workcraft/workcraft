@@ -41,14 +41,14 @@ public class NullLayoutTool extends AbstractLayoutTool {
     }
 
     private void setChildrenNullPosition(Container container) {
-        Point2D.Double pos = new Point2D.Double(0.0,0.0);
+        Point2D.Double pos = new Point2D.Double(0.0, 0.0);
         for (Node node : container.getChildren()) {
             if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode transformableNode = (VisualTransformableNode)node;
+                VisualTransformableNode transformableNode = (VisualTransformableNode) node;
                 transformableNode.setRootSpacePosition(pos);
             }
             if (node instanceof Container) {
-                setChildrenNullPosition((Container)node);
+                setChildrenNullPosition((Container) node);
             }
         }
     }

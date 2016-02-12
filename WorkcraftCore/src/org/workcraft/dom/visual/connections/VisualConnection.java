@@ -248,7 +248,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             children.add(graphic);
         }
         if (refConnection instanceof ObservableState) {
-            ((ObservableState)refConnection).addObserver(new StateObserver() {
+            ((ObservableState) refConnection).addObserver(new StateObserver() {
                 public void notify(StateEvent e) {
                     observableStateImpl.sendNotification(e);
                 }
@@ -531,7 +531,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     public void inverseShape() {
         if (getGraphic() instanceof Polyline) {
-            Polyline polyline = (Polyline)getGraphic();
+            Polyline polyline = (Polyline) getGraphic();
             LinkedList<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
             Collections.reverse(controlPoints);
             polyline.resetControlPoints();
@@ -539,7 +539,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
                 polyline.addControlPoint(cp);
             }
         } else if (getGraphic() instanceof Bezier) {
-            Bezier bezier = (Bezier)getGraphic();
+            Bezier bezier = (Bezier) getGraphic();
             BezierControlPoint[] controlPoints = bezier.getBezierControlPoints();
             Point2D tmpPoint = controlPoints[0].getPosition();
             controlPoints[0].setPosition(controlPoints[1].getPosition());
@@ -551,7 +551,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualConnection) {
-            VisualConnection srcConnection = (VisualConnection)src;
+            VisualConnection srcConnection = (VisualConnection) src;
             setConnectionType(srcConnection.getConnectionType());
             setColor(srcConnection.getColor());
             setLineWidth(srcConnection.getLineWidth());
@@ -566,19 +566,19 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     @Override
     public void copyShape(Shapable src) {
         if (src instanceof VisualConnection) {
-            VisualConnection srcConnection = (VisualConnection)src;
+            VisualConnection srcConnection = (VisualConnection) src;
             setConnectionType(srcConnection.getConnectionType());
             ConnectionGraphic srcGraphic = srcConnection.getGraphic();
 
             if (srcGraphic instanceof Polyline) {
-                Polyline polyline = (Polyline)getGraphic();
+                Polyline polyline = (Polyline) getGraphic();
                 polyline.resetControlPoints();
                 for (ControlPoint srcControlPoint: srcGraphic.getControlPoints()) {
                     polyline.addControlPoint(srcControlPoint.getPosition());
                 }
             } else if (srcGraphic instanceof Bezier) {
-                Bezier bezier = (Bezier)getGraphic();
-                BezierControlPoint[] srcControlPoints = ((Bezier)srcGraphic).getBezierControlPoints();
+                Bezier bezier = (Bezier) getGraphic();
+                BezierControlPoint[] srcControlPoints = ((Bezier) srcGraphic).getBezierControlPoints();
                 BezierControlPoint[] dstControlPoints = bezier.getBezierControlPoints();
                 dstControlPoints[0].setPosition(srcControlPoints[0].getPosition());
                 dstControlPoints[1].setPosition(srcControlPoints[1].getPosition());

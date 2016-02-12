@@ -71,7 +71,7 @@ public class TreeWindow<Node> extends JPanel {
 
     @SuppressWarnings("unchecked")
     public Node selected() {
-        return (Node)tree.getSelectionPath().getLastPathComponent();
+        return (Node) tree.getSelectionPath().getLastPathComponent();
     }
 
     public JTree getTreeComponent() {
@@ -101,7 +101,7 @@ public class TreeWindow<Node> extends JPanel {
 
         checkBox = new JCheckBox();
         checkBox.setBackground(tree.getBackground());
-        checkBox.setMargin(new Insets(0,0,0,0));
+        checkBox.setMargin(new Insets(0, 0, 0, 0));
 
         sourceWithRestructuredTrapped = new TreeSourceAdapter<Node>(source) {
             public TreeListener<Node> getListener(final TreeListener<Node> chain) {
@@ -109,7 +109,7 @@ public class TreeWindow<Node> extends JPanel {
                     @Override
                     public void restructured(Path<Node> path) {
                         List<TreePath> expanded = new ArrayList<TreePath>();
-                        for(int i=0;i<tree.getRowCount();i++) {
+                        for(int i=0; i<tree.getRowCount(); i++) {
                             final TreePath treePath = tree.getPathForRow(i);
                             if(tree.isExpanded(i))
                                 expanded.add(treePath);
@@ -203,7 +203,7 @@ public class TreeWindow<Node> extends JPanel {
                     Object value, boolean sel, boolean expanded, boolean leaf,
                     int row, boolean hasFocus) {
 
-                Node node = (Node)value;
+                Node node = (Node) value;
 
                 String name = decorator.getName(node);
                 boolean tricky = name.startsWith("!");
@@ -257,7 +257,7 @@ public class TreeWindow<Node> extends JPanel {
         }
         );
 
-        setLayout(new BorderLayout(0,0));
+        setLayout(new BorderLayout(0, 0));
         this.add(tree, BorderLayout.CENTER);
     }
 

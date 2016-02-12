@@ -13,14 +13,14 @@ class EncodingCellEditor extends GenericCellEditor {
 
     @Override
     public Object getCellEditorValue() {
-        encoding.updateEncoding((String)super.getCellEditorValue());
+        encoding.updateEncoding((String) super.getCellEditorValue());
         return encoding;
     }
 
     @Override
     public Component getTableCellEditorComponent(JTable table,
             Object value, boolean isSelected, int row, int column) {
-        encoding = (Encoding)value;
+        encoding = (Encoding) value;
         return super.getTableCellEditorComponent(table, value, isSelected, row, column);
     }
 }

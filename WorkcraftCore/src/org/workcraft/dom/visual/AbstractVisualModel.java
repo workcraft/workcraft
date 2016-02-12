@@ -86,7 +86,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     public AbstractVisualModel(MathModel mathModel, VisualGroup root) {
         super((root == null) ? new VisualGroup() : root);
         this.mathModel = mathModel;
-        this.currentLevel = (VisualGroup)getRoot();
+        this.currentLevel = (VisualGroup) getRoot();
         new TransformEventPropagator().attach(getRoot());
         new SelectionEventPropagator(this).attach(getRoot());
         new RemovedNodeDeselector(this).attach(getRoot());
@@ -115,14 +115,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             for (Node node : mathContainer.getChildren()) {
                 if (node instanceof MathConnection) continue;
                 if (node instanceof MathNode) {
-                    MathNode mathNode = (MathNode)node;
-                    VisualComponent visualComponent = (VisualComponent)NodeFactory.createVisualComponent(mathNode);
+                    MathNode mathNode = (MathNode) node;
+                    VisualComponent visualComponent = (VisualComponent) NodeFactory.createVisualComponent(mathNode);
                     if (visualComponent != null) {
                         visualContainer.add(visualComponent);
                         createdNodes.put(mathNode, visualComponent);
                     }
                     if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
-                        containerQueue.add(new Pair<Container, Container>((Container)mathNode, (Container)visualComponent));
+                        containerQueue.add(new Pair<Container, Container>((Container) mathNode, (Container) visualComponent));
                     }
                 }
             }
@@ -134,7 +134,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             Container mathContainer = container.getFirst();
             for (Node node : mathContainer.getChildren()) {
                 if (node instanceof MathConnection) {
-                    MathConnection mathConnection = (MathConnection)node;
+                    MathConnection mathConnection = (MathConnection) node;
                     VisualComponent firstComponent = createdNodes.get(mathConnection.getFirst());
                     VisualComponent secondComponent = createdNodes.get(mathConnection.getSecond());
                     try {
@@ -142,10 +142,10 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                     } catch (InvalidConnectionException e) {
                     }
                 } else if (node instanceof MathNode) {
-                    MathNode mathNode = (MathNode)node;
+                    MathNode mathNode = (MathNode) node;
                     VisualComponent visualComponent = createdNodes.get(mathNode);
                     if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
-                        containerQueue.add(new Pair<Container, Container>((Container)mathNode, (Container)visualComponent));
+                        containerQueue.add(new Pair<Container, Container>((Container) mathNode, (Container) visualComponent));
                     }
                 }
             }
@@ -176,9 +176,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     public MathNode getMathReference(Node node) {
         VisualComponent component = null;
         if (node instanceof VisualComponent) {
-            component = (VisualComponent)node;
+            component = (VisualComponent) node;
         } else if (node instanceof VisualReplica) {
-            component = ((VisualReplica)node).getMaster();
+            component = ((VisualReplica) node).getMaster();
         }
         return (component == null) ? null : component.getReferencedComponent();
     }
@@ -197,7 +197,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             String mathName = getMathName(mathNode);
             throw new RuntimeException("Cannot create visual component for math node '" + mathName + "' of class '" + type +"'");
         }
-        return (T)component;
+        return (T) component;
     }
 
     @Override
@@ -387,7 +387,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public String getNodeMathReference(Node node) {
         if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent)node;
+            VisualComponent component = (VisualComponent) node;
             node = component.getReferencedComponent();
         }
         return getMathModel().getNodeReference(node);
@@ -396,7 +396,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public String getMathName(Node node) {
         if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent)node;
+            VisualComponent component = (VisualComponent) node;
             node = component.getReferencedComponent();
         }
         return getMathModel().getName(node);
@@ -405,7 +405,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public void setMathName(Node node, String name) {
         if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent)node;
+            VisualComponent component = (VisualComponent) node;
             node = component.getReferencedComponent();
         }
         getMathModel().setName(node, name);
@@ -424,7 +424,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         // manage the isInside value for all parents and children
         Collapsible collapsible = null;
         if (newCurrentLevel instanceof Collapsible) {
-            collapsible = (Collapsible)newCurrentLevel;
+            collapsible = (Collapsible) newCurrentLevel;
         }
 
         if (collapsible != null) {
@@ -432,14 +432,14 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             Node parent = newCurrentLevel.getParent();
             while (parent != null) {
                 if (parent instanceof Collapsible) {
-                    ((Collapsible)parent).setIsCurrentLevelInside(true);
+                    ((Collapsible) parent).setIsCurrentLevelInside(true);
                 }
                 parent = parent.getParent();
             }
 
             for (Node node: newCurrentLevel.getChildren()) {
                 if (node instanceof Collapsible) {
-                    ((Collapsible)node).setIsCurrentLevelInside(false);
+                    ((Collapsible) node).setIsCurrentLevelInside(false);
                 }
             }
         }
@@ -447,11 +447,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     private Container getCurrentMathLevel() {
         Container currentMathLevel;
-        VisualComponent visualContainer = (VisualComponent)Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
+        VisualComponent visualContainer = (VisualComponent) Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
         if (visualContainer == null) {
             currentMathLevel = getMathModel().getRoot();
         } else {
-            currentMathLevel = (Container)visualContainer.getReferencedComponent();
+            currentMathLevel = (Container) visualContainer.getReferencedComponent();
         }
         return currentMathLevel;
     }
@@ -508,13 +508,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         ArrayList<Node> toSelect = new ArrayList<Node>();
         for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualGroup) {
-                VisualGroup group = (VisualGroup)node;
+                VisualGroup group = (VisualGroup) node;
                 ArrayList<Node> nodesToReparent = new ArrayList<Node>(group.getChildren());
                 toSelect.addAll(nodesToReparent);
                 this.reparent(getCurrentLevel(), this, group, nodesToReparent);
                 getCurrentLevel().remove(group);
             } else if (node instanceof VisualPage) {
-                VisualPage page = (VisualPage)node;
+                VisualPage page = (VisualPage) node;
                 ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
                 toSelect.addAll(nodesToReparent);
                 this.reparent(getCurrentLevel(), this, page, nodesToReparent);
@@ -558,7 +558,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         for (Node node : selection) {
             LinkedList<Node> batch = null;
             if (node.getParent() instanceof Container) {
-                Container container = (Container)node.getParent();
+                Container container = (Container) node.getParent();
                 if (filter.eval(node)) {
                     batch = batches.get(container);
                     if (batch == null) {
@@ -614,7 +614,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         Collection<Node> ret = new HashSet<Node>();
         for (Node node: nodes) {
             if ((node instanceof Dependent) && !(node instanceof Replica)) {
-                ret.addAll(((Dependent)node).getMathReferences());
+                ret.addAll(((Dependent) node).getMathReferences());
             } else if (node instanceof VisualGroup) {
                 ret.addAll(getMathChildren(node.getChildren()));
             }
@@ -631,9 +631,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             srcChildren = srcRoot.getChildren();
         }
 
-        Container srcMathContainer = NamespaceHelper.getMathContainer((VisualModel)srcModel, srcRoot);
+        Container srcMathContainer = NamespaceHelper.getMathContainer((VisualModel) srcModel, srcRoot);
         Collection<Node> srcMathChildren = getMathChildren(srcChildren);
-        MathModel srcMathModel = ((VisualModel)srcModel).getMathModel();
+        MathModel srcMathModel = ((VisualModel) srcModel).getMathModel();
 
         MathModel dstMathMmodel = getMathModel();
         Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);

@@ -10,7 +10,7 @@ public class VisualDfsDescriptor implements VisualModelDescriptor {
 
     @Override
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
-        return new VisualDfs((Dfs)mathModel);
+        return new VisualDfs((Dfs) mathModel);
     }
 
     @Override

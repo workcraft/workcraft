@@ -82,7 +82,7 @@ public class DefaultNodeSerialiser {
             propertyElement.setAttribute("class", desc.getPropertyType().getName());
             propertyElement.setAttribute("name", desc.getName());
 
-            ((BasicXMLSerialiser)serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
+            ((BasicXMLSerialiser) serialiser).serialise(propertyElement, desc.getReadMethod().invoke(object));
         }
     }
 
@@ -102,12 +102,12 @@ public class DefaultNodeSerialiser {
 
         if (serialiser != null) {
             if (serialiser instanceof BasicXMLSerialiser)
-                ((BasicXMLSerialiser)serialiser).serialise(curLevelElement, object);
+                ((BasicXMLSerialiser) serialiser).serialise(curLevelElement, object);
             else if (serialiser instanceof CustomXMLSerialiser)
-                ((CustomXMLSerialiser)serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
+                ((CustomXMLSerialiser) serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
         } else {
             if (object.getClass().equals(currentLevel) && (object instanceof Dependent)) {
-                Collection<MathNode> refs = ((Dependent)object).getMathReferences();
+                Collection<MathNode> refs = ((Dependent) object).getMathReferences();
                 if (refs.size() == 1) {
                     curLevelElement.setAttribute("ref", externalReferences.getReference(refs.iterator().next()));
                 }

@@ -51,7 +51,7 @@ public class DocumentPlaceholder extends JPanel {
     public DocumentPlaceholder() {
         super();
         logoImage = getImage();
-        setBackground(new Color(255,255,255));
+        setBackground(new Color(255, 255, 255));
         setLayout(null);
 
     }

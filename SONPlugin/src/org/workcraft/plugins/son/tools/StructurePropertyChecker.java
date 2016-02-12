@@ -29,8 +29,8 @@ public class StructurePropertyChecker implements Tool {
 
     public void run(WorkspaceEntry we){
 
-        VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
-        SON net = (SON)we.getModelEntry().getMathModel();
+        VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
+        SON net = (SON) we.getModelEntry().getMathModel();
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();

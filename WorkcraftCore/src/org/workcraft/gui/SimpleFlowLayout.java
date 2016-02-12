@@ -68,7 +68,7 @@ public class SimpleFlowLayout implements LayoutManager {
     }
 
     public Dimension minimumLayoutSize(Container target) {
-        return new Dimension(0,0);
+        return new Dimension(0, 0);
     }
 
     public void layoutContainer(Container target) {
@@ -90,7 +90,7 @@ public class SimpleFlowLayout implements LayoutManager {
 
                 if (m instanceof LineBreak) {
                     x = insets.left;
-                    y += vgap + rowh + ((LineBreak)m).gap;
+                    y += vgap + rowh + ((LineBreak) m).gap;
                     rowh = 0;
                     continue;
                 }

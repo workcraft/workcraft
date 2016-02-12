@@ -45,7 +45,7 @@ public class ScenarioTable extends JTable{
     public ScenarioTable(ScenarioSaveList saveList, GraphEditor editor, TableModel model, Node selection) {
         this.editor = editor;
         this.saveList = saveList;
-        net = (SON)editor.getModel().getMathModel();
+        net = (SON) editor.getModel().getMathModel();
 
         if(!saveList.isEmpty()){
             //get scenario node refs without connection refs
@@ -59,7 +59,7 @@ public class ScenarioTable extends JTable{
             this.setModel(model);
 
         this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.setDefaultRenderer(Object.class,new ScenarioTableCellRendererImplementation());
+        this.setDefaultRenderer(Object.class, new ScenarioTableCellRendererImplementation());
     }
 
     @SuppressWarnings("serial")
@@ -76,9 +76,9 @@ public class ScenarioTable extends JTable{
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus,int row, int column) {
+                boolean isSelected, boolean hasFocus, int row, int column) {
             if(value instanceof String)
-                label.setText((String)value);
+                label.setText((String) value);
             else if(value instanceof ScenarioRef){
                 label.setText("Senario "+(row+1));
             } else

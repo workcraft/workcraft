@@ -52,13 +52,13 @@ public class Dfs extends AbstractMathModel {
     }
 
     public MathConnection connect(Node first, Node second) {
-        MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);
         return con;
     }
 
     public ControlConnection controlConnect(Node first, Node second) {
-        ControlConnection con = new ControlConnection((MathNode)first, (MathNode)second);
+        ControlConnection con = new ControlConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);
         return con;
     }

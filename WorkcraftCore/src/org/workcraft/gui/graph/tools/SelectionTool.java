@@ -297,7 +297,7 @@ public class SelectionTool extends AbstractTool {
             if (node == null) {
                 if (e.getClickCount() > 1) {
                     if (model.getCurrentLevel() instanceof VisualGroup) {
-                        VisualGroup currentGroup = (VisualGroup)model.getCurrentLevel();
+                        VisualGroup currentGroup = (VisualGroup) model.getCurrentLevel();
                         Rectangle2D bb = currentGroup.getBoundingBox();
                         Point2D pos = currentGroup.getRootSpacePosition();
                         Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
@@ -307,7 +307,7 @@ public class SelectionTool extends AbstractTool {
                         }
                     }
                     if (model.getCurrentLevel() instanceof VisualPage) {
-                        VisualPage currentPage = (VisualPage)model.getCurrentLevel();
+                        VisualPage currentPage = (VisualPage) model.getCurrentLevel();
                         Rectangle2D bb = currentPage.getBoundingBox();
                         Point2D pos = currentPage.getRootSpacePosition();
                         Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
@@ -351,7 +351,7 @@ public class SelectionTool extends AbstractTool {
         }
 
         if (e.getButton() == MouseEvent.BUTTON3) {
-            VisualNode node = (VisualNode)HitMan.hitTestForPopup(e.getPosition(), model);
+            VisualNode node = (VisualNode) HitMan.hitTestForPopup(e.getPosition(), model);
             JPopupMenu popup = createPopupMenu(node, e.getEditor());
             if (popup != null) {
                 if (node == null) {
@@ -371,7 +371,7 @@ public class SelectionTool extends AbstractTool {
         List<Tool> applicableTools = new ArrayList<>();
         for (Tool tool: Tools.getApplicableTools(we)) {
             if (tool instanceof NodeTransformer) {
-                if (((NodeTransformer)tool).isApplicableTo(node)) {
+                if (((NodeTransformer) tool).isApplicableTo(node)) {
                     applicableTools.add(tool);
                 }
             }
@@ -408,7 +408,7 @@ public class SelectionTool extends AbstractTool {
             selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
             editor.repaint();
         } else {
-            VisualNode node = (VisualNode)HitMan.hitTestForSelection(e.getPosition(), model);
+            VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
             if (currentNode != node) {
                 currentNode = node;
                 editor.repaint();
@@ -469,7 +469,7 @@ public class SelectionTool extends AbstractTool {
             } else if ((e.getKeyModifiers() == 0) && (hitNode instanceof VisualNode)) {
                 // If mouse down without modifiers and hit something then begin move-drag
                 dragState = DrugState.MOVE;
-                VisualNode node = (VisualNode)hitNode;
+                VisualNode node = (VisualNode) hitNode;
                 if ((node != null) && !model.getSelection().contains(node)) {
                     model.select(node);
                 }
@@ -678,7 +678,7 @@ public class SelectionTool extends AbstractTool {
         document.setParagraphAttributes(0, document.getLength(), alignment, false);
 
         // Set font size similar to the current editor scale
-        float fontSize = VisualComponent.labelFont.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+        float fontSize = VisualComponent.labelFont.getSize2D() * (float) editor.getViewport().getTransform().getScaleY();
         textPane.setFont(VisualComponent.labelFont.deriveFont(fontSize));
 
         // Add scroll vertical bar (is necessary)
@@ -747,7 +747,7 @@ public class SelectionTool extends AbstractTool {
             Node node = selection.iterator().next();
             if(node instanceof Container) {
                 editor.getWorkspaceEntry().saveMemento();
-                model.setCurrentLevel((Container)node);
+                model.setCurrentLevel((Container) node);
                 editor.repaint();
             }
         }
@@ -826,7 +826,7 @@ public class SelectionTool extends AbstractTool {
             VisualModelTransformer.rotateSelection(model, Math.PI/2);
             for(Node node : model.getSelection()) {
                 if (node instanceof Rotatable) {
-                    ((Rotatable)node).rotateClockwise();
+                    ((Rotatable) node).rotateClockwise();
                 }
             }
             afterSelectionModification(editor);
@@ -840,7 +840,7 @@ public class SelectionTool extends AbstractTool {
             VisualModelTransformer.rotateSelection(model, -Math.PI/2);
             for(Node node : model.getSelection()) {
                 if (node instanceof Rotatable) {
-                    ((Rotatable)node).rotateCounterclockwise();
+                    ((Rotatable) node).rotateCounterclockwise();
                 }
             }
             afterSelectionModification(editor);
@@ -854,7 +854,7 @@ public class SelectionTool extends AbstractTool {
             VisualModelTransformer.scaleSelection(model, -1.0, 1.0);
             for(Node node : model.getSelection()) {
                 if (node instanceof Flippable) {
-                    ((Flippable)node).flipHorizontal();
+                    ((Flippable) node).flipHorizontal();
                 }
             }
             afterSelectionModification(editor);
@@ -868,7 +868,7 @@ public class SelectionTool extends AbstractTool {
             VisualModelTransformer.scaleSelection(model, 1.0, -1.0);
             for(Node node : model.getSelection()) {
                 if (node instanceof Flippable) {
-                    ((Flippable)node).flipVertical();
+                    ((Flippable) node).flipVertical();
                 }
             }
             afterSelectionModification(editor);

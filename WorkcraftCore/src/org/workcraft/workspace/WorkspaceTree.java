@@ -130,7 +130,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
 
     @Override
     public void removeListener(TreeListener<Path<String>> listener) {
-        throw new NotSupportedException();//TODO
+        throw new NotSupportedException(); //TODO
     }
 
     @Override

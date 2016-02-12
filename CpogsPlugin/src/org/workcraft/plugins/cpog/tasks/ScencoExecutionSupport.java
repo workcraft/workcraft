@@ -146,7 +146,7 @@ public class ScencoExecutionSupport {
             for(VisualComponent component : scenarios.get(k).getComponents())
                 if (component instanceof VisualVertex) {
                     // If element is a vertex
-                    VisualVertex vertex = (VisualVertex)component;
+                    VisualVertex vertex = (VisualVertex) component;
 
                     if (!events.containsKey(vertex.getLabel())) { // Check if a condition is present on vertex
                         events.put(vertex.getLabel(), n);
@@ -182,7 +182,7 @@ public class ScencoExecutionSupport {
 
             for(VisualComponent component : scenarios.get(k).getComponents())
                 if (component instanceof VisualVertex) {
-                    VisualVertex vertex = (VisualVertex)component;
+                    VisualVertex vertex = (VisualVertex) component;
                     int id = events.get(vertex.getLabel());
                     constraints[k][id][id] = '1';
                 }
@@ -193,11 +193,11 @@ public class ScencoExecutionSupport {
 
             for(VisualConnection c : scenarios.get(k).getConnections())
                 if (c instanceof VisualArc) {
-                    VisualArc arc = (VisualArc)c;
+                    VisualArc arc = (VisualArc) c;
                     VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
                     if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
-                        int id1 = events.get(((VisualVertex)c1).getLabel());
-                        int id2 = events.get(((VisualVertex)c2).getLabel());
+                        int id1 = events.get(((VisualVertex) c1).getLabel());
+                        int id2 = events.get(((VisualVertex) c2).getLabel());
                         graph[id1][id2] = 1;
                     }
                 }
@@ -260,12 +260,12 @@ public class ScencoExecutionSupport {
                 output.println(".scenario CPOG_" + k);
                 for(VisualConnection c : scenarios.get(k).getConnections()){
                     if (c instanceof VisualArc) {
-                        VisualArc arc = (VisualArc)c;
+                        VisualArc arc = (VisualArc) c;
                         VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
                         if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
-                            nodes.put(((VisualVertex)c1).getLabel(), 0);
-                            nodes.put(((VisualVertex)c2).getLabel(), 0);
-                            output.println(((VisualVertex)c1).getLabel() + " " + ((VisualVertex)c2).getLabel());
+                            nodes.put(((VisualVertex) c1).getLabel(), 0);
+                            nodes.put(((VisualVertex) c2).getLabel(), 0);
+                            output.println(((VisualVertex) c1).getLabel() + " " + ((VisualVertex) c2).getLabel());
                         }
                     }
                 }
@@ -273,7 +273,7 @@ public class ScencoExecutionSupport {
                 // Print conditions on vertices
                 for(VisualComponent component : scenarios.get(k).getComponents()){
                     if(component instanceof VisualVertex){
-                        VisualVertex vertex = (VisualVertex)component;
+                        VisualVertex vertex = (VisualVertex) component;
                         BooleanFormula condition = vertex.getCondition();
                         if (condition != One.instance() && condition != Zero.instance()){
 
@@ -299,7 +299,7 @@ public class ScencoExecutionSupport {
                                         result += cond.charAt(i);
                                     }
                                 } else{
-                                    result += cond.charAt(i);;
+                                    result += cond.charAt(i); ;
                                 }
                             }
 
@@ -318,7 +318,7 @@ public class ScencoExecutionSupport {
                             output.println(" " + vertex.getLabel());
                         }
 
-                        //VisualVertex vertex = (VisualVertex)component;
+                        //VisualVertex vertex = (VisualVertex) component;
                         if(!nodes.containsKey(vertex.getLabel())){
                             output.println(vertex.getLabel());
                         }
@@ -385,7 +385,7 @@ public class ScencoExecutionSupport {
           "-m" + " " + effort + " " + genMode + " " + numSol + " " + customFlag + " " + customPath + " " +
           verbose + " " + cpogSize + " " + disableFunction + " " + oldSynt + " " +
           espressoFlag + " " + espressoCommand + " " + abcFlag + " " + abcFolder + " " + gateLibFlag + " " +
-          gatesLibrary + " " + modBitFlag + " " + modBit);*/
+          gatesLibrary + " " + modBitFlag + " " + modBit); */
 
         process = new ProcessBuilder(parameters).start();
         InputStream is = process.getInputStream();
@@ -413,7 +413,7 @@ public class ScencoExecutionSupport {
                     if(settings.isVerboseMode())
                         System.out.println(line);
                     StringTokenizer st2 = new StringTokenizer(line, ",");
-                    String el = (String)st2.nextElement();
+                    String el = (String) st2.nextElement();
                     if(el.equals("V")){ //formula of a vertex
                         optVertices[v] = (String) st2.nextElement();
                         truthTableVertices[v] = (String) st2.nextElement();
@@ -506,7 +506,7 @@ public class ScencoExecutionSupport {
     }
 
     // Instantiating encoding into graphs
-    protected void instantiateEncoding(int m,int freeVariables,
+    protected void instantiateEncoding(int m, int freeVariables,
             ArrayList<VisualTransformableNode> scenarios, Variable[] vars,
             boolean[][] encoding, int pr, HashMap<String, Integer> events,
             VisualVertex[] vertices, VisualCPOG cpog, VisualScenario resultCpog,

@@ -35,7 +35,7 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualSTG model = (VisualSTG)we.getModelEntry().getVisualModel();
+        final VisualSTG model = (VisualSTG) we.getModelEntry().getVisualModel();
         HashSet<VisualPlace> places = new HashSet<>(model.getVisualPlaces());
         if (!model.getSelection().isEmpty()) {
             places.retainAll(model.getSelection());
@@ -51,8 +51,8 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualSTG) && (node instanceof VisualPlace)) {
-            VisualPlace place = (VisualPlace)node;
-            ((VisualSTG)model).maybeMakeImplicit(place, true);
+            VisualPlace place = (VisualPlace) node;
+            ((VisualSTG) model).maybeMakeImplicit(place, true);
         }
     }
 

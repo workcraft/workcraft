@@ -130,11 +130,11 @@ public class VerConfTool implements Tool {
     public void writeOutput() {
         //JPanel panelmain=mainFrame.getContentPane().get();
 
-        String trname = (String)trcombob.getSelectedItem();
-        String lvname = (String)lvcombob.getSelectedItem();
-        String dyname = (String)dycombob.getSelectedItem();
-        String hlname = (String)hlcombob.getSelectedItem();
-        String slname = (String)slcombob.getSelectedItem();
+        String trname = (String) trcombob.getSelectedItem();
+        String lvname = (String) lvcombob.getSelectedItem();
+        String dyname = (String) dycombob.getSelectedItem();
+        String hlname = (String) hlcombob.getSelectedItem();
+        String slname = (String) slcombob.getSelectedItem();
 
         PrintWriter writer = null;
         try {
@@ -160,18 +160,18 @@ public class VerConfTool implements Tool {
 
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
-        final VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
+        final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
 
         cntSyncNodes=0;
 
-        Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
+        Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
 
         //SyncMenu dialog = new SyncMenu();
 
         mainFrame = new JFrame("Configure Verification");
         JPanel panelmain = new JPanel();
-        mainFrame.getContentPane().add(panelmain,BorderLayout.PAGE_START);
-        panelmain.setLayout(new BoxLayout(panelmain,BoxLayout.PAGE_AXIS));
+        mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
+        panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
 
         System.out.println("loaded = " + loaded);
         List<JPanel> panellist = new ArrayList<JPanel>();
@@ -189,7 +189,7 @@ public class VerConfTool implements Tool {
             panellist.get(panellist.size()-1).add(new JLabel(" Soln "));
             panellist.get(panellist.size()-1).add(slcombob = new JComboBox(solno));
             //panellist.get(panellist.size()-1).add(new JLabel(" Soln "));
-            //panellist.get(panellist.size()-1).add(new JTextField("1",1));
+            //panellist.get(panellist.size()-1).add(new JTextField("1", 1));
         }
         lvcombob.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

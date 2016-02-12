@@ -160,14 +160,14 @@ public class CreateWorkDialog extends JDialog {
 
         modelScroll.setViewportView(modelList);
         modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
-        modelScroll.setMinimumSize(new Dimension(150,0));
-        modelScroll.setPreferredSize(new Dimension(250,0));
+        modelScroll.setMinimumSize(new Dimension(150, 0));
+        modelScroll.setPreferredSize(new Dimension(250, 0));
 
         optionsPane = new JPanel();
         optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
         optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
-        optionsPane.setMinimumSize(new Dimension(150,0));
-        optionsPane.setPreferredSize(new Dimension(250,0));
+        optionsPane.setMinimumSize(new Dimension(150, 0));
+        optionsPane.setPreferredSize(new Dimension(250, 0));
 
         chkVisual = new JCheckBox("create visual model");
 
@@ -180,7 +180,7 @@ public class CreateWorkDialog extends JDialog {
         optionsPane.add(chkOpen);
         optionsPane.add(new JLabel("Title: "));
         txtTitle = new JTextField();
-        //txtTitle.setMaximumSize(new Dimension(1000,20));
+        //txtTitle.setMaximumSize(new Dimension(1000, 20));
         optionsPane.add(txtTitle);
 
         JPanel dummy = new JPanel();
@@ -254,7 +254,7 @@ public class CreateWorkDialog extends JDialog {
     }
 
     public ModelDescriptor getSelectedModel() {
-        return ((ListElement)modelList.getSelectedValue()).descriptor;
+        return ((ListElement) modelList.getSelectedValue()).descriptor;
     }
 
     public int getModalResult() {

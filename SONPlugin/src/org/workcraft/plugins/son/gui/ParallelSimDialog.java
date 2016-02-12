@@ -107,7 +107,7 @@ public class ParallelSimDialog  extends JDialog{
                 boolean isSelected, boolean hasFocus) {
 
             setEnabled(list.isEnabled());
-            setSelected(((EventItem)value).isSelected());
+            setSelected(((EventItem) value).isSelected());
             setFont(list.getFont());
 
             setBackground(list.getBackground());
@@ -139,12 +139,12 @@ public class ParallelSimDialog  extends JDialog{
 
                 int index = list.locationToIndex(event.getPoint());
                 try{
-                    EventItem item = (EventItem)list.getModel().getElementAt(index);
+                    EventItem item = (EventItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
                     ArrayList<EventItem> itemList = new ArrayList<EventItem>();
                     for(int i=0; i<list.getModel().getSize(); i++){
-                        itemList.add((EventItem)list.getModel().getElementAt(i));
+                        itemList.add((EventItem) list.getModel().getElementAt(i));
                     }
 
                     if(item instanceof EventItem){
@@ -290,7 +290,7 @@ public class ParallelSimDialog  extends JDialog{
 
         interfacePanel = new JPanel(new BorderLayout(10, 10));
         interfacePanel.add(eventInfoPanel, BorderLayout.NORTH);
-        interfacePanel.add(eventPanel,BorderLayout.CENTER);
+        interfacePanel.add(eventPanel, BorderLayout.CENTER);
         interfacePanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         this.add(interfacePanel);

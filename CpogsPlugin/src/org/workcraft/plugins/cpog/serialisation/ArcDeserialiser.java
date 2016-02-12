@@ -34,7 +34,7 @@ public class ArcDeserialiser extends BooleanFunctionDeserialiser {
 
     @Override
     protected void setFormula(Object deserialisee, BooleanFormula formula) {
-        ((Arc)deserialisee).setCondition(formula);
+        ((Arc) deserialisee).setCondition(formula);
     }
 
     @Override

@@ -41,7 +41,7 @@ public class VisualDummyTransition extends VisualNamedTransition implements Stat
 
     @NoAutoSerialisation
     public DummyTransition getReferencedTransition() {
-        return (DummyTransition)getReferencedComponent();
+        return (DummyTransition) getReferencedComponent();
     }
 
     @Override

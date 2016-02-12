@@ -73,10 +73,10 @@ public class Export {
             try    {
                 if (model instanceof VisualModel) {
                     if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE) {
-                        if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
+                        if (exporter.getCompatibility(((VisualModel) model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
                             return new Result<Boolean>(new Exception(new RuntimeException("Exporter is not applicable to the model.")));
                         } else {
-                            model = ((VisualModel)model).getMathModel();
+                            model = ((VisualModel) model).getMathModel();
                         }
                     }
                 }
@@ -141,10 +141,10 @@ public class Export {
         try {
             if (model instanceof VisualModel) {
                 if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE) {
-                    if (exporter.getCompatibility(((VisualModel)model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
+                    if (exporter.getCompatibility(((VisualModel) model).getMathModel()) == Exporter.NOT_COMPATIBLE) {
                         throw new RuntimeException("Exporter is not applicable to the model.");
                     } else {
-                        model = ((VisualModel)model).getMathModel();
+                        model = ((VisualModel) model).getMathModel();
                     }
                 }
             }

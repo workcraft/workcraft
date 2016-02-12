@@ -52,9 +52,9 @@ public class ErrorTracingAlg extends SimulationAlg{
                         boolean hasPreAsyn = false;
                         for(Node n: cycle){
                             if(n instanceof TransitionNode){
-                                eventCycle.add((TransitionNode)n);
-                                if(!getPreAsynEvents((TransitionNode)n).isEmpty()
-                                        && hasCommonElements(fireList2, getPreAsynEvents((TransitionNode)n)))
+                                eventCycle.add((TransitionNode) n);
+                                if(!getPreAsynEvents((TransitionNode) n).isEmpty()
+                                        && hasCommonElements(fireList2, getPreAsynEvents((TransitionNode) n)))
                                     hasPreAsyn = true;
                             }
                         }
@@ -90,20 +90,20 @@ public class ErrorTracingAlg extends SimulationAlg{
         //get err number from lower conditions and channel places
         for(Node pre : net.getPreset(e)){
             if(pre instanceof PlaceNode)
-                err = err + ((PlaceNode)pre).getErrors();
+                err = err + ((PlaceNode) pre).getErrors();
         }
 
         for(Node post: net.getPostset(e)){
             if(post instanceof Condition){
-                ((Condition)post).setErrors(err);
+                ((Condition) post).setErrors(err);
                 //set err number for lower condition
                 if(!isLower)
                     for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
-                        ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition)post).getErrors());
+                        ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition) post).getErrors());
                     }
             }
             if(post instanceof ChannelPlace){
-                ((ChannelPlace)post).setErrors(err);
+                ((ChannelPlace) post).setErrors(err);
             }
         }
     }
@@ -112,15 +112,15 @@ public class ErrorTracingAlg extends SimulationAlg{
         int err = 0;
 
         for(TransitionNode e : sync){
-            if(((TransitionNode)e).isFaulty())
+            if(((TransitionNode) e).isFaulty())
                 err++;
             for(Node pre : net.getPreset(e)){
                 if(pre instanceof Condition)
-                    err = err + ((Condition)pre).getErrors();
+                    err = err + ((Condition) pre).getErrors();
                 if(pre instanceof ChannelPlace){
                     for(Node n : net.getPreset(pre))
                         if(!sync.contains(n))
-                            err = err + ((ChannelPlace)pre).getErrors();
+                            err = err + ((ChannelPlace) pre).getErrors();
                 }
             }
         }
@@ -128,18 +128,18 @@ public class ErrorTracingAlg extends SimulationAlg{
         for(TransitionNode e : sync){
             for(Node post: net.getPostset(e)){
                 if(post instanceof Condition){
-                    ((Condition)post).setErrors(err);
+                    ((Condition) post).setErrors(err);
                     //set err number for upper conditions
                     if(!isLower)
                         for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
-                            ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition)post).getErrors());
+                            ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition) post).getErrors());
                         }
                 }
 
                 if(post instanceof ChannelPlace){
                     for(Node n : net.getPostset(post))
                         if(!sync.contains(n))
-                            ((ChannelPlace)post).setErrors(err);
+                            ((ChannelPlace) post).setErrors(err);
                 }
             }
         }
@@ -173,9 +173,9 @@ public class ErrorTracingAlg extends SimulationAlg{
                         boolean hasPostAsyn = false;
                         for(Node n: cycle){
                             if(n instanceof TransitionNode){
-                                eventCycle.add((TransitionNode)n);
-                                if(!getPostAsynEvents((TransitionNode)n).isEmpty()
-                                        && hasCommonElements(fireList2, getPostAsynEvents((TransitionNode)n)))
+                                eventCycle.add((TransitionNode) n);
+                                if(!getPostAsynEvents((TransitionNode) n).isEmpty()
+                                        && hasCommonElements(fireList2, getPostAsynEvents((TransitionNode) n)))
                                     hasPostAsyn = true;
                             }
                         }
@@ -201,21 +201,21 @@ public class ErrorTracingAlg extends SimulationAlg{
         //get err number from lower conditions and channel places
         for(Node pre : net.getPreset(e)){
             if(pre instanceof PlaceNode)
-                err = err + ((PlaceNode)pre).getErrors();
+                err = err + ((PlaceNode) pre).getErrors();
         }
 
         for(Node post: net.getPostset(e)){
             if(post instanceof Condition){
-                ((Condition)post).setErrors(err);
+                ((Condition) post).setErrors(err);
                 //set err number for lower condition
                 if(!isLower)
                     for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
-                        ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
+                        ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition) post).getErrors());
                     }
-                ((Condition)post).setErrors(((Condition)post).getErrors() - err);
+                ((Condition) post).setErrors(((Condition) post).getErrors() - err);
             }
             if(post instanceof ChannelPlace){
-                ((ChannelPlace)post).setErrors(((ChannelPlace)post).getErrors() - err);
+                ((ChannelPlace) post).setErrors(((ChannelPlace) post).getErrors() - err);
             }
         }
     }
@@ -224,15 +224,15 @@ public class ErrorTracingAlg extends SimulationAlg{
         int err = 0;
 
         for(TransitionNode e : sync){
-            if(((TransitionNode)e).isFaulty())
+            if(((TransitionNode) e).isFaulty())
                 err++;
             for(Node pre : net.getPreset(e)){
                 if(pre instanceof Condition)
-                    err = err + ((Condition)pre).getErrors();
+                    err = err + ((Condition) pre).getErrors();
                 if(pre instanceof ChannelPlace){
                     for(Node n : net.getPreset(pre))
                         if(!sync.contains(n))
-                            err = err + ((ChannelPlace)pre).getErrors();
+                            err = err + ((ChannelPlace) pre).getErrors();
                 }
             }
         }
@@ -240,19 +240,19 @@ public class ErrorTracingAlg extends SimulationAlg{
         for(TransitionNode e : sync){
             for(Node post: net.getPostset(e)){
                 if(post instanceof Condition){
-                    ((Condition)post).setErrors(err);
+                    ((Condition) post).setErrors(err);
                     //set err number for upper conditions
                     if(!isLower)
                         for(Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))){
-                            ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition)post).getErrors());
+                            ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition) post).getErrors());
                         }
-                    ((Condition)post).setErrors(((Condition)post).getErrors() - err);
+                    ((Condition) post).setErrors(((Condition) post).getErrors() - err);
                 }
 
                 if(post instanceof ChannelPlace){
                     for(Node n : net.getPostset(post))
                         if(!sync.contains(n))
-                            ((ChannelPlace)post).setErrors(((ChannelPlace)post).getErrors() - err);
+                            ((ChannelPlace) post).setErrors(((ChannelPlace) post).getErrors() - err);
                 }
             }
         }

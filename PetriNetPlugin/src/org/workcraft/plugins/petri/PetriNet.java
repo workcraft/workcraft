@@ -42,7 +42,7 @@ import org.workcraft.util.Hierarchy;
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
 
     public PetriNet() {
-        this(null, (References)null);
+        this(null, (References) null);
     }
 
     public PetriNet(Container root, References refs) {
@@ -115,14 +115,14 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         for (Connection c: net.getConnections(t)) {
             if (c.getFirst()==t) {
                 if (map.containsKey(c.getSecond())) {
-                    map.put((Place)c.getSecond(), map.get(c.getSecond())+1);
+                    map.put((Place) c.getSecond(), map.get(c.getSecond())+1);
                 } else {
-                    map.put((Place)c.getSecond(), 1);
+                    map.put((Place) c.getSecond(), 1);
                 }
             }
         }
         for (Node n : net.getPostset(t)) {
-            if (((Place)n).getTokens() < map.get((Place)n)) {
+            if (((Place) n).getTokens() < map.get((Place) n)) {
                 return false;
             }
         }
@@ -135,14 +135,14 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         for (Connection c: net.getConnections(t)) {
             if (c.getSecond()==t) {
                 if (map.containsKey(c.getFirst())) {
-                    map.put((Place)c.getFirst(), map.get(c.getFirst())+1);
+                    map.put((Place) c.getFirst(), map.get(c.getFirst())+1);
                 } else {
-                    map.put((Place)c.getFirst(), 1);
+                    map.put((Place) c.getFirst(), 1);
                 }
             }
         }
         for (Node n : net.getPreset(t)) {
-            if (((Place)n).getTokens() < map.get((Place)n)) {
+            if (((Place) n).getTokens() < map.get((Place) n)) {
                 return false;
             }
         }
@@ -166,14 +166,14 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         // first consume tokens and then produce tokens (to avoid extra capacity)
         for (Connection c : net.getConnections(t)) {
             if (t == c.getFirst()) {
-                Place to = (Place)c.getSecond();
-                to.setTokens(((Place)to).getTokens()-1);
+                Place to = (Place) c.getSecond();
+                to.setTokens(((Place) to).getTokens()-1);
             }
         }
         for (Connection c : net.getConnections(t)) {
             if (t == c.getSecond()) {
-                Place from = (Place)c.getFirst();
-                from.setTokens(((Place)from).getTokens()+1);
+                Place from = (Place) c.getFirst();
+                from.setTokens(((Place) from).getTokens()+1);
             }
         }
     }
@@ -183,14 +183,14 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
             // first consume tokens and then produce tokens (to avoid extra capacity)
             for (Connection c : net.getConnections(t)) {
                 if (t == c.getSecond()) {
-                    Place from = (Place)c.getFirst();
-                    from.setTokens(((Place)from).getTokens()-1);
+                    Place from = (Place) c.getFirst();
+                    from.setTokens(((Place) from).getTokens()-1);
                 }
             }
             for (Connection c : net.getConnections(t)) {
                 if (t == c.getFirst()) {
-                    Place to = (Place)c.getSecond();
-                    to.setTokens(((Place)to).getTokens()+1);
+                    Place to = (Place) c.getSecond();
+                    to.setTokens(((Place) to).getTokens()+1);
                 }
             }
         }
@@ -202,7 +202,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         if (first instanceof Transition && second instanceof Transition)
             throw new InvalidConnectionException("Connections between transitions are not valid");
 
-        MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);
         return con;
     }

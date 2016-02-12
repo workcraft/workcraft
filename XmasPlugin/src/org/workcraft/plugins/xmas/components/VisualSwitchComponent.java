@@ -75,7 +75,7 @@ public class VisualSwitchComponent extends VisualXmasComponent {
     }
 
     public SwitchComponent getReferencedSwitchComponent() {
-        return (SwitchComponent)getReferencedComponent();
+        return (SwitchComponent) getReferencedComponent();
     }
 
     public Shape getUpPointerShape() {
@@ -102,9 +102,9 @@ public class VisualSwitchComponent extends VisualXmasComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (d instanceof StateDecoration) {
-            g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+            g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-            if (((StateDecoration)d).getState()) {
+            if (((StateDecoration) d).getState()) {
                 Shape shape = transformShape(getUpPointerShape());
                 g.fill(shape);
                 g.draw(shape);

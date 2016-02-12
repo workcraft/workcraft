@@ -48,7 +48,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        signal.setType((Type)value);
+        signal.setType((Type) value);
     }
 
     @Override

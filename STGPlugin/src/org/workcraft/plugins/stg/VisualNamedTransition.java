@@ -60,7 +60,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
     @Override
     public Point2D getLabelOffset() {
-        return new Point2D.Double(0.0,0.0);
+        return new Point2D.Double(0.0, 0.0);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
     @Override
     public Point2D getNameOffset() {
-        return new Point2D.Double(0.0,0.0);
+        return new Point2D.Double(0.0, 0.0);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (d instanceof CoreDecoration) {
-            Color[] palette = ((CoreDecoration)d).getColorisationPalette();
+            Color[] palette = ((CoreDecoration) d).getColorisationPalette();
             Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
             double x = expandedShape.getX();
             double y = expandedShape.getY();
@@ -130,7 +130,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
     }
 
     public NamedTransition getReferencedTransition() {
-        return (NamedTransition)getReferencedComponent();
+        return (NamedTransition) getReferencedComponent();
     }
 
     @NoAutoSerialisation

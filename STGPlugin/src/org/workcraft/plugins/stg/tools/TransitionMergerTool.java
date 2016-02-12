@@ -42,12 +42,12 @@ public final class TransitionMergerTool extends AbstractMergerTool {
         HashSet<String> signalNames = new HashSet<>();
         for (VisualComponent component: components) {
             if (component instanceof VisualSignalTransition) {
-                VisualSignalTransition signalTransition = (VisualSignalTransition)component;
+                VisualSignalTransition signalTransition = (VisualSignalTransition) component;
                 signalNames.add(signalTransition.getSignalName());
             }
         }
         if (model.getMathModel() instanceof STG) {
-            STG stg = (STG)model.getMathModel();
+            STG stg = (STG) model.getMathModel();
             String resultSignalName = null;
             for (String signalName: signalNames) {
                 if (resultSignalName == null) {

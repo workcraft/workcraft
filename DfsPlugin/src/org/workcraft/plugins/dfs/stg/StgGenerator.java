@@ -70,7 +70,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     private VisualDfs getDfsModel() {
-        return (VisualDfs)getSrcModel();
+        return (VisualDfs) getSrcModel();
     }
 
     @Override
@@ -908,7 +908,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualControlRegister n: crPreset) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
             } else {
@@ -962,7 +962,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
             Connection connection = getDfsModel().getConnection(r, n);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMF, false);
                 createReadArc(nstg.fM1, rstg.tMF, false);
             } else {
@@ -975,7 +975,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
             Connection connection = getDfsModel().getConnection(r, n);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMF, false);
                 createReadArc(nstg.fM1, rstg.tMF, false);
             } else {
@@ -1023,7 +1023,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
                 createReadArc(nstg.tM0, rstg.fMF, false);
@@ -1104,7 +1104,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection)connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
                 createReadArc(nstg.tM0, rstg.fMF, false);
@@ -1171,19 +1171,19 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     public boolean isRelated(Node highLevelNode, Node node) {
         NodeStg nodeStg = null;
         if (highLevelNode instanceof VisualLogic) {
-            nodeStg = getLogicStg((VisualLogic)highLevelNode);
+            nodeStg = getLogicStg((VisualLogic) highLevelNode);
         } else if (highLevelNode instanceof VisualRegister) {
-            nodeStg = getRegisterStg((VisualRegister)highLevelNode);
+            nodeStg = getRegisterStg((VisualRegister) highLevelNode);
         } else if (highLevelNode instanceof VisualCounterflowLogic) {
-            nodeStg = getCounterflowLogicStg((VisualCounterflowLogic)highLevelNode);
+            nodeStg = getCounterflowLogicStg((VisualCounterflowLogic) highLevelNode);
         } else if (highLevelNode instanceof VisualCounterflowRegister) {
-            nodeStg = getCounterflowRegisterStg((VisualCounterflowRegister)highLevelNode);
+            nodeStg = getCounterflowRegisterStg((VisualCounterflowRegister) highLevelNode);
         } else if (highLevelNode instanceof VisualControlRegister) {
-            nodeStg = getControlRegisterStg((VisualControlRegister)highLevelNode);
+            nodeStg = getControlRegisterStg((VisualControlRegister) highLevelNode);
         } else if (highLevelNode instanceof VisualPushRegister) {
-            nodeStg = getPushRegisterStg((VisualPushRegister)highLevelNode);
+            nodeStg = getPushRegisterStg((VisualPushRegister) highLevelNode);
         } else if (highLevelNode instanceof VisualPopRegister) {
-            nodeStg = getPopRegisterStg((VisualPopRegister)highLevelNode);
+            nodeStg = getPopRegisterStg((VisualPopRegister) highLevelNode);
         }
         return (nodeStg != null) && nodeStg.contains(node);
     }

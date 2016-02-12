@@ -27,11 +27,11 @@ public class CircuitConnectionDeserializer implements CustomXMLDeserialiser{
     /*    VisualCircuitConnection vc = (VisualCircuitConnection) instance;
 
         vc.setVisualConnectionDependencies(
-                (VisualComponent)externalReferenceResolver.getObject(element.getAttribute("first")),
-                (VisualComponent)externalReferenceResolver.getObject(element.getAttribute("second")),
+                (VisualComponent) externalReferenceResolver.getObject(element.getAttribute("first")),
+                (VisualComponent) externalReferenceResolver.getObject(element.getAttribute("second")),
                 new Polyline(vc),
-                (CircuitConnection)externalReferenceResolver.getObject(element.getAttribute("ref"))
-                );*/
+                (CircuitConnection) externalReferenceResolver.getObject(element.getAttribute("ref"))
+                ); */
 
     }
 

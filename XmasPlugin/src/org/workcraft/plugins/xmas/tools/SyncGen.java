@@ -67,7 +67,7 @@ public class SyncGen implements Tool {
         }
     }
 
-    public void createD(char c,char ck) {
+    public void createD(char c, char ck) {
         System.out.println("d" + c + "_1 " + " = " + "not " + "d" + c);
         System.out.println("d" + c + "_2 " + " = " + "not (" + "d" + c + "_1 & cd" + ck + ")");
         System.out.println("d" + c + "_3 " + " = " + "not (" + "d" + c + " & cd" + ck + ")");
@@ -77,18 +77,18 @@ public class SyncGen implements Tool {
 
     public void createSynca() {
         System.out.println("asynchronous wrapper");
-        createD('a','t');
-        createD('b','t');
-        createD('c','t');
-        createD('d','t');
+        createD('a', 't');
+        createD('b', 't');
+        createD('c', 't');
+        createD('d', 't');
         System.out.println("da1" + " = " + "db_q");
         System.out.println("dc1" + " = " + "dd_q");
         System.out.println("n1" + " = " + "WR | da_q");
         System.out.println("a1" + " = " + "not n1 & dc_q");
-        createD('e','r');
-        createD('f','r');
-        createD('g','r');
-        createD('h','r');
+        createD('e', 'r');
+        createD('f', 'r');
+        createD('g', 'r');
+        createD('h', 'r');
         System.out.println("de1" + " = " + "df_q");
         System.out.println("dg1" + " = " + "dh_q");
         System.out.println("n2" + " = " + "RD | de_q");
@@ -167,10 +167,10 @@ public class SyncGen implements Tool {
 
     public void run(WorkspaceEntry we) {
 
-        //VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
-        //Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
+        //VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
+        //Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
 
-        VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
+        VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
 
         System.out.println("");
         //System.out.println("Generating circuit");
@@ -179,15 +179,15 @@ public class SyncGen implements Tool {
         for (Node node : vnet.getNodes()) {
             if(node instanceof VisualSyncComponent) {
                 cntSyncNodes++;
-                VisualSyncComponent vsc=(VisualSyncComponent)node;
+                VisualSyncComponent vsc=(VisualSyncComponent) node;
                 SyncComponent sc=vsc.getReferencedSyncComponent();
                 scomps.add(sc);
             }
         }
         JFrame mainFrame = new JFrame("Configure Synchronisation");
         JPanel panelmain = new JPanel();
-        mainFrame.getContentPane().add(panelmain,BorderLayout.PAGE_START);
-        panelmain.setLayout(new BoxLayout(panelmain,BoxLayout.PAGE_AXIS));
+        mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
+        panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
         List<JPanel> panellist = new ArrayList<JPanel>();
         JRadioButton jr;
         for(int no = 0; no < cntSyncNodes; no = no+1) {

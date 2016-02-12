@@ -45,9 +45,9 @@ public class ImplicitPlaceArcDeserialiser implements CustomXMLDeserialiser {
         VisualImplicitPlaceArc arc = (VisualImplicitPlaceArc) instance;
 
         arc.setImplicitPlaceArcDependencies(
-                (MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon1")),
-                (MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon2")),
-                (STGPlace)externalReferenceResolver.getObject(element.getAttribute("refPlace"))
+                (MathConnection) externalReferenceResolver.getObject(element.getAttribute("refCon1")),
+                (MathConnection) externalReferenceResolver.getObject(element.getAttribute("refCon2")),
+                (STGPlace) externalReferenceResolver.getObject(element.getAttribute("refPlace"))
         );
     }
 

@@ -173,7 +173,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         if (getMaster() instanceof VisualComponent) {
-            MathNode mathNode = ((VisualComponent)master).getReferencedComponent();
+            MathNode mathNode = ((VisualComponent) master).getReferencedComponent();
             name = mathModel.getNodeReference(mathNode);
         }
 
@@ -236,7 +236,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualReplica) {
-            VisualReplica srcReplica = (VisualReplica)src;
+            VisualReplica srcReplica = (VisualReplica) src;
             setForegroundColor(srcReplica.getForegroundColor());
             setFillColor(srcReplica.getFillColor());
             setNameColor(srcReplica.getNameColor());

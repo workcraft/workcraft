@@ -73,7 +73,7 @@ public class AboutDialog extends JDialog {
             Font font = logoLabel.getFont();
             logoLabel.setFont(font.deriveFont(72.0f));
         }
-        logoLabel.setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
+        logoLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
         infoPane = new JEditorPane();
         infoPane.setFocusable(false);

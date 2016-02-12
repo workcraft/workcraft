@@ -147,16 +147,16 @@ public class NamespaceHelper {
         // Find the closest container that has a referenced math node.
         VisualComponent vis = null;
         if (visualContainer instanceof VisualComponent) {
-            vis = (VisualComponent)visualContainer;
+            vis = (VisualComponent) visualContainer;
         } else {
-            vis = (VisualComponent)Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+            vis = (VisualComponent) Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
         }
 
         // Get appropriate math container, it will be the target container for the math model.
         MathModel mmodel = visualModel.getMathModel();
         Container mathTargetContainer = mmodel.getRoot();
         if (vis != null) {
-            mathTargetContainer = (Container)vis.getReferencedComponent();
+            mathTargetContainer = (Container) vis.getReferencedComponent();
         }
         return mathTargetContainer;
     }
@@ -165,7 +165,7 @@ public class NamespaceHelper {
         HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
         for (Node srcNode: srcContainer.getChildren()) {
             if (srcNode instanceof VisualPage) {
-                VisualPage srcPage = (VisualPage)srcNode;
+                VisualPage srcPage = (VisualPage) srcNode;
                 String name = srcModel.getMathName(srcPage);
 
                 VisualPage dstPage = new VisualPage(new PageNode());
@@ -179,7 +179,7 @@ public class NamespaceHelper {
 
                 toProcess.put(srcPage, dstPage);
             } else if (srcNode instanceof VisualGroup) {
-                VisualGroup srcGroup = (VisualGroup)srcNode;
+                VisualGroup srcGroup = (VisualGroup) srcNode;
                 toProcess.put(srcGroup, dstContainer);
             }
         }

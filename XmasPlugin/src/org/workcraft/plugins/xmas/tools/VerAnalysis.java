@@ -54,7 +54,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         String name;
         int chk;
 
-        Qslist(String s1,int n) {
+        Qslist(String s1, int n) {
             name = s1;
             chk=n;
         }
@@ -85,7 +85,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
     public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
 
-    private static List<String> processArg(String file,int index) {
+    private static List<String> processArg(String file, int index) {
         String typ=null;
         Scanner sc=null;
         try {
@@ -181,7 +181,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
             String str = nxt.next();
             int num = Integer.parseInt(str);
             //System.out.println("qsl " + check + " " + str + " " + num);
-            qslist.add(new Qslist(check,num));
+            qslist.add(new Qslist(check, num));
         }
     }
 
@@ -213,7 +213,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         return -1;
     }
 
-    public void initHighlight(Xmas xnet,VisualXmas vnet) {
+    public void initHighlight(Xmas xnet, VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -221,16 +221,16 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
         for (Node node : vnet.getNodes()) {
             if(node instanceof VisualQueueComponent) {
-                vqc=(VisualQueueComponent)node;
+                vqc=(VisualQueueComponent) node;
                 vqc.setForegroundColor(Color.black);
             } else if(node instanceof VisualSyncComponent) {
-                vsc=(VisualSyncComponent)node;
+                vsc=(VisualSyncComponent) node;
                 vsc.setForegroundColor(Color.black);
             }
         }
     }
 
-    public void localHighlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void localHighlight(String s, Xmas xnet, VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -242,22 +242,22 @@ public class VerAnalysis extends AbstractTool implements Tool {
                 System.out.println(st);
                 for (Node node : vnet.getNodes()) {
                     if(node instanceof VisualQueueComponent) {
-                        vqc=(VisualQueueComponent)node;
+                        vqc=(VisualQueueComponent) node;
                         qc=vqc.getReferencedQueueComponent();
                         //if(xnet.getName(qc).contains(st)) {
                         String rstr;
                         rstr = xnet.getName(qc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(st)) {
                             vqc.setForegroundColor(Color.red);
                         }
                     } else if(node instanceof VisualSyncComponent) {
-                        vsc=(VisualSyncComponent)node;
+                        vsc=(VisualSyncComponent) node;
                         sc=vsc.getReferencedSyncComponent();
                         //if(xnet.getName(qc).contains(st)) {
                         String rstr;
                         rstr = xnet.getName(sc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(st)) {
                             vsc.setForegroundColor(Color.red);
                         }
@@ -267,7 +267,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         }
     }
 
-    public void relHighlight(String s,Xmas xnet,VisualXmas vnet) {
+    public void relHighlight(String s, Xmas xnet, VisualXmas vnet) {
         int typ=0;
         String str="";
         QueueComponent qc;
@@ -285,22 +285,22 @@ public class VerAnalysis extends AbstractTool implements Tool {
                     //System.out.println("str===" + str);
                     for(Node node : vnet.getNodes()) {
                         if(node instanceof VisualQueueComponent) {
-                            vqc=(VisualQueueComponent)node;
+                            vqc=(VisualQueueComponent) node;
                             qc=vqc.getReferencedQueueComponent();
                             //System.out.println("x===" + xnet.getName(qc));
                             String rstr;
                             rstr = xnet.getName(qc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==0) {
                                 vqc.setForegroundColor(Color.pink);
                             }
                         } else if(node instanceof VisualSyncComponent) {
-                            vsc=(VisualSyncComponent)node;
+                            vsc=(VisualSyncComponent) node;
                             sc=vsc.getReferencedSyncComponent();
                             //System.out.println("strrr===" + str + ' ' + xnet.getName(sc));
                             String rstr;
                             rstr = xnet.getName(sc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==0) {
                                 vsc.setForegroundColor(Color.pink);
                             }
@@ -315,20 +315,20 @@ public class VerAnalysis extends AbstractTool implements Tool {
                     //System.out.println("str===" + str);
                     for(Node node : vnet.getNodes()) {
                         if(node instanceof VisualQueueComponent) {
-                            vqc=(VisualQueueComponent)node;
+                            vqc=(VisualQueueComponent) node;
                             qc=vqc.getReferencedQueueComponent();
                             String rstr;
                             rstr = xnet.getName(qc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==1) {
                                 vqc.setForegroundColor(Color.red);
                             }
                         } else if(node instanceof VisualSyncComponent) {
-                            vsc=(VisualSyncComponent)node;
+                            vsc=(VisualSyncComponent) node;
                             sc=vsc.getReferencedSyncComponent();
                             String rstr;
                             rstr = xnet.getName(sc);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if(rstr.equals(str) && typ==1) {
                                 vsc.setForegroundColor(Color.red);
                             }
@@ -339,7 +339,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         }
     }
 
-    public void activeHighlight(Xmas xnet,VisualXmas vnet) {
+    public void activeHighlight(Xmas xnet, VisualXmas vnet) {
         QueueComponent qc;
         SyncComponent sc;
         VisualQueueComponent vqc;
@@ -349,20 +349,20 @@ public class VerAnalysis extends AbstractTool implements Tool {
             if(ql.chk==0) {
                 for(Node node : vnet.getNodes()) {
                     if(node instanceof VisualQueueComponent) {
-                        vqc=(VisualQueueComponent)node;
+                        vqc=(VisualQueueComponent) node;
                         qc=vqc.getReferencedQueueComponent();
                         String rstr;
                         rstr = xnet.getName(qc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(ql.name)) {
                             vqc.setForegroundColor(Color.green);
                         }
                     } else if(node instanceof VisualSyncComponent) {
-                        vsc=(VisualSyncComponent)node;
+                        vsc=(VisualSyncComponent) node;
                         sc=vsc.getReferencedSyncComponent();
                         String rstr;
                         rstr = xnet.getName(sc);
-                        rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                        rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if(rstr.equals(ql.name)) {
                             vsc.setForegroundColor(Color.green);
                         }
@@ -382,7 +382,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
     static List<JCheckBox> jcbn = new ArrayList<JCheckBox>();
     JCheckBox jcb, jcblast;
 
-    void createPanel(List<JPanel> panellist,String file) {
+    void createPanel(List<JPanel> panellist, String file) {
         int no=1;
         String typ=null;
         Scanner sc=null;
@@ -422,7 +422,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
                 String check=nxt.next();
                 nxt=new Scanner(lineSc.next());
                 panellist.get(panellist.size()-1).add(new JLabel(check));
-                panellist.get(panellist.size()-1).add(new JTextField(nxt.next(),1));
+                panellist.get(panellist.size()-1).add(new JTextField(nxt.next(), 1));
             }
             lineSc.close();
         }
@@ -449,13 +449,13 @@ public class VerAnalysis extends AbstractTool implements Tool {
     public void run(final WorkspaceEntry we) {
         System.out.println("Analysing Model");
 
-        final Xmas xnet = (Xmas)we.getModelEntry().getMathModel();
-        final VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
+        final Xmas xnet = (Xmas) we.getModelEntry().getMathModel();
+        final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
 
         mainFrame = new JFrame("Analysis");
         JPanel panelmain = new JPanel();
-        mainFrame.getContentPane().add(panelmain,BorderLayout.PAGE_START);
-        panelmain.setLayout(new BoxLayout(panelmain,BoxLayout.PAGE_AXIS));
+        mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
+        panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
         List<JPanel> panellist = new ArrayList<JPanel>();
 
         JPanel panela = new JPanel();
@@ -513,7 +513,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
                         BufferedReader stdInput = new BufferedReader(inputStreamReader);
                         int n=0;
                         int test=-1;
-                        initHighlight(xnet,vnet);
+                        initHighlight(xnet, vnet);
                         while ((s = stdInput.readLine()) != null) {
                             //if(n==1) test=checkType(s);
                             if(test==-1) test=checkType(s);
@@ -536,17 +536,17 @@ public class VerAnalysis extends AbstractTool implements Tool {
                         if (test>0) {
                             if(display.equals("popup")) {
                                 if(!level.equals("advanced")) {
-                                    SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test,str);
+                                    SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test, str);
                                 } else {
-                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test,str);
+                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test, str);
                                 }
                             }
                             if (test==2) {
                                 if(highlight.equals("local")) {
-                                    localHighlight(str,xnet,vnet);
+                                    localHighlight(str, xnet, vnet);
                                 } else if(highlight.equals("rel")) {
-                                    relHighlight(str,xnet,vnet);
-                                    activeHighlight(xnet,vnet);
+                                    relHighlight(str, xnet, vnet);
+                                    activeHighlight(xnet, vnet);
                                 }
                             }
                         } else if(test==0) {

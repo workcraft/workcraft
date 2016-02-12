@@ -45,10 +45,10 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
         matchByParameters(parameters);
 
         filtered = new boolean[this.methods.size()];
-        for(int i=0;i<parameters.length;i++)
+        for(int i=0; i<parameters.length; i++)
             filterByParameter(i);
 
-        for(int i=this.methods.size();--i>=0;)
+        for(int i=this.methods.size(); --i>=0;)
             if(filtered[i])
                 remove(i);
 
@@ -77,7 +77,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
     private boolean matches(Class<?>[] actual, Class<?>[] expected) {
         if(expected.length != actual.length)
             return false;
-        for(int i=0;i<expected.length;i++)
+        for(int i=0; i<expected.length; i++)
             if(!actual[i].isAssignableFrom(expected[i]))
                 return false;
         return true;

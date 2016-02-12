@@ -45,6 +45,6 @@ public class DoubleSerialiser implements BasicXMLSerialiser{
 
     public void serialise(Element element, Object object)
             throws SerialisationException {
-        element.setAttribute("value", doubleToString((Double)object));
+        element.setAttribute("value", doubleToString((Double) object));
     }
 }

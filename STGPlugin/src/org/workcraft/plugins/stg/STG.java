@@ -68,7 +68,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
     public STG(Container root, References refs) {
         super(root, new STGReferenceManager(refs));
-        referenceManager = (STGReferenceManager)getReferenceManager();
+        referenceManager = (STGReferenceManager) getReferenceManager();
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
     }
 
@@ -387,7 +387,7 @@ public class STG extends AbstractMathModel implements STGModel {
                 Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
                 for (Node node : implicitPlaceCandidates) {
-                    if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) {
+                    if ((node instanceof STGPlace) && ((STGPlace) node).isImplicit()) {
                         return node;
                     }
                 }
@@ -410,7 +410,7 @@ public class STG extends AbstractMathModel implements STGModel {
         ModelProperties properties = super.getProperties(node);
         if (node != null) {
             if (node instanceof STGPlace) {
-                STGPlace place = (STGPlace)node;
+                STGPlace place = (STGPlace) node;
                 if (place.isImplicit()) {
                     properties.removeByName("Name");
                 }

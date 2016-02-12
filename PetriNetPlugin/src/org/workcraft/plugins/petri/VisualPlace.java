@@ -105,15 +105,15 @@ public class VisualPlace extends VisualComponent {
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-        g.setStroke(new BasicStroke((float)strokeWidth));
+        g.setStroke(new BasicStroke((float) strokeWidth));
         g.draw(shape);
 
-        Place place = (Place)getReferencedComponent();
+        Place place = (Place) getReferencedComponent();
         int tokenCount = place.getTokens();
         Color tokenColor = getTokenColor();
         if (d instanceof PlaceDecoration) {
-            tokenCount = ((PlaceDecoration)d).getTokens();
-            tokenColor = ((PlaceDecoration)d).getTokenColor();
+            tokenCount = ((PlaceDecoration) d).getTokens();
+            tokenColor = ((PlaceDecoration) d).getTokenColor();
         }
         drawCapacity(r, place.getCapacity());
         drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, size, strokeWidth, tokenColor);
@@ -127,11 +127,11 @@ public class VisualPlace extends VisualComponent {
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             String capacityString = Integer.toString(capacity);
-            Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
+            Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize()/2);
             Rectangle2D rect = superFont.getStringBounds(capacityString, g.getFontRenderContext());
             g.setFont(superFont);
             g.setColor(Coloriser.colorise(getTokenColor(), d.getColorisation()));
-            g.drawString(capacityString, (float)(size/3), (float)(size/3 + rect.getHeight()));
+            g.drawString(capacityString, (float) (size/3), (float) (size/3 + rect.getHeight()));
         }
     }
 
@@ -141,7 +141,7 @@ public class VisualPlace extends VisualComponent {
     }
 
     public Place getReferencedPlace() {
-        return (Place)getReferencedComponent();
+        return (Place) getReferencedComponent();
     }
 
     public Color getTokenColor() {
@@ -183,11 +183,11 @@ public class VisualPlace extends VisualComponent {
                 }
             } else if (count > 7)    {
                 String tokenString = Integer.toString(count);
-                Font superFont = g.getFont().deriveFont((float)CommonVisualSettings.getBaseSize()/2);
+                Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize()/2);
                 Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
                 g.setFont(superFont);
                 g.setColor(Coloriser.colorise(color, d.getColorisation()));
-                g.drawString(tokenString, (float)(-rect.getCenterX()), (float)(-rect.getCenterY()));
+                g.drawString(tokenString, (float) (-rect.getCenterX()), (float) (-rect.getCenterY()));
             }
         }
     }
@@ -196,7 +196,7 @@ public class VisualPlace extends VisualComponent {
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualPlace) {
-            VisualPlace srcPlace = (VisualPlace)src;
+            VisualPlace srcPlace = (VisualPlace) src;
             getReferencedPlace().setCapacity(srcPlace.getReferencedPlace().getCapacity());
             getReferencedPlace().setTokens(srcPlace.getReferencedPlace().getTokens());
             setTokenColor(srcPlace.getTokenColor());
@@ -211,7 +211,7 @@ public class VisualPlace extends VisualComponent {
         LinkedList<Color> tokenColors = new LinkedList<>();
         for (Stylable src: srcs) {
             if (src instanceof VisualPlace) {
-                VisualPlace srcPlace = (VisualPlace)src;
+                VisualPlace srcPlace = (VisualPlace) src;
                 int tmpTokens = srcPlace.getReferencedPlace().getTokens();
                 if (tokens < tmpTokens) {
                     tokens = tmpTokens;

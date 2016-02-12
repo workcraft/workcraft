@@ -11,7 +11,7 @@ public class PnToCpogDialogSupport {
     public static String textRemoveNodeLabel = "Remove condition nodes";
 
     // comboboxes
-    public static String[] significanceItems = {"Exhaustive", "Hashmap-based","Tree of runs"};
+    public static String[] significanceItems = {"Exhaustive", "Hashmap-based", "Tree of runs"};
 
     // dimensions
     public static Dimension significanceSize = new Dimension(180, 26);

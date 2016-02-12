@@ -88,7 +88,7 @@ public class CpogSelectionTool extends SelectionTool {
     final double minRadius = 2.0;
     final double expandRadius = 2.0;
     double maxX = 0, maxY = 0;
-    Point2D.Double coordinate = new Point2D.Double(0,0);
+    Point2D.Double coordinate = new Point2D.Double(0, 0);
     int xpos = 0;
     boolean transitivesActive = true;
 
@@ -276,7 +276,7 @@ public class CpogSelectionTool extends SelectionTool {
         groupPageButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                VisualCPOG visualCpog = (VisualCPOG)editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+                VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
                 visualCpog.groupScenarioPageSelection("scenario" + scenarioNo);
                 scenarioNo++;
                 editor.requestFocus();
@@ -745,7 +745,7 @@ public class CpogSelectionTool extends SelectionTool {
                 GraphReference g = referenceMap.get(k);
                 HashMap<String, VisualVertex> vMap = g.getVertMap();
                 for(String k1 : vMap.keySet()) {
-                    localVertices.get(k1).setPosition(new Point2D.Double(vMap.get(k1).getX(),vMap.get(k1).getY()));
+                    localVertices.get(k1).setPosition(new Point2D.Double(vMap.get(k1).getX(), vMap.get(k1).getY()));
                     pageVerts.add(localVertices.get(k1));
                     if (visualCpog.getVertices(visualCpog.getCurrentLevel()).contains(localVertices.get(k1))) {
                         visualCpog.add(localVertices.get(k1));
@@ -817,8 +817,8 @@ public class CpogSelectionTool extends SelectionTool {
                             if (a.getFirst().getParent().equals(a.getSecond().getParent())) {
                                 if ((a.getFirst().getParent() instanceof VisualPage) || (a.getFirst().getParent() instanceof VisualScenarioPage)) {
                                     VisualPage vp = (VisualPage) a.getFirst().getParent();
-                                    String first = ((VisualVertex)a.getFirst()).getLabel();
-                                    String second = ((VisualVertex)a.getSecond()).getLabel();
+                                    String first = ((VisualVertex) a.getFirst()).getLabel();
+                                    String second = ((VisualVertex) a.getSecond()).getLabel();
                                     refKey = vp.getLabel();
                                     relaventPages.addAll(referenceMap.get(refKey).getRefPages());
                                     relaventPages.remove(vp);
@@ -1046,7 +1046,7 @@ public class CpogSelectionTool extends SelectionTool {
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(vertex);
         Rectangle2D bbRoot = TransformHelper.transform(vertex, localToRootTransform).getBoundingBox();
         Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
-        float fontSize = VisualNamedTransition.font.getSize2D() * (float)editor.getViewport().getTransform().getScaleY();
+        float fontSize = VisualNamedTransition.font.getSize2D() * (float) editor.getViewport().getTransform().getScaleY();
         text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
         text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
         text.setHorizontalAlignment(JTextField.CENTER);

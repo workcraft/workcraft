@@ -40,7 +40,7 @@ public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        bundle.setColor((Color)value);
+        bundle.setColor((Color) value);
     }
 
     @Override

@@ -75,12 +75,12 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
                 } else {
                     Literal[][] side1 = getBiClause(and.getX());
                     Literal[][] side2 = getBiClause(and.getY());
-                    for(int i=0;i<side1.length;i++)
-                        for(int j=0;j<side2.length;j++) {
+                    for(int i=0; i<side1.length; i++)
+                        for(int j=0; j<side2.length; j++) {
                             List<Literal> list = new ArrayList<Literal>();
-                            for(int k=0;k<side1[i].length;k++)
+                            for(int k=0; k<side1[i].length; k++)
                                 list.add(not(side1[i][k]));
-                            for(int k=0;k<side2[j].length;k++)
+                            for(int k=0; k<side2[j].length; k++)
                                 list.add(not(side2[j][k]));
                             result.add(new CnfClause(list));
                         }
@@ -121,7 +121,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
                 if(preres.length!=1)
                     throw new RuntimeException("something wrong...");
                 Literal[][]res = new Literal[preres[0].length][];
-                for(int i=0;i<res.length;i++) {
+                for(int i=0; i<res.length; i++) {
                     res[i] = new Literal[1];
                     res[i][0] = CnfOperations.not(preres[0][i]);
                 }
@@ -226,7 +226,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
             count++;
             Integer m = met.get(node);
             if(m == null)
-                met.put(node,1);
+                met.put(node, 1);
             else
                 met.put(node, m+1);
             return super.visitBinary(node);
@@ -258,7 +258,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
         //System.out.println("formula: " + FormulaToString.toString(formula));
 
         formula.accept(new ConstantExpectingCnfGenerator(result, this));
-        //CnfLiteral res = formula.accept(this);result.add(or(res));
+        //CnfLiteral res = formula.accept(this); result.add(or(res));
 
         return result;
     }
@@ -267,7 +267,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     //int varCount = 0;
 
     Literal newVar(BooleanFormula node) {
-        Literal res = new Literal("");//"tmp_"+varCount++
+        Literal res = new Literal(""); //"tmp_"+varCount++
         cache.put(node, res);
         return res;
     }

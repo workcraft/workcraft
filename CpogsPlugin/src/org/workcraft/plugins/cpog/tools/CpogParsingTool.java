@@ -437,11 +437,11 @@ public class CpogParsingTool {
                 }
 
                 if (toBeRemoved.size() > 1) {
-                    insert = insert + "(";// + arc.getSecond().getLabel() + " + ";
+                    insert = insert + "("; // + arc.getSecond().getLabel() + " + ";
                 }
 
                 for (VisualArc a : toBeRemoved) {
-                    insert = insert + ((VisualVertex)a.getSecond()).getLabel() + " + ";
+                    insert = insert + ((VisualVertex) a.getSecond()).getLabel() + " + ";
                 }
 
                 while ((insert.endsWith(" ")) || (insert.endsWith("+"))) {
@@ -851,7 +851,7 @@ public class CpogParsingTool {
             }
         }
         if (startPoint == null) {
-            startPoint = new Point2D.Double(0,0);
+            startPoint = new Point2D.Double(0, 0);
         } else {
             startPoint.setLocation(startPoint.getX(), startPoint.getY());
         }
@@ -902,13 +902,13 @@ public class CpogParsingTool {
     }
 
     public static boolean hasEnoughScenarios(WorkspaceEntry we) {
-        VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+        VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
         return getScenarios(cpog).size() > 1;
     }
 
     public static boolean hasTooScenarios(WorkspaceEntry we){
         DesktopApi.OsType os = DesktopApi.getOs();
-        VisualCPOG cpog = (VisualCPOG)(we.getModelEntry().getVisualModel());
+        VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
         if(os.isLinux()){
             return getScenarios(cpog).size() > MAX_SCENARIOS_LINUX;
         } else {

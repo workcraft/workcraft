@@ -214,7 +214,7 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     public void draw(DrawRequest r) {
         Decoration d = r.getDecoration();
         if (d instanceof ContainerDecoration) {
-            setIsExcited(((ContainerDecoration)d).isContainerExcited());
+            setIsExcited(((ContainerDecoration) d).isContainerExcited());
         }
         // This is to update the rendered text for names (and labels) of group children,
         // which is necessary to calculate the bounding box before children have been drawn

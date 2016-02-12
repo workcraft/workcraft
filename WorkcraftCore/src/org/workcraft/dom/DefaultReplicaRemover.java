@@ -47,7 +47,7 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
                     updateReplicable(replica);
                 }
                 if (node instanceof Replica) {
-                    updateReplicable((Replica)node);
+                    updateReplicable((Replica) node);
                 }
 
                 // Remove replicas if the master node is being deleted (even deeper in hierarchy)
@@ -55,7 +55,7 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
                     removeReplicas(replicable);
                 }
                 if (node instanceof Replicable) {
-                    removeReplicas((Replicable)node);
+                    removeReplicas((Replicable) node);
                 }
             }
         }
@@ -63,18 +63,18 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
             for (Node node : e.getAffectedNodes()) {
                 // Remove a replica if all its connections have been removed
                 if (node instanceof Connection)     {
-                    Connection connection = (Connection)node;
+                    Connection connection = (Connection) node;
                     Node first = connection.getFirst();
                     Node second = connection.getSecond();
                     if ((first instanceof Replica) && (nct.getConnections(first).size() <= 1)) {
-                        removeReplica((Replica)first);
+                        removeReplica((Replica) first);
                     }
                     if ((second instanceof Replica) && (nct.getConnections(second).size() <= 1)) {
-                        removeReplica((Replica)second);
+                        removeReplica((Replica) second);
                     }
                 }
                 if (node instanceof Replicable) {
-                    removeReplicas((Replicable)node);
+                    removeReplicas((Replicable) node);
                 }
             }
         }
@@ -88,10 +88,10 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
 
     private void removeReplica(Replica replica) {
         if (replica instanceof Node) {
-            Node replicaNode = (Node)replica;
+            Node replicaNode = (Node) replica;
             Node parent = replicaNode.getParent();
             if (parent instanceof Container) {
-                ((Container)parent).remove(replicaNode);
+                ((Container) parent).remove(replicaNode);
             }
         }
     }

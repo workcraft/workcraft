@@ -93,7 +93,7 @@ public class DockableWindowContentPanel extends JPanel {
         private ActionButton createHeaderButton(Icon icon, Action action, ScriptedActionListener actionListener) {
             ActionButton button = new ActionButton(action);
             button.addScriptedActionListener(actionListener);
-            button.setPreferredSize(new Dimension(icon.getIconWidth(),icon.getIconHeight()));
+            button.setPreferredSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
             button.setFocusable(false);
             button.setBorder(null);
             button.setIcon(icon);
@@ -107,7 +107,7 @@ public class DockableWindowContentPanel extends JPanel {
             Color c;
             if (UIManager.getLookAndFeel().getName().contains("Substance")) {
                 c = getBackground();
-                c = new Color((int)(c.getRed() * 0.9), (int)(c.getGreen() * 0.9), (int)(c.getBlue() * 0.9));
+                c = new Color((int) (c.getRed() * 0.9), (int) (c.getGreen() * 0.9), (int) (c.getBlue() * 0.9));
             } else {
                 c = UIManager.getColor("InternalFrame.activeTitleBackground");
             }
@@ -116,7 +116,7 @@ public class DockableWindowContentPanel extends JPanel {
             if  (options != 0) {
                 buttonPanel = new JPanel();
                 buttonPanel.setBackground(c);
-                buttonPanel.setLayout(new FlowLayout(FlowLayout.TRAILING, 4,2));
+                buttonPanel.setLayout(new FlowLayout(FlowLayout.TRAILING, 4, 2));
                 buttonPanel.setFocusable(false);
                 add(buttonPanel, BorderLayout.EAST);
             }
@@ -147,7 +147,7 @@ public class DockableWindowContentPanel extends JPanel {
             }
 
             if (icons != 0) {
-                buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth()+4) * icons,UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
+                buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth()+4) * icons, UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
             }
 
             titleLabel = new JLabel(title);
@@ -215,8 +215,8 @@ public class DockableWindowContentPanel extends JPanel {
         header = new DockableViewHeader(title, options);
 
         contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout(0,0));
-        contentPane.add(content,BorderLayout.CENTER);
+        contentPane.setLayout(new BorderLayout(0, 0));
+        contentPane.add(content, BorderLayout.CENTER);
         contentPane.setBorder(BorderFactory.createLineBorder(contentPane.getBackground(), 2));
 
         if ((options & HEADER) > 0) {

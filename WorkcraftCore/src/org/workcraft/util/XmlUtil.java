@@ -57,7 +57,7 @@ public class XmlUtil {
         for (int i=0; i<nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
-                result.add((Element)n);
+                result.add((Element) n);
         }
         return result;
     }
@@ -67,7 +67,7 @@ public class XmlUtil {
         for (int i=0; i<nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
-                return (Element)n;
+                return (Element) n;
         }
         return null;
     }

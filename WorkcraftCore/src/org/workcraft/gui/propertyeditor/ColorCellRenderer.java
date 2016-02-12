@@ -41,7 +41,7 @@ public class ColorCellRenderer extends JLabel implements TableCellRenderer {
             boolean isSelected, boolean hasFocus, int row, int column) {
         setBorder(PropertyEditorTable.BORDER_RENDER);
         if (value != null) {
-            setBackground((Color)value);
+            setBackground((Color) value);
         }
         return this;
     }

@@ -18,7 +18,7 @@ public class ConnectionHelper {
 
     static public void addControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (locationsInRootSpace != null)) {
-            Polyline polyline = (Polyline)connection.getGraphic();
+            Polyline polyline = (Polyline) connection.getGraphic();
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
             for (Point2D location: locationsInRootSpace) {
                 if ((location.distance(connection.getFirstCenter()) > SAME_ANCHOR_POINT_THRESHOLD)
@@ -39,7 +39,7 @@ public class ConnectionHelper {
             ConnectionGraphic graphic = connection.getGraphic();
             Point2D locationOnConnection = graphic.getNearestPointOnCurve(locationInLocalSpace);
             connection.setConnectionType(ConnectionType.POLYLINE);
-            Polyline polyline = (Polyline)connection.getGraphic();
+            Polyline polyline = (Polyline) connection.getGraphic();
             int segmentIndex = polyline.getNearestSegment(locationInLocalSpace, null);
             result = polyline.insertControlPointInSegment(locationOnConnection, segmentIndex);
         }
@@ -49,7 +49,7 @@ public class ConnectionHelper {
     static public LinkedList<Point2D> getPrefixControlPoints(VisualConnection connection, Point2D splitPointInLocalSpace) {
         LinkedList<Point2D> locationsInRootSpace = new LinkedList<>();
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInLocalSpace != null)) {
-            Polyline polyline = (Polyline)connection.getGraphic();
+            Polyline polyline = (Polyline) connection.getGraphic();
             int splitIndex = polyline.getNearestSegment(splitPointInLocalSpace, null);
             AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
             int index = -1;
@@ -68,7 +68,7 @@ public class ConnectionHelper {
     static public LinkedList<Point2D> getSuffixControlPoints(VisualConnection connection, Point2D splitPointInLocalSpace) {
         LinkedList<Point2D> locationsInRootSpace = new LinkedList<>();
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInLocalSpace != null)) {
-            Polyline polyline = (Polyline)connection.getGraphic();
+            Polyline polyline = (Polyline) connection.getGraphic();
             int splitIndex = polyline.getNearestSegment(splitPointInLocalSpace, null);
             AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
             int index = -1;
@@ -88,7 +88,7 @@ public class ConnectionHelper {
         LinkedList<Point2D> locations = new LinkedList<>();
         Point2D lastLocation = null;
         if (con1.getGraphic() instanceof Polyline) {
-            Polyline polyline = (Polyline)con1.getGraphic();
+            Polyline polyline = (Polyline) con1.getGraphic();
             AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con1);
             for (ControlPoint cp:  polyline.getControlPoints()) {
                 Point2D location = localToRootTransform.transform(cp.getPosition(), null);
@@ -103,7 +103,7 @@ public class ConnectionHelper {
         locations.add(nodeLocation);
         Point2D firstLocation = null;
         if (con2.getGraphic() instanceof Polyline) {
-            Polyline polyline = (Polyline)con2.getGraphic();
+            Polyline polyline = (Polyline) con2.getGraphic();
             AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(con2);
             for (ControlPoint cp:  polyline.getControlPoints()) {
                 Point2D location = localToRootTransform.transform(cp.getPosition(), null);

@@ -41,25 +41,25 @@ public class Geometry {
     }
 
     public static Point2D add(Point2D p1, Point2D p2) {
-        Point2D result = (Point2D)p1.clone();
+        Point2D result = (Point2D) p1.clone();
         result.setLocation(result.getX() + p2.getX(), result.getY() + p2.getY());
         return result;
     }
 
     public static Point2D subtract(Point2D p1, Point2D p2) {
-        Point2D result = (Point2D)p1.clone();
+        Point2D result = (Point2D) p1.clone();
         result.setLocation(result.getX() - p2.getX(), result.getY() - p2.getY());
         return result;
     }
 
     public static Point2D rotate90CCW(Point2D p) {
-        Point2D result = (Point2D)p.clone();
+        Point2D result = (Point2D) p.clone();
         result.setLocation(-p.getY(), p.getX());
         return result;
     }
 
     public static Point2D normalize(Point2D p) {
-        Point2D result = (Point2D)p.clone();
+        Point2D result = (Point2D) p.clone();
         double length = p.distance(0, 0);
         if (length < 0.0000001)
             result.setLocation(0, 0);
@@ -78,7 +78,7 @@ public class Geometry {
     }
 
     public static Point2D multiply(Point2D p, double a) {
-        Point2D result = (Point2D)p.clone();
+        Point2D result = (Point2D) p.clone();
         result.setLocation(p.getX() * a, p.getY() * a);
         return result;
     }
@@ -193,13 +193,13 @@ public class Geometry {
     }
 
     public static Point2D changeBasis(Point2D p, Point2D vx, Point2D vy) {
-        Point2D result = (Point2D)p.clone();
+        Point2D result = (Point2D) p.clone();
 
-        if (dotProduct(vx,vy) > 0.0000001)
+        if (dotProduct(vx, vy) > 0.0000001)
             throw new RuntimeException("Vectors vx and vy must be orthogonal");
 
-        double vysq = vy.distanceSq(0,0);
-        double vxsq = vx.distanceSq(0,0);
+        double vysq = vy.distanceSq(0, 0);
+        double vxsq = vx.distanceSq(0, 0);
 
         if (vysq < 0.0000001 || vxsq < 0.0000001)
             throw new RuntimeException("Vectors vx and vy must not have zero length");

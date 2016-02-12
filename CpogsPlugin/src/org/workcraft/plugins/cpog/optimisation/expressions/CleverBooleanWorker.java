@@ -37,7 +37,7 @@ public class CleverBooleanWorker implements BooleanWorker {
             return y;
         if(y == ONE)
             return x;
-        return new And(x,y);
+        return new And(x, y);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CleverBooleanWorker implements BooleanWorker {
             return x;
         if(y == ZERO)
             return not(x);
-        return new Iff(x,y);
+        return new Iff(x, y);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CleverBooleanWorker implements BooleanWorker {
             return y;
         if(y == ZERO)
             return not(x);
-        return new Imply(x,y);
+        return new Imply(x, y);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class CleverBooleanWorker implements BooleanWorker {
             return y;
         if(y == ZERO)
             return x;
-        return new Or(x,y);
+        return new Or(x, y);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class CleverBooleanWorker implements BooleanWorker {
             return not(x);
         if(y == ZERO)
             return x;
-        return new Xor(x,y);
+        return new Xor(x, y);
     }
 
     @Override

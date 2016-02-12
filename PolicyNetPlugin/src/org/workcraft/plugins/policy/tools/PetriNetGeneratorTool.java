@@ -25,7 +25,7 @@ public class PetriNetGeneratorTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualPolicyNet visualModel = (VisualPolicyNet)we.getModelEntry().getVisualModel();
+        final VisualPolicyNet visualModel = (VisualPolicyNet) we.getModelEntry().getVisualModel();
         final PetriNetGenerator generator = new PetriNetGenerator(visualModel);
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();

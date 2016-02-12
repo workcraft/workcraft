@@ -63,7 +63,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
         double h2 = h/2;
         double dx = size / 5;
         double dy = strokeWidth / 4;
-        float strokeWidth1 = (float)strokeWidth;
+        float strokeWidth1 = (float) strokeWidth;
         float strokeWidth2 = strokeWidth1 / 2;
         float strokeWidth4 = strokeWidth1 / 4;
         int kd = 6;
@@ -116,11 +116,11 @@ public class VisualControlRegister extends VisualBinaryRegister {
         boolean falseExcited = false;
         if (d instanceof BinaryRegisterDecoration) {
             defaultColor = getForegroundColor();
-            tokenColor = ((BinaryRegisterDecoration)d).getTokenColor();
-            trueMarked = ((BinaryRegisterDecoration)d).isTrueMarked();
-            trueExcited = ((BinaryRegisterDecoration)d).isTrueExcited();
-            falseMarked = ((BinaryRegisterDecoration)d).isFalseMarked();
-            falseExcited = ((BinaryRegisterDecoration)d).isFalseExcited();
+            tokenColor = ((BinaryRegisterDecoration) d).getTokenColor();
+            trueMarked = ((BinaryRegisterDecoration) d).isTrueMarked();
+            trueExcited = ((BinaryRegisterDecoration) d).isTrueExcited();
+            falseMarked = ((BinaryRegisterDecoration) d).isFalseMarked();
+            falseExcited = ((BinaryRegisterDecoration) d).isFalseExcited();
         }
 
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
@@ -205,7 +205,7 @@ public class VisualControlRegister extends VisualBinaryRegister {
     }
 
     public ControlRegister getReferencedControlRegister() {
-        return (ControlRegister)getReferencedComponent();
+        return (ControlRegister) getReferencedComponent();
     }
 
 }

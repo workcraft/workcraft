@@ -57,7 +57,7 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        String name = (String)value;
+        String name = (String) value;
         Node node = fsm.getNodeByReference(name);
         if (node == null) {
             fsm.setName(symbol, name);

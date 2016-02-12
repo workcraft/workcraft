@@ -55,7 +55,7 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
     private void nodeRemoved(Node node) {
         if (node instanceof SelectionObserver) {
             //System.out.println("Removing observer " + node);
-            SelectionObserver so = (SelectionObserver)node;
+            SelectionObserver so = (SelectionObserver) node;
             selectionObservers.remove(so);
         }
 
@@ -79,7 +79,7 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
         if (e instanceof SelectionChangedEvent) {
             //System.out.println("Propagating event");
             for (SelectionObserver so : selectionObservers)
-                so.notify((SelectionChangedEvent)e);
+                so.notify((SelectionChangedEvent) e);
         }
     }
 }

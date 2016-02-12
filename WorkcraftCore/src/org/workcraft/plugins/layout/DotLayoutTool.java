@@ -86,9 +86,9 @@ public class DotLayoutTool extends AbstractLayoutTool {
                 if (ss.length == 3) {
                     double x = +Double.parseDouble(ss[1])*pointsToInches;
                     double y = -Double.parseDouble(ss[2])*pointsToInches;
-                    Point2D p = new Point2D.Double(x,y);
+                    Point2D p = new Point2D.Double(x, y);
                     if (ss[0].equals("s")) {
-                        result.add(0,p);
+                        result.add(0, p);
                     } else {
                         if (ss[0].equals("e")) {
                             end = p;
@@ -99,12 +99,12 @@ public class DotLayoutTool extends AbstractLayoutTool {
                 } else {
                     double x = +Double.parseDouble(ss[0])*pointsToInches;
                     double y = -Double.parseDouble(ss[1])*pointsToInches;
-                    result.add(0,new Point2D.Double(x,y));
+                    result.add(0, new Point2D.Double(x, y));
                 }
             }
 
             if (end != null) {
-                result.add(0,end);
+                result.add(0, end);
             }
             return result;
         } catch(NumberFormatException ex) {
@@ -120,7 +120,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
                 public void node(String id, Map<String, String> properties) {
                     Node node = model.getNodeByReference(id);
                     if (node instanceof VisualTransformableNode) {
-                        VisualTransformableNode m = (VisualTransformableNode)node;
+                        VisualTransformableNode m = (VisualTransformableNode) node;
                         String posStr = properties.get("pos");
                         if (posStr!=null) {
                             String[] posParts = posStr.split(",");
@@ -152,11 +152,11 @@ public class DotLayoutTool extends AbstractLayoutTool {
                             }
                         }
                         if (con != null) {
-                            VisualConnection vc = (VisualConnection)con;
+                            VisualConnection vc = (VisualConnection) con;
                             vc.setConnectionType(ConnectionType.POLYLINE);
                             vc.setScaleMode(ScaleMode.ADAPTIVE);
 
-                            Polyline poly = (Polyline)vc.getGraphic();
+                            Polyline poly = (Polyline) vc.getGraphic();
                             poly.remove(poly.getChildren());
                             try {
                                 List<Point2D> points = parseConnectionSpline(properties.get("pos"));
@@ -191,10 +191,10 @@ public class DotLayoutTool extends AbstractLayoutTool {
         String prefix = FileUtils.getTempPrefix(model.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            File original = new File(directory,"original.dot");
+            File original = new File(directory, "original.dot");
             File layout = new File(directory, "layout.dot");
 
-            saveGraph((VisualModel)model, original);
+            saveGraph((VisualModel) model, original);
 
             List<String> args = new ArrayList<String>();
             String toolName = ToolUtils.getAbsoluteCommandPath(DotLayoutSettings.getCommand());
@@ -216,7 +216,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
             }
             if (res.getReturnValue().getReturnCode() == 0) {
                 String in = FileUtils.readAllText(layout);
-                applyLayout(in, (VisualModel)model);
+                applyLayout(in, (VisualModel) model);
             } else {
                 throw new LayoutException("External process (dot) failed (code " +
                     res.getReturnValue().getReturnCode() +")\n\n" +

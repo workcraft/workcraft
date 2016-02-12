@@ -127,7 +127,7 @@ public class PcompDialog extends JDialog {
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         options.add(showInEditor, 0);
         options.add(outputOptions, 1);
-        options.add(sharedOutputs,2);
+        options.add(sharedOutputs, 2);
         options.add(improvedPcomp, 3);
 
         content.add(options, "1 0");

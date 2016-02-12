@@ -73,8 +73,8 @@ public class XmasSimulationTool extends StgSimulationTool {
 
     @Override
     public VisualModel getUnderlyingModel(VisualModel model) {
-        generator = new StgGenerator((VisualXmas)model);
-        skipTransitions = getSkipTransitions((VisualXmas)model);
+        generator = new StgGenerator((VisualXmas) model);
+        skipTransitions = getSkipTransitions((VisualXmas) model);
         return generator.getStgModel();
     }
 
@@ -106,7 +106,7 @@ public class XmasSimulationTool extends StgSimulationTool {
             if (node instanceof VisualTransformableNode) {
                 AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);
                 Point2D posLocal = rootToLocalTransform.transform(posRoot, null);
-                Point2D posNode = ((VisualTransformableNode)node).getParentToLocalTransform().transform(posLocal, null);
+                Point2D posNode = ((VisualTransformableNode) node).getParentToLocalTransform().transform(posLocal, null);
                 transition = getClickedComponentTransition(node, posNode);
             }
         }
@@ -122,22 +122,22 @@ public class XmasSimulationTool extends StgSimulationTool {
     private Transition getClickedComponentTransition(Node node, Point2D posNode) {
         Transition result = null;
         if (node instanceof VisualXmasContact) {
-            ContactStg contactStg = generator.getContactStg((VisualXmasContact)node);
+            ContactStg contactStg = generator.getContactStg((VisualXmasContact) node);
             result = getExcitedTransition(contactStg.rdy.getAllTransitions());
         } else if (node instanceof VisualSourceComponent) {
-            SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
+            SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent) node);
             result = getExcitedTransition(sourceStg.oracle.getAllTransitions());
         } else if (node instanceof VisualSinkComponent) {
-            SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent)node);
+            SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent) node);
             result = getExcitedTransition(sinkStg.oracle.getAllTransitions());
         } else if (node instanceof VisualSwitchComponent) {
-            SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent)node);
+            SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent) node);
             result = getExcitedTransition(switchStg.oracle.getAllTransitions());
         } else if (node instanceof VisualQueueComponent) {
-            VisualQueueComponent queue = (VisualQueueComponent)node;
+            VisualQueueComponent queue = (VisualQueueComponent) node;
             QueueStg queueStg = generator.getQueueStg(queue);
             int capacity = queue.getReferencedQueueComponent().getCapacity();
-            int idx =  (int)Math.floor(0.5 * capacity  + posNode.getX() * queue.slotWidth);
+            int idx =  (int) Math.floor(0.5 * capacity  + posNode.getX() * queue.slotWidth);
             if (idx >= capacity) idx = capacity - 1;
             if (idx < 0) idx = 0;
             SlotStg slot = queueStg.slotList.get(idx);
@@ -161,7 +161,7 @@ public class XmasSimulationTool extends StgSimulationTool {
             public Decoration getDecoration(Node node) {
                 final Node traceCurrentNode = getTraceCurrentNode();
                 if (node instanceof VisualXmasContact) {
-                    final VisualXmasContact contact = (VisualXmasContact)node;
+                    final VisualXmasContact contact = (VisualXmasContact) node;
                     final ContactStg contactStg = generator.getContactStg(contact);
                     final boolean isExcited = getExcitedTransition(contactStg.rdy.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
@@ -201,9 +201,9 @@ public class XmasSimulationTool extends StgSimulationTool {
                         }
                     };
                 } else if (node instanceof VisualXmasConnection) {
-                    final VisualXmasConnection connection = (VisualXmasConnection)node;
-                    final VisualXmasContact firstContact = (VisualXmasContact)connection.getFirst();
-                    final VisualXmasContact secondContact = (VisualXmasContact)connection.getSecond();
+                    final VisualXmasConnection connection = (VisualXmasConnection) node;
+                    final VisualXmasContact firstContact = (VisualXmasContact) connection.getFirst();
+                    final VisualXmasContact secondContact = (VisualXmasContact) connection.getSecond();
                     final ContactStg firstStg = generator.getContactStg(firstContact);
                     final ContactStg secondStg = generator.getContactStg(secondContact);
                     final boolean firstReady = firstStg.rdy.zero.getReferencedPlace().getTokens() == 0;
@@ -230,7 +230,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                         }
                     };
                 } else if (node instanceof VisualSourceComponent) {
-                    final SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent)node);
+                    final SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent) node);
                     final boolean isExcited = getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
                     final boolean isActive = sourceStg.oracle.one.getReferencedPlace().getTokens() != 0;
@@ -266,7 +266,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                         }
                     };
                 } else if (node instanceof VisualSinkComponent) {
-                    final SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent)node);
+                    final SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent) node);
                     final boolean isExcited = getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
                     final boolean isActive = sinkStg.oracle.one.getReferencedPlace().getTokens() != 0;
@@ -302,7 +302,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                         }
                     };
                 } else if (node instanceof VisualSwitchComponent) {
-                    final SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent)node);
+                    final SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent) node);
                     final boolean isExcited = getExcitedTransition(switchStg.oracle.getAllTransitions()) != null;
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
                     final boolean isActive = switchStg.oracle.one.getReferencedPlace().getTokens() != 0;
@@ -338,7 +338,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                         }
                     };
                 } else if (node instanceof VisualQueueComponent) {
-                    final VisualQueueComponent queue = (VisualQueueComponent)node;
+                    final VisualQueueComponent queue = (VisualQueueComponent) node;
                     final QueueStg queueStg = generator.getQueueStg(queue);
                     final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
 

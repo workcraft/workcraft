@@ -69,7 +69,7 @@ public class CheckCircuitTask extends MpsatChainTask {
         try {
             // Common variables
             monitor.progressUpdate(0.05);
-            VisualCircuit visualCircuit = (VisualCircuit)we.getModelEntry().getVisualModel();
+            VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
             File envFile = visualCircuit.getEnvironmentFile();
             boolean hasEnvironment = (envFile != null) && envFile.exists();
 
@@ -77,7 +77,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             directory = FileUtils.createTempDirectory(prefix);
 
             CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
-            STG devStg = (STG)generator.getStg().getMathModel();
+            STG devStg = (STG) generator.getStg().getMathModel();
             String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
             File devStgFile =  new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
@@ -93,7 +93,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Environment STG
             STG envStg = null;
             if (hasEnvironment) {
-                envStg = (STG)framework.loadFile(envFile).getMathModel();
+                envStg = (STG) framework.loadFile(envFile).getMathModel();
                 // Make sure that input signals of the device STG are also inputs in the environment STG
                 Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
                 Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);

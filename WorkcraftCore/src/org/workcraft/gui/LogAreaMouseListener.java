@@ -33,7 +33,7 @@ public final class LogAreaMouseListener implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         Object src = e.getSource();
         if (src instanceof JTextArea) {
-            final JTextArea textArea = (JTextArea)src;
+            final JTextArea textArea = (JTextArea) src;
             if (e.getButton() == MouseEvent.BUTTON3) {
                 JPopupMenu popup = new JPopupMenu();
                 popup.setFocusable(false);

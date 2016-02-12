@@ -44,7 +44,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     @Override
     public Object getValue() throws InvocationTargetException {
         if (event instanceof SignalEvent) {
-            SignalEvent signalEvent = (SignalEvent)event;
+            SignalEvent signalEvent = (SignalEvent) event;
             return signalEvent.getDirection();
         }
         return null;
@@ -53,8 +53,8 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     @Override
     public void setValue(Object value) throws InvocationTargetException {
         if (event instanceof SignalEvent) {
-            SignalEvent signalEvent = (SignalEvent)event;
-            signalEvent.setDirection((Direction)value);
+            SignalEvent signalEvent = (SignalEvent) event;
+            signalEvent.setDirection((Direction) value);
         }
     }
 

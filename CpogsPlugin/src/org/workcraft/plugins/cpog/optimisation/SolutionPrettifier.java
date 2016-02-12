@@ -40,13 +40,13 @@ public class SolutionPrettifier {
 
         BooleanFormula[] functions = new BooleanFormula[functionVars.length];
 
-        for(int i=0;i<functions.length;i++)
+        for(int i=0; i<functions.length; i++)
             functions[i] = functionVars[i].accept(substitutor);
 
         boolean[][] encoding = new boolean[encodingVars.length][];
-        for(int i=0;i<encodingVars.length;i++) {
+        for(int i=0; i<encodingVars.length; i++) {
             encoding[i] = new boolean[encodingVars[i].length];
-            for(int j=0;j<encodingVars[i].length;j++)
+            for(int j=0; j<encodingVars[i].length; j++)
                 encoding[i][j] = encodingVars[i][j].accept(substitutor).accept(evaluator);
         }
 

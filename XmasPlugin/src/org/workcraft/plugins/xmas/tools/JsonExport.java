@@ -84,11 +84,11 @@ public class JsonExport implements Tool {
 
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
-        VisualXmas vnet = (VisualXmas)we.getModelEntry().getVisualModel();
-        //Circuit cnet = (Circuit)we.getModelEntry().getModel();
-        //VisualCircuit vnet = (VisualCircuit)we.getModelEntry().getMathModel();
+        VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
+        //Circuit cnet = (Circuit) we.getModelEntry().getModel();
+        //VisualCircuit vnet = (VisualCircuit) we.getModelEntry().getMathModel();
 
-        Xmas cnet = (Xmas)we.getModelEntry().getMathModel();
+        Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
 
         //srcNodes = cnet.getSourceComponent();
         int no=1;
@@ -117,35 +117,35 @@ public class JsonExport implements Tool {
         for(VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
             for(VisualComponent vp: vg.getComponents()) {
                 if(vp instanceof VisualSourceComponent) {
-                    VisualSourceComponent vsc=(VisualSourceComponent)vp;
+                    VisualSourceComponent vsc=(VisualSourceComponent) vp;
                     SourceComponent sc=vsc.getReferencedSourceComponent();
                     sc.setGr(no);
                 } else if(vp instanceof VisualSinkComponent) {
-                    VisualSinkComponent vsc=(VisualSinkComponent)vp;
+                    VisualSinkComponent vsc=(VisualSinkComponent) vp;
                     SinkComponent sc=vsc.getReferencedSinkComponent();
                     sc.setGr(no);
                 } else if(vp instanceof VisualFunctionComponent) {
-                    VisualFunctionComponent vsc=(VisualFunctionComponent)vp;
+                    VisualFunctionComponent vsc=(VisualFunctionComponent) vp;
                     FunctionComponent sc=vsc.getReferencedFunctionComponent();
                     sc.setGr(no);
                 } else if(vp instanceof VisualQueueComponent) {
-                    VisualQueueComponent vsc=(VisualQueueComponent)vp;
+                    VisualQueueComponent vsc=(VisualQueueComponent) vp;
                     QueueComponent sc=vsc.getReferencedQueueComponent();
                     sc.setGr(no);
                 } else if(vp instanceof VisualForkComponent) {
-                    VisualForkComponent vsc=(VisualForkComponent)vp;
+                    VisualForkComponent vsc=(VisualForkComponent) vp;
                     ForkComponent sc=vsc.getReferencedForkComponent();
                     sc.setGr(no);
                 } else if(vp instanceof VisualJoinComponent) {
-                    VisualJoinComponent vsc=(VisualJoinComponent)vp;
+                    VisualJoinComponent vsc=(VisualJoinComponent) vp;
                     JoinComponent sc=vsc.getReferencedJoinComponent();
                     sc.setGr(no);
                 } else if(vp instanceof VisualSwitchComponent) {
-                    VisualSwitchComponent vsc=(VisualSwitchComponent)vp;
+                    VisualSwitchComponent vsc=(VisualSwitchComponent) vp;
                     SwitchComponent sc=vsc.getReferencedSwitchComponent();
                     sc.setGr(no);
                 } else if(vp instanceof VisualMergeComponent) {
-                    VisualMergeComponent vsc=(VisualMergeComponent)vp;
+                    VisualMergeComponent vsc=(VisualMergeComponent) vp;
                     MergeComponent sc=vsc.getReferencedMergeComponent();
                     sc.setGr(no);
                 }
@@ -161,8 +161,8 @@ public class JsonExport implements Tool {
         for (SourceComponent node : cnet.getSourceComponents()) {
             //System.out.println("Num =" + cnet.getPostset(node).size());
             //System.out.println("Name =" + cnet.getName(node));
-            //((SourceComponent)node).setVal('b');
-            //System.out.println("Val =" + ((SourceComponent)node).getType());
+            //((SourceComponent) node).setVal('b');
+            //System.out.println("Val =" + ((SourceComponent) node).getType());
             srcNode=node;
         }
         //System.out.println("Name_ =" + cnet.getName(srcNode));
@@ -219,7 +219,7 @@ public class JsonExport implements Tool {
                 writer.println("    {");
                 String rstr;
                 rstr = cnet.getName(node);
-                rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                 System.out.println("      \"id\": \"" + cnet.getName(node) + "\",");
                 //writer.println("      \"id\": \"" + cnet.getName(node) + "\",");
                 writer.println("      \"id\": \"" + rstr + "\",");
@@ -236,35 +236,35 @@ public class JsonExport implements Tool {
                 System.out.println("      \"outs\" : [");
                 writer.println("      \"outs\" : [");
                 if(node instanceof SourceComponent) {
-                    srcNode=(SourceComponent)node;
+                    srcNode=(SourceComponent) node;
                     contacts=srcNode.getOutputs();
                     numOutputs=1;
                 } else if(node instanceof SinkComponent) {
-                    snkNode=(SinkComponent)node;
+                    snkNode=(SinkComponent) node;
                     contacts=snkNode.getOutputs();
                     numOutputs=1;
                 } else if(node instanceof FunctionComponent) {
-                    funNode=(FunctionComponent)node;
+                    funNode=(FunctionComponent) node;
                     contacts=funNode.getOutputs();
                     numOutputs=1;
                 } else if(node instanceof QueueComponent) {
-                    quNode=(QueueComponent)node;
+                    quNode=(QueueComponent) node;
                     contacts=quNode.getOutputs();
                     numOutputs=1;
                 } else if(node instanceof ForkComponent) {
-                    frkNode=(ForkComponent)node;
+                    frkNode=(ForkComponent) node;
                     contacts=frkNode.getOutputs();
                     numOutputs=2;
                 } else if(node instanceof JoinComponent) {
-                    jnNode=(JoinComponent)node;
+                    jnNode=(JoinComponent) node;
                     contacts=jnNode.getOutputs();
                     numOutputs=1;
                 } else if(node instanceof SwitchComponent) {
-                    swNode=(SwitchComponent)node;
+                    swNode=(SwitchComponent) node;
                     contacts=swNode.getOutputs();
                     numOutputs=2;
                 } else if(node instanceof MergeComponent) {
-                    mrgNode=(MergeComponent)node;
+                    mrgNode=(MergeComponent) node;
                     contacts=mrgNode.getOutputs();
                     numOutputs=1;
                 }
@@ -278,7 +278,7 @@ public class JsonExport implements Tool {
                             int contactCount=1;
                             int contactNo=1;
                             if(cpNode instanceof JoinComponent) {
-                                JoinComponent jnNode2=(JoinComponent)cpNode;
+                                JoinComponent jnNode2=(JoinComponent) cpNode;
                                 contacts2=jnNode2.getInputs();
                                 for(XmasContact jncntNode : contacts2) {
                                     if(jncntNode==c.getSecond()) {
@@ -288,7 +288,7 @@ public class JsonExport implements Tool {
                                     contactCount++;
                                 }
                             } else if(cpNode instanceof MergeComponent) {
-                                MergeComponent mrgNode2=(MergeComponent)cpNode;
+                                MergeComponent mrgNode2=(MergeComponent) cpNode;
                                 contacts2=mrgNode2.getInputs();
                                 for(XmasContact mrgcntNode : contacts2) {
                                     if(mrgcntNode==c.getSecond()) {
@@ -299,7 +299,7 @@ public class JsonExport implements Tool {
                                 }
                             }
                             rstr = cnet.getName(cpNode);
-                            rstr = rstr.replace(rstr.charAt(0),Character.toUpperCase(rstr.charAt(0)));
+                            rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             System.out.println("          \"id\": " + "\"" + cnet.getName(cpNode) + "\",");
                             //writer.println("          \"id\": " + "\"" + cnet.getName(cpNode) + "\",");
                             writer.println("          \"id\": " + "\"" + rstr + "\",");

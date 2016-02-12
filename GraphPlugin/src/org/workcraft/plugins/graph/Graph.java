@@ -49,7 +49,7 @@ public class Graph extends AbstractMathModel {
     }
 
     public MathConnection connect(Node first, Node second) {
-        MathConnection con = new MathConnection((MathNode)first, (MathNode)second);
+        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);
         return con;
     }

@@ -68,7 +68,7 @@ public class FsmToPnConverter {
 
     private Map<VisualEvent, VisualTransition> convertEvents() {
         Map<VisualEvent, VisualTransition> result = new HashMap<VisualEvent, VisualTransition>();
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)dstModel.getPetriNet().getReferenceManager();
+        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) dstModel.getPetriNet().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for(VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             Symbol symbol = event.getReferencedEvent().getSymbol();
@@ -127,9 +127,9 @@ public class FsmToPnConverter {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualEvent) {
-            result = node == getRelatedTransition((VisualEvent)highLevelNode);
+            result = node == getRelatedTransition((VisualEvent) highLevelNode);
         } else if (highLevelNode instanceof VisualState) {
-            result = node == getRelatedPlace((VisualState)highLevelNode);
+            result = node == getRelatedPlace((VisualState) highLevelNode);
         }
         return result;
     }

@@ -27,13 +27,13 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
 
     @Override
     protected void setExistingReference(Node node) {
-        if ((node instanceof STGPlace) && ((STGPlace)node).isImplicit()) return;
+        if ((node instanceof STGPlace) && ((STGPlace) node).isImplicit()) return;
         super.setExistingReference(node);
     }
 
     private STGNameManager getNameManager(Node node) {
         NamespaceProvider namespaceProvider = getNamespaceProvider(node);
-        STGNameManager nameManager = (STGNameManager)getNameManager(namespaceProvider);
+        STGNameManager nameManager = (STGNameManager) getNameManager(namespaceProvider);
         return nameManager;
     }
 
@@ -81,7 +81,7 @@ public class STGReferenceManager extends HierarchicalUniqueNameReferenceManager 
     public String getPrefix(Node node) {
         if (node instanceof STGPlace) return "p";
         if (node instanceof SignalTransition) {
-            switch (((SignalTransition)node).getSignalType()) {
+            switch (((SignalTransition) node).getSignalType()) {
             case INPUT: return "in";
             case OUTPUT: return "out";
             case INTERNAL: return "t";

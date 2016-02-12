@@ -38,7 +38,7 @@ public class PnToCpogTask implements Task<PnToCpogResult>{
         Outcome outcome;
 
         // reading Petri net from workspace
-        pn = (VisualPetriNet)(we.getModelEntry().getVisualModel());
+        pn = (VisualPetriNet) (we.getModelEntry().getVisualModel());
 
         // instantiating converter
         PnToCpogConverter converter = new PnToCpogConverter(pn);

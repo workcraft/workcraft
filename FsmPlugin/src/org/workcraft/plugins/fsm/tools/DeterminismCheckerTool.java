@@ -26,7 +26,7 @@ public class DeterminismCheckerTool extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
+        final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
         HashSet<State> nondeterministicStates = checkDeterminism(fsm);
         if (nondeterministicStates.isEmpty()) {
             JOptionPane.showMessageDialog(null,    "The model is deterministic.",

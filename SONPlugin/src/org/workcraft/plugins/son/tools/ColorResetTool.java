@@ -20,7 +20,7 @@ public class ColorResetTool implements Tool {
     }
 
     public void run(WorkspaceEntry we){
-        SON net=(SON)we.getModelEntry().getMathModel();
+        SON net=(SON) we.getModelEntry().getMathModel();
         net.refreshAllColor();
     }
 

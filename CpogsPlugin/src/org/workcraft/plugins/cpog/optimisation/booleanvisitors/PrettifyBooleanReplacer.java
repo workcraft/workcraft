@@ -22,7 +22,7 @@ public class PrettifyBooleanReplacer extends BooleanReplacer {
 
     @Override
     public BooleanFormula visit(BooleanVariable node) {
-        switch(((Variable)node).getState()) {
+        switch(((Variable) node).getState()) {
         case TRUE:
             return One.instance();
         case FALSE:

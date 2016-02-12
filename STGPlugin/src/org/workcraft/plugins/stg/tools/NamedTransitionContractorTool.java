@@ -37,11 +37,11 @@ public class NamedTransitionContractorTool extends TransitionContractorTool {
         super.beforeContraction(visualModel, visualTransition);
         convertedImplicitPlaces.clear();
         if (visualModel instanceof VisualSTG) {
-            VisualSTG visualStg = (VisualSTG)visualModel;
+            VisualSTG visualStg = (VisualSTG) visualModel;
             Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
             for (Connection connection: adjacentConnections) {
                 if (connection instanceof VisualImplicitPlaceArc) {
-                    VisualPlace formerImplicitPlace = visualStg.makeExplicit((VisualImplicitPlaceArc)connection);
+                    VisualPlace formerImplicitPlace = visualStg.makeExplicit((VisualImplicitPlaceArc) connection);
                     convertedImplicitPlaces.add(formerImplicitPlace);
                 }
             }
@@ -53,7 +53,7 @@ public class NamedTransitionContractorTool extends TransitionContractorTool {
             HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap) {
         super.afterContraction(visualModel, visualTransition, productPlaceMap);
         if (visualModel instanceof VisualSTG) {
-            VisualSTG visualStg = (VisualSTG)visualModel;
+            VisualSTG visualStg = (VisualSTG) visualModel;
             for (VisualPlace productPlace: productPlaceMap.keySet()) {
                 Pair<VisualPlace, VisualPlace> originalPlacePair = productPlaceMap.get(productPlace);
                 VisualPlace predPlace = originalPlacePair.getFirst();
@@ -67,11 +67,11 @@ public class NamedTransitionContractorTool extends TransitionContractorTool {
 
     @Override
     public VisualPlace createProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace) {
-        Container visualContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
+        Container visualContainer = (Container) Hierarchy.getCommonParent(predPlace, succPlace);
         Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
         MathModel mathModel = visualModel.getMathModel();
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)mathModel.getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager((NamespaceProvider)mathContainer);
+        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) mathModel.getReferenceManager();
+        NameManager nameManagerer = refManager.getNameManager((NamespaceProvider) mathContainer);
         String predName = visualModel.getMathName(predPlace);
         String succName = visualModel.getMathName(succPlace);
         String productName = nameManagerer.getDerivedName(null, predName + succName);

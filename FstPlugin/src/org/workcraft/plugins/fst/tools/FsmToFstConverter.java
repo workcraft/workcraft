@@ -36,13 +36,13 @@ public     class FsmToFstConverter extends DefaultModelConverter<VisualFsm, Visu
     public VisualConnection convertConnection(VisualConnection srcConnection) {
         VisualConnection dstConnection = super.convertConnection(srcConnection);
         if ((srcConnection instanceof VisualEvent) && (dstConnection instanceof VisualSignalEvent)) {
-            Event srcEvent = (Event)srcConnection.getReferencedConnection();
+            Event srcEvent = (Event) srcConnection.getReferencedConnection();
             Symbol srcSymbol = srcEvent.getSymbol();
-            Fsm fsm = (Fsm)getSrcModel().getMathModel();
+            Fsm fsm = (Fsm) getSrcModel().getMathModel();
             String name = fsm.getName(srcSymbol);
-            Fst fst = (Fst)getDstModel().getMathModel();
+            Fst fst = (Fst) getDstModel().getMathModel();
             Signal dstSignal = fst.getOrCreateSignal(name, Type.DUMMY);
-            SignalEvent dstSignalEvent = (SignalEvent)dstConnection.getReferencedConnection();
+            SignalEvent dstSignalEvent = (SignalEvent) dstConnection.getReferencedConnection();
             dstSignalEvent.setSymbol(dstSignal);
         }
         return dstConnection;
@@ -53,7 +53,7 @@ public     class FsmToFstConverter extends DefaultModelConverter<VisualFsm, Visu
         VisualFsm fsm = getSrcModel();
         for (VisualState srcState: fsm.getVisualStates()) {
             if (srcState.getReferencedState().isInitial()) {
-                VisualState dstState = (VisualState)getSrcToDstNode(srcState);
+                VisualState dstState = (VisualState) getSrcToDstNode(srcState);
                 if (dstState != null) {
                     dstState.getReferencedState().setInitial(true);
                 }

@@ -79,10 +79,10 @@ public class SelectionTool extends PetriNetSelectionTool {
 
     protected Collection<VisualBundledTransition> getSelectedTransitions(final GraphEditor editor) {
         Set<VisualBundledTransition> transitions = new HashSet<VisualBundledTransition>();
-        VisualPolicyNet visualModel = (VisualPolicyNet)editor.getModel();
+        VisualPolicyNet visualModel = (VisualPolicyNet) editor.getModel();
         for (Node node : visualModel.getSelection()) {
             if (node instanceof VisualBundledTransition) {
-                transitions.add((VisualBundledTransition)node);
+                transitions.add((VisualBundledTransition) node);
             }
         }
         return transitions;
@@ -92,7 +92,7 @@ public class SelectionTool extends PetriNetSelectionTool {
         Collection<VisualBundledTransition> transitions = getSelectedTransitions(editor);
         if (!transitions.isEmpty()) {
             editor.getWorkspaceEntry().saveMemento();
-            VisualPolicyNet visualModel = (VisualPolicyNet)editor.getModel();
+            VisualPolicyNet visualModel = (VisualPolicyNet) editor.getModel();
             visualModel.bundleTransitions(transitions);
         }
     }
@@ -101,7 +101,7 @@ public class SelectionTool extends PetriNetSelectionTool {
         Collection<VisualBundledTransition> transitions = getSelectedTransitions(editor);
         if (!transitions.isEmpty()) {
             editor.getWorkspaceEntry().saveMemento();
-            VisualPolicyNet visualModel = (VisualPolicyNet)editor.getModel();
+            VisualPolicyNet visualModel = (VisualPolicyNet) editor.getModel();
             visualModel.unbundleTransitions(transitions);
         }
     }

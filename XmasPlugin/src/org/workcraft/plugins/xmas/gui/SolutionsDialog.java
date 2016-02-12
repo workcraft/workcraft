@@ -35,7 +35,7 @@ public class SolutionsDialog extends JDialog {
                 public void actionPerformed(ActionEvent e) {
                     SolutionsDialog.this.setVisible(false);
                 }
-            }));*/
+            })); */
 
         contents.add(solutionsPanel, "0 1");
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

@@ -75,7 +75,7 @@ public class DotGImporterTests {
         fileStream.close();
 
         ModelEntry importedEntry =  Import.importFromFile(new DotGImporter(), tempFile);
-        STG imported = (STG)importedEntry.getModel();
+        STG imported = (STG) importedEntry.getModel();
 
         Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());
         Assert.assertEquals(2, Hierarchy.getChildrenOfType(imported.getRoot(), Place.class).size());
@@ -85,13 +85,13 @@ public class DotGImporterTests {
     @Test
     public void test2() throws Throwable {
         final InputStream test = ClassLoader.getSystemClassLoader().getResourceAsStream("org/workcraft/testing/plugins/interop/test2.g");
-        STGModel imported = new DotGImporter().importSTG(test);//DotGImporterTests.class.getClassLoader().getResourceAsStream("test2.g"));
+        STGModel imported = new DotGImporter().importSTG(test); //DotGImporterTests.class.getClassLoader().getResourceAsStream("test2.g"));
         Assert.assertEquals(17, imported.getTransitions().size());
         Assert.assertEquals(0, imported.getDummyTransitions().size());
 
         int explicitPlaces = 0;
         for(Place p : imported.getPlaces()) {
-            if(!((STGPlace)p).isImplicit()) explicitPlaces++;
+            if(!((STGPlace) p).isImplicit()) explicitPlaces++;
         }
 
         Assert.assertEquals(2, explicitPlaces);

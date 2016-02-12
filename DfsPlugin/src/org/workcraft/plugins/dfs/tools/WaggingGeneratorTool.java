@@ -27,7 +27,7 @@ public class WaggingGeneratorTool implements Tool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualDfs dfs = (VisualDfs)we.getModelEntry().getVisualModel();
+        final VisualDfs dfs = (VisualDfs) we.getModelEntry().getVisualModel();
         if (dfs.getSelection().size() < 1) {
             final Framework framework = Framework.getInstance();
             JOptionPane.showMessageDialog(framework.getMainWindow(),

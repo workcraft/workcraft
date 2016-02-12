@@ -27,7 +27,7 @@ public abstract class StateSupervisor extends HierarchySupervisor implements Sta
 
     private void nodeAdded(Node node) {
         if (node instanceof ObservableState) {
-            ((ObservableState)node).addObserver(this);
+            ((ObservableState) node).addObserver(this);
         }
         for (Node n : node.getChildren()) {
             nodeAdded(n);
@@ -36,7 +36,7 @@ public abstract class StateSupervisor extends HierarchySupervisor implements Sta
 
     private void nodeRemoved(Node node) {
         if (node instanceof ObservableState) {
-            ((ObservableState)node).removeObserver(this);
+            ((ObservableState) node).removeObserver(this);
         }
         for (Node n : node.getChildren()) {
             nodeRemoved(n);

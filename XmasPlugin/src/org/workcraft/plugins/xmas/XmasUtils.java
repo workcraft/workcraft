@@ -13,14 +13,14 @@ public class XmasUtils {
         if (contact.isInput()) {
             for (Node prevNode: xmas.getPreset(contact)) {
                 if (prevNode instanceof XmasContact) {
-                    result = (XmasComponent)prevNode.getParent();
+                    result = (XmasComponent) prevNode.getParent();
                     break;
                 }
             }
         } else {
             for (Node succNode: xmas.getPostset(contact)) {
                 if (succNode instanceof XmasContact) {
-                    result = (XmasComponent)succNode.getParent();
+                    result = (XmasComponent) succNode.getParent();
                     break;
                 }
             }
@@ -29,7 +29,7 @@ public class XmasUtils {
     }
 
     public static VisualXmasComponent getConnectedComponent(final VisualXmas visualXmas, VisualXmasContact visualContact) {
-        Xmas xmas = (Xmas)visualXmas.getMathModel();
+        Xmas xmas = (Xmas) visualXmas.getMathModel();
         XmasContact contact = visualContact.getReferencedContact();
         XmasComponent component = getConnectedComponent(xmas, contact);
         return visualXmas.getVisualComponent(component, VisualXmasComponent.class);
@@ -40,14 +40,14 @@ public class XmasUtils {
         if (contact.isInput()) {
             for (Node prevNode: xmas.getPreset(contact)) {
                 if (prevNode instanceof XmasContact) {
-                    result = (XmasContact)prevNode;
+                    result = (XmasContact) prevNode;
                     break;
                 }
             }
         } else {
             for (Node succNode: xmas.getPostset(contact)) {
                 if (succNode instanceof XmasContact) {
-                    result = (XmasContact)succNode;
+                    result = (XmasContact) succNode;
                     break;
                 }
             }
@@ -56,7 +56,7 @@ public class XmasUtils {
     }
 
     public static VisualXmasContact getConnectedContact(final VisualXmas visualXmas, VisualXmasContact visualContact) {
-        Xmas xmas = (Xmas)visualXmas.getMathModel();
+        Xmas xmas = (Xmas) visualXmas.getMathModel();
         XmasContact contact = visualContact.getReferencedContact();
         XmasContact connectedContact = getConnectedContact(xmas, contact);
         return visualXmas.getVisualComponent(connectedContact, VisualXmasContact.class);

@@ -61,13 +61,13 @@ public class VisualGraph extends AbstractVisualModel {
     public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
-        VisualComponent v1 = (VisualComponent)first;
-        VisualComponent v2 = (VisualComponent)second;
+        VisualComponent v1 = (VisualComponent) first;
+        VisualComponent v2 = (VisualComponent) second;
         Node m1 = v1.getReferencedComponent();
         Node m2 = v2.getReferencedComponent();
 
         if (mConnection == null) {
-            mConnection = ((Graph)getMathModel()).connect(m1, m2);
+            mConnection = ((Graph) getMathModel()).connect(m1, m2);
         }
         VisualConnection vConnection = new VisualConnection(mConnection, v1, v2);
         Container container = Hierarchy.getNearestContainer(v1, v2);

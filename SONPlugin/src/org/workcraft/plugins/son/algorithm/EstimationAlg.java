@@ -67,7 +67,7 @@ public class EstimationAlg extends TimeAlg{
     public void setDefaultDuration(){
         for(Node n : scenario.getNodes(net)){
             if(n instanceof PlaceNode || n instanceof Block){
-                Time node = (Time)n;
+                Time node = (Time) n;
                 if(!node.getDuration().isSpecified())
                     node.setDuration(defaultDuration);
             }
@@ -100,16 +100,16 @@ public class EstimationAlg extends TimeAlg{
         Collection<SONConnection> oCons = net.getOutputScenarioPNConnections(n, scenario);
 
         if(n instanceof Time)
-            node = (Time)n;
+            node = (Time) n;
         else return;
 
         //set default duration
         if(!specifiedDur){
             node.setDuration(defaultDuration);
             if(n instanceof PlaceNode){
-                ((PlaceNode)n).setDurationColor(color);
+                ((PlaceNode) n).setDurationColor(color);
             }else if(n instanceof Block){
-                ((Block)n).setDurationColor(color);
+                ((Block) n).setDurationColor(color);
             }
         }
         //n has unspecified start and specified end
@@ -278,7 +278,7 @@ public class EstimationAlg extends TimeAlg{
 
         for(Path path : fwdPaths){
             for(int i = 1;  i < path.size(); i++){
-                Time n = (Time)path.get(i);
+                Time n = (Time) path.get(i);
                 if(!n.getDuration().isSpecified()){
                     n.setDuration(defaultDuration);
                 }
@@ -296,7 +296,7 @@ public class EstimationAlg extends TimeAlg{
 
         for(Path path : bwdPaths){
             for(int i = 1;  i < path.size(); i++){
-                Time n = (Time)path.get(i);
+                Time n = (Time) path.get(i);
                 if(!n.getDuration().isSpecified()){
                     n.setDuration(defaultDuration);
                 }
@@ -337,7 +337,7 @@ public class EstimationAlg extends TimeAlg{
     private Interval getSpecifiedEndTime(Node n) throws TimeEstimationException{
 
         if(n instanceof Condition){
-            Condition c = (Condition)n;
+            Condition c = (Condition) n;
             Collection<SONConnection> cons = net.getOutputPNConnections(c);
             Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(c, scenario);
 
@@ -359,7 +359,7 @@ public class EstimationAlg extends TimeAlg{
                 return con.getTime();
             }
         }else if(n instanceof TransitionNode){
-            TransitionNode t = (TransitionNode)n;
+            TransitionNode t = (TransitionNode) n;
             Collection<SONConnection> cons = net.getOutputScenarioPNConnections(t, scenario);
             if(concurConsistency(cons)){
                 return cons.iterator().next().getTime();
@@ -374,7 +374,7 @@ public class EstimationAlg extends TimeAlg{
     private Interval getSpecifiedStartTime(Node n) throws TimeEstimationException{
 
         if(n instanceof Condition){
-            Condition c = (Condition)n;
+            Condition c = (Condition) n;
             Collection<SONConnection> cons = net.getInputScenarioPNConnections(c, scenario);
             //p is initial
             if(cons.isEmpty()){
@@ -389,7 +389,7 @@ public class EstimationAlg extends TimeAlg{
                 return con.getTime();
             }
         }else if(n instanceof TransitionNode){
-            TransitionNode t = (TransitionNode)n;
+            TransitionNode t = (TransitionNode) n;
             Collection<SONConnection> cons = net.getInputScenarioPNConnections(t, scenario);
             if(concurConsistency(cons)){
                 return cons.iterator().next().getTime();
@@ -404,7 +404,7 @@ public class EstimationAlg extends TimeAlg{
         Interval end = null;
 
         if(n instanceof Condition){
-            Condition c = (Condition)n;
+            Condition c = (Condition) n;
             Collection<SONConnection> cons = net.getOutputPNConnections(c);
             Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(c, scenario);
             //c is final
@@ -445,7 +445,7 @@ public class EstimationAlg extends TimeAlg{
                 }
             }
         }else if(n instanceof TransitionNode){
-            TransitionNode t = (TransitionNode)n;
+            TransitionNode t = (TransitionNode) n;
             Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(t, scenario);
 
             Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
@@ -474,7 +474,7 @@ public class EstimationAlg extends TimeAlg{
                 }
             }
         }else if(n instanceof ChannelPlace){
-            ChannelPlace cp = (ChannelPlace)n;
+            ChannelPlace cp = (ChannelPlace) n;
             end = getEstimatedEndTime(n);
             if(end != null){
                 cp.setEndTime(end);
@@ -487,7 +487,7 @@ public class EstimationAlg extends TimeAlg{
         Interval start = null;
 
         if(n instanceof Condition){
-            Condition c = (Condition)n;
+            Condition c = (Condition) n;
             Collection<SONConnection> cons = net.getInputScenarioPNConnections(c, scenario);
             //p is initial
             if(cons.isEmpty()){
@@ -517,7 +517,7 @@ public class EstimationAlg extends TimeAlg{
                 }
             }
         }else if(n instanceof TransitionNode){
-            TransitionNode t = (TransitionNode)n;
+            TransitionNode t = (TransitionNode) n;
             Collection<SONConnection> cons2 = net.getInputScenarioPNConnections(t, scenario);
 
             Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
@@ -546,7 +546,7 @@ public class EstimationAlg extends TimeAlg{
                 }
             }
         }else if(n instanceof ChannelPlace){
-            ChannelPlace cp = (ChannelPlace)n;
+            ChannelPlace cp = (ChannelPlace) n;
             start = getEstimatedStartTime(n);
             if(start != null){
                 cp.setStartTime(start);
@@ -571,7 +571,7 @@ public class EstimationAlg extends TimeAlg{
         Interval result = new Interval();
 
         LinkedList<Time> visited = new LinkedList<Time>();
-        visited.add((Time)n);
+        visited.add((Time) n);
 
         if(scenario != null)
             backwardDFS(visited, scenario.getNodes(net));
@@ -601,7 +601,7 @@ public class EstimationAlg extends TimeAlg{
         Interval result = new Interval();
 
         LinkedList<Time> visited = new LinkedList<Time>();
-        visited.add((Time)n);
+        visited.add((Time) n);
 
         if(scenario != null)
             forwardDFS(visited, scenario.getNodes(net));
@@ -755,26 +755,26 @@ public class EstimationAlg extends TimeAlg{
 
         for(Node node : getPrePNSet(n)){
             if(node instanceof Time)
-                preSet.add((Time)node);
+                preSet.add((Time) node);
         }
 
         if(n instanceof TransitionNode){
             for(SONConnection con : net.getSONConnections(n)){
                 if(con.getSemantics() == Semantics.SYNCLINE){
                     if(con.getFirst() == n)
-                        preSet.add((Time)con.getSecond());
+                        preSet.add((Time) con.getSecond());
                     else
-                        preSet.add((Time)con.getFirst());
+                        preSet.add((Time) con.getFirst());
                 }else if(con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
-                    preSet.add((Time)con.getFirst());
+                    preSet.add((Time) con.getFirst());
             }
         }else if(n instanceof ChannelPlace){
             Node input = net.getPreset(n).iterator().next();
-            preSet.add((Time)input);
+            preSet.add((Time) input);
             Collection<Semantics> semantics = net.getSONConnectionTypes(n);
             if(semantics.iterator().next() == Semantics.SYNCLINE){
                 Node output = net.getPostset(n).iterator().next();
-                preSet.add((Time)output);
+                preSet.add((Time) output);
             }
         }
 
@@ -797,27 +797,27 @@ public class EstimationAlg extends TimeAlg{
 
         for(Node node :getPostPNSet(n)){
             if(node instanceof Time)
-                postSet.add((Time)node);
+                postSet.add((Time) node);
         }
 
         if(n instanceof TransitionNode){
             for(SONConnection con : net.getSONConnections(n)){
                 if(con.getSemantics() == Semantics.SYNCLINE){
                     if(con.getFirst() == n)
-                        postSet.add((Time)con.getSecond());
+                        postSet.add((Time) con.getSecond());
                     else
-                        postSet.add((Time)con.getFirst());
+                        postSet.add((Time) con.getFirst());
                 }else if(con.getSemantics() == Semantics.ASYNLINE && con.getFirst() == n)
-                    postSet.add((Time)con.getSecond());
+                    postSet.add((Time) con.getSecond());
             }
 
         }else if(n instanceof ChannelPlace){
             Node output = net.getPostset(n).iterator().next();
-            postSet.add((Time)output);
+            postSet.add((Time) output);
             Collection<Semantics> semantics = net.getSONConnectionTypes(n);
             if(semantics.iterator().next() == Semantics.SYNCLINE){
                 Node input = net.getPreset(n).iterator().next();
-                postSet.add((Time)input);
+                postSet.add((Time) input);
             }
         }
 

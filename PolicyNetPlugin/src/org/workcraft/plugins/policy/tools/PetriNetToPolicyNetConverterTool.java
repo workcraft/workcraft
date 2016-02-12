@@ -27,7 +27,7 @@ public class PetriNetToPolicyNetConverterTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualPetriNet srcModel = (VisualPetriNet)we.getModelEntry().getVisualModel();
+        final VisualPetriNet srcModel = (VisualPetriNet) we.getModelEntry().getVisualModel();
         final VisualPolicyNet dstModel = new VisualPolicyNet(new PolicyNet());
         final PetriNetToPolicyNetConverter converter = new PetriNetToPolicyNetConverter(srcModel, dstModel);
         final Framework framework = Framework.getInstance();

@@ -77,7 +77,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 
     @NoAutoSerialisation
     public SignalTransition getReferencedTransition() {
-        return (SignalTransition)getReferencedComponent();
+        return (SignalTransition) getReferencedComponent();
     }
 
     @NoAutoSerialisation
@@ -142,7 +142,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         boolean foundMinus = false;
         for (Stylable src: srcs) {
             if (src instanceof VisualSignalTransition) {
-                VisualSignalTransition srcSignalTransition = (VisualSignalTransition)src;
+                VisualSignalTransition srcSignalTransition = (VisualSignalTransition) src;
                 if (srcSignalTransition.getType() == Type.OUTPUT) {
                     foundOutput = true;
                 }

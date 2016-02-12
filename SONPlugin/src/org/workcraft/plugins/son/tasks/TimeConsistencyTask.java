@@ -63,7 +63,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
     public TimeConsistencyTask(WorkspaceEntry we, TimeConsistencySettings settings) {
         this.settings = settings;
-        net=(SON)we.getModelEntry().getMathModel();
+        net=(SON) we.getModelEntry().getMathModel();
         initialise();
     }
 
@@ -217,7 +217,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
         for(Node node : consistencyResult.keySet()){
             infoMsg("Node:" + net.getNodeReference(node));
-            Time n = (Time)node;
+            Time n = (Time) node;
             infoMsg("-start="+(n.getStartTime())+" end="+(n.getEndTime())+" duration="+(n.getDuration()));
 
             ArrayList<String> strs = consistencyResult.get(node);
@@ -238,7 +238,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
             for(Node node : unspecifyPartialNodes){
                 infoMsg("Node:" + net.getNodeReference(node));
-                ArrayList<String> estimationResult = timeEstimationTask((Time)node);
+                ArrayList<String> estimationResult = timeEstimationTask((Time) node);
                 if(!estimationResult.isEmpty()){
                     for(String str : estimationResult){
                         infoMsg("-"+str);
@@ -258,7 +258,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
             for(Node node : causalResult.keySet()){
                 infoMsg("Node:" + net.getNodeReference(node));
-                Time n = (Time)node;
+                Time n = (Time) node;
                 infoMsg("-start="+(n.getStartTime())+" end="+(n.getEndTime())+" duration="+(n.getDuration()));
 
                 ArrayList<String> strs = causalResult.get(node);
@@ -293,7 +293,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
 
         //ON consistency checking
         for(Node n : nodes){
-            Time node = (Time)n;
+            Time node = (Time) n;
             //add node to map
             result.put(node, new ArrayList<String>());
 
@@ -313,16 +313,16 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
         //CSON and BSON consistency checking
         for(Node n: nodes){
             if(n instanceof ChannelPlace){
-                ChannelPlace cp = (ChannelPlace)n;
+                ChannelPlace cp = (ChannelPlace) n;
                 try {
                     result.get(cp).addAll(consistencyAlg.csonConsistency(cp, syncCPs, g));
                 } catch (InvalidStructureException e) {
                     e.printStackTrace();
                 }
             }else if(n instanceof TransitionNode){
-                result.get(n).addAll(consistencyAlg.bsonConsistency((TransitionNode)n, phases, s));
+                result.get(n).addAll(consistencyAlg.bsonConsistency((TransitionNode) n, phases, s));
             }else if(n instanceof Condition){
-                Condition c = (Condition)n;
+                Condition c = (Condition) n;
                 if(lowerConditions.contains(c) && c.isInitial()){
                     result.get(n).addAll(consistencyAlg.bsonConsistency2(c, s));;
                 }
@@ -344,7 +344,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
         }
         try {
             if(!t.getStartTime().isSpecified()){
-                estimationAlg.setEstimatedStartTime((Node)t);
+                estimationAlg.setEstimatedStartTime((Node) t);
                 if(relationAlg.isInitial(t))
                     estimatedIniNodes.add(t);
             }
@@ -357,7 +357,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
         }
         try {
             if(!t.getEndTime().isSpecified()){
-                estimationAlg.setEstimatedEndTime((Node)t);
+                estimationAlg.setEstimatedEndTime((Node) t);
                 if(relationAlg.isFinal(t))
                     estimatedFinalNodes.add(t);
             }
@@ -414,7 +414,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
         for(Path path : cycleAlg.syncCycleTask(nodes)){
             for(Node node : path){
                 if(node instanceof ChannelPlace)
-                    result.add((ChannelPlace)node);
+                    result.add((ChannelPlace) node);
             }
         }
         return result;
@@ -441,7 +441,7 @@ public class TimeConsistencyTask implements Task<VerificationResult>{
     private void unspecifyHighlight(boolean b, Collection<Node> nodes){
         if(b){
             for(Node node : nodes){
-                net.setForegroundColor(node, new Color(204,204,255));
+                net.setForegroundColor(node, new Color(204, 204, 255));
             }
         }
     }

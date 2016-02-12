@@ -26,7 +26,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 public class Imply extends BinaryBooleanFormula {
 
     Imply(BooleanFormula x, BooleanFormula y) {
-        super(x,y);
+        super(x, y);
     }
 
     @Override

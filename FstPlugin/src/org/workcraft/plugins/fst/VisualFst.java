@@ -30,16 +30,16 @@ public class VisualFst extends VisualFsm {
     public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
 
-        VisualState vState1 = (VisualState)first;
-        VisualState vState2 = (VisualState)second;
+        VisualState vState1 = (VisualState) first;
+        VisualState vState2 = (VisualState) second;
         State mState1 = vState1.getReferencedState();
         State mState2 = vState2.getReferencedState();
 
         if (mConnection == null) {
-            Signal signal = ((Fst)getMathModel()).createSignal(null, Type.DUMMY);
-            mConnection = ((Fst)getMathModel()).createSignalEvent(mState1, mState2, signal);
+            Signal signal = ((Fst) getMathModel()).createSignal(null, Type.DUMMY);
+            mConnection = ((Fst) getMathModel()).createSignalEvent(mState1, mState2, signal);
         }
-        VisualSignalEvent vEvent = new VisualSignalEvent((SignalEvent)mConnection, vState1, vState2);
+        VisualSignalEvent vEvent = new VisualSignalEvent((SignalEvent) mConnection, vState1, vState2);
 
         Container container = Hierarchy.getNearestContainer(vState1, vState2);
         container.add(vEvent);

@@ -99,7 +99,7 @@ public class SynchronousExternalProcess {
         byte[] result = new byte[len];
         int cur = 0;
         for (byte[] dataChunk : chunks) {
-            for(int i=0;i<dataChunk.length;i++) {
+            for(int i=0; i<dataChunk.length; i++) {
                 result[cur++] = dataChunk[i];
             }
         }

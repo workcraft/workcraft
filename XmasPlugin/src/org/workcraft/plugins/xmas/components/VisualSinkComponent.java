@@ -52,7 +52,7 @@ public class VisualSinkComponent extends VisualXmasComponent {
     }
 
     public SinkComponent getReferencedSinkComponent() {
-        return (SinkComponent)getReferencedComponent();
+        return (SinkComponent) getReferencedComponent();
     }
 
     @Override
@@ -84,8 +84,8 @@ public class VisualSinkComponent extends VisualXmasComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (d instanceof StateDecoration) {
-            if (((StateDecoration)d).getState()) {
-                g.setStroke(new BasicStroke((float)XmasSettings.getBorderWidth()));
+            if (((StateDecoration) d).getState()) {
+                g.setStroke(new BasicStroke((float) XmasSettings.getBorderWidth()));
                 g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
                 Shape shape = transformShape(getTokenShape());
                 g.draw(shape);

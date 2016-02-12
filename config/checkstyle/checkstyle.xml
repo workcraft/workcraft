@@ -66,6 +66,7 @@
         <module name="ParenPad" />
         <module name="TypecastParenPad" />
         <module name="UnnecessaryParentheses" />
+        <module name="WhitespaceAfter" />
 
         <module name="RedundantModifier" />
 

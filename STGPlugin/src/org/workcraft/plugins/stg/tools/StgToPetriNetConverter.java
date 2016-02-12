@@ -52,7 +52,7 @@ public     class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG,
         dstCandidate = dstCandidate.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
 
         HierarchicalUniqueNameReferenceManager refManager
-                = (HierarchicalUniqueNameReferenceManager)getDstModel().getPetriNet().getReferenceManager();
+                = (HierarchicalUniqueNameReferenceManager) getDstModel().getPetriNet().getReferenceManager();
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(container);
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);

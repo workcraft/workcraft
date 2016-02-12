@@ -146,7 +146,7 @@ public class Untanglings {
     public boolean startConversion(){
 
         // starting conversion
-        untangling = new ReductionBasedRepresentativeUntangling(sys,setup);
+        untangling = new ReductionBasedRepresentativeUntangling(sys, setup);
 
         // if Petri Net is not safe, stop the conversion
         if(untangling.isSafe() == false){

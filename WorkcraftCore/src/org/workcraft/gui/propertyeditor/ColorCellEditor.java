@@ -98,7 +98,7 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
     @Override
     public Component getTableCellEditorComponent(JTable table,
             Object value, boolean isSelected, int row, int column) {
-        color = (Color)value;
+        color = (Color) value;
         return button;
     }
 }

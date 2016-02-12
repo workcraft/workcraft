@@ -91,7 +91,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
             label.setBorder(PropertyEditorTable.BORDER_RENDER);
             label.setBackground(table.getBackground());
             if ((net != null) && (value instanceof SignalState)) {
-                SignalState st = (SignalState)value;
+                SignalState st = (SignalState) value;
                 if (column == 0) {
                     label.setText(st.name);
                     label.setForeground(st.color);
@@ -149,7 +149,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
                 label.setText(value.toString());
                 Node node = net.getNodeByReference(value.toString());
                 if (node instanceof SignalTransition) {
-                    SignalTransition st = (SignalTransition)node;
+                    SignalTransition st = (SignalTransition) node;
                     Color color = getTypeColor(st.getSignalType());
                     label.setForeground(color);
                 }
@@ -196,8 +196,8 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         for (String ref : combinedTrace) {
             Node node = net.getNodeByReference(ref);
             if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition)node;
-                String signalReference = ((STG)net).getSignalReference(transition);
+                SignalTransition transition = (SignalTransition) node;
+                String signalReference = ((STG) net).getSignalReference(transition);
                 SignalState signalState = stateMap.get(signalReference);
                 if (signalState != null) {
                     switch (transition.getDirection()) {
@@ -223,8 +223,8 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
         for(Node node: net.getTransitions()) {
             if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition)node;
-                String signalReference = ((STG)net).getSignalReference(transition);
+                SignalTransition transition = (SignalTransition) node;
+                String signalReference = ((STG) net).getSignalReference(transition);
                 SignalState st = stateMap.get(signalReference);
                 if (st != null) {
                     st.excited |= net.isEnabled(transition);
@@ -266,7 +266,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         for (Node node : net.getTransitions()) {
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
-                String signalReference = ((STG)net).getSignalReference(transition);
+                String signalReference = ((STG) net).getSignalReference(transition);
                 if (!stateMap.containsKey(signalReference)) {
                     SignalState signalState = new SignalState();
                     signalState.name = signalReference;
@@ -298,7 +298,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
     @Override
     protected void coloriseTokens(Transition t) {
-        VisualTransition vt = ((VisualSTG)visualNet).getVisualTransition(t);
+        VisualTransition vt = ((VisualSTG) visualNet).getVisualTransition(t);
         if (vt == null) return;
         Color tokenColor = Color.black;
         ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
@@ -309,13 +309,13 @@ public class StgSimulationTool extends PetriNetSimulationTool {
             // combine preset token colours
             for (Connection c: visualNet.getConnections(vt)) {
                 if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
-                    VisualConnection vc = (VisualConnection)c;
+                    VisualConnection vc = (VisualConnection) c;
                     if (vc.isTokenColorPropagator()) {
                         if (vc.getFirst() instanceof VisualPlace) {
-                            VisualPlace vp = (VisualPlace)c.getFirst();
+                            VisualPlace vp = (VisualPlace) c.getFirst();
                             tokenColor = Coloriser.colorise(tokenColor, vp.getTokenColor());
                         } else if (vc instanceof VisualImplicitPlaceArc) {
-                            VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc)vc;
+                            VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
                             tokenColor = Coloriser.colorise(tokenColor, vipa.getTokenColor());
                         }
                     }
@@ -325,13 +325,13 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         // propagate the colour to postset tokens
         for (Connection c: visualNet.getConnections(vt)) {
             if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
-                VisualConnection vc = (VisualConnection)c;
+                VisualConnection vc = (VisualConnection) c;
                 if (vc.isTokenColorPropagator()) {
                     if (vc.getSecond() instanceof VisualPlace) {
-                        VisualPlace vp = (VisualPlace)c.getSecond();
+                        VisualPlace vp = (VisualPlace) c.getSecond();
                         vp.setTokenColor(tokenColor);
                     } else if (vc instanceof VisualImplicitPlaceArc) {
-                        VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc)vc;
+                        VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
                         vipa.setTokenColor(tokenColor);
                     }
                 }

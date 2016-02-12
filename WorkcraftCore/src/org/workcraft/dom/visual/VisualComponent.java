@@ -295,13 +295,13 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
     protected void drawPivot(DrawRequest r) {
         Graphics2D g = r.getGraphics();
-        float s2 = (float)CommonVisualSettings.getPivotSize() / 2;
+        float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
         Path2D p = new Path2D.Double();
         p.moveTo(-s2, 0);
         p.lineTo(s2, 0);
         p.moveTo(0, -s2);
         p.lineTo(0, s2);
-        g.setStroke(new BasicStroke((float)CommonVisualSettings.getPivotWidth()));
+        g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
         g.draw(p);
     }
 
@@ -418,7 +418,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualComponent) {
-            VisualComponent srcComponent = (VisualComponent)src;
+            VisualComponent srcComponent = (VisualComponent) src;
             setForegroundColor(srcComponent.getForegroundColor());
             setFillColor(srcComponent.getFillColor());
             setLabel(srcComponent.getLabel());
@@ -441,7 +441,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         String label = "";
         for (Stylable src: srcs) {
             if (src instanceof VisualComponent) {
-                VisualComponent srcComponent = (VisualComponent)src;
+                VisualComponent srcComponent = (VisualComponent) src;
                 foregroundColors.add(srcComponent.getForegroundColor());
                 fillColors.add(srcComponent.getFillColor());
                 nameColors.add(srcComponent.getNameColor());

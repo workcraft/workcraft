@@ -49,14 +49,14 @@ public class VisualSignalEvent extends VisualEvent {
     }
 
     public SignalEvent getReferencedSignalEvent() {
-        return (SignalEvent)getReferencedEvent();
+        return (SignalEvent) getReferencedEvent();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualSignalEvent) {
-            VisualSignalEvent srcSignalEvent = (VisualSignalEvent)src;
+            VisualSignalEvent srcSignalEvent = (VisualSignalEvent) src;
             getReferencedSignalEvent().setDirection(srcSignalEvent.getReferencedSignalEvent().getDirection());
         }
     }

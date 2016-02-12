@@ -83,9 +83,9 @@ public class TransitionContractorTool extends TransformationTool implements Node
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualModel) && (node instanceof VisualTransition)) {
-            VisualModel visualModel = (VisualModel)model;
-            PetriNetModel mathModel = (PetriNetModel)visualModel.getMathModel();
-            VisualTransition visualTransition = (VisualTransition)node;
+            VisualModel visualModel = (VisualModel) model;
+            PetriNetModel mathModel = (PetriNetModel) visualModel.getMathModel();
+            VisualTransition visualTransition = (VisualTransition) node;
             Transition mathTransition = visualTransition.getReferencedTransition();
             if (hasSelfLoop(mathModel, mathTransition)) {
                 JOptionPane.showMessageDialog(null,
@@ -157,7 +157,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
         Set<Node> succNodes = model.getPostset(transition);
         int markedPlaceCount = 0;
         for (Node succNode: succNodes) {
-            Place succPlace = (Place)succNode;
+            Place succPlace = (Place) succNode;
             if (succPlace.getTokens() != 0) {
                 markedPlaceCount++;
             }
@@ -186,7 +186,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
             return false;
         }
         for (Node succNode: succNodes) {
-            Place succPlace = (Place)succNode;
+            Place succPlace = (Place) succNode;
             if (succPlace.getTokens() != 0) {
                 return false;
             }
@@ -210,7 +210,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
             return false;
         }
         for (Node succNode: succNodes) {
-            Place succPlace = (Place)succNode;
+            Place succPlace = (Place) succNode;
             if (succPlace.getTokens() != 0) {
                 return false;
             }
@@ -245,9 +245,9 @@ public class TransitionContractorTool extends TransformationTool implements Node
         LinkedList<Node> succNodes = new LinkedList<Node>(visualModel.getPostset(visualTransition));
         HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap = new HashMap<>();
         for (Node predNode: predNodes) {
-            VisualPlace predPlace = (VisualPlace)predNode;
+            VisualPlace predPlace = (VisualPlace) predNode;
             for (Node succNode: succNodes) {
-                VisualPlace succPlace = (VisualPlace)succNode;
+                VisualPlace succPlace = (VisualPlace) succNode;
                 VisualPlace productPlace = createProductPlace(visualModel, predPlace, succPlace);
                 initialiseProductPlace(visualModel, predPlace, succPlace, productPlace);
 
@@ -269,11 +269,11 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     public VisualPlace createProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace) {
-        Container visualContainer = (Container)Hierarchy.getCommonParent(predPlace, succPlace);
+        Container visualContainer = (Container) Hierarchy.getCommonParent(predPlace, succPlace);
         Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
         MathModel mathModel = visualModel.getMathModel();
-        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager)mathModel.getReferenceManager();
-        NameManager nameManagerer = refManager.getNameManager((NamespaceProvider)mathContainer);
+        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) mathModel.getReferenceManager();
+        NameManager nameManagerer = refManager.getNameManager((NamespaceProvider) mathContainer);
         String predName = visualModel.getMathName(predPlace);
         String succName = visualModel.getMathName(succPlace);
         String productName = nameManagerer.getDerivedName(null, predName + succName);
@@ -328,8 +328,8 @@ public class TransitionContractorTool extends TransformationTool implements Node
             }
             if ((newConnection != null) && (originalConnection instanceof VisualConnection)) {
                 productConnectionMap.put(newConnection, originalConnection);
-                newConnection.copyStyle((VisualConnection)originalConnection);
-                newConnection.copyShape((VisualConnection)originalConnection);
+                newConnection.copyStyle((VisualConnection) originalConnection);
+                newConnection.copyShape((VisualConnection) originalConnection);
             }
         }
         return productConnectionMap;
@@ -341,10 +341,10 @@ public class TransitionContractorTool extends TransformationTool implements Node
         for (Connection connection: visualModel.getConnections(visualTransition)) {
             VisualReplicaPlace replicaPlace = null;
             if (connection.getFirst() instanceof VisualReplicaPlace) {
-                replicaPlace = (VisualReplicaPlace)connection.getFirst();
+                replicaPlace = (VisualReplicaPlace) connection.getFirst();
             }
             if (connection.getSecond() instanceof VisualReplicaPlace) {
-                replicaPlace = (VisualReplicaPlace)connection.getSecond();
+                replicaPlace = (VisualReplicaPlace) connection.getSecond();
             }
             if (replicaPlace != null) {
                 replicaPlaces.add(replicaPlace);
@@ -352,15 +352,15 @@ public class TransitionContractorTool extends TransformationTool implements Node
 
             VisualPlace place = null;
             if (connection.getFirst() instanceof VisualPlace) {
-                place = (VisualPlace)connection.getFirst();
+                place = (VisualPlace) connection.getFirst();
             }
             if (connection.getSecond() instanceof VisualPlace) {
-                place = (VisualPlace)connection.getSecond();
+                place = (VisualPlace) connection.getSecond();
             }
             if (place != null) {
                 for (Replica replica: place.getReplicas()) {
                     if (replica instanceof VisualReplicaPlace) {
-                        replicaPlaces.add((VisualReplicaPlace)replica);
+                        replicaPlaces.add((VisualReplicaPlace) replica);
                     }
                 }
             }
@@ -383,18 +383,18 @@ public class TransitionContractorTool extends TransformationTool implements Node
                 Connection predPlaceConnection = null;
                 Connection succPlaceConnection = null;
                 if (productConnection.getFirst() instanceof VisualTransition) {
-                    VisualTransition transition = (VisualTransition)productConnection.getFirst();
+                    VisualTransition transition = (VisualTransition) productConnection.getFirst();
                     predPlaceConnection = visualModel.getConnection(transition, predPlace);
                     succPlaceConnection = visualModel.getConnection(transition, succPlace);
                 }
                 if (productConnection.getSecond() instanceof VisualTransition) {
-                    VisualTransition transition = (VisualTransition)productConnection.getSecond();
+                    VisualTransition transition = (VisualTransition) productConnection.getSecond();
                     predPlaceConnection = visualModel.getConnection(predPlace, transition);
                     succPlaceConnection = visualModel.getConnection(succPlace, transition);
                 }
                 if (((predPlaceConnection == null) || convertedReplicaConnections.contains(predPlaceConnection))
                         &&((succPlaceConnection == null) || convertedReplicaConnections.contains(succPlaceConnection))) {
-                    replicaPlaceConnections.add((VisualConnection)productConnection);
+                    replicaPlaceConnections.add((VisualConnection) productConnection);
                 }
             }
         }

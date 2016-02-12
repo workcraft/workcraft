@@ -55,8 +55,8 @@ public class Grid implements ViewportListener {
 
     protected Stroke stroke;
 
-    protected Color majorLinesColor = new Color(200,200,200);
-    protected Color minorLinesColor = new Color(240,240,240);
+    protected Color majorLinesColor = new Color(200, 200, 200);
+    protected Color minorLinesColor = new Color(240, 240, 240);
     protected Color guideLinesColor = Color.RED;
 
     protected double majorInterval = 10.0;
@@ -215,19 +215,19 @@ public class Grid implements ViewportListener {
             }
         }
         // Compute the leftmost, rightmost, topmost and bottom visible grid lines
-        int majorBottom  = (int)Math.ceil(visibleLR.getY()/majorInterval);
-        int majorTop = (int)Math.floor(visibleUL.getY()/majorInterval);
+        int majorBottom  = (int) Math.ceil(visibleLR.getY()/majorInterval);
+        int majorTop = (int) Math.floor(visibleUL.getY()/majorInterval);
 
-        int majorLeft = (int)Math.ceil(visibleUL.getX()/majorInterval);
-        int majorRight = (int)Math.floor(visibleLR.getX()/majorInterval);
+        int majorLeft = (int) Math.ceil(visibleUL.getX()/majorInterval);
+        int majorRight = (int) Math.floor(visibleLR.getX()/majorInterval);
 
         double minorInterval = majorInterval * minorIntervalFactor;
 
-        int minorLeft = (int)Math.ceil(visibleUL.getX()/minorInterval);
-        int minorRight = (int)Math.floor(visibleLR.getX()/minorInterval);
+        int minorLeft = (int) Math.ceil(visibleUL.getX()/minorInterval);
+        int minorRight = (int) Math.floor(visibleLR.getX()/minorInterval);
 
-        int minorBottom = (int)Math.ceil(visibleLR.getY()/minorInterval);
-        int minorTop = (int)Math.floor(visibleUL.getY()/minorInterval);
+        int minorBottom = (int) Math.ceil(visibleLR.getY()/minorInterval);
+        int minorTop = (int) Math.floor(visibleUL.getY()/minorInterval);
 
         // Build the gridlines positions, store them as user-space coordinates,
         // screen-space coordinates, and as a drawable path (in screen-space)
@@ -244,7 +244,7 @@ public class Grid implements ViewportListener {
             minorLinePositions[0][x-minorLeft] = x*minorInterval;
             p1.setLocation(x*minorInterval, 0);
             viewport.getTransform().transform(p1, p2);
-            minorLinePositionsScreen[0][x-minorLeft] = (int)p2.getX();
+            minorLinePositionsScreen[0][x-minorLeft] = (int) p2.getX();
 
             minorLinesPath.moveTo(p2.getX(), viewLL.getY());
             minorLinesPath.lineTo(p2.getX(), viewUR.getY());
@@ -258,7 +258,7 @@ public class Grid implements ViewportListener {
             minorLinePositions[1][y-minorBottom] = y*minorInterval;
             p1.setLocation(0, y*minorInterval);
             viewport.getTransform().transform(p1, p2);
-            minorLinePositionsScreen[1][y-minorBottom] = (int)p2.getY();
+            minorLinePositionsScreen[1][y-minorBottom] = (int) p2.getY();
 
             minorLinesPath.moveTo(viewLL.getX(), p2.getY());
             minorLinesPath.lineTo(viewUR.getX(), p2.getY());
@@ -272,9 +272,9 @@ public class Grid implements ViewportListener {
             majorLinePositions[0][x-majorLeft] = x*majorInterval;
             p1.setLocation(x*majorInterval, 0);
             viewport.getTransform().transform(p1, p2);
-            majorLinePositionsScreen[0][x-majorLeft] = (int)p2.getX();
-            majorLinesPath.moveTo((int)p2.getX(), viewLL.getY());
-            majorLinesPath.lineTo((int)p2.getX(), viewUR.getY());
+            majorLinePositionsScreen[0][x-majorLeft] = (int) p2.getX();
+            majorLinesPath.moveTo((int) p2.getX(), viewLL.getY());
+            majorLinesPath.lineTo((int) p2.getX(), viewUR.getY());
         }
 
         final int countMajV = Math.max(0, majorTop-majorBottom+1);
@@ -285,7 +285,7 @@ public class Grid implements ViewportListener {
             majorLinePositions[1][y-majorBottom] = y*majorInterval;
             p1.setLocation(0, y*majorInterval);
             viewport.getTransform().transform(p1, p2);
-            majorLinePositionsScreen[1][y-majorBottom] = (int)p2.getY();
+            majorLinePositionsScreen[1][y-majorBottom] = (int) p2.getY();
 
             majorLinesPath.moveTo(viewLL.getX(), p2.getY());
             majorLinesPath.lineTo(viewUR.getX(), p2.getY());

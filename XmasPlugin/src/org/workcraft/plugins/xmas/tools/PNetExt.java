@@ -28,7 +28,7 @@ public class PNetExt {
         String name1;
         String name2;
 
-        Source(String s1,String s2) {
+        Source(String s1, String s2) {
             name1 = s1;
             name2 = s2;
         }
@@ -39,7 +39,7 @@ public class PNetExt {
         String name1;
         String name2;
 
-        Switch(String s1,String s2) {
+        Switch(String s1, String s2) {
             name1 = s1;
             name2 = s2;
         }
@@ -50,7 +50,7 @@ public class PNetExt {
         String name1;
         String name2;
 
-        Merge(String s1,String s2) {
+        Merge(String s1, String s2) {
             name1 = s1;
             name2 = s2;
         }
@@ -77,7 +77,7 @@ public class PNetExt {
         mergelist.clear();
     }
 
-    private static void readFile(String file,int syncflag) {
+    private static void readFile(String file, int syncflag) {
         String typ=null;
         String g1=null;
         String g2=null;
@@ -98,7 +98,7 @@ public class PNetExt {
                 if(check.startsWith("//gensource")) {
                     nxt=new Scanner(line.next());
                     name=nxt.next();
-                    sourcelist.add(new Source(name,name));
+                    sourcelist.add(new Source(name, name));
                     typ="Source";
                 } else if(check.startsWith("//genfunction")) {
                     nxt=new Scanner(line.next());
@@ -108,12 +108,12 @@ public class PNetExt {
                 } else if(check.startsWith("//genmerge")) {
                     nxt=new Scanner(line.next());
                     name=nxt.next();
-                    mergelist.add(new Merge(name,name));
+                    mergelist.add(new Merge(name, name));
                     typ="Merge";
                 } else if(check.startsWith("//genswitch")) {
                     nxt=new Scanner(line.next());
                     name=nxt.next();
-                    switchlist.add(new Switch(name,name));
+                    switchlist.add(new Switch(name, name));
                     typ="Switch";
                 }
             }
@@ -173,7 +173,7 @@ public class PNetExt {
             writer = new PrintWriter(pncFile);
             File cpnFile = XmasSettings.getTempVxmCpnFile();
             readFile(cpnFile.getAbsolutePath(), syncflag);
-            writeNet(writer,srcNodes,funNodes, swNodes);
+            writeNet(writer, srcNodes, funNodes, swNodes);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

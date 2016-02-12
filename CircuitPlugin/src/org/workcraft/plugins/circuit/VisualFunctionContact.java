@@ -82,7 +82,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     public FunctionContact getReferencedFunctionContact() {
-        return (FunctionContact)getReferencedComponent();
+        return (FunctionContact) getReferencedComponent();
     }
 
     @NoAutoSerialisation
@@ -121,10 +121,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private FormulaRenderingResult getRenderedSetFormula() {
-        if (((FunctionContact)getReferencedContact()).getSetFunction() == null) {
+        if (((FunctionContact) getReferencedContact()).getSetFunction() == null) {
             renderedSetFormula = null;
         } else if (renderedSetFormula == null) {
-            renderedSetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getSetFunction(), context, font);
+            renderedSetFormula = FormulaToGraphics.render(((FunctionContact) getReferencedContact()).getSetFunction(), context, font);
         }
         return renderedSetFormula;
     }
@@ -164,10 +164,10 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private FormulaRenderingResult getRenderedResetFormula() {
-        if (((FunctionContact)getReferencedContact()).getResetFunction() == null) {
+        if (((FunctionContact) getReferencedContact()).getResetFunction() == null) {
             renderedResetFormula = null;
         } else if (renderedResetFormula == null) {
-            renderedResetFormula = FormulaToGraphics.render(((FunctionContact)getReferencedContact()).getResetFunction(), context, font);
+            renderedResetFormula = FormulaToGraphics.render(((FunctionContact) getReferencedContact()).getResetFunction(), context, font);
         }
         return renderedResetFormula;
     }
@@ -208,7 +208,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private void drawArrow(Graphics2D g, int arrowType, double arrX, double arrY) {
-        g.setStroke(new BasicStroke((float)0.02));
+        g.setStroke(new BasicStroke((float) 0.02));
         if (arrowType == 1) {
             // arrow down
             Line2D line = new Line2D.Double(arrX, arrY-0.15, arrX, arrY-0.375);
@@ -290,7 +290,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             }
             // Output port of a BOX-rendered component
             if ((parent instanceof VisualFunctionComponent) && isOutput()) {
-                VisualFunctionComponent component = (VisualFunctionComponent)parent;
+                VisualFunctionComponent component = (VisualFunctionComponent) parent;
                 if (component.getRenderType() == RenderType.BOX) {
                     result = true;
                 }
@@ -321,7 +321,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     @Override
     public void notify(StateEvent e) {
         if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pc = (PropertyChangedEvent)e;
+            PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION) || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
                 invalidateRenderedFormula();

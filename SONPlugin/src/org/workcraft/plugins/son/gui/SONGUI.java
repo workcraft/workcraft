@@ -14,7 +14,7 @@ public class SONGUI extends GUI{
     public static JToggleButton createIconToggleButton(Icon icon, String toolTip) {
         JToggleButton result = new JToggleButton(icon);
         result.setToolTipText(toolTip);
-        result.setMargin(new Insets(0,0,0,0));
+        result.setMargin(new Insets(0, 0, 0, 0));
         int iconSize = CommonEditorSettings.getIconSize();
         Insets insets = result.getInsets();
         int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);

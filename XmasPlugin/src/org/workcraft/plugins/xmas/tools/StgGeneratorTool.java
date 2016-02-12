@@ -26,7 +26,7 @@ public class StgGeneratorTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualXmas xmas = (VisualXmas)we.getModelEntry().getVisualModel();
+        final VisualXmas xmas = (VisualXmas) we.getModelEntry().getVisualModel();
         final StgGenerator generator = new StgGenerator(xmas);
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();

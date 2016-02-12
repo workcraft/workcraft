@@ -238,7 +238,7 @@ public class PnToCpogConverter {
             }
 
             // set position of last vertex
-            vertex.setPosition(new Double(xPos,yPos));
+            vertex.setPosition(new Double(xPos, yPos));
             return;
         }
 
@@ -269,7 +269,7 @@ public class PnToCpogConverter {
                 VisualVertex postVertex = (VisualVertex) connection.getSecond();
 
                 // set the position to current vertex
-                vertex.setPosition(new Double(x,y));
+                vertex.setPosition(new Double(x, y));
 
                 // increment horizontal position
                 x = x + 5;

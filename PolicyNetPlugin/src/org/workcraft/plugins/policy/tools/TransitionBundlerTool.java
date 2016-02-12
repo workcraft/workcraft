@@ -24,7 +24,7 @@ public class TransitionBundlerTool extends ConversionTool {
         framework.getMainWindow().getCurrentEditor().getToolBox().selectDefaultTool();
         we.saveMemento();
 
-        final VisualPolicyNet visualModel = (VisualPolicyNet)we.getModelEntry().getVisualModel();
+        final VisualPolicyNet visualModel = (VisualPolicyNet) we.getModelEntry().getVisualModel();
         visualModel.unbundleTransitions(visualModel.getVisualBundledTransitions());
 
         final PetriNetGenerator generator = new PetriNetGenerator(visualModel);

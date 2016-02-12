@@ -77,20 +77,20 @@ public class VisualCPOG extends AbstractVisualModel {
 
         @Override
         public Object getValue() throws InvocationTargetException {
-            if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause)node).getFormula());
-            if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex)node).getCondition());
-            return FormulaToString.toString(((VisualArc)node).getCondition());
+            if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause) node).getFormula());
+            if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex) node).getCondition());
+            return FormulaToString.toString(((VisualArc) node).getCondition());
         }
 
         @Override
         public void setValue(Object value) throws InvocationTargetException {
             try {
                 if (node instanceof VisualRhoClause) {
-                    ((VisualRhoClause)node).setFormula(BooleanParser.parse((String)value, mathModel.getVariables()));
+                    ((VisualRhoClause) node).setFormula(BooleanParser.parse((String) value, mathModel.getVariables()));
                 } else if (node instanceof VisualArc) {
-                    ((VisualArc)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+                    ((VisualArc) node).setCondition(BooleanParser.parse((String) value, mathModel.getVariables()));
                 } else if (node instanceof VisualVertex) {
-                    ((VisualVertex)node).setCondition(BooleanParser.parse((String)value, mathModel.getVariables()));
+                    ((VisualVertex) node).setCondition(BooleanParser.parse((String) value, mathModel.getVariables()));
                 }
             } catch (ParseException e) {
                 throw new InvocationTargetException(e);
@@ -174,7 +174,7 @@ public class VisualCPOG extends AbstractVisualModel {
             if (mConnection == null) {
                 mConnection = mathModel.connect(v.getMathVertex(), u.getMathVariable());
             }
-            ret = new VisualDynamicVariableConnection((DynamicVariableConnection)mConnection, v, u);
+            ret = new VisualDynamicVariableConnection((DynamicVariableConnection) mConnection, v, u);
             Hierarchy.getNearestContainer(v, u).add(ret);
         }
         return ret;

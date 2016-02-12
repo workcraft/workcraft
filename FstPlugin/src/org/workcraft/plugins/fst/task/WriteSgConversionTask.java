@@ -76,7 +76,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
         try {
             // Common variables
             monitor.progressUpdate(0.05);
-            PetriNetModel pn = (PetriNetModel)getWorkspaceEntry().getModelEntry().getMathModel();
+            PetriNetModel pn = (PetriNetModel) getWorkspaceEntry().getModelEntry().getMathModel();
             pn.setTitle(getWorkspaceEntry().getTitle());
             Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
             if (pnExporter == null) {

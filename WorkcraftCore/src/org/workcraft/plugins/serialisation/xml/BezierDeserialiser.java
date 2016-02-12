@@ -43,7 +43,7 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
-        Bezier bezier = (Bezier)instance;
+        Bezier bezier = (Bezier) instance;
         for (BezierControlPoint cp : bezier.getBezierControlPoints()) {
             nodeFinaliser.finaliseInstance(cp);
         }
@@ -54,7 +54,7 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
     public Object createInstance(Element element,
             ReferenceResolver externalReferenceResolver,
             Object... constructorParameters) {
-        return new Bezier((VisualConnection)constructorParameters[0]);
+        return new Bezier((VisualConnection) constructorParameters[0]);
     }
 
     @Override
@@ -65,9 +65,9 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
         Element cp1e = XmlUtil.getChildElement("cp1", element);
         Element cp2e =  XmlUtil.getChildElement("cp2", element);
 
-        BezierControlPoint cp1 = (BezierControlPoint)nodeInitialiser.initInstance(cp1e);
-        BezierControlPoint cp2 = (BezierControlPoint)nodeInitialiser.initInstance(cp2e);
+        BezierControlPoint cp1 = (BezierControlPoint) nodeInitialiser.initInstance(cp1e);
+        BezierControlPoint cp2 = (BezierControlPoint) nodeInitialiser.initInstance(cp2e);
 
-        ((Bezier)instance).initControlPoints(cp1, cp2);
+        ((Bezier) instance).initControlPoints(cp1, cp2);
     }
 }

@@ -26,7 +26,7 @@ public class StgGeneratorTool extends ConversionTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualDfs dfs = (VisualDfs)we.getModelEntry().getVisualModel();
+        final VisualDfs dfs = (VisualDfs) we.getModelEntry().getVisualModel();
         final StgGenerator generator = new StgGenerator(dfs);
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();

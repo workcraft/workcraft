@@ -57,7 +57,7 @@ public class TimeEstimatorDialog extends JDialog{
 
     public TimeEstimatorDialog(GraphEditor editor, TimeEstimatorSettings settings, Node selection, Granularity g){
         super(editor.getMainWindow(), "Estimator Setting", ModalityType.TOOLKIT_MODAL);
-        net = (SON)editor.getModel().getMathModel();
+        net = (SON) editor.getModel().getMathModel();
         this.editor = editor;
         this.settings = settings;
         this.selection = selection;
@@ -88,7 +88,7 @@ public class TimeEstimatorDialog extends JDialog{
 
         JPanel    entirePanel = new JPanel(new BorderLayout());
         entirePanel.setBorder(BorderFactory.createTitledBorder("Entire estimation"));
-        entirePanel.setLayout(new GridLayout(3,0));
+        entirePanel.setLayout(new GridLayout(3, 0));
 
         entireEst = new JCheckBox("Estimate time value for entire SON");
         entireEst.setSelected(false);
@@ -110,7 +110,7 @@ public class TimeEstimatorDialog extends JDialog{
 
         JPanel singlePanel = new JPanel(new BorderLayout());
         singlePanel.setBorder(BorderFactory.createTitledBorder("Single Node estimation"));
-        singlePanel.setLayout(new GridLayout(2,0));
+        singlePanel.setLayout(new GridLayout(2, 0));
 
         intermediate = new  JCheckBox("Set values for intermediate nodes");
         intermediate.setSelected(false);
@@ -169,7 +169,7 @@ public class TimeEstimatorDialog extends JDialog{
                     saveList.setPosition(row);
                     Object obj = scenarioTable.getValueAt(row, column);
                     if(obj instanceof ScenarioRef){
-                        scenarioTable.setScenarioRef((ScenarioRef)obj);
+                        scenarioTable.setScenarioRef((ScenarioRef) obj);
                         scenarioTable.setIsCellColor(true);
                         scenarioTable.updateTable(editor);
                         scenarioTable.updateColor(selection);

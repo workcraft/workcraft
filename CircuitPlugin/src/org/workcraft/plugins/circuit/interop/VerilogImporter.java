@@ -509,7 +509,7 @@ public class VerilogImporter implements Importer {
             String pinName = gate.isPrimititve() ? getPrimitiveGatePinName(index++) : verilogPin.name;
             Node node = circuit.getNodeByReference(component, pinName);
             if (node instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact)node;
+                FunctionContact contact = (FunctionContact) node;
                 if (contact.isInput()) {
                     wire.sinks.add(contact);
                 } else {
@@ -747,7 +747,7 @@ public class VerilogImporter implements Importer {
         if (outputContacts.size() != 1) {
             throw new RuntimeException("Cannot determin the output of component '" + circuit.getName(component) + "'.");
         }
-        FunctionContact outputContact = (FunctionContact)outputContacts.iterator().next();
+        FunctionContact outputContact = (FunctionContact) outputContacts.iterator().next();
         return outputContact;
     }
 

@@ -36,12 +36,12 @@ public class GraphStatisticsTool implements Tool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualCPOG cpog = (VisualCPOG)we.getModelEntry().getVisualModel();
+        final VisualCPOG cpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 
         ArrayList<Container> scenarios = new ArrayList<Container>();
         for (Node cur: cpog.getSelection()) {
             if (cur instanceof VisualScenario) {
-                scenarios.add((VisualScenario)cur);
+                scenarios.add((VisualScenario) cur);
             }
         }
         if (scenarios.isEmpty()) {

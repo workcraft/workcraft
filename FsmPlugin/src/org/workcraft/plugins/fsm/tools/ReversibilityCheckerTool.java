@@ -27,7 +27,7 @@ public class ReversibilityCheckerTool extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Fsm fsm = (Fsm)we.getModelEntry().getMathModel();
+        final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
         HashSet<State> irreversibleStates = checkReversibility(fsm);
         if (irreversibleStates.isEmpty()) {
             JOptionPane.showMessageDialog(null,    "The model is reversible.",
@@ -65,7 +65,7 @@ public class ReversibilityCheckerTool extends VerificationTool {
             if (visitedStates.contains(curState)) continue;
             visitedStates.add(curState);
             for (Event curEvent: stateSuccEvents.get(curState)) {
-                State nextState = (State)curEvent.getSecond();
+                State nextState = (State) curEvent.getSecond();
                 if (nextState != null) {
                     queueStates.add(nextState);
                 }
@@ -89,7 +89,7 @@ public class ReversibilityCheckerTool extends VerificationTool {
             if (visitedStates.contains(curState)) continue;
             visitedStates.add(curState);
             for (Event curEvent: statePrevEvents.get(curState)) {
-                State prevState = (State)curEvent.getFirst();
+                State prevState = (State) curEvent.getFirst();
                 if (prevState != null) {
                     queueStates.add(prevState);
                 }

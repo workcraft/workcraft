@@ -40,7 +40,7 @@ public class RelationAlgorithm{
             if(postset.size() > 1){
                 for(Node post : postset){
                     if(post instanceof TransitionNode)
-                        result.add((TransitionNode)post);
+                        result.add((TransitionNode) post);
                 }
             }
         }
@@ -65,7 +65,7 @@ public class RelationAlgorithm{
             if(preset.size() > 1){
                 for(Node pre : preset){
                     if(pre instanceof TransitionNode)
-                        result.add((TransitionNode)pre);
+                        result.add((TransitionNode) pre);
                 }
             }
         }
@@ -193,7 +193,7 @@ public class RelationAlgorithm{
                 if(net.getSONConnectionType(c, pre) == Semantics.PNLINE)
                     for(Node n2 : net.getPreset(pre))
                         if((n2 instanceof Condition) && net.getSONConnectionType(pre, n2)== Semantics.PNLINE)
-                            result.add((Condition)n2);
+                            result.add((Condition) n2);
 
         return result;
     }
@@ -208,7 +208,7 @@ public class RelationAlgorithm{
                 if(net.getSONConnectionType(c, post)== Semantics.PNLINE)
                     for(Node n2 : net.getPostset(post))
                         if((n2 instanceof Condition) && net.getSONConnectionType(post, n2) == Semantics.PNLINE)
-                            result.add((Condition)n2);
+                            result.add((Condition) n2);
 
         return result;
     }
@@ -224,7 +224,7 @@ public class RelationAlgorithm{
                 Iterator<Node> it = net.getPreset(pre).iterator();
 
                 while(it.hasNext()){
-                    result.add((TransitionNode)it.next());
+                    result.add((TransitionNode) it.next());
                 }
             }
         }
@@ -242,7 +242,7 @@ public class RelationAlgorithm{
                 Iterator<Node> it = net.getPostset(post).iterator();
 
                 while(it.hasNext()){
-                    result.add((TransitionNode)it.next());
+                    result.add((TransitionNode) it.next());
                 }
             }
         return result;
@@ -260,7 +260,7 @@ public class RelationAlgorithm{
                 Iterator<Node> it = net.getPreset(pre).iterator();
 
                 while(it.hasNext()){
-                    result.add((TransitionNode)it.next());
+                    result.add((TransitionNode) it.next());
                 }
             }
         }
@@ -270,7 +270,7 @@ public class RelationAlgorithm{
                 Iterator<Node> it = net.getPostset(post).iterator();
 
                 while(it.hasNext()){
-                    result.add((TransitionNode)it.next());
+                    result.add((TransitionNode) it.next());
                 }
             }
         }
@@ -290,7 +290,7 @@ public class RelationAlgorithm{
                 Iterator<Node> it = net.getPostset(post).iterator();
 
                 while(it.hasNext()){
-                    result.add((TransitionNode)it.next());
+                    result.add((TransitionNode) it.next());
                 }
             }
         }
@@ -300,7 +300,7 @@ public class RelationAlgorithm{
                 Iterator<Node> it = net.getPreset(pre).iterator();
 
                 while(it.hasNext()){
-                    result.add((TransitionNode)it.next());
+                    result.add((TransitionNode) it.next());
                 }
             }
         }
@@ -315,15 +315,15 @@ public class RelationAlgorithm{
         Collection<Condition> result = new ArrayList<Condition>();
         for(Node n : net.getPreset(e)){
             if(n instanceof Condition)
-                result.add((Condition)n);
+                result.add((Condition) n);
             if(n instanceof ChannelPlace){
 
                 Iterator<Node> it = net.getPreset(n).iterator();
 
                 while(it.hasNext()){
-                    for(Node preCondition : net.getPreset((TransitionNode)it.next()))
+                    for(Node preCondition : net.getPreset((TransitionNode) it.next()))
                         if(preCondition instanceof Condition)
-                            result.add((Condition)preCondition);
+                            result.add((Condition) preCondition);
                 }
             }
         }
@@ -334,9 +334,9 @@ public class RelationAlgorithm{
                 Iterator<Node> it = net.getPostset(n).iterator();
 
                 while(it.hasNext()){
-                    for(Node preCondition : net.getPreset((TransitionNode)it.next()))
+                    for(Node preCondition : net.getPreset((TransitionNode) it.next()))
                         if(preCondition instanceof Condition)
-                            result.add((Condition)preCondition);
+                            result.add((Condition) preCondition);
                 }
             }
         }
@@ -352,15 +352,15 @@ public class RelationAlgorithm{
 
         for(Node n : net.getPostset(e)){
             if(n instanceof Condition)
-                result.add((Condition)n);
+                result.add((Condition) n);
             if(n instanceof ChannelPlace){
 
                 Iterator<Node> it = net.getPostset(n).iterator();
 
                 while(it.hasNext()){
-                    for(Node postCondition : net.getPostset((TransitionNode)it.next()))
+                    for(Node postCondition : net.getPostset((TransitionNode) it.next()))
                         if(postCondition instanceof Condition)
-                            result.add((Condition)postCondition);
+                            result.add((Condition) postCondition);
                 }
             }
         }
@@ -373,7 +373,7 @@ public class RelationAlgorithm{
                 while(it.hasNext()){
                     for(Node postCondition : net.getPostset(it.next()))
                         if(postCondition instanceof Condition)
-                            result.add((Condition)postCondition);
+                            result.add((Condition) postCondition);
                 }
             }
         }
@@ -412,7 +412,7 @@ public class RelationAlgorithm{
         Collection<Condition> result = new ArrayList<Condition>();
         for(Node n : net.getPostset(c)){
             if(net.getSONConnectionType(c, n) == Semantics.BHVLINE)
-                result.add((Condition)n);
+                result.add((Condition) n);
         }
         return result;
     }
@@ -424,7 +424,7 @@ public class RelationAlgorithm{
         Collection<Condition> result = new ArrayList<Condition>();
         for(Node n : net.getPreset(c)){
             if(net.getSONConnectionType(c, n) == Semantics.BHVLINE)
-                result.add((Condition)n);
+                result.add((Condition) n);
         }
         return result;
     }

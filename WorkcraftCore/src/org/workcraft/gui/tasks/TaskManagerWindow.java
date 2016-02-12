@@ -189,7 +189,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                                 if (monitor.isCancelRequested()) {
                                     return new Result<Object>(Outcome.CANCELLED);
                                 }
-                                Thread.sleep((int)(Math.random()*100+20));
+                                Thread.sleep((int) (Math.random()*100+20));
                             } catch (InterruptedException e) {
                                 return new Result<Object>(Outcome.FAILED);
                             }

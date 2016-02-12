@@ -63,7 +63,7 @@ public class RenderedText {
 
     public void draw(Graphics2D g, Alignment alignment) {
         g.setFont(font);
-        float y = (float)boundingBox.getMinY();
+        float y = (float) boundingBox.getMinY();
         for (GlyphVector glyphVector: glyphVectors) {
             final Rectangle2D lineBoundingBox = glyphVector.getVisualBounds();
             double xMargin = 0.0;
@@ -79,7 +79,7 @@ public class RenderedText {
             }
             double x = boundingBox.getX() - lineBoundingBox.getX() + xMargin * (1.0 - positioning.xSign);
             y += lineBoundingBox.getHeight();
-            g.drawGlyphVector(glyphVector, (float)x, (float)y);
+            g.drawGlyphVector(glyphVector, (float) x, (float) y);
             y += spacing;
         }
     }

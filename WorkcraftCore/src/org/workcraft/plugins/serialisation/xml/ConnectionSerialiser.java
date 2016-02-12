@@ -38,7 +38,7 @@ public class ConnectionSerialiser implements CustomXMLSerialiser {
             ReferenceProducer internalReferences,
             ReferenceProducer incomingReferences,
             NodeSerialiser nodeSerialiser) throws SerialisationException {
-        Connection con = (Connection)object;
+        Connection con = (Connection) object;
         element.setAttribute("first", internalReferences.getReference(con.getFirst()));
         element.setAttribute("second", internalReferences.getReference(con.getSecond()));
     }

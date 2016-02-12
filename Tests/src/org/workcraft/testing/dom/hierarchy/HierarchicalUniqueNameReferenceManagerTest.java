@@ -14,15 +14,15 @@ public class HierarchicalUniqueNameReferenceManagerTest {
     static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>(){
         private static final long serialVersionUID = -2931077011392124649L;
         {
-            put("/'abc'/'dfe'", new Pair<String, String>("abc","/'dfe'"));
-            put("/'abc'/'dfe'/'asdf'", new Pair<String, String>("abc","/'dfe'/'asdf'"));
-            put("/abc/dfe/asdf", new Pair<String, String>("abc","/dfe/asdf"));
+            put("/'abc'/'dfe'", new Pair<String, String>("abc", "/'dfe'"));
+            put("/'abc'/'dfe'/'asdf'", new Pair<String, String>("abc", "/'dfe'/'asdf'"));
+            put("/abc/dfe/asdf", new Pair<String, String>("abc", "/dfe/asdf"));
 
-            put("/abc/1/dfe/asdf", new Pair<String, String>("abc/1","/dfe/asdf"));
+            put("/abc/1/dfe/asdf", new Pair<String, String>("abc/1", "/dfe/asdf"));
 
-            put("a/b/c+/33", new Pair<String, String>("a","/b/c+/33"));
+            put("a/b/c+/33", new Pair<String, String>("a", "/b/c+/33"));
 
-            put("/'abc/dfe'/asdf", new Pair<String, String>("abc/dfe","/asdf"));
+            put("/'abc/dfe'/asdf", new Pair<String, String>("abc/dfe", "/asdf"));
         }
     };
 

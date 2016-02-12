@@ -74,7 +74,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
             ReferenceProducer internalReferences = new ReferenceProducer() {
                 public String getReference(Object obj) {
                     if (obj instanceof Node)
-                        return model.getNodeReference((Node)obj);
+                        return model.getNodeReference((Node) obj);
                     else
                         return null;
                 }

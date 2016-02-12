@@ -184,7 +184,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
     @Override
     public void activated(final GraphEditor editor) {
-        stg = (VisualSTG)editor.getModel();
+        stg = (VisualSTG) editor.getModel();
         super.activated(editor);
         editor.getWorkspaceEntry().setCanModify(false);
     }
@@ -211,7 +211,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualNamedTransition) {
-                    VisualNamedTransition t = (VisualNamedTransition)node;
+                    VisualNamedTransition t = (VisualNamedTransition) node;
                     final String name = stg.getNodeMathReference(node);
                     if (selectedCores == null) {
                         final Color color = (density == null) ? null : density.getColor(name);
@@ -279,7 +279,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
             label.setBorder(PropertyEditorTable.BORDER_RENDER);
             if ((cores != null) && (row >= 0) && (row < cores.size())) {
                 Core core = cores.get(row);
-                label.setText((String)value);
+                label.setText((String) value);
                 if (column == COLUMN_COLOR) {
                     label.setBackground(core.getColor());
                 } else {

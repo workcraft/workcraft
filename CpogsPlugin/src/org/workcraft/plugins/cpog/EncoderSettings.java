@@ -22,11 +22,11 @@ public class EncoderSettings {
         }
     }
 
-    private int solutionNumber = 10, numPO,bits, circuitSize;
+    private int solutionNumber = 10, numPO, bits, circuitSize;
     private GenerationMode genMode = GenerationMode.OPTIMAL_ENCODING;
     private boolean verboseMode, customEncMode, effort, contMode, cpogSize, costFunc, abcFlag;
     private String[] customEnc;
-    private String espressoPath,abcPath,libPath;
+    private String espressoPath, abcPath, libPath;
 
     public EncoderSettings(String espressoPath, String abcPath, String libPath) {
         this.espressoPath = espressoPath;

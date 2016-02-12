@@ -43,9 +43,9 @@ public class EventDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-        MathNode first = (MathNode)internalReferenceResolver.getObject(element.getAttribute("first"));
-        MathNode second = (MathNode)internalReferenceResolver.getObject(element.getAttribute("second"));
-        Symbol symbol = (Symbol)internalReferenceResolver.getObject(element.getAttribute("symbol"));
+        MathNode first = (MathNode) internalReferenceResolver.getObject(element.getAttribute("first"));
+        MathNode second = (MathNode) internalReferenceResolver.getObject(element.getAttribute("second"));
+        Symbol symbol = (Symbol) internalReferenceResolver.getObject(element.getAttribute("symbol"));
 
         Event event = (Event) instance;
         event.setDependencies(first, second);

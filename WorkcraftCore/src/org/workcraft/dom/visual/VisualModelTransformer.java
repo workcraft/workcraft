@@ -19,7 +19,7 @@ public class VisualModelTransformer {
         HashMap<ControlPoint, Point2D> controlPointPositions = new HashMap<>();
         for (Node node: nodes) {
             if (node instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection)node;
+                VisualConnection vc = (VisualConnection) node;
                 for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
                     controlPointPositions.put(cp, cp.getPosition());
                 }
@@ -28,7 +28,7 @@ public class VisualModelTransformer {
         // First reposition vertices.
         for (Node node: nodes) {
             if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode vn = (VisualTransformableNode)node;
+                VisualTransformableNode vn = (VisualTransformableNode) node;
                 Point2D pos = vn.getPosition();
                 if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
                     AffineTransform t2 = new AffineTransform();
@@ -51,7 +51,7 @@ public class VisualModelTransformer {
         // Then reposition control points, using their stored initial positions.
         for (Node node: nodes) {
             if (node instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection)node;
+                VisualConnection vc = (VisualConnection) node;
                 for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
                     Point2D pos = controlPointPositions.get(cp);
                     t.transform(pos, pos);
@@ -114,7 +114,7 @@ public class VisualModelTransformer {
         Rectangle2D selectionBB = null;
         for (Node vn: nodes) {
             if(vn instanceof VisualTransformableNode) {
-                Point2D pos = ((VisualTransformableNode)vn).getPosition();
+                Point2D pos = ((VisualTransformableNode) vn).getPosition();
                 selectionBB = bbUnion(selectionBB, pos);
             }
         }
@@ -125,11 +125,11 @@ public class VisualModelTransformer {
         HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<VisualTransformableNode, Point2D>();
         for (Node node: nodes) {
             if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode component = (VisualTransformableNode)node;
+                VisualTransformableNode component = (VisualTransformableNode) node;
                 Point2D position = component.getRootSpacePosition();
                 componentToPositionMap.put(component, position);
             } else if (node instanceof VisualConnection) {
-                VisualConnection connection = (VisualConnection)node;
+                VisualConnection connection = (VisualConnection) node;
                 for (ControlPoint cp: connection.getGraphic().getControlPoints()) {
                     Point2D position = cp.getRootSpacePosition();
                     componentToPositionMap.put(cp, position);

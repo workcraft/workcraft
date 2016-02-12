@@ -33,7 +33,7 @@ public class NodeHelper {
         ArrayList<T> result = new ArrayList<T>();
         for(Object node : original) {
             if(type.isInstance(node)) {
-                result.add((T)node);
+                result.add((T) node);
             }
         }
         return result;
@@ -43,8 +43,8 @@ public class NodeHelper {
     public static <T, O> Collection<T> filterByType(Collection<O> original, Class<T> type, Func<T, Boolean> filter) {
         ArrayList<T> result = new ArrayList<T>();
         for(Object node : original) {
-            if(type.isInstance(node) && filter.eval((T)node)) {
-                result.add((T)node);
+            if(type.isInstance(node) && filter.eval((T) node)) {
+                result.add((T) node);
             }
         }
         return result;

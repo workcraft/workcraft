@@ -53,7 +53,7 @@ public class PresetManagerPanel<T> extends JPanel {
         presetCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Preset<T> p = (Preset<T>)presetCombo.getSelectedItem();
+                Preset<T> p = (Preset<T>) presetCombo.getSelectedItem();
 
                 if (p == null)
                     return;
@@ -93,7 +93,7 @@ public class PresetManagerPanel<T> extends JPanel {
         updatePresetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Preset<T> selected = (Preset<T>)presetCombo.getSelectedItem();
+                Preset<T> selected = (Preset<T>) presetCombo.getSelectedItem();
                 presetManager.update(selected, guiMapper.getSettingsFromControls());
             }
         });
@@ -119,7 +119,7 @@ public class PresetManagerPanel<T> extends JPanel {
 
     @SuppressWarnings("unchecked")
     public void managePresets() {
-        Preset<T> selected = (Preset<T>)presetCombo.getSelectedItem();
+        Preset<T> selected = (Preset<T>) presetCombo.getSelectedItem();
 
         PresetManagerDialog<T> dlg = new PresetManagerDialog<T>(dialogOwner, presetManager);
         dlg.setModalityType(ModalityType.APPLICATION_MODAL);

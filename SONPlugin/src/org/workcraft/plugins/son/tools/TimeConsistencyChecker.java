@@ -35,8 +35,8 @@ public class TimeConsistencyChecker implements Tool{
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
-        VisualSON visualNet = (VisualSON)we.getModelEntry().getVisualModel();
-        SON net = (SON)we.getModelEntry().getMathModel();
+        VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
+        SON net = (SON) we.getModelEntry().getMathModel();
 
         BlockConnector.blockBoundingConnector(visualNet);
         net.refreshAllColor();

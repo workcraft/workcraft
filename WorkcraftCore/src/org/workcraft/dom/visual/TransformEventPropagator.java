@@ -89,7 +89,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 
     private void nodeRemoved(Node node) {
         if (node instanceof ObservableState) {
-            ((ObservableState)node).removeObserver(this);
+            ((ObservableState) node).removeObserver(this);
 
             // remove node from all observer lists
             LinkedList<TransformObserver> observers = nodeToObservers.get(node);
@@ -101,7 +101,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
         }
 
         if (node instanceof TransformObserver) {
-            TransformObserver to = (TransformObserver)node;
+            TransformObserver to = (TransformObserver) node;
             LinkedList<Node> nodes = observerToNodes.get(to);
             if (nodes != null)
                 for (Node n : nodes)
@@ -114,7 +114,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
 
     private void nodeAdded(Node node) {
         if (node instanceof ObservableState)
-            ((ObservableState)node).addObserver(this);
+            ((ObservableState) node).addObserver(this);
 
         if (node instanceof TransformObserver) {
             TransformObserver to = (TransformObserver) node;
@@ -132,13 +132,13 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
                 to.notify(e);
 
         for (Node n : node.getChildren())
-            propagate(n,e);
+            propagate(n, e);
     }
 
     @Override
     public void notify(StateEvent e) {
         if (e instanceof TransformEvent)
-            propagate(((TransformEvent)e).getSender(), (TransformEvent)e);
+            propagate(((TransformEvent) e).getSender(), (TransformEvent) e);
     }
 
     @Override

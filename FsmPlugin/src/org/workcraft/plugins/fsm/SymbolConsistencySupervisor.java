@@ -19,11 +19,11 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
     @Override
     public void handleEvent(StateEvent e) {
         if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent)e;
+            PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             if ((sender instanceof Event) && pce.getPropertyName().equals(Event.PROPERTY_SYMBOL)) {
                 // Update the collection of symbols on a change of event symbol property
-                handleEventSymbolChange((Event)sender);
+                handleEventSymbolChange((Event) sender);
             }
         }
     }
@@ -34,7 +34,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
             for (Node node: e.getAffectedNodes()) {
                 if (node instanceof Event) {
                     // Remove unused symbols on event deletion
-                    handleEventRemoval((Event)node);
+                    handleEventRemoval((Event) node);
                 }
             }
         }

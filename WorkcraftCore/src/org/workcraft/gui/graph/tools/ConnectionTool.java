@@ -106,7 +106,7 @@ public class ConnectionTool extends AbstractTool {
     }
 
     protected void updateState(GraphEditor editor) {
-        currentNode = (VisualNode)HitMan.hitTestForConnection(currentPoint, editor.getModel());
+        currentNode = (VisualNode) HitMan.hitTestForConnection(currentPoint, editor.getModel());
         if ((currentNode == null) || isConnectable(currentNode)) {
             if (currentNode != firstNode) {
                 mouseLeftFirstNode = true;
@@ -151,7 +151,7 @@ public class ConnectionTool extends AbstractTool {
     @Override
     public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
         if ((firstNode != null) && (currentPoint != null)) {
-            g.setStroke(new BasicStroke((float)editor.getViewport().pixelSizeInUserSpace().getX()));
+            g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
             Path2D path = new Path2D.Double();
             path.moveTo(firstPoint.getX(), firstPoint.getY());
             if (controlPoints != null) {
@@ -239,7 +239,7 @@ public class ConnectionTool extends AbstractTool {
         firstNode = currentNode;
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
         if (firstNode instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection)firstNode;
+            VisualConnection connection = (VisualConnection) firstNode;
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
             Point2D currentPointInLocalSpace = rootToLocalTransform.transform(currentPoint, null);
             Point2D nearestPointInLocalSpace = connection.getNearestPointOnConnection(currentPointInLocalSpace);
@@ -258,12 +258,12 @@ public class ConnectionTool extends AbstractTool {
         VisualConnection connection = null;
         try {
             if (firstNode instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection)firstNode;
+                VisualConnection vc = (VisualConnection) firstNode;
                 AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
                 vc.setSplitPoint(rootToLocalTransform.transform(firstPoint, null));
             }
             if (currentNode instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection)currentNode;
+                VisualConnection vc = (VisualConnection) currentNode;
                 AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
                 vc.setSplitPoint(rootToLocalTransform.transform(currentPoint, null));
             }

@@ -58,7 +58,7 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     public PetriNet getPetriNet() {
-        return (PetriNet)getMathModel();
+        return (PetriNet) getMathModel();
     }
 
     public VisualPlace createPlace(String mathName, Container container) {
@@ -114,11 +114,11 @@ public class VisualPetriNet extends AbstractVisualModel {
             MathNode firstRef = getMathReference(first);
             MathNode secondRef = getMathReference(second);
             if ((firstRef != null) && (secondRef != null)) {
-                PetriNet petriNet = (PetriNet)getMathModel();
+                PetriNet petriNet = (PetriNet) getMathModel();
                 mConnection = petriNet.connect(firstRef, secondRef);
             }
         }
-        VisualConnection connection = new VisualConnection(mConnection, (VisualNode)first, (VisualNode)second);
+        VisualConnection connection = new VisualConnection(mConnection, (VisualNode) first, (VisualNode) second);
         Hierarchy.getNearestContainer(first, second).add(connection);
         return connection;
     }
@@ -152,11 +152,11 @@ public class VisualPetriNet extends AbstractVisualModel {
         VisualNode place = null;
         VisualNode transition = null;
         if (first instanceof VisualTransition) {
-            place = (VisualNode)second;
-            transition = (VisualNode)first;
+            place = (VisualNode) second;
+            transition = (VisualNode) first;
         } else if (second instanceof VisualTransition) {
-            place = (VisualNode)first;
-            transition = (VisualNode)second;
+            place = (VisualNode) first;
+            transition = (VisualNode) second;
         }
         VisualConnection connection = null;
         if ((place != null) && (transition != null)) {
@@ -167,17 +167,17 @@ public class VisualPetriNet extends AbstractVisualModel {
 
     private VisualReadArc createReadArcConnection(VisualNode place, VisualNode transition)
              throws InvalidConnectionException {
-        PetriNet petriNet = (PetriNet)getMathModel();
+        PetriNet petriNet = (PetriNet) getMathModel();
 
         Place mPlace = null;
         if (place instanceof VisualPlace) {
-            mPlace = ((VisualPlace)place).getReferencedPlace();
+            mPlace = ((VisualPlace) place).getReferencedPlace();
         } else if (place instanceof VisualReplicaPlace) {
-            mPlace = ((VisualReplicaPlace)place).getReferencedPlace();
+            mPlace = ((VisualReplicaPlace) place).getReferencedPlace();
         }
         Transition mTransition = null;
         if (transition instanceof VisualTransition) {
-            mTransition = ((VisualTransition)transition).getReferencedTransition();
+            mTransition = ((VisualTransition) transition).getReferencedTransition();
         }
 
         VisualReadArc connection = null;

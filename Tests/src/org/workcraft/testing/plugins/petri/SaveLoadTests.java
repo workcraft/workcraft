@@ -76,7 +76,7 @@ public class SaveLoadTests {
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel));
         ModelEntry modelEntry = framework.load(bis);
-        PetriNet petri = (PetriNet)modelEntry.getModel();
+        PetriNet petri = (PetriNet) modelEntry.getModel();
 
         Assert.assertNotNull(petri);
 
@@ -91,14 +91,14 @@ public class SaveLoadTests {
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel));
         ModelEntry modelEntry = framework.load(bis);
-        VisualPetriNet petriVisual = (VisualPetriNet)modelEntry.getModel();
-        PetriNet petri = (PetriNet)petriVisual.getMathModel();
+        VisualPetriNet petriVisual = (VisualPetriNet) modelEntry.getModel();
+        PetriNet petri = (PetriNet) petriVisual.getMathModel();
 
         Assert.assertNotNull(petriVisual);
         Assert.assertNotNull(petri);
 
         VisualPetriNet sample = buildSampleVisualPetri();
-        assertPetriEquals(petri, (PetriNet)sample.getMathModel());
+        assertPetriEquals(petri, (PetriNet) sample.getMathModel());
         assertVisualPetriEquals(petriVisual, sample);
     }
 
@@ -142,7 +142,7 @@ public class SaveLoadTests {
     private void assertPetriEquals(PetriNet expected, PetriNet actual) {
         Assert.assertEquals(getComponents(expected).size(), getComponents(actual).size());
         for(MathNode component : getComponents(expected))
-            assertComponentEquals(component,(MathNode) actual.getNodeByReference(expected.getNodeReference(component)));
+            assertComponentEquals(component, (MathNode) actual.getNodeByReference(expected.getNodeReference(component)));
 
         Assert.assertEquals(getConnections(expected).size(), getConnections(actual).size());
         for(MathConnection connection : getConnections(expected))
@@ -220,9 +220,9 @@ public class SaveLoadTests {
         Assert.assertEquals(type, node2.getClass());
 
         if(type == Transition.class)
-            assertTransitionEquals((Transition)node, (Transition)node2);
+            assertTransitionEquals((Transition) node, (Transition) node2);
         if(type == Place.class)
-            assertPlaceEquals((Place)node, (Place)node2);
+            assertPlaceEquals((Place) node, (Place) node2);
     }
 
     private void assertTransitionEquals(Transition expected, Transition actual) {
@@ -323,6 +323,6 @@ public class SaveLoadTests {
 
     private void randomPosition(Node node) {
         if(node instanceof Movable)
-            MovableHelper.translate((Movable)node, r.nextDouble()*10, r.nextDouble()*10);
+            MovableHelper.translate((Movable) node, r.nextDouble()*10, r.nextDouble()*10);
     }
 }

@@ -73,7 +73,7 @@ public class JavaScriptWindow extends JPanel {
         panelInput = new JPanel();
         panelInput.setLayout(new BorderLayout());
         panelInput.add(txtScript, BorderLayout.CENTER);
-        panelInput.setMinimumSize(new Dimension(100,100));
+        panelInput.setMinimumSize(new Dimension(100, 100));
 
         setLayout(new BorderLayout());
         this.add(panelInput, BorderLayout.CENTER);

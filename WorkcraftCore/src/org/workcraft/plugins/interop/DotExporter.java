@@ -62,7 +62,7 @@ public class DotExporter implements Exporter {
         final List<ExportNode> dotExportNodes = new ArrayList<ExportNode>();
         VisualModel visualModel = null;
         if (model instanceof VisualModel) {
-            visualModel = (VisualModel)model;
+            visualModel = (VisualModel) model;
         }
         for (VisualComponent component : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
             String id = visualModel.getNodeReference(component);

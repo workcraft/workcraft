@@ -22,11 +22,11 @@ public class ReadArcDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
-        VisualReadArc arc = (VisualReadArc)instance;
+        VisualReadArc arc = (VisualReadArc) instance;
 
         arc.setDependencies(
-                (MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon1")),
-                (MathConnection)externalReferenceResolver.getObject(element.getAttribute("refCon2"))
+                (MathConnection) externalReferenceResolver.getObject(element.getAttribute("refCon1")),
+                (MathConnection) externalReferenceResolver.getObject(element.getAttribute("refCon2"))
         );
     }
 
